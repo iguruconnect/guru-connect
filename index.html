@@ -4089,7 +4089,7 @@ html, body, button, input, select, textarea {
             "Kamble","Borkar","Kharat","Gore","Inamdar","Mane","Kshirsagar","Vaidya","Bhujbal","Londhe"
         ];
 
-        for(let i=1; i<=1000; i++) {
+        for(let i=1; i<=60; i++) {
             const first = GC_STUDENT_FIRST_NAMES[(i - 1) % GC_STUDENT_FIRST_NAMES.length];
             const lastIndex = Math.floor((i - 1) / GC_STUDENT_FIRST_NAMES.length) % GC_STUDENT_LAST_NAMES.length;
             const last = GC_STUDENT_LAST_NAMES[lastIndex];
@@ -4285,7 +4285,7 @@ html, body, button, input, select, textarea {
             "Limaye","Phadke","Gokhale","Lele","Oke","Tambe","Vartak","Karnik","Godbole","Kelkar"
         ];
 
-        for(let j=1; j<=1000; j++) {
+        for(let j=1; j<=60; j++) {
             const first = GC_TUTOR_FIRST_NAMES[(j - 1) % GC_TUTOR_FIRST_NAMES.length];
             const lastIndex = Math.floor((j - 1) / GC_TUTOR_FIRST_NAMES.length) % GC_TUTOR_LAST_NAMES.length;
             const last = GC_TUTOR_LAST_NAMES[lastIndex];
@@ -7500,6 +7500,1018 @@ html, body, button, input, select, textarea {
   function run(){try{renderTutors()}catch(e){console.error(e)}try{renderStudents()}catch(e){console.error(e)}bind()}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(run,150)});else setTimeout(run,150);
   window.addEventListener('load',function(){setTimeout(run,250)});
+})();
+</script>
+
+
+<style id="gc-final-performance-scroll-fix">
+/* ============================================================
+   GURU CONNECT — FINAL PERFORMANCE + DIRECTORY SCROLL FIX
+   ============================================================ */
+
+/* Never lock the public page vertically. */
+html, body {
+  height: auto !important;
+  min-height: 100% !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+
+body {
+  position: relative !important;
+}
+
+/* Keep directory sections in normal document flow. */
+#publicWebsiteContent,
+#tutors,
+#studentsDirectory,
+#tutorGrid,
+#studentGridContainer {
+  position: relative !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+
+/* Prevent old fixed/transform rules from trapping cards. */
+#tutorGrid,
+#studentGridContainer {
+  contain: layout style paint;
+}
+
+/* Comfortable but compact directory cards. */
+#tutorGrid,
+#studentGridContainer {
+  align-items: start !important;
+}
+
+@media (max-width: 640px) {
+  #tutorGrid,
+  #studentGridContainer {
+    grid-template-columns: 1fr !important;
+  }
+}
+</style>
+
+<script id="gc-final-performance-scroll-js">
+(function () {
+  'use strict';
+
+  /* ---------- Safe helpers ---------- */
+  function arr(name) {
+    try {
+      return Array.isArray(window[name]) ? window[name] : [];
+    } catch (_) {
+      return [];
+    }
+  }
+
+  function uniqueDirectory(list) {
+    const seen = new Set();
+    const out = [];
+
+    list.forEach(function (item) {
+      if (!item) return;
+
+      let name = String(item.name || '').trim();
+      if (!name) return;
+
+      /* Remove only a trailing numeric dummy suffix: "Name 2" -> "Name". */
+      const cleaned = name.replace(/\s+\d+$/, '').trim();
+      const isDummy =
+        item.isDummy === true ||
+        item.registrationStatus === 'illustrative';
+
+      const displayName = isDummy ? cleaned : name;
+      const key = displayName.toLowerCase();
+
+      if (seen.has(key)) return;
+      seen.add(key);
+
+      if (isDummy) item._directoryCleanName = displayName;
+      out.push(item);
+    });
+
+    return out;
+  }
+
+  function tutorSource() {
+    return uniqueDirectory(arr('tutorDirectoryList'));
+  }
+
+  function studentSource() {
+    return uniqueDirectory(arr('studentDirectoryList'));
+  }
+
+  function tutorPerPage() {
+    try {
+      return Math.max(1, Number(window.tutorsPerPage) || 6);
+    } catch (_) {
+      return 6;
+    }
+  }
+
+  function studentPerPage() {
+    try {
+      return Math.max(1, Number(window.studentsPerPage) || 6);
+    } catch (_) {
+      return 6;
+    }
+  }
+
+  function getTutorPage() {
+    try {
+      return Math.max(1, Number(window.currentTutorPage) || 1);
+    } catch (_) {
+      return 1;
+    }
+  }
+
+  function getStudentPage() {
+    try {
+      return Math.max(1, Number(window.currentStudentPage) || 1);
+    } catch (_) {
+      return 1;
+    }
+  }
+
+  function setTutorPage(p) {
+    try { window.currentTutorPage = p; } catch (_) {}
+  }
+
+  function setStudentPage(p) {
+    try { window.currentStudentPage = p; } catch (_) {}
+  }
+
+  function esc(v) {
+    return String(v == null ? '' : v).replace(/[&<>"']/g, function (m) {
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[m];
+    });
+  }
+
+  function tickUrl() {
+    try {
+      if (typeof VERIFIED_TICK_V3 !== 'undefined' && VERIFIED_TICK_V3) {
+        return VERIFIED_TICK_V3;
+      }
+    } catch (_) {}
+    try {
+      if (typeof VERIFIED_TICK_LOGO_URL !== 'undefined' && VERIFIED_TICK_LOGO_URL) {
+        return VERIFIED_TICK_LOGO_URL;
+      }
+    } catch (_) {}
+    return '';
+  }
+
+  function tutorPhoto(t) {
+    return t && (t.photoData || t.photo || t.image || t.avatar || t.profileImage || '');
+  }
+
+  function studentPhoto(s) {
+    return s && (s.photoData || s.photo || s.image || s.avatar || s.profileImage || '');
+  }
+
+  function gcPhotoHtml(photo, name, icon) {
+    if (typeof window.photoHtml === 'function' && window.photoHtml !== gcPhotoHtml) {
+      try { return window.photoHtml(photo, name); } catch (_) {}
+    }
+
+    const initials = String(name || 'GC')
+      .trim().split(/\s+/).slice(0, 2)
+      .map(function (x) { return x.charAt(0); })
+      .join('').toUpperCase() || 'GC';
+
+    if (photo) {
+      return '<img src="' + esc(photo) + '" alt="' + esc(name) +
+        '" class="gc-fast-avatar" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' +
+        '<span class="gc-fast-avatar-fallback" style="display:none">' + esc(initials) + '</span>';
+    }
+
+    return '<span class="gc-fast-avatar-fallback">' + esc(initials) + '</span>';
+  }
+
+  /* ---------- Final compact tutor renderer ---------- */
+  window.renderTutorDirectory = function () {
+    const container = document.getElementById('tutorGrid');
+    if (!container) return;
+
+    const source = tutorSource();
+    const per = tutorPerPage();
+    const total = Math.max(1, Math.ceil(source.length / per));
+
+    let page = getTutorPage();
+    if (page > total) page = total;
+    setTutorPage(page);
+
+    const start = (page - 1) * per;
+    const items = source.slice(start, start + per);
+
+    container.innerHTML = '';
+
+    items.forEach(function (t) {
+      const id = String(t.id || '');
+      const name = String(t._directoryCleanName || t.name || 'Tutor');
+      const subject = String(t.subject || '—');
+      const rate = String(t.price || t.rate || '—');
+      const exp = String(t.experience || '—');
+      const verified = t.verified === true;
+      const tick = tickUrl();
+
+      const card = document.createElement('article');
+      card.className = 'gc-beautiful-card gc-beautiful-tutor';
+      card.dataset.tutorId = id;
+
+      card.innerHTML =
+        '<div class="gc-beautiful-brand">' +
+          '<span class="gc-beautiful-brand-text">GURU CONNECT</span>' +
+          '<span class="gc-beautiful-brand-sub">Partners in Positive Change</span>' +
+        '</div>' +
+        '<div class="gc-beautiful-avatar">' +
+          gcPhotoHtml(tutorPhoto(t), name, 'fa-chalkboard-user') +
+        '</div>' +
+        '<div class="gc-beautiful-content">' +
+          '<div class="gc-beautiful-name-row">' +
+            '<h3 class="gc-beautiful-name" title="' + esc(name) + '">' + esc(name) + '</h3>' +
+            (verified && tick
+              ? '<span class="gc-beautiful-tick"><img src="' + esc(tick) + '" alt="Verified Tutor"></span>'
+              : '') +
+          '</div>' +
+          '<div class="gc-beautiful-fields">' +
+            '<div class="gc-beautiful-field"><b>SUBJECT</b><span>' + esc(subject) + '</span></div>' +
+            '<div class="gc-beautiful-field"><b>RATE</b><span>' + esc(rate) + '</span></div>' +
+            '<div class="gc-beautiful-field"><b>EXPERIENCE</b><span>' + esc(exp) + '</span></div>' +
+          '</div>' +
+        '</div>' +
+        '<button type="button" class="gc-beautiful-more" data-tutor-id="' + esc(id) +
+          '">MORE <i class="fa-solid fa-chevron-right"></i></button>';
+
+      container.appendChild(card);
+    });
+
+    const totalEl = document.getElementById('tutorTotalPagesText');
+    const input = document.getElementById('tutorPageJumpInput');
+    if (totalEl) totalEl.textContent = '/ ' + total;
+    if (input) {
+      input.value = page;
+      input.max = total;
+    }
+
+    renderTutorPageButtons(total, page);
+  };
+
+  /* ---------- Final compact student renderer ---------- */
+  window.renderStudentDirectory = function () {
+    const container = document.getElementById('studentGridContainer');
+    if (!container) return;
+
+    const source = studentSource();
+    const per = studentPerPage();
+    const total = Math.max(1, Math.ceil(source.length / per));
+
+    let page = getStudentPage();
+    if (page > total) page = total;
+    setStudentPage(page);
+
+    const start = (page - 1) * per;
+    const items = source.slice(start, start + per);
+
+    container.innerHTML = '';
+
+    items.forEach(function (s) {
+      const id = String(s.id || '');
+      const name = String(s._directoryCleanName || s.name || 'Student');
+      const course = String(s.course || s.std || '—');
+      const stream = String(s.stream || '—');
+      let req = String(s.learningRequirement || s.subject || 'Not specified');
+
+      try {
+        if (typeof window.gcGetStudentRequirementV2 === 'function') {
+          req = String(window.gcGetStudentRequirementV2(s) || req);
+        }
+      } catch (_) {}
+
+      const card = document.createElement('article');
+      card.className = 'gc-beautiful-card gc-beautiful-student';
+      card.dataset.studentId = id;
+
+      card.innerHTML =
+        '<div class="gc-beautiful-brand">' +
+          '<span class="gc-beautiful-brand-text">GURU CONNECT</span>' +
+          '<span class="gc-beautiful-brand-sub">Partners in Positive Change</span>' +
+        '</div>' +
+        '<div class="gc-beautiful-avatar">' +
+          gcPhotoHtml(studentPhoto(s), name, 'fa-user-graduate') +
+        '</div>' +
+        '<div class="gc-beautiful-content">' +
+          '<div class="gc-beautiful-name-row">' +
+            '<h3 class="gc-beautiful-name" title="' + esc(name) + '">' + esc(name) + '</h3>' +
+          '</div>' +
+          '<div class="gc-beautiful-fields">' +
+            '<div class="gc-beautiful-field"><b>CLASS</b><span>' + esc(course) + '</span></div>' +
+            '<div class="gc-beautiful-field"><b>STREAM</b><span>' + esc(stream) + '</span></div>' +
+            '<div class="gc-beautiful-field"><b>REQUIREMENT</b><span>' + esc(req) + '</span></div>' +
+          '</div>' +
+        '</div>' +
+        '<button type="button" class="gc-beautiful-more gc-beautiful-student-more" data-student-id="' +
+          esc(id) + '">MORE <i class="fa-solid fa-chevron-right"></i></button>';
+
+      container.appendChild(card);
+    });
+
+    renderStudentPageButtons(total, page);
+  };
+
+  function renderTutorPageButtons(total, page) {
+    const wrap = document.getElementById('tutorPaginationNumbers');
+    if (!wrap) return;
+
+    wrap.innerHTML = '';
+
+    const prev = document.getElementById('tutorPrevBtn');
+    const next = document.getElementById('tutorNextBtn');
+    if (prev) prev.disabled = page <= 1;
+    if (next) next.disabled = page >= total;
+
+    const start = Math.max(1, Math.min(page - 2, total - 4));
+    const end = Math.min(total, start + 4);
+
+    for (let i = start; i <= end; i++) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = i;
+      b.className = 'w-8 h-8 rounded-lg text-xs font-bold transition ' +
+        (i === page ? 'bg-brand-blue text-white shadow' :
+         'bg-slate-100 text-slate-600 hover:bg-slate-200');
+      b.addEventListener('click', function () {
+        setTutorPage(i);
+        window.renderTutorDirectory();
+        document.getElementById('tutors')?.scrollIntoView({behavior:'smooth', block:'start'});
+      });
+      wrap.appendChild(b);
+    }
+  }
+
+  function renderStudentPageButtons(total, page) {
+    const wrap = document.getElementById('paginationNumbers');
+    if (!wrap) return;
+
+    wrap.innerHTML = '';
+
+    const prev = document.getElementById('prevBtn');
+    const next = document.getElementById('nextBtn');
+    if (prev) prev.disabled = page <= 1;
+    if (next) next.disabled = page >= total;
+
+    const start = Math.max(1, Math.min(page - 2, total - 4));
+    const end = Math.min(total, start + 4);
+
+    for (let i = start; i <= end; i++) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = i;
+      b.className = 'w-8 h-8 rounded-lg text-xs font-bold transition ' +
+        (i === page ? 'bg-brand-blue text-white shadow' :
+         'bg-slate-100 text-slate-600 hover:bg-slate-200');
+      b.addEventListener('click', function () {
+        setStudentPage(i);
+        window.renderStudentDirectory();
+        document.getElementById('studentsDirectory')?.scrollIntoView({behavior:'smooth', block:'start'});
+      });
+      wrap.appendChild(b);
+    }
+  }
+
+  window.changeTutorPage = function (direction) {
+    const total = Math.max(1, Math.ceil(tutorSource().length / tutorPerPage()));
+    let page = getTutorPage() + Number(direction || 0);
+    page = Math.max(1, Math.min(total, page));
+    setTutorPage(page);
+    window.renderTutorDirectory();
+  };
+
+  window.jumpToTutorPageInput = function (value) {
+    const total = Math.max(1, Math.ceil(tutorSource().length / tutorPerPage()));
+    let page = parseInt(value, 10);
+    if (!Number.isFinite(page)) page = 1;
+    page = Math.max(1, Math.min(total, page));
+    setTutorPage(page);
+    window.renderTutorDirectory();
+  };
+
+  window.changePage = function (direction) {
+    const total = Math.max(1, Math.ceil(studentSource().length / studentPerPage()));
+    let page = getStudentPage() + Number(direction || 0);
+    page = Math.max(1, Math.min(total, page));
+    setStudentPage(page);
+    window.renderStudentDirectory();
+  };
+
+  window.jumpToPageInput = function (value) {
+    const total = Math.max(1, Math.ceil(studentSource().length / studentPerPage()));
+    let page = parseInt(value, 10);
+    if (!Number.isFinite(page)) page = 1;
+    page = Math.max(1, Math.min(total, page));
+    setStudentPage(page);
+    window.renderStudentDirectory();
+  };
+
+  /* Subject filter now actually filters the displayed tutor pages. */
+  const originalTutorListRef = function () {
+    return arr('tutorDirectoryList');
+  };
+
+  window.filterTutors = function () {
+    const select = document.getElementById('subjectFilter');
+    const value = select ? String(select.value || 'All') : 'All';
+
+    const all = originalTutorListRef();
+    const filtered = value === 'All'
+      ? all
+      : all.filter(function (t) {
+          return String(t && t.subject || '').toLowerCase() === value.toLowerCase();
+        });
+
+    window.__gcTutorFilteredList = uniqueDirectory(filtered);
+    const per = tutorPerPage();
+    const total = Math.max(1, Math.ceil(window.__gcTutorFilteredList.length / per));
+    setTutorPage(Math.min(getTutorPage(), total));
+
+    /* Render directly from filtered data without changing registered data. */
+    const container = document.getElementById('tutorGrid');
+    if (!container) return;
+
+    const page = getTutorPage();
+    const items = window.__gcTutorFilteredList.slice((page - 1) * per, page * per);
+    container.innerHTML = '';
+
+    items.forEach(function (t) {
+      const id = String(t.id || '');
+      const name = String(t._directoryCleanName || t.name || 'Tutor');
+      const verified = t.verified === true;
+      const tick = tickUrl();
+
+      const card = document.createElement('article');
+      card.className = 'gc-beautiful-card gc-beautiful-tutor';
+      card.dataset.tutorId = id;
+      card.innerHTML =
+        '<div class="gc-beautiful-brand"><span class="gc-beautiful-brand-text">GURU CONNECT</span>' +
+        '<span class="gc-beautiful-brand-sub">Partners in Positive Change</span></div>' +
+        '<div class="gc-beautiful-avatar">' + gcPhotoHtml(tutorPhoto(t), name, 'fa-chalkboard-user') + '</div>' +
+        '<div class="gc-beautiful-content"><div class="gc-beautiful-name-row">' +
+        '<h3 class="gc-beautiful-name">' + esc(name) + '</h3>' +
+        (verified && tick ? '<span class="gc-beautiful-tick"><img src="' + esc(tick) + '" alt="Verified Tutor"></span>' : '') +
+        '</div><div class="gc-beautiful-fields">' +
+        '<div class="gc-beautiful-field"><b>SUBJECT</b><span>' + esc(t.subject || '—') + '</span></div>' +
+        '<div class="gc-beautiful-field"><b>RATE</b><span>' + esc(t.price || t.rate || '—') + '</span></div>' +
+        '<div class="gc-beautiful-field"><b>EXPERIENCE</b><span>' + esc(t.experience || '—') + '</span></div>' +
+        '</div></div><button type="button" class="gc-beautiful-more" data-tutor-id="' + esc(id) +
+        '">MORE <i class="fa-solid fa-chevron-right"></i></button>';
+      container.appendChild(card);
+    });
+
+    renderTutorPageButtons(total, page);
+    const totalEl = document.getElementById('tutorTotalPagesText');
+    if (totalEl) totalEl.textContent = '/ ' + total;
+  };
+
+  /* ---------- Make sure clicking MORE still works after rerender ---------- */
+  document.addEventListener('click', function (e) {
+    const tutorBtn = e.target.closest('.gc-beautiful-more[data-tutor-id]');
+    if (tutorBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = tutorBtn.getAttribute('data-tutor-id');
+      try {
+        if (typeof window.openTutorProfile === 'function') window.openTutorProfile(id);
+      } catch (_) {}
+      return;
+    }
+
+    const studentBtn = e.target.closest('.gc-beautiful-student-more[data-student-id]');
+    if (studentBtn) {
+      e.preventDefault();
+      e.stopPropagation();
+      const id = studentBtn.getAttribute('data-student-id');
+      try {
+        if (typeof window.openStudentProfile === 'function') window.openStudentProfile(id);
+      } catch (_) {}
+    }
+  }, true);
+
+  /* ---------- Keep admin login light ---------- */
+  const originalAdminQueue = window.renderAdminQueue;
+
+  window.renderAdminQueue = function () {
+    /*
+      The original admin renderer creates one large DOM row for every
+      illustrative profile. With 1,000+ rows this freezes the browser.
+      The directory itself remains fully paginated.
+    */
+    try {
+      if (typeof originalAdminQueue === 'function') {
+        originalAdminQueue();
+      }
+    } catch (err) {
+      console.warn('Admin queue renderer recovered:', err);
+    }
+  };
+
+  /* ---------- Initial refresh ---------- */
+  function refresh() {
+    try {
+      if (typeof window.renderTutorDirectory === 'function') {
+        window.renderTutorDirectory();
+      }
+    } catch (_) {}
+
+    try {
+      if (typeof window.renderStudentDirectory === 'function') {
+        window.renderStudentDirectory();
+      }
+    } catch (_) {}
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () {
+      setTimeout(refresh, 80);
+    });
+  } else {
+    setTimeout(refresh, 80);
+  }
+})();
+</script>
+
+
+<!-- =========================================================
+     GURU CONNECT CLOUD DIRECTORY
+     Supabase-backed registration + cross-browser directory
+     ========================================================= -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function () {
+  'use strict';
+
+  /*
+   * IMPORTANT:
+   * Replace only GC_SUPABASE_ANON_KEY with the project's
+   * PUBLIC anon/publishable key from Supabase.
+   * Never put the service_role/secret key in this HTML.
+   */
+  const GC_SUPABASE_URL = 'https://hzqqswrnawrfgufbxgay.supabase.co';
+  const GC_SUPABASE_ANON_KEY = 'sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+
+  let gcSupabase = null;
+  let gcCloudEnabled = false;
+
+  try {
+    if (window.supabase && GC_SUPABASE_ANON_KEY && !GC_SUPABASE_ANON_KEY.includes('PASTE_YOUR')) {
+      gcSupabase = window.supabase.createClient(GC_SUPABASE_URL, GC_SUPABASE_ANON_KEY, {
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+      });
+      gcCloudEnabled = true;
+    }
+  } catch (err) {
+    console.warn('GURU CONNECT cloud client could not start:', err);
+  }
+
+  window.GC_CLOUD_STATUS = function () {
+    return gcCloudEnabled ? 'enabled' : 'not configured';
+  };
+
+  async function gcGetAnonymousUser() {
+    if (!gcSupabase) throw new Error('Supabase public key is not configured.');
+
+    const current = await gcSupabase.auth.getUser();
+    if (current && current.data && current.data.user) return current.data.user;
+
+    const result = await gcSupabase.auth.signInAnonymously();
+    if (result.error) throw result.error;
+    if (!result.data || !result.data.user) throw new Error('Anonymous cloud session could not be created.');
+    return result.data.user;
+  }
+
+  function gcCleanText(v) {
+    return String(v == null ? '' : v).trim();
+  }
+
+  function gcTutorCloudRow(t, userId) {
+    return {
+      user_id: userId,
+      name: gcCleanText(t.name),
+      subject: gcCleanText(t.subject),
+      stream: gcCleanText(t.stream),
+      experience: gcCleanText(t.experience),
+      qualification: gcCleanText(t.qualification),
+      college: gcCleanText(t.college),
+      teaching_college: gcCleanText(t.teachingCollege),
+      address: gcCleanText(t.address),
+      price: gcCleanText(t.price),
+      about_me: gcCleanText(t.aboutMe),
+      photo_url: gcCleanText(t.photoData || t.photo || ''),
+      verified: false,
+      is_illustrative: false,
+      registration_status: 'registered'
+    };
+  }
+
+  function gcStudentCloudRow(s, userId) {
+    return {
+      user_id: userId,
+      name: gcCleanText(s.name),
+      course: gcCleanText(s.course || s.std),
+      stream: gcCleanText(s.stream),
+      learning_requirement: gcCleanText(s.learningRequirement || s.subject),
+      photo_url: gcCleanText(s.photoData || s.photo || ''),
+      is_illustrative: false,
+      registration_status: 'registered'
+    };
+  }
+
+  async function gcSaveProfileToCloud(role, profile) {
+    if (!gcCloudEnabled) {
+      return { ok: false, skipped: true, error: new Error('Cloud key not configured.') };
+    }
+
+    try {
+      const user = await gcGetAnonymousUser();
+
+      // Create the corresponding public profile record first. This keeps
+      // tutor_profiles/student_profiles linked to auth.users through user_id.
+      const profileRow = {
+        id: user.id,
+        role: role,
+        full_name: gcCleanText(profile.name),
+        email: gcCleanText(profile.email) || null,
+        phone: gcCleanText(profile.phone) || null,
+        photo_url: gcCleanText(profile.photoData || '')
+      };
+
+      const pRes = await gcSupabase.from('profiles').upsert(profileRow, { onConflict: 'id' });
+      if (pRes.error) throw pRes.error;
+
+      if (role === 'tutor') {
+        const row = gcTutorCloudRow(profile, user.id);
+        const res = await gcSupabase.from('tutor_profiles').insert(row).select('*').single();
+        if (res.error) throw res.error;
+        return { ok: true, row: res.data, userId: user.id };
+      }
+
+      const row = gcStudentCloudRow(profile, user.id);
+      const res = await gcSupabase.from('student_profiles').insert(row).select('*').single();
+      if (res.error) throw res.error;
+      return { ok: true, row: res.data, userId: user.id };
+    } catch (err) {
+      console.error('GURU CONNECT cloud registration failed:', err);
+      return { ok: false, skipped: false, error: err };
+    }
+  }
+
+  function gcTutorFromCloud(row) {
+    return {
+      id: row.id,
+      user_id: row.user_id,
+      name: row.name || 'Tutor',
+      subject: row.subject || '',
+      stream: row.stream || '',
+      experience: row.experience || '',
+      qualification: row.qualification || '',
+      college: row.college || '',
+      teachingCollege: row.teaching_college || '',
+      address: row.address || '',
+      price: row.price || '',
+      aboutMe: row.about_me || '',
+      photoData: '',
+      verified: row.verified === true,
+      registrationDate: row.created_at || new Date().toISOString(),
+      isDummy: false,
+      isCloud: true,
+      registrationStatus: 'registered',
+      registrationRole: 'tutor'
+    };
+  }
+
+  function gcStudentFromCloud(row) {
+    return {
+      id: row.id,
+      user_id: row.user_id,
+      name: row.name || 'Student',
+      course: row.course || '',
+      std: row.course || '',
+      stream: row.stream || '',
+      learningRequirement: row.learning_requirement || '',
+      subject: row.learning_requirement || '',
+      photoData: '',
+      registrationDate: row.created_at || new Date().toISOString(),
+      isDummy: false,
+      isCloud: true,
+      registrationStatus: 'registered',
+      registrationRole: 'student'
+    };
+  }
+
+  async function gcLoadAllCloudRows(table, mapper) {
+    if (!gcCloudEnabled) return [];
+
+    const all = [];
+    const batch = 500;
+    let from = 0;
+
+    while (true) {
+      const { data, error } = await gcSupabase
+        .from(table)
+        .select(table === 'tutor_profiles'
+          ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,created_at'
+          : 'id,user_id,name,course,stream,learning_requirement,created_at')
+        .eq('is_illustrative', false)
+        .eq('registration_status', 'registered')
+        .order('created_at', { ascending: false })
+        .range(from, from + batch - 1);
+
+      if (error) throw error;
+      if (!data || !data.length) break;
+
+      data.forEach(row => all.push(mapper(row)));
+      if (data.length < batch) break;
+      from += batch;
+    }
+
+    return all;
+  }
+
+  async function gcLoadCloudDirectories() {
+    if (!gcCloudEnabled) return;
+
+    try {
+      const [cloudTutors, cloudStudents] = await Promise.all([
+        gcLoadAllCloudRows('tutor_profiles', gcTutorFromCloud),
+        gcLoadAllCloudRows('student_profiles', gcStudentFromCloud)
+      ]);
+
+      const localTutors = Array.isArray(tutorDirectoryList)
+        ? tutorDirectoryList.filter(t => !t.isCloud && t.isDummy !== false)
+        : [];
+      const localStudents = Array.isArray(studentDirectoryList)
+        ? studentDirectoryList.filter(st => !st.isCloud && st.isDummy !== false)
+        : [];
+
+      // Cloud registrations are the shared source. Local-only registrations
+      // are kept for backward compatibility on the current browser.
+      tutorDirectoryList = [...cloudTutors, ...localTutors];
+      studentDirectoryList = [...cloudStudents, ...localStudents];
+
+      window.tutorDirectoryList = tutorDirectoryList;
+      window.studentDirectoryList = studentDirectoryList;
+
+      window.currentTutorPage = 1;
+      window.currentStudentPage = 1;
+
+      if (typeof window.renderTutorDirectory === 'function') window.renderTutorDirectory();
+      if (typeof window.renderStudentDirectory === 'function') window.renderStudentDirectory();
+
+      // Fetch profile photos only for the currently visible cards. This avoids
+      // downloading thousands of base64 images on first page load.
+      await gcLoadVisiblePhotos();
+    } catch (err) {
+      console.error('GURU CONNECT could not load cloud directories:', err);
+      const msg = String(err && err.message || err || '');
+      if (msg) console.warn('Cloud directory message:', msg);
+    }
+  }
+
+  async function gcLoadVisiblePhotos() {
+    if (!gcCloudEnabled) return;
+
+    try {
+      const tutorItems = Array.isArray(tutorDirectoryList)
+        ? tutorDirectoryList.filter(t => t.isCloud).slice(
+            (Number(window.currentTutorPage || 1) - 1) * 6,
+            (Number(window.currentTutorPage || 1) - 1) * 6 + 6
+          )
+        : [];
+
+      const studentItems = Array.isArray(studentDirectoryList)
+        ? studentDirectoryList.filter(s => s.isCloud).slice(
+            (Number(window.currentStudentPage || 1) - 1) * 6,
+            (Number(window.currentStudentPage || 1) - 1) * 6 + 6
+          )
+        : [];
+
+      const tutorIds = tutorItems.map(t => t.id).filter(Boolean);
+      const studentIds = studentItems.map(s => s.id).filter(Boolean);
+
+      const jobs = [];
+
+      if (tutorIds.length) {
+        jobs.push(
+          gcSupabase.from('tutor_profiles').select('id,photo_url').in('id', tutorIds)
+            .then(({ data, error }) => {
+              if (error) throw error;
+              (data || []).forEach(r => {
+                const item = tutorDirectoryList.find(t => String(t.id) === String(r.id));
+                if (item) item.photoData = r.photo_url || '';
+              });
+            })
+        );
+      }
+
+      if (studentIds.length) {
+        jobs.push(
+          gcSupabase.from('student_profiles').select('id,photo_url').in('id', studentIds)
+            .then(({ data, error }) => {
+              if (error) throw error;
+              (data || []).forEach(r => {
+                const item = studentDirectoryList.find(s => String(s.id) === String(r.id));
+                if (item) item.photoData = r.photo_url || '';
+              });
+            })
+        );
+      }
+
+      await Promise.all(jobs);
+      if (typeof window.renderTutorDirectory === 'function') window.renderTutorDirectory();
+      if (typeof window.renderStudentDirectory === 'function') window.renderStudentDirectory();
+    } catch (err) {
+      console.warn('Cloud profile photos could not be loaded:', err);
+    }
+  }
+
+  // Expose these for the registration handlers below.
+  window.gcSaveProfileToCloud = gcSaveProfileToCloud;
+  window.gcLoadCloudDirectories = gcLoadCloudDirectories;
+  window.gcLoadVisiblePhotos = gcLoadVisiblePhotos;
+
+  /*
+   * Replace the old local-only registration handlers. LocalStorage is still
+   * kept as a fallback, but every successful registration first attempts the
+   * shared Supabase directory.
+   */
+  window.handleStudentFormSubmit = async function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById('stu_name').value.trim();
+    const email = document.getElementById('stu_email').value.trim();
+    const phone = document.getElementById('stu_phone').value.trim();
+    const standard = document.getElementById('stu_std').value;
+    const stream = document.getElementById('stu_stream').value;
+    const course = document.getElementById('stu_course')?.value ||
+      `${standard.includes('11') ? 'XI' : 'XII'} ${stream.toUpperCase()}`;
+    const requestedSubject = document.getElementById('stu_subject').value.trim();
+    const subject = typeof validSubjectForStream === 'function'
+      ? validSubjectForStream(stream, requestedSubject, Date.now())
+      : requestedSubject;
+
+    const photoFile = document.getElementById('stu_photo')?.files?.[0];
+    const photoData = typeof readImageDataUrl === 'function' ? await readImageDataUrl(photoFile) : '';
+
+    const collegeIdFile = document.getElementById('stu_college_id')?.files?.[0];
+    const aadhaarFile = document.getElementById('stu_aadhaar')?.files?.[0];
+    const division = document.getElementById('stu_division')?.value.trim() || '';
+    const rollNumber = document.getElementById('stu_roll')?.value.trim() || '';
+    const college = document.getElementById('stu_college')?.value.trim() || '';
+    const learningRequirement = document.getElementById('stu_learning_requirement')?.value.trim() || '';
+
+    const profile = {
+      name, email, phone, std: standard, stream, course, college, division,
+      rollNumber, subject, photoData, learningRequirement,
+      registrationDate: new Date().toISOString(),
+      helpline: { registered: false },
+      privacy: { showContactToConnectedTutors: true, showDetailsToConnectedTutors: true },
+      isDummy: false, registrationStatus: 'registered', registrationRole: 'student'
+    };
+
+    // Preserve the existing helpline fields if they are selected.
+    const helplineChoice = document.getElementById('stuHelplineRegister')?.value || 'no';
+    if (helplineChoice === 'yes') {
+      const plan = document.getElementById('stuHelplinePlan')?.value || '';
+      const hCourse = document.getElementById('stuHelplineCourse')?.value || '';
+      const hSubject = document.getElementById('stuHelplineSubject')?.value.trim() || '';
+      const count = parseInt(document.getElementById('stuHelplineSubjectCount')?.value || '0', 10);
+      if (!plan || !hCourse || !hSubject || !count) {
+        alert('Please complete the Helpline Plan, Course, Subject and Number of Subjects fields.');
+        return;
+      }
+      const pp = (typeof STUDENT_HELPLINE_PLAN_PRICES !== 'undefined'
+        ? (STUDENT_HELPLINE_PLAN_PRICES[plan] ?? 0) : 0);
+      profile.helpline = { registered:true, plan, course:hCourse, subject:hSubject, subjectCount:count, amount:pp*count };
+    }
+
+    const cloud = await window.gcSaveProfileToCloud('student', profile);
+    if (!cloud.ok && !cloud.skipped) {
+      alert('Cloud registration could not be saved. Please try again. Your local browser data was not submitted as a replacement.');
+      return;
+    }
+    if (cloud.ok) {
+      profile.id = cloud.row.id;
+      profile.user_id = cloud.userId;
+      profile.isCloud = true;
+    } else {
+      profile.id = `GC-STU-${Date.now().toString().slice(-6)}`;
+    }
+
+    studentDirectoryList.unshift(profile);
+    window.studentDirectoryList = studentDirectoryList;
+    try { saveRegisteredDirectories(); } catch (_) {}
+    if (typeof window.renderStudentDirectory === 'function') window.renderStudentDirectory();
+
+    localStorage.setItem('active_user_name', name);
+    localStorage.setItem('active_user_phone', phone);
+    localStorage.setItem('active_user_role', 'student');
+    updateAuthBadge();
+
+    alert(`Student Registration Successful for ${name}!${cloud.ok ? ' Saved to cloud.' : ''}`);
+    closeUserDashboard();
+    switchTab('requirement');
+  };
+
+  window.handleTutorFormSubmit = async function (e) {
+    e.preventDefault();
+
+    const name = document.getElementById('t_name').value.trim();
+    const email = document.getElementById('t_email').value.trim();
+    const phone = document.getElementById('t_phone').value.trim();
+    const requestedSubject = document.getElementById('t_subject').value.trim();
+    const tutorStream = typeof inferTutorStream === 'function'
+      ? inferTutorStream(requestedSubject, Date.now()) : '';
+    const subject = typeof validSubjectForStream === 'function'
+      ? validSubjectForStream(tutorStream, requestedSubject, Date.now()) : requestedSubject;
+    const price = document.getElementById('t_price').value.trim();
+    const exp = document.getElementById('t_exp').value.trim();
+    const utr = document.getElementById('txnIdInput')?.value.trim() || '';
+
+    const photoFile = document.getElementById('t_photo')?.files?.[0];
+    const photoData = typeof readImageDataUrl === 'function' ? await readImageDataUrl(photoFile) : '';
+    const collegeIdFile = document.getElementById('t_college_id')?.files?.[0];
+    const aadhaarFile = document.getElementById('t_aadhaar')?.files?.[0];
+
+    const profile = {
+      id: Date.now(),
+      name, email, subject, stream: tutorStream,
+      price: price.includes('/') ? price : price + '/hr',
+      experience: exp,
+      college: document.getElementById('t_college')?.value.trim() || 'Junior College Faculty',
+      teachingCollege: document.getElementById('t_teaching_college')?.value.trim() ||
+        document.getElementById('t_college')?.value.trim() || '',
+      qualification: document.getElementById('t_qualification')?.value.trim() || '',
+      address: document.getElementById('t_address')?.value.trim() || '',
+      aboutMe: document.getElementById('t_about')?.value.trim() || '',
+      photoData,
+      collegeIdName: collegeIdFile?.name || '',
+      aadhaarName: aadhaarFile?.name || '',
+      verified: false, phone, utr, paidStatus:'PENDING',
+      registrationDate: new Date().toISOString(),
+      isDummy:false, registrationStatus:'registered', registrationRole:'tutor'
+    };
+
+    const cloud = await window.gcSaveProfileToCloud('tutor', profile);
+    if (!cloud.ok && !cloud.skipped) {
+      alert('Cloud registration could not be saved. Please try again. Your local browser data was not submitted as a replacement.');
+      return;
+    }
+    if (cloud.ok) {
+      profile.id = cloud.row.id;
+      profile.user_id = cloud.userId;
+      profile.isCloud = true;
+    }
+
+    tutorDirectoryList.unshift(profile);
+    window.tutorDirectoryList = tutorDirectoryList;
+    try { saveRegisteredDirectories(); } catch (_) {}
+    if (typeof window.renderTutorDirectory === 'function') window.renderTutorDirectory();
+
+    localStorage.setItem('active_user_name', name);
+    localStorage.setItem('active_user_phone', phone);
+    localStorage.setItem('active_user_role', 'tutor');
+    updateAuthBadge();
+
+    const form = document.getElementById('tutorRegForm');
+    if (form) form.classList.add('hidden');
+
+    if (cloud.ok) {
+      alert(`Tutor Registration Successful for ${name}! Saved to cloud.`);
+    }
+    openUserDashboard();
+  };
+
+  // Cloud load happens after all existing scripts have defined their directory
+  // functions. The public directory remains usable even if cloud is unavailable.
+  function gcBootCloud() {
+    if (!gcCloudEnabled) {
+      console.warn('GURU CONNECT cloud directory is not configured yet. Add the Supabase anon key.');
+      return;
+    }
+    setTimeout(function () {
+      window.gcLoadCloudDirectories().catch(function (err) {
+        console.error('Cloud directory startup error:', err);
+      });
+    }, 120);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', gcBootCloud);
+  } else {
+    gcBootCloud();
+  }
+
 })();
 </script>
 
