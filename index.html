@@ -8532,7 +8532,7 @@ body {
 
   async function gcSaveProfileToCloud(role, profile) {
     if (!gcCloudEnabled) {
-      return { ok: false, skipped: true, error: new Error('Cloud key not configured.') };
+      return { ok: false, skipped: false, error: new Error('Supabase cloud is not configured.') };
     }
 
     try {
@@ -8554,14 +8554,18 @@ body {
 
       if (role === 'tutor') {
         const row = gcTutorCloudRow(profile, user.id);
-        const res = await gcSupabase.from('tutor_profiles').insert(row).select('*').single();
+        const res = await gcSupabase.from('tutor_profiles')
+          .upsert(row, { onConflict: 'user_id' })
+          .select('*').single();
         if (res.error) throw res.error;
         return { ok: true, row: res.data, userId: user.id };
       }
 
       gcPageCache.clear();
       const row = gcStudentCloudRow(profile, user.id);
-      const res = await gcSupabase.from('student_profiles').insert(row).select('*').single();
+      const res = await gcSupabase.from('student_profiles')
+        .upsert(row, { onConflict: 'user_id' })
+        .select('*').single();
       if (res.error) throw res.error;
       return { ok: true, row: res.data, userId: user.id };
     } catch (err) {
@@ -8846,17 +8850,15 @@ body {
     }
 
     const cloud = await window.gcSaveProfileToCloud('student', profile);
-    if (!cloud.ok && !cloud.skipped) {
-      alert('Cloud registration could not be saved. Please try again. Your local browser data was not submitted as a replacement.');
+    if (!cloud.ok) {
+      const detail = cloud.error && cloud.error.message ? '\n\nSupabase: ' + cloud.error.message : '';
+      alert('REGISTRATION NOT COMPLETED. Your Student profile could not be saved to the GURU CONNECT cloud database.' + detail + '\n\nPlease try again. No local-only registration has been created.');
       return;
     }
-    if (cloud.ok) {
-      profile.id = cloud.row.id;
-      profile.user_id = cloud.userId;
-      profile.isCloud = true;
-    } else {
-      profile.id = `GC-STU-${Date.now().toString().slice(-6)}`;
-    }
+
+    profile.id = cloud.row.id;
+    profile.user_id = cloud.userId;
+    profile.isCloud = true;
 
     studentDirectoryList.unshift(profile);
     window.studentDirectoryList = studentDirectoryList;
@@ -8868,7 +8870,7 @@ body {
     localStorage.setItem('active_user_role', 'student');
     updateAuthBadge();
 
-    alert(`Student Registration Successful for ${name}!${cloud.ok ? ' Saved to cloud.' : ''}`);
+    alert(`Student Registration Successful for ${name}!\n\nYour profile has been saved to the GURU CONNECT cloud database.`);
     closeUserDashboard();
     switchTab('requirement');
   };
@@ -8913,15 +8915,15 @@ body {
     };
 
     const cloud = await window.gcSaveProfileToCloud('tutor', profile);
-    if (!cloud.ok && !cloud.skipped) {
-      alert('Cloud registration could not be saved. Please try again. Your local browser data was not submitted as a replacement.');
+    if (!cloud.ok) {
+      const detail = cloud.error && cloud.error.message ? '\n\nSupabase: ' + cloud.error.message : '';
+      alert('REGISTRATION NOT COMPLETED. Your Tutor profile could not be saved to the GURU CONNECT cloud database.' + detail + '\n\nPlease try again. No local-only registration has been created.');
       return;
     }
-    if (cloud.ok) {
-      profile.id = cloud.row.id;
-      profile.user_id = cloud.userId;
-      profile.isCloud = true;
-    }
+
+    profile.id = cloud.row.id;
+    profile.user_id = cloud.userId;
+    profile.isCloud = true;
 
     tutorDirectoryList.unshift(profile);
     window.tutorDirectoryList = tutorDirectoryList;
@@ -8936,9 +8938,7 @@ body {
     const form = document.getElementById('tutorRegForm');
     if (form) form.classList.add('hidden');
 
-    if (cloud.ok) {
-      alert(`Tutor Registration Successful for ${name}! Saved to cloud.`);
-    }
+    alert(`Tutor Registration Successful for ${name}!\n\nYour profile has been saved to the GURU CONNECT cloud database.`);
     openUserDashboard();
   };
 
@@ -8946,7 +8946,7 @@ body {
   // functions. The public directory remains usable even if cloud is unavailable.
   function gcBootCloud() {
     if (!gcCloudEnabled) {
-      console.warn('GURU CONNECT cloud directory is not configured yet. Add the Supabase anon key.');
+      console.error('GURU CONNECT CLOUD IS NOT CONFIGURED. Registration is disabled until Supabase is available.');
       return;
     }
     const startCloud = function () {
@@ -9522,6 +9522,67 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
     }
   }
   setTimeout(check,1200);
+})();
+</script>
+
+
+<style id="gc-cloud-registration-guard">
+#gcCloudStatusBadge{
+  position:fixed;right:12px;bottom:12px;z-index:100000;
+  padding:7px 11px;border-radius:999px;font:700 11px/1.2 Arial,sans-serif;
+  background:#fff;border:1px solid rgba(15,23,42,.12);
+  box-shadow:0 5px 18px rgba(15,23,42,.12);
+  cursor:pointer;user-select:none;
+}
+#gcCloudStatusBadge.gc-ok{color:#166534;border-color:#86efac;background:#f0fdf4}
+#gcCloudStatusBadge.gc-bad{color:#991b1b;border-color:#fecaca;background:#fff1f2}
+</style>
+<script id="gc-cloud-registration-guard-script">
+(function(){
+  function badge(){
+    let b=document.getElementById('gcCloudStatusBadge');
+    if(!b){
+      b=document.createElement('button');
+      b.id='gcCloudStatusBadge';
+      b.type='button';
+      b.title='GURU CONNECT cloud status';
+      document.body.appendChild(b);
+      b.addEventListener('click',async function(){
+        if(typeof window.gcCloudDiagnostic==='function'){
+          const r=await window.gcCloudDiagnostic();
+          alert(r.message);
+        }
+      });
+    }
+    const enabled=typeof window.gcCloudStatus==='function' && window.gcCloudStatus()==='enabled';
+    b.textContent=enabled?'☁ CLOUD CONNECTED':'☁ CLOUD ERROR';
+    b.className=enabled?'gc-ok':'gc-bad';
+  }
+
+  window.gcCloudDiagnostic=async function(){
+    if(!window.gcSupabase){
+      return {ok:false,message:'Supabase client is not available. Check the Supabase script/key in index.html.'};
+    }
+    try{
+      const auth=await window.gcSupabase.auth.getUser();
+      if(auth.error && auth.error.message && !auth.data?.user){
+        // Anonymous auth may not have a session yet; test it explicitly.
+        const u=await window.gcGetAnonymousUser();
+        return {ok:true,message:'Supabase connected and anonymous cloud registration session is available.\\nUser: '+u.id};
+      }
+      const u=auth.data && auth.data.user;
+      return {ok:true,message:'Supabase connected.\\nCloud session: '+(u?u.id:'none')};
+    }catch(e){
+      return {ok:false,message:'Supabase connection/authentication failed.\\n\\n'+(e.message||e)};
+    }
+  };
+
+  function boot(){
+    setTimeout(badge,500);
+    setTimeout(badge,1800);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot);
+  else boot();
 })();
 </script>
 
