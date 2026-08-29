@@ -2675,16 +2675,26 @@ html, body, button, input, select, textarea {
 
 <style id="gc-final-ui-fix">
 .gc-929-fixed-logo{
-  display:flex;align-items:center;justify-content:center;
-  width:94px;height:48px;padding:3px 7px;
-  border-radius:13px;background:#fff;
-  border:1px solid #dbe4f0;
-  box-shadow:0 5px 14px rgba(15,23,42,.10);
-  overflow:hidden;transition:transform .18s,box-shadow .18s;
-  flex-shrink:0;
+  display:inline-flex !important;align-items:center !important;justify-content:center !important;
+  width:auto !important;height:50px !important;padding:0 !important;margin:0 3px !important;
+  border-radius:0 !important;background:transparent !important;
+  border:0 !important;box-shadow:none !important;
+  overflow:visible !important;transition:none !important;
+  flex-shrink:0 !important;
+  cursor:pointer !important;
+  user-select:none !important;-webkit-user-select:none !important;
+  -webkit-tap-highlight-color:transparent !important;
 }
-.gc-929-fixed-logo:hover{transform:translateY(-1px);box-shadow:0 8px 18px rgba(15,23,42,.16)}
-.gc-929-fixed-logo img{width:100%;height:100%;object-fit:contain;display:block}
+.gc-929-fixed-logo:hover{transform:none !important;box-shadow:none !important;background:transparent !important}
+.gc-929-fixed-logo:focus,.gc-929-fixed-logo:focus-visible{outline:none !important;box-shadow:none !important}
+.gc-929-fixed-logo img{
+  width:86px !important;height:48px !important;object-fit:contain !important;
+  display:block !important;background:transparent !important;
+  border:0 !important;box-shadow:none !important;outline:0 !important;
+  cursor:pointer !important;user-select:none !important;
+  -webkit-user-drag:none !important;caret-color:transparent !important;
+}
+
 .gc-menu-button{
   border:0;background:linear-gradient(135deg,#123b8f,#2563eb);
   color:#fff;font-size:11px;font-weight:900;
@@ -2706,105 +2716,107 @@ html, body, button, input, select, textarea {
 </style>
 
 
-<style id="gc-glitch-fixes">
-/* 929 Digital Desk: no white input-like patch, no text cursor */
-.gc-929-logo{
-  display:inline-flex !important;
-  align-items:center !important;
-  justify-content:center !important;
-  background:transparent !important;
-  border:0 !important;
-  padding:0 !important;
-  margin:0 4px !important;
-  outline:none !important;
-  cursor:pointer !important;
-  user-select:none !important;
-  -webkit-user-select:none !important;
-}
-.gc-929-logo img{
-  display:block !important;
-  height:42px !important;
-  width:auto !important;
-  max-width:118px !important;
-  object-fit:contain !important;
+<style id="gc-glitch-fix-v2">
+/* Remove any remaining white "button/input" appearance behind 929. */
+#publicMenuWrapper .gc-929-fixed-logo,
+#publicMenuWrapper .gc-929-fixed-logo img{
   background:transparent !important;
   border:0 !important;
   box-shadow:none !important;
-  outline:none !important;
-  cursor:pointer !important;
-  user-select:none !important;
-  -webkit-user-drag:none !important;
-  pointer-events:auto !important;
+  outline:0 !important;
+  text-decoration:none !important;
+  caret-color:transparent !important;
 }
-.gc-929-logo:focus,
-.gc-929-logo:focus-visible{outline:none !important;box-shadow:none !important}
+#publicMenuWrapper .gc-929-fixed-logo::before,
+#publicMenuWrapper .gc-929-fixed-logo::after{content:none !important}
 
-/* Dropdowns/panels must disappear cleanly when another area is clicked */
-.gc-menu-panel,
-.gc-admin-panel,
-.gc-dropdown-panel{z-index:9999}
-.gc-force-hidden{display:none !important}
-
-/* Prevent a stale open menu from covering the page after navigation */
-body.gc-overlay-open{overflow:hidden}
+/* The dropdown must sit above content but must not behave like a permanent layer. */
+#publicNavbarLinks{
+  pointer-events:auto;
+  z-index:99999 !important;
+}
 </style>
-<script id="gc-glitch-fixes">
+<script id="gc-glitch-fix-v2-script">
 (function(){
-  function isVisible(el){
-    if(!el) return false;
-    const cs=getComputedStyle(el);
-    return cs.display!=='none' && cs.visibility!=='hidden' && !el.classList.contains('hidden');
-  }
+  const $ = id => document.getElementById(id);
 
-  function closeOpenMenus(except){
-    // Common dropdown/menu containers in the current site
-    document.querySelectorAll(
-      '.gc-menu-panel,.gc-admin-panel,.gc-dropdown-panel,' +
-      '[data-dropdown-panel],.dropdown-menu,.menu-dropdown'
-    ).forEach(el=>{
-      if(el!==except && isVisible(el)){
-        el.classList.add('hidden');
-        el.classList.remove('show','open','active');
-        if(el.style.display) el.style.display='none';
-      }
-    });
-
-    // Close native details menus when clicking elsewhere
-    document.querySelectorAll('details[open]').forEach(d=>{
-      if(d!==except) d.removeAttribute('open');
-    });
-  }
-
-  document.addEventListener('click',function(e){
-    const target=e.target;
-    if(!target) return;
-
-    // Clicking inside an open menu should not close that menu.
-    const insideMenu=target.closest(
-      '.gc-menu-panel,.gc-admin-panel,.gc-dropdown-panel,' +
-      '[data-dropdown-panel],.dropdown-menu,.menu-dropdown,' +
-      '[aria-haspopup="true"],[role="menu"]'
-    );
-
-    if(!insideMenu){
-      closeOpenMenus(null);
+  function closePublicMenu(){
+    const m=$('publicNavbarLinks');
+    if(m){
+      m.classList.add('hidden');
+      m.removeAttribute('data-gc-open-menu');
     }
-  },true);
+  }
+
+  // This is deliberately attached to pointerdown/click on the document and
+  // checks the ACTUAL menu wrapper used by the site.
+  function outsideMenu(e){
+    const menu=$('publicNavbarLinks');
+    const wrapper=$('publicMenuWrapper');
+    if(!menu || menu.classList.contains('hidden')) return;
+    if(wrapper && !wrapper.contains(e.target)) closePublicMenu();
+  }
+  document.addEventListener('pointerdown',outsideMenu,true);
+  document.addEventListener('click',outsideMenu,true);
 
   document.addEventListener('keydown',function(e){
-    if(e.key==='Escape') closeOpenMenus(null);
+    if(e.key==='Escape') closePublicMenu();
+  },true);
+
+  // Clicking a menu link always closes the menu before navigation.
+  document.addEventListener('click',function(e){
+    const link=e.target.closest && e.target.closest('#publicNavbarLinks a');
+    if(link) closePublicMenu();
+  },true);
+
+  // Login and Admin login overlays close when the user clicks the dark backdrop.
+  // Clicking inside the white dialog does NOT close it.
+  ['loginModal','staffLoginModal'].forEach(function(id){
+    const modal=$(id);
+    if(!modal || modal.dataset.gcBackdropBound) return;
+    modal.dataset.gcBackdropBound='1';
+    modal.addEventListener('click',function(e){
+      if(e.target===modal){
+        modal.classList.add('hidden');
+      }
+    });
   });
 
-  // If navigation changes, close stale dropdowns.
-  window.addEventListener('hashchange',()=>closeOpenMenus(null));
+  // ESC closes login overlays too.
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='Escape') return;
+    ['loginModal','staffLoginModal'].forEach(function(id){
+      const m=$(id);
+      if(m) m.classList.add('hidden');
+    });
+  },true);
 
-  // Ensure the 929 logo never behaves like a text/editable element.
+  // If the admin dashboard is active, clicking the site logo is an explicit
+  // "back to website" action. This fixes the feeling that the admin screen
+  // has trapped the user on the page.
+  const brandHome=document.querySelector('header a[href="#home"]');
+  if(brandHome && !brandHome.dataset.gcAdminHomeBound){
+    brandHome.dataset.gcAdminHomeBound='1';
+    brandHome.addEventListener('click',function(){
+      if(localStorage.getItem('is_staff_logged')==='true' &&
+         typeof window.logoutStaff==='function'){
+        window.logoutStaff();
+      }
+      closePublicMenu();
+    });
+  }
+
+  // Make the 929 asset non-editable/non-text-like even if the browser tries to
+  // expose alt text during a transient image state.
   function fix929(){
-    document.querySelectorAll('.gc-929-logo, .gc-929-logo img').forEach(el=>{
+    document.querySelectorAll('.gc-929-fixed-logo, .gc-929-fixed-logo img').forEach(function(el){
       el.setAttribute('draggable','false');
+      el.setAttribute('contenteditable','false');
+      el.setAttribute('spellcheck','false');
       el.setAttribute('tabindex','-1');
       el.style.caretColor='transparent';
       el.style.userSelect='none';
+      el.style.webkitUserSelect='none';
     });
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fix929);
@@ -4799,8 +4811,29 @@ body.gc-overlay-open{overflow:hidden}
         function closeAboutModal() { document.getElementById('aboutModal').classList.add('hidden'); }
         function openContactModal() { document.getElementById('contactModal').classList.remove('hidden'); }
         function closeContactModal() { document.getElementById('contactModal').classList.add('hidden'); }
-        function toggleNavMenu() { document.getElementById('publicNavbarLinks').classList.toggle('hidden'); }
-        function closeNavMenu() { document.getElementById('publicNavbarLinks').classList.add('hidden'); }
+        function toggleNavMenu(e) {
+            if (e) e.stopPropagation();
+            const menu = document.getElementById('publicNavbarLinks');
+            if (!menu) return;
+            // Close every other open menu/panel first.
+            document.querySelectorAll('[data-gc-open-menu="true"]').forEach(el => {
+                if (el !== menu) {
+                    el.classList.add('hidden');
+                    el.removeAttribute('data-gc-open-menu');
+                }
+            });
+            const willOpen = menu.classList.contains('hidden');
+            menu.classList.toggle('hidden', !willOpen);
+            if (willOpen) menu.setAttribute('data-gc-open-menu','true');
+            else menu.removeAttribute('data-gc-open-menu');
+        }
+        function closeNavMenu() {
+            const menu = document.getElementById('publicNavbarLinks');
+            if (menu) {
+                menu.classList.add('hidden');
+                menu.removeAttribute('data-gc-open-menu');
+            }
+        }
 
         function switchTab(tab) {
             // Hide all registration/request cards first
