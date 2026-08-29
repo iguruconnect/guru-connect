@@ -4089,7 +4089,7 @@ html, body, button, input, select, textarea {
             "Kamble","Borkar","Kharat","Gore","Inamdar","Mane","Kshirsagar","Vaidya","Bhujbal","Londhe"
         ];
 
-        for(let i=1; i<=1000; i++) {
+        for(let i=1; i<=60; i++) {
             const first = GC_STUDENT_FIRST_NAMES[(i - 1) % GC_STUDENT_FIRST_NAMES.length];
             const lastIndex = Math.floor((i - 1) / GC_STUDENT_FIRST_NAMES.length) % GC_STUDENT_LAST_NAMES.length;
             const last = GC_STUDENT_LAST_NAMES[lastIndex];
@@ -4285,7 +4285,7 @@ html, body, button, input, select, textarea {
             "Limaye","Phadke","Gokhale","Lele","Oke","Tambe","Vartak","Karnik","Godbole","Kelkar"
         ];
 
-        for(let j=1; j<=1000; j++) {
+        for(let j=1; j<=60; j++) {
             const first = GC_TUTOR_FIRST_NAMES[(j - 1) % GC_TUTOR_FIRST_NAMES.length];
             const lastIndex = Math.floor((j - 1) / GC_TUTOR_FIRST_NAMES.length) % GC_TUTOR_LAST_NAMES.length;
             const last = GC_TUTOR_LAST_NAMES[lastIndex];
@@ -8516,29 +8516,85 @@ body {
 </script>
 
 
-<style id="gc-cloud-fix-final">
-html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!important;overflow-y:auto!important}
-#tutors,#studentsDirectory,#tutorGrid,#studentGridContainer{height:auto!important;max-height:none!important;overflow:visible!important}
+<style id="gc-authoritative-final-fix">
+html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!important;overflow-y:auto!important;position:relative!important}
+body{touch-action:auto!important}
+#tutors,#studentsDirectory,#tutorGrid,#studentGridContainer{
+  height:auto!important;max-height:none!important;overflow:visible!important;
+  position:relative!important;display:grid!important;
+}
 #tutorGrid,#studentGridContainer{align-items:start!important}
-#adminDashboard,#adminPanel,#adminContent{max-height:none!important;overflow:visible!important}
-#adminEditModal,#adminEditProfileModal,.gc-admin-modal{max-height:92vh!important;overflow-y:auto!important}
+#tutorGrid>* ,#studentGridContainer>*{min-width:0!important;max-width:100%!important}
+.gc-profile-card{overflow:hidden!important}
+
+/* Admin overlays may scroll internally, but the underlying application must
+   not become a giant fixed-height container. */
+#adminDashboard,#adminPanel,#adminContent{height:auto!important;max-height:none!important;overflow:visible!important}
+.gc-admin-modal,#adminEditModal,#adminEditProfileModal{
+  max-height:90vh!important;overflow-y:auto!important;overflow-x:hidden!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+
+/* Make profile grids usable on narrow screens without clipping. */
+@media(max-width:700px){
+  #tutorGrid,#studentGridContainer{grid-template-columns:1fr!important}
+}
 </style>
-<script id="gc-cloud-fix-boot">
+<script id="gc-authoritative-final-js">
 (function(){
-  async function refreshCloud(){
+  'use strict';
+
+  /* Restore normal document scrolling whenever the admin panel closes/opens. */
+  function unlockPage(){
     try{
-      if(typeof window.gcLoadCloudDirectory==='function'){
-        const ok=await window.gcLoadCloudDirectory();
-        if(ok){
-          if(typeof window.renderTutorDirectory==='function') window.renderTutorDirectory();
-          if(typeof window.renderStudentDirectory==='function') window.renderStudentDirectory();
-        }
-      }
-    }catch(e){console.error('Cloud directory refresh:',e)}
+      document.documentElement.style.setProperty('overflow-y','auto','important');
+      document.body.style.setProperty('overflow-y','auto','important');
+      document.body.style.setProperty('height','auto','important');
+      document.body.classList.remove('overflow-hidden');
+    }catch(e){}
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>setTimeout(refreshCloud,150));
-  else setTimeout(refreshCloud,150);
+
+  /* Never allow an accidental click handler to turn a directory into a
+     fixed viewport. */
+  document.addEventListener('click',function(e){
+    const el=e.target.closest('#tutorGrid,#studentGridContainer,#tutors,#studentsDirectory');
+    if(el) unlockPage();
+  },true);
+
+  /* If the app replaces the admin/login DOM, re-apply safe scrolling. */
+  const mo=new MutationObserver(function(){
+    unlockPage();
+  });
+  try{mo.observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:['style','class']});}catch(e){}
+
+  /* Guard the two common directory pagination functions. If the existing
+     application throws during pagination, keep the page usable. */
+  function safeCall(name){
+    const fn=window[name];
+    if(typeof fn!=='function' || fn.__gcWrapped) return;
+    function wrapped(){
+      unlockPage();
+      try{return fn.apply(this,arguments);}
+      catch(err){console.error('GURU CONNECT '+name+' error:',err);unlockPage();}
+      finally{setTimeout(unlockPage,0);}
+    }
+    wrapped.__gcWrapped=true;
+    wrapped.__gcOriginal=fn;
+    window[name]=wrapped;
+  }
+
+  function install(){
+    safeCall('changePage');
+    safeCall('changeTutorPage');
+    safeCall('jumpToPageInput');
+    safeCall('jumpToTutorPageInput');
+    unlockPage();
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){setTimeout(install,200)});
+  else setTimeout(install,200);
 })();
 </script>
+
 </body>
 </html>
