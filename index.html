@@ -2705,6 +2705,113 @@ html, body, button, input, select, textarea {
 .gc-top-nav-wrap,.gc-top-tabs{display:none!important}
 </style>
 
+
+<style id="gc-glitch-fixes">
+/* 929 Digital Desk: no white input-like patch, no text cursor */
+.gc-929-logo{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:transparent !important;
+  border:0 !important;
+  padding:0 !important;
+  margin:0 4px !important;
+  outline:none !important;
+  cursor:pointer !important;
+  user-select:none !important;
+  -webkit-user-select:none !important;
+}
+.gc-929-logo img{
+  display:block !important;
+  height:42px !important;
+  width:auto !important;
+  max-width:118px !important;
+  object-fit:contain !important;
+  background:transparent !important;
+  border:0 !important;
+  box-shadow:none !important;
+  outline:none !important;
+  cursor:pointer !important;
+  user-select:none !important;
+  -webkit-user-drag:none !important;
+  pointer-events:auto !important;
+}
+.gc-929-logo:focus,
+.gc-929-logo:focus-visible{outline:none !important;box-shadow:none !important}
+
+/* Dropdowns/panels must disappear cleanly when another area is clicked */
+.gc-menu-panel,
+.gc-admin-panel,
+.gc-dropdown-panel{z-index:9999}
+.gc-force-hidden{display:none !important}
+
+/* Prevent a stale open menu from covering the page after navigation */
+body.gc-overlay-open{overflow:hidden}
+</style>
+<script id="gc-glitch-fixes">
+(function(){
+  function isVisible(el){
+    if(!el) return false;
+    const cs=getComputedStyle(el);
+    return cs.display!=='none' && cs.visibility!=='hidden' && !el.classList.contains('hidden');
+  }
+
+  function closeOpenMenus(except){
+    // Common dropdown/menu containers in the current site
+    document.querySelectorAll(
+      '.gc-menu-panel,.gc-admin-panel,.gc-dropdown-panel,' +
+      '[data-dropdown-panel],.dropdown-menu,.menu-dropdown'
+    ).forEach(el=>{
+      if(el!==except && isVisible(el)){
+        el.classList.add('hidden');
+        el.classList.remove('show','open','active');
+        if(el.style.display) el.style.display='none';
+      }
+    });
+
+    // Close native details menus when clicking elsewhere
+    document.querySelectorAll('details[open]').forEach(d=>{
+      if(d!==except) d.removeAttribute('open');
+    });
+  }
+
+  document.addEventListener('click',function(e){
+    const target=e.target;
+    if(!target) return;
+
+    // Clicking inside an open menu should not close that menu.
+    const insideMenu=target.closest(
+      '.gc-menu-panel,.gc-admin-panel,.gc-dropdown-panel,' +
+      '[data-dropdown-panel],.dropdown-menu,.menu-dropdown,' +
+      '[aria-haspopup="true"],[role="menu"]'
+    );
+
+    if(!insideMenu){
+      closeOpenMenus(null);
+    }
+  },true);
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape') closeOpenMenus(null);
+  });
+
+  // If navigation changes, close stale dropdowns.
+  window.addEventListener('hashchange',()=>closeOpenMenus(null));
+
+  // Ensure the 929 logo never behaves like a text/editable element.
+  function fix929(){
+    document.querySelectorAll('.gc-929-logo, .gc-929-logo img').forEach(el=>{
+      el.setAttribute('draggable','false');
+      el.setAttribute('tabindex','-1');
+      el.style.caretColor='transparent';
+      el.style.userSelect='none';
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fix929);
+  else fix929();
+})();
+</script>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
