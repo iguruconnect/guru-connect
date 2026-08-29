@@ -6133,7 +6133,145 @@ html, body, button, input, select, textarea {
       t.name=document.getElementById('a_t_name').value.trim()||t.name;t.email=document.getElementById('a_t_email').value.trim();t.phone=document.getElementById('a_t_phone').value.trim();t.qualification=document.getElementById('a_t_qualification').value.trim();t.experience=document.getElementById('a_t_experience').value.trim();t.teachingCollege=document.getElementById('a_t_teaching').value.trim();t.college=t.teachingCollege;t.subject=document.getElementById('a_t_subject').value.trim();t.price=document.getElementById('a_t_price').value.trim();t._manualRating=Math.min(5,Math.max(1,Number(document.getElementById('a_t_rating').value)||Number(tutorRating(t))));t.students=document.getElementById('a_t_students').value.trim();t.aboutMe=document.getElementById('a_t_about').value.trim();t.verified=document.getElementById('a_t_verified').checked;t.paidStatus=t.verified?'PAID':t.paidStatus;
       const f=document.getElementById('a_t_photo')?.files?.[0];if(f){const d=await readImageDataUrl(f,700);if(d)t.photoData=d;}const more=await readMany('a_t_ach',700);t.achievements=[...(t.achievements||[]),...more].slice(0,3);saveDirs();rerender();closeAdminEditTutorModal();alert('Tutor profile fully updated by Staff/Admin.');};
   };
-  window.adminEditStudent=function(id){if(!adminGuard())return;const s=studentDirectoryList.find(a=>String(a.id)===String(id));if(!s)return;window.currentEditingStudentId=id;const m=document.getElementById('adminEditStudentModal');if(!m)return;const box=m.querySelector('div');box.innerHTML=`<div class="flex justify-between items-center mb-5"><h3 class="text-xl font-black text-brand-dark">Full Edit — Student Profile</h3><button onclick="closeAdminEditStudentModal()" class="text-slate-400 text-xl"><i class="fa-solid fa-xmark"></i></button></div><form id="gcAdminStudentForm" class="space-y-4"><div class="grid grid-cols-1 sm:grid-cols-2 gap-4">${v2Input('a_s_name','NAME',s.name,'fa-user',true)}${v2Input('a_s_email','EMAIL',s.email,'fa-envelope')}${v2Input('a_s_phone','PHONE',s.phone,'fa-phone')}${v2Input('a_s_course','COURSE',s.course,'fa-graduation-cap')}${v2Input('a_s_stream','STREAM',s.stream,'fa-layer-group')}${v2Input('a_s_class','CLASS',s.std,'fa-school')}</div><div><label class="gc-v2-label">LEARNING REQUIREMENT</label><textarea id="a_s_req" class="gc-v2-textarea" rows="5">${x(s.learningRequirement||'')}</textarea></div>${imageInput('a_s_photo','Replace Profile Photo',false)}<div class="flex gap-3"><button type="button" onclick="closeAdminEditStudentModal()" class="flex-1 bg-slate-100 py-3 rounded-xl font-bold">Cancel</button><button class="flex-1 bg-brand-blue text-white py-3 rounded-xl font-black">SAVE ALL CHANGES</button></div></form>`;m.classList.remove('hidden');document.getElementById('gcAdminStudentForm').onsubmit=async e=>{e.preventDefault();s.name=document.getElementById('a_s_name').value.trim()||s.name;s.email=document.getElementById('a_s_email').value.trim();s.phone=document.getElementById('a_s_phone').value.trim();s.course=document.getElementById('a_s_course').value.trim();s.stream=document.getElementById('a_s_stream').value.trim();s.std=document.getElementById('a_s_class').value.trim();s.learningRequirement=document.getElementById('a_s_req').value.trim();const f=document.getElementById('a_s_photo')?.files?.[0];if(f){const d=await readImageDataUrl(f,700);if(d)s.photoData=d;}saveDirs();rerender();closeAdminEditStudentModal();alert('Student profile fully updated by Staff/Admin.');};};
+  window.adminEditStudent=function(id){
+    if(!adminGuard()) return;
+
+    const s = studentDirectoryList.find(a => String(a.id) === String(id));
+    if(!s) {
+      console.warn('Student record not found for edit:', id);
+      return;
+    }
+
+    window.currentEditingStudentId = s.id;
+
+    const m = document.getElementById('adminEditStudentModal');
+    if(!m) return;
+
+    const box = m.querySelector(':scope > div');
+    if(!box) return;
+
+    const safe = (v) => String(v ?? '').replace(/[&<>"']/g, ch => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[ch]));
+
+    box.innerHTML = `
+      <div class="flex justify-between items-center mb-5">
+        <div>
+          <h3 class="text-xl font-black text-brand-dark">Edit Student Profile</h3>
+          <p class="text-xs text-slate-500 mt-1">GC ID: ${safe(s.id)}</p>
+        </div>
+        <button type="button" onclick="closeAdminEditStudentModal()" class="text-slate-400 hover:text-red-500 text-xl">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="gcAdminStudentForm" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="sm:col-span-2">
+            <label class="gc-v2-label">NAME</label>
+            <input id="a_s_name" class="gc-v2-input" required value="${safe(s.name)}">
+          </div>
+          <div>
+            <label class="gc-v2-label">COURSE / CLASS</label>
+            <input id="a_s_course" class="gc-v2-input" value="${safe(s.course || s.std)}">
+          </div>
+          <div>
+            <label class="gc-v2-label">STREAM</label>
+            <input id="a_s_stream" class="gc-v2-input" value="${safe(s.stream)}">
+          </div>
+          <div>
+            <label class="gc-v2-label">PHONE</label>
+            <input id="a_s_phone" class="gc-v2-input" value="${safe(s.phone)}">
+          </div>
+          <div>
+            <label class="gc-v2-label">EMAIL</label>
+            <input id="a_s_email" class="gc-v2-input" value="${safe(s.email)}">
+          </div>
+        </div>
+
+        <div>
+          <label class="gc-v2-label">LEARNING REQUIREMENT</label>
+          <textarea id="a_s_req" class="gc-v2-textarea" rows="4">${safe(s.learningRequirement || '')}</textarea>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button type="button" onclick="closeAdminEditStudentModal()" class="flex-1 bg-slate-100 py-3 rounded-xl font-bold">
+            CANCEL
+          </button>
+          <button id="gcAdminStudentSaveBtn" type="submit" class="flex-1 bg-brand-blue text-white py-3 rounded-xl font-black">
+            SAVE CHANGES
+          </button>
+        </div>
+      </form>`;
+
+    m.classList.remove('hidden');
+
+    const form = document.getElementById('gcAdminStudentForm');
+    if(!form) return;
+
+    form.onsubmit = async function(e){
+      e.preventDefault();
+
+      const btn = document.getElementById('gcAdminStudentSaveBtn');
+      if(btn) {
+        btn.disabled = true;
+        btn.textContent = 'SAVING...';
+      }
+
+      // Update the local object first so the UI never waits on Supabase.
+      s.name = document.getElementById('a_s_name')?.value.trim() || s.name;
+      s.course = document.getElementById('a_s_course')?.value.trim() || s.course || s.std;
+      s.std = s.course;
+      s.stream = document.getElementById('a_s_stream')?.value.trim() || s.stream;
+      s.phone = document.getElementById('a_s_phone')?.value.trim() || s.phone || '';
+      s.email = document.getElementById('a_s_email')?.value.trim() || s.email || '';
+      s.learningRequirement = document.getElementById('a_s_req')?.value.trim() || '';
+
+      try { saveRegisteredDirectories(); } catch(_) {}
+
+      // Redraw only the student directory. Do NOT rebuild the large admin queue here.
+      try { renderStudentDirectory(); } catch(_) {}
+
+      // Persist cloud records when this is a Supabase-backed student.
+      if(s.isCloud && window.gcSupabaseAdminUpdateStudent) {
+        try { await window.gcSupabaseAdminUpdateStudent(s); } catch(err) {
+          console.warn('Cloud student update failed; local UI was preserved.', err);
+        }
+      }
+
+      closeAdminEditStudentModal();
+      try { showSuccessPopup('Student profile has been updated successfully.'); }
+      catch(_) { alert('Student profile updated successfully.'); }
+
+      if(btn) {
+        btn.disabled = false;
+        btn.textContent = 'SAVE CHANGES';
+      }
+    };
+  };
+
+
+  window.gcSupabaseAdminUpdateStudent = async function(s){
+    if(!s || !s.isCloud || !gcSupabase) return false;
+
+    const patch = {
+      name: gcCleanText(s.name),
+      course: gcCleanText(s.course || s.std),
+      stream: gcCleanText(s.stream),
+      learning_requirement: gcCleanText(s.learningRequirement || '')
+    };
+
+    const result = await gcSupabase
+      .from('student_profiles')
+      .update(patch)
+      .eq('id', s.id);
+
+    if(result.error) throw result.error;
+
+    if(typeof gcPageCache !== 'undefined') gcPageCache.clear();
+    return true;
+  };
+
 
   /* -------- styles -------- */
   const css=document.createElement('style');css.id='gc-v2-style';css.textContent=`
@@ -8046,7 +8184,7 @@ body {
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function () {
-      setTimeout(refresh, 80);
+      setTimeout(refresh, 250);
     });
   } else {
     setTimeout(refresh, 80);
@@ -8227,6 +8365,12 @@ body {
       learningRequirement: row.learning_requirement || '',
       subject: row.learning_requirement || '',
       photoData: row.photo_url || '',
+      email: row.email || '',
+      phone: row.phone || '',
+      college: row.college || '',
+      division: row.division || '',
+      rollNumber: row.roll_number || '',
+      gcId: row.id,
       registrationDate: row.created_at || new Date().toISOString(),
       isDummy: false,
       isCloud: true,
@@ -8275,12 +8419,26 @@ body {
       ]);
 
       const localTutors = Array.isArray(tutorDirectoryList)
-        ? tutorDirectoryList.filter(t => !t.isCloud && t.isDummy !== false) : [];
+        ? tutorDirectoryList.filter(t => !t.isCloud) : [];
       const localStudents = Array.isArray(studentDirectoryList)
-        ? studentDirectoryList.filter(st => !st.isCloud && st.isDummy !== false) : [];
+        ? studentDirectoryList.filter(st => !st.isCloud) : [];
 
       tutorDirectoryList = [...tp.rows, ...localTutors];
       studentDirectoryList = [...sp.rows, ...localStudents];
+
+      // Never lose already registered local records during a temporary cloud
+      // response failure/empty result. De-duplicate by ID.
+      const uniqueById = (arr) => {
+        const seen = new Set();
+        return arr.filter(item => {
+          const key = String(item?.id ?? '');
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+      };
+      tutorDirectoryList = uniqueById(tutorDirectoryList);
+      studentDirectoryList = uniqueById(studentDirectoryList);
       window.tutorDirectoryList = tutorDirectoryList;
       window.studentDirectoryList = studentDirectoryList;
       window.gcTutorCloudTotal = tp.total;
