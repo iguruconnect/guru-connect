@@ -8433,6 +8433,60 @@ body {
     return payload;
   }
 
+  async function gcLoadCloudDirectoryAll(table, mapper) {
+    if (!gcCloudEnabled) return { rows: [], total: 0 };
+
+    const fields = table === 'tutor_profiles'
+      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,photo_url,created_at'
+      : 'id,user_id,name,course,stream,learning_requirement,photo_url,created_at';
+
+    const cacheKey = 'ALL:' + table;
+    const cached = gcPageCache.get(cacheKey);
+    if (cached) return cached;
+
+    // Supabase/PostgREST has a server-side row limit. Fetch in chunks so a
+    // growing tutor/student database does not silently stop at 60/1000 rows.
+    const chunkSize = 1000;
+    let from = 0;
+    const rows = [];
+
+    while (true) {
+      let result = await gcSupabase
+        .from(table)
+        .select(fields, { count: 'estimated' })
+        .order('created_at', { ascending: false })
+        .range(from, from + chunkSize - 1);
+
+      if (result.error) {
+        console.warn('Directory query failed for ' + table + '; retrying without estimated count.', result.error);
+        result = await gcSupabase
+          .from(table)
+          .select(fields)
+          .order('created_at', { ascending: false })
+          .range(from, from + chunkSize - 1);
+      }
+
+      if (result.error) throw result.error;
+
+      const batch = result.data || [];
+      rows.push(...batch);
+
+      if (batch.length < chunkSize) break;
+      from += chunkSize;
+
+      // Safety valve against a broken backend returning endless identical pages.
+      if (from > 100000) break;
+    }
+
+    const payload = {
+      rows: rows.map(mapper),
+      total: rows.length
+    };
+
+    gcPageCache.set(cacheKey, payload);
+    return payload;
+  }
+
   async function gcLoadCloudDirectories(pageTutor = 1, pageStudent = 1) {
     if (!gcCloudEnabled) return false;
     try {
@@ -8447,10 +8501,12 @@ body {
         console.warn('GURU CONNECT anonymous session unavailable; attempting public directory read.', authErr);
       }
 
-      const pageSize = 6;
+      // Directory mode: fetch the complete public listing, not only the first
+      // 6 records. Supabase returns only the lightweight profile fields selected
+      // below, so new tutors become visible without waiting for photo blobs.
       const [tp, sp] = await Promise.all([
-        gcLoadCloudPage('tutor_profiles', gcTutorFromCloud, pageTutor, pageSize),
-        gcLoadCloudPage('student_profiles', gcStudentFromCloud, pageStudent, pageSize)
+        gcLoadCloudDirectoryAll('tutor_profiles', gcTutorFromCloud),
+        gcLoadCloudDirectoryAll('student_profiles', gcStudentFromCloud)
       ]);
 
       const localTutors = Array.isArray(tutorDirectoryList)
@@ -8922,6 +8978,16 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
 
   // Prevent the heavy admin queue from becoming the reason an action appears frozen.
   // The action buttons above still update their row immediately.
+})();
+</script>
+
+
+<script id="gc-all-profile-directory-fix">
+(function(){
+  // When the cloud directory is loaded, the complete arrays are now available.
+  // Disable any old first-page-only pagination controls rather than making the
+  // user navigate through artificial 6-record pages.
+  window.gcShowAllProfiles = true;
 })();
 </script>
 
