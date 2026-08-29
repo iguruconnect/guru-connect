@@ -8813,5 +8813,117 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
 })();
 </script>
 
+
+<script id="gc-final-admin-actions-fix">
+(function(){
+  function isAdmin(){
+    return localStorage.getItem('is_staff_logged') === 'true';
+  }
+
+  function findTutor(id){
+    const list = Array.isArray(window.tutorDirectoryList) ? window.tutorDirectoryList : [];
+    return list.find(t => String(t.id) === String(id));
+  }
+
+  function redrawTutor(t){
+    try { if(typeof saveRegisteredDirectories === 'function') saveRegisteredDirectories(); } catch(_){}
+    try { if(typeof saveDirs === 'function') saveDirs(); } catch(_){}
+    try { if(typeof renderTutorDirectory === 'function') renderTutorDirectory(); } catch(_){}
+    try { if(typeof renderAdminQueue === 'function') renderAdminQueue(); } catch(_){}
+  }
+
+  // IMPORTANT: the old functions only changed JavaScript memory/localStorage.
+  // This layer also persists the status to Supabase when the tutor is cloud-backed.
+  async function persistTutorStatus(t){
+    if(!t || !t.isCloud || !window.gcSupabase) return;
+
+    try {
+      if(typeof gcGetAnonymousUser === 'function') await gcGetAnonymousUser();
+    } catch(_){}
+
+    const patch = {
+      verified: !!t.verified
+    };
+
+    // Keep the paid status if the column exists; retry without it for older schemas.
+    patch.paid_status = t.paidStatus || 'PENDING';
+
+    let result = await window.gcSupabase
+      .from('tutor_profiles')
+      .update(patch)
+      .eq('id', t.id);
+
+    if(result.error){
+      result = await window.gcSupabase
+        .from('tutor_profiles')
+        .update({ verified: !!t.verified })
+        .eq('id', t.id);
+    }
+
+    if(result.error) console.warn('Tutor status cloud save failed:', result.error);
+  }
+
+  window.adminVerifyTutorPaid = function(id){
+    if(!isAdmin()) return;
+    const t = findTutor(id);
+    if(!t) return alert('Tutor record not found.');
+
+    t.paidStatus = 'PAID';
+    redrawTutor(t);
+
+    // Never block the admin UI on Supabase.
+    persistTutorStatus(t).catch(console.warn);
+
+    try { showSuccessPopup('Tutor marked PAID successfully.'); }
+    catch(_) { alert('Tutor marked PAID successfully.'); }
+  };
+
+  window.adminRevokeTutorPaid = function(id){
+    if(!isAdmin()) return;
+    const t = findTutor(id);
+    if(!t) return alert('Tutor record not found.');
+    if(!confirm("Are you sure you want to revoke this tutor's PAID status?")) return;
+
+    t.paidStatus = 'PENDING';
+    redrawTutor(t);
+    persistTutorStatus(t).catch(console.warn);
+
+    try { showSuccessPopup('Tutor PAID status has been revoked.'); }
+    catch(_) { alert('Tutor PAID status has been revoked.'); }
+  };
+
+  window.adminGrantVerifiedTick = function(id){
+    if(!isAdmin()) return;
+    const t = findTutor(id);
+    if(!t) return alert('Tutor record not found.');
+
+    t.verified = true;
+    t.paidStatus = 'PAID';
+    redrawTutor(t);
+    persistTutorStatus(t).catch(console.warn);
+
+    try { showSuccessPopup('Verified Tick granted successfully.'); }
+    catch(_) { alert('Verified Tick granted successfully.'); }
+  };
+
+  window.adminRevokeVerifiedTick = function(id){
+    if(!isAdmin()) return;
+    const t = findTutor(id);
+    if(!t) return alert('Tutor record not found.');
+    if(!confirm("Are you sure you want to revoke this tutor's Verified Tick?")) return;
+
+    t.verified = false;
+    redrawTutor(t);
+    persistTutorStatus(t).catch(console.warn);
+
+    try { showSuccessPopup('Verified Tick has been revoked.'); }
+    catch(_) { alert('Verified Tick has been revoked.'); }
+  };
+
+  // Prevent the heavy admin queue from becoming the reason an action appears frozen.
+  // The action buttons above still update their row immediately.
+})();
+</script>
+
 </body>
 </html>
