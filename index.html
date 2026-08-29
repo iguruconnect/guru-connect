@@ -4089,7 +4089,7 @@ html, body, button, input, select, textarea {
             "Kamble","Borkar","Kharat","Gore","Inamdar","Mane","Kshirsagar","Vaidya","Bhujbal","Londhe"
         ];
 
-        for(let i=1; i<=60; i++) {
+        for(let i=1; i<=1000; i++) {
             const first = GC_STUDENT_FIRST_NAMES[(i - 1) % GC_STUDENT_FIRST_NAMES.length];
             const lastIndex = Math.floor((i - 1) / GC_STUDENT_FIRST_NAMES.length) % GC_STUDENT_LAST_NAMES.length;
             const last = GC_STUDENT_LAST_NAMES[lastIndex];
@@ -4285,7 +4285,7 @@ html, body, button, input, select, textarea {
             "Limaye","Phadke","Gokhale","Lele","Oke","Tambe","Vartak","Karnik","Godbole","Kelkar"
         ];
 
-        for(let j=1; j<=60; j++) {
+        for(let j=1; j<=1000; j++) {
             const first = GC_TUTOR_FIRST_NAMES[(j - 1) % GC_TUTOR_FIRST_NAMES.length];
             const lastIndex = Math.floor((j - 1) / GC_TUTOR_FIRST_NAMES.length) % GC_TUTOR_LAST_NAMES.length;
             const last = GC_TUTOR_LAST_NAMES[lastIndex];
@@ -8058,7 +8058,7 @@ body {
    * Never put the service_role/secret key in this HTML.
    */
   const GC_SUPABASE_URL = 'https://hzqqswrnawrfgufbxgay.supabase.co';
-  const GC_SUPABASE_ANON_KEY = 'sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+  const GC_SUPABASE_ANON_KEY = 'PASTE_YOUR_SUPABASE_ANON_KEY_HERE';
 
   let gcSupabase = null;
   let gcCloudEnabled = false;
@@ -8515,5 +8515,30 @@ body {
 })();
 </script>
 
+
+<style id="gc-cloud-fix-final">
+html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!important;overflow-y:auto!important}
+#tutors,#studentsDirectory,#tutorGrid,#studentGridContainer{height:auto!important;max-height:none!important;overflow:visible!important}
+#tutorGrid,#studentGridContainer{align-items:start!important}
+#adminDashboard,#adminPanel,#adminContent{max-height:none!important;overflow:visible!important}
+#adminEditModal,#adminEditProfileModal,.gc-admin-modal{max-height:92vh!important;overflow-y:auto!important}
+</style>
+<script id="gc-cloud-fix-boot">
+(function(){
+  async function refreshCloud(){
+    try{
+      if(typeof window.gcLoadCloudDirectory==='function'){
+        const ok=await window.gcLoadCloudDirectory();
+        if(ok){
+          if(typeof window.renderTutorDirectory==='function') window.renderTutorDirectory();
+          if(typeof window.renderStudentDirectory==='function') window.renderStudentDirectory();
+        }
+      }
+    }catch(e){console.error('Cloud directory refresh:',e)}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>setTimeout(refreshCloud,150));
+  else setTimeout(refreshCloud,150);
+})();
+</script>
 </body>
 </html>
