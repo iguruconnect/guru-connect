@@ -6356,7 +6356,12 @@ html, body, button, input, select, textarea {
     const m=document.getElementById('adminEditTutorModal'); if(!m)return; const box=m.querySelector('div'); box.innerHTML=`<div class="flex justify-between items-center mb-5"><h3 class="text-xl font-black text-brand-dark">Full Edit — Tutor Profile</h3><button onclick="closeAdminEditTutorModal()" class="text-slate-400 text-xl"><i class="fa-solid fa-xmark"></i></button></div><form id="gcAdminTutorForm" class="space-y-4"><div class="grid grid-cols-1 sm:grid-cols-2 gap-4">${v2Input('a_t_name','NAME',t.name,'fa-user',true)}${v2Input('a_t_email','EMAIL',t.email,'fa-envelope')}${v2Input('a_t_phone','PHONE',t.phone,'fa-phone')}${v2Input('a_t_qualification','QUALIFICATION',t.qualification,'fa-graduation-cap')}${v2Input('a_t_experience','EXPERIENCE',t.experience,'fa-briefcase')}${v2Input('a_t_teaching','TEACHING COLLEGE / INSTITUTE',t.teachingCollege||t.college,'fa-school')}${v2Input('a_t_subject','SUBJECT',t.subject,'fa-book-open')}${v2Input('a_t_price','RATE / HOUR',t.price,'fa-indian-rupee-sign')}${v2Input('a_t_rating','RATING',t._manualRating||tutorRating(t),'fa-star')}${v2Input('a_t_students','STUDENTS',t.students,'fa-users')}</div><div><label class="gc-v2-label">ABOUT ME</label><textarea id="a_t_about" class="gc-v2-textarea" rows="5">${x(t.aboutMe||'')}</textarea></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">${imageInput('a_t_photo','Replace Profile Photo',false)}${imageInput('a_t_ach','Add Achievement Photos',true)}</div><div class="gc-v2-panel"><label class="flex items-center gap-2 text-sm font-black"><input id="a_t_verified" type="checkbox" ${t.verified?'checked':''}> VERIFIED TUTOR</label><p class="text-xs text-slate-500 mt-1">Verified tutors automatically receive the supplied blue tick and a high rating.</p></div><div class="flex gap-3"><button type="button" onclick="closeAdminEditTutorModal()" class="flex-1 bg-slate-100 py-3 rounded-xl font-bold">Cancel</button><button class="flex-1 bg-brand-blue text-white py-3 rounded-xl font-black">SAVE ALL CHANGES</button></div></form>`;
     m.classList.remove('hidden'); document.getElementById('gcAdminTutorForm').onsubmit=async e=>{e.preventDefault();
       t.name=document.getElementById('a_t_name').value.trim()||t.name;t.email=document.getElementById('a_t_email').value.trim();t.phone=document.getElementById('a_t_phone').value.trim();t.qualification=document.getElementById('a_t_qualification').value.trim();t.experience=document.getElementById('a_t_experience').value.trim();t.teachingCollege=document.getElementById('a_t_teaching').value.trim();t.college=t.teachingCollege;t.subject=document.getElementById('a_t_subject').value.trim();t.price=document.getElementById('a_t_price').value.trim();t._manualRating=Math.min(5,Math.max(1,Number(document.getElementById('a_t_rating').value)||Number(tutorRating(t))));t.students=document.getElementById('a_t_students').value.trim();t.aboutMe=document.getElementById('a_t_about').value.trim();t.verified=document.getElementById('a_t_verified').checked;t.paidStatus=t.verified?'PAID':t.paidStatus;
-      const f=document.getElementById('a_t_photo')?.files?.[0];if(f){const d=await readImageDataUrl(f,700);if(d)t.photoData=d;}const more=await readMany('a_t_ach',700);t.achievements=[...(t.achievements||[]),...more].slice(0,3);saveDirs();rerender();closeAdminEditTutorModal();alert('Tutor profile fully updated by Staff/Admin.');};
+      const f=document.getElementById('a_t_photo')?.files?.[0];if(f){const d=await readImageDataUrl(f,700);if(d)t.photoData=d;}const more=await readMany('a_t_ach',700);t.achievements=[...(t.achievements||[]),...more].slice(0,3);saveDirs();rerender();
+      if(t.isCloud && window.gcSupabase){
+        const statusResult=await persistTutorStatus(t);
+        if(!statusResult.ok){ alert('Profile was updated locally, but Supabase could not save the Verified/PAID status. Please check paid_status and RLS.'); }
+      }
+      closeAdminEditTutorModal();alert('Tutor profile fully updated by Staff/Admin.');};
   };
   window.adminEditStudent=function(id){
     if(!adminGuard()) return;
@@ -8506,6 +8511,7 @@ body {
       about_me: gcCleanText(t.aboutMe),
       photo_url: gcCleanText(t.photoData || t.photo || ''),
       verified: false,
+      paid_status: 'PENDING',
       is_illustrative: false,
       registration_status: 'registered'
     };
@@ -8580,6 +8586,7 @@ body {
       aboutMe: row.about_me || '',
       photoData: row.photo_url || '',
       verified: row.verified === true,
+      paidStatus: row.paid_status || 'PENDING',
       registrationDate: row.created_at || new Date().toISOString(),
       isDummy: false,
       isCloud: true,
@@ -8624,7 +8631,7 @@ body {
     if (cached) return cached;
 
     const fields = table === 'tutor_profiles'
-      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,photo_url,created_at'
+      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,created_at'
       : 'id,user_id,name,course,stream,learning_requirement,photo_url,created_at';
 
     const result = await gcSupabase.from(table)
@@ -8662,7 +8669,7 @@ body {
     if (!gcCloudEnabled) return { rows: [], total: 0 };
 
     const fields = table === 'tutor_profiles'
-      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,photo_url,created_at'
+      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,created_at'
       : 'id,user_id,name,course,stream,learning_requirement,photo_url,created_at';
 
     const cacheKey = 'ALL:' + table;
@@ -8900,7 +8907,7 @@ body {
       photoData,
       collegeIdName: collegeIdFile?.name || '',
       aadhaarName: aadhaarFile?.name || '',
-      verified: false, phone, utr, paidStatus:'PENDING',
+      verified: false, phone, utr, paidStatus:'PENDING', paid_status:'PENDING',
       registrationDate: new Date().toISOString(),
       isDummy:false, registrationStatus:'registered', registrationRole:'tutor'
     };
@@ -9116,32 +9123,60 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
   // IMPORTANT: the old functions only changed JavaScript memory/localStorage.
   // This layer also persists the status to Supabase when the tutor is cloud-backed.
   async function persistTutorStatus(t){
-    if(!t || !t.isCloud || !window.gcSupabase) return;
+    if(!t || !t.isCloud || !window.gcSupabase) return {ok:false, skipped:true};
 
     try {
-      if(typeof gcGetAnonymousUser === 'function') await gcGetAnonymousUser();
-    } catch(_){}
+      const patch = {
+        verified: t.verified === true,
+        paid_status: t.paidStatus === 'PAID' ? 'PAID' : 'PENDING'
+      };
 
-    const patch = {
-      verified: !!t.verified
-    };
-
-    // Keep the paid status if the column exists; retry without it for older schemas.
-    patch.paid_status = t.paidStatus || 'PENDING';
-
-    let result = await window.gcSupabase
-      .from('tutor_profiles')
-      .update(patch)
-      .eq('id', t.id);
-
-    if(result.error){
-      result = await window.gcSupabase
+      const result = await window.gcSupabase
         .from('tutor_profiles')
-        .update({ verified: !!t.verified })
-        .eq('id', t.id);
-    }
+        .update(patch)
+        .eq('id', t.id)
+        .select('id,verified,paid_status')
+        .single();
 
-    if(result.error) console.warn('Tutor status cloud save failed:', result.error);
+      if(result.error) {
+        console.error('GURU CONNECT Supabase status update failed:', result.error);
+        throw result.error;
+      }
+
+      // Re-sync the local object from the authoritative cloud response.
+      if(result.data){
+        t.verified = result.data.verified === true;
+        t.paidStatus = result.data.paid_status || 'PENDING';
+      }
+      return {ok:true,row:result.data};
+    } catch(err) {
+      return {ok:false,error:err};
+    }
+  }
+
+  async function gcPersistTutorStatusAndRefresh(t, successMessage){
+    const result = await persistTutorStatus(t);
+    if(!result.ok){
+      // Revert the optimistic change if the database rejected it. This prevents
+      // the UI from claiming a status that wasn't actually stored in Supabase.
+      try {
+        const cloudRow = await window.gcSupabase
+          .from('tutor_profiles')
+          .select('verified,paid_status')
+          .eq('id', t.id)
+          .single();
+        if(!cloudRow.error && cloudRow.data){
+          t.verified = cloudRow.data.verified === true;
+          t.paidStatus = cloudRow.data.paid_status || 'PENDING';
+        }
+      } catch(_){}
+      redrawTutor(t);
+      alert('Supabase could not save this status. Please check that the paid_status column and RLS policy are enabled.');
+      return false;
+    }
+    redrawTutor(t);
+    try { showSuccessPopup(successMessage); } catch(_) { alert(successMessage); }
+    return true;
   }
 
   window.adminVerifyTutorPaid = function(id){
@@ -9151,12 +9186,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
 
     t.paidStatus = 'PAID';
     redrawTutor(t);
-
-    // Never block the admin UI on Supabase.
-    persistTutorStatus(t).catch(console.warn);
-
-    try { showSuccessPopup('Tutor marked PAID successfully.'); }
-    catch(_) { alert('Tutor marked PAID successfully.'); }
+    gcPersistTutorStatusAndRefresh(t, 'Tutor marked PAID successfully.');
   };
 
   window.adminRevokeTutorPaid = function(id){
@@ -9167,10 +9197,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
 
     t.paidStatus = 'PENDING';
     redrawTutor(t);
-    persistTutorStatus(t).catch(console.warn);
-
-    try { showSuccessPopup('Tutor PAID status has been revoked.'); }
-    catch(_) { alert('Tutor PAID status has been revoked.'); }
+    gcPersistTutorStatusAndRefresh(t, 'Tutor PAID status has been revoked.');
   };
 
   window.adminGrantVerifiedTick = function(id){
@@ -9181,10 +9208,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
     t.verified = true;
     t.paidStatus = 'PAID';
     redrawTutor(t);
-    persistTutorStatus(t).catch(console.warn);
-
-    try { showSuccessPopup('Verified Tick granted successfully.'); }
-    catch(_) { alert('Verified Tick granted successfully.'); }
+    gcPersistTutorStatusAndRefresh(t, 'Verified Tick granted successfully.');
   };
 
   window.adminRevokeVerifiedTick = function(id){
@@ -9195,10 +9219,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
 
     t.verified = false;
     redrawTutor(t);
-    persistTutorStatus(t).catch(console.warn);
-
-    try { showSuccessPopup('Verified Tick has been revoked.'); }
-    catch(_) { alert('Verified Tick has been revoked.'); }
+    gcPersistTutorStatusAndRefresh(t, 'Verified Tick has been revoked.');
   };
 
   // Prevent the heavy admin queue from becoming the reason an action appears frozen.
@@ -9475,6 +9496,32 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
   if(typeof old==='function'){
     window.renderUserDashboard=function(p){old(p);setTimeout(()=>enhance(p),20)}
   }
+})();
+</script>
+
+
+<script id="gc-supabase-status-schema-check">
+(function(){
+  window.GC_SUPABASE_STATUS_SCHEMA = {paidStatus:false, verified:false, checked:false};
+
+  async function check(){
+    if(!window.gcSupabase) return;
+    try{
+      const r=await window.gcSupabase.from('tutor_profiles')
+        .select('id,verified,paid_status')
+        .limit(1);
+      if(!r.error){
+        window.GC_SUPABASE_STATUS_SCHEMA={paidStatus:true,verified:true,checked:true};
+        return;
+      }
+      const v=await window.gcSupabase.from('tutor_profiles').select('id,verified').limit(1);
+      window.GC_SUPABASE_STATUS_SCHEMA={paidStatus:false,verified:!v.error,checked:true};
+      if(r.error) console.warn('GURU CONNECT: paid_status column is not available yet. Run the supplied migration SQL in Supabase.',r.error);
+    }catch(e){
+      console.warn('GURU CONNECT status schema check failed:',e);
+    }
+  }
+  setTimeout(check,1200);
 })();
 </script>
 
