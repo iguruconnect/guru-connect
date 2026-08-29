@@ -6254,6 +6254,15 @@ html, body, button, input, select, textarea {
   window.gcSupabaseAdminUpdateStudent = async function(s){
     if(!s || !s.isCloud || !gcSupabase) return false;
 
+    try {
+      await Promise.race([
+        gcGetAnonymousUser(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Cloud auth timeout')), 7000))
+      ]);
+    } catch(authErr) {
+      console.warn('Cloud student edit auth unavailable:', authErr);
+    }
+
     const patch = {
       name: gcCleanText(s.name),
       course: gcCleanText(s.course || s.std),
@@ -8400,10 +8409,25 @@ body {
       .order('created_at', { ascending: false })
       .range(from, to);
 
-    if (result.error) throw result.error;
+    let finalResult = result;
+
+    // Compatibility fallback for older table schemas / RLS policies:
+    // first try the optimized filtered query; if that fails, retry a minimal
+    // read without optional status filters.
+    if (finalResult.error) {
+      console.warn('Optimized ' + table + ' query failed; retrying compatibility query.', finalResult.error);
+
+      finalResult = await gcSupabase.from(table)
+        .select(fields, { count: 'estimated' })
+        .order('created_at', { ascending: false })
+        .range(from, to);
+    }
+
+    if (finalResult.error) throw finalResult.error;
+
     const payload = {
-      rows: (result.data || []).map(mapper),
-      total: Number(result.count || 0)
+      rows: (finalResult.data || []).map(mapper),
+      total: Number(finalResult.count || 0)
     };
     gcPageCache.set(cacheKey, payload);
     return payload;
@@ -8412,6 +8436,17 @@ body {
   async function gcLoadCloudDirectories(pageTutor = 1, pageStudent = 1) {
     if (!gcCloudEnabled) return false;
     try {
+      // Establish the same anonymous Supabase session used by registration
+      // before reading directories. This makes RLS policies work consistently.
+      try {
+        await Promise.race([
+          gcGetAnonymousUser(),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Anonymous session timeout')), 7000))
+        ]);
+      } catch (authErr) {
+        console.warn('GURU CONNECT anonymous session unavailable; attempting public directory read.', authErr);
+      }
+
       const pageSize = 6;
       const [tp, sp] = await Promise.all([
         gcLoadCloudPage('tutor_profiles', gcTutorFromCloud, pageTutor, pageSize),
@@ -8672,6 +8707,109 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
       if(typeof window.gcLoadCloudDirectories==='function') await window.gcLoadCloudDirectories(window.currentTutorPage||1,p);
     }catch(e){console.error('Student page load:',e);}
   };
+})();
+</script>
+
+
+<script id="gc-final-student-admin-fix">
+(function(){
+  function gcAdminReady(){
+    return localStorage.getItem('is_staff_logged') === 'true';
+  }
+
+  window.adminEditStudent = function(id){
+    if(!gcAdminReady()) return;
+
+    const list = Array.isArray(window.studentDirectoryList) ? window.studentDirectoryList : [];
+    const s = list.find(x => String(x.id) === String(id));
+    if(!s){
+      alert('Student record could not be found.');
+      return;
+    }
+
+    window.currentEditingStudentId = s.id;
+
+    const modal = document.getElementById('adminEditStudentModal');
+    if(!modal) return;
+
+    // Use the existing modal fields so the rest of the website design is preserved.
+    const set = (id, value) => {
+      const el = document.getElementById(id);
+      if(el) el.value = value == null ? '' : value;
+    };
+
+    set('editStudentName', s.name || '');
+    set('editStudentStd', s.std || s.course || '');
+    set('editStudentStream', s.stream || '');
+    set('editStudentSubject', s.subject || s.learningRequirement || '');
+    set('editStudentPhone', s.phone || '');
+
+    modal.classList.remove('hidden');
+  };
+
+  window.saveStudentEdit = async function(e){
+    if(e) e.preventDefault();
+    if(window.currentEditingStudentId == null) return;
+
+    const list = Array.isArray(window.studentDirectoryList) ? window.studentDirectoryList : [];
+    const s = list.find(x => String(x.id) === String(window.currentEditingStudentId));
+    if(!s) return;
+
+    const value = id => {
+      const el = document.getElementById(id);
+      return el ? el.value.trim() : '';
+    };
+
+    s.name = value('editStudentName') || s.name;
+    s.std = value('editStudentStd') || s.std || s.course || '';
+    s.course = s.std;
+    const requestedStream = value('editStudentStream');
+    if(Array.isArray(window.JC_STREAMS) && window.JC_STREAMS.includes(requestedStream)){
+      s.stream = requestedStream;
+    } else if(requestedStream){
+      s.stream = requestedStream;
+    }
+    s.subject = value('editStudentSubject') || s.subject || s.learningRequirement || '';
+    s.learningRequirement = s.subject;
+    s.phone = value('editStudentPhone');
+
+    // Persist locally first — never freeze the admin screen waiting for network.
+    try { if(typeof saveRegisteredDirectories === 'function') saveRegisteredDirectories(); } catch(_){}
+
+    try { renderStudentDirectory(); } catch(_){}
+
+    const saveBtn = document.querySelector('#adminEditStudentModal button[type="submit"]');
+    if(saveBtn){
+      saveBtn.disabled = true;
+      saveBtn.textContent = 'SAVING...';
+    }
+
+    // Cloud persistence is deliberately fire-and-forget from the UI perspective.
+    if(s.isCloud && typeof window.gcSupabaseAdminUpdateStudent === 'function'){
+      window.gcSupabaseAdminUpdateStudent(s).catch(err => {
+        console.warn('Student cloud update failed:', err);
+      });
+    }
+
+    if(typeof closeAdminEditStudentModal === 'function') closeAdminEditStudentModal();
+
+    try {
+      if(typeof showSuccessPopup === 'function'){
+        showSuccessPopup('Student profile has been updated successfully.');
+      } else {
+        alert('Student profile has been updated successfully.');
+      }
+    } catch(_){}
+
+    if(saveBtn){
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'SAVE CHANGES';
+    }
+  };
+
+  // Do not let the old admin save handler rebuild the complete admin table.
+  const form = document.getElementById('adminEditStudentForm');
+  if(form) form.onsubmit = window.saveStudentEdit;
 })();
 </script>
 
