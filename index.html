@@ -10752,5 +10752,221 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
 })();
 </script>
 
+
+<style id="gc-admin-tutor-actions-final">
+#adminEditTutorModal{z-index:100200!important}
+#adminEditTutorModal .gc-v2-input,#adminEditTutorModal .gc-v2-textarea{background:#fff!important}
+.gc-admin-save-state{font-size:12px;font-weight:800;margin-top:8px;text-align:center}
+</style>
+<script id="gc-admin-tutor-actions-final-script">
+(function(){
+  function staff(){ return localStorage.getItem('is_staff_logged') === 'true'; }
+  function tutors(){ return Array.isArray(window.tutorDirectoryList) ? window.tutorDirectoryList : []; }
+  function find(id){ return tutors().find(t=>String(t.id)===String(id)); }
+  function clean(v){ return typeof window.gcCleanText==='function' ? window.gcCleanText(v) : String(v??'').trim(); }
+  function redraw(t){
+    try{ if(typeof saveRegisteredDirectories==='function') saveRegisteredDirectories(); }catch(_){ }
+    try{ if(typeof saveDirs==='function') saveDirs(); }catch(_){ }
+    try{ if(typeof renderTutorDirectory==='function') renderTutorDirectory(); }catch(_){ }
+    try{ if(typeof renderAdminQueue==='function') renderAdminQueue(); }catch(_){ }
+  }
+
+  // One authoritative cloud update path for ALL staff tutor edits/status changes.
+  window.gcSupabaseAdminUpdateTutor = async function(t){
+    if(!t || !t.isCloud || !window.gcSupabase) return {ok:false,skipped:true};
+
+    const patch={
+      name:clean(t.name),
+      subject:clean(t.subject),
+      stream:clean(t.stream),
+      experience:clean(t.experience),
+      qualification:clean(t.qualification),
+      college:clean(t.college),
+      teaching_college:clean(t.teachingCollege),
+      address:clean(t.address),
+      price:clean(t.price),
+      about_me:clean(t.aboutMe),
+      photo_url:clean(t.photoData||t.photo||''),
+      verified:t.verified===true,
+      paid_status:t.paidStatus==='PAID'?'PAID':'PENDING'
+    };
+
+    // Update by the cloud row id. The staff UI never sends an auth/service key.
+    const result=await window.gcSupabase.from('tutor_profiles')
+      .update(patch)
+      .eq('id',t.id)
+      .select('id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,created_at')
+      .single();
+    if(result.error) throw result.error;
+
+    if(result.data){
+      Object.assign(t,{
+        id:result.data.id,
+        user_id:result.data.user_id,
+        name:result.data.name||t.name,
+        subject:result.data.subject||'',
+        stream:result.data.stream||'',
+        experience:result.data.experience||'',
+        qualification:result.data.qualification||'',
+        college:result.data.college||'',
+        teachingCollege:result.data.teaching_college||'',
+        address:result.data.address||'',
+        price:result.data.price||'',
+        aboutMe:result.data.about_me||'',
+        photoData:result.data.photo_url||'',
+        verified:result.data.verified===true,
+        paidStatus:result.data.paid_status||'PENDING',
+        isCloud:true
+      });
+    }
+    return {ok:true,row:result.data};
+  };
+
+  async function saveStatus(t, message, revert){
+    if(!staff()) return false;
+    const before={verified:t.verified,paidStatus:t.paidStatus};
+    redraw(t);
+    if(!t.isCloud){
+      try{showSuccessPopup(message)}catch(_){alert(message)}
+      return true;
+    }
+    try{
+      await window.gcSupabaseAdminUpdateTutor(t);
+      redraw(t);
+      try{showSuccessPopup(message)}catch(_){alert(message)}
+      return true;
+    }catch(err){
+      t.verified=before.verified; t.paidStatus=before.paidStatus; redraw(t);
+      const msg=typeof window.gcFormatCloudError==='function'?window.gcFormatCloudError(err):(err?.message||String(err));
+      alert('STATUS WAS NOT SAVED TO THE CLOUD.\n\n'+msg+'\n\nIf Supabase says "row-level security", the Staff role needs an UPDATE policy on tutor_profiles.');
+      console.error('Tutor status update failed:',err);
+      return false;
+    }
+  }
+
+  window.adminVerifyTutorPaid=async function(id){
+    if(!staff()) return;
+    const t=find(id); if(!t) return alert('Tutor record not found.');
+    t.paidStatus='PAID';
+    await saveStatus(t,'Tutor marked PAID successfully.');
+  };
+
+  window.adminRevokeTutorPaid=async function(id){
+    if(!staff()) return;
+    const t=find(id); if(!t) return alert('Tutor record not found.');
+    if(!confirm("Are you sure you want to revoke this tutor's PAID status?")) return;
+    t.paidStatus='PENDING';
+    await saveStatus(t,'Tutor PAID status has been revoked.');
+  };
+
+  window.adminGrantVerifiedTick=async function(id){
+    if(!staff()) return;
+    const t=find(id); if(!t) return alert('Tutor record not found.');
+    t.verified=true; t.paidStatus='PAID';
+    await saveStatus(t,'Verified Tick granted successfully. Tutor is now PAID + VERIFIED.');
+  };
+
+  window.adminRevokeVerifiedTick=async function(id){
+    if(!staff()) return;
+    const t=find(id); if(!t) return alert('Tutor record not found.');
+    if(!confirm("Are you sure you want to revoke this tutor's Verified Tick?")) return;
+    t.verified=false;
+    await saveStatus(t,'Verified Tick has been revoked.');
+  };
+
+  // Replace the broken/duplicate tutor editor with one stable implementation.
+  window.adminEditTutor=async function(id){
+    if(!staff()) return;
+    const t=find(id); if(!t) return alert('Tutor record not found.');
+    window.currentEditingTutorId=t.id;
+    const m=document.getElementById('adminEditTutorModal'); if(!m) return alert('Tutor edit window is missing.');
+    const box=m.querySelector(':scope > div') || m.querySelector('div');
+    if(!box) return;
+    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    box.innerHTML=`
+      <div class="flex justify-between items-center mb-5">
+        <div><h3 class="text-xl font-black text-brand-dark">Edit Tutor Profile</h3><p class="text-xs text-slate-500 mt-1">Changes are saved to the GURU CONNECT cloud database.</p></div>
+        <button type="button" onclick="closeAdminEditTutorModal()" class="text-slate-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="gcAdminTutorFormFinal" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="gc-v2-label">NAME</label><input id="gc_a_t_name" class="gc-v2-input" required value="${esc(t.name)}"></div>
+          <div><label class="gc-v2-label">EMAIL</label><input id="gc_a_t_email" type="email" class="gc-v2-input" value="${esc(t.email)}"></div>
+          <div><label class="gc-v2-label">PHONE</label><input id="gc_a_t_phone" class="gc-v2-input" value="${esc(t.phone)}"></div>
+          <div><label class="gc-v2-label">QUALIFICATION</label><input id="gc_a_t_qualification" class="gc-v2-input" value="${esc(t.qualification)}"></div>
+          <div><label class="gc-v2-label">EXPERIENCE</label><input id="gc_a_t_experience" class="gc-v2-input" value="${esc(t.experience)}"></div>
+          <div><label class="gc-v2-label">TEACHING COLLEGE / INSTITUTE</label><input id="gc_a_t_teaching" class="gc-v2-input" value="${esc(t.teachingCollege||t.college)}"></div>
+          <div><label class="gc-v2-label">SUBJECT</label><input id="gc_a_t_subject" class="gc-v2-input" value="${esc(t.subject)}"></div>
+          <div><label class="gc-v2-label">RATE / HOUR</label><input id="gc_a_t_price" class="gc-v2-input" value="${esc(t.price)}"></div>
+          <div><label class="gc-v2-label">RATING</label><input id="gc_a_t_rating" type="number" min="1" max="5" step="0.1" class="gc-v2-input" value="${esc(t._manualRating||tutorRating(t))}"></div>
+          <div><label class="gc-v2-label">STUDENTS</label><input id="gc_a_t_students" class="gc-v2-input" value="${esc(t.students||'')}"></div>
+        </div>
+        <div><label class="gc-v2-label">ABOUT ME</label><textarea id="gc_a_t_about" class="gc-v2-textarea" rows="5">${esc(t.aboutMe||'')}</textarea></div>
+        <div class="gc-v2-panel">
+          <label class="flex items-center gap-3 text-sm font-black cursor-pointer"><input id="gc_a_t_verified" type="checkbox" ${t.verified?'checked':''} class="w-5 h-5"> VERIFIED TUTOR</label>
+          <div class="text-xs text-slate-500 mt-2">PAID STATUS: <b>${esc(t.paidStatus||'PENDING')}</b></div>
+        </div>
+        <div id="gcAdminTutorSaveMsg" class="gc-admin-save-state text-slate-500">Ready to save.</div>
+        <div class="flex gap-3">
+          <button type="button" onclick="closeAdminEditTutorModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 py-3 rounded-xl font-bold">CANCEL</button>
+          <button id="gcAdminTutorSaveBtnFinal" type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white py-3 rounded-xl font-black shadow-lg">SAVE ALL CHANGES</button>
+        </div>
+      </form>`;
+    m.classList.remove('hidden');
+
+    const form=document.getElementById('gcAdminTutorFormFinal');
+    form.onsubmit=async function(e){
+      e.preventDefault();
+      const btn=document.getElementById('gcAdminTutorSaveBtnFinal');
+      const msg=document.getElementById('gcAdminTutorSaveMsg');
+      if(btn){btn.disabled=true;btn.textContent='SAVING...';}
+      if(msg){msg.textContent='Saving tutor profile...';msg.className='gc-admin-save-state text-blue-600';}
+      try{
+        t.name=document.getElementById('gc_a_t_name').value.trim()||t.name;
+        t.email=document.getElementById('gc_a_t_email').value.trim();
+        t.phone=document.getElementById('gc_a_t_phone').value.trim();
+        t.qualification=document.getElementById('gc_a_t_qualification').value.trim();
+        t.experience=document.getElementById('gc_a_t_experience').value.trim();
+        t.teachingCollege=document.getElementById('gc_a_t_teaching').value.trim();
+        t.college=t.teachingCollege;
+        t.subject=document.getElementById('gc_a_t_subject').value.trim();
+        t.price=document.getElementById('gc_a_t_price').value.trim();
+        t._manualRating=Math.min(5,Math.max(1,Number(document.getElementById('gc_a_t_rating').value)||Number(tutorRating(t))));
+        t.students=document.getElementById('gc_a_t_students').value.trim();
+        t.aboutMe=document.getElementById('gc_a_t_about').value.trim();
+        t.verified=document.getElementById('gc_a_t_verified').checked;
+        if(t.verified) t.paidStatus='PAID';
+
+        const f=document.getElementById('a_t_photo')?.files?.[0];
+        if(f && typeof readImageDataUrl==='function'){const d=await readImageDataUrl(f,700);if(d)t.photoData=d;}
+        if(typeof readMany==='function'){
+          const more=await readMany('a_t_ach',700);
+          if(more.length)t.achievements=[...(t.achievements||[]),...more].slice(0,3);
+        }
+        redraw(t);
+
+        if(t.isCloud){
+          await window.gcSupabaseAdminUpdateTutor(t);
+        }
+        closeAdminEditTutorModal();
+        try{showSuccessPopup('Tutor profile has been updated successfully.');}catch(_){alert('Tutor profile has been updated successfully.');}
+      }catch(err){
+        console.error('Tutor edit failed:',err);
+        const detail=typeof window.gcFormatCloudError==='function'?window.gcFormatCloudError(err):(err?.message||String(err));
+        if(msg){msg.textContent='Save failed — '+detail;msg.className='gc-admin-save-state text-red-600';}
+        alert('Tutor profile could not be saved to the cloud.\n\n'+detail+'\n\nThe form has been kept open so you can try again.');
+      }finally{
+        if(btn){btn.disabled=false;btn.textContent='SAVE ALL CHANGES';}
+      }
+    };
+  };
+
+  window.closeAdminEditTutorModal=function(){
+    const m=document.getElementById('adminEditTutorModal'); if(m)m.classList.add('hidden');
+    window.currentEditingTutorId=null;
+  };
+})();
+</script>
+
 </body>
 </html>
