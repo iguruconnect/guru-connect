@@ -3288,6 +3288,93 @@ header .gc-929-fixed-logo{height:50px!important;}
   #publicNavbarLinks .gc-mobile-staff-item{display:flex!important;}
 }
 </style>
+
+<style id="gc-registration-fullscreen-fix">
+/* Registration is a real full-screen page layer: no website content can scroll behind it. */
+#registrationSection.gc-registration-overlay{
+  position:fixed !important;
+  inset:0 !important;
+  z-index:99990 !important;
+  width:100vw !important;
+  height:100dvh !important;
+  max-width:none !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  box-sizing:border-box !important;
+  margin:0 !important;
+  padding:76px 16px 34px !important;
+  background:#f8fafc !important;
+  border:0 !important;
+  scroll-behavior:smooth;
+}
+#registrationSection.gc-registration-overlay > div{
+  max-width:980px !important;
+  margin:0 auto !important;
+}
+.gc-registration-close{
+  position:fixed;
+  top:14px;
+  right:16px;
+  z-index:100000;
+  width:44px;
+  height:44px;
+  border:0;
+  border-radius:14px;
+  background:#0f172a;
+  color:#fff;
+  font-size:18px;
+  font-weight:900;
+  box-shadow:0 10px 25px rgba(15,23,42,.25);
+  cursor:pointer;
+}
+.gc-registration-close:hover{transform:translateY(-1px);background:#1e293b}
+body.gc-registration-lock{overflow:hidden !important;}
+#registrationSection.gc-registration-overlay .bg-brand-lightBg{
+  background:#fff !important;
+}
+@media(max-width:640px){
+  #registrationSection.gc-registration-overlay{
+    padding:64px 10px 24px !important;
+  }
+  .gc-registration-close{
+    top:10px;right:10px;width:40px;height:40px;border-radius:12px;
+  }
+}
+
+/* Public-facing registration success popup */
+#gcRegistrationSuccessPopup{
+  position:fixed;inset:0;z-index:100500;display:none;
+  align-items:center;justify-content:center;padding:20px;
+  background:rgba(2,6,23,.72);backdrop-filter:blur(8px);
+}
+#gcRegistrationSuccessPopup.is-open{display:flex}
+.gc-reg-success-card{
+  width:min(560px,94vw);
+  background:#fff;border-radius:26px;padding:30px 26px 24px;
+  box-shadow:0 30px 80px rgba(2,6,23,.35);
+  text-align:center;border:1px solid rgba(37,99,235,.12);
+  animation:gcRegPop .22s ease-out;
+}
+@keyframes gcRegPop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
+.gc-reg-success-icon{
+  width:70px;height:70px;border-radius:50%;margin:0 auto 16px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#2563eb,#06b6d4);
+  color:#fff;font-size:30px;box-shadow:0 12px 28px rgba(37,99,235,.25);
+}
+.gc-reg-success-card h3{font-size:22px;font-weight:950;color:#0f172a;margin:0 0 10px}
+.gc-reg-success-card p{font-size:14px;line-height:1.65;color:#475569;margin:0}
+.gc-reg-success-card .gc-success-note{
+  margin-top:14px;padding:12px 14px;border-radius:14px;
+  background:#eff6ff;color:#1e3a8a;font-size:12px;font-weight:800;
+}
+.gc-reg-success-card button{
+  margin-top:18px;width:100%;border:0;border-radius:14px;padding:13px 16px;
+  background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;
+  font-weight:950;cursor:pointer;box-shadow:0 10px 22px rgba(37,99,235,.22);
+}
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -3848,8 +3935,8 @@ header .gc-929-fixed-logo{height:50px!important;}
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Name of the College *</label>
-                                <input type="text" id="stu_college" required placeholder="Enter your college name" class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white">
+                                <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Name of the College (Optional)</label>
+                                <input type="text" id="stu_college" placeholder="Enter your college name (optional)" class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white">
                             </div>
                         </div>
 
@@ -3876,6 +3963,30 @@ header .gc-929-fixed-logo{height:50px!important;}
                         <div>
                             <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Learning Requirement / Educational Needs</label>
                             <textarea id="stu_learning_requirement" rows="3" placeholder="Write your educational needs, subjects/topics where you need support, goals, etc." class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white"></textarea>
+                        </div>
+
+                        <div class="border-2 border-blue-100 bg-blue-50/40 rounded-2xl p-4 sm:p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-blue-100 text-brand-blue flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-id-card"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-black text-brand-dark text-base sm:text-lg">Your Profile Details</h3>
+                                    <p class="text-[11px] sm:text-xs text-slate-500">Add details that help tutors understand you better.</p>
+                                </div>
+                            </div>
+                            <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">About Me (Optional)</label>
+                            <textarea id="stu_about_me" rows="4" placeholder="Tell tutors about yourself, your learning style, interests, goals and what kind of academic support you are looking for." class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white"></textarea>
+
+                            <div class="mt-4">
+                                <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">My Achievements / Certificates (Optional — up to 3 photos)</label>
+                                <p class="text-[11px] text-slate-500 mb-3">Upload up to 3 clear photos of awards, certificates, competitions or other achievements.</p>
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <input type="file" id="stu_achievement_1" accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-blue-50 file:text-brand-blue">
+                                    <input type="file" id="stu_achievement_2" accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-blue-50 file:text-brand-blue">
+                                    <input type="file" id="stu_achievement_3" accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-blue-50 file:text-brand-blue">
+                                </div>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-slate-200">
@@ -4022,6 +4133,24 @@ header .gc-929-fixed-logo{height:50px!important;}
                                 <input type="file" id="t_photo" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange">
                             </div>
                         </div>
+
+                        <div class="border-2 border-orange-100 bg-orange-50/40 rounded-2xl p-4 sm:p-5">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-orange-100 text-brand-nagpurOrange flex items-center justify-center shrink-0">
+                                    <i class="fa-solid fa-trophy"></i>
+                                </div>
+                                <div>
+                                    <h3 class="font-black text-brand-dark text-base sm:text-lg">Professional Achievements</h3>
+                                    <p class="text-[11px] sm:text-xs text-slate-500">Showcase up to 3 achievement / certificate photos on your profile.</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <input type="file" id="t_achievement_1" accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange">
+                                <input type="file" id="t_achievement_2" accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange">
+                                <input type="file" id="t_achievement_3" accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange">
+                            </div>
+                        </div>
+
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
@@ -5256,13 +5385,13 @@ header .gc-929-fixed-logo{height:50px!important;}
                     document.getElementById('stuOtpBox').classList.add('hidden');
                     const btn = document.getElementById('stuSubmitBtn');
                     btn.disabled = false;
-                    btn.className = "w-full bg-brand-blue hover:bg-blue-700 text-white font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2";
+                    btn.className = "w-full bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 hover:from-blue-700 hover:to-cyan-600 text-white font-black py-3.5 sm:py-4 rounded-xl transition shadow-lg text-sm sm:text-base tracking-wider mt-2 ring-2 ring-blue-200";
                     btn.textContent = "REGISTER STUDENT PROFILE";
                 } else {
                     document.getElementById('tutorOtpBox').classList.add('hidden');
                     const btn = document.getElementById('tutorSubmitBtn');
                     btn.disabled = false;
-                    btn.className = "w-full bg-brand-blue hover:bg-blue-700 text-white font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2";
+                    btn.className = "w-full bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 hover:from-blue-700 hover:to-cyan-600 text-white font-black py-3.5 sm:py-4 rounded-xl transition shadow-lg text-sm sm:text-base tracking-wider mt-2 ring-2 ring-blue-200";
                     btn.textContent = "SUBMIT TUTOR APPLICATION";
                 }
             } else {
@@ -9283,16 +9412,23 @@ body {
     const photoFile = document.getElementById('stu_photo')?.files?.[0];
     const photoData = typeof readImageDataUrl === 'function' ? await readImageDataUrl(photoFile) : '';
 
+    const achievementFiles = [1,2,3].map(i => document.getElementById('stu_achievement_'+i)?.files?.[0]).filter(Boolean);
+    const achievementPhotos = [];
+    for (const f of achievementFiles) {
+      try { achievementPhotos.push(await readImageDataUrl(f)); } catch (_) {}
+    }
+
     const collegeIdFile = document.getElementById('stu_college_id')?.files?.[0];
     const aadhaarFile = document.getElementById('stu_aadhaar')?.files?.[0];
     const division = document.getElementById('stu_division')?.value.trim() || '';
     const rollNumber = document.getElementById('stu_roll')?.value.trim() || '';
     const college = document.getElementById('stu_college')?.value.trim() || '';
     const learningRequirement = document.getElementById('stu_learning_requirement')?.value.trim() || '';
+    const aboutMe = document.getElementById('stu_about_me')?.value.trim() || '';
 
     const profile = {
       name, email, phone, std: standard, stream, course, college, division,
-      rollNumber, subject, photoData, learningRequirement,
+      rollNumber, subject, photoData, achievementPhotos, aboutMe, learningRequirement,
       registrationDate: new Date().toISOString(),
       helpline: { registered: false },
       privacy: { showContactToConnectedTutors: true, showDetailsToConnectedTutors: true },
@@ -9336,9 +9472,8 @@ body {
     localStorage.setItem('active_user_role', 'student');
     updateAuthBadge();
 
-    alert(`Student Registration Successful for ${name}!\n\nYour profile has been saved to the GURU CONNECT cloud database.`);
+    showRegistrationSuccessPopup();
     closeUserDashboard();
-    switchTab('requirement');
   };
 
   window.handleTutorFormSubmit = async function (e) {
@@ -9358,6 +9493,11 @@ body {
 
     const photoFile = document.getElementById('t_photo')?.files?.[0];
     const photoData = typeof readImageDataUrl === 'function' ? await readImageDataUrl(photoFile) : '';
+    const achievementFiles = [1,2,3].map(i => document.getElementById('t_achievement_'+i)?.files?.[0]).filter(Boolean);
+    const achievementPhotos = [];
+    for (const f of achievementFiles) {
+      try { achievementPhotos.push(await readImageDataUrl(f)); } catch (_) {}
+    }
     const collegeIdFile = document.getElementById('t_college_id')?.files?.[0];
     const aadhaarFile = document.getElementById('t_aadhaar')?.files?.[0];
 
@@ -9373,6 +9513,7 @@ body {
       address: document.getElementById('t_address')?.value.trim() || '',
       aboutMe: document.getElementById('t_about')?.value.trim() || '',
       photoData,
+      achievementPhotos,
       collegeIdName: collegeIdFile?.name || '',
       aadhaarName: aadhaarFile?.name || '',
       verified: false, phone, utr, paidStatus:'PENDING', paid_status:'PENDING',
@@ -9404,7 +9545,7 @@ body {
     const form = document.getElementById('tutorRegForm');
     if (form) form.classList.add('hidden');
 
-    alert(`Tutor Registration Successful for ${name}!\n\nYour profile has been saved to the GURU CONNECT cloud database.`);
+    showRegistrationSuccessPopup();
     openUserDashboard();
   };
 
@@ -10521,5 +10662,95 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
   window.addEventListener('pageshow',reset);
 })();
 </script>
+
+<script id="gc-registration-overlay-script">
+(function(){
+  function registrationSection(){ return document.getElementById('registrationSection'); }
+
+  function ensureCloseButton(){
+    const section=registrationSection();
+    if(!section || section.querySelector('.gc-registration-close')) return;
+    const b=document.createElement('button');
+    b.type='button';
+    b.className='gc-registration-close';
+    b.setAttribute('aria-label','Close Registration');
+    b.innerHTML='<i class="fa-solid fa-xmark"></i>';
+    b.onclick=closeRegistrationPage;
+    section.prepend(b);
+  }
+
+  window.openRegistrationPage=function(){
+    const section=registrationSection();
+    if(!section) return;
+    ensureCloseButton();
+    section.classList.add('gc-registration-overlay');
+    document.body.classList.add('gc-registration-lock');
+    section.scrollTop=0;
+    try{ history.replaceState(null,'','#registrationSection'); }catch(_){}
+  };
+
+  window.closeRegistrationPage=function(){
+    const section=registrationSection();
+    if(!section) return;
+    section.classList.remove('gc-registration-overlay');
+    document.body.classList.remove('gc-registration-lock');
+    try{ history.replaceState(null,'',location.pathname+location.search); }catch(_){}
+  };
+
+  function wireRegistrationLinks(){
+    document.querySelectorAll('a[href="#registrationSection"]').forEach(function(a){
+      if(a.dataset.gcRegLinkWired) return;
+      a.dataset.gcRegLinkWired='1';
+      a.addEventListener('click',function(e){
+        e.preventDefault();
+        if(typeof closeNavMenu==='function') closeNavMenu();
+        openRegistrationPage();
+      });
+    });
+  }
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape' && registrationSection()?.classList.contains('gc-registration-overlay')){
+      closeRegistrationPage();
+    }
+  });
+
+  window.addEventListener('load',function(){
+    wireRegistrationLinks();
+    if(location.hash==='#registrationSection') openRegistrationPage();
+  });
+  const obs=new MutationObserver(wireRegistrationLinks);
+  obs.observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
+
+
+<div id="gcRegistrationSuccessPopup" role="dialog" aria-modal="true" aria-labelledby="gcRegSuccessTitle">
+  <div class="gc-reg-success-card">
+    <div class="gc-reg-success-icon"><i class="fa-solid fa-circle-check"></i></div>
+    <h3 id="gcRegSuccessTitle">Registration Submitted Successfully</h3>
+    <p>Thank you Your Registration Form is submitted successfully - Please wait for our Response call &amp; Approval.</p>
+    <div class="gc-success-note">Our team will review your registration and contact you after the verification / approval process.</div>
+    <button type="button" onclick="closeRegistrationSuccessPopup()">OK, THANK YOU</button>
+  </div>
+</div>
+
+
+<script id="gc-registration-success-popup-script">
+(function(){
+  window.showRegistrationSuccessPopup=function(){
+    const p=document.getElementById('gcRegistrationSuccessPopup');
+    if(p) p.classList.add('is-open');
+  };
+  window.closeRegistrationSuccessPopup=function(){
+    const p=document.getElementById('gcRegistrationSuccessPopup');
+    if(p) p.classList.remove('is-open');
+  };
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape') closeRegistrationSuccessPopup();
+  });
+})();
+</script>
+
 </body>
 </html>
