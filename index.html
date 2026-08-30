@@ -2953,6 +2953,176 @@ header, .header, .topbar, .navbar, .nav, .site-header {
 }
 </style>
 
+
+<!-- GURU CONNECT MOBILE HEADER + CLOUD BADGE FINAL PATCH -->
+<style id="gc-mobile-professional-header-fix">
+/* Never expose internal cloud/database status to public visitors. */
+#gcCloudStatusBadge{
+  display:none !important;
+}
+
+/* Mobile header: keep brand, LOGIN, ADMIN and MENU visible without horizontal clipping. */
+@media (max-width: 768px){
+  body{
+    overflow-x:hidden !important;
+    width:100% !important;
+    min-width:0 !important;
+  }
+
+  header{
+    width:100% !important;
+    max-width:100vw !important;
+    overflow:visible !important;
+  }
+
+  header > div{
+    width:100% !important;
+    max-width:100% !important;
+    height:auto !important;
+    min-height:60px !important;
+    padding:7px 8px !important;
+    gap:6px !important;
+  }
+
+  /* Brand area gets enough room but never pushes the controls off-screen. */
+  header > div > div:first-child{
+    min-width:0 !important;
+    flex:1 1 auto !important;
+    gap:5px !important;
+    overflow:hidden !important;
+  }
+
+  header > div > div:first-child > a{
+    width:38px !important;
+    height:38px !important;
+    flex:0 0 38px !important;
+    margin:0 !important;
+  }
+
+  header > div > div:first-child > div{
+    min-width:0 !important;
+    overflow:hidden !important;
+  }
+
+  header > div > div:first-child > div > span{
+    display:block !important;
+    font-size:14px !important;
+    line-height:1.05 !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+
+  /* Hide the external 929 Digital Desk logo on phones: it is secondary navigation
+     and otherwise consumes the exact space needed by LOGIN/ADMIN/MENU. */
+  header .gc-929-fixed-logo{
+    display:none !important;
+  }
+
+  /* Right-side controls stay visible and compact. */
+  header > div > div:nth-last-child(1){
+    flex:0 0 auto !important;
+    min-width:0 !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+    gap:4px !important;
+  }
+
+  #navLoginBtn,
+  #navStaffBtn,
+  .gc-menu-button{
+    flex:0 0 auto !important;
+    height:38px !important;
+    min-width:38px !important;
+    padding:0 9px !important;
+    border-radius:10px !important;
+    display:inline-flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    gap:5px !important;
+    font-size:11px !important;
+    white-space:nowrap !important;
+  }
+
+  /* Keep LOGIN and ADMIN labels visible on phones. */
+  #navLoginBtn span,
+  #navStaffBtn span{
+    display:inline !important;
+  }
+
+  .gc-menu-button span{
+    display:inline !important;
+  }
+
+  .gc-menu-button i.fa-chevron-down{
+    display:none !important;
+  }
+
+  /* On very narrow phones, use icon + short labels so nothing gets cut. */
+  @media (max-width:390px){
+    header > div{
+      padding-left:6px !important;
+      padding-right:6px !important;
+      gap:4px !important;
+    }
+    header > div > div:first-child > a{
+      width:34px !important;
+      height:34px !important;
+      flex-basis:34px !important;
+    }
+    header > div > div:first-child > div > span{
+      font-size:12px !important;
+    }
+    #navLoginBtn,
+    #navStaffBtn,
+    .gc-menu-button{
+      height:34px !important;
+      min-width:34px !important;
+      padding:0 7px !important;
+      font-size:10px !important;
+      border-radius:9px !important;
+    }
+  }
+}
+
+/* Make dropdown position relative to the visible menu button and keep it inside viewport. */
+#publicMenuWrapper{
+  position:relative !important;
+  flex:0 0 auto !important;
+}
+@media (max-width:768px){
+  #publicNavbarLinks{
+    right:0 !important;
+    left:auto !important;
+    width:min(240px, calc(100vw - 12px)) !important;
+    max-width:calc(100vw - 12px) !important;
+    margin-top:6px !important;
+  }
+}
+</style>
+
+<script id="gc-hide-public-cloud-status">
+(function(){
+  function hideCloudStatus(){
+    var b=document.getElementById('gcCloudStatusBadge');
+    if(b){
+      b.style.setProperty('display','none','important');
+      b.setAttribute('aria-hidden','true');
+      b.setAttribute('tabindex','-1');
+    }
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',hideCloudStatus);
+  }else{
+    hideCloudStatus();
+  }
+  /* Existing scripts may recreate/update the badge later, so keep it hidden. */
+  setInterval(hideCloudStatus,1000);
+})();
+</script>
+<!-- /GURU CONNECT MOBILE HEADER + CLOUD BADGE FINAL PATCH -->
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -9818,5 +9988,136 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
 })();
 </script>
 
+
+
+<!-- GURU CONNECT: SHAREABLE PUBLIC TUTOR PROFILE -->
+<style id="gc-shareable-tutor-profile">
+  body.gc-public-tutor-mode > *:not(#gcPublicTutorPage){display:none!important}
+  body.gc-public-tutor-mode{background:#f5f8ff!important;overflow:auto!important}
+  #gcPublicTutorPage{display:none}
+  body.gc-public-tutor-mode #gcPublicTutorPage{display:block;min-height:100vh}
+  .gc-public-wrap{max-width:980px;margin:0 auto;padding:22px 14px 48px}
+  .gc-public-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+  .gc-public-brand{font-weight:1000;color:#123b8f;letter-spacing:.08em;font-size:14px}
+  .gc-public-share{border:0;background:#123b8f;color:#fff;padding:10px 14px;border-radius:12px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(18,59,143,.18)}
+  .gc-public-card{background:#fff;border:1px solid #dbe5f4;border-radius:28px;overflow:hidden;box-shadow:0 18px 55px rgba(15,43,85,.10)}
+  .gc-public-hero{padding:24px;background:linear-gradient(135deg,#06145f 0%,#0759c9 48%,#18b8ff 100%);color:#fff;display:flex;gap:20px;align-items:center}
+  .gc-public-avatar{width:112px;height:112px;border-radius:24px;overflow:hidden;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.75);display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:42px}
+  .gc-public-avatar img{width:100%;height:100%;object-fit:cover}
+  .gc-public-status{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);padding:6px 10px;border-radius:999px;font-size:10px;font-weight:1000;letter-spacing:.08em}
+  .gc-public-name{font-size:clamp(24px,5vw,38px);line-height:1.08;font-weight:1000;margin:9px 0 6px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .gc-public-tick{width:25px;height:25px;display:inline-flex;flex:0 0 auto}.gc-public-tick img{width:100%;height:100%;object-fit:contain}
+  .gc-public-sub{font-size:14px;font-weight:800;opacity:.94}
+  .gc-public-body{padding:22px}
+  .gc-public-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:18px}
+  .gc-public-stat{background:#f7faff;border:1px solid #e1eaf6;border-radius:16px;padding:13px}.gc-public-stat small{display:block;font-size:9px;font-weight:1000;color:#64748b;letter-spacing:.08em}.gc-public-stat strong{display:block;margin-top:4px;color:#0f172a;font-size:15px}
+  .gc-public-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .gc-public-detail{border:1px solid #e2e8f0;border-radius:16px;padding:14px}.gc-public-detail small{display:block;font-size:9px;font-weight:1000;color:#64748b;letter-spacing:.08em}.gc-public-detail strong{display:block;margin-top:5px;color:#0f172a;line-height:1.45}
+  .gc-public-about{margin-top:14px;border-radius:18px;background:#f5f9ff;border:1px solid #dce9fb;padding:17px;line-height:1.7;color:#334155;font-size:14px;white-space:pre-line}
+  .gc-public-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.gc-public-actions a,.gc-public-actions button{flex:1;min-width:180px;text-align:center;padding:13px 15px;border-radius:14px;font-weight:1000;text-decoration:none;cursor:pointer;border:0}.gc-public-primary{background:#123b8f;color:#fff}.gc-public-secondary{background:#eef5ff;color:#123b8f}
+  .gc-public-note{text-align:center;color:#64748b;font-size:11px;margin-top:14px}
+  .gc-public-error{max-width:560px;margin:12vh auto;padding:28px;background:#fff;border:1px solid #e2e8f0;border-radius:24px;text-align:center;box-shadow:0 18px 55px rgba(15,43,85,.10)}
+  .gc-public-loading{max-width:560px;margin:18vh auto;text-align:center;color:#123b8f;font-weight:1000}
+  @media(max-width:640px){.gc-public-wrap{padding:12px 10px 32px}.gc-public-hero{padding:18px;gap:13px}.gc-public-avatar{width:82px;height:82px;border-radius:18px;font-size:30px}.gc-public-body{padding:15px}.gc-public-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.gc-public-grid{grid-template-columns:1fr}.gc-public-top{align-items:flex-start}.gc-public-share{padding:9px 11px;font-size:11px}}
+  .gc-dashboard-public-link{margin-top:18px;padding:16px;border:1px solid #cfe0fb;background:linear-gradient(135deg,#f4f8ff,#fff);border-radius:20px}
+  .gc-dashboard-public-link .gc-public-link-row{display:flex;gap:9px;align-items:center;margin-top:10px}.gc-dashboard-public-link input{flex:1;min-width:0;padding:11px 12px;border:1px solid #d7e1ee;border-radius:11px;background:#fff;font-size:12px;font-weight:700;color:#334155}.gc-dashboard-public-link button{border:0;background:#123b8f;color:#fff;padding:11px 13px;border-radius:11px;font-weight:900;cursor:pointer}
+  .gc-dashboard-public-link.gc-disabled{opacity:.72}
+</style>
+
+<div id="gcPublicTutorPage" aria-live="polite"></div>
+
+<script id="gc-shareable-tutor-profile-script">
+(function(){
+  'use strict';
+  function tutorList(){return Array.isArray(window.tutorDirectoryList)?window.tutorDirectoryList:[];}
+  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]});}
+  function isEligible(t){return !!t && t.isDummy!==true && t.paidStatus==='PAID' && t.verified===true;}
+  function getIdFromUrl(){
+    try{var q=new URLSearchParams(location.search); var id=q.get('tutor'); if(id)return id;}catch(e){}
+    var m=location.hash.match(/^#tutor[=\/]([^&]+)/i); return m?decodeURIComponent(m[1]):'';
+  }
+  function profileUrl(t){return location.origin+location.pathname+'?tutor='+encodeURIComponent(String(t.id));}
+  function photo(t){return t.photoData||t.photo_url||t.photo||'';}
+  function tick(){try{return typeof VERIFIED_TICK_LOGO_URL!=='undefined'?VERIFIED_TICK_LOGO_URL:''}catch(e){return ''}}
+  function rating(t){return t._manualRating||t.rating||'—'}
+  function publicPage(t){
+    var root=document.getElementById('gcPublicTutorPage'); if(!root)return;
+    var p=photo(t), tickUrl=tick(), name=t.name||'Tutor';
+    document.body.classList.add('gc-public-tutor-mode');
+    root.innerHTML='<div class="gc-public-wrap">'+
+      '<div class="gc-public-top"><div class="gc-public-brand">GURU CONNECT</div><button class="gc-public-share" onclick="gcShareTutorProfile()"><i class="fa-solid fa-share-nodes"></i> SHARE PROFILE</button></div>'+
+      '<article class="gc-public-card">'+
+        '<header class="gc-public-hero">'+
+          '<div class="gc-public-avatar">'+(p?'<img src="'+esc(p)+'" alt="'+esc(name)+'" onerror="this.onerror=null;this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=\"fa-solid fa-chalkboard-user\"></i>\'">':'<i class="fa-solid fa-chalkboard-user"></i>')+'</div>'+ 
+          '<div style="min-width:0">'+
+            '<div class="gc-public-status"><i class="fa-solid fa-circle-check"></i> VERIFIED & DIGITALLY AVAILABLE</div>'+
+            '<h1 class="gc-public-name">'+esc(name)+(tickUrl?'<span class="gc-public-tick"><img src="'+esc(tickUrl)+'" alt="Verified"></span>':'')+'</h1>'+ 
+            '<div class="gc-public-sub">'+esc(t.subject||'Junior College Tutor')+(t.stream?' • '+esc(t.stream):'')+'</div>'+ 
+          '</div>'+ 
+        '</header>'+ 
+        '<div class="gc-public-body">'+
+          '<div class="gc-public-stats">'+
+            '<div class="gc-public-stat"><small>RATING</small><strong>★ '+esc(rating(t))+'</strong></div>'+ 
+            '<div class="gc-public-stat"><small>EXPERIENCE</small><strong>'+esc(t.experience||'Not provided')+'</strong></div>'+ 
+            '<div class="gc-public-stat"><small>STUDENTS</small><strong>'+esc(t.students||'—')+'</strong></div>'+ 
+            '<div class="gc-public-stat"><small>TEACHING MODE</small><strong>ONLINE / DIGITAL</strong></div>'+ 
+          '</div>'+ 
+          '<div class="gc-public-grid">'+
+            '<div class="gc-public-detail"><small>QUALIFICATION</small><strong>'+esc(t.qualification||'Not provided')+'</strong></div>'+ 
+            '<div class="gc-public-detail"><small>COLLEGE / INSTITUTE</small><strong>'+esc(t.teachingCollege||t.college||'Not provided')+'</strong></div>'+ 
+            '<div class="gc-public-detail"><small>SUBJECT / EXPERTISE</small><strong>'+esc(t.subject||'Not provided')+'</strong></div>'+ 
+            '<div class="gc-public-detail"><small>LOCATION</small><strong>'+esc(t.location||'Maharashtra')+'</strong></div>'+ 
+          '</div>'+ 
+          '<section class="gc-public-about"><strong style="display:block;color:#123b8f;margin-bottom:7px"><i class="fa-solid fa-user-tie"></i> ABOUT THE TUTOR</strong>'+esc(t.aboutMe||'This tutor has not added an About Me section yet.')+'</section>'+ 
+          '<div class="gc-public-actions">'+
+            '<button class="gc-public-primary" onclick="gcShareTutorProfile()"><i class="fa-solid fa-link"></i> COPY PROFILE LINK</button>'+ 
+            '<a class="gc-public-secondary" href="'+esc(location.pathname)+'"><i class="fa-solid fa-house"></i> GURU CONNECT</a>'+ 
+          '</div>'+ 
+          '<div class="gc-public-note">This public profile is available to verified tutors with an active paid GURU CONNECT listing.</div>'+ 
+        '</div>'+ 
+      '</article>'+ 
+    '</div>';
+  }
+  function showMessage(title,msg){
+    document.body.classList.add('gc-public-tutor-mode');
+    document.getElementById('gcPublicTutorPage').innerHTML='<div class="gc-public-error"><div style="font-size:40px;color:#123b8f"><i class="fa-solid fa-user-shield"></i></div><h1 style="font-size:24px;font-weight:1000;color:#0f172a;margin:10px 0">'+esc(title)+'</h1><p style="color:#64748b;line-height:1.6">'+esc(msg)+'</p><a href="'+esc(location.pathname)+'" style="display:inline-block;margin-top:18px;background:#123b8f;color:#fff;padding:12px 18px;border-radius:12px;text-decoration:none;font-weight:900">OPEN GURU CONNECT</a></div>';
+  }
+  window.gcShareTutorProfile=function(){
+    var id=getIdFromUrl(), t=tutorList().find(function(x){return String(x.id)===String(id)}); if(!t)return;
+    var u=profileUrl(t);
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(u).then(function(){alert('Tutor profile link copied successfully.');}).catch(function(){prompt('Copy this tutor profile link:',u);});}
+    else prompt('Copy this tutor profile link:',u);
+  };
+  window.gcTutorPublicUrl=function(id){var t=tutorList().find(function(x){return String(x.id)===String(id)});return t?profileUrl(t):''};
+  window.gcOpenPublicTutorFromDashboard=function(id){var t=tutorList().find(function(x){return String(x.id)===String(id)});if(!t)return;if(!isEligible(t)){alert('Your public Tutor Profile becomes available after GURU CONNECT verifies your tutor profile and your paid listing is active.');return}window.open(profileUrl(t),'_blank','noopener');};
+  window.gcCopyPublicTutorFromDashboard=function(id){var u=window.gcTutorPublicUrl(id),t=tutorList().find(function(x){return String(x.id)===String(id)});if(!u||!t)return;if(!isEligible(t)){alert('Public profile link will activate after your profile is verified and your paid listing is active.');return}if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(u).then(function(){alert('Public tutor profile link copied. You can share it on WhatsApp, Instagram, CV, visiting card or anywhere online.');});else prompt('Copy your public tutor profile link:',u);};
+  function dashboardEnhance(p){
+    if(!p||p.registrationRole!=='tutor')return;
+    var host=document.getElementById('userDashboardContent');if(!host||host.querySelector('#gcTutorPublicProfileBox'))return;
+    var eligible=isEligible(p),u=profileUrl(p);
+    var box=document.createElement('section');box.id='gcTutorPublicProfileBox';box.className='gc-dashboard-public-link '+(!eligible?'gc-disabled':'');
+    box.innerHTML='<div style="font-weight:1000;color:#123b8f"><i class="fa-solid fa-globe"></i> YOUR PUBLIC TUTOR PROFILE</div>'+
+      '<p style="margin:5px 0 0;color:#64748b;font-size:12px;line-height:1.5">'+(eligible?'Your verified digital profile is live. Share this link with students, parents, on WhatsApp, Instagram, your CV or visiting card.':'Available after your tutor profile is VERIFIED and your PAID listing is active.')+'</p>'+ 
+      '<div class="gc-public-link-row"><input readonly value="'+esc(u)+'" aria-label="Public tutor profile link"><button type="button" '+(!eligible?'disabled':'')+' onclick="gcCopyPublicTutorFromDashboard(\''+esc(String(p.id))+'\')"><i class="fa-solid fa-copy"></i> COPY</button><button type="button" '+(!eligible?'disabled':'')+' onclick="gcOpenPublicTutorFromDashboard(\''+esc(String(p.id))+'\')"><i class="fa-solid fa-arrow-up-right-from-square"></i> OPEN</button></div>';
+    host.appendChild(box);
+  }
+  var oldDash=window.renderUserDashboard;
+  if(typeof oldDash==='function')window.renderUserDashboard=function(p){oldDash(p);setTimeout(function(){dashboardEnhance(p)},30)};
+  function bootPublic(){
+    var id=getIdFromUrl(); if(!id)return;
+    document.body.classList.add('gc-public-tutor-mode');
+    document.getElementById('gcPublicTutorPage').innerHTML='<div class="gc-public-loading">Loading tutor profile…</div>';
+    var tries=0;
+    function attempt(){
+      var t=tutorList().find(function(x){return String(x.id)===String(id)});
+      if(t){if(!isEligible(t))showMessage('Tutor Profile Not Public Yet','This tutor profile is not currently available as a public verified profile.');else publicPage(t);return;}
+      tries++; if(tries<30){setTimeout(attempt,500);return} showMessage('Tutor Profile Not Found','The tutor profile link may be incorrect or the profile is no longer active.');
+    }
+    attempt();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(bootPublic,1800)});else setTimeout(bootPublic,1800);
+  window.addEventListener('popstate',bootPublic);
+})();
+</script>
 </body>
 </html>
