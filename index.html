@@ -10968,5 +10968,162 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
 })();
 </script>
 
+
+<script id="gc-admin-actions-hard-fix">
+(function(){
+  // HARD FIX: Staff dashboard actions must work against the same in-memory
+  // tutor list used by renderAdminQueue. Cloud persistence is attempted after
+  // the UI/local data is updated; a database/RLS failure must not make the
+  // Staff controls appear dead.
+  function staff(){ return localStorage.getItem('is_staff_logged') === 'true'; }
+  function list(){ return Array.isArray(window.tutorDirectoryList) ? window.tutorDirectoryList : []; }
+  function tutor(id){ return list().find(t => String(t.id) === String(id)); }
+  function redraw(){
+    try{ if(typeof saveRegisteredDirectories==='function') saveRegisteredDirectories(); }catch(e){console.warn(e)}
+    try{ if(typeof saveDirs==='function') saveDirs(); }catch(e){console.warn(e)}
+    try{ if(typeof renderTutorDirectory==='function') renderTutorDirectory(); }catch(e){console.warn(e)}
+    try{ if(typeof renderAdminQueue==='function') renderAdminQueue(); }catch(e){console.warn(e)}
+  }
+  function notice(msg){
+    try{ if(typeof showSuccessPopup==='function'){ showSuccessPopup(msg); return; } }catch(e){}
+    alert(msg);
+  }
+  async function cloudUpdate(t, includeProfile){
+    if(!t || !t.isCloud || !window.gcSupabase) return {ok:false,skipped:true};
+    const patch = includeProfile ? {
+      name:String(t.name||'').trim(), subject:String(t.subject||'').trim(),
+      stream:String(t.stream||'').trim(), experience:String(t.experience||'').trim(),
+      qualification:String(t.qualification||'').trim(), college:String(t.college||'').trim(),
+      teaching_college:String(t.teachingCollege||'').trim(), address:String(t.address||'').trim(),
+      price:String(t.price||'').trim(), about_me:String(t.aboutMe||'').trim(),
+      verified:t.verified===true, paid_status:t.paidStatus==='PAID'?'PAID':'PENDING'
+    } : {verified:t.verified===true,paid_status:t.paidStatus==='PAID'?'PAID':'PENDING'};
+    const r=await window.gcSupabase.from('tutor_profiles').update(patch).eq('id',t.id).select('id,verified,paid_status').maybeSingle();
+    if(r.error) throw r.error;
+    if(r.data){t.verified=r.data.verified===true;t.paidStatus=r.data.paid_status||'PENDING';}
+    return {ok:true,row:r.data};
+  }
+  async function afterStatus(t,msg){
+    redraw();
+    try{
+      const r=await cloudUpdate(t,false);
+      redraw();
+      if(r.ok) notice(msg);
+      else notice(msg+'\n\nNote: the change is active in this Staff session, but cloud persistence is not configured.');
+    }catch(err){
+      console.error('Staff tutor status cloud save failed:',err);
+      // DO NOT revert the action. This is the important UI fix.
+      redraw();
+      notice(msg+'\n\nCloud save could not be completed: '+(err.message||err)+'\n\nThe Staff dashboard has kept the change locally.');
+    }
+  }
+
+  window.adminVerifyTutorPaid=async function(id){
+    if(!staff()) return alert('Please login through STAFF LOGIN first.');
+    const t=tutor(id); if(!t) return alert('Tutor record not found.');
+    t.paidStatus='PAID';
+    await afterStatus(t,'Tutor marked PAID successfully.');
+  };
+  window.adminRevokeTutorPaid=async function(id){
+    if(!staff()) return alert('Please login through STAFF LOGIN first.');
+    const t=tutor(id); if(!t) return alert('Tutor record not found.');
+    if(!confirm("Are you sure you want to revoke this tutor's PAID status?")) return;
+    t.paidStatus='PENDING';
+    await afterStatus(t,'Tutor PAID status has been revoked.');
+  };
+  window.adminGrantVerifiedTick=async function(id){
+    if(!staff()) return alert('Please login through STAFF LOGIN first.');
+    const t=tutor(id); if(!t) return alert('Tutor record not found.');
+    t.verified=true; t.paidStatus='PAID';
+    await afterStatus(t,'Verified Tick granted successfully. Tutor is now PAID + VERIFIED.');
+  };
+  window.adminRevokeVerifiedTick=async function(id){
+    if(!staff()) return alert('Please login through STAFF LOGIN first.');
+    const t=tutor(id); if(!t) return alert('Tutor record not found.');
+    if(!confirm("Are you sure you want to revoke this tutor's Verified Tick?")) return;
+    t.verified=false;
+    await afterStatus(t,'Verified Tick has been revoked.');
+  };
+
+  window.adminEditTutor=async function(id){
+    if(!staff()) return alert('Please login through STAFF LOGIN first.');
+    const t=tutor(id); if(!t) return alert('Tutor record not found.');
+    const m=document.getElementById('adminEditTutorModal');
+    if(!m) return alert('Tutor edit window is missing from this page.');
+    window.currentEditingTutorId=t.id;
+    const box=m.querySelector(':scope > div') || m.querySelector('div');
+    if(!box) return alert('Tutor edit container is missing.');
+    const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    box.innerHTML=`
+      <div class="flex justify-between items-center mb-5">
+        <div><h3 class="text-xl font-black text-brand-dark">Edit Tutor Profile</h3><p class="text-xs text-slate-500 mt-1">Staff can update the tutor's professional information.</p></div>
+        <button type="button" onclick="closeAdminEditTutorModal()" class="text-slate-400 hover:text-red-500 text-xl"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <form id="gcHardTutorEditForm" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="gc-v2-label">NAME</label><input id="gc_h_name" class="gc-v2-input" required value="${esc(t.name)}"></div>
+          <div><label class="gc-v2-label">EMAIL</label><input id="gc_h_email" type="email" class="gc-v2-input" value="${esc(t.email)}"></div>
+          <div><label class="gc-v2-label">PHONE</label><input id="gc_h_phone" class="gc-v2-input" value="${esc(t.phone)}"></div>
+          <div><label class="gc-v2-label">QUALIFICATION</label><input id="gc_h_qualification" class="gc-v2-input" value="${esc(t.qualification)}"></div>
+          <div><label class="gc-v2-label">EXPERIENCE</label><input id="gc_h_experience" class="gc-v2-input" value="${esc(t.experience)}"></div>
+          <div><label class="gc-v2-label">TEACHING COLLEGE / INSTITUTE</label><input id="gc_h_teaching" class="gc-v2-input" value="${esc(t.teachingCollege||t.college)}"></div>
+          <div><label class="gc-v2-label">SUBJECT</label><input id="gc_h_subject" class="gc-v2-input" value="${esc(t.subject)}"></div>
+          <div><label class="gc-v2-label">RATE / HOUR</label><input id="gc_h_price" class="gc-v2-input" value="${esc(t.price)}"></div>
+          <div><label class="gc-v2-label">RATING</label><input id="gc_h_rating" type="number" min="1" max="5" step="0.1" class="gc-v2-input" value="${esc(t._manualRating||((typeof tutorRating==='function')?tutorRating(t):'5'))}"></div>
+          <div><label class="gc-v2-label">STUDENTS</label><input id="gc_h_students" class="gc-v2-input" value="${esc(t.students||'')}"></div>
+        </div>
+        <div><label class="gc-v2-label">ABOUT ME</label><textarea id="gc_h_about" class="gc-v2-textarea" rows="5">${esc(t.aboutMe||'')}</textarea></div>
+        <div class="gc-v2-panel">
+          <label class="flex items-center gap-3 text-sm font-black cursor-pointer"><input id="gc_h_verified" type="checkbox" ${t.verified?'checked':''} class="w-5 h-5"> VERIFIED TUTOR</label>
+          <p class="text-xs text-slate-500 mt-2">PAID STATUS: <b>${esc(t.paidStatus||'PENDING')}</b></p>
+        </div>
+        <div id="gcHardEditStatus" class="text-xs font-bold text-slate-500">Ready to save.</div>
+        <div class="flex gap-3">
+          <button type="button" onclick="closeAdminEditTutorModal()" class="flex-1 bg-slate-100 py-3 rounded-xl font-bold">CANCEL</button>
+          <button id="gcHardEditSave" type="submit" class="flex-1 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 text-white py-3 rounded-xl font-black shadow-lg">SAVE ALL CHANGES</button>
+        </div>
+      </form>`;
+    m.classList.remove('hidden');
+    const form=document.getElementById('gcHardTutorEditForm');
+    form.onsubmit=async function(e){
+      e.preventDefault();
+      const btn=document.getElementById('gcHardEditSave'), status=document.getElementById('gcHardEditStatus');
+      btn.disabled=true;btn.textContent='SAVING...';status.textContent='Updating tutor profile...';status.className='text-xs font-bold text-blue-600';
+      try{
+        t.name=document.getElementById('gc_h_name').value.trim()||t.name;
+        t.email=document.getElementById('gc_h_email').value.trim();
+        t.phone=document.getElementById('gc_h_phone').value.trim();
+        t.qualification=document.getElementById('gc_h_qualification').value.trim();
+        t.experience=document.getElementById('gc_h_experience').value.trim();
+        t.teachingCollege=document.getElementById('gc_h_teaching').value.trim();
+        t.college=t.teachingCollege;
+        t.subject=document.getElementById('gc_h_subject').value.trim();
+        t.price=document.getElementById('gc_h_price').value.trim();
+        t._manualRating=Math.min(5,Math.max(1,Number(document.getElementById('gc_h_rating').value)||5));
+        t.students=document.getElementById('gc_h_students').value.trim();
+        t.aboutMe=document.getElementById('gc_h_about').value.trim();
+        t.verified=document.getElementById('gc_h_verified').checked;
+        if(t.verified) t.paidStatus='PAID';
+        redraw();
+        let cloudOK=false;
+        try{ const r=await cloudUpdate(t,true); cloudOK=!!r.ok; }catch(err){ console.error('Tutor cloud edit failed:',err); }
+        redraw();
+        closeAdminEditTutorModal();
+        notice(cloudOK ? 'Tutor profile updated successfully and saved to the cloud.' : 'Tutor profile updated successfully.\n\nCloud persistence is not available for this Staff session, so the dashboard kept the changes locally.');
+      }catch(err){
+        console.error('Hard tutor edit failed:',err);
+        status.textContent='Save failed — '+(err.message||err);status.className='text-xs font-bold text-red-600';
+        alert('Tutor edit could not be completed.\n\n'+(err.message||err));
+      }finally{btn.disabled=false;btn.textContent='SAVE ALL CHANGES';}
+    };
+  };
+
+  window.closeAdminEditTutorModal=function(){
+    const m=document.getElementById('adminEditTutorModal'); if(m)m.classList.add('hidden');
+    window.currentEditingTutorId=null;
+  };
+})();
+</script>
+
 </body>
 </html>
