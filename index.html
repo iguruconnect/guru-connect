@@ -3123,6 +3123,68 @@ header, .header, .topbar, .navbar, .nav, .site-header {
 </script>
 <!-- /GURU CONNECT MOBILE HEADER + CLOUD BADGE FINAL PATCH -->
 
+
+<style id="gc-mobile-header-cleanup">
+@media (max-width: 760px){
+  /* Keep the branding clean: only the Menu control stays beside it. */
+  header .gc-header-actions,
+  header .header-actions,
+  header .nav-actions,
+  header .top-actions,
+  header .actions {
+    gap: 4px !important;
+  }
+
+  /* Standalone Login/Staff controls are moved into the mobile menu by JS below. */
+  header #navLoginBtn,
+  header #loginBtn,
+  header #staffLoginBtn,
+  header #navStaffBtn,
+  header [data-action="login"],
+  header [data-action="staff-login"] {
+    display:none !important;
+  }
+
+  #publicNavbarLinks{
+    width: min(92vw, 360px) !important;
+    max-width: calc(100vw - 20px) !important;
+    right: 10px !important;
+    left: auto !important;
+    box-sizing: border-box !important;
+    overflow-y: auto !important;
+    max-height: calc(100vh - 82px) !important;
+    padding: 10px !important;
+  }
+
+  #publicNavbarLinks .gc-mobile-login-item,
+  #publicNavbarLinks .gc-mobile-staff-item{
+    display:flex !important;
+    width:100% !important;
+    box-sizing:border-box !important;
+    align-items:center !important;
+    justify-content:center !important;
+    margin:6px 0 !important;
+    padding:11px 12px !important;
+    border-radius:12px !important;
+    font-weight:900 !important;
+    text-decoration:none !important;
+  }
+
+  #publicNavbarLinks .gc-mobile-login-item{
+    background:linear-gradient(135deg,#2563eb,#06b6d4) !important;
+    color:#fff !important;
+  }
+
+  #publicNavbarLinks .gc-mobile-staff-item{
+    background:linear-gradient(135deg,#7c3aed,#ec4899) !important;
+    color:#fff !important;
+  }
+
+  /* Do not show the technical cloud status to public users. */
+  #gcCloudStatusBadge{display:none !important;}
+}
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -3163,7 +3225,7 @@ header, .header, .topbar, .navbar, .nav, .site-header {
                 </button>
 
                 <button id="navStaffBtn" onclick="openStaffLoginModal()" class="bg-brand-blue hover:bg-blue-700 text-white text-[11px] sm:text-xs font-bold px-2 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition shadow flex items-center gap-1">
-                    <i class="fa-solid fa-lock text-xs sm:text-sm"></i> <span class="hidden sm:inline">ADMIN</span>
+                    <i class="fa-solid fa-lock text-xs sm:text-sm"></i> <span class="hidden sm:inline">STAFF</span>
                 </button>
 
                 <!-- MENU DROPDOWN: restored because it is cleaner and more compact -->
@@ -10119,5 +10181,229 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
   window.addEventListener('popstate',bootPublic);
 })();
 </script>
+
+<script id="gc-mobile-login-menu-items">
+(function(){
+  function findFirst(selectors){
+    for(const s of selectors){
+      const el=document.querySelector(s);
+      if(el) return el;
+    }
+    return null;
+  }
+
+  function addMenuItem(){
+    const menu=document.getElementById('publicNavbarLinks');
+    if(!menu) return;
+
+    if(!menu.querySelector('.gc-mobile-login-item')){
+      const login=document.createElement('button');
+      login.type='button';
+      login.className='gc-mobile-login-item';
+      login.textContent='Student / Tutor Login';
+      login.addEventListener('click',function(){
+        const target=findFirst([
+          '#loginBtn','#navLoginBtn','[onclick*="loginModal"]',
+          '[onclick*="openLogin"]'
+        ]);
+        if(target) target.click();
+        else {
+          const modal=document.getElementById('loginModal');
+          if(modal) modal.classList.remove('hidden');
+        }
+      });
+      menu.appendChild(login);
+    }
+
+    if(!menu.querySelector('.gc-mobile-staff-item')){
+      const staff=document.createElement('button');
+      staff.type='button';
+      staff.className='gc-mobile-staff-item';
+      staff.textContent='STAFF LOGIN';
+      staff.addEventListener('click',function(){
+        const target=findFirst([
+          '#staffLoginBtn','#navStaffBtn','[onclick*="staffLoginModal"]',
+          '[onclick*="openStaffLogin"]'
+        ]);
+        if(target) target.click();
+        else {
+          const modal=document.getElementById('staffLoginModal');
+          if(modal) modal.classList.remove('hidden');
+        }
+      });
+      menu.appendChild(staff);
+    }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addMenuItem);
+  else addMenuItem();
+  setTimeout(addMenuItem,500);
+})();
+</script>
+
+
+<style id="gc-helpline-plan-ui">
+.gc-helpline-plan-panel{
+  display:none;
+  margin-top:14px;
+  padding:16px;
+  border:1px solid rgba(37,99,235,.18);
+  border-radius:16px;
+  background:linear-gradient(180deg,#f8fbff,#ffffff);
+}
+.gc-helpline-plan-panel.is-open{display:block}
+.gc-helpline-plan-title{font-weight:900;font-size:16px;margin-bottom:6px}
+.gc-helpline-plan-note{font-size:12px;color:#64748b;margin-bottom:12px}
+.gc-helpline-plan-list{display:grid;gap:10px}
+.gc-helpline-plan-option{
+  border:1px solid #dbe4f0;
+  border-radius:13px;
+  padding:12px;
+  background:#fff;
+  cursor:pointer;
+}
+.gc-helpline-plan-option.is-selected{
+  border-color:#2563eb;
+  box-shadow:0 0 0 2px rgba(37,99,235,.12);
+}
+.gc-helpline-plan-option strong{display:block}
+.gc-helpline-plan-option small{display:block;color:#64748b;margin-top:3px}
+.gc-helpline-pay{
+  display:none;
+  margin-top:12px;
+  padding:13px;
+  border-radius:13px;
+  background:#eef6ff;
+}
+.gc-helpline-pay.is-open{display:block}
+.gc-helpline-pay button{
+  width:100%;
+  margin-top:9px;
+  border:0;
+  border-radius:11px;
+  padding:11px 14px;
+  font-weight:900;
+  cursor:pointer;
+}
+</style>
+
+<script id="gc-helpline-registration-flow">
+(function(){
+  function textOf(el){ return (el && (el.textContent||el.innerText||'')).trim().toLowerCase(); }
+
+  function findRegistrationContainer(){
+    const candidates=[...document.querySelectorAll('form,section,.modal,.dialog,.popup,.card,div')];
+    return candidates.find(el=>{
+      const t=textOf(el);
+      return t.includes('register with helpline service') &&
+             t.includes('continue without helpline service') &&
+             el.querySelectorAll('button,label,input').length>0;
+    }) || null;
+  }
+
+  function getExistingPlanSource(){
+    const all=[...document.querySelectorAll('body *')];
+    return all.find(el=>{
+      const t=textOf(el);
+      return (t.includes('helpline plan') || t.includes('helpline plans')) &&
+             t.length>20 && t.length<5000;
+    }) || null;
+  }
+
+  function wire(){
+    const root=findRegistrationContainer();
+    if(!root || root.dataset.gcHelplineWired) return;
+    root.dataset.gcHelplineWired='1';
+
+    const controls=[...root.querySelectorAll('button,label')];
+    const yes=controls.find(el=>/register with helpline service/i.test(textOf(el)));
+    const no=controls.find(el=>/continue without helpline service/i.test(textOf(el)));
+
+    const panel=document.createElement('div');
+    panel.className='gc-helpline-plan-panel';
+    panel.innerHTML=`
+      <div class="gc-helpline-plan-title">929 Helpline Service Plans</div>
+      <div class="gc-helpline-plan-note">
+        Select the helpline plan you want. The payment step will follow the selected plan.
+      </div>
+      <div class="gc-helpline-plan-list"></div>
+      <div class="gc-helpline-pay">
+        <strong>Payment</strong>
+        <div class="gc-helpline-payment-summary"></div>
+        <button type="button">Continue to Payment</button>
+      </div>
+    `;
+    (no || root.lastElementChild || root).after(panel);
+
+    const list=panel.querySelector('.gc-helpline-plan-list');
+    const pay=panel.querySelector('.gc-helpline-pay');
+    const summary=panel.querySelector('.gc-helpline-payment-summary');
+
+    // Use existing plan cards/details if present; otherwise expose a clean selection area
+    // and leave actual pricing to the site's existing plan/payment data.
+    const source=getExistingPlanSource();
+    if(source && source!==panel && !root.contains(source)){
+      const clone=source.cloneNode(true);
+      clone.querySelectorAll('button,a,input').forEach(x=>x.removeAttribute('onclick'));
+      list.appendChild(clone);
+    }else{
+      const existing=[...document.querySelectorAll('[data-helpline-plan],.helpline-plan,.gc-helpline-plan')]
+        .filter(x=>!panel.contains(x));
+      existing.slice(0,10).forEach(x=>list.appendChild(x.cloneNode(true)));
+    }
+
+    if(!list.children.length){
+      const msg=document.createElement('div');
+      msg.className='gc-helpline-plan-option';
+      msg.innerHTML='<strong>Choose a Helpline Plan</strong><small>Available plans and their current prices should appear here from your existing plan configuration.</small>';
+      list.appendChild(msg);
+    }
+
+    list.addEventListener('click',function(e){
+      const option=e.target.closest('.gc-helpline-plan-option,[data-helpline-plan],.helpline-plan');
+      if(!option) return;
+      list.querySelectorAll('.is-selected').forEach(x=>x.classList.remove('is-selected'));
+      option.classList.add('is-selected');
+      summary.textContent='Selected plan: '+(option.innerText||'Helpline Plan').replace(/\s+/g,' ').trim();
+      pay.classList.add('is-open');
+    });
+
+    const paymentButton=pay.querySelector('button');
+    paymentButton.addEventListener('click',function(){
+      // Prefer the site's existing payment action if one exists.
+      const selected=list.querySelector('.is-selected');
+      const candidates=[
+        ...document.querySelectorAll('[data-payment-action],[data-action="payment"],button')
+      ];
+      const existing=candidates.find(el=>{
+        if(el===paymentButton) return false;
+        const t=textOf(el);
+        return t.includes('payment') || t.includes('pay now') || t.includes('subscribe');
+      });
+      if(existing) existing.click();
+      else alert('Please connect the selected Helpline Plan to the existing payment gateway/action.');
+    });
+
+    function toggle(){
+      const active=yes && (
+        yes.matches('input:checked') ||
+        yes.getAttribute('aria-checked')==='true' ||
+        yes.classList.contains('active') ||
+        yes.classList.contains('selected')
+      );
+      if(active) panel.classList.add('is-open');
+    }
+    if(yes) yes.addEventListener('click',()=>setTimeout(toggle,0));
+    if(no) no.addEventListener('click',()=>panel.classList.remove('is-open'));
+  }
+
+  const observer=new MutationObserver(wire);
+  observer.observe(document.documentElement,{childList:true,subtree:true});
+  wire();
+  setTimeout(wire,500);
+  setTimeout(wire,1500);
+})();
+</script>
+
 </body>
 </html>
