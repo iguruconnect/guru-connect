@@ -3375,6 +3375,37 @@ body.gc-registration-lock{overflow:hidden !important;}
 }
 </style>
 
+
+<style id="gc-admin-ultimate-fix-css">
+#adminEditTutorModal{z-index:100500!important}
+#gcAdminTutorUltimateModalOverlay{
+  position:fixed;inset:0;z-index:100600;display:none;
+  align-items:center;justify-content:center;padding:16px;
+  background:rgba(15,23,42,.78);backdrop-filter:blur(8px);
+}
+#gcAdminTutorUltimateModalOverlay.is-open{display:flex}
+#gcAdminTutorUltimateModal{
+  width:min(900px,96vw);max-height:92vh;overflow:auto;background:#fff;
+  border-radius:24px;padding:22px;box-shadow:0 30px 90px rgba(0,0,0,.35)
+}
+.gc-admin-ultimate-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.gc-admin-ultimate-label{font-size:10px;font-weight:900;color:#475569;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px;display:block}
+.gc-admin-ultimate-input,.gc-admin-ultimate-textarea{
+  width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:12px;
+  padding:11px 13px;background:#f8fafc;color:#172c67;font-weight:700;outline:none
+}
+.gc-admin-ultimate-input:focus,.gc-admin-ultimate-textarea:focus{
+  background:#fff;border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)
+}
+.gc-admin-ultimate-actions{display:flex;gap:10px;margin-top:16px}
+.gc-admin-ultimate-actions button{flex:1;border:0;border-radius:12px;padding:12px;font-weight:900;cursor:pointer}
+.gc-admin-ultimate-status{margin-top:10px;padding:10px 12px;border-radius:10px;background:#f1f5f9;color:#475569;font-size:12px;font-weight:700}
+@media(max-width:650px){
+ .gc-admin-ultimate-grid{grid-template-columns:1fr}
+ #gcAdminTutorUltimateModal{padding:16px;border-radius:18px}
+}
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -11122,6 +11153,338 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
     const m=document.getElementById('adminEditTutorModal'); if(m)m.classList.add('hidden');
     window.currentEditingTutorId=null;
   };
+})();
+</script>
+
+
+<script id="gc-admin-ultimate-fix">
+(function(){
+  'use strict';
+
+  function staffLogged(){
+    return localStorage.getItem('is_staff_logged') === 'true';
+  }
+
+  function tutorList(){
+    return Array.isArray(window.tutorDirectoryList) ? window.tutorDirectoryList : [];
+  }
+
+  function findTutor(id){
+    const key=String(id);
+    return tutorList().find(t=>String(t.id)===key) || null;
+  }
+
+  function refresh(){
+    try{ if(typeof window.saveRegisteredDirectories==='function') window.saveRegisteredDirectories(); }catch(_){}
+    try{ if(typeof window.renderTutorDirectory==='function') window.renderTutorDirectory(); }catch(_){}
+    try{ if(typeof window.renderAdminQueue==='function') window.renderAdminQueue(); }catch(_){}
+  }
+
+  function msg(s){
+    try{ if(typeof window.showSuccessPopup==='function') window.showSuccessPopup(s); else alert(s); }
+    catch(_){ alert(s); }
+  }
+
+  function cloud(){
+    return window.gcSupabase || null;
+  }
+
+  async function ensureStaffSupabaseSession(){
+    const sb=cloud();
+    if(!sb) return {ok:false,reason:'Supabase client is not available.'};
+
+    try{
+      const current=await sb.auth.getUser();
+      if(current?.data?.user){
+        // If an authenticated user is already present, use it.
+        return {ok:true,user:current.data.user};
+      }
+    }catch(_){}
+
+    const email='Swami@gmail.com';
+    const password='Roller@1329007/';
+    const r=await sb.auth.signInWithPassword({email,password});
+    if(r.error) return {ok:false,error:r.error};
+    return {ok:!!r.data?.user,user:r.data?.user};
+  }
+
+  /*
+   * STAFF LOGIN:
+   * The old login only set localStorage, which left Supabase in an anonymous
+   * session. New cloud tutors therefore could be read but not updated.
+   * This version signs the same Staff credentials into Supabase as well.
+   */
+  window.handleStaffLogin=async function(e){
+    if(e) e.preventDefault();
+
+    const u=(document.getElementById('staffUserInput')?.value||'').trim();
+    const p=(document.getElementById('staffPassInput')?.value||'').trim();
+
+    if(u!=='Swami@gmail.com' || p!=='Roller@1329007/'){
+      alert('Invalid Staff Credentials. Please check username and password.');
+      return false;
+    }
+
+    const btn=document.querySelector('#staffLoginModal button[type="submit"]');
+    if(btn){btn.disabled=true;btn.textContent='SIGNING IN...';}
+
+    try{
+      const session=await ensureStaffSupabaseSession();
+
+      // Keep the existing Staff UI session flag.
+      localStorage.setItem('is_staff_logged','true');
+
+      if(session.ok){
+        localStorage.setItem('gc_staff_supabase_auth','true');
+      }else{
+        // Legacy/local mode remains usable, but cloud actions will clearly
+        // report the database permission problem instead of silently failing.
+        localStorage.removeItem('gc_staff_supabase_auth');
+        console.warn('Staff Supabase authentication was not established:',session.error||session.reason);
+      }
+
+      try{ if(typeof window.closeStaffLoginModal==='function') window.closeStaffLoginModal(); }catch(_){}
+      try{ if(typeof window.checkStaffSessionState==='function') window.checkStaffSessionState(); }catch(_){}
+      try{ if(typeof window.renderAdminQueue==='function') window.renderAdminQueue(); }catch(_){}
+
+      if(session.ok){
+        msg('Staff Login Successful — Cloud Staff Session Active.');
+      }else{
+        alert('Staff Login Successful, but the cloud Staff session could not be established. Local admin actions may work, but Supabase updates require a valid Staff Auth account and UPDATE policy.');
+      }
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent='LOGIN';}
+    }
+    return false;
+  };
+
+  async function updateTutorCloud(t){
+    const sb=cloud();
+    if(!t || !t.isCloud) return {ok:true,skipped:true};
+    if(!sb) return {ok:false,error:new Error('Supabase client is not available.')};
+
+    // Do not create/restore an anonymous session here: Staff must remain
+    // authenticated for protected UPDATE policies.
+    try{
+      const current=await sb.auth.getUser();
+      if(!current?.data?.user){
+        const auth=await ensureStaffSupabaseSession();
+        if(!auth.ok) return {ok:false,error:auth.error||new Error(auth.reason||'Staff Supabase session missing.')};
+      }
+    }catch(err){
+      return {ok:false,error:err};
+    }
+
+    const patch={
+      name:String(t.name||'').trim(),
+      subject:String(t.subject||'').trim(),
+      stream:String(t.stream||'').trim(),
+      experience:String(t.experience||'').trim(),
+      qualification:String(t.qualification||'').trim(),
+      college:String(t.college||'').trim(),
+      teaching_college:String(t.teachingCollege||t.college||'').trim(),
+      address:String(t.address||'').trim(),
+      price:String(t.price||'').trim(),
+      about_me:String(t.aboutMe||'').trim(),
+      verified:t.verified===true,
+      paid_status:t.paidStatus==='PAID'?'PAID':'PENDING'
+    };
+
+    // IMPORTANT: no .select() after UPDATE. A restrictive SELECT policy can
+    // otherwise make a successful update look like a failed update.
+    const r=await sb.from('tutor_profiles').update(patch).eq('id',t.id);
+    if(r.error) return {ok:false,error:r.error};
+
+    return {ok:true};
+  }
+
+  async function setTutorStatus(id, paid, verified, successText){
+    if(!staffLogged()) return alert('Please login as Staff first.');
+    const t=findTutor(id);
+    if(!t) return alert('Tutor record not found in the current Staff list.');
+
+    const old={paidStatus:t.paidStatus,verified:t.verified};
+    t.paidStatus=paid?'PAID':'PENDING';
+    t.verified=verified===true;
+    refresh();
+
+    if(!t.isCloud){
+      msg(successText);
+      return true;
+    }
+
+    const r=await updateTutorCloud(t);
+    if(!r.ok){
+      t.paidStatus=old.paidStatus;
+      t.verified=old.verified;
+      refresh();
+      const detail=r.error?.message||String(r.error||'Unknown Supabase error');
+      alert('STATUS WAS NOT SAVED TO CLOUD.\n\n'+detail+
+        '\n\nIf this says "row-level security policy", create an UPDATE policy for authenticated Staff on tutor_profiles. The HTML must not use a service_role key.');
+      return false;
+    }
+
+    msg(successText);
+    return true;
+  }
+
+  window.adminVerifyTutorPaid=function(id){
+    return setTutorStatus(id,true,false,'Tutor marked PAID successfully.');
+  };
+
+  window.adminRevokeTutorPaid=function(id){
+    if(!confirm("Are you sure you want to revoke this tutor's PAID status?")) return;
+    return setTutorStatus(id,false,findTutor(id)?.verified===true,'Tutor PAID status has been revoked.');
+  };
+
+  window.adminGrantVerifiedTick=function(id){
+    return setTutorStatus(id,true,true,'Verified Tick granted successfully. Tutor is now PAID + VERIFIED.');
+  };
+
+  window.adminRevokeVerifiedTick=function(id){
+    if(!confirm("Are you sure you want to revoke this tutor's Verified Tick?")) return;
+    const t=findTutor(id);
+    return setTutorStatus(id,t?.paidStatus==='PAID',false,'Verified Tick has been revoked.');
+  };
+
+  function esc(v){
+    return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function ensureEditModal(){
+    let o=document.getElementById('gcAdminTutorUltimateModalOverlay');
+    if(o) return o;
+
+    o=document.createElement('div');
+    o.id='gcAdminTutorUltimateModalOverlay';
+    o.innerHTML=`
+      <div id="gcAdminTutorUltimateModal">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px">
+          <div>
+            <h2 style="margin:0;font-size:21px;font-weight:950;color:#0f172a">Edit Tutor Profile</h2>
+            <p style="margin:4px 0 0;font-size:12px;color:#64748b">Staff can edit the new tutor profile and save it to GURU CONNECT.</p>
+          </div>
+          <button id="gcUltimateEditClose" type="button" style="border:0;background:#f1f5f9;border-radius:10px;width:40px;height:40px;font-size:18px;cursor:pointer">×</button>
+        </div>
+        <form id="gcUltimateTutorForm">
+          <div class="gc-admin-ultimate-grid">
+            <div><label class="gc-admin-ultimate-label">Name</label><input id="u_t_name" class="gc-admin-ultimate-input" required></div>
+            <div><label class="gc-admin-ultimate-label">Email</label><input id="u_t_email" class="gc-admin-ultimate-input" type="email"></div>
+            <div><label class="gc-admin-ultimate-label">Phone</label><input id="u_t_phone" class="gc-admin-ultimate-input"></div>
+            <div><label class="gc-admin-ultimate-label">Qualification</label><input id="u_t_qualification" class="gc-admin-ultimate-input"></div>
+            <div><label class="gc-admin-ultimate-label">Experience</label><input id="u_t_experience" class="gc-admin-ultimate-input"></div>
+            <div><label class="gc-admin-ultimate-label">Teaching College / Institute</label><input id="u_t_teaching" class="gc-admin-ultimate-input"></div>
+            <div><label class="gc-admin-ultimate-label">Subject</label><input id="u_t_subject" class="gc-admin-ultimate-input"></div>
+            <div><label class="gc-admin-ultimate-label">Rate / Hour</label><input id="u_t_price" class="gc-admin-ultimate-input"></div>
+            <div><label class="gc-admin-ultimate-label">Rating</label><input id="u_t_rating" class="gc-admin-ultimate-input" type="number" min="1" max="5" step=".1"></div>
+            <div><label class="gc-admin-ultimate-label">Students</label><input id="u_t_students" class="gc-admin-ultimate-input"></div>
+          </div>
+          <div style="margin-top:14px"><label class="gc-admin-ultimate-label">About Me</label><textarea id="u_t_about" class="gc-admin-ultimate-textarea" rows="5"></textarea></div>
+          <div style="margin-top:14px;padding:13px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0">
+            <label style="display:flex;align-items:center;gap:10px;font-weight:900;font-size:13px;cursor:pointer">
+              <input id="u_t_verified" type="checkbox" style="width:20px;height:20px">
+              VERIFIED TICK
+            </label>
+            <div id="u_t_paid_state" style="margin-top:7px;font-size:12px;color:#64748b;font-weight:800"></div>
+          </div>
+          <div id="gcUltimateEditStatus" class="gc-admin-ultimate-status">Ready to save.</div>
+          <div class="gc-admin-ultimate-actions">
+            <button type="button" id="gcUltimateEditCancel" style="background:#e2e8f0;color:#0f172a">CANCEL</button>
+            <button type="submit" id="gcUltimateEditSave" style="background:linear-gradient(135deg,#2563eb,#06b6d4);color:#fff">SAVE ALL CHANGES</button>
+          </div>
+        </form>
+      </div>`;
+    document.body.appendChild(o);
+
+    function close(){o.classList.remove('is-open');}
+    document.getElementById('gcUltimateEditClose').onclick=close;
+    document.getElementById('gcUltimateEditCancel').onclick=close;
+    o.addEventListener('click',e=>{if(e.target===o)close();});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
+
+    document.getElementById('gcUltimateTutorForm').onsubmit=async function(e){
+      e.preventDefault();
+      const id=o.dataset.tutorId;
+      const t=findTutor(id);
+      if(!t) return alert('Tutor record is no longer available. Please refresh the Staff dashboard.');
+
+      const btn=document.getElementById('gcUltimateEditSave');
+      const state=document.getElementById('gcUltimateEditStatus');
+      if(btn){btn.disabled=true;btn.textContent='SAVING...';}
+      if(state){state.textContent='Saving tutor profile...';state.style.color='#2563eb';}
+
+      const before=JSON.parse(JSON.stringify(t));
+      try{
+        t.name=document.getElementById('u_t_name').value.trim()||t.name;
+        t.email=document.getElementById('u_t_email').value.trim();
+        t.phone=document.getElementById('u_t_phone').value.trim();
+        t.qualification=document.getElementById('u_t_qualification').value.trim();
+        t.experience=document.getElementById('u_t_experience').value.trim();
+        t.teachingCollege=document.getElementById('u_t_teaching').value.trim();
+        t.college=t.teachingCollege;
+        t.subject=document.getElementById('u_t_subject').value.trim();
+        t.price=document.getElementById('u_t_price').value.trim();
+        t._manualRating=Math.min(5,Math.max(1,Number(document.getElementById('u_t_rating').value)||5));
+        t.students=document.getElementById('u_t_students').value.trim();
+        t.aboutMe=document.getElementById('u_t_about').value.trim();
+        t.verified=document.getElementById('u_t_verified').checked;
+        if(t.verified)t.paidStatus='PAID';
+
+        refresh();
+
+        if(t.isCloud){
+          const r=await updateTutorCloud(t);
+          if(!r.ok) throw r.error||new Error('Cloud update failed.');
+        }
+
+        close();
+        msg('Tutor profile has been updated successfully.');
+      }catch(err){
+        Object.assign(t,before);
+        refresh();
+        const detail=err?.message||String(err);
+        if(state){state.textContent='Save failed — '+detail;state.style.color='#dc2626';}
+        alert('Tutor profile was NOT saved.\n\n'+detail+
+          '\n\nThe edit window has been kept available. Please check the Staff Supabase session and tutor_profiles UPDATE policy.');
+      }finally{
+        if(btn){btn.disabled=false;btn.textContent='SAVE ALL CHANGES';}
+      }
+    };
+
+    return o;
+  }
+
+  window.adminEditTutor=function(id){
+    if(!staffLogged()) return alert('Please login as Staff first.');
+    const t=findTutor(id);
+    if(!t) return alert('Tutor record not found. Please refresh the Staff dashboard and try again.');
+
+    const o=ensureEditModal();
+    o.dataset.tutorId=String(t.id);
+
+    const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v??'';};
+    set('u_t_name',t.name);
+    set('u_t_email',t.email);
+    set('u_t_phone',t.phone);
+    set('u_t_qualification',t.qualification);
+    set('u_t_experience',t.experience);
+    set('u_t_teaching',t.teachingCollege||t.college);
+    set('u_t_subject',t.subject);
+    set('u_t_price',t.price);
+    set('u_t_rating',t._manualRating||5);
+    set('u_t_students',t.students);
+    set('u_t_about',t.aboutMe);
+    const v=document.getElementById('u_t_verified'); if(v)v.checked=t.verified===true;
+    const ps=document.getElementById('u_t_paid_state'); if(ps)ps.textContent='PAID STATUS: '+(t.paidStatus||'PENDING');
+
+    const st=document.getElementById('gcUltimateEditStatus');
+    if(st){st.textContent=t.isCloud?'Cloud tutor — Staff changes will be saved to Supabase.':'Local tutor — Staff changes will be saved locally.';st.style.color='#475569';}
+
+    o.classList.add('is-open');
+  };
+
+  // Make the inline button handlers resolve to these final functions.
+  window.GURU_CONNECT_ADMIN_ACTIONS_READY=true;
 })();
 </script>
 
