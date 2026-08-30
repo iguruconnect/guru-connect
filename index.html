@@ -3185,6 +3185,109 @@ header, .header, .topbar, .navbar, .nav, .site-header {
 }
 </style>
 
+
+<style id="gc-unified-menu-desktop-final">
+/* ==========================================================
+   GURU CONNECT — ONE CONSISTENT MENU ON DESKTOP + MOBILE
+   ========================================================== */
+html,body{width:100%;max-width:100%;margin:0;padding:0;overflow-x:hidden!important;}
+body{min-width:0!important;}
+
+/* Keep the public header clean: branding + 929 + one MENU control. */
+header > div,
+header .max-w-7xl{min-width:0!important;width:100%!important;max-width:1280px!important;box-sizing:border-box!important;}
+header .gc-head-login,
+header .gc-head-staff,
+header #navLoginBtn,
+header #navStaffBtn{display:none!important;}
+
+#publicMenuWrapper{position:relative!important;z-index:100000!important;flex:0 0 auto!important;}
+.gc-menu-button{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;
+  min-width:92px!important;height:42px!important;padding:0 14px!important;
+  border:2px solid #102d69!important;border-radius:13px!important;
+  background:linear-gradient(135deg,#1f5bd7,#1645a7)!important;color:#fff!important;
+  font-size:12px!important;font-weight:950!important;letter-spacing:.04em!important;
+  box-shadow:0 5px 14px rgba(15,45,105,.20)!important;cursor:pointer!important;
+}
+.gc-menu-button:hover{transform:translateY(-1px)!important;box-shadow:0 8px 18px rgba(15,45,105,.25)!important;}
+
+#publicNavbarLinks{
+  position:absolute!important;top:calc(100% + 9px)!important;right:0!important;left:auto!important;
+  width:320px!important;max-width:calc(100vw - 20px)!important;
+  padding:10px!important;background:#fff!important;border:1px solid #d9e2ef!important;
+  border-radius:18px!important;box-shadow:0 22px 55px rgba(15,23,42,.22)!important;
+  overflow:hidden!important;z-index:100001!important;
+}
+#publicNavbarLinks a,
+#publicNavbarLinks button{box-sizing:border-box!important;}
+#publicNavbarLinks .gc-menu-yellow-item,
+#publicNavbarLinks > a:not(.gc-mobile-login-item):not(.gc-mobile-staff-item){
+  display:flex!important;align-items:center!important;width:100%!important;min-height:42px!important;
+  margin:3px 0!important;padding:10px 13px!important;border-radius:11px!important;
+  background:linear-gradient(135deg,#fff8c7,#ffe76a)!important;
+  color:#6b4f00!important;border:1px solid #f2d45a!important;
+  font-size:12px!important;font-weight:950!important;letter-spacing:.025em!important;
+  text-decoration:none!important;transition:transform .15s ease,box-shadow .15s ease,background .15s ease!important;
+}
+#publicNavbarLinks .gc-menu-yellow-item:hover,
+#publicNavbarLinks > a:not(.gc-mobile-login-item):not(.gc-mobile-staff-item):hover{
+  background:linear-gradient(135deg,#ffe66b,#ffd42a)!important;
+  color:#4a3600!important;transform:translateX(2px)!important;
+  box-shadow:0 5px 12px rgba(234,179,8,.20)!important;
+}
+#publicNavbarLinks .gc-mobile-login-item,
+#publicNavbarLinks .gc-mobile-staff-item{
+  display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;
+  min-height:44px!important;margin:6px 0!important;padding:10px 13px!important;
+  border-radius:12px!important;font-size:12px!important;font-weight:950!important;
+  cursor:pointer!important;border:0!important;box-sizing:border-box!important;
+}
+#publicNavbarLinks .gc-mobile-login-item{
+  background:linear-gradient(135deg,#2563eb,#06b6d4)!important;color:#fff!important;
+  box-shadow:0 6px 15px rgba(37,99,235,.18)!important;
+}
+#publicNavbarLinks .gc-mobile-staff-item{
+  background:linear-gradient(135deg,#7c3aed,#ec4899)!important;color:#fff!important;
+  box-shadow:0 6px 15px rgba(124,58,237,.18)!important;
+}
+
+/* Header spacing and branding must never be squeezed by navigation. */
+header .gc-929-fixed-logo{margin-left:6px!important;margin-right:6px!important;flex:0 0 auto!important;}
+header .gc-929-fixed-logo img{max-width:none!important;}
+header .gc-929-fixed-logo{height:50px!important;}
+
+/* Remove accidental left clipping on the public homepage sections. */
+#publicWebsiteContent{width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;padding:0!important;overflow:visible!important;}
+#publicWebsiteContent > section{width:100%!important;max-width:1280px!important;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box!important;}
+#publicWebsiteContent > #home{max-width:none!important;margin-left:0!important;margin-right:0!important;}
+#tutors,#studentsDirectory{width:100%!important;max-width:1280px!important;margin-left:auto!important;margin-right:auto!important;padding-left:24px!important;padding-right:24px!important;box-sizing:border-box!important;}
+#tutors > div,#studentsDirectory > div{min-width:0!important;}
+
+/* Contact modal: make it feel like a proper contact page/panel. */
+#contactModal > div{max-width:640px!important;padding:26px!important;}
+#contactModal .gc-contact-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px;}
+#contactModal .gc-contact-channel{
+  display:flex;align-items:center;gap:13px;padding:13px 14px;border:1px solid #e2e8f0;
+  border-radius:15px;background:#fff;text-decoration:none;box-shadow:0 4px 12px rgba(15,23,42,.05);
+}
+#contactModal .gc-contact-channel i{font-size:22px;min-width:28px;text-align:center;}
+#contactModal .gc-contact-channel strong{display:block;font-size:11px;font-weight:950;color:#0f172a;text-transform:uppercase;letter-spacing:.04em;}
+#contactModal .gc-contact-channel span{display:block;font-size:12px;font-weight:800;color:#475569;margin-top:2px;overflow-wrap:anywhere;}
+
+@media(max-width:760px){
+  header .max-w-7xl{height:64px!important;padding-left:8px!important;padding-right:8px!important;}
+  header .gc-929-fixed-logo{height:40px!important;margin-left:2px!important;margin-right:2px!important;}
+  .gc-menu-button{min-width:86px!important;height:39px!important;padding:0 11px!important;font-size:11px!important;}
+  #publicNavbarLinks{width:min(340px,calc(100vw - 16px))!important;right:0!important;top:calc(100% + 7px)!important;max-height:calc(100vh - 76px)!important;overflow-y:auto!important;}
+  #tutors,#studentsDirectory{padding-left:12px!important;padding-right:12px!important;}
+}
+@media(min-width:761px){
+  /* Same menu behavior on PC: no separate Login/Staff buttons outside the menu. */
+  #publicNavbarLinks .gc-mobile-login-item,
+  #publicNavbarLinks .gc-mobile-staff-item{display:flex!important;}
+}
+</style>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -3240,7 +3343,8 @@ header, .header, .topbar, .navbar, .nav, .site-header {
                         <a href="#studentsDirectory" onclick="closeNavMenu()" class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition">STUDENTS DIRECTORY</a>
                         <a href="#registrationSection" onclick="closeNavMenu()" class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition">PORTAL & REQUESTS</a>
                         <a href="javascript:void(0)" onclick="openHelplineModal(); closeNavMenu();" class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition">HELPLINE PLANS</a>
-                        <a href="javascript:void(0)" onclick="openAboutModal(); closeNavMenu();" class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition border-t border-slate-100">ABOUT US</a>
+                        <a href="javascript:void(0)" onclick="openAboutModal(); closeNavMenu();" class="gc-menu-yellow-item">ABOUT US</a>
+                        <a href="javascript:void(0)" onclick="openContactModal(); closeNavMenu();" class="gc-menu-yellow-item">CONTACT US</a>
                     </nav>
                 </div>
             </div>
@@ -4152,15 +4256,15 @@ header, .header, .topbar, .navbar, .nav, .site-header {
                 <a href="mailto:support@guruconnnect.in" class="text-brand-blue font-black text-sm sm:text-base hover:underline">support@guruconnnect.in</a>
             </div>
 
-            <div class="flex items-center justify-center gap-3 mt-6 pt-4 border-t border-slate-100">
-                <a href="https://api.whatsapp.com/send?phone=15559565917&text=Hello%20Guru%20Connect,%20I%20want%20support." target="_blank" rel="noopener noreferrer" class="w-11 h-11 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200 rounded-2xl flex items-center justify-center text-xl transition shadow-sm" title="WhatsApp Support">
-                    <i class="fa-brands fa-whatsapp"></i>
+            <div class="gc-contact-grid">
+                <a href="https://api.whatsapp.com/send?phone=15559565917&text=Hello%20Guru%20Connect,%20I%20want%20support." target="_blank" rel="noopener noreferrer" class="gc-contact-channel">
+                    <i class="fa-brands fa-whatsapp text-emerald-600"></i><div><strong>WhatsApp Support</strong><span>Chat with GURU CONNECT</span></div>
                 </a>
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="w-11 h-11 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 rounded-2xl flex items-center justify-center text-xl transition shadow-sm" title="Facebook">
-                    <i class="fa-brands fa-facebook-f"></i>
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="gc-contact-channel">
+                    <i class="fa-brands fa-facebook-f text-blue-600"></i><div><strong>Facebook</strong><span>Follow GURU CONNECT</span></div>
                 </a>
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="w-11 h-11 bg-pink-50 hover:bg-pink-100 text-pink-600 border border-pink-200 rounded-2xl flex items-center justify-center text-xl transition shadow-sm" title="Instagram">
-                    <i class="fa-brands fa-instagram"></i>
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="gc-contact-channel">
+                    <i class="fa-brands fa-instagram text-pink-600"></i><div><strong>Instagram</strong><span>Follow GURU CONNECT</span></div>
                 </a>
             </div>
 
@@ -10405,5 +10509,17 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
 })();
 </script>
 
+
+<script id="gc-home-horizontal-position-fix">
+(function(){
+  function reset(){
+    try{window.scrollTo(0,0);}catch(e){}
+    try{document.documentElement.scrollLeft=0;document.body.scrollLeft=0;}catch(e){}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){setTimeout(reset,0);});
+  else setTimeout(reset,0);
+  window.addEventListener('pageshow',reset);
+})();
+</script>
 </body>
 </html>
