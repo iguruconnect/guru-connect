@@ -9684,7 +9684,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
         }
       });
     }
-    const enabled=!!window.gcSupabase && typeof window.gcCloudStatus==='function' && window.gcCloudStatus()==='enabled';
+    const enabled=!!window.gcSupabase && typeof window.GC_CLOUD_STATUS==='function' && window.GC_CLOUD_STATUS()==='enabled';
     b.textContent=enabled?'☁ CLOUD CONNECTED':'☁ CLOUD ERROR';
     b.className=enabled?'gc-ok':'gc-bad';
   }
@@ -9739,7 +9739,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
 <script id="gc-supabase-runtime-guard">
 (function(){
   function check(){
-    if(window.supabase) return;
+    if(window.supabase || window.gcSupabase) return;
     console.error('GURU CONNECT: Supabase JS library did not load from jsDelivr.');
     const b=document.getElementById('gcCloudStatusBadge');
     if(b){
@@ -9779,6 +9779,42 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
   window.addEventListener('resize', function(){
     if(window.innerWidth > 768) closePublicMenu();
   });
+})();
+</script>
+
+
+<script id="gc-supabase-final-bootstrap">
+(function(){
+  function updateBadge(){
+    const b=document.getElementById('gcCloudStatusBadge');
+    if(!b) return;
+    if(window.gcSupabase && typeof window.GC_CLOUD_STATUS==='function' && window.GC_CLOUD_STATUS()==='enabled'){
+      b.textContent='☁ CLOUD CONNECTED';
+      b.className='gc-ok';
+      b.title='GURU CONNECT cloud database connected';
+    } else {
+      b.textContent='☁ CLOUD ERROR';
+      b.className='gc-bad';
+      b.title='Supabase cloud is not initialized';
+    }
+  }
+
+  // The CDN normally loads before the main cloud script. This retry protects
+  // against a slow mobile CDN load without ever using localStorage as a DB.
+  setTimeout(function(){
+    if(window.supabase && !window.gcSupabase){
+      try{
+        const url='https://hzqqswrnawrfgufbxgay.supabase.co';
+        const key='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+        window.gcSupabase=window.supabase.createClient(url,key,{
+          auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}
+        });
+      }catch(e){ console.error('GURU CONNECT delayed Supabase init failed:',e); }
+    }
+    updateBadge();
+  },3000);
+
+  setTimeout(updateBadge,4000);
 })();
 </script>
 
