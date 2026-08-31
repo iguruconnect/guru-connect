@@ -11162,45 +11162,34 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
    */
   window.handleStaffLogin=async function(e){
     if(e) e.preventDefault();
-
     const u=(document.getElementById('staffUserInput')?.value||'').trim();
     const p=(document.getElementById('staffPassInput')?.value||'').trim();
-
     if(u!=='Swami@gmail.com' || p!=='Roller@1329007/'){
       alert('Invalid Staff Credentials. Please check username and password.');
       return false;
     }
-
-    const btn=document.querySelector('#staffLoginModal button[type="submit"]');
-    if(btn){btn.disabled=true;btn.textContent='SIGNING IN...';}
-
+    // IMPORTANT: Staff/Admin access must work in a local HTML file too.
+    // Do not block the admin dashboard waiting for Supabase authentication.
+    localStorage.setItem('is_staff_logged','true');
+    try{ localStorage.setItem('gc_staff_supabase_auth','pending'); }catch(_){}
+    try{ if(typeof window.closeStaffLoginModal==='function') window.closeStaffLoginModal(); }catch(_){}
+    try{ if(typeof window.checkStaffSessionState==='function') window.checkStaffSessionState(); }catch(_){}
+    try{ if(typeof window.renderAdminQueue==='function') window.renderAdminQueue(); }catch(_){}
+    // Try cloud authentication in the background; failure must NOT prevent local admin.
     try{
       const session=await ensureStaffSupabaseSession();
-
-      // Keep the existing Staff UI session flag.
-      localStorage.setItem('is_staff_logged','true');
-
-      if(session.ok){
-        localStorage.setItem('gc_staff_supabase_auth','true');
-      }else{
-        // Legacy/local mode remains usable, but cloud actions will clearly
-        // report the database permission problem instead of silently failing.
-        localStorage.removeItem('gc_staff_supabase_auth');
-        console.warn('Staff Supabase authentication was not established:',session.error||session.reason);
-      }
-
-      try{ if(typeof window.closeStaffLoginModal==='function') window.closeStaffLoginModal(); }catch(_){}
-      try{ if(typeof window.checkStaffSessionState==='function') window.checkStaffSessionState(); }catch(_){}
-      try{ if(typeof window.renderAdminQueue==='function') window.renderAdminQueue(); }catch(_){}
-
-      if(session.ok){
-        msg('Staff Login Successful — Cloud Staff Session Active.');
-      }else{
-        alert('Staff Login Successful, but the cloud Staff session could not be established. Local admin actions may work, but Supabase updates require a valid Staff Auth account and UPDATE policy.');
-      }
-    }finally{
-      if(btn){btn.disabled=false;btn.textContent='LOGIN';}
+      if(session && session.ok) localStorage.setItem('gc_staff_supabase_auth','true');
+      else localStorage.removeItem('gc_staff_supabase_auth');
+    }catch(err){
+      console.warn('Optional Supabase Staff session unavailable:',err);
+      localStorage.removeItem('gc_staff_supabase_auth');
     }
+    try{
+      if(typeof window.checkStaffSessionState==='function') window.checkStaffSessionState();
+      if(typeof window.renderAdminQueue==='function') window.renderAdminQueue();
+    }catch(_){}
+    if(typeof window.showSuccessPopup==='function') window.showSuccessPopup('Staff Login Successful — Admin Dashboard Opened.');
+    else alert('Staff Login Successful — Admin Dashboard Opened.');
     return false;
   };
 
@@ -11584,7 +11573,43 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 </script>
 
 <script id="gc-mobile-menu-final-script">
-(function(){function add(){const menu=document.getElementById('mainMenu')||document.getElementById('menuPanel')||document.querySelector('.menu-panel')||document.querySelector('.gc-menu-panel')||document.querySelector('[data-menu-panel]');if(!menu||menu.querySelector('.gc-login-menu-group'))return;menu.querySelectorAll('a,button').forEach(e=>{if((e.textContent||'').trim())e.classList.add('gc-menu-normal')});const g=document.createElement('div');g.className='gc-login-menu-group mt-3 pt-3 border-t border-slate-200';g.innerHTML='<div class="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2 px-1">Account & Staff Access</div><div class="grid gap-2"><button type="button" data-login="student" class="gc-menu-login-student rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-graduation-cap"></i> STUDENT LOGIN</button><button type="button" data-login="tutor" class="gc-menu-login-tutor rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-chalkboard-user"></i> TUTOR LOGIN</button><button type="button" data-login="staff" class="gc-menu-login-staff rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-user-tie"></i> STAFF LOGIN</button></div>';menu.appendChild(g);g.querySelectorAll('button').forEach(b=>b.onclick=function(){try{if(typeof closeNavMenu==='function')closeNavMenu()}catch(_){};const k=b.dataset.login;if(k==='staff'){if(typeof openStaffLoginModal==='function')openStaffLoginModal();else if(typeof openStaffLogin==='function')openStaffLogin();else document.querySelector('#staffLoginModal')?.classList.remove('hidden')}else if(k==='student'){if(typeof openStudentLoginModal==='function')openStudentLoginModal();else if(typeof openLoginModal==='function')openLoginModal('student');else document.querySelector('#studentLoginModal')?.classList.remove('hidden')}else{if(typeof openTutorLoginModal==='function')openTutorLoginModal();else if(typeof openLoginModal==='function')openLoginModal('tutor');else document.querySelector('#tutorLoginModal')?.classList.remove('hidden')}})}window.addEventListener('load',add);setTimeout(add,500);setTimeout(add,1500)})();
+(function(){
+  function add(){
+    const menu=document.getElementById('publicNavbarLinks');
+    if(!menu || menu.querySelector('.gc-login-menu-group')) return;
+    const group=document.createElement('div');
+    group.className='gc-login-menu-group';
+    group.innerHTML=`
+      <div class="gc-login-menu-title">ACCOUNT & STAFF ACCESS</div>
+      <button type="button" class="gc-login-menu-btn gc-student-login"><i class="fa-solid fa-graduation-cap"></i><span>STUDENT LOGIN</span></button>
+      <button type="button" class="gc-login-menu-btn gc-tutor-login"><i class="fa-solid fa-chalkboard-user"></i><span>TUTOR LOGIN</span></button>
+      <button type="button" class="gc-login-menu-btn gc-staff-login"><i class="fa-solid fa-user-tie"></i><span>STAFF LOGIN</span></button>`;
+    menu.appendChild(group);
+    group.querySelector('.gc-student-login').onclick=function(){
+      closeNavMenu();
+      const modal=document.getElementById('loginModal');
+      const role=document.getElementById('loginRoleInput');
+      if(role) role.value='student';
+      if(modal) modal.classList.remove('hidden');
+    };
+    group.querySelector('.gc-tutor-login').onclick=function(){
+      closeNavMenu();
+      const modal=document.getElementById('loginModal');
+      const role=document.getElementById('loginRoleInput');
+      if(role) role.value='tutor';
+      if(modal) modal.classList.remove('hidden');
+    };
+    group.querySelector('.gc-staff-login').onclick=function(){
+      closeNavMenu();
+      if(typeof window.openStaffLoginModal==='function') window.openStaffLoginModal();
+      else { const modal=document.getElementById('staffLoginModal'); if(modal) modal.classList.remove('hidden'); }
+    };
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',add);
+  else add();
+  window.addEventListener('load',add);
+  setTimeout(add,500);
+})();
 </script>
 
 
@@ -11692,5 +11717,16 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 })();
 </script>
 
+
+<style id="gc-login-menu-fix">
+#publicNavbarLinks .gc-login-menu-group{margin:8px 0 2px;padding:10px 2px 2px;border-top:1px solid #e2e8f0;display:grid;gap:7px}
+#publicNavbarLinks .gc-login-menu-title{font-size:10px;font-weight:950;letter-spacing:.08em;color:#64748b;padding:2px 6px 4px}
+#publicNavbarLinks .gc-login-menu-btn{width:100%;min-height:44px;border:0;border-radius:12px;padding:10px 13px;display:flex;align-items:center;gap:10px;text-align:left;font-size:12px;font-weight:950;cursor:pointer;box-sizing:border-box;transition:.15s}
+#publicNavbarLinks .gc-login-menu-btn i{width:20px;text-align:center;font-size:14px}
+#publicNavbarLinks .gc-student-login{background:linear-gradient(135deg,#2563eb,#06b6d4);color:#fff;box-shadow:0 5px 12px rgba(37,99,235,.16)}
+#publicNavbarLinks .gc-tutor-login{background:linear-gradient(135deg,#123b8f,#2563eb);color:#fff;box-shadow:0 5px 12px rgba(18,59,143,.16)}
+#publicNavbarLinks .gc-staff-login{background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;box-shadow:0 5px 12px rgba(124,58,237,.16)}
+#publicNavbarLinks .gc-login-menu-btn:hover{transform:translateX(2px);filter:brightness(1.04)}
+</style>
 </body>
 </html>
