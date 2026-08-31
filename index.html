@@ -10462,6 +10462,66 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
 })();
 </script>
 
+<script id="gc-mobile-login-menu-items">
+(function(){
+  function findFirst(selectors){
+    for(const s of selectors){
+      const el=document.querySelector(s);
+      if(el) return el;
+    }
+    return null;
+  }
+
+  function addMenuItem(){
+    const menu=document.getElementById('publicNavbarLinks');
+    if(!menu) return;
+
+    if(!menu.querySelector('.gc-mobile-login-item')){
+      const login=document.createElement('button');
+      login.type='button';
+      login.className='gc-mobile-login-item';
+      login.textContent='Student / Tutor Login';
+      login.addEventListener('click',function(){
+        const target=findFirst([
+          '#loginBtn','#navLoginBtn','[onclick*="loginModal"]',
+          '[onclick*="openLogin"]'
+        ]);
+        if(target) target.click();
+        else {
+          const modal=document.getElementById('loginModal');
+          if(modal) modal.classList.remove('hidden');
+        }
+      });
+      menu.appendChild(login);
+    }
+
+    if(!menu.querySelector('.gc-mobile-staff-item')){
+      const staff=document.createElement('button');
+      staff.type='button';
+      staff.className='gc-mobile-staff-item';
+      staff.textContent='STAFF LOGIN';
+      staff.addEventListener('click',function(){
+        const target=findFirst([
+          '#staffLoginBtn','#navStaffBtn','[onclick*="staffLoginModal"]',
+          '[onclick*="openStaffLogin"]'
+        ]);
+        if(target) target.click();
+        else {
+          const modal=document.getElementById('staffLoginModal');
+          if(modal) modal.classList.remove('hidden');
+        }
+      });
+      menu.appendChild(staff);
+    }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addMenuItem);
+  else addMenuItem();
+  setTimeout(addMenuItem,500);
+})();
+</script>
+
+
 <style id="gc-helpline-plan-ui">
 .gc-helpline-plan-panel{
   display:none;
@@ -11581,65 +11641,118 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 })();
 </script>
 
-<style id="gc-final-login-menu-ui">
-#publicNavbarLinks .gc-final-login-group{border-top:1px solid #e2e8f0;margin-top:8px;padding:10px 10px 8px}
-#publicNavbarLinks .gc-final-login-title{font-size:10px;font-weight:900;letter-spacing:.08em;color:#64748b;padding:0 6px 7px;text-transform:uppercase}
-#publicNavbarLinks .gc-final-login-btn{width:100%;border:0;border-radius:12px;padding:11px 12px;display:flex;align-items:center;gap:10px;font-size:12px;font-weight:900;text-align:left;cursor:pointer;transition:.18s;margin-top:6px}
-#publicNavbarLinks .gc-final-login-btn i{width:18px;text-align:center}
-#publicNavbarLinks .gc-final-student{background:#eff6ff;color:#1d4ed8}
-#publicNavbarLinks .gc-final-student:hover{background:#dbeafe}
-#publicNavbarLinks .gc-final-tutor{background:#ecfeff;color:#0f766e}
-#publicNavbarLinks .gc-final-tutor:hover{background:#cffafe}
-#publicNavbarLinks .gc-final-staff{background:#fff1f2;color:#be123c}
-#publicNavbarLinks .gc-final-staff:hover{background:#ffe4e6}
-</style>
-<script id="gc-final-login-menu-ui-script">
+<script id="gc-mobile-menu-final-script">
+(function(){function add(){const menu=document.getElementById('mainMenu')||document.getElementById('menuPanel')||document.querySelector('.menu-panel')||document.querySelector('.gc-menu-panel')||document.querySelector('[data-menu-panel]');if(!menu||menu.querySelector('.gc-login-menu-group'))return;menu.querySelectorAll('a,button').forEach(e=>{if((e.textContent||'').trim())e.classList.add('gc-menu-normal')});const g=document.createElement('div');g.className='gc-login-menu-group mt-3 pt-3 border-t border-slate-200';g.innerHTML='<div class="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2 px-1">Account & Staff Access</div><div class="grid gap-2"><button type="button" data-login="student" class="gc-menu-login-student rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-graduation-cap"></i> STUDENT LOGIN</button><button type="button" data-login="tutor" class="gc-menu-login-tutor rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-chalkboard-user"></i> TUTOR LOGIN</button><button type="button" data-login="staff" class="gc-menu-login-staff rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-user-tie"></i> STAFF LOGIN</button></div>';menu.appendChild(g);g.querySelectorAll('button').forEach(b=>b.onclick=function(){try{if(typeof closeNavMenu==='function')closeNavMenu()}catch(_){};const k=b.dataset.login;if(k==='staff'){if(typeof openStaffLoginModal==='function')openStaffLoginModal();else if(typeof openStaffLogin==='function')openStaffLogin();else document.querySelector('#staffLoginModal')?.classList.remove('hidden')}else if(k==='student'){if(typeof openStudentLoginModal==='function')openStudentLoginModal();else if(typeof openLoginModal==='function')openLoginModal('student');else document.querySelector('#studentLoginModal')?.classList.remove('hidden')}else{if(typeof openTutorLoginModal==='function')openTutorLoginModal();else if(typeof openLoginModal==='function')openLoginModal('tutor');else document.querySelector('#tutorLoginModal')?.classList.remove('hidden')}})}window.addEventListener('load',add);setTimeout(add,500);setTimeout(add,1500)})();
+</script>
+
+<script id="gc-final-working-admin-repair">
 (function(){
   'use strict';
-  function setup(){
-    var menu=document.getElementById('publicNavbarLinks');
-    if(!menu || menu.querySelector('.gc-final-login-group')) return;
-
-    var group=document.createElement('div');
-    group.className='gc-final-login-group';
-    group.innerHTML=
-      '<div class="gc-final-login-title">ACCOUNT LOGIN</div>'+
-      '<button type="button" class="gc-final-login-btn gc-final-student" data-final-login="student"><i class="fa-solid fa-graduation-cap"></i><span>STUDENT LOGIN</span></button>'+
-      '<button type="button" class="gc-final-login-btn gc-final-tutor" data-final-login="tutor"><i class="fa-solid fa-chalkboard-user"></i><span>TUTOR LOGIN</span></button>'+
-      '<button type="button" class="gc-final-login-btn gc-final-staff" data-final-login="staff"><i class="fa-solid fa-user-tie"></i><span>STAFF LOGIN</span></button>';
-    menu.appendChild(group);
-
-    group.querySelectorAll('[data-final-login]').forEach(function(btn){
-      btn.addEventListener('click',function(e){
-        e.preventDefault();
-        e.stopPropagation();
-        var role=btn.getAttribute('data-final-login');
-        try{ if(typeof closeNavMenu==='function') closeNavMenu(); }catch(_){ }
-
-        if(role==='staff'){
-          if(typeof openStaffLoginModal==='function') openStaffLoginModal();
-          return;
-        }
-
-        // The working source uses ONE OTP modal for both Student and Tutor.
-        // Select the requested role first, then open that same modal.
-        var roleInput=document.getElementById('loginRoleInput');
-        if(roleInput) roleInput.value=role;
-        if(typeof openLoginModal==='function') openLoginModal();
-        else {
-          var modal=document.getElementById('loginModal');
-          if(modal) modal.classList.remove('hidden');
-        }
-      });
-    });
+  // FINAL REPAIR: the directory arrays are declared with top-level `let`,
+  // so they are NOT guaranteed to exist as window.tutorDirectoryList.
+  // All Staff actions below deliberately use the real lexical arrays.
+  function staff(){ return localStorage.getItem('is_staff_logged') === 'true'; }
+  function tutors(){
+    try { if (typeof tutorDirectoryList !== 'undefined' && Array.isArray(tutorDirectoryList)) return tutorDirectoryList; } catch(e) {}
+    return [];
   }
+  function students(){
+    try { if (typeof studentDirectoryList !== 'undefined' && Array.isArray(studentDirectoryList)) return studentDirectoryList; } catch(e) {}
+    return [];
+  }
+  function findTutor(id){ return tutors().find(t => String(t.id) === String(id)) || null; }
+  function redraw(){
+    try { if (typeof saveRegisteredDirectories === 'function') saveRegisteredDirectories(); } catch(e) {}
+    try { if (typeof saveDirs === 'function') saveDirs(); } catch(e) {}
+    try { if (typeof renderTutorDirectory === 'function') renderTutorDirectory(); } catch(e) {}
+    try { if (typeof renderAdminQueue === 'function') renderAdminQueue(); } catch(e) {}
+  }
+  function notify(text){ try { if(typeof showSuccessPopup==='function') showSuccessPopup(text); else alert(text); } catch(e){ alert(text); } }
+  function esc(v){ return String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setup);
-  else setup();
-  window.addEventListener('load',setup);
-  setTimeout(setup,300);
-  setTimeout(setup,1000);
+  window.adminEditTutor = function(id){
+    if(!staff()) return alert('Please login through STAFF LOGIN first.');
+    const t=findTutor(id);
+    if(!t) return alert('Tutor record not found in the Admin Dashboard.');
+    const m=document.getElementById('adminEditTutorModal');
+    if(!m) return alert('Tutor edit window is missing.');
+    const box=m.querySelector(':scope > div') || m.querySelector('div');
+    if(!box) return alert('Tutor edit container is missing.');
+
+    box.innerHTML=`
+      <div class="flex justify-between items-center mb-5">
+        <div><h3 class="text-xl font-black text-brand-dark">Edit Tutor Profile</h3>
+        <p class="text-xs text-slate-500 mt-1">Staff/Admin full edit</p></div>
+        <button type="button" id="gcFinalTutorClose" class="text-slate-400 hover:text-red-500 text-xl">&times;</button>
+      </div>
+      <form id="gcFinalTutorForm" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="gc-v2-label">NAME</label><input id="gcFName" class="gc-v2-input" required value="${esc(t.name)}"></div>
+          <div><label class="gc-v2-label">EMAIL</label><input id="gcFEmail" type="email" class="gc-v2-input" value="${esc(t.email)}"></div>
+          <div><label class="gc-v2-label">PHONE</label><input id="gcFPhone" class="gc-v2-input" value="${esc(t.phone)}"></div>
+          <div><label class="gc-v2-label">QUALIFICATION</label><input id="gcFQual" class="gc-v2-input" value="${esc(t.qualification)}"></div>
+          <div><label class="gc-v2-label">EXPERIENCE</label><input id="gcFExp" class="gc-v2-input" value="${esc(t.experience)}"></div>
+          <div><label class="gc-v2-label">TEACHING COLLEGE / INSTITUTE</label><input id="gcFCollege" class="gc-v2-input" value="${esc(t.teachingCollege||t.college)}"></div>
+          <div><label class="gc-v2-label">SUBJECT</label><input id="gcFSubject" class="gc-v2-input" value="${esc(t.subject)}"></div>
+          <div><label class="gc-v2-label">RATE / HOUR</label><input id="gcFPrice" class="gc-v2-input" value="${esc(t.price)}"></div>
+          <div><label class="gc-v2-label">RATING</label><input id="gcFRating" type="number" min="1" max="5" step="0.1" class="gc-v2-input" value="${esc(t._manualRating || (typeof tutorRating==='function'?tutorRating(t):5))}"></div>
+          <div><label class="gc-v2-label">STUDENTS</label><input id="gcFStudents" class="gc-v2-input" value="${esc(t.students||'')}"></div>
+        </div>
+        <div><label class="gc-v2-label">ABOUT ME</label><textarea id="gcFAbout" class="gc-v2-textarea" rows="5">${esc(t.aboutMe||'')}</textarea></div>
+        <div class="gc-v2-panel"><label class="flex items-center gap-3 text-sm font-black cursor-pointer"><input id="gcFVerified" type="checkbox" class="w-5 h-5" ${t.verified?'checked':''}> VERIFIED TUTOR</label><div class="text-xs text-slate-500 mt-2">Current PAID status: <b>${esc(t.paidStatus||'PENDING')}</b></div></div>
+        <div id="gcFFinalStatus" class="text-xs font-bold text-slate-500 text-center">Ready to save.</div>
+        <div class="flex gap-3"><button type="button" id="gcFCancel" class="flex-1 bg-slate-100 py-3 rounded-xl font-bold">CANCEL</button><button id="gcFSave" type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-xl font-black">SAVE ALL CHANGES</button></div>
+      </form>`;
+    m.classList.remove('hidden');
+    m.style.zIndex='100500';
+    const close=()=>{m.classList.add('hidden');};
+    document.getElementById('gcFinalTutorClose').onclick=close;
+    document.getElementById('gcFCancel').onclick=close;
+    document.getElementById('gcFinalTutorForm').onsubmit=async function(e){
+      e.preventDefault();
+      const btn=document.getElementById('gcFSave'), state=document.getElementById('gcFFinalStatus');
+      btn.disabled=true; btn.textContent='SAVING...'; state.textContent='Saving...'; state.className='text-xs font-bold text-blue-600 text-center';
+      try{
+        t.name=document.getElementById('gcFName').value.trim()||t.name;
+        t.email=document.getElementById('gcFEmail').value.trim();
+        t.phone=document.getElementById('gcFPhone').value.trim();
+        t.qualification=document.getElementById('gcFQual').value.trim();
+        t.experience=document.getElementById('gcFExp').value.trim();
+        t.teachingCollege=document.getElementById('gcFCollege').value.trim(); t.college=t.teachingCollege;
+        t.subject=document.getElementById('gcFSubject').value.trim(); t.price=document.getElementById('gcFPrice').value.trim();
+        t._manualRating=Math.min(5,Math.max(1,Number(document.getElementById('gcFRating').value)||5));
+        t.students=document.getElementById('gcFStudents').value.trim(); t.aboutMe=document.getElementById('gcFAbout').value.trim();
+        t.verified=document.getElementById('gcFVerified').checked; if(t.verified)t.paidStatus='PAID';
+        redraw();
+        if(t.isCloud && window.gcSupabase){
+          const patch={name:t.name,subject:t.subject,stream:t.stream||'',experience:t.experience,qualification:t.qualification,college:t.college,teaching_college:t.teachingCollege,address:t.address||'',price:t.price,about_me:t.aboutMe,verified:t.verified===true,paid_status:t.paidStatus==='PAID'?'PAID':'PENDING'};
+          const r=await window.gcSupabase.from('tutor_profiles').update(patch).eq('id',t.id);
+          if(r.error) throw r.error;
+        }
+        redraw(); close(); notify('Tutor profile updated successfully.');
+      }catch(err){
+        state.textContent='Cloud save failed — local changes kept.'; state.className='text-xs font-bold text-amber-600 text-center';
+        redraw(); alert('Tutor profile updated locally.\n\nCloud save failed: '+(err?.message||err));
+      }finally{btn.disabled=false;btn.textContent='SAVE ALL CHANGES';}
+    };
+  };
+  window.closeAdminEditTutorModal=function(){const m=document.getElementById('adminEditTutorModal');if(m)m.classList.add('hidden');};
+
+  // Make Student Edit use the same reliable lexical-array lookup.
+  window.adminEditStudent=function(id){
+    if(!staff()) return alert('Please login through STAFF LOGIN first.');
+    const s=students().find(x=>String(x.id)===String(id));
+    if(!s) return alert('Student record not found in the Admin Dashboard.');
+    const m=document.getElementById('adminEditStudentModal'); if(!m)return alert('Student edit window is missing.');
+    const box=m.querySelector(':scope > div')||m.querySelector('div'); if(!box)return;
+    box.innerHTML=`<div class="flex justify-between items-center mb-5"><div><h3 class="text-xl font-black text-brand-dark">Edit Student Profile</h3><p class="text-xs text-slate-500 mt-1">Staff/Admin full edit</p></div><button type="button" id="gcFinalStudentClose" class="text-slate-400 hover:text-red-500 text-xl">&times;</button></div><form id="gcFinalStudentForm" class="space-y-4"><div class="grid grid-cols-1 sm:grid-cols-2 gap-4"><div class="sm:col-span-2"><label class="gc-v2-label">NAME</label><input id="gcFSName" class="gc-v2-input" required value="${esc(s.name)}"></div><div><label class="gc-v2-label">COURSE / CLASS</label><input id="gcFSCourse" class="gc-v2-input" value="${esc(s.course||s.std)}"></div><div><label class="gc-v2-label">STREAM</label><input id="gcFSStream" class="gc-v2-input" value="${esc(s.stream)}"></div><div><label class="gc-v2-label">PHONE</label><input id="gcFSPhone" class="gc-v2-input" value="${esc(s.phone)}"></div><div><label class="gc-v2-label">EMAIL</label><input id="gcFSEmail" type="email" class="gc-v2-input" value="${esc(s.email)}"></div></div><div><label class="gc-v2-label">LEARNING REQUIREMENT</label><textarea id="gcFSReq" class="gc-v2-textarea" rows="4">${esc(s.learningRequirement||'')}</textarea></div><div class="flex gap-3"><button type="button" id="gcFSCancel" class="flex-1 bg-slate-100 py-3 rounded-xl font-bold">CANCEL</button><button type="submit" class="flex-1 bg-brand-blue text-white py-3 rounded-xl font-black">SAVE CHANGES</button></div></form>`;
+    m.classList.remove('hidden');m.style.zIndex='100500';
+    const close=()=>m.classList.add('hidden'); document.getElementById('gcFinalStudentClose').onclick=close;document.getElementById('gcFSCancel').onclick=close;
+    document.getElementById('gcFinalStudentForm').onsubmit=function(e){e.preventDefault();s.name=document.getElementById('gcFSName').value.trim()||s.name;s.course=document.getElementById('gcFSCourse').value.trim();s.std=s.course;s.stream=document.getElementById('gcFSStream').value.trim();s.phone=document.getElementById('gcFSPhone').value.trim();s.email=document.getElementById('gcFSEmail').value.trim();s.learningRequirement=document.getElementById('gcFSReq').value.trim();redraw();try{if(typeof renderStudentDirectory==='function')renderStudentDirectory();}catch(_){}close();notify('Student profile updated successfully.');};
+  };
+  window.closeAdminEditStudentModal=function(){const m=document.getElementById('adminEditStudentModal');if(m)m.classList.add('hidden');};
 })();
 </script>
+
 </body>
 </html>
