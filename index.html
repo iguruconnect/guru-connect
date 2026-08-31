@@ -10462,8 +10462,6 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
 })();
 </script>
 
-
-
 <style id="gc-helpline-plan-ui">
 .gc-helpline-plan-panel{
   display:none;
@@ -11162,34 +11160,45 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
    */
   window.handleStaffLogin=async function(e){
     if(e) e.preventDefault();
+
     const u=(document.getElementById('staffUserInput')?.value||'').trim();
     const p=(document.getElementById('staffPassInput')?.value||'').trim();
+
     if(u!=='Swami@gmail.com' || p!=='Roller@1329007/'){
       alert('Invalid Staff Credentials. Please check username and password.');
       return false;
     }
-    // IMPORTANT: Staff/Admin access must work in a local HTML file too.
-    // Do not block the admin dashboard waiting for Supabase authentication.
-    localStorage.setItem('is_staff_logged','true');
-    try{ localStorage.setItem('gc_staff_supabase_auth','pending'); }catch(_){}
-    try{ if(typeof window.closeStaffLoginModal==='function') window.closeStaffLoginModal(); }catch(_){}
-    try{ if(typeof window.checkStaffSessionState==='function') window.checkStaffSessionState(); }catch(_){}
-    try{ if(typeof window.renderAdminQueue==='function') window.renderAdminQueue(); }catch(_){}
-    // Try cloud authentication in the background; failure must NOT prevent local admin.
+
+    const btn=document.querySelector('#staffLoginModal button[type="submit"]');
+    if(btn){btn.disabled=true;btn.textContent='SIGNING IN...';}
+
     try{
       const session=await ensureStaffSupabaseSession();
-      if(session && session.ok) localStorage.setItem('gc_staff_supabase_auth','true');
-      else localStorage.removeItem('gc_staff_supabase_auth');
-    }catch(err){
-      console.warn('Optional Supabase Staff session unavailable:',err);
-      localStorage.removeItem('gc_staff_supabase_auth');
+
+      // Keep the existing Staff UI session flag.
+      localStorage.setItem('is_staff_logged','true');
+
+      if(session.ok){
+        localStorage.setItem('gc_staff_supabase_auth','true');
+      }else{
+        // Legacy/local mode remains usable, but cloud actions will clearly
+        // report the database permission problem instead of silently failing.
+        localStorage.removeItem('gc_staff_supabase_auth');
+        console.warn('Staff Supabase authentication was not established:',session.error||session.reason);
+      }
+
+      try{ if(typeof window.closeStaffLoginModal==='function') window.closeStaffLoginModal(); }catch(_){}
+      try{ if(typeof window.checkStaffSessionState==='function') window.checkStaffSessionState(); }catch(_){}
+      try{ if(typeof window.renderAdminQueue==='function') window.renderAdminQueue(); }catch(_){}
+
+      if(session.ok){
+        msg('Staff Login Successful — Cloud Staff Session Active.');
+      }else{
+        alert('Staff Login Successful, but the cloud Staff session could not be established. Local admin actions may work, but Supabase updates require a valid Staff Auth account and UPDATE policy.');
+      }
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent='LOGIN';}
     }
-    try{
-      if(typeof window.checkStaffSessionState==='function') window.checkStaffSessionState();
-      if(typeof window.renderAdminQueue==='function') window.renderAdminQueue();
-    }catch(_){}
-    if(typeof window.showSuccessPopup==='function') window.showSuccessPopup('Staff Login Successful — Admin Dashboard Opened.');
-    else alert('Staff Login Successful — Admin Dashboard Opened.');
     return false;
   };
 
@@ -11572,254 +11581,65 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 })();
 </script>
 
-<script id="gc-mobile-menu-final-script">
-(function(){
-  function add(){
-    const menu=document.getElementById('publicNavbarLinks');
-    if(!menu || menu.querySelector('.gc-login-menu-group')) return;
-    const group=document.createElement('div');
-    group.className='gc-login-menu-group';
-    group.innerHTML=`
-      <div class="gc-login-menu-title">ACCOUNT & STAFF ACCESS</div>
-      <button type="button" class="gc-login-menu-btn gc-student-login"><i class="fa-solid fa-graduation-cap"></i><span>STUDENT LOGIN</span></button>
-      <button type="button" class="gc-login-menu-btn gc-tutor-login"><i class="fa-solid fa-chalkboard-user"></i><span>TUTOR LOGIN</span></button>
-      <button type="button" class="gc-login-menu-btn gc-staff-login"><i class="fa-solid fa-user-tie"></i><span>STAFF LOGIN</span></button>`;
-    menu.appendChild(group);
-    group.querySelector('.gc-student-login').onclick=function(){
-      closeNavMenu();
-      const modal=document.getElementById('loginModal');
-      const role=document.getElementById('loginRoleInput');
-      if(role) role.value='student';
-      if(modal) modal.classList.remove('hidden');
-    };
-    group.querySelector('.gc-tutor-login').onclick=function(){
-      closeNavMenu();
-      const modal=document.getElementById('loginModal');
-      const role=document.getElementById('loginRoleInput');
-      if(role) role.value='tutor';
-      if(modal) modal.classList.remove('hidden');
-    };
-    group.querySelector('.gc-staff-login').onclick=function(){
-      closeNavMenu();
-      if(typeof window.openStaffLoginModal==='function') window.openStaffLoginModal();
-      else { const modal=document.getElementById('staffLoginModal'); if(modal) modal.classList.remove('hidden'); }
-    };
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',add);
-  else add();
-  window.addEventListener('load',add);
-  setTimeout(add,500);
-})();
-</script>
-
-
-<!-- FINAL MENU LOGIN UI FIX: separate Student, Tutor and Staff access -->
-<style id="gc-final-menu-login-ui-fix">
-  #publicNavbarLinks .gc-menu-login-group{
-    display:grid!important;
-    gap:8px!important;
-    margin-top:10px!important;
-    padding-top:10px!important;
-    border-top:1px solid #e2e8f0!important;
-  }
-  #publicNavbarLinks .gc-menu-login-group-title{
-    padding:0 4px 2px!important;
-    color:#64748b!important;
-    font-size:9px!important;
-    font-weight:950!important;
-    letter-spacing:.08em!important;
-    text-transform:uppercase!important;
-  }
-  #publicNavbarLinks .gc-menu-role-login{
-    width:100%!important;
-    min-height:44px!important;
-    display:flex!important;
-    align-items:center!important;
-    gap:10px!important;
-    padding:10px 13px!important;
-    border:0!important;
-    border-radius:12px!important;
-    color:#fff!important;
-    font-size:12px!important;
-    font-weight:950!important;
-    letter-spacing:.025em!important;
-    cursor:pointer!important;
-    box-sizing:border-box!important;
-    transition:transform .15s ease,box-shadow .15s ease!important;
-  }
-  #publicNavbarLinks .gc-menu-role-login i{
-    width:20px!important;
-    text-align:center!important;
-    font-size:14px!important;
-  }
-  #publicNavbarLinks .gc-menu-role-login:hover{
-    transform:translateX(2px)!important;
-  }
-  #publicNavbarLinks .gc-menu-student{background:linear-gradient(135deg,#2563eb,#06b6d4)!important;box-shadow:0 6px 15px rgba(37,99,235,.18)!important;}
-  #publicNavbarLinks .gc-menu-tutor{background:linear-gradient(135deg,#0f766e,#14b8a6)!important;box-shadow:0 6px 15px rgba(20,184,166,.18)!important;}
-  #publicNavbarLinks .gc-menu-staff{background:linear-gradient(135deg,#7c3aed,#ec4899)!important;box-shadow:0 6px 15px rgba(124,58,237,.18)!important;}
-  @media(max-width:760px){
-    #publicNavbarLinks .gc-menu-role-login{min-height:46px!important;font-size:12px!important;}
-  }
+<style id="gc-final-login-menu-ui">
+#publicNavbarLinks .gc-final-login-group{border-top:1px solid #e2e8f0;margin-top:8px;padding:10px 10px 8px}
+#publicNavbarLinks .gc-final-login-title{font-size:10px;font-weight:900;letter-spacing:.08em;color:#64748b;padding:0 6px 7px;text-transform:uppercase}
+#publicNavbarLinks .gc-final-login-btn{width:100%;border:0;border-radius:12px;padding:11px 12px;display:flex;align-items:center;gap:10px;font-size:12px;font-weight:900;text-align:left;cursor:pointer;transition:.18s;margin-top:6px}
+#publicNavbarLinks .gc-final-login-btn i{width:18px;text-align:center}
+#publicNavbarLinks .gc-final-student{background:#eff6ff;color:#1d4ed8}
+#publicNavbarLinks .gc-final-student:hover{background:#dbeafe}
+#publicNavbarLinks .gc-final-tutor{background:#ecfeff;color:#0f766e}
+#publicNavbarLinks .gc-final-tutor:hover{background:#cffafe}
+#publicNavbarLinks .gc-final-staff{background:#fff1f2;color:#be123c}
+#publicNavbarLinks .gc-final-staff:hover{background:#ffe4e6}
 </style>
-<script id="gc-final-menu-login-ui-fix-script">
+<script id="gc-final-login-menu-ui-script">
 (function(){
-  function closeMenu(){
-    try{ if(typeof closeNavMenu==='function') closeNavMenu(); }
-    catch(_){
-      var m=document.getElementById('publicNavbarLinks');
-      if(m){m.classList.add('hidden');m.removeAttribute('data-gc-open-menu');}
-    }
-  }
-  function openRole(role){
-    closeMenu();
-    var select=document.getElementById('loginRoleInput');
-    if(select) select.value=role;
-    if(typeof openLoginModal==='function') openLoginModal();
-    else {
-      var modal=document.getElementById('loginModal');
-      if(modal) modal.classList.remove('hidden');
-    }
-  }
-  function openStaff(){
-    closeMenu();
-    if(typeof openStaffLoginModal==='function') openStaffLoginModal();
-    else {
-      var modal=document.getElementById('staffLoginModal');
-      if(modal) modal.classList.remove('hidden');
-    }
-  }
-  function addLoginMenu(){
+  'use strict';
+  function setup(){
     var menu=document.getElementById('publicNavbarLinks');
-    if(!menu) return;
-
-    // Remove older versions so the menu never shows duplicate/combined login entries.
-    menu.querySelectorAll('.gc-mobile-login-item,.gc-mobile-staff-item,.gc-login-menu-group').forEach(function(el){el.remove();});
+    if(!menu || menu.querySelector('.gc-final-login-group')) return;
 
     var group=document.createElement('div');
-    group.className='gc-menu-login-group';
-    group.innerHTML=''
-      +'<div class="gc-menu-login-group-title">Account Access</div>'
-      +'<button type="button" class="gc-menu-role-login gc-menu-student"><i class="fa-solid fa-graduation-cap"></i><span>STUDENT LOGIN</span></button>'
-      +'<button type="button" class="gc-menu-role-login gc-menu-tutor"><i class="fa-solid fa-chalkboard-user"></i><span>TUTOR LOGIN</span></button>'
-      +'<button type="button" class="gc-menu-role-login gc-menu-staff"><i class="fa-solid fa-user-tie"></i><span>STAFF LOGIN</span></button>';
+    group.className='gc-final-login-group';
+    group.innerHTML=
+      '<div class="gc-final-login-title">ACCOUNT LOGIN</div>'+
+      '<button type="button" class="gc-final-login-btn gc-final-student" data-final-login="student"><i class="fa-solid fa-graduation-cap"></i><span>STUDENT LOGIN</span></button>'+
+      '<button type="button" class="gc-final-login-btn gc-final-tutor" data-final-login="tutor"><i class="fa-solid fa-chalkboard-user"></i><span>TUTOR LOGIN</span></button>'+
+      '<button type="button" class="gc-final-login-btn gc-final-staff" data-final-login="staff"><i class="fa-solid fa-user-tie"></i><span>STAFF LOGIN</span></button>';
     menu.appendChild(group);
 
-    group.querySelector('.gc-menu-student').addEventListener('click',function(){openRole('student');});
-    group.querySelector('.gc-menu-tutor').addEventListener('click',function(){openRole('tutor');});
-    group.querySelector('.gc-menu-staff').addEventListener('click',openStaff);
+    group.querySelectorAll('[data-final-login]').forEach(function(btn){
+      btn.addEventListener('click',function(e){
+        e.preventDefault();
+        e.stopPropagation();
+        var role=btn.getAttribute('data-final-login');
+        try{ if(typeof closeNavMenu==='function') closeNavMenu(); }catch(_){ }
+
+        if(role==='staff'){
+          if(typeof openStaffLoginModal==='function') openStaffLoginModal();
+          return;
+        }
+
+        // The working source uses ONE OTP modal for both Student and Tutor.
+        // Select the requested role first, then open that same modal.
+        var roleInput=document.getElementById('loginRoleInput');
+        if(roleInput) roleInput.value=role;
+        if(typeof openLoginModal==='function') openLoginModal();
+        else {
+          var modal=document.getElementById('loginModal');
+          if(modal) modal.classList.remove('hidden');
+        }
+      });
+    });
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addLoginMenu);
-  else addLoginMenu();
-  window.addEventListener('load',addLoginMenu);
-  setTimeout(addLoginMenu,300);
-  setTimeout(addLoginMenu,1000);
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setup);
+  else setup();
+  window.addEventListener('load',setup);
+  setTimeout(setup,300);
+  setTimeout(setup,1000);
 })();
 </script>
-
-
-<style id="gc-login-menu-fix">
-#publicNavbarLinks .gc-login-menu-group{margin:8px 0 2px;padding:10px 2px 2px;border-top:1px solid #e2e8f0;display:grid;gap:7px}
-#publicNavbarLinks .gc-login-menu-title{font-size:10px;font-weight:950;letter-spacing:.08em;color:#64748b;padding:2px 6px 4px}
-#publicNavbarLinks .gc-login-menu-btn{width:100%;min-height:44px;border:0;border-radius:12px;padding:10px 13px;display:flex;align-items:center;gap:10px;text-align:left;font-size:12px;font-weight:950;cursor:pointer;box-sizing:border-box;transition:.15s}
-#publicNavbarLinks .gc-login-menu-btn i{width:20px;text-align:center;font-size:14px}
-#publicNavbarLinks .gc-student-login{background:linear-gradient(135deg,#2563eb,#06b6d4);color:#fff;box-shadow:0 5px 12px rgba(37,99,235,.16)}
-#publicNavbarLinks .gc-tutor-login{background:linear-gradient(135deg,#123b8f,#2563eb);color:#fff;box-shadow:0 5px 12px rgba(18,59,143,.16)}
-#publicNavbarLinks .gc-staff-login{background:linear-gradient(135deg,#7c3aed,#ec4899);color:#fff;box-shadow:0 5px 12px rgba(124,58,237,.16)}
-#publicNavbarLinks .gc-login-menu-btn:hover{transform:translateX(2px);filter:brightness(1.04)}
-</style>
 </body>
 </html>
-
-<!-- FINAL ADMIN EDIT FIX -->
-<style id="gc-admin-edit-final-fix">
-#adminEditTutorModal{z-index:999999!important}
-#adminEditTutorModal > div{z-index:1000000!important;position:relative}
-</style>
-<script id="gc-admin-edit-final-fix-script">
-(function(){
-'use strict';
-function isStaff(){ return localStorage.getItem('is_staff_logged') === 'true'; }
-function tutors(){
-  try{ if(Array.isArray(window.tutorDirectoryList)) return window.tutorDirectoryList; }catch(e){}
-  try{ if(typeof tutorDirectoryList!=='undefined' && Array.isArray(tutorDirectoryList)) return tutorDirectoryList; }catch(e){}
-  return [];
-}
-function getTutor(id){return tutors().find(t=>String(t.id)===String(id));}
-function redraw(){
-  try{if(typeof saveRegisteredDirectories==='function')saveRegisteredDirectories();}catch(e){}
-  try{if(typeof saveDirs==='function')saveDirs();}catch(e){}
-  try{if(typeof renderTutorDirectory==='function')renderTutorDirectory();}catch(e){}
-  try{if(typeof renderAdminQueue==='function')renderAdminQueue();}catch(e){}
-}
-function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-window.adminEditTutor=function(id){
-  if(!isStaff()){ alert('Please login through STAFF LOGIN first.'); return; }
-  const t=getTutor(id);
-  if(!t){ alert('Tutor record not found. Please refresh the Staff Dashboard.'); return; }
-  const m=document.getElementById('adminEditTutorModal');
-  if(!m){alert('Admin edit window is missing.');return;}
-  const box=m.querySelector(':scope > div')||m.querySelector('div');
-  if(!box){alert('Admin edit window is corrupted.');return;}
-  box.innerHTML=`
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
-    <div><h3 style="font-size:22px;font-weight:900;color:#172c67;margin:0">EDIT TUTOR PROFILE</h3><p style="font-size:12px;color:#64748b;margin:5px 0 0">Admin has full authority to update this tutor.</p></div>
-    <button type="button" id="gcAdminEditClose" style="border:0;background:#f1f5f9;border-radius:10px;width:38px;height:38px;font-size:20px;cursor:pointer">×</button>
-  </div>
-  <form id="gcAdminEditForm">
-    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px">
-      ${field('gcAEName','NAME',t.name,true)}
-      ${field('gcAEEmail','EMAIL',t.email)}
-      ${field('gcAEPhone','PHONE',t.phone)}
-      ${field('gcAEQual','QUALIFICATION',t.qualification)}
-      ${field('gcAEExp','EXPERIENCE',t.experience)}
-      ${field('gcAECollege','TEACHING COLLEGE / INSTITUTE',t.teachingCollege||t.college)}
-      ${field('gcAESubject','SUBJECT',t.subject)}
-      ${field('gcAEPrice','RATE / HOUR',t.price)}
-      ${field('gcAERating','RATING',t._manualRating||t.rating||5)}
-      ${field('gcAEStudents','STUDENTS',t.students||'')}
-    </div>
-    <div style="margin-top:12px"><label style="font-size:10px;font-weight:900;color:#475569">ABOUT ME</label><textarea id="gcAEAbout" rows="5" style="width:100%;box-sizing:border-box;margin-top:5px;border:1px solid #cbd5e1;border-radius:12px;padding:11px;background:#fff">${esc(t.aboutMe||'')}</textarea></div>
-    <div style="margin-top:14px;padding:13px;border-radius:12px;background:#f8fafc;border:1px solid #e2e8f0"><label style="font-weight:900;font-size:13px;display:flex;gap:9px;align-items:center"><input id="gcAEVerified" type="checkbox" ${t.verified?'checked':''} style="width:19px;height:19px"> VERIFIED TUTOR</label></div>
-    <div style="display:flex;gap:10px;margin-top:16px"><button type="button" id="gcAECancel" style="flex:1;border:0;background:#e2e8f0;padding:12px;border-radius:12px;font-weight:900;cursor:pointer">CANCEL</button><button type="submit" id="gcAESave" style="flex:2;border:0;background:#2563eb;color:#fff;padding:12px;border-radius:12px;font-weight:900;cursor:pointer">SAVE ALL CHANGES</button></div>
-  </form>`;
-  function close(){m.classList.add('hidden');}
-  document.getElementById('gcAdminEditClose').onclick=close;
-  document.getElementById('gcAECancel').onclick=close;
-  m.classList.remove('hidden');
-  document.getElementById('gcAdminEditForm').onsubmit=async function(e){
-    e.preventDefault();
-    const btn=document.getElementById('gcAESave');btn.disabled=true;btn.textContent='SAVING...';
-    try{
-      t.name=document.getElementById('gcAEName').value.trim()||t.name;
-      t.email=document.getElementById('gcAEEmail').value.trim();
-      t.phone=document.getElementById('gcAEPhone').value.trim();
-      t.qualification=document.getElementById('gcAEQual').value.trim();
-      t.experience=document.getElementById('gcAEExp').value.trim();
-      t.teachingCollege=document.getElementById('gcAECollege').value.trim();
-      t.college=t.teachingCollege;
-      t.subject=document.getElementById('gcAESubject').value.trim();
-      t.price=document.getElementById('gcAEPrice').value.trim();
-      t._manualRating=Math.min(5,Math.max(1,Number(document.getElementById('gcAERating').value)||5));
-      t.students=document.getElementById('gcAEStudents').value.trim();
-      t.aboutMe=document.getElementById('gcAEAbout').value.trim();
-      t.verified=document.getElementById('gcAEVerified').checked;
-      if(t.verified)t.paidStatus='PAID';
-      redraw();
-      // Local/admin edit must never be blocked by Supabase being unavailable.
-      if(t.isCloud && window.gcSupabase && typeof window.gcSupabase.from==='function'){
-        try{
-          const patch={name:t.name,subject:t.subject,stream:t.stream||'',experience:t.experience,qualification:t.qualification,college:t.college,teaching_college:t.teachingCollege,address:t.address||'',price:t.price,about_me:t.aboutMe,verified:t.verified===true,paid_status:t.paidStatus==='PAID'?'PAID':'PENDING'};
-          const r=await window.gcSupabase.from('tutor_profiles').update(patch).eq('id',t.id);
-          if(r.error) console.warn('Cloud save failed; local admin change retained:',r.error);
-        }catch(err){console.warn('Cloud save unavailable; local admin change retained:',err);}
-      }
-      close();
-      try{if(typeof showSuccessPopup==='function')showSuccessPopup('Tutor profile updated successfully by Admin.');else alert('Tutor profile updated successfully by Admin.');}catch(_){alert('Tutor profile updated successfully by Admin.');}
-    }catch(err){alert('Could not update tutor profile: '+(err?.message||err));}
-    finally{btn.disabled=false;btn.textContent='SAVE ALL CHANGES';}
-  };
-};
-function field(id,label,value,required){return `<div><label style="font-size:10px;font-weight:900;color:#475569">${label}</label><input id="${id}" ${required?'required':''} value="${esc(value||'')}" style="width:100%;box-sizing:border-box;margin-top:5px;border:1px solid #cbd5e1;border-radius:12px;padding:10px 11px;background:#fff"></div>`}
-})();
-</script>
