@@ -2769,7 +2769,7 @@ html, body, button, input, select, textarea {
     if(link) closePublicMenu();
   },true);
 
-  // Login and Staff Login overlays close when the user clicks the dark backdrop.
+  // Login and Admin login overlays close when the user clicks the dark backdrop.
   // Clicking inside the white dialog does NOT close it.
   ['loginModal','staffLoginModal'].forEach(function(id){
     const modal=$(id);
@@ -2824,571 +2824,6 @@ html, body, button, input, select, textarea {
 })();
 </script>
 
-
-<style id="gc-mobile-responsive-final">
-/* ===== GURU CONNECT MOBILE FINAL FIX ===== */
-html, body {
-  width: 100%;
-  max-width: 100%;
-  overflow-x: hidden !important;
-}
-*, *::before, *::after {
-  box-sizing: border-box;
-}
-img, video, canvas, svg {
-  max-width: 100%;
-}
-button, input, select, textarea {
-  max-width: 100%;
-}
-
-/* Header must always fit on narrow phones */
-header, .header, .topbar, .navbar, .nav, .site-header {
-  max-width: 100vw;
-}
-@media (max-width: 768px) {
-  header, .header, .topbar, .navbar, .nav, .site-header {
-    width: 100% !important;
-    min-width: 0 !important;
-  }
-
-  /* Prevent desktop fixed widths from creating horizontal clipping */
-  .container, .wrapper, .content, .main, .page, .section, .directory,
-  .dashboard, .cards, .grid, .profile-grid {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-  }
-
-  /* Header: logo left, controls right; allow wrapping instead of clipping */
-  .gc-header-inner, .gc-header, .header-inner {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    padding-left: 10px !important;
-    padding-right: 10px !important;
-  }
-
-  /* Existing public navigation */
-  #publicNavbarLinks {
-    max-width: calc(100vw - 20px) !important;
-    width: auto !important;
-    min-width: 0 !important;
-    overflow-x: hidden !important;
-  }
-
-  #publicNavbarLinks a,
-  #publicNavbarLinks button {
-    white-space: normal !important;
-    word-break: break-word;
-  }
-
-  /* Make menu and staff login reachable on phones */
-  .gc-mobile-menu-btn, #mobileMenuBtn, .menu-toggle,
-  [aria-label*="menu" i], [title*="menu" i] {
-    flex: 0 0 auto;
-  }
-
-  /* Common header control groups */
-  .header-actions, .nav-actions, .top-actions, .actions {
-    display: flex !important;
-    flex-wrap: wrap !important;
-    align-items: center !important;
-    justify-content: flex-end !important;
-    gap: 6px !important;
-    min-width: 0 !important;
-  }
-
-  /* Buttons remain readable */
-  button, .btn, a.btn, input[type="button"], input[type="submit"] {
-    max-width: 100%;
-    white-space: normal;
-    word-break: normal;
-  }
-
-  /* Cards: one comfortable column on phones */
-  .profile-grid, .cards, .grid, .directory-grid {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-
-  .profile-card, .card, .tutor-card, .student-card {
-    width: 100% !important;
-    max-width: 100% !important;
-    min-width: 0 !important;
-    overflow: hidden;
-  }
-
-  /* Tables should scroll rather than cut the entire page */
-  .table-wrap, .table-responsive, .responsive-table {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: auto !important;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Modals fit inside the phone */
-  .modal, .modal-content, .popup, .dialog {
-    max-width: calc(100vw - 20px) !important;
-  }
-
-  /* Prevent long IDs/emails/text from widening the page */
-  .profile-card *, .card *, .modal *, .dashboard * {
-    overflow-wrap: anywhere;
-  }
-
-  body {
-    font-size: 14px;
-  }
-}
-
-/* Extra-small phones */
-@media (max-width: 420px) {
-  .gc-header-inner, .gc-header, .header-inner {
-    padding-left: 7px !important;
-    padding-right: 7px !important;
-  }
-  button, .btn, a.btn {
-    font-size: 12px;
-  }
-}
-</style>
-
-
-<!-- GURU CONNECT MOBILE HEADER + CLOUD BADGE FINAL PATCH -->
-<style id="gc-mobile-professional-header-fix">
-/* Never expose internal cloud/database status to public visitors. */
-#gcCloudStatusBadge{
-  display:none !important;
-}
-
-/* Mobile header: keep brand, LOGIN, ADMIN and MENU visible without horizontal clipping. */
-@media (max-width: 768px){
-  body{
-    overflow-x:hidden !important;
-    width:100% !important;
-    min-width:0 !important;
-  }
-
-  header{
-    width:100% !important;
-    max-width:100vw !important;
-    overflow:visible !important;
-  }
-
-  header > div{
-    width:100% !important;
-    max-width:100% !important;
-    height:auto !important;
-    min-height:60px !important;
-    padding:7px 8px !important;
-    gap:6px !important;
-  }
-
-  /* Brand area gets enough room but never pushes the controls off-screen. */
-  header > div > div:first-child{
-    min-width:0 !important;
-    flex:1 1 auto !important;
-    gap:5px !important;
-    overflow:hidden !important;
-  }
-
-  header > div > div:first-child > a{
-    width:38px !important;
-    height:38px !important;
-    flex:0 0 38px !important;
-    margin:0 !important;
-  }
-
-  header > div > div:first-child > div{
-    min-width:0 !important;
-    overflow:hidden !important;
-  }
-
-  header > div > div:first-child > div > span{
-    display:block !important;
-    font-size:14px !important;
-    line-height:1.05 !important;
-    white-space:nowrap !important;
-    overflow:hidden !important;
-    text-overflow:ellipsis !important;
-  }
-
-  /* Hide the external 929 Digital Desk logo on phones: it is secondary navigation
-     and otherwise consumes the exact space needed by LOGIN/ADMIN/MENU. */
-  header .gc-929-fixed-logo{
-    display:none !important;
-  }
-
-  /* Right-side controls stay visible and compact. */
-  header > div > div:nth-last-child(1){
-    flex:0 0 auto !important;
-    min-width:0 !important;
-    display:flex !important;
-    align-items:center !important;
-    justify-content:flex-end !important;
-    gap:4px !important;
-  }
-
-  #navLoginBtn,
-  #navStaffBtn,
-  .gc-menu-button{
-    flex:0 0 auto !important;
-    height:38px !important;
-    min-width:38px !important;
-    padding:0 9px !important;
-    border-radius:10px !important;
-    display:inline-flex !important;
-    align-items:center !important;
-    justify-content:center !important;
-    gap:5px !important;
-    font-size:11px !important;
-    white-space:nowrap !important;
-  }
-
-  /* Keep LOGIN and ADMIN labels visible on phones. */
-  #navLoginBtn span,
-  #navStaffBtn span{
-    display:inline !important;
-  }
-
-  .gc-menu-button span{
-    display:inline !important;
-  }
-
-  .gc-menu-button i.fa-chevron-down{
-    display:none !important;
-  }
-
-  /* On very narrow phones, use icon + short labels so nothing gets cut. */
-  @media (max-width:390px){
-    header > div{
-      padding-left:6px !important;
-      padding-right:6px !important;
-      gap:4px !important;
-    }
-    header > div > div:first-child > a{
-      width:34px !important;
-      height:34px !important;
-      flex-basis:34px !important;
-    }
-    header > div > div:first-child > div > span{
-      font-size:12px !important;
-    }
-    #navLoginBtn,
-    #navStaffBtn,
-    .gc-menu-button{
-      height:34px !important;
-      min-width:34px !important;
-      padding:0 7px !important;
-      font-size:10px !important;
-      border-radius:9px !important;
-    }
-  }
-}
-
-/* Make dropdown position relative to the visible menu button and keep it inside viewport. */
-#publicMenuWrapper{
-  position:relative !important;
-  flex:0 0 auto !important;
-}
-@media (max-width:768px){
-  #publicNavbarLinks{
-    right:0 !important;
-    left:auto !important;
-    width:min(240px, calc(100vw - 12px)) !important;
-    max-width:calc(100vw - 12px) !important;
-    margin-top:6px !important;
-  }
-}
-</style>
-
-<script id="gc-hide-public-cloud-status">
-(function(){
-  function hideCloudStatus(){
-    var b=document.getElementById('gcCloudStatusBadge');
-    if(b){
-      b.style.setProperty('display','none','important');
-      b.setAttribute('aria-hidden','true');
-      b.setAttribute('tabindex','-1');
-    }
-  }
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',hideCloudStatus);
-  }else{
-    hideCloudStatus();
-  }
-  /* Existing scripts may recreate/update the badge later, so keep it hidden. */
-  setInterval(hideCloudStatus,1000);
-})();
-</script>
-<!-- /GURU CONNECT MOBILE HEADER + CLOUD BADGE FINAL PATCH -->
-
-
-<style id="gc-mobile-header-cleanup">
-@media (max-width: 760px){
-  /* Keep the branding clean: only the Menu control stays beside it. */
-  header .gc-header-actions,
-  header .header-actions,
-  header .nav-actions,
-  header .top-actions,
-  header .actions {
-    gap: 4px !important;
-  }
-
-  /* Standalone Login/Staff controls are moved into the mobile menu by JS below. */
-  header #navLoginBtn,
-  header #loginBtn,
-  header #staffLoginBtn,
-  header #navStaffBtn,
-  header [data-action="login"],
-  header [data-action="staff-login"] {
-    display:none !important;
-  }
-
-  #publicNavbarLinks{
-    width: min(92vw, 360px) !important;
-    max-width: calc(100vw - 20px) !important;
-    right: 10px !important;
-    left: auto !important;
-    box-sizing: border-box !important;
-    overflow-y: auto !important;
-    max-height: calc(100vh - 82px) !important;
-    padding: 10px !important;
-  }
-
-  #publicNavbarLinks .gc-mobile-login-item,
-  #publicNavbarLinks .gc-mobile-staff-item{
-    display:flex !important;
-    width:100% !important;
-    box-sizing:border-box !important;
-    align-items:center !important;
-    justify-content:center !important;
-    margin:6px 0 !important;
-    padding:11px 12px !important;
-    border-radius:12px !important;
-    font-weight:900 !important;
-    text-decoration:none !important;
-  }
-
-  #publicNavbarLinks .gc-mobile-login-item{
-    background:linear-gradient(135deg,#2563eb,#06b6d4) !important;
-    color:#fff !important;
-  }
-
-  #publicNavbarLinks .gc-mobile-staff-item{
-    background:linear-gradient(135deg,#7c3aed,#ec4899) !important;
-    color:#fff !important;
-  }
-
-  /* Do not show the technical cloud status to public users. */
-  #gcCloudStatusBadge{display:none !important;}
-}
-</style>
-
-
-<style id="gc-unified-menu-desktop-final">
-/* ==========================================================
-   GURU CONNECT — ONE CONSISTENT MENU ON DESKTOP + MOBILE
-   ========================================================== */
-html,body{width:100%;max-width:100%;margin:0;padding:0;overflow-x:hidden!important;}
-body{min-width:0!important;}
-
-/* Keep the public header clean: branding + 929 + one MENU control. */
-header > div,
-header .max-w-7xl{min-width:0!important;width:100%!important;max-width:1280px!important;box-sizing:border-box!important;}
-header .gc-head-login,
-header .gc-head-staff,
-header #navLoginBtn,
-header #navStaffBtn{display:none!important;}
-
-#publicMenuWrapper{position:relative!important;z-index:100000!important;flex:0 0 auto!important;}
-.gc-menu-button{
-  display:inline-flex!important;align-items:center!important;justify-content:center!important;gap:7px!important;
-  min-width:92px!important;height:42px!important;padding:0 14px!important;
-  border:2px solid #102d69!important;border-radius:13px!important;
-  background:linear-gradient(135deg,#1f5bd7,#1645a7)!important;color:#fff!important;
-  font-size:12px!important;font-weight:950!important;letter-spacing:.04em!important;
-  box-shadow:0 5px 14px rgba(15,45,105,.20)!important;cursor:pointer!important;
-}
-.gc-menu-button:hover{transform:translateY(-1px)!important;box-shadow:0 8px 18px rgba(15,45,105,.25)!important;}
-
-#publicNavbarLinks{
-  position:absolute!important;top:calc(100% + 9px)!important;right:0!important;left:auto!important;
-  width:320px!important;max-width:calc(100vw - 20px)!important;
-  padding:10px!important;background:#fff!important;border:1px solid #d9e2ef!important;
-  border-radius:18px!important;box-shadow:0 22px 55px rgba(15,23,42,.22)!important;
-  overflow:hidden!important;z-index:100001!important;
-}
-#publicNavbarLinks a,
-#publicNavbarLinks button{box-sizing:border-box!important;}
-#publicNavbarLinks .gc-menu-yellow-item,
-#publicNavbarLinks > a:not(.gc-mobile-login-item):not(.gc-mobile-staff-item){
-  display:flex!important;align-items:center!important;width:100%!important;min-height:42px!important;
-  margin:3px 0!important;padding:10px 13px!important;border-radius:11px!important;
-  background:linear-gradient(135deg,#fff8c7,#ffe76a)!important;
-  color:#6b4f00!important;border:1px solid #f2d45a!important;
-  font-size:12px!important;font-weight:950!important;letter-spacing:.025em!important;
-  text-decoration:none!important;transition:transform .15s ease,box-shadow .15s ease,background .15s ease!important;
-}
-#publicNavbarLinks .gc-menu-yellow-item:hover,
-#publicNavbarLinks > a:not(.gc-mobile-login-item):not(.gc-mobile-staff-item):hover{
-  background:linear-gradient(135deg,#ffe66b,#ffd42a)!important;
-  color:#4a3600!important;transform:translateX(2px)!important;
-  box-shadow:0 5px 12px rgba(234,179,8,.20)!important;
-}
-#publicNavbarLinks .gc-mobile-login-item,
-#publicNavbarLinks .gc-mobile-staff-item{
-  display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;
-  min-height:44px!important;margin:6px 0!important;padding:10px 13px!important;
-  border-radius:12px!important;font-size:12px!important;font-weight:950!important;
-  cursor:pointer!important;border:0!important;box-sizing:border-box!important;
-}
-#publicNavbarLinks .gc-mobile-login-item{
-  background:linear-gradient(135deg,#2563eb,#06b6d4)!important;color:#fff!important;
-  box-shadow:0 6px 15px rgba(37,99,235,.18)!important;
-}
-#publicNavbarLinks .gc-mobile-staff-item{
-  background:linear-gradient(135deg,#7c3aed,#ec4899)!important;color:#fff!important;
-  box-shadow:0 6px 15px rgba(124,58,237,.18)!important;
-}
-
-/* Header spacing and branding must never be squeezed by navigation. */
-header .gc-929-fixed-logo{margin-left:6px!important;margin-right:6px!important;flex:0 0 auto!important;}
-header .gc-929-fixed-logo img{max-width:none!important;}
-header .gc-929-fixed-logo{height:50px!important;}
-
-/* Remove accidental left clipping on the public homepage sections. */
-#publicWebsiteContent{width:100%!important;max-width:100%!important;min-width:0!important;margin:0!important;padding:0!important;overflow:visible!important;}
-#publicWebsiteContent > section{width:100%!important;max-width:1280px!important;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box!important;}
-#publicWebsiteContent > #home{max-width:none!important;margin-left:0!important;margin-right:0!important;}
-#tutors,#studentsDirectory{width:100%!important;max-width:1280px!important;margin-left:auto!important;margin-right:auto!important;padding-left:24px!important;padding-right:24px!important;box-sizing:border-box!important;}
-#tutors > div,#studentsDirectory > div{min-width:0!important;}
-
-/* Contact modal: make it feel like a proper contact page/panel. */
-#contactModal > div{max-width:640px!important;padding:26px!important;}
-#contactModal .gc-contact-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px;}
-#contactModal .gc-contact-channel{
-  display:flex;align-items:center;gap:13px;padding:13px 14px;border:1px solid #e2e8f0;
-  border-radius:15px;background:#fff;text-decoration:none;box-shadow:0 4px 12px rgba(15,23,42,.05);
-}
-#contactModal .gc-contact-channel i{font-size:22px;min-width:28px;text-align:center;}
-#contactModal .gc-contact-channel strong{display:block;font-size:11px;font-weight:950;color:#0f172a;text-transform:uppercase;letter-spacing:.04em;}
-#contactModal .gc-contact-channel span{display:block;font-size:12px;font-weight:800;color:#475569;margin-top:2px;overflow-wrap:anywhere;}
-
-@media(max-width:760px){
-  header .max-w-7xl{height:64px!important;padding-left:8px!important;padding-right:8px!important;}
-  header .gc-929-fixed-logo{height:40px!important;margin-left:2px!important;margin-right:2px!important;}
-  .gc-menu-button{min-width:86px!important;height:39px!important;padding:0 11px!important;font-size:11px!important;}
-  #publicNavbarLinks{width:min(340px,calc(100vw - 16px))!important;right:0!important;top:calc(100% + 7px)!important;max-height:calc(100vh - 76px)!important;overflow-y:auto!important;}
-  #tutors,#studentsDirectory{padding-left:12px!important;padding-right:12px!important;}
-}
-@media(min-width:761px){
-  /* Same menu behavior on PC: no separate Login/Staff buttons outside the menu. */
-  #publicNavbarLinks .gc-mobile-login-item,
-  #publicNavbarLinks .gc-mobile-staff-item{display:flex!important;}
-}
-</style>
-
-<style id="gc-registration-fullscreen-fix">
-/* Registration is a real full-screen page layer: no website content can scroll behind it. */
-#registrationSection.gc-registration-overlay{
-  position:fixed !important;
-  inset:0 !important;
-  z-index:99990 !important;
-  width:100vw !important;
-  height:100dvh !important;
-  max-width:none !important;
-  overflow-y:auto !important;
-  overflow-x:hidden !important;
-  box-sizing:border-box !important;
-  margin:0 !important;
-  padding:76px 16px 34px !important;
-  background:#f8fafc !important;
-  border:0 !important;
-  scroll-behavior:smooth;
-}
-#registrationSection.gc-registration-overlay > div{
-  max-width:980px !important;
-  margin:0 auto !important;
-}
-.gc-registration-close{
-  position:fixed;
-  top:14px;
-  right:16px;
-  z-index:100000;
-  width:44px;
-  height:44px;
-  border:0;
-  border-radius:14px;
-  background:#0f172a;
-  color:#fff;
-  font-size:18px;
-  font-weight:900;
-  box-shadow:0 10px 25px rgba(15,23,42,.25);
-  cursor:pointer;
-}
-.gc-registration-close:hover{transform:translateY(-1px);background:#1e293b}
-body.gc-registration-lock{overflow:hidden !important;}
-#registrationSection.gc-registration-overlay .bg-brand-lightBg{
-  background:#fff !important;
-}
-@media(max-width:640px){
-  #registrationSection.gc-registration-overlay{
-    padding:64px 10px 24px !important;
-  }
-  .gc-registration-close{
-    top:10px;right:10px;width:40px;height:40px;border-radius:12px;
-  }
-}
-
-/* Public-facing registration success popup */
-#gcRegistrationSuccessPopup{
-  position:fixed;inset:0;z-index:100500;display:none;
-  align-items:center;justify-content:center;padding:20px;
-  background:rgba(2,6,23,.72);backdrop-filter:blur(8px);
-}
-#gcRegistrationSuccessPopup.is-open{display:flex}
-.gc-reg-success-card{
-  width:min(560px,94vw);
-  background:#fff;border-radius:26px;padding:30px 26px 24px;
-  box-shadow:0 30px 80px rgba(2,6,23,.35);
-  text-align:center;border:1px solid rgba(37,99,235,.12);
-  animation:gcRegPop .22s ease-out;
-}
-@keyframes gcRegPop{from{opacity:0;transform:translateY(12px) scale(.98)}to{opacity:1;transform:none}}
-.gc-reg-success-icon{
-  width:70px;height:70px;border-radius:50%;margin:0 auto 16px;
-  display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,#2563eb,#06b6d4);
-  color:#fff;font-size:30px;box-shadow:0 12px 28px rgba(37,99,235,.25);
-}
-.gc-reg-success-card h3{font-size:22px;font-weight:950;color:#0f172a;margin:0 0 10px}
-.gc-reg-success-card p{font-size:14px;line-height:1.65;color:#475569;margin:0}
-.gc-reg-success-card .gc-success-note{
-  margin-top:14px;padding:12px 14px;border-radius:14px;
-  background:#eff6ff;color:#1e3a8a;font-size:12px;font-weight:800;
-}
-.gc-reg-success-card button{
-  margin-top:18px;width:100%;border:0;border-radius:14px;padding:13px 16px;
-  background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;
-  font-weight:950;cursor:pointer;box-shadow:0 10px 22px rgba(37,99,235,.22);
-}
-</style>
-
-
-<style id="gc-mobile-menu-final-fix">
-@media(max-width:768px){header{overflow:visible!important}.gc-header-actions,.header-actions,.desktop-actions{display:none!important}#mainMenu,#menuPanel,.menu-panel,.gc-menu-panel{max-width:calc(100vw - 20px)!important;width:calc(100vw - 20px)!important;left:10px!important;right:10px!important;box-sizing:border-box!important;overflow-x:hidden!important}}
-.gc-menu-normal{background:linear-gradient(135deg,#facc15,#f59e0b)!important;color:#172c67!important}.gc-menu-login-student{background:linear-gradient(135deg,#2563eb,#06b6d4)!important;color:#fff!important}.gc-menu-login-tutor{background:linear-gradient(135deg,#7c3aed,#ec4899)!important;color:#fff!important}.gc-menu-login-staff{background:linear-gradient(135deg,#059669,#10b981)!important;color:#fff!important}
-</style>
-<style id="gc-clean-login-menu-ui">
-.gc-login-menu-group{margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0;display:grid;gap:8px}
-.gc-login-menu-group button{width:100%;border:0;text-align:left;transition:.15s ease;box-sizing:border-box}
-.gc-login-menu-group button:hover{transform:translateY(-1px)}
-.gc-menu-login-student{background:#eff6ff!important;color:#1d4ed8!important}
-.gc-menu-login-tutor{background:#f0fdf4!important;color:#15803d!important}
-.gc-menu-login-staff{background:#fff7ed!important;color:#c2410c!important}
-#adminEditTutorModal,#adminEditStudentModal{z-index:100500!important}
-</style>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -3429,7 +2864,7 @@ body.gc-registration-lock{overflow:hidden !important;}
                 </button>
 
                 <button id="navStaffBtn" onclick="openStaffLoginModal()" class="bg-brand-blue hover:bg-blue-700 text-white text-[11px] sm:text-xs font-bold px-2 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition shadow flex items-center gap-1">
-                    <i class="fa-solid fa-lock text-xs sm:text-sm"></i> <span class="hidden sm:inline">STAFF</span>
+                    <i class="fa-solid fa-lock text-xs sm:text-sm"></i> <span class="hidden sm:inline">ADMIN</span>
                 </button>
 
                 <!-- MENU DROPDOWN: restored because it is cleaner and more compact -->
@@ -3444,8 +2879,7 @@ body.gc-registration-lock{overflow:hidden !important;}
                         <a href="#studentsDirectory" onclick="closeNavMenu()" class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition">STUDENTS DIRECTORY</a>
                         <a href="#registrationSection" onclick="closeNavMenu()" class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition">PORTAL & REQUESTS</a>
                         <a href="javascript:void(0)" onclick="openHelplineModal(); closeNavMenu();" class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition">HELPLINE PLANS</a>
-                        <a href="javascript:void(0)" onclick="openAboutModal(); closeNavMenu();" class="gc-menu-yellow-item">ABOUT US</a>
-                        <a href="javascript:void(0)" onclick="openContactModal(); closeNavMenu();" class="gc-menu-yellow-item">CONTACT US</a>
+                        <a href="javascript:void(0)" onclick="openAboutModal(); closeNavMenu();" class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition border-t border-slate-100">ABOUT US</a>
                     </nav>
                 </div>
             </div>
@@ -3949,8 +3383,8 @@ body.gc-registration-lock{overflow:hidden !important;}
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Name of the College (Optional)</label>
-                                <input type="text" id="stu_college" placeholder="Enter your college name (optional)" class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white">
+                                <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Name of the College *</label>
+                                <input type="text" id="stu_college" required placeholder="Enter your college name" class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white">
                             </div>
                         </div>
 
@@ -3977,30 +3411,6 @@ body.gc-registration-lock{overflow:hidden !important;}
                         <div>
                             <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Learning Requirement / Educational Needs</label>
                             <textarea id="stu_learning_requirement" rows="3" placeholder="Write your educational needs, subjects/topics where you need support, goals, etc." class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white"></textarea>
-                        </div>
-
-                        <div class="border-2 border-blue-100 bg-blue-50/40 rounded-2xl p-4 sm:p-5">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 rounded-xl bg-blue-100 text-brand-blue flex items-center justify-center shrink-0">
-                                    <i class="fa-solid fa-id-card"></i>
-                                </div>
-                                <div>
-                                    <h3 class="font-black text-brand-dark text-base sm:text-lg">Your Profile Details</h3>
-                                    <p class="text-[11px] sm:text-xs text-slate-500">Add details that help tutors understand you better.</p>
-                                </div>
-                            </div>
-                            <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">About Me (Optional)</label>
-                            <textarea id="stu_about_me" rows="4" placeholder="Tell tutors about yourself, your learning style, interests, goals and what kind of academic support you are looking for." class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white"></textarea>
-
-                            <div class="mt-4">
-                                <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">My Achievements / Certificates (Optional — up to 3 photos)</label>
-                                <p class="text-[11px] text-slate-500 mb-3">Upload up to 3 clear photos of awards, certificates, competitions or other achievements.</p>
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                    <input type="file" id="stu_achievement_1" accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-blue-50 file:text-brand-blue">
-                                    <input type="file" id="stu_achievement_2" accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-blue-50 file:text-brand-blue">
-                                    <input type="file" id="stu_achievement_3" accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-blue-50 file:text-brand-blue">
-                                </div>
-                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-slate-200">
@@ -4147,24 +3557,6 @@ body.gc-registration-lock{overflow:hidden !important;}
                                 <input type="file" id="t_photo" accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange">
                             </div>
                         </div>
-
-                        <div class="border-2 border-orange-100 bg-orange-50/40 rounded-2xl p-4 sm:p-5">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-10 h-10 rounded-xl bg-orange-100 text-brand-nagpurOrange flex items-center justify-center shrink-0">
-                                    <i class="fa-solid fa-trophy"></i>
-                                </div>
-                                <div>
-                                    <h3 class="font-black text-brand-dark text-base sm:text-lg">Professional Achievements</h3>
-                                    <p class="text-[11px] sm:text-xs text-slate-500">Showcase up to 3 achievement / certificate photos on your profile.</p>
-                                </div>
-                            </div>
-                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                <input type="file" id="t_achievement_1" accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange">
-                                <input type="file" id="t_achievement_2" accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange">
-                                <input type="file" id="t_achievement_3" accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange">
-                            </div>
-                        </div>
-
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
@@ -4399,15 +3791,15 @@ body.gc-registration-lock{overflow:hidden !important;}
                 <a href="mailto:support@guruconnnect.in" class="text-brand-blue font-black text-sm sm:text-base hover:underline">support@guruconnnect.in</a>
             </div>
 
-            <div class="gc-contact-grid">
-                <a href="https://api.whatsapp.com/send?phone=15559565917&text=Hello%20Guru%20Connect,%20I%20want%20support." target="_blank" rel="noopener noreferrer" class="gc-contact-channel">
-                    <i class="fa-brands fa-whatsapp text-emerald-600"></i><div><strong>WhatsApp Support</strong><span>Chat with GURU CONNECT</span></div>
+            <div class="flex items-center justify-center gap-3 mt-6 pt-4 border-t border-slate-100">
+                <a href="https://api.whatsapp.com/send?phone=15559565917&text=Hello%20Guru%20Connect,%20I%20want%20support." target="_blank" rel="noopener noreferrer" class="w-11 h-11 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200 rounded-2xl flex items-center justify-center text-xl transition shadow-sm" title="WhatsApp Support">
+                    <i class="fa-brands fa-whatsapp"></i>
                 </a>
-                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="gc-contact-channel">
-                    <i class="fa-brands fa-facebook-f text-blue-600"></i><div><strong>Facebook</strong><span>Follow GURU CONNECT</span></div>
+                <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" class="w-11 h-11 bg-blue-50 hover:bg-blue-100 text-blue-600 border border-blue-200 rounded-2xl flex items-center justify-center text-xl transition shadow-sm" title="Facebook">
+                    <i class="fa-brands fa-facebook-f"></i>
                 </a>
-                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="gc-contact-channel">
-                    <i class="fa-brands fa-instagram text-pink-600"></i><div><strong>Instagram</strong><span>Follow GURU CONNECT</span></div>
+                <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="w-11 h-11 bg-pink-50 hover:bg-pink-100 text-pink-600 border border-pink-200 rounded-2xl flex items-center justify-center text-xl transition shadow-sm" title="Instagram">
+                    <i class="fa-brands fa-instagram"></i>
                 </a>
             </div>
 
@@ -5399,13 +4791,13 @@ body.gc-registration-lock{overflow:hidden !important;}
                     document.getElementById('stuOtpBox').classList.add('hidden');
                     const btn = document.getElementById('stuSubmitBtn');
                     btn.disabled = false;
-                    btn.className = "w-full bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 hover:from-blue-700 hover:to-cyan-600 text-white font-black py-3.5 sm:py-4 rounded-xl transition shadow-lg text-sm sm:text-base tracking-wider mt-2 ring-2 ring-blue-200";
+                    btn.className = "w-full bg-brand-blue hover:bg-blue-700 text-white font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2";
                     btn.textContent = "REGISTER STUDENT PROFILE";
                 } else {
                     document.getElementById('tutorOtpBox').classList.add('hidden');
                     const btn = document.getElementById('tutorSubmitBtn');
                     btn.disabled = false;
-                    btn.className = "w-full bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 hover:from-blue-700 hover:to-cyan-600 text-white font-black py-3.5 sm:py-4 rounded-xl transition shadow-lg text-sm sm:text-base tracking-wider mt-2 ring-2 ring-blue-200";
+                    btn.className = "w-full bg-brand-blue hover:bg-blue-700 text-white font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2";
                     btn.textContent = "SUBMIT TUTOR APPLICATION";
                 }
             } else {
@@ -8996,7 +8388,7 @@ body {
     }
   }, true);
 
-  /* ---------- Keep Staff Login light ---------- */
+  /* ---------- Keep admin login light ---------- */
   const originalAdminQueue = window.renderAdminQueue;
 
   window.renderAdminQueue = function () {
@@ -9068,7 +8460,6 @@ body {
       gcSupabase = window.supabase.createClient(GC_SUPABASE_URL, GC_SUPABASE_ANON_KEY, {
         auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
       });
-      window.gcSupabase = gcSupabase;
       gcCloudEnabled = true;
     }
   } catch (err) {
@@ -9141,7 +8532,7 @@ body {
 
   async function gcSaveProfileToCloud(role, profile) {
     if (!gcCloudEnabled) {
-      return { ok: false, skipped: false, error: new Error('Supabase cloud is not configured.') };
+      return { ok: false, skipped: true, error: new Error('Cloud key not configured.') };
     }
 
     try {
@@ -9163,18 +8554,14 @@ body {
 
       if (role === 'tutor') {
         const row = gcTutorCloudRow(profile, user.id);
-        const res = await gcSupabase.from('tutor_profiles')
-          .insert(row)
-          .select('*').single();
+        const res = await gcSupabase.from('tutor_profiles').insert(row).select('*').single();
         if (res.error) throw res.error;
         return { ok: true, row: res.data, userId: user.id };
       }
 
       gcPageCache.clear();
       const row = gcStudentCloudRow(profile, user.id);
-      const res = await gcSupabase.from('student_profiles')
-        .insert(row)
-        .select('*').single();
+      const res = await gcSupabase.from('student_profiles').insert(row).select('*').single();
       if (res.error) throw res.error;
       return { ok: true, row: res.data, userId: user.id };
     } catch (err) {
@@ -9426,23 +8813,16 @@ body {
     const photoFile = document.getElementById('stu_photo')?.files?.[0];
     const photoData = typeof readImageDataUrl === 'function' ? await readImageDataUrl(photoFile) : '';
 
-    const achievementFiles = [1,2,3].map(i => document.getElementById('stu_achievement_'+i)?.files?.[0]).filter(Boolean);
-    const achievementPhotos = [];
-    for (const f of achievementFiles) {
-      try { achievementPhotos.push(await readImageDataUrl(f)); } catch (_) {}
-    }
-
     const collegeIdFile = document.getElementById('stu_college_id')?.files?.[0];
     const aadhaarFile = document.getElementById('stu_aadhaar')?.files?.[0];
     const division = document.getElementById('stu_division')?.value.trim() || '';
     const rollNumber = document.getElementById('stu_roll')?.value.trim() || '';
     const college = document.getElementById('stu_college')?.value.trim() || '';
     const learningRequirement = document.getElementById('stu_learning_requirement')?.value.trim() || '';
-    const aboutMe = document.getElementById('stu_about_me')?.value.trim() || '';
 
     const profile = {
       name, email, phone, std: standard, stream, course, college, division,
-      rollNumber, subject, photoData, achievementPhotos, aboutMe, learningRequirement,
+      rollNumber, subject, photoData, learningRequirement,
       registrationDate: new Date().toISOString(),
       helpline: { registered: false },
       privacy: { showContactToConnectedTutors: true, showDetailsToConnectedTutors: true },
@@ -9466,15 +8846,17 @@ body {
     }
 
     const cloud = await window.gcSaveProfileToCloud('student', profile);
-    if (!cloud.ok) {
-      const detail = cloud.error ? '\n\nSupabase: ' + (window.gcFormatCloudError ? window.gcFormatCloudError(cloud.error) : (cloud.error.message || cloud.error)) : '';
-      alert('REGISTRATION NOT COMPLETED. Your Student profile could not be saved to the GURU CONNECT cloud database.' + detail + '\n\nPlease try again. No local-only registration has been created.');
+    if (!cloud.ok && !cloud.skipped) {
+      alert('Cloud registration could not be saved. Please try again. Your local browser data was not submitted as a replacement.');
       return;
     }
-
-    profile.id = cloud.row.id;
-    profile.user_id = cloud.userId;
-    profile.isCloud = true;
+    if (cloud.ok) {
+      profile.id = cloud.row.id;
+      profile.user_id = cloud.userId;
+      profile.isCloud = true;
+    } else {
+      profile.id = `GC-STU-${Date.now().toString().slice(-6)}`;
+    }
 
     studentDirectoryList.unshift(profile);
     window.studentDirectoryList = studentDirectoryList;
@@ -9486,8 +8868,9 @@ body {
     localStorage.setItem('active_user_role', 'student');
     updateAuthBadge();
 
-    showRegistrationSuccessPopup();
+    alert(`Student Registration Successful for ${name}!${cloud.ok ? ' Saved to cloud.' : ''}`);
     closeUserDashboard();
+    switchTab('requirement');
   };
 
   window.handleTutorFormSubmit = async function (e) {
@@ -9507,11 +8890,6 @@ body {
 
     const photoFile = document.getElementById('t_photo')?.files?.[0];
     const photoData = typeof readImageDataUrl === 'function' ? await readImageDataUrl(photoFile) : '';
-    const achievementFiles = [1,2,3].map(i => document.getElementById('t_achievement_'+i)?.files?.[0]).filter(Boolean);
-    const achievementPhotos = [];
-    for (const f of achievementFiles) {
-      try { achievementPhotos.push(await readImageDataUrl(f)); } catch (_) {}
-    }
     const collegeIdFile = document.getElementById('t_college_id')?.files?.[0];
     const aadhaarFile = document.getElementById('t_aadhaar')?.files?.[0];
 
@@ -9527,7 +8905,6 @@ body {
       address: document.getElementById('t_address')?.value.trim() || '',
       aboutMe: document.getElementById('t_about')?.value.trim() || '',
       photoData,
-      achievementPhotos,
       collegeIdName: collegeIdFile?.name || '',
       aadhaarName: aadhaarFile?.name || '',
       verified: false, phone, utr, paidStatus:'PENDING', paid_status:'PENDING',
@@ -9536,15 +8913,15 @@ body {
     };
 
     const cloud = await window.gcSaveProfileToCloud('tutor', profile);
-    if (!cloud.ok) {
-      const detail = cloud.error ? '\n\nSupabase: ' + (window.gcFormatCloudError ? window.gcFormatCloudError(cloud.error) : (cloud.error.message || cloud.error)) : '';
-      alert('REGISTRATION NOT COMPLETED. Your Tutor profile could not be saved to the GURU CONNECT cloud database.' + detail + '\n\nPlease try again. No local-only registration has been created.');
+    if (!cloud.ok && !cloud.skipped) {
+      alert('Cloud registration could not be saved. Please try again. Your local browser data was not submitted as a replacement.');
       return;
     }
-
-    profile.id = cloud.row.id;
-    profile.user_id = cloud.userId;
-    profile.isCloud = true;
+    if (cloud.ok) {
+      profile.id = cloud.row.id;
+      profile.user_id = cloud.userId;
+      profile.isCloud = true;
+    }
 
     tutorDirectoryList.unshift(profile);
     window.tutorDirectoryList = tutorDirectoryList;
@@ -9559,7 +8936,9 @@ body {
     const form = document.getElementById('tutorRegForm');
     if (form) form.classList.add('hidden');
 
-    showRegistrationSuccessPopup();
+    if (cloud.ok) {
+      alert(`Tutor Registration Successful for ${name}! Saved to cloud.`);
+    }
     openUserDashboard();
   };
 
@@ -9567,7 +8946,7 @@ body {
   // functions. The public directory remains usable even if cloud is unavailable.
   function gcBootCloud() {
     if (!gcCloudEnabled) {
-      console.error('GURU CONNECT CLOUD IS NOT CONFIGURED. Registration is disabled until Supabase is available.');
+      console.warn('GURU CONNECT cloud directory is not configured yet. Add the Supabase anon key.');
       return;
     }
     const startCloud = function () {
@@ -9618,237 +8997,6 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
   };
 })();
 </script>
-
-
-<script id="gc-final-student-admin-fix">
-(function(){
-  function gcAdminReady(){
-    return localStorage.getItem('is_staff_logged') === 'true';
-  }
-
-  window.adminEditStudent = function(id){
-    if(!gcAdminReady()) return;
-
-    const list = Array.isArray(window.studentDirectoryList) ? window.studentDirectoryList : [];
-    const s = list.find(x => String(x.id) === String(id));
-    if(!s){
-      alert('Student record could not be found.');
-      return;
-    }
-
-    window.currentEditingStudentId = s.id;
-
-    const modal = document.getElementById('adminEditStudentModal');
-    if(!modal) return;
-
-    // Use the existing modal fields so the rest of the website design is preserved.
-    const set = (id, value) => {
-      const el = document.getElementById(id);
-      if(el) el.value = value == null ? '' : value;
-    };
-
-    set('editStudentName', s.name || '');
-    set('editStudentStd', s.std || s.course || '');
-    set('editStudentStream', s.stream || '');
-    set('editStudentSubject', s.subject || s.learningRequirement || '');
-    set('editStudentPhone', s.phone || '');
-
-    modal.classList.remove('hidden');
-  };
-
-  window.saveStudentEdit = async function(e){
-    if(e) e.preventDefault();
-    if(window.currentEditingStudentId == null) return;
-
-    const list = Array.isArray(window.studentDirectoryList) ? window.studentDirectoryList : [];
-    const s = list.find(x => String(x.id) === String(window.currentEditingStudentId));
-    if(!s) return;
-
-    const value = id => {
-      const el = document.getElementById(id);
-      return el ? el.value.trim() : '';
-    };
-
-    s.name = value('editStudentName') || s.name;
-    s.std = value('editStudentStd') || s.std || s.course || '';
-    s.course = s.std;
-    const requestedStream = value('editStudentStream');
-    if(Array.isArray(window.JC_STREAMS) && window.JC_STREAMS.includes(requestedStream)){
-      s.stream = requestedStream;
-    } else if(requestedStream){
-      s.stream = requestedStream;
-    }
-    s.subject = value('editStudentSubject') || s.subject || s.learningRequirement || '';
-    s.learningRequirement = s.subject;
-    s.phone = value('editStudentPhone');
-
-    // Persist locally first — never freeze the admin screen waiting for network.
-    try { if(typeof saveRegisteredDirectories === 'function') saveRegisteredDirectories(); } catch(_){}
-
-    try { renderStudentDirectory(); } catch(_){}
-
-    const saveBtn = document.querySelector('#adminEditStudentModal button[type="submit"]');
-    if(saveBtn){
-      saveBtn.disabled = true;
-      saveBtn.textContent = 'SAVING...';
-    }
-
-    // Cloud persistence is deliberately fire-and-forget from the UI perspective.
-    if(s.isCloud && typeof window.gcSupabaseAdminUpdateStudent === 'function'){
-      window.gcSupabaseAdminUpdateStudent(s).catch(err => {
-        console.warn('Student cloud update failed:', err);
-      });
-    }
-
-    if(typeof closeAdminEditStudentModal === 'function') closeAdminEditStudentModal();
-
-    try {
-      if(typeof showSuccessPopup === 'function'){
-        showSuccessPopup('Student profile has been updated successfully.');
-      } else {
-        alert('Student profile has been updated successfully.');
-      }
-    } catch(_){}
-
-    if(saveBtn){
-      saveBtn.disabled = false;
-      saveBtn.textContent = 'SAVE CHANGES';
-    }
-  };
-
-  // Do not let the old admin save handler rebuild the complete admin table.
-  const form = document.getElementById('adminEditStudentForm');
-  if(form) form.onsubmit = window.saveStudentEdit;
-})();
-</script>
-
-
-<script id="gc-final-admin-actions-fix">
-(function(){
-  function isAdmin(){
-    return localStorage.getItem('is_staff_logged') === 'true';
-  }
-
-  function findTutor(id){
-    const list = Array.isArray(window.tutorDirectoryList) ? window.tutorDirectoryList : [];
-    return list.find(t => String(t.id) === String(id));
-  }
-
-  function redrawTutor(t){
-    try { if(typeof saveRegisteredDirectories === 'function') saveRegisteredDirectories(); } catch(_){}
-    try { if(typeof saveDirs === 'function') saveDirs(); } catch(_){}
-    try { if(typeof renderTutorDirectory === 'function') renderTutorDirectory(); } catch(_){}
-    try { if(typeof renderAdminQueue === 'function') renderAdminQueue(); } catch(_){}
-  }
-
-  // IMPORTANT: the old functions only changed JavaScript memory/localStorage.
-  // This layer also persists the status to Supabase when the tutor is cloud-backed.
-  async function persistTutorStatus(t){
-    if(!t || !t.isCloud || !window.gcSupabase) return {ok:false, skipped:true};
-
-    try {
-      const patch = {
-        verified: t.verified === true,
-        paid_status: t.paidStatus === 'PAID' ? 'PAID' : 'PENDING'
-      };
-
-      const result = await window.gcSupabase
-        .from('tutor_profiles')
-        .update(patch)
-        .eq('id', t.id)
-        .select('id,verified,paid_status')
-        .single();
-
-      if(result.error) {
-        console.error('GURU CONNECT Supabase status update failed:', result.error);
-        throw result.error;
-      }
-
-      // Re-sync the local object from the authoritative cloud response.
-      if(result.data){
-        t.verified = result.data.verified === true;
-        t.paidStatus = result.data.paid_status || 'PENDING';
-      }
-      return {ok:true,row:result.data};
-    } catch(err) {
-      return {ok:false,error:err};
-    }
-  }
-
-  async function gcPersistTutorStatusAndRefresh(t, successMessage){
-    const result = await persistTutorStatus(t);
-    if(!result.ok){
-      // Revert the optimistic change if the database rejected it. This prevents
-      // the UI from claiming a status that wasn't actually stored in Supabase.
-      try {
-        const cloudRow = await window.gcSupabase
-          .from('tutor_profiles')
-          .select('verified,paid_status')
-          .eq('id', t.id)
-          .single();
-        if(!cloudRow.error && cloudRow.data){
-          t.verified = cloudRow.data.verified === true;
-          t.paidStatus = cloudRow.data.paid_status || 'PENDING';
-        }
-      } catch(_){}
-      redrawTutor(t);
-      alert('Supabase could not save this status. Please check that the paid_status column and RLS policy are enabled.');
-      return false;
-    }
-    redrawTutor(t);
-    try { showSuccessPopup(successMessage); } catch(_) { alert(successMessage); }
-    return true;
-  }
-
-  window.adminVerifyTutorPaid = function(id){
-    if(!isAdmin()) return;
-    const t = findTutor(id);
-    if(!t) return alert('Tutor record not found.');
-
-    t.paidStatus = 'PAID';
-    redrawTutor(t);
-    gcPersistTutorStatusAndRefresh(t, 'Tutor marked PAID successfully.');
-  };
-
-  window.adminRevokeTutorPaid = function(id){
-    if(!isAdmin()) return;
-    const t = findTutor(id);
-    if(!t) return alert('Tutor record not found.');
-    if(!confirm("Are you sure you want to revoke this tutor's PAID status?")) return;
-
-    t.paidStatus = 'PENDING';
-    redrawTutor(t);
-    gcPersistTutorStatusAndRefresh(t, 'Tutor PAID status has been revoked.');
-  };
-
-  window.adminGrantVerifiedTick = function(id){
-    if(!isAdmin()) return;
-    const t = findTutor(id);
-    if(!t) return alert('Tutor record not found.');
-
-    t.verified = true;
-    t.paidStatus = 'PAID';
-    redrawTutor(t);
-    gcPersistTutorStatusAndRefresh(t, 'Verified Tick granted successfully.');
-  };
-
-  window.adminRevokeVerifiedTick = function(id){
-    if(!isAdmin()) return;
-    const t = findTutor(id);
-    if(!t) return alert('Tutor record not found.');
-    if(!confirm("Are you sure you want to revoke this tutor's Verified Tick?")) return;
-
-    t.verified = false;
-    redrawTutor(t);
-    gcPersistTutorStatusAndRefresh(t, 'Verified Tick has been revoked.');
-  };
-
-  // Prevent the heavy admin queue from becoming the reason an action appears frozen.
-  // The action buttons above still update their row immediately.
-})();
-</script>
-
-
 <script id="gc-all-profile-directory-fix">
 (function(){
   // When the cloud directory is loaded, the complete arrays are now available.
@@ -10147,576 +9295,32 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
 </script>
 
 
-<style id="gc-cloud-registration-guard">
-#gcCloudStatusBadge{
-  position:fixed;right:12px;bottom:12px;z-index:100000;
-  padding:7px 11px;border-radius:999px;font:700 11px/1.2 Arial,sans-serif;
-  background:#fff;border:1px solid rgba(15,23,42,.12);
-  box-shadow:0 5px 18px rgba(15,23,42,.12);
-  cursor:pointer;user-select:none;
-}
-#gcCloudStatusBadge.gc-ok{color:#166534;border-color:#86efac;background:#f0fdf4}
-#gcCloudStatusBadge.gc-bad{color:#991b1b;border-color:#fecaca;background:#fff1f2}
-</style>
-<script id="gc-cloud-registration-guard-script">
+<script id="gc-clean-login-menu">
 (function(){
-  function badge(){
-    let b=document.getElementById('gcCloudStatusBadge');
-    if(!b){
-      b=document.createElement('button');
-      b.id='gcCloudStatusBadge';
-      b.type='button';
-      b.title='GURU CONNECT cloud status';
-      document.body.appendChild(b);
-      b.addEventListener('click',async function(){
-        if(typeof window.gcCloudDiagnostic==='function'){
-          const r=await window.gcCloudDiagnostic();
-          alert(r.message);
-        }
-      });
-    }
-    const enabled=!!window.gcSupabase && typeof window.GC_CLOUD_STATUS==='function' && window.GC_CLOUD_STATUS()==='enabled';
-    b.textContent=enabled?'☁ CLOUD CONNECTED':'☁ CLOUD ERROR';
-    b.className=enabled?'gc-ok':'gc-bad';
+  function setup(){
+    const menu=document.getElementById('publicNavbarLinks');
+    if(!menu || menu.querySelector('[data-gc-clean-login]')) return;
+    const wrap=document.createElement('div');
+    wrap.setAttribute('data-gc-clean-login','1');
+    wrap.style.cssText='border-top:1px solid #e2e8f0;margin-top:6px;padding:10px 10px 6px;display:grid;gap:7px;';
+    wrap.innerHTML=`
+      <div style="font-size:10px;font-weight:900;letter-spacing:.08em;color:#64748b;padding:0 6px 2px">ACCOUNT LOGIN</div>
+      <button type="button" data-role="student" style="width:100%;min-height:42px;border:0;border-radius:11px;background:#2563eb;color:#fff;font-weight:900;cursor:pointer;text-align:left;padding:10px 12px"><i class="fa-solid fa-graduation-cap" style="width:20px"></i> STUDENT LOGIN</button>
+      <button type="button" data-role="tutor" style="width:100%;min-height:42px;border:0;border-radius:11px;background:#0f766e;color:#fff;font-weight:900;cursor:pointer;text-align:left;padding:10px 12px"><i class="fa-solid fa-chalkboard-user" style="width:20px"></i> TUTOR LOGIN</button>
+      <button type="button" data-role="staff" style="width:100%;min-height:42px;border:0;border-radius:11px;background:#7c3aed;color:#fff;font-weight:900;cursor:pointer;text-align:left;padding:10px 12px"><i class="fa-solid fa-user-tie" style="width:20px"></i> STAFF LOGIN</button>`;
+    menu.appendChild(wrap);
+    wrap.querySelectorAll('button').forEach(btn=>btn.addEventListener('click',function(){
+      try{if(typeof closeNavMenu==='function') closeNavMenu();}catch(e){}
+      const role=this.dataset.role;
+      if(role==='staff'){ if(typeof openStaffLoginModal==='function') openStaffLoginModal(); return; }
+      const modal=document.getElementById('loginModal');
+      const sel=document.getElementById('loginRoleInput');
+      if(sel) sel.value=role;
+      if(modal) modal.classList.remove('hidden');
+    }));
   }
-
-  window.gcCloudDiagnostic=async function(){
-    if(!window.gcSupabase){
-      return {ok:false,message:'Supabase client is not available. The Supabase JavaScript library did not initialize. Please hard-refresh the page; if this remains, check browser console for the CDN error.'};
-    }
-    try{
-      const auth=await window.gcSupabase.auth.getUser();
-      if(auth.error && auth.error.message && !auth.data?.user){
-        // Anonymous auth may not have a session yet; test it explicitly.
-        const u=await window.gcGetAnonymousUser();
-        return {ok:true,message:'Supabase connected and anonymous cloud registration session is available.\\nUser: '+u.id};
-      }
-      const u=auth.data && auth.data.user;
-      return {ok:true,message:'Supabase connected.\\nCloud session: '+(u?u.id:'none')};
-    }catch(e){
-      return {ok:false,message:'Supabase connection/authentication failed.\\n\\n'+(e.message||e)};
-    }
-  };
-
-  function boot(){
-    setTimeout(badge,500);
-    setTimeout(badge,1800);
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot);
-  else boot();
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',setup); else setup();
 })();
-</script>
-
-
-<script id="gc-cloud-error-helper">
-(function(){
-  window.gcFormatCloudError=function(err){
-    if(!err) return 'Unknown Supabase error.';
-    const msg=String(err.message||err.error_description||err.details||err.hint||err);
-    if(/row-level security|permission denied|violates row-level security/i.test(msg)){
-      return 'Supabase security policy blocked this registration. The database is connected, but its INSERT policy needs to allow this registration flow.';
-    }
-    if(/not-null|null value/i.test(msg)){
-      return 'Supabase rejected the registration because a required database field is missing.';
-    }
-    if(/column .* does not exist|schema cache/i.test(msg)){
-      return 'Supabase rejected the registration because the website and database columns do not match.';
-    }
-    return msg;
-  };
-})();
-</script>
-
-<script id="gc-supabase-runtime-guard">
-(function(){
-  function check(){
-    if(window.supabase || window.gcSupabase) return;
-    console.error('GURU CONNECT: Supabase JS library did not load from jsDelivr.');
-    const b=document.getElementById('gcCloudStatusBadge');
-    if(b){
-      b.textContent='☁ SUPABASE LIBRARY ERROR';
-      b.className='gc-bad';
-      b.title='Supabase JavaScript library did not load. Check internet/CDN access.';
-    }
-  }
-  setTimeout(check,2500);
-})();
-</script>
-
-
-<script id="gc-mobile-navigation-final">
-(function(){
-  function closePublicMenu(){
-    const m = document.getElementById('publicNavbarLinks');
-    if(!m) return;
-    m.classList.remove('open','active','show');
-    m.style.removeProperty('display');
-    m.style.removeProperty('visibility');
-    m.style.removeProperty('opacity');
-  }
-
-  document.addEventListener('click', function(e){
-    const m = document.getElementById('publicNavbarLinks');
-    if(!m) return;
-    const toggle = e.target.closest('#mobileMenuBtn,.menu-toggle,[data-menu-toggle]');
-    if(!toggle && !m.contains(e.target)) closePublicMenu();
-    if(m.contains(e.target) && e.target.closest('a,button')) closePublicMenu();
-  }, true);
-
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape') closePublicMenu();
-  });
-
-  window.addEventListener('resize', function(){
-    if(window.innerWidth > 768) closePublicMenu();
-  });
-})();
-</script>
-
-
-<script id="gc-supabase-final-bootstrap">
-(function(){
-  function updateBadge(){
-    const b=document.getElementById('gcCloudStatusBadge');
-    if(!b) return;
-    if(window.gcSupabase && typeof window.GC_CLOUD_STATUS==='function' && window.GC_CLOUD_STATUS()==='enabled'){
-      b.textContent='☁ CLOUD CONNECTED';
-      b.className='gc-ok';
-      b.title='GURU CONNECT cloud database connected';
-    } else {
-      b.textContent='☁ CLOUD ERROR';
-      b.className='gc-bad';
-      b.title='Supabase cloud is not initialized';
-    }
-  }
-
-  // The CDN normally loads before the main cloud script. This retry protects
-  // against a slow mobile CDN load without ever using localStorage as a DB.
-  setTimeout(function(){
-    if(window.supabase && !window.gcSupabase){
-      try{
-        const url='https://hzqqswrnawrfgufbxgay.supabase.co';
-        const key='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
-        window.gcSupabase=window.supabase.createClient(url,key,{
-          auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}
-        });
-      }catch(e){ console.error('GURU CONNECT delayed Supabase init failed:',e); }
-    }
-    updateBadge();
-  },3000);
-
-  setTimeout(updateBadge,4000);
-})();
-</script>
-
-
-
-<!-- GURU CONNECT: SHAREABLE PUBLIC TUTOR PROFILE -->
-<style id="gc-shareable-tutor-profile">
-  body.gc-public-tutor-mode > *:not(#gcPublicTutorPage){display:none!important}
-  body.gc-public-tutor-mode{background:#f5f8ff!important;overflow:auto!important}
-  #gcPublicTutorPage{display:none}
-  body.gc-public-tutor-mode #gcPublicTutorPage{display:block;min-height:100vh}
-  .gc-public-wrap{max-width:980px;margin:0 auto;padding:22px 14px 48px}
-  .gc-public-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
-  .gc-public-brand{font-weight:1000;color:#123b8f;letter-spacing:.08em;font-size:14px}
-  .gc-public-share{border:0;background:#123b8f;color:#fff;padding:10px 14px;border-radius:12px;font-weight:900;cursor:pointer;box-shadow:0 8px 20px rgba(18,59,143,.18)}
-  .gc-public-card{background:#fff;border:1px solid #dbe5f4;border-radius:28px;overflow:hidden;box-shadow:0 18px 55px rgba(15,43,85,.10)}
-  .gc-public-hero{padding:24px;background:linear-gradient(135deg,#06145f 0%,#0759c9 48%,#18b8ff 100%);color:#fff;display:flex;gap:20px;align-items:center}
-  .gc-public-avatar{width:112px;height:112px;border-radius:24px;overflow:hidden;background:rgba(255,255,255,.18);border:2px solid rgba(255,255,255,.75);display:flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:42px}
-  .gc-public-avatar img{width:100%;height:100%;object-fit:cover}
-  .gc-public-status{display:inline-flex;align-items:center;gap:7px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);padding:6px 10px;border-radius:999px;font-size:10px;font-weight:1000;letter-spacing:.08em}
-  .gc-public-name{font-size:clamp(24px,5vw,38px);line-height:1.08;font-weight:1000;margin:9px 0 6px;display:flex;align-items:center;gap:9px;flex-wrap:wrap}
-  .gc-public-tick{width:25px;height:25px;display:inline-flex;flex:0 0 auto}.gc-public-tick img{width:100%;height:100%;object-fit:contain}
-  .gc-public-sub{font-size:14px;font-weight:800;opacity:.94}
-  .gc-public-body{padding:22px}
-  .gc-public-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:18px}
-  .gc-public-stat{background:#f7faff;border:1px solid #e1eaf6;border-radius:16px;padding:13px}.gc-public-stat small{display:block;font-size:9px;font-weight:1000;color:#64748b;letter-spacing:.08em}.gc-public-stat strong{display:block;margin-top:4px;color:#0f172a;font-size:15px}
-  .gc-public-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-  .gc-public-detail{border:1px solid #e2e8f0;border-radius:16px;padding:14px}.gc-public-detail small{display:block;font-size:9px;font-weight:1000;color:#64748b;letter-spacing:.08em}.gc-public-detail strong{display:block;margin-top:5px;color:#0f172a;line-height:1.45}
-  .gc-public-about{margin-top:14px;border-radius:18px;background:#f5f9ff;border:1px solid #dce9fb;padding:17px;line-height:1.7;color:#334155;font-size:14px;white-space:pre-line}
-  .gc-public-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.gc-public-actions a,.gc-public-actions button{flex:1;min-width:180px;text-align:center;padding:13px 15px;border-radius:14px;font-weight:1000;text-decoration:none;cursor:pointer;border:0}.gc-public-primary{background:#123b8f;color:#fff}.gc-public-secondary{background:#eef5ff;color:#123b8f}
-  .gc-public-note{text-align:center;color:#64748b;font-size:11px;margin-top:14px}
-  .gc-public-error{max-width:560px;margin:12vh auto;padding:28px;background:#fff;border:1px solid #e2e8f0;border-radius:24px;text-align:center;box-shadow:0 18px 55px rgba(15,43,85,.10)}
-  .gc-public-loading{max-width:560px;margin:18vh auto;text-align:center;color:#123b8f;font-weight:1000}
-  @media(max-width:640px){.gc-public-wrap{padding:12px 10px 32px}.gc-public-hero{padding:18px;gap:13px}.gc-public-avatar{width:82px;height:82px;border-radius:18px;font-size:30px}.gc-public-body{padding:15px}.gc-public-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.gc-public-grid{grid-template-columns:1fr}.gc-public-top{align-items:flex-start}.gc-public-share{padding:9px 11px;font-size:11px}}
-  .gc-dashboard-public-link{margin-top:18px;padding:16px;border:1px solid #cfe0fb;background:linear-gradient(135deg,#f4f8ff,#fff);border-radius:20px}
-  .gc-dashboard-public-link .gc-public-link-row{display:flex;gap:9px;align-items:center;margin-top:10px}.gc-dashboard-public-link input{flex:1;min-width:0;padding:11px 12px;border:1px solid #d7e1ee;border-radius:11px;background:#fff;font-size:12px;font-weight:700;color:#334155}.gc-dashboard-public-link button{border:0;background:#123b8f;color:#fff;padding:11px 13px;border-radius:11px;font-weight:900;cursor:pointer}
-  .gc-dashboard-public-link.gc-disabled{opacity:.72}
-</style>
-
-<div id="gcPublicTutorPage" aria-live="polite"></div>
-
-<script id="gc-shareable-tutor-profile-script">
-(function(){
-  'use strict';
-  function tutorList(){return Array.isArray(window.tutorDirectoryList)?window.tutorDirectoryList:[];}
-  function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]});}
-  function isEligible(t){return !!t && t.isDummy!==true && t.paidStatus==='PAID' && t.verified===true;}
-  function getIdFromUrl(){
-    try{var q=new URLSearchParams(location.search); var id=q.get('tutor'); if(id)return id;}catch(e){}
-    var m=location.hash.match(/^#tutor[=\/]([^&]+)/i); return m?decodeURIComponent(m[1]):'';
-  }
-  function profileUrl(t){return location.origin+location.pathname+'?tutor='+encodeURIComponent(String(t.id));}
-  function photo(t){return t.photoData||t.photo_url||t.photo||'';}
-  function tick(){try{return typeof VERIFIED_TICK_LOGO_URL!=='undefined'?VERIFIED_TICK_LOGO_URL:''}catch(e){return ''}}
-  function rating(t){return t._manualRating||t.rating||'—'}
-  function publicPage(t){
-    var root=document.getElementById('gcPublicTutorPage'); if(!root)return;
-    var p=photo(t), tickUrl=tick(), name=t.name||'Tutor';
-    document.body.classList.add('gc-public-tutor-mode');
-    root.innerHTML='<div class="gc-public-wrap">'+
-      '<div class="gc-public-top"><div class="gc-public-brand">GURU CONNECT</div><button class="gc-public-share" onclick="gcShareTutorProfile()"><i class="fa-solid fa-share-nodes"></i> SHARE PROFILE</button></div>'+
-      '<article class="gc-public-card">'+
-        '<header class="gc-public-hero">'+
-          '<div class="gc-public-avatar">'+(p?'<img src="'+esc(p)+'" alt="'+esc(name)+'" onerror="this.onerror=null;this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=\"fa-solid fa-chalkboard-user\"></i>\'">':'<i class="fa-solid fa-chalkboard-user"></i>')+'</div>'+ 
-          '<div style="min-width:0">'+
-            '<div class="gc-public-status"><i class="fa-solid fa-circle-check"></i> VERIFIED & DIGITALLY AVAILABLE</div>'+
-            '<h1 class="gc-public-name">'+esc(name)+(tickUrl?'<span class="gc-public-tick"><img src="'+esc(tickUrl)+'" alt="Verified"></span>':'')+'</h1>'+ 
-            '<div class="gc-public-sub">'+esc(t.subject||'Junior College Tutor')+(t.stream?' • '+esc(t.stream):'')+'</div>'+ 
-          '</div>'+ 
-        '</header>'+ 
-        '<div class="gc-public-body">'+
-          '<div class="gc-public-stats">'+
-            '<div class="gc-public-stat"><small>RATING</small><strong>★ '+esc(rating(t))+'</strong></div>'+ 
-            '<div class="gc-public-stat"><small>EXPERIENCE</small><strong>'+esc(t.experience||'Not provided')+'</strong></div>'+ 
-            '<div class="gc-public-stat"><small>STUDENTS</small><strong>'+esc(t.students||'—')+'</strong></div>'+ 
-            '<div class="gc-public-stat"><small>TEACHING MODE</small><strong>ONLINE / DIGITAL</strong></div>'+ 
-          '</div>'+ 
-          '<div class="gc-public-grid">'+
-            '<div class="gc-public-detail"><small>QUALIFICATION</small><strong>'+esc(t.qualification||'Not provided')+'</strong></div>'+ 
-            '<div class="gc-public-detail"><small>COLLEGE / INSTITUTE</small><strong>'+esc(t.teachingCollege||t.college||'Not provided')+'</strong></div>'+ 
-            '<div class="gc-public-detail"><small>SUBJECT / EXPERTISE</small><strong>'+esc(t.subject||'Not provided')+'</strong></div>'+ 
-            '<div class="gc-public-detail"><small>LOCATION</small><strong>'+esc(t.location||'Maharashtra')+'</strong></div>'+ 
-          '</div>'+ 
-          '<section class="gc-public-about"><strong style="display:block;color:#123b8f;margin-bottom:7px"><i class="fa-solid fa-user-tie"></i> ABOUT THE TUTOR</strong>'+esc(t.aboutMe||'This tutor has not added an About Me section yet.')+'</section>'+ 
-          '<div class="gc-public-actions">'+
-            '<button class="gc-public-primary" onclick="gcShareTutorProfile()"><i class="fa-solid fa-link"></i> COPY PROFILE LINK</button>'+ 
-            '<a class="gc-public-secondary" href="'+esc(location.pathname)+'"><i class="fa-solid fa-house"></i> GURU CONNECT</a>'+ 
-          '</div>'+ 
-          '<div class="gc-public-note">This public profile is available to verified tutors with an active paid GURU CONNECT listing.</div>'+ 
-        '</div>'+ 
-      '</article>'+ 
-    '</div>';
-  }
-  function showMessage(title,msg){
-    document.body.classList.add('gc-public-tutor-mode');
-    document.getElementById('gcPublicTutorPage').innerHTML='<div class="gc-public-error"><div style="font-size:40px;color:#123b8f"><i class="fa-solid fa-user-shield"></i></div><h1 style="font-size:24px;font-weight:1000;color:#0f172a;margin:10px 0">'+esc(title)+'</h1><p style="color:#64748b;line-height:1.6">'+esc(msg)+'</p><a href="'+esc(location.pathname)+'" style="display:inline-block;margin-top:18px;background:#123b8f;color:#fff;padding:12px 18px;border-radius:12px;text-decoration:none;font-weight:900">OPEN GURU CONNECT</a></div>';
-  }
-  window.gcShareTutorProfile=function(){
-    var id=getIdFromUrl(), t=tutorList().find(function(x){return String(x.id)===String(id)}); if(!t)return;
-    var u=profileUrl(t);
-    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(u).then(function(){alert('Tutor profile link copied successfully.');}).catch(function(){prompt('Copy this tutor profile link:',u);});}
-    else prompt('Copy this tutor profile link:',u);
-  };
-  window.gcTutorPublicUrl=function(id){var t=tutorList().find(function(x){return String(x.id)===String(id)});return t?profileUrl(t):''};
-  window.gcOpenPublicTutorFromDashboard=function(id){var t=tutorList().find(function(x){return String(x.id)===String(id)});if(!t)return;if(!isEligible(t)){alert('Your public Tutor Profile becomes available after GURU CONNECT verifies your tutor profile and your paid listing is active.');return}window.open(profileUrl(t),'_blank','noopener');};
-  window.gcCopyPublicTutorFromDashboard=function(id){var u=window.gcTutorPublicUrl(id),t=tutorList().find(function(x){return String(x.id)===String(id)});if(!u||!t)return;if(!isEligible(t)){alert('Public profile link will activate after your profile is verified and your paid listing is active.');return}if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(u).then(function(){alert('Public tutor profile link copied. You can share it on WhatsApp, Instagram, CV, visiting card or anywhere online.');});else prompt('Copy your public tutor profile link:',u);};
-  function dashboardEnhance(p){
-    if(!p||p.registrationRole!=='tutor')return;
-    var host=document.getElementById('userDashboardContent');if(!host||host.querySelector('#gcTutorPublicProfileBox'))return;
-    var eligible=isEligible(p),u=profileUrl(p);
-    var box=document.createElement('section');box.id='gcTutorPublicProfileBox';box.className='gc-dashboard-public-link '+(!eligible?'gc-disabled':'');
-    box.innerHTML='<div style="font-weight:1000;color:#123b8f"><i class="fa-solid fa-globe"></i> YOUR PUBLIC TUTOR PROFILE</div>'+
-      '<p style="margin:5px 0 0;color:#64748b;font-size:12px;line-height:1.5">'+(eligible?'Your verified digital profile is live. Share this link with students, parents, on WhatsApp, Instagram, your CV or visiting card.':'Available after your tutor profile is VERIFIED and your PAID listing is active.')+'</p>'+ 
-      '<div class="gc-public-link-row"><input readonly value="'+esc(u)+'" aria-label="Public tutor profile link"><button type="button" '+(!eligible?'disabled':'')+' onclick="gcCopyPublicTutorFromDashboard(\''+esc(String(p.id))+'\')"><i class="fa-solid fa-copy"></i> COPY</button><button type="button" '+(!eligible?'disabled':'')+' onclick="gcOpenPublicTutorFromDashboard(\''+esc(String(p.id))+'\')"><i class="fa-solid fa-arrow-up-right-from-square"></i> OPEN</button></div>';
-    host.appendChild(box);
-  }
-  var oldDash=window.renderUserDashboard;
-  if(typeof oldDash==='function')window.renderUserDashboard=function(p){oldDash(p);setTimeout(function(){dashboardEnhance(p)},30)};
-  function bootPublic(){
-    var id=getIdFromUrl(); if(!id)return;
-    document.body.classList.add('gc-public-tutor-mode');
-    document.getElementById('gcPublicTutorPage').innerHTML='<div class="gc-public-loading">Loading tutor profile…</div>';
-    var tries=0;
-    function attempt(){
-      var t=tutorList().find(function(x){return String(x.id)===String(id)});
-      if(t){if(!isEligible(t))showMessage('Tutor Profile Not Public Yet','This tutor profile is not currently available as a public verified profile.');else publicPage(t);return;}
-      tries++; if(tries<30){setTimeout(attempt,500);return} showMessage('Tutor Profile Not Found','The tutor profile link may be incorrect or the profile is no longer active.');
-    }
-    attempt();
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(bootPublic,1800)});else setTimeout(bootPublic,1800);
-  window.addEventListener('popstate',bootPublic);
-})();
-</script>
-
-<style id="gc-helpline-plan-ui">
-.gc-helpline-plan-panel{
-  display:none;
-  margin-top:14px;
-  padding:16px;
-  border:1px solid rgba(37,99,235,.18);
-  border-radius:16px;
-  background:linear-gradient(180deg,#f8fbff,#ffffff);
-}
-.gc-helpline-plan-panel.is-open{display:block}
-.gc-helpline-plan-title{font-weight:900;font-size:16px;margin-bottom:6px}
-.gc-helpline-plan-note{font-size:12px;color:#64748b;margin-bottom:12px}
-.gc-helpline-plan-list{display:grid;gap:10px}
-.gc-helpline-plan-option{
-  border:1px solid #dbe4f0;
-  border-radius:13px;
-  padding:12px;
-  background:#fff;
-  cursor:pointer;
-}
-.gc-helpline-plan-option.is-selected{
-  border-color:#2563eb;
-  box-shadow:0 0 0 2px rgba(37,99,235,.12);
-}
-.gc-helpline-plan-option strong{display:block}
-.gc-helpline-plan-option small{display:block;color:#64748b;margin-top:3px}
-.gc-helpline-pay{
-  display:none;
-  margin-top:12px;
-  padding:13px;
-  border-radius:13px;
-  background:#eef6ff;
-}
-.gc-helpline-pay.is-open{display:block}
-.gc-helpline-pay button{
-  width:100%;
-  margin-top:9px;
-  border:0;
-  border-radius:11px;
-  padding:11px 14px;
-  font-weight:900;
-  cursor:pointer;
-}
-</style>
-
-<script id="gc-helpline-registration-flow">
-(function(){
-  function textOf(el){ return (el && (el.textContent||el.innerText||'')).trim().toLowerCase(); }
-
-  function findRegistrationContainer(){
-    const candidates=[...document.querySelectorAll('form,section,.modal,.dialog,.popup,.card,div')];
-    return candidates.find(el=>{
-      const t=textOf(el);
-      return t.includes('register with helpline service') &&
-             t.includes('continue without helpline service') &&
-             el.querySelectorAll('button,label,input').length>0;
-    }) || null;
-  }
-
-  function getExistingPlanSource(){
-    const all=[...document.querySelectorAll('body *')];
-    return all.find(el=>{
-      const t=textOf(el);
-      return (t.includes('helpline plan') || t.includes('helpline plans')) &&
-             t.length>20 && t.length<5000;
-    }) || null;
-  }
-
-  function wire(){
-    const root=findRegistrationContainer();
-    if(!root || root.dataset.gcHelplineWired) return;
-    root.dataset.gcHelplineWired='1';
-
-    const controls=[...root.querySelectorAll('button,label')];
-    const yes=controls.find(el=>/register with helpline service/i.test(textOf(el)));
-    const no=controls.find(el=>/continue without helpline service/i.test(textOf(el)));
-
-    const panel=document.createElement('div');
-    panel.className='gc-helpline-plan-panel';
-    panel.innerHTML=`
-      <div class="gc-helpline-plan-title">929 Helpline Service Plans</div>
-      <div class="gc-helpline-plan-note">
-        Select the helpline plan you want. The payment step will follow the selected plan.
-      </div>
-      <div class="gc-helpline-plan-list"></div>
-      <div class="gc-helpline-pay">
-        <strong>Payment</strong>
-        <div class="gc-helpline-payment-summary"></div>
-        <button type="button">Continue to Payment</button>
-      </div>
-    `;
-    (no || root.lastElementChild || root).after(panel);
-
-    const list=panel.querySelector('.gc-helpline-plan-list');
-    const pay=panel.querySelector('.gc-helpline-pay');
-    const summary=panel.querySelector('.gc-helpline-payment-summary');
-
-    // Use existing plan cards/details if present; otherwise expose a clean selection area
-    // and leave actual pricing to the site's existing plan/payment data.
-    const source=getExistingPlanSource();
-    if(source && source!==panel && !root.contains(source)){
-      const clone=source.cloneNode(true);
-      clone.querySelectorAll('button,a,input').forEach(x=>x.removeAttribute('onclick'));
-      list.appendChild(clone);
-    }else{
-      const existing=[...document.querySelectorAll('[data-helpline-plan],.helpline-plan,.gc-helpline-plan')]
-        .filter(x=>!panel.contains(x));
-      existing.slice(0,10).forEach(x=>list.appendChild(x.cloneNode(true)));
-    }
-
-    if(!list.children.length){
-      const msg=document.createElement('div');
-      msg.className='gc-helpline-plan-option';
-      msg.innerHTML='<strong>Choose a Helpline Plan</strong><small>Available plans and their current prices should appear here from your existing plan configuration.</small>';
-      list.appendChild(msg);
-    }
-
-    list.addEventListener('click',function(e){
-      const option=e.target.closest('.gc-helpline-plan-option,[data-helpline-plan],.helpline-plan');
-      if(!option) return;
-      list.querySelectorAll('.is-selected').forEach(x=>x.classList.remove('is-selected'));
-      option.classList.add('is-selected');
-      summary.textContent='Selected plan: '+(option.innerText||'Helpline Plan').replace(/\s+/g,' ').trim();
-      pay.classList.add('is-open');
-    });
-
-    const paymentButton=pay.querySelector('button');
-    paymentButton.addEventListener('click',function(){
-      // Prefer the site's existing payment action if one exists.
-      const selected=list.querySelector('.is-selected');
-      const candidates=[
-        ...document.querySelectorAll('[data-payment-action],[data-action="payment"],button')
-      ];
-      const existing=candidates.find(el=>{
-        if(el===paymentButton) return false;
-        const t=textOf(el);
-        return t.includes('payment') || t.includes('pay now') || t.includes('subscribe');
-      });
-      if(existing) existing.click();
-      else alert('Please connect the selected Helpline Plan to the existing payment gateway/action.');
-    });
-
-    function toggle(){
-      const active=yes && (
-        yes.matches('input:checked') ||
-        yes.getAttribute('aria-checked')==='true' ||
-        yes.classList.contains('active') ||
-        yes.classList.contains('selected')
-      );
-      if(active) panel.classList.add('is-open');
-    }
-    if(yes) yes.addEventListener('click',()=>setTimeout(toggle,0));
-    if(no) no.addEventListener('click',()=>panel.classList.remove('is-open'));
-  }
-
-  const observer=new MutationObserver(wire);
-  observer.observe(document.documentElement,{childList:true,subtree:true});
-  wire();
-  setTimeout(wire,500);
-  setTimeout(wire,1500);
-})();
-</script>
-
-
-<script id="gc-home-horizontal-position-fix">
-(function(){
-  function reset(){
-    try{window.scrollTo(0,0);}catch(e){}
-    try{document.documentElement.scrollLeft=0;document.body.scrollLeft=0;}catch(e){}
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',function(){setTimeout(reset,0);});
-  else setTimeout(reset,0);
-  window.addEventListener('pageshow',reset);
-})();
-</script>
-
-<script id="gc-registration-overlay-script">
-(function(){
-  function registrationSection(){ return document.getElementById('registrationSection'); }
-
-  function ensureCloseButton(){
-    const section=registrationSection();
-    if(!section || section.querySelector('.gc-registration-close')) return;
-    const b=document.createElement('button');
-    b.type='button';
-    b.className='gc-registration-close';
-    b.setAttribute('aria-label','Close Registration');
-    b.innerHTML='<i class="fa-solid fa-xmark"></i>';
-    b.onclick=closeRegistrationPage;
-    section.prepend(b);
-  }
-
-  window.openRegistrationPage=function(){
-    const section=registrationSection();
-    if(!section) return;
-    ensureCloseButton();
-    section.classList.add('gc-registration-overlay');
-    document.body.classList.add('gc-registration-lock');
-    section.scrollTop=0;
-    try{ history.replaceState(null,'','#registrationSection'); }catch(_){}
-  };
-
-  window.closeRegistrationPage=function(){
-    const section=registrationSection();
-    if(!section) return;
-    section.classList.remove('gc-registration-overlay');
-    document.body.classList.remove('gc-registration-lock');
-    try{ history.replaceState(null,'',location.pathname+location.search); }catch(_){}
-  };
-
-  function wireRegistrationLinks(){
-    document.querySelectorAll('a[href="#registrationSection"]').forEach(function(a){
-      if(a.dataset.gcRegLinkWired) return;
-      a.dataset.gcRegLinkWired='1';
-      a.addEventListener('click',function(e){
-        e.preventDefault();
-        if(typeof closeNavMenu==='function') closeNavMenu();
-        openRegistrationPage();
-      });
-    });
-  }
-
-  document.addEventListener('keydown',function(e){
-    if(e.key==='Escape' && registrationSection()?.classList.contains('gc-registration-overlay')){
-      closeRegistrationPage();
-    }
-  });
-
-  window.addEventListener('load',function(){
-    wireRegistrationLinks();
-    if(location.hash==='#registrationSection') openRegistrationPage();
-  });
-  const obs=new MutationObserver(wireRegistrationLinks);
-  obs.observe(document.documentElement,{childList:true,subtree:true});
-})();
-</script>
-
-
-<div id="gcRegistrationSuccessPopup" role="dialog" aria-modal="true" aria-labelledby="gcRegSuccessTitle">
-  <div class="gc-reg-success-card">
-    <div class="gc-reg-success-icon"><i class="fa-solid fa-circle-check"></i></div>
-    <h3 id="gcRegSuccessTitle">Registration Submitted Successfully</h3>
-    <p>Thank you Your Registration Form is submitted successfully - Please wait for our Response call &amp; Approval.</p>
-    <div class="gc-success-note">Our team will review your registration and contact you after the verification / approval process.</div>
-    <button type="button" onclick="closeRegistrationSuccessPopup()">OK, THANK YOU</button>
-  </div>
-</div>
-
-
-<script id="gc-registration-success-popup-script">
-(function(){
-  window.showRegistrationSuccessPopup=function(){
-    const p=document.getElementById('gcRegistrationSuccessPopup');
-    if(p) p.classList.add('is-open');
-  };
-  window.closeRegistrationSuccessPopup=function(){
-    const p=document.getElementById('gcRegistrationSuccessPopup');
-    if(p) p.classList.remove('is-open');
-  };
-  document.addEventListener('keydown',function(e){
-    if(e.key==='Escape') closeRegistrationSuccessPopup();
-  });
-})();
-</script>
-
-
-<style id="gc-admin-tutor-actions-final">
-#adminEditTutorModal{z-index:100200!important}
-#adminEditTutorModal .gc-v2-input,#adminEditTutorModal .gc-v2-textarea{background:#fff!important}
-.gc-admin-save-state{font-size:12px;font-weight:800;margin-top:8px;text-align:center}
-</style>
-<style id="gc-admin-real-fix">
-#staffAdminDashboard button{cursor:pointer!important}
-</style>
-<script id="gc-mobile-menu-final-script">
-(function(){function add(){const menu=document.getElementById('mainMenu')||document.getElementById('menuPanel')||document.querySelector('.menu-panel')||document.querySelector('.gc-menu-panel')||document.querySelector('[data-menu-panel]');if(!menu||menu.querySelector('.gc-login-menu-group'))return;menu.querySelectorAll('a,button').forEach(e=>{if((e.textContent||'').trim())e.classList.add('gc-menu-normal')});const g=document.createElement('div');g.className='gc-login-menu-group mt-3 pt-3 border-t border-slate-200';g.innerHTML='<div class="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2 px-1">Account & Staff Access</div><div class="grid gap-2"><button type="button" data-login="student" class="gc-menu-login-student rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-graduation-cap"></i> STUDENT LOGIN</button><button type="button" data-login="tutor" class="gc-menu-login-tutor rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-chalkboard-user"></i> TUTOR LOGIN</button><button type="button" data-login="staff" class="gc-menu-login-staff rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-user-tie"></i> STAFF LOGIN</button></div>';menu.appendChild(g);g.querySelectorAll('button').forEach(b=>b.onclick=function(){try{if(typeof closeNavMenu==='function')closeNavMenu()}catch(_){};const k=b.dataset.login;if(k==='staff'){if(typeof openStaffLoginModal==='function')openStaffLoginModal();else if(typeof openStaffLogin==='function')openStaffLogin();else document.querySelector('#staffLoginModal')?.classList.remove('hidden')}else if(k==='student'){if(typeof openStudentLoginModal==='function')openStudentLoginModal();else if(typeof openLoginModal==='function')openLoginModal('student');else document.querySelector('#studentLoginModal')?.classList.remove('hidden')}else{if(typeof openTutorLoginModal==='function')openTutorLoginModal();else if(typeof openLoginModal==='function')openLoginModal('tutor');else document.querySelector('#tutorLoginModal')?.classList.remove('hidden')}})}window.addEventListener('load',add);setTimeout(add,500);setTimeout(add,1500)})();
 </script>
 </body>
 </html>
