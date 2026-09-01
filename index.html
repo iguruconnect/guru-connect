@@ -11672,5 +11672,219 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 })();
 </script>
 
+
+<style id="gc-v11-final-form-ui">
+/* File chooser must look like a real, active button */
+input[type="file"]{
+  width:100%!important;box-sizing:border-box!important;padding:8px!important;
+  border:2px dashed #60a5fa!important;border-radius:12px!important;
+  background:#eff6ff!important;color:#1e3a8a!important;cursor:pointer!important;
+  font-weight:800!important;
+}
+input[type="file"]::file-selector-button{
+  border:0!important;border-radius:9px!important;padding:9px 14px!important;
+  margin-right:10px!important;background:#2563eb!important;color:#fff!important;
+  font-weight:900!important;cursor:pointer!important;
+}
+input[type="file"]::file-selector-button:hover{filter:brightness(1.1)!important}
+input[type="file"]::file-selector-button:active{transform:scale(.97)!important}
+
+/* Requested optional registration fields */
+#t_teaching_college,#t_about,#stu_division,#stu_roll{ }
+#t_teaching_college:not([required]),#t_about:not([required]),#stu_division:not([required]),#stu_roll:not([required]){}
+
+/* Verified submit buttons: grey only while disabled; vivid and tactile once enabled */
+#stuSubmitBtn:not(:disabled),#tutorSubmitBtn:not(:disabled){
+  background:linear-gradient(135deg,#2563eb,#06b6d4)!important;color:#fff!important;
+  opacity:1!important;cursor:pointer!important;
+  box-shadow:0 8px 22px rgba(37,99,235,.28)!important;
+  transition:transform .12s,filter .12s,box-shadow .12s!important;
+}
+#stuSubmitBtn:not(:disabled):hover,#tutorSubmitBtn:not(:disabled):hover{
+  filter:brightness(1.08)!important;box-shadow:0 10px 28px rgba(37,99,235,.4)!important;
+}
+#stuSubmitBtn:not(:disabled):active,#tutorSubmitBtn:not(:disabled):active{transform:scale(.975)!important}
+</style>
+
+<script id="gc-v11-final-registration-rules">
+(function(){
+'use strict';
+
+function optional(id){
+  var e=document.getElementById(id);
+  if(!e)return;
+  e.removeAttribute('required');
+  e.removeAttribute('aria-required');
+  var p=e.parentElement;
+  if(p){
+    p.querySelectorAll('label').forEach(function(l){
+      l.textContent=l.textContent.replace(/\s*\*\s*$/,'');
+    });
+  }
+}
+function apply(){
+  /* Tutor: teaching college + About Me are NOT compulsory */
+  optional('t_teaching_college');
+  optional('t_about');
+
+  /* Student: Division + Roll Number are NOT compulsory */
+  optional('stu_division');
+  optional('stu_roll');
+
+  document.querySelectorAll('input[type=file]').forEach(function(e){
+    e.removeAttribute('disabled');
+    e.style.cursor='pointer';
+  });
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply);else apply();
+new MutationObserver(apply).observe(document.documentElement,{
+  subtree:true,childList:true,attributes:true,attributeFilter:['required','disabled']
+});
+})();
+</script>
+
+<script id="gc-v11-final-tutor-admin-editor">
+(function(){
+'use strict';
+
+function staff(){return localStorage.getItem('is_staff_logged')==='true'}
+function tutors(){
+  try{return typeof tutorDirectoryList!=='undefined'&&Array.isArray(tutorDirectoryList)?tutorDirectoryList:[]}
+  catch(e){return[]}
+}
+function findTutor(id){return tutors().find(function(t){return String(t.id)===String(id)})}
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function saveLocal(){
+  try{if(typeof saveDirs==='function')saveDirs()}catch(e){}
+  try{if(typeof saveRegisteredDirectories==='function')saveRegisteredDirectories()}catch(e){}
+  try{if(typeof rerender==='function')rerender()}catch(e){}
+  try{if(typeof renderAdminQueue==='function')renderAdminQueue()}catch(e){}
+}
+
+function fileToDataURL(file,maxW){
+  return new Promise(function(resolve){
+    if(!file){resolve(null);return}
+    var r=new FileReader();
+    r.onload=function(){resolve(r.result)};
+    r.onerror=function(){resolve(null)};
+    r.readAsDataURL(file);
+  });
+}
+
+window.adminEditTutor=function(id){
+  if(!staff()){alert('Please login through STAFF LOGIN first.');return}
+  var t=findTutor(id);
+  if(!t){alert('Tutor record not found.');return}
+
+  var m=document.getElementById('adminEditTutorModal');
+  if(!m){alert('Tutor edit window is missing.');return}
+  var box=m.querySelector(':scope > div')||m.querySelector('div');
+  if(!box){alert('Tutor edit container is missing.');return}
+
+  window.currentEditingTutorId=t.id;
+  var ach=Array.isArray(t.achievements)?t.achievements.slice(0,3):[];
+
+  box.innerHTML=
+  '<div style="margin-bottom:18px">'+
+    '<h3 class="text-xl font-black text-brand-dark">Edit Tutor Profile</h3>'+
+    '<p class="text-xs text-slate-500 mt-1">Staff/Admin can update the complete tutor profile.</p>'+
+  '</div>'+
+  '<form id="gcV11TutorForm" class="space-y-4">'+
+    '<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">'+
+      '<div><label class="gc-v2-label">NAME</label><input id="v11name" class="gc-v2-input" required value="'+esc(t.name)+'"></div>'+
+      '<div><label class="gc-v2-label">EMAIL</label><input id="v11email" type="email" class="gc-v2-input" value="'+esc(t.email)+'"></div>'+
+      '<div><label class="gc-v2-label">PHONE</label><input id="v11phone" class="gc-v2-input" value="'+esc(t.phone)+'"></div>'+
+      '<div><label class="gc-v2-label">QUALIFICATION</label><input id="v11qual" class="gc-v2-input" value="'+esc(t.qualification)+'"></div>'+
+      '<div><label class="gc-v2-label">EXPERIENCE</label><input id="v11exp" class="gc-v2-input" value="'+esc(t.experience)+'"></div>'+
+      '<div><label class="gc-v2-label">COLLEGE / INSTITUTE</label><input id="v11college" class="gc-v2-input" value="'+esc(t.teachingCollege||t.college)+'"></div>'+
+      '<div><label class="gc-v2-label">SUBJECT</label><input id="v11subject" class="gc-v2-input" value="'+esc(t.subject)+'"></div>'+
+      '<div><label class="gc-v2-label">RATE / HOUR</label><input id="v11price" class="gc-v2-input" value="'+esc(t.price)+'"></div>'+
+      '<div><label class="gc-v2-label">RATING</label><input id="v11rating" type="number" min="1" max="5" step=".1" class="gc-v2-input" value="'+esc(t._manualRating||5)+'"></div>'+
+      '<div><label class="gc-v2-label">STUDENTS</label><input id="v11students" class="gc-v2-input" value="'+esc(t.students||'')+'"></div>'+
+    '</div>'+
+    '<div><label class="gc-v2-label">ABOUT ME</label><textarea id="v11about" class="gc-v2-textarea" rows="5">'+esc(t.aboutMe||'')+'</textarea></div>'+
+    '<div class="gc-v2-panel">'+
+      '<div class="font-black text-sm mb-3">TUTOR PHOTOS</div>'+
+      '<label class="gc-v2-label">PROFILE PHOTO — choose a new photo to replace it</label>'+
+      '<input id="v11photo" type="file" accept="image/*">'+
+      '<div style="margin-top:14px;font-weight:900;font-size:12px">PROFESSIONAL ACHIEVEMENT PHOTOS — UP TO 3</div>'+
+      '<div id="v11achPreview" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:10px 0">'+
+        (ach.length?ach.map(function(a){return '<img src="'+esc(a)+'" style="width:100%;height:100px;object-fit:cover;border-radius:10px;border:1px solid #cbd5e1">'}).join(''):'<div style="grid-column:1/-1;font-size:11px;color:#64748b">No achievement photos saved for this tutor.</div>')+
+      '</div>'+
+      '<label class="gc-v2-label">ADD / REPLACE ACHIEVEMENT PHOTOS</label>'+
+      '<input id="v11ach" type="file" accept="image/*" multiple>'+
+    '</div>'+
+    '<div class="gc-v2-panel"><label class="flex items-center gap-3 text-sm font-black"><input id="v11verified" type="checkbox" '+(t.verified?'checked':'')+' class="w-5 h-5"> VERIFIED TUTOR</label></div>'+
+    '<div id="v11status" class="text-xs font-bold text-slate-500">Ready to save.</div>'+
+    '<div class="flex gap-3"><button type="button" id="v11cancel" class="flex-1 bg-slate-100 py-3 rounded-xl font-bold">CANCEL</button><button id="v11save" type="submit" class="flex-1 bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 text-white py-3 rounded-xl font-black shadow-lg">SAVE ALL CHANGES</button></div>'+
+  '</form>';
+
+  m.classList.remove('hidden');
+  document.getElementById('v11cancel').onclick=function(){closeAdminEditTutorModal()};
+
+  document.getElementById('gcV11TutorForm').onsubmit=async function(e){
+    e.preventDefault();
+    var btn=document.getElementById('v11save'),status=document.getElementById('v11status');
+    btn.disabled=true;btn.textContent='SAVING...';status.textContent='Saving tutor profile and photos...';status.className='text-xs font-bold text-blue-600';
+    try{
+      t.name=document.getElementById('v11name').value.trim()||t.name;
+      t.email=document.getElementById('v11email').value.trim();
+      t.phone=document.getElementById('v11phone').value.trim();
+      t.qualification=document.getElementById('v11qual').value.trim();
+      t.experience=document.getElementById('v11exp').value.trim();
+      t.teachingCollege=document.getElementById('v11college').value.trim();
+      t.college=t.teachingCollege;
+      t.subject=document.getElementById('v11subject').value.trim();
+      t.price=document.getElementById('v11price').value.trim();
+      t._manualRating=Math.min(5,Math.max(1,Number(document.getElementById('v11rating').value)||5));
+      t.students=document.getElementById('v11students').value.trim();
+      t.aboutMe=document.getElementById('v11about').value.trim();
+      t.verified=document.getElementById('v11verified').checked;
+      if(t.verified)t.paidStatus='PAID';
+
+      var pf=document.getElementById('v11photo').files[0];
+      if(pf){
+        var pd=await fileToDataURL(pf,700);
+        if(pd)t.photoData=pd;
+      }
+
+      var files=Array.from(document.getElementById('v11ach').files||[]).slice(0,3);
+      if(files.length){
+        var added=[];
+        for(var i=0;i<files.length;i++){
+          var d=await fileToDataURL(files[i],900);
+          if(d)added.push(d);
+        }
+        t.achievements=added.slice(0,3);
+      }else{
+        t.achievements=ach.slice(0,3);
+      }
+
+      saveLocal();
+      try{if(typeof persistTutorStatus==='function')await persistTutorStatus(t)}catch(err){console.warn(err)}
+      saveLocal();
+
+      status.textContent='✓ Tutor profile, including achievements, saved successfully.';
+      status.className='text-xs font-bold text-emerald-600';
+      setTimeout(function(){closeAdminEditTutorModal();alert('Tutor profile updated successfully by Admin.')},250);
+    }catch(err){
+      console.error(err);
+      status.textContent='Save failed — '+(err.message||err);
+      status.className='text-xs font-bold text-red-600';
+      alert('Tutor edit could not be completed: '+(err.message||err));
+    }finally{
+      btn.disabled=false;btn.textContent='SAVE ALL CHANGES';
+    }
+  };
+};
+
+/* Remove the X close button from the Admin Tutor editor. Cancel remains. */
+var style=document.createElement('style');
+style.textContent='#adminEditTutorModal .gc-v11-close-x{display:none!important}';
+document.head.appendChild(style);
+
+})();
+</script>
+
 </body>
 </html>
