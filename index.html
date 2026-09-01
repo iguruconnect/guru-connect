@@ -3410,6 +3410,174 @@ body.gc-registration-lock{overflow:hidden !important;}
 @media(max-width:768px){header{overflow:visible!important}.gc-header-actions,.header-actions,.desktop-actions{display:none!important}#mainMenu,#menuPanel,.menu-panel,.gc-menu-panel{max-width:calc(100vw - 20px)!important;width:calc(100vw - 20px)!important;left:10px!important;right:10px!important;box-sizing:border-box!important;overflow-x:hidden!important}}
 .gc-menu-normal{background:linear-gradient(135deg,#facc15,#f59e0b)!important;color:#172c67!important}.gc-menu-login-student{background:linear-gradient(135deg,#2563eb,#06b6d4)!important;color:#fff!important}.gc-menu-login-tutor{background:linear-gradient(135deg,#7c3aed,#ec4899)!important;color:#fff!important}.gc-menu-login-staff{background:linear-gradient(135deg,#059669,#10b981)!important;color:#fff!important}
 </style>
+
+<style id="gc-320x450-profile-cards">
+/* GURU CONNECT — compact 320 × 450 profile-card viewport.
+   The card itself is 320px wide × 450px tall; internal fields are deliberately
+   smaller so the complete profile remains readable on phones. */
+.gc-v4-preview-card,
+.gc-beautiful-card,
+.gc-profile-card,
+.gc-tutor-card,
+.gc-student-card {
+  box-sizing:border-box !important;
+}
+
+/* Directory containers: do not let the old grid stretch/clip the card. */
+#tutorGrid, #studentGridContainer {
+  width:100% !important;
+  max-width:320px !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:10px !important;
+}
+
+/* The actual cards: 320 × 450. */
+.gc-v4-preview-card {
+  width:320px !important;
+  min-width:320px !important;
+  max-width:320px !important;
+  height:450px !important;
+  min-height:450px !important;
+  max-height:450px !important;
+  margin:0 auto !important;
+  padding:12px !important;
+  border-radius:22px !important;
+  overflow:hidden !important;
+  display:flex !important;
+  flex-direction:column !important;
+  position:relative !important;
+}
+
+/* Main profile area */
+.gc-v4-preview-main {
+  min-width:0 !important;
+  width:100% !important;
+  flex:1 1 auto !important;
+  display:flex !important;
+  flex-direction:column !important;
+  gap:9px !important;
+  overflow:hidden !important;
+}
+
+/* Name plate */
+.gc-v4-preview-name {
+  min-width:0 !important;
+  width:100% !important;
+  min-height:46px !important;
+  padding:7px 9px !important;
+  border-radius:13px !important;
+  background:#fff !important;
+  display:flex !important;
+  align-items:center !important;
+  gap:7px !important;
+  box-sizing:border-box !important;
+}
+.gc-v4-preview-name h3 {
+  min-width:0 !important;
+  flex:1 1 auto !important;
+  margin:0 !important;
+  font-size:17px !important;
+  line-height:1.15 !important;
+  font-weight:900 !important;
+  color:#0f172a !important;
+  white-space:nowrap !important;
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+}
+.gc-v4-verified-patch {
+  flex:0 0 auto !important;
+  width:27px !important;
+  height:27px !important;
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  background:#fff !important;
+  border-radius:50% !important;
+}
+.gc-v4-verified-patch img {
+  width:24px !important;
+  height:24px !important;
+  object-fit:contain !important;
+}
+
+/* Avatar, if present in the existing card markup */
+.gc-v4-preview-card img:not(.gc-v4-verified-patch img) {
+  max-width:100% !important;
+}
+
+/* White information fields */
+.gc-v4-preview-meta {
+  width:100% !important;
+  display:grid !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:7px !important;
+  min-width:0 !important;
+}
+.gc-v4-preview-meta > span {
+  min-width:0 !important;
+  min-height:38px !important;
+  padding:6px 7px !important;
+  border-radius:11px !important;
+  background:#fff !important;
+  color:#0f172a !important;
+  font-size:11px !important;
+  line-height:1.15 !important;
+  display:flex !important;
+  flex-direction:column !important;
+  justify-content:center !important;
+  overflow:hidden !important;
+  box-sizing:border-box !important;
+}
+.gc-v4-preview-meta > span b {
+  font-size:8px !important;
+  letter-spacing:.65px !important;
+  margin-bottom:2px !important;
+  color:#64748b !important;
+  white-space:nowrap !important;
+}
+.gc-v4-preview-meta > span:not(:has(b)) {
+  display:block !important;
+}
+
+/* Make the card action area compact and stable */
+.gc-v4-more {
+  flex:0 0 38px !important;
+  min-height:38px !important;
+  width:100% !important;
+  border-radius:12px !important;
+  font-size:11px !important;
+  font-weight:900 !important;
+}
+
+/* If the student renderer uses these classes, keep the same compact geometry. */
+.gc-beautiful-student-more,
+.gc-beautiful-more,
+.gc-profile-more {
+  font-size:11px !important;
+}
+
+/* Phone: keep 320px when it fits; on narrower devices scale the whole card
+   proportionally rather than allowing fields to overflow. */
+@media (max-width:319px) {
+  #tutorGrid, #studentGridContainer {
+    width:100% !important;
+    max-width:100% !important;
+    overflow:visible !important;
+  }
+  .gc-v4-preview-card {
+    width:calc(100vw - 20px) !important;
+    min-width:0 !important;
+    max-width:calc(100vw - 20px) !important;
+    height:auto !important;
+    min-height:calc((100vw - 20px) * 1.40625) !important;
+    max-height:none !important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
