@@ -3977,12 +3977,12 @@ body.gc-registration-lock{overflow:hidden !important;}
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
-                                <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Division *</label>
-                                <input type="text" id="stu_division" required placeholder="e.g. A" class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white">
+                                <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Division</label>
+                                <input type="text" id="stu_division" placeholder="e.g. A" class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white">
                             </div>
                             <div>
-                                <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Roll Number *</label>
-                                <input type="text" id="stu_roll" required placeholder="Enter roll number" class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white">
+                                <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Roll Number</label>
+                                <input type="text" id="stu_roll" placeholder="Enter roll number" class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white">
                             </div>
                             <div>
                                 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Registration Date</label>
@@ -11669,6 +11669,136 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
       return original(String(id));
     };
   }
+})();
+</script>
+
+
+<script id="gc-v15-student-optional-fields">
+(function(){
+  'use strict';
+  function fixStudentOptionalFields(){
+    ['stu_division','stu_roll'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el) {
+        el.removeAttribute('required');
+        el.removeAttribute('aria-required');
+      }
+    });
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',fixStudentOptionalFields,{once:true});
+  }else{
+    fixStudentOptionalFields();
+  }
+  new MutationObserver(fixStudentOptionalFields).observe(document.documentElement,{
+    subtree:true,childList:true,attributes:true,attributeFilter:['required']
+  });
+})();
+</script>
+
+
+<style id="gc-v16-beautiful-upload">
+.gc16-upload{
+  position:relative;display:flex;align-items:center;gap:14px;width:100%;
+  min-height:76px;box-sizing:border-box;padding:12px 15px;
+  border:1.5px dashed #60a5fa;border-radius:16px;
+  background:linear-gradient(135deg,#eff6ff,#f8fbff);
+  transition:all .18s ease;cursor:pointer;
+}
+.gc16-upload:hover,.gc16-upload.gc16-drag{
+  border-color:#2563eb;background:linear-gradient(135deg,#dbeafe,#ecfeff);
+  transform:translateY(-1px);box-shadow:0 8px 22px rgba(37,99,235,.14);
+}
+.gc16-upload-icon{
+  flex:0 0 46px;width:46px;height:46px;border-radius:13px;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(135deg,#2563eb,#06b6d4);color:white;
+  font-size:23px;box-shadow:0 5px 14px rgba(37,99,235,.24);
+}
+.gc16-upload-text{min-width:0;flex:1}
+.gc16-upload-title{font-size:13px;font-weight:900;color:#0f172a}
+.gc16-upload-sub{font-size:10px;color:#64748b;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gc16-upload-button{
+  flex:0 0 auto;padding:8px 12px;border-radius:10px;
+  background:#2563eb;color:#fff;font-size:10px;font-weight:900;
+  box-shadow:0 4px 10px rgba(37,99,235,.22);
+}
+.gc16-upload input[type=file]{
+  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+  opacity:0!important;cursor:pointer!important;padding:0!important;border:0!important;
+}
+.gc16-upload.gc16-has-file .gc16-upload-sub{color:#059669;font-weight:800}
+.gc16-upload.gc16-has-file .gc16-upload-button{background:#059669}
+@media(max-width:520px){
+ .gc16-upload{min-height:68px;padding:10px}
+ .gc16-upload-icon{width:40px;height:40px;flex-basis:40px;font-size:20px}
+ .gc16-upload-button{padding:7px 9px}
+}
+</style>
+<script id="gc-v16-beautiful-upload-js">
+(function(){
+'use strict';
+function decorateUploads(){
+ document.querySelectorAll('input[type="file"]').forEach(function(input){
+   if(input.dataset.gc16Done==='1')return;
+   input.dataset.gc16Done='1';
+
+   var wrap=document.createElement('div');
+   wrap.className='gc16-upload';
+   wrap.title='Choose a file';
+   input.parentNode.insertBefore(wrap,input);
+   wrap.appendChild(input);
+
+   var icon=document.createElement('div');
+   icon.className='gc16-upload-icon';
+   icon.innerHTML='⇧';
+
+   var text=document.createElement('div');
+   text.className='gc16-upload-text';
+
+   var title=document.createElement('div');
+   title.className='gc16-upload-title';
+   title.textContent=input.multiple?'Upload photos':'Upload photo';
+
+   var sub=document.createElement('div');
+   sub.className='gc16-upload-sub';
+   sub.textContent=input.multiple?'Choose up to 3 images':'JPG, PNG or WEBP · Tap to choose';
+
+   var button=document.createElement('div');
+   button.className='gc16-upload-button';
+   button.textContent='CHOOSE FILE';
+
+   text.appendChild(title);text.appendChild(sub);
+   wrap.appendChild(icon);wrap.appendChild(text);wrap.appendChild(button);
+
+   input.addEventListener('change',function(){
+     var files=Array.from(input.files||[]);
+     if(!files.length){
+       wrap.classList.remove('gc16-has-file');
+       sub.textContent=input.multiple?'Choose up to 3 images':'JPG, PNG or WEBP · Tap to choose';
+       button.textContent='CHOOSE FILE';
+       return;
+     }
+     wrap.classList.add('gc16-has-file');
+     if(files.length===1){
+       sub.textContent='✓ '+files[0].name;
+       button.textContent='CHANGE';
+     }else{
+       sub.textContent='✓ '+files.length+' photos selected';
+       button.textContent='CHANGE';
+     }
+   });
+   ['dragenter','dragover'].forEach(function(ev){
+     wrap.addEventListener(ev,function(e){e.preventDefault();wrap.classList.add('gc16-drag')});
+   });
+   ['dragleave','drop'].forEach(function(ev){
+     wrap.addEventListener(ev,function(e){e.preventDefault();wrap.classList.remove('gc16-drag')});
+   });
+ });
+}
+function run(){decorateUploads()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
+new MutationObserver(decorateUploads).observe(document.documentElement,{subtree:true,childList:true});
 })();
 </script>
 
