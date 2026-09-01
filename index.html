@@ -3117,8 +3117,8 @@ header, .header, .topbar, .navbar, .nav, .site-header {
   }else{
     hideCloudStatus();
   }
-  /* Hide once after DOM ready. Do not run a permanent 1-second poll. */
-  setTimeout(hideCloudStatus,1200);
+  /* Existing scripts may recreate/update the badge later, so keep it hidden. */
+  setInterval(hideCloudStatus,1000);
 })();
 </script>
 <!-- /GURU CONNECT MOBILE HEADER + CLOUD BADGE FINAL PATCH -->
@@ -3977,12 +3977,12 @@ body.gc-registration-lock{overflow:hidden !important;}
 
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
-                                <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Division</label>
-                                <input type="text" id="stu_division" placeholder="e.g. A" class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white">
+                                <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Division *</label>
+                                <input type="text" id="stu_division" required placeholder="e.g. A" class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white">
                             </div>
                             <div>
-                                <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Roll Number</label>
-                                <input type="text" id="stu_roll" placeholder="Enter roll number" class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white">
+                                <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Roll Number *</label>
+                                <input type="text" id="stu_roll" required placeholder="Enter roll number" class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white">
                             </div>
                             <div>
                                 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Registration Date</label>
@@ -11673,134 +11673,429 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 </script>
 
 
-<script id="gc-v15-student-optional-fields">
+
+<!-- ================================================================
+ GURU CONNECT — FINAL PROFILE CARD POLISH V6
+ White information tabs + exact supplied verified badge + preset avatars
+ This layer only replaces the PUBLIC directory card rendering.
+ Existing Staff/Admin/Edit/Payment functions are intentionally untouched.
+================================================================ -->
+<style id="gc-final-signature-v6">
+  #tutorGrid.gc-signature-directory,#studentGridContainer.gc-signature-directory{display:grid!important;grid-template-columns:1fr!important;gap:16px!important;width:100%!important}
+  .gc-signature-card.gc-v6{width:100%!important;min-height:188px!important;display:grid!important;grid-template-columns:180px minmax(0,1fr) 150px!important;gap:20px!important;align-items:center!important;padding:18px 18px 18px 20px!important;border-radius:24px!important;position:relative!important;overflow:hidden!important;box-sizing:border-box!important;color:#fff!important;border:1px solid rgba(255,255,255,.35)!important;box-shadow:0 16px 38px rgba(15,23,42,.20)!important;isolation:isolate!important}
+  .gc-v6-tutor{background:linear-gradient(115deg,#1f66ea 0%,#1455d7 48%,#083eaa 100%)!important}
+  .gc-v6-student{background:linear-gradient(115deg,#ff7b12 0%,#f45b08 48%,#d94700 100%)!important}
+  .gc-signature-card.gc-v6:before{content:"";position:absolute;width:460px;height:460px;right:-250px;top:-320px;border:1px solid rgba(255,255,255,.16);border-radius:50%;box-shadow:0 0 0 35px rgba(255,255,255,.035),0 0 0 70px rgba(255,255,255,.022);z-index:-1;pointer-events:none}
+  .gc-signature-card.gc-v6:after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 8% 18%,rgba(255,255,255,.18) 0 1px,transparent 1.5px) 0 0/15px 15px;opacity:.17;z-index:-1;pointer-events:none}
+  .gc-v6-left{height:100%;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;position:relative;z-index:2}
+  .gc-v6-role{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;background:#fff;color:#1659d8;border-radius:999px;padding:7px 13px 7px 9px;font-size:12px;line-height:1;font-weight:950;box-shadow:0 6px 14px rgba(0,0,0,.15);white-space:nowrap}
+  .gc-v6-student .gc-v6-role{color:#ef5708}
+  .gc-v6-role i{font-size:14px}
+  .gc-v6-avatar{width:116px;height:116px;min-width:116px;border-radius:50%;background:#fff;padding:5px;box-sizing:border-box;overflow:hidden;border:2px solid rgba(255,255,255,.96);box-shadow:0 9px 22px rgba(0,0,0,.24);display:flex;align-items:center;justify-content:center}
+  .gc-v6-avatar img{width:100%;height:100%;display:block;object-fit:cover;border-radius:50%}
+  .gc-v6-chip{width:48px;height:34px;border-radius:7px;background:linear-gradient(135deg,#fff4ae,#d4a52d 45%,#ffe98a 65%,#c58b17);border:1px solid rgba(103,73,0,.3);box-shadow:0 5px 11px rgba(0,0,0,.18);position:relative}
+  .gc-v6-chip:before,.gc-v6-chip:after{content:"";position:absolute;inset:7px 0;border-top:1px solid rgba(80,57,0,.4);border-bottom:1px solid rgba(80,57,0,.4)}
+  .gc-v6-chip:after{inset:0 17px;border-left:1px solid rgba(80,57,0,.4);border-right:1px solid rgba(80,57,0,.4)}
+  .gc-v6-wifi{font-size:29px;transform:rotate(90deg);line-height:1}
+  .gc-v6-main{min-width:0;position:relative;z-index:3}
+  .gc-v6-name-row{display:flex;align-items:center;gap:8px;min-width:0;margin-bottom:7px}
+  .gc-v6-name{margin:0;min-width:0;max-width:100%;display:inline-flex;align-items:center;gap:8px;background:#fff;color:#14233f;border-radius:10px;padding:8px 13px;box-shadow:0 6px 14px rgba(0,0,0,.16);font-size:25px;line-height:1.05;font-weight:950;white-space:nowrap}
+  .gc-v6-name-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .gc-v6-tick{width:38px!important;height:38px!important;min-width:38px!important;flex:0 0 38px!important;object-fit:contain!important;display:block!important;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important}
+  .gc-v6-edit{border:0;background:#fff;color:#2563eb;width:32px;height:32px;border-radius:9px;display:none;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 5px 12px rgba(0,0,0,.13);flex:none}
+  .gc-v6-name-row.gc-is-owner .gc-v6-edit{display:inline-flex}
+  .gc-v6-student .gc-v6-edit{color:#ed5506}
+  .gc-v6-subtitle{display:flex;align-items:center;gap:7px;color:#ffe000;font-size:15px;font-weight:950;margin:0 0 11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gc-v6-subtitle:before,.gc-v6-subtitle:after{content:"";height:2px;width:30px;background:#ffd900;display:block;flex:none}
+  .gc-v6-data{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;min-width:0}
+  .gc-v6-box{min-width:0;min-height:64px;padding:8px 10px;border-radius:11px;background:#fff!important;border:1px solid rgba(255,255,255,.82);display:flex;align-items:center;gap:8px;box-sizing:border-box;color:#15213b!important;box-shadow:0 5px 12px rgba(0,0,0,.09)}
+  .gc-v6-icon{width:34px;height:34px;min-width:34px;border-radius:9px;background:#edf4ff;color:#1557d6;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .gc-v6-student .gc-v6-icon{background:#fff1e8;color:#ee5607}
+  .gc-v6-box small{display:block;color:#3563b8;font-size:8px;line-height:1;font-weight:950;letter-spacing:.04em;margin-bottom:5px;white-space:nowrap}
+  .gc-v6-student .gc-v6-box small{color:#e35a16}
+  .gc-v6-box strong{display:block;color:#17233d;font-size:12px;line-height:1.15;font-weight:950;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .gc-v6-status{display:grid;grid-template-columns:1fr 1px 1fr;align-items:center;margin-top:8px;background:#fff;border-radius:11px;color:#17233d;min-height:56px;box-shadow:0 5px 12px rgba(0,0,0,.10);overflow:hidden}
+  .gc-v6-status>div{display:flex;align-items:center;justify-content:center;gap:7px;padding:7px;min-width:0;text-align:center}
+  .gc-v6-status i{font-size:22px;color:#f8c400}
+  .gc-v6-status .users{color:#174ea8}
+  .gc-v6-student .gc-v6-status .users{color:#ed5608}
+  .gc-v6-status small{display:block;font-size:7px;font-weight:950;color:#4a6188}
+  .gc-v6-status strong{display:block;font-size:11px;font-weight:950;color:#17233d;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gc-v6-status>b{height:34px;width:1px;background:#9bb0d3}
+  .gc-v6-subject{margin-top:8px;background:#fff;border-radius:11px;min-height:44px;padding:7px 12px;display:flex;align-items:center;justify-content:center;gap:8px;color:#17233d;box-shadow:0 5px 12px rgba(0,0,0,.09);text-align:center}
+  .gc-v6-subject i{color:#1557d6;font-size:17px}.gc-v6-student .gc-v6-subject i{color:#ed5608}
+  .gc-v6-subject small{font-size:7px;font-weight:950;color:#55709e;display:block}.gc-v6-subject strong{font-size:11px;font-weight:950;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .gc-v6-side{min-width:0;display:flex;flex-direction:column;gap:10px;position:relative;z-index:4}
+  .gc-v6-side button{width:100%;min-height:50px;border:0;border-radius:11px;background:#fff;color:#1458df;font:inherit;font-size:13px;font-weight:950;cursor:pointer;box-shadow:0 7px 15px rgba(0,0,0,.16);transition:.16s}
+  .gc-v6-side button:hover{transform:translateY(-2px)}
+  .gc-v6-side .connect{min-height:54px;font-size:16px}.gc-v6-student .gc-v6-side button{color:#ed5608}
+  .gc-v6-more i{margin-left:6px;font-size:11px}
+  @media(max-width:1050px){.gc-signature-card.gc-v6{grid-template-columns:145px minmax(0,1fr) 125px;gap:14px}.gc-v6-avatar{width:94px;height:94px;min-width:94px}.gc-v6-name{font-size:21px}.gc-v6-data{grid-template-columns:repeat(2,minmax(0,1fr))}.gc-v6-box{min-height:55px}.gc-v6-subject{display:none}}
+  @media(max-width:700px){.gc-signature-card.gc-v6{grid-template-columns:78px minmax(0,1fr) 78px;gap:8px;padding:10px;min-height:135px;border-radius:18px}.gc-v6-role{font-size:8px;padding:5px 7px;gap:4px}.gc-v6-role i{font-size:9px}.gc-v6-avatar{width:64px;height:64px;min-width:64px;padding:3px}.gc-v6-chip{width:34px;height:24px}.gc-v6-wifi{font-size:19px}.gc-v6-name{font-size:15px;padding:6px 7px;gap:5px;border-radius:8px}.gc-v6-tick{width:24px!important;height:24px!important;min-width:24px!important;flex-basis:24px!important}.gc-v6-edit{width:25px;height:25px;font-size:10px}.gc-v6-subtitle{font-size:9px;margin-bottom:6px;gap:4px}.gc-v6-subtitle:before,.gc-v6-subtitle:after{width:10px;height:1px}.gc-v6-data{gap:4px}.gc-v6-box{min-height:36px;padding:5px;border-radius:7px;gap:4px}.gc-v6-icon{width:22px;height:22px;min-width:22px;border-radius:5px;font-size:10px}.gc-v6-box small{font-size:5.5px;margin-bottom:2px}.gc-v6-box strong{font-size:7.5px}.gc-v6-status{margin-top:4px;min-height:35px;border-radius:7px}.gc-v6-status>div{gap:3px;padding:4px}.gc-v6-status i{font-size:14px}.gc-v6-status small{font-size:5px}.gc-v6-status strong{font-size:7px}.gc-v6-status>b{height:22px}.gc-v6-side{gap:5px}.gc-v6-side button{min-height:34px;font-size:7px;border-radius:7px;padding:4px}.gc-v6-side .connect{min-height:37px;font-size:9px}}
+  @media(max-width:430px){.gc-signature-card.gc-v6{grid-template-columns:58px minmax(0,1fr) 62px;gap:6px;padding:8px;min-height:116px}.gc-v6-avatar{width:50px;height:50px;min-width:50px}.gc-v6-role{font-size:6.5px;padding:4px 5px}.gc-v6-chip{width:26px;height:18px}.gc-v6-wifi{font-size:15px}.gc-v6-name{font-size:12px;padding:5px 5px}.gc-v6-tick{width:19px!important;height:19px!important;min-width:19px!important;flex-basis:19px!important}.gc-v6-edit{width:21px;height:21px}.gc-v6-subtitle{font-size:7px}.gc-v6-data-box{}.gc-v6-box{min-height:31px}.gc-v6-icon{display:none}.gc-v6-box small{font-size:5px}.gc-v6-box strong{font-size:6.5px}.gc-v6-status{display:none}.gc-v6-side button{min-height:30px;font-size:6.5px}.gc-v6-side .connect{min-height:32px;font-size:7.5px}}
+</style>
+<script id="gc-final-signature-v6-js">
 (function(){
   'use strict';
-  function fixStudentOptionalFields(){
-    ['stu_division','stu_roll'].forEach(function(id){
-      var el=document.getElementById(id);
-      if(el) {
-        el.removeAttribute('required');
-        el.removeAttribute('aria-required');
-      }
-    });
+  function E(v){return String(v??'').replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+  function tickUrl(){try{return typeof VERIFIED_TICK_LOGO_URL!=='undefined'?VERIFIED_TICK_LOGO_URL:''}catch(e){return ''}}
+  function hash(s){var h=0;for(var i=0;i<String(s||'').length;i++)h=(h*31+String(s||'').charCodeAt(i))>>>0;return h}
+  function presetAvatar(name,role){
+    var h=hash(name), hue=(role==='tutor'?[214,192,232,205,175][h%5]:[26,12,38,5,45][h%5]);
+    var bg=role==='tutor'?'#eaf3ff':'#fff1e7', shirt=['#1d4ed8','#0f766e','#7c3aed','#334155','#b45309'][h%5];
+    var hair=['#171717','#3b2418','#111827','#4b2e1e','#202020'][h%5];
+    var svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="'+bg+'"/><stop offset="1" stop-color="'+(role==='tutor'?'#dbeafe':'#fed7aa')+'"/></linearGradient></defs><rect width="240" height="240" rx="120" fill="url(#g)"/><circle cx="120" cy="91" r="50" fill="#f2c7a5"/><path d="M70 88c4-45 29-67 54-67 35 0 53 27 47 70-12-19-29-29-49-31-17 18-33 25-52 28z" fill="'+hair+'"/><path d="M57 224c8-49 33-69 63-69s55 20 63 69" fill="'+shirt+'"/><circle cx="102" cy="94" r="5" fill="#172033"/><circle cx="138" cy="94" r="5" fill="#172033"/><path d="M105 117q15 12 30 0" fill="none" stroke="#8a4b3a" stroke-width="4" stroke-linecap="round"/><path d="M82 83q16-14 30-2M128 81q15-12 29 3" fill="none" stroke="#172033" stroke-width="6" stroke-linecap="round"/></svg>';
+    return 'data:image/svg+xml;charset=UTF-8,'+encodeURIComponent(svg);
   }
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded',fixStudentOptionalFields,{once:true});
-  }else{
-    fixStudentOptionalFields();
-  }
-  new MutationObserver(fixStudentOptionalFields).observe(document.documentElement,{
-    subtree:true,childList:true,attributes:true,attributeFilter:['required']
-  });
+  function avatar(obj,name,role){var src=obj&&(obj.photoData||obj.photo||obj.image||obj.avatar||obj.profileImage||'');return '<img src="'+E(src||presetAvatar(name,role))+'" alt="'+E(name)+'" onerror="this.onerror=null;this.src=\''+presetAvatar(name,role)+'\'">'}
+  function viewer(){try{return typeof getActiveViewer==='function'?getActiveViewer():{isRegistered:false,role:'',phone:''}}catch(e){return {isRegistered:false,role:'',phone:''}}}
+  function owner(p,role){var v=viewer();return !!(v.isRegistered&&v.role===role&&String(v.phone||'').replace(/\D/g,'')===String(p.phone||'').replace(/\D/g,''))}
+  function openEdit(){try{if(typeof openUserDashboard==='function')openUserDashboard();else if(typeof renderUserDashboard==='function'){var p=typeof getCurrentUserProfile==='function'?getCurrentUserProfile():null;if(p)renderUserDashboard(p)}}catch(e){console.error(e)}}
+  function rating(t){if(t&&t._manualRating)return Number(t._manualRating).toFixed(1);var n=Math.abs(Number(String(t?.id||t?.name||'1').replace(/\D/g,''))||1);return Math.min(5,(t?.verified?4.7+((n*37)%31)/100:4.3+((n*29)%41)/100)).toFixed(1)}
+  function renderTutors(){var c=document.getElementById('tutorGrid');if(!c)return;c.classList.add('gc-signature-directory');var list=Array.isArray(window.tutorDirectoryList)?window.tutorDirectoryList:[],per=window.tutorsPerPage||6,page=window.currentTutorPage||1;var items=list.slice((page-1)*per,page*per);c.innerHTML='';items.forEach(function(t){var id=E(t.id||''),name=E(t.name||'Tutor'),ver=t.verified===true, exp=E(t.experience||'—'),rate=E(t.price||t.rate||'—'),sub=E(t.subject||'Not specified'),students=E(t.students||'—'),reviews=Number(t.reviewCount||t.reviewsCount||0),isOwner=owner(t,'tutor');var card=document.createElement('article');card.className='gc-signature-card gc-v6 gc-v6-tutor';card.innerHTML='<div class="gc-v6-left"><span class="gc-v6-role"><i class="fa-solid fa-user-tie"></i>TUTOR</span><div class="gc-v6-avatar">'+avatar(t,t.name,'tutor')+'</div><span class="gc-v6-chip"></span><i class="fa-solid fa-wifi gc-v6-wifi"></i></div><div class="gc-v6-main"><div class="gc-v6-name-row '+(isOwner?'gc-is-owner':'')+'"><h3 class="gc-v6-name"><span class="gc-v6-name-text">'+name+'</span>'+(ver?'<img class="gc-v6-tick" src="'+E(tickUrl())+'" alt="Verified" title="Verified">':'')+'</h3>'+(isOwner?'<button type="button" class="gc-v6-edit" title="Edit my profile"><i class="fa-solid fa-pen"></i></button>':'')+'</div><div class="gc-v6-subtitle"><i class="fa-solid fa-graduation-cap"></i>Junior College Faculty</div><div class="gc-v6-data"><div class="gc-v6-box"><span class="gc-v6-icon"><i class="fa-solid fa-book-open"></i></span><div><small>SUBJECTS</small><strong>'+sub+'</strong></div></div><div class="gc-v6-box"><span class="gc-v6-icon"><i class="fa-solid fa-briefcase"></i></span><div><small>EXPERIENCE</small><strong>'+exp+'</strong></div></div><div class="gc-v6-box"><span class="gc-v6-icon"><i class="fa-solid fa-indian-rupee-sign"></i></span><div><small>RATE</small><strong>'+rate+'</strong></div></div><div class="gc-v6-box"><span class="gc-v6-icon"><i class="fa-solid fa-star"></i></span><div><small>RATING</small><strong>'+rating(t)+(reviews?' ('+reviews+' reviews)':'')+'</strong></div></div></div><div class="gc-v6-status"><div><i class="fa-solid fa-star"></i><div><small>RATING</small><strong>'+rating(t)+'</strong></div></div><b></b><div><i class="fa-solid fa-users users"></i><div><small>STUDENTS</small><strong>'+students+'</strong></div></div></div><div class="gc-v6-subject"><i class="fa-solid fa-book-open"></i><div><small>SUBJECTS</small><strong>'+sub+'</strong></div></div></div><div class="gc-v6-side"><button type="button" class="gc-v6-more" data-tutor-id="'+id+'">MORE <i class="fa-solid fa-ellipsis-vertical"></i></button><button type="button" class="connect" data-tutor-connect="'+id+'">CONNECT</button></div>';c.appendChild(card);if(isOwner){card.querySelector('.gc-v6-edit').onclick=openEdit}card.querySelector('.gc-v6-more').onclick=function(){if(typeof openTutorProfile==='function')openTutorProfile(this.dataset.tutorId)};card.querySelector('.connect').onclick=function(){if(typeof connectWithTutor==='function')connectWithTutor(this.dataset.tutorConnect)}});}
+  function renderStudents(){var c=document.getElementById('studentGridContainer');if(!c)return;c.classList.add('gc-signature-directory');var list=Array.isArray(window.studentDirectoryList)?window.studentDirectoryList:[],per=window.GC_STUDENTS_PER_PAGE||6,page=window.currentStudentPage||1,items=list.slice((page-1)*per,page*per),v=viewer();c.innerHTML='';items.forEach(function(s){var id=E(s.id||''),name=E(s.name||'Student'),course=E(s.course||s.std||'—'),stream=E(s.stream||'—'),req=E((s.learningRequirement||s.subject||'Not specified')),record=E(s.recordNo||s.gcId||s.id||'—'),isOwner=owner(s,'student');var card=document.createElement('article');card.className='gc-signature-card gc-v6 gc-v6-student';card.innerHTML='<div class="gc-v6-left"><span class="gc-v6-role"><i class="fa-solid fa-user-graduate"></i>STUDENT</span><div class="gc-v6-avatar">'+avatar(s,s.name,'student')+'</div><span class="gc-v6-chip"></span><i class="fa-solid fa-wifi gc-v6-wifi"></i></div><div class="gc-v6-main"><div class="gc-v6-name-row '+(isOwner?'gc-is-owner':'')+'"><h3 class="gc-v6-name"><span class="gc-v6-name-text">'+name+'</span></h3>'+(isOwner?'<button type="button" class="gc-v6-edit" title="Edit my profile"><i class="fa-solid fa-pen"></i></button>':'')+'</div><div class="gc-v6-subtitle"><i class="fa-solid fa-graduation-cap"></i>Junior College Student</div><div class="gc-v6-data"><div class="gc-v6-box"><span class="gc-v6-icon"><i class="fa-solid fa-book-open"></i></span><div><small>CLASS & STREAM</small><strong>'+course+' • '+stream+'</strong></div></div><div class="gc-v6-box"><span class="gc-v6-icon"><i class="fa-solid fa-id-card"></i></span><div><small>GC ID</small><strong>'+record+'</strong></div></div><div class="gc-v6-box"><span class="gc-v6-icon"><i class="fa-solid fa-bullseye"></i></span><div><small>REQUIREMENT</small><strong>'+req+'</strong></div></div><div class="gc-v6-box"><span class="gc-v6-icon"><i class="fa-solid fa-star"></i></span><div><small>RATING</small><strong>'+E(s.rating||'—')+(Number(s.reviewCount||s.reviewsCount)?' ('+Number(s.reviewCount||s.reviewsCount)+' reviews)':'')+'</strong></div></div></div><div class="gc-v6-status"><div><i class="fa-solid fa-user-graduate"></i><div><small>PROFILE</small><strong>STUDENT</strong></div></div><b></b><div><i class="fa-solid fa-shield-halved users"></i><div><small>CONTACT</small><strong>PROTECTED</strong></div></div></div><div class="gc-v6-subject"><i class="fa-solid fa-bullseye"></i><div><small>LEARNING REQUIREMENT</small><strong>'+req+'</strong></div></div></div><div class="gc-v6-side"><button type="button" class="gc-v6-more" data-student-id="'+id+'">MORE <i class="fa-solid fa-ellipsis-vertical"></i></button><button type="button" class="connect" data-student-connect="'+id+'">CONNECT</button></div>';c.appendChild(card);if(isOwner){card.querySelector('.gc-v6-edit').onclick=openEdit}card.querySelector('.gc-v6-more').onclick=function(){if(typeof openStudentProfile==='function')openStudentProfile(this.dataset.studentId)};card.querySelector('.connect').onclick=function(){if(typeof connectWithStudent==='function')connectWithStudent(this.dataset.studentConnect)}})}
+  function apply(){window.renderTutorDirectory=renderTutors;window.renderStudentDirectory=renderStudents;renderTutors();renderStudents()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(apply,900)});else setTimeout(apply,900);
 })();
 </script>
 
-
-<style id="gc-v16-beautiful-upload">
-.gc16-upload{
-  position:relative;display:flex;align-items:center;gap:14px;width:100%;
-  min-height:76px;box-sizing:border-box;padding:12px 15px;
-  border:1.5px dashed #60a5fa;border-radius:16px;
-  background:linear-gradient(135deg,#eff6ff,#f8fbff);
-  transition:all .18s ease;cursor:pointer;
+<style id="gc-v8-rating-subject-polish">
+/* GURU CONNECT V8 — premium horizontal directory cards */
+#tutorGrid.gc-beautiful-directory,#studentGridContainer.gc-beautiful-directory{
+  display:grid!important;grid-template-columns:1fr!important;gap:16px!important;width:100%!important;
 }
-.gc16-upload:hover,.gc16-upload.gc16-drag{
-  border-color:#2563eb;background:linear-gradient(135deg,#dbeafe,#ecfeff);
-  transform:translateY(-1px);box-shadow:0 8px 22px rgba(37,99,235,.14);
+.gc-beautiful-card{
+  width:100%!important;min-height:205px!important;height:auto!important;padding:16px 18px!important;
+  border-radius:24px!important;display:grid!important;grid-template-columns:125px minmax(0,1fr) 145px!important;
+  grid-template-rows:auto 1fr!important;align-items:center!important;gap:12px 18px!important;
+  position:relative!important;overflow:hidden!important;box-sizing:border-box!important;color:#fff!important;
+  border:1px solid rgba(255,255,255,.32)!important;box-shadow:0 14px 34px rgba(15,23,42,.16)!important;
 }
-.gc16-upload-icon{
-  flex:0 0 46px;width:46px;height:46px;border-radius:13px;
-  display:flex;align-items:center;justify-content:center;
-  background:linear-gradient(135deg,#2563eb,#06b6d4);color:white;
-  font-size:23px;box-shadow:0 5px 14px rgba(37,99,235,.24);
-}
-.gc16-upload-text{min-width:0;flex:1}
-.gc16-upload-title{font-size:13px;font-weight:900;color:#0f172a}
-.gc16-upload-sub{font-size:10px;color:#64748b;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gc16-upload-button{
-  flex:0 0 auto;padding:8px 12px;border-radius:10px;
-  background:#2563eb;color:#fff;font-size:10px;font-weight:900;
-  box-shadow:0 4px 10px rgba(37,99,235,.22);
-}
-.gc16-upload input[type=file]{
-  position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
-  opacity:0!important;cursor:pointer!important;padding:0!important;border:0!important;
-}
-.gc16-upload.gc16-has-file .gc16-upload-sub{color:#059669;font-weight:800}
-.gc16-upload.gc16-has-file .gc16-upload-button{background:#059669}
-@media(max-width:520px){
- .gc16-upload{min-height:68px;padding:10px}
- .gc16-upload-icon{width:40px;height:40px;flex-basis:40px;font-size:20px}
- .gc16-upload-button{padding:7px 9px}
-}
+.gc-beautiful-tutor{background:linear-gradient(120deg,#0b55d8 0%,#1767df 52%,#0648bb 100%)!important}
+.gc-beautiful-student{background:linear-gradient(120deg,#ff7a00 0%,#ff8a00 52%,#f45d00 100%)!important}
+.gc-beautiful-card:before{content:"";position:absolute;right:-90px;top:-100px;width:330px;height:220px;border-radius:50%;border:1px solid rgba(255,255,255,.13);box-shadow:0 0 0 34px rgba(255,255,255,.025),0 0 0 70px rgba(255,255,255,.018);pointer-events:none}
+.gc-beautiful-brand{grid-column:1/-1!important;grid-row:1!important;display:flex!important;align-items:center!important;gap:7px!important;height:22px!important;margin:0!important;position:relative!important;z-index:4!important}
+.gc-beautiful-brand-mark{width:25px!important;height:25px!important;min-width:25px!important;border-radius:50%!important;background:#fff!important;color:#2563eb!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;font-size:14px!important;box-shadow:0 3px 9px rgba(0,0,0,.18)!important}
+.gc-beautiful-brand-text{font-size:12px!important;font-weight:1000!important;letter-spacing:.03em!important}.gc-beautiful-brand-sub{font-size:6px!important;font-weight:900!important;opacity:.82!important}
+.gc-beautiful-avatar{grid-column:1!important;grid-row:2!important;width:108px!important;height:108px!important;min-width:108px!important;border-radius:50%!important;overflow:hidden!important;background:#fff!important;border:5px solid rgba(255,255,255,.96)!important;box-shadow:0 7px 20px rgba(0,0,0,.2)!important;display:flex!important;align-items:center!important;justify-content:center!important;position:relative!important;z-index:3!important;margin:0 auto!important}
+.gc-beautiful-avatar img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important}.gc-beautiful-avatar-fallback{width:100%!important;height:100%!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#eff6ff!important;color:#1554c8!important;font-size:38px!important}.gc-beautiful-student .gc-beautiful-avatar-fallback{background:#fff7ed!important;color:#ea580c!important}
+.gc-beautiful-content{grid-column:2!important;grid-row:2!important;min-width:0!important;position:relative!important;z-index:3!important;align-self:center!important}
+.gc-beautiful-name-row{display:flex!important;align-items:center!important;min-width:0!important;gap:7px!important;margin-bottom:9px!important}
+.gc-beautiful-name{min-width:0!important;max-width:calc(100% - 44px)!important;display:block!important;margin:0!important;padding:8px 13px!important;background:#fff!important;color:#142b5c!important;border-radius:10px!important;box-shadow:0 5px 13px rgba(0,0,0,.15)!important;font-size:25px!important;line-height:1.05!important;font-weight:950!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.gc-beautiful-tick{width:34px!important;height:34px!important;min-width:34px!important;flex:0 0 34px!important;padding:0!important;background:#fff!important;border-radius:8px!important;display:flex!important;align-items:center!important;justify-content:center!important;box-shadow:0 4px 12px rgba(0,0,0,.18)!important;overflow:hidden!important}
+.gc-beautiful-tick img{width:100%!important;height:100%!important;object-fit:contain!important;display:block!important;border-radius:0!important}
+.gc-beautiful-tutor .gc-beautiful-tick{background:#fff!important}
+.gc-beautiful-fields{display:grid!important;grid-template-columns:1.45fr 1fr 1fr 1.15fr!important;gap:7px!important;margin-top:0!important}
+.gc-beautiful-field{min-width:0!important;padding:10px 11px!important;border:1px solid rgba(255,255,255,.72)!important;border-radius:11px!important;background:#fff!important;color:#152d60!important;text-align:left!important;box-shadow:0 4px 10px rgba(0,0,0,.08)!important}
+.gc-beautiful-field b{display:block!important;font-size:8px!important;line-height:1!important;letter-spacing:.04em!important;color:#5270a5!important;margin-bottom:5px!important}.gc-beautiful-field span{display:block!important;font-size:13px!important;line-height:1.12!important;font-weight:950!important;color:#152d60!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.gc-beautiful-rating-field{display:flex!important;align-items:center!important;gap:7px!important}.gc-beautiful-rating-field .gc-star{color:#f7bd00!important;font-size:20px!important;flex:none!important}.gc-beautiful-rating-text{min-width:0!important}.gc-beautiful-rating-text strong{font-size:16px!important;color:#152d60!important}.gc-beautiful-rating-text small{font-size:8px!important;color:#657797!important;font-weight:800!important}
+.gc-beautiful-more{grid-column:3!important;grid-row:2!important;position:relative!important;z-index:5!important;align-self:center!important;border:0!important;border-radius:13px!important;padding:13px 14px!important;min-width:118px!important;background:#fff!important;color:#1554c8!important;font-size:12px!important;font-weight:1000!important;cursor:pointer!important;white-space:nowrap!important;box-shadow:0 7px 16px rgba(0,0,0,.16)!important}.gc-beautiful-more:hover{transform:translateY(-1px)!important}.gc-beautiful-student .gc-beautiful-more{color:#ea580c!important}
+@media(max-width:900px){.gc-beautiful-card{grid-template-columns:90px minmax(0,1fr) 90px!important;padding:13px!important;gap:10px!important}.gc-beautiful-avatar{width:82px!important;height:82px!important;min-width:82px!important}.gc-beautiful-name{font-size:20px!important}.gc-beautiful-fields{grid-template-columns:repeat(2,minmax(0,1fr))!important}.gc-beautiful-more{min-width:82px!important;padding:10px!important}}
+@media(max-width:620px){.gc-beautiful-card{min-height:0!important;grid-template-columns:72px minmax(0,1fr)!important;grid-template-rows:auto auto auto!important;padding:12px!important;border-radius:19px!important}.gc-beautiful-brand{grid-column:1/-1!important;grid-row:1!important}.gc-beautiful-avatar{grid-column:1!important;grid-row:2!important;width:64px!important;height:64px!important;min-width:64px!important;border-width:3px!important}.gc-beautiful-content{grid-column:2!important;grid-row:2!important}.gc-beautiful-name{font-size:16px!important;padding:7px 9px!important;max-width:calc(100% - 38px)!important}.gc-beautiful-tick{width:30px!important;height:30px!important;min-width:30px!important;flex-basis:30px!important}.gc-beautiful-fields{grid-column:1/-1!important;grid-row:3!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important}.gc-beautiful-field{padding:8px!important}.gc-beautiful-field b{font-size:7px!important}.gc-beautiful-field span{font-size:10px!important}.gc-beautiful-more{grid-column:2!important;grid-row:4!important;justify-self:end;min-width:90px!important;padding:9px 12px!important;margin-top:2px!important}}
 </style>
-<script id="gc-v16-beautiful-upload-js">
+
+<script id="gc-v8-rating-subject-js">
 (function(){
 'use strict';
-function decorateUploads(){
- document.querySelectorAll('input[type="file"]').forEach(function(input){
-   if(input.dataset.gc16Done==='1')return;
-   input.dataset.gc16Done='1';
-
-   var wrap=document.createElement('div');
-   wrap.className='gc16-upload';
-   wrap.title='Choose a file';
-   input.parentNode.insertBefore(wrap,input);
-   wrap.appendChild(input);
-
-   var icon=document.createElement('div');
-   icon.className='gc16-upload-icon';
-   icon.innerHTML='⇧';
-
-   var text=document.createElement('div');
-   text.className='gc16-upload-text';
-
-   var title=document.createElement('div');
-   title.className='gc16-upload-title';
-   title.textContent=input.multiple?'Upload photos':'Upload photo';
-
-   var sub=document.createElement('div');
-   sub.className='gc16-upload-sub';
-   sub.textContent=input.multiple?'Choose up to 3 images':'JPG, PNG or WEBP · Tap to choose';
-
-   var button=document.createElement('div');
-   button.className='gc16-upload-button';
-   button.textContent='CHOOSE FILE';
-
-   text.appendChild(title);text.appendChild(sub);
-   wrap.appendChild(icon);wrap.appendChild(text);wrap.appendChild(button);
-
-   input.addEventListener('change',function(){
-     var files=Array.from(input.files||[]);
-     if(!files.length){
-       wrap.classList.remove('gc16-has-file');
-       sub.textContent=input.multiple?'Choose up to 3 images':'JPG, PNG or WEBP · Tap to choose';
-       button.textContent='CHOOSE FILE';
-       return;
-     }
-     wrap.classList.add('gc16-has-file');
-     if(files.length===1){
-       sub.textContent='✓ '+files[0].name;
-       button.textContent='CHANGE';
-     }else{
-       sub.textContent='✓ '+files.length+' photos selected';
-       button.textContent='CHANGE';
-     }
-   });
-   ['dragenter','dragover'].forEach(function(ev){
-     wrap.addEventListener(ev,function(e){e.preventDefault();wrap.classList.add('gc16-drag')});
-   });
-   ['dragleave','drop'].forEach(function(ev){
-     wrap.addEventListener(ev,function(e){e.preventDefault();wrap.classList.remove('gc16-drag')});
-   });
- });
-}
-function run(){decorateUploads()}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
-new MutationObserver(decorateUploads).observe(document.documentElement,{subtree:true,childList:true});
+function E(v){return String(v??'').replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})}
+function list(name){try{return Array.isArray(window[name])?window[name]:[]}catch(e){return []}}
+function uniq(a){var seen=new Set();return a.filter(function(x){if(!x)return false;var n=String(x._directoryCleanName||x.name||'').trim();if(!n)return false;var k=n.toLowerCase();if(seen.has(k))return false;seen.add(k);return true})}
+function photo(x){return x&&(x.photoData||x.photo||x.image||x.avatar||x.profileImage||'')}
+function tick(){try{return window.VERIFIED_TICK_LOGO_URL||''}catch(e){return ''}}
+function avatar(src,name,icon){if(src)return '<img src="'+E(src)+'" alt="'+E(name)+'">';return '<span class="gc-beautiful-avatar-fallback"><i class="fa-solid '+icon+'"></i></span>'}
+function rating(x,isTutor){var r=Number(x.rating);if(!isFinite(r)||r<=0)r=isTutor?4.8:4.7;var c=Number(x.reviewCount||x.reviewsCount||x.reviews||0);return {r:r.toFixed(1),c:c};}
+function renderT(){var c=document.getElementById('tutorGrid');if(!c)return;var a=uniq(list('tutorDirectoryList'));var per=Math.max(1,Number(window.tutorsPerPage)||6),page=Math.max(1,Number(window.currentTutorPage)||1),items=a.slice((page-1)*per,page*per);c.classList.add('gc-beautiful-directory');c.innerHTML='';items.forEach(function(t){var id=String(t.id??''),name=String(t._directoryCleanName||t.name||'Tutor'),subject=String(t.subject||t.subjects||'—'),rate=String(t.price||t.rate||'—'),exp=String(t.experience||'—'),rt=rating(t,true);var reviews=rt.c?rt.c+' reviews':'Top rated';var card=document.createElement('article');card.className='gc-beautiful-card gc-beautiful-tutor';card.dataset.tutorId=id;card.innerHTML='<div class="gc-beautiful-brand"><span class="gc-beautiful-brand-mark"><i class="fa-solid fa-graduation-cap"></i></span><span class="gc-beautiful-brand-text">GURU CONNECT</span><span class="gc-beautiful-brand-sub">Partners in Positive Change</span></div><div class="gc-beautiful-avatar">'+avatar(photo(t),name,'fa-chalkboard-user')+'</div><div class="gc-beautiful-content"><div class="gc-beautiful-name-row"><h3 class="gc-beautiful-name" title="'+E(name)+'">'+E(name)+'</h3>'+(t.verified===true&&tick()?'<span class="gc-beautiful-tick"><img src="'+E(tick())+'" alt="Verified"></span>':'')+'</div><div class="gc-beautiful-fields"><div class="gc-beautiful-field"><b>SUBJECTS</b><span>'+E(subject)+'</span></div><div class="gc-beautiful-field"><b>EXPERIENCE</b><span>'+E(exp)+'</span></div><div class="gc-beautiful-field"><b>RATE</b><span>'+E(rate)+'</span></div><div class="gc-beautiful-field gc-beautiful-rating-field"><i class="fa-solid fa-star gc-star"></i><div class="gc-beautiful-rating-text"><b>RATING</b><strong>'+rt.r+'</strong> <small>('+E(reviews)+')</small></div></div></div></div><button type="button" class="gc-beautiful-more" data-tutor-id="'+E(id)+'">MORE <i class="fa-solid fa-ellipsis-vertical"></i></button>';c.appendChild(card)});try{var total=Math.max(1,Math.ceil(a.length/per)),el=document.getElementById('tutorTotalPagesText');if(el)el.textContent='/ '+total;var inp=document.getElementById('tutorPageJumpInput');if(inp){inp.value=page;inp.max=total}}catch(e){}}
+function renderS(){var c=document.getElementById('studentGridContainer');if(!c)return;var a=uniq(list('studentDirectoryList')).filter(function(s){return !s||!s._hideFromProfileDirectory});var per=Math.max(1,Number(window.studentsPerPage)||6),page=Math.max(1,Number(window.currentStudentPage)||1),items=a.slice((page-1)*per,page*per);c.classList.add('gc-beautiful-directory');c.innerHTML='';items.forEach(function(s){var id=String(s.id??''),name=String(s._directoryCleanName||s.name||'Student'),course=String(s.course||s.std||'—'),stream=String(s.stream||'—'),req=(typeof window.gcGetStudentRequirementV2==='function')?window.gcGetStudentRequirementV2(s):String(s.learningRequirement||s.subject||'Not specified'),rt=rating(s,false),reviews=rt.c?rt.c+' reviews':'Top rated';var card=document.createElement('article');card.className='gc-beautiful-card gc-beautiful-student';card.dataset.studentId=id;card.innerHTML='<div class="gc-beautiful-brand"><span class="gc-beautiful-brand-mark"><i class="fa-solid fa-user-graduate"></i></span><span class="gc-beautiful-brand-text">GURU CONNECT</span><span class="gc-beautiful-brand-sub">Partners in Positive Change</span></div><div class="gc-beautiful-avatar">'+avatar(photo(s),name,'fa-user-graduate')+'</div><div class="gc-beautiful-content"><div class="gc-beautiful-name-row"><h3 class="gc-beautiful-name" title="'+E(name)+'">'+E(name)+'</h3></div><div class="gc-beautiful-fields"><div class="gc-beautiful-field"><b>CLASS & STREAM</b><span>'+E(course)+' · '+E(stream)+'</span></div><div class="gc-beautiful-field"><b>GC ID</b><span>'+E(id||'GC-STU')+'</span></div><div class="gc-beautiful-field gc-beautiful-rating-field"><i class="fa-solid fa-star gc-star"></i><div class="gc-beautiful-rating-text"><b>RATING</b><strong>'+rt.r+'</strong> <small>('+E(reviews)+')</small></div></div><div class="gc-beautiful-field"><b>REQUIREMENT</b><span>'+E(req)+'</span></div></div></div><button type="button" class="gc-beautiful-more gc-beautiful-student-more" data-student-id="'+E(id)+'">MORE <i class="fa-solid fa-ellipsis-vertical"></i></button>';c.appendChild(card)});try{if(typeof renderPaginationNumbers==='function')renderPaginationNumbers()}catch(e){}}
+window.renderTutors=renderT;window.renderStudents=renderS;
+function bind(){var tc=document.getElementById('tutorGrid');if(tc&&!tc.dataset.gcV8){tc.dataset.gcV8='1';tc.addEventListener('click',function(e){var b=e.target.closest('.gc-beautiful-more[data-tutor-id]');if(b&&typeof window.openTutorProfile==='function'){e.preventDefault();e.stopPropagation();window.openTutorProfile(b.dataset.tutorId)}},true)}var sc=document.getElementById('studentGridContainer');if(sc&&!sc.dataset.gcV8){sc.dataset.gcV8='1';sc.addEventListener('click',function(e){var b=e.target.closest('.gc-beautiful-student-more[data-student-id]');if(b&&typeof window.openStudentProfile==='function'){e.preventDefault();e.stopPropagation();window.openStudentProfile(b.dataset.studentId)}},true)}}
+function run(){renderT();renderS();bind()}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(run,450)});else setTimeout(run,450);
 })();
 </script>
 
 </body>
 </html>
+
+<!-- =========================================================
+     GURU CONNECT — HORIZONTAL SIGNATURE PROFILE CARDS
+     Final visual layer. Does not modify Admin/Edit/Payment logic.
+     ========================================================= -->
+<style id="gc-horizontal-signature-cards">
+  #tutorGrid.gc-signature-directory,
+  #studentGridContainer.gc-signature-directory{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:16px!important;
+    width:100%!important;
+    align-items:stretch!important;
+  }
+
+  .gc-signature-card{
+    width:100%!important;
+    min-width:0!important;
+    min-height:188px!important;
+    position:relative!important;
+    overflow:hidden!important;
+    box-sizing:border-box!important;
+    display:grid!important;
+    grid-template-columns:170px minmax(0,1fr) 142px!important;
+    align-items:center!important;
+    gap:22px!important;
+    padding:20px 20px 20px 22px!important;
+    border-radius:24px!important;
+    border:1px solid rgba(255,255,255,.30)!important;
+    color:#fff!important;
+    box-shadow:0 16px 38px rgba(15,23,42,.20)!important;
+    isolation:isolate!important;
+  }
+  .gc-signature-card::before{
+    content:""!important;
+    position:absolute!important;
+    width:430px!important;height:430px!important;
+    right:-210px!important;top:-300px!important;
+    border-radius:50%!important;
+    border:1px solid rgba(255,255,255,.13)!important;
+    box-shadow:0 0 0 34px rgba(255,255,255,.025),0 0 0 68px rgba(255,255,255,.018)!important;
+    pointer-events:none!important;
+    z-index:-1!important;
+  }
+  .gc-signature-card::after{
+    content:""!important;
+    position:absolute!important;
+    inset:0!important;
+    background:radial-gradient(circle at 9% 20%,rgba(255,255,255,.14) 0 1px,transparent 1.5px) 0 0/15px 15px!important;
+    opacity:.16!important;
+    pointer-events:none!important;
+    z-index:-1!important;
+  }
+  .gc-signature-tutor{background:linear-gradient(120deg,#1458df 0%,#0d4bc8 52%,#083b9f 100%)!important}
+  .gc-signature-student{background:linear-gradient(120deg,#ff7812 0%,#f25d08 52%,#d94700 100%)!important}
+
+  .gc-signature-left{
+    min-width:0!important;
+    height:100%!important;
+    display:flex!important;
+    flex-direction:column!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:9px!important;
+    position:relative!important;
+    z-index:2!important;
+  }
+  .gc-signature-role{
+    align-self:flex-start!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    gap:8px!important;
+    background:#fff!important;
+    color:#1458df!important;
+    border-radius:999px!important;
+    padding:7px 13px 7px 9px!important;
+    font-size:12px!important;
+    line-height:1!important;
+    font-weight:1000!important;
+    box-shadow:0 6px 14px rgba(0,0,0,.14)!important;
+    white-space:nowrap!important;
+  }
+  .gc-signature-student .gc-signature-role{color:#ed5506!important}
+  .gc-signature-role i{font-size:14px!important}
+  .gc-signature-chip{
+    width:52px!important;height:38px!important;
+    border-radius:7px!important;
+    background:linear-gradient(135deg,#fff4ae,#d4a52d 45%,#ffe98a 65%,#c58b17)!important;
+    border:1px solid rgba(103,73,0,.28)!important;
+    box-shadow:0 5px 11px rgba(0,0,0,.18)!important;
+    position:relative!important;
+  }
+  .gc-signature-chip::before,.gc-signature-chip::after{content:"";position:absolute;inset:8px 0;border-top:1px solid rgba(80,57,0,.4);border-bottom:1px solid rgba(80,57,0,.4)}
+  .gc-signature-chip::after{inset:0 18px;border-left:1px solid rgba(80,57,0,.4);border-right:1px solid rgba(80,57,0,.4)}
+  .gc-signature-wifi{font-size:31px!important;transform:rotate(90deg)!important;opacity:.98!important}
+  .gc-signature-avatar{
+    width:112px!important;height:112px!important;min-width:112px!important;
+    border-radius:50%!important;
+    background:#fff!important;
+    border:5px solid rgba(255,255,255,.96)!important;
+    overflow:hidden!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    box-shadow:0 9px 22px rgba(0,0,0,.22)!important;
+  }
+  .gc-signature-avatar img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important}
+  .gc-signature-avatar-fallback{width:100%!important;height:100%!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#eff6ff!important;color:#1458df!important;font-size:38px!important}
+  .gc-signature-student .gc-signature-avatar-fallback{background:#fff7ed!important;color:#d94700!important}
+
+  .gc-signature-main{min-width:0!important;position:relative!important;z-index:2!important}
+  .gc-signature-name-row{display:flex!important;align-items:center!important;gap:10px!important;min-width:0!important;margin-bottom:7px!important}
+  .gc-signature-name{
+    min-width:0!important;max-width:100%!important;width:max-content!important;
+    margin:0!important;padding:9px 15px!important;
+    background:#fff!important;color:#13213d!important;
+    border-radius:10px!important;
+    box-shadow:0 6px 14px rgba(0,0,0,.16)!important;
+    font-size:25px!important;line-height:1.05!important;font-weight:950!important;
+    display:flex!important;align-items:center!important;gap:9px!important;
+    white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  }
+  .gc-signature-name-text{min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important;display:block!important}
+  .gc-signature-tick{
+    width:auto!important;height:auto!important;min-width:0!important;flex:0 0 auto!important;
+    padding:0!important;border-radius:0!important;background:transparent!important;
+    box-shadow:none!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  }
+  .gc-signature-tick i{font-size:28px!important;color:#2563eb!important;line-height:1!important;display:block!important;filter:drop-shadow(0 2px 3px rgba(37,99,235,.18))!important}
+  .gc-signature-subtitle{
+    display:flex!important;align-items:center!important;gap:8px!important;
+    color:#ffe000!important;font-size:16px!important;font-weight:950!important;
+    margin:0 0 12px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+  }
+  .gc-signature-subtitle i{font-size:17px!important}
+  .gc-signature-subtitle::before,.gc-signature-subtitle::after{content:"";height:2px;width:34px;background:#ffd900;display:block;flex:none!important}
+  .gc-signature-data{
+    display:grid!important;
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    gap:8px!important;
+  }
+  .gc-signature-data-box{
+    min-width:0!important;
+    min-height:58px!important;
+    padding:8px 10px!important;
+    border:1px solid rgba(255,255,255,.32)!important;
+    background:rgba(255,255,255,.10)!important;
+    border-radius:11px!important;
+    display:flex!important;align-items:center!important;gap:8px!important;
+    box-sizing:border-box!important;
+  }
+  .gc-signature-data-icon{
+    width:34px!important;height:34px!important;min-width:34px!important;
+    border-radius:9px!important;background:rgba(255,255,255,.94)!important;
+    display:flex!important;align-items:center!important;justify-content:center!important;
+    color:#1458df!important;font-size:16px!important;
+  }
+  .gc-signature-student .gc-signature-data-icon{color:#ed5506!important}
+  .gc-signature-data-box small{display:block!important;font-size:8px!important;line-height:1!important;font-weight:900!important;opacity:.82!important;margin-bottom:4px!important;white-space:nowrap!important}
+  .gc-signature-data-box strong{display:block!important;font-size:12px!important;line-height:1.12!important;font-weight:950!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+
+  .gc-signature-side{min-width:0!important;position:relative!important;z-index:4!important;display:flex!important;flex-direction:column!important;gap:10px!important;align-items:stretch!important}
+  .gc-signature-side button{
+    width:100%!important;min-height:50px!important;border:0!important;border-radius:11px!important;
+    background:#fff!important;color:#1458df!important;font-size:13px!important;font-weight:1000!important;
+    cursor:pointer!important;box-shadow:0 7px 15px rgba(0,0,0,.16)!important;transition:transform .16s ease,box-shadow .16s ease!important;
+  }
+  .gc-signature-side button:hover{transform:translateY(-2px)!important;box-shadow:0 10px 18px rgba(0,0,0,.20)!important}
+  .gc-signature-side .gc-signature-connect{min-height:54px!important;font-size:16px!important}
+  .gc-signature-student .gc-signature-side button{color:#ed5506!important}
+  .gc-signature-more i{margin-left:7px!important;font-size:11px!important}
+
+  .gc-signature-bottom{grid-column:2/3;display:flex!important;gap:8px!important;margin-top:-1px!important}
+  .gc-signature-bottom-pill{background:rgba(8,43,118,.48)!important;border-radius:9px!important;padding:7px 11px!important;font-size:11px!important;font-weight:900!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .gc-signature-student .gc-signature-bottom-pill{background:rgba(125,40,0,.30)!important}
+
+  @media(max-width:900px){
+    .gc-signature-card{grid-template-columns:130px minmax(0,1fr) 112px!important;gap:14px!important;padding:16px!important;min-height:170px!important}
+    .gc-signature-avatar{width:90px!important;height:90px!important;min-width:90px!important;border-width:4px!important}
+    .gc-signature-role{font-size:10px!important;padding:6px 10px 6px 8px!important}
+    .gc-signature-chip{width:44px!important;height:32px!important}
+    .gc-signature-wifi{font-size:25px!important}
+    .gc-signature-name{font-size:21px!important;padding:8px 12px!important}
+    .gc-signature-tick{width:auto!important;height:auto!important;min-width:0!important;flex-basis:auto!important}
+    .gc-signature-subtitle{font-size:14px!important;margin-bottom:9px!important}
+    .gc-signature-data{gap:6px!important}
+    .gc-signature-data-box{padding:7px!important;min-height:52px!important;gap:6px!important}
+    .gc-signature-data-icon{width:29px!important;height:29px!important;min-width:29px!important;font-size:14px!important}
+    .gc-signature-data-box small{font-size:7px!important}.gc-signature-data-box strong{font-size:10px!important}
+    .gc-signature-side button{min-height:44px!important;font-size:11px!important}.gc-signature-side .gc-signature-connect{min-height:48px!important;font-size:14px!important}
+  }
+  @media(max-width:700px){
+    #tutorGrid.gc-signature-directory,#studentGridContainer.gc-signature-directory{gap:12px!important}
+    .gc-signature-card{grid-template-columns:82px minmax(0,1fr) 82px!important;gap:9px!important;padding:12px!important;border-radius:18px!important;min-height:142px!important}
+    .gc-signature-left{gap:6px!important}.gc-signature-avatar{width:68px!important;height:68px!important;min-width:68px!important;border-width:3px!important}
+    .gc-signature-role{font-size:8px!important;padding:5px 7px!important;gap:4px!important}.gc-signature-role i{font-size:10px!important}
+    .gc-signature-chip{width:34px!important;height:25px!important}.gc-signature-wifi{font-size:20px!important}
+    .gc-signature-name-row{gap:6px!important;margin-bottom:5px!important}.gc-signature-name{font-size:16px!important;padding:6px 8px!important;max-width:calc(100% - 40px)!important;border-radius:8px!important}
+    .gc-signature-tick{width:auto!important;height:auto!important;min-width:0!important;flex-basis:auto!important;padding:0!important}.gc-signature-tick i{font-size:20px!important}
+    .gc-signature-subtitle{font-size:10px!important;gap:4px!important;margin-bottom:6px!important}.gc-signature-subtitle::before,.gc-signature-subtitle::after{width:14px!important;height:1px!important}.gc-signature-subtitle i{font-size:11px!important}
+    .gc-signature-data{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:4px!important}
+    .gc-signature-data-box{min-height:39px!important;padding:5px!important;border-radius:7px!important;gap:5px!important}.gc-signature-data-icon{width:23px!important;height:23px!important;min-width:23px!important;border-radius:6px!important;font-size:11px!important}.gc-signature-data-box small{font-size:6px!important;margin-bottom:2px!important}.gc-signature-data-box strong{font-size:8px!important}
+    .gc-signature-side{gap:6px!important}.gc-signature-side button{min-height:38px!important;padding:5px 4px!important;font-size:8px!important;border-radius:8px!important}.gc-signature-side .gc-signature-connect{min-height:42px!important;font-size:10px!important}.gc-signature-more i{margin-left:3px!important;font-size:8px!important}
+  }
+  @media(max-width:430px){
+    .gc-signature-card{grid-template-columns:64px minmax(0,1fr) 65px!important;gap:7px!important;padding:9px!important;min-height:124px!important}
+    .gc-signature-avatar{width:55px!important;height:55px!important;min-width:55px!important}.gc-signature-role{font-size:7px!important;padding:4px 6px!important}.gc-signature-role i{font-size:8px!important}.gc-signature-chip{width:27px!important;height:20px!important}.gc-signature-wifi{font-size:16px!important}
+    .gc-signature-name{font-size:13px!important;padding:5px 6px!important}.gc-signature-tick{width:auto!important;height:auto!important;min-width:0!important;flex-basis:auto!important}.gc-signature-tick i{font-size:17px!important}.gc-signature-subtitle{font-size:8px!important}.gc-signature-subtitle::before,.gc-signature-subtitle::after{width:8px!important}
+    .gc-signature-data-box{min-height:34px!important}.gc-signature-data-icon{display:none!important}.gc-signature-data-box small{font-size:5.5px!important}.gc-signature-data-box strong{font-size:7px!important}
+    .gc-signature-side button{min-height:34px!important;font-size:7px!important}.gc-signature-side .gc-signature-connect{min-height:36px!important;font-size:8px!important}
+  }
+</style>
+
+<script id="gc-horizontal-signature-cards-js">
+(function(){
+  'use strict';
+  var esc=function(v){return String(v??'').replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})};
+  var tick=function(){try{return (typeof VERIFIED_TICK_LOGO_URL!=='undefined'&&VERIFIED_TICK_LOGO_URL)||''}catch(e){return ''}};
+  var photo=function(x){return x&&(x.photoData||x.photo||x.image||x.avatar||x.profileImage||'')};
+  var initials=function(n){return String(n||'').trim().split(/\s+/).slice(0,2).map(function(x){return x[0]||''}).join('').toUpperCase()||'GC'};
+  var avatar=function(src,name,icon){return src?'<img src="'+esc(src)+'" alt="'+esc(name)+'" onerror="this.onerror=null;this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><span class="gc-signature-avatar-fallback" style="display:none"><i class="fa-solid '+icon+'"></i></span>':'<span class="gc-signature-avatar-fallback">'+esc(initials(name))+'</span>'};
+  var getList=function(name){try{return Array.isArray(window[name])?window[name]:[]}catch(e){return[]}};
+
+  function tutorRender(){
+    var c=document.getElementById('tutorGrid');if(!c)return;
+    c.classList.add('gc-signature-directory');c.classList.remove('gc-beautiful-directory');
+    var list=getList('tutorDirectoryList'), per=6, page=1;
+    try{per=window.tutorsPerPage||6;page=window.currentTutorPage||1}catch(e){}
+    var start=(page-1)*per,items=list.slice(start,start+per);c.innerHTML='';
+    items.forEach(function(t){
+      var id=String(t.id??''),name=String(t.name||'Tutor'),verified=t.verified===true;
+      var subject=String(t.subject||'Not specified'),rate=String(t.price||t.rate||'—'),exp=String(t.experience||'—');
+      var rating=String(t.rating||'—'),reviews=Number(t.reviewCount||t.reviewsCount||0),students=String(t.students||'—');
+      var card=document.createElement('article');card.className='gc-signature-card gc-signature-tutor';
+      card.innerHTML='<div class="gc-signature-left"><span class="gc-signature-role"><i class="fa-solid fa-user-tie"></i>TUTOR</span><div class="gc-signature-avatar">'+avatar(photo(t),name,'fa-chalkboard-user')+'</div><span class="gc-signature-chip"></span><i class="fa-solid fa-wifi gc-signature-wifi"></i></div>'+
+      '<div class="gc-signature-main"><div class="gc-signature-name-row"><h3 class="gc-signature-name" title="'+esc(name)+'"><span class="gc-signature-name-text">'+esc(name)+'</span>'+(verified?'<span class="gc-signature-tick" title="Verified Tutor" aria-label="Verified Tutor"><i class="fa-solid fa-circle-check"></i></span>':'')+'</h3></div>'+
+      '<div class="gc-signature-subtitle"><i class="fa-solid fa-graduation-cap"></i>Junior College Faculty</div><div class="gc-signature-data">'+
+      '<div class="gc-signature-data-box"><span class="gc-signature-data-icon"><i class="fa-solid fa-book-open"></i></span><div><small>SUBJECTS</small><strong>'+esc(subject)+'</strong></div></div>'+ 
+      '<div class="gc-signature-data-box"><span class="gc-signature-data-icon"><i class="fa-solid fa-briefcase"></i></span><div><small>EXPERIENCE</small><strong>'+esc(exp)+'</strong></div></div>'+ 
+      '<div class="gc-signature-data-box"><span class="gc-signature-data-icon"><i class="fa-solid fa-indian-rupee-sign"></i></span><div><small>RATE</small><strong>'+esc(rate)+'</strong></div></div>'+ 
+      '<div class="gc-signature-data-box"><span class="gc-signature-data-icon"><i class="fa-solid fa-star"></i></span><div><small>RATING</small><strong>'+esc(rating)+(reviews?' ('+reviews+' reviews)':'')+'</strong></div></div></div></div>'+ 
+      '<div class="gc-signature-side"><button type="button" class="gc-signature-more" data-tutor-id="'+esc(id)+'">MORE <i class="fa-solid fa-ellipsis-vertical"></i></button><button type="button" class="gc-signature-connect" data-tutor-connect="'+esc(id)+'">CONNECT</button></div>';
+      c.appendChild(card);
+    });
+    try{var total=Math.max(1,Math.ceil(list.length/per)),el=document.getElementById('tutorTotalPagesText'),inp=document.getElementById('tutorPageJumpInput');if(el)el.textContent='/ '+total;if(inp){inp.value=page;inp.max=total}}catch(e){}
+  }
+
+  function studentRender(){
+    var c=document.getElementById('studentGridContainer');if(!c)return;
+    c.classList.add('gc-signature-directory');c.classList.remove('gc-beautiful-directory');
+    var list=getList('studentDirectoryList').filter(function(s){return !s||!s._hideFromProfileDirectory}),per=6,page=1;
+    try{page=window.currentStudentPage||1}catch(e){}
+    var start=(page-1)*per,items=list.slice(start,start+per);c.innerHTML='';
+    items.forEach(function(s){
+      var id=String(s.id??''),name=String(s.name||'Student'),course=String(s.course||s.std||'—'),stream=String(s.stream||'—');
+      var req=(typeof window.gcGetStudentRequirementV2==='function')?window.gcGetStudentRequirementV2(s):String(s.learningRequirement||s.subject||'Not specified');
+      var rating=String(s.rating||'—'),reviews=Number(s.reviewCount||s.reviewsCount||0),record=String(s.recordNo||s.gcId||s.id||'—');
+      var card=document.createElement('article');card.className='gc-signature-card gc-signature-student';
+      card.innerHTML='<div class="gc-signature-left"><span class="gc-signature-role"><i class="fa-solid fa-user-graduate"></i>STUDENT</span><div class="gc-signature-avatar">'+avatar(photo(s),name,'fa-user-graduate')+'</div><span class="gc-signature-chip"></span><i class="fa-solid fa-wifi gc-signature-wifi"></i></div>'+ 
+      '<div class="gc-signature-main"><div class="gc-signature-name-row"><h3 class="gc-signature-name" title="'+esc(name)+'">'+esc(name)+'</h3></div><div class="gc-signature-subtitle"><i class="fa-solid fa-graduation-cap"></i>Junior College Student</div><div class="gc-signature-data">'+
+      '<div class="gc-signature-data-box"><span class="gc-signature-data-icon"><i class="fa-solid fa-book-open"></i></span><div><small>CLASS & STREAM</small><strong>'+esc(course)+' • '+esc(stream)+'</strong></div></div>'+ 
+      '<div class="gc-signature-data-box"><span class="gc-signature-data-icon"><i class="fa-solid fa-id-card"></i></span><div><small>GC ID</small><strong>'+esc(record)+'</strong></div></div>'+ 
+      '<div class="gc-signature-data-box"><span class="gc-signature-data-icon"><i class="fa-solid fa-bullseye"></i></span><div><small>REQUIREMENT</small><strong>'+esc(req)+'</strong></div></div>'+ 
+      '<div class="gc-signature-data-box"><span class="gc-signature-data-icon"><i class="fa-solid fa-star"></i></span><div><small>RATING</small><strong>'+esc(rating)+(reviews?' ('+reviews+' reviews)':'')+'</strong></div></div></div></div>'+ 
+      '<div class="gc-signature-side"><button type="button" class="gc-signature-more" data-student-id="'+esc(id)+'">MORE <i class="fa-solid fa-ellipsis-vertical"></i></button><button type="button" class="gc-signature-connect" data-student-connect="'+esc(id)+'">CONNECT</button></div>';
+      c.appendChild(card);
+    });
+  }
+
+  function bind(){
+    var tc=document.getElementById('tutorGrid');if(tc&&!tc.dataset.gcSignatureBound){tc.dataset.gcSignatureBound='1';tc.addEventListener('click',function(e){var b=e.target.closest('.gc-signature-more[data-tutor-id]');if(b){e.preventDefault();e.stopPropagation();if(typeof window.openTutorProfile==='function')window.openTutorProfile(b.dataset.tutorId);return}var x=e.target.closest('[data-tutor-connect]');if(x){e.preventDefault();e.stopPropagation();if(typeof window.connectWithTutor==='function')window.connectWithTutor(x.dataset.tutorConnect)}},true)}
+    var sc=document.getElementById('studentGridContainer');if(sc&&!sc.dataset.gcSignatureBound){sc.dataset.gcSignatureBound='1';sc.addEventListener('click',function(e){var b=e.target.closest('.gc-signature-more[data-student-id]');if(b){e.preventDefault();e.stopPropagation();if(typeof window.openStudentProfile==='function')window.openStudentProfile(b.dataset.studentId);return}var x=e.target.closest('[data-student-connect]');if(x){e.preventDefault();e.stopPropagation();if(typeof window.connectWithStudent==='function')window.connectWithStudent(x.dataset.studentConnect)}},true)}
+  }
+  function apply(){try{window.renderTutorDirectory=tutorRender}catch(e){}try{window.renderStudentDirectory=studentRender}catch(e){}tutorRender();studentRender();bind()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(apply,500)});else setTimeout(apply,500);
+})();
+</script>
+
+<style id="gc-name-tick-final">
+.gc-signature-name{max-width:100%!important;width:max-content!important;display:flex!important;align-items:center!important;gap:9px!important;background:#fff!important;color:#13213d!important}
+.gc-signature-name-text{min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+.gc-signature-tick{width:auto!important;height:auto!important;min-width:0!important;flex:0 0 auto!important;padding:0!important;margin:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;display:inline-flex!important;align-items:center!important;justify-content:center!important}
+.gc-signature-tick i{font-size:28px!important;color:#2563eb!important;line-height:1!important;display:block!important;filter:drop-shadow(0 2px 3px rgba(37,99,235,.18))!important}
+@media(max-width:900px){.gc-signature-name{font-size:21px!important;gap:7px!important}.gc-signature-tick i{font-size:24px!important}}
+@media(max-width:700px){.gc-signature-name{font-size:16px!important;gap:5px!important;max-width:100%!important}.gc-signature-tick i{font-size:20px!important}}
+@media(max-width:430px){.gc-signature-name{font-size:13px!important;gap:4px!important}.gc-signature-tick i{font-size:17px!important}}
+</style>
