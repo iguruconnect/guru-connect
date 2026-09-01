@@ -3117,8 +3117,8 @@ header, .header, .topbar, .navbar, .nav, .site-header {
   }else{
     hideCloudStatus();
   }
-  /* Existing scripts may recreate/update the badge later, so keep it hidden. */
-  setInterval(hideCloudStatus,1000);
+  /* Hide once after DOM ready. Do not run a permanent 1-second poll. */
+  setTimeout(hideCloudStatus,1200);
 })();
 </script>
 <!-- /GURU CONNECT MOBILE HEADER + CLOUD BADGE FINAL PATCH -->
