@@ -6261,10 +6261,10 @@ body.gc-registration-lock{overflow:hidden !important;}
                             <td class="p-3 sm:p-4 font-mono text-amber-600 font-bold">${t.utr || 'N/A'} ${paidBadge}</td>
                             <td class="p-3 sm:p-4">${badgeStatus}</td>
                             <td class="p-3 sm:p-4 text-right space-x-1 min-w-[280px]">
-                                ${t.paidStatus !== 'PAID' ? `<button onclick="adminVerifyTutorPaid(String(${t.id}))" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm">Mark PAID</button>` : `<button onclick="adminRevokeTutorPaid(String(${t.id}))" class="bg-slate-600 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-[10px] font-bold shadow-sm">Revoke Paid</button>`}
-                                ${!t.verified ? `<button onclick="adminGrantVerifiedTick(String(${t.id}))" class="bg-brand-blue hover:bg-blue-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm">Grant Tick</button>` : `<button onclick="adminRevokeVerifiedTick(String(${t.id}))" class="bg-slate-600 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-[10px] font-bold shadow-sm">Revoke Tick</button>`}
-                                <button onclick="adminEditTutor(String(${t.id}))" class="bg-amber-500 hover:bg-amber-600 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button onclick="adminDeleteTutor(String(${t.id}))" class="bg-red-600 hover:bg-red-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-trash"></i></button>
+                                ${t.paidStatus !== 'PAID' ? `<button onclick="adminVerifyTutorPaid('${t.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm">Mark PAID</button>` : `<button onclick="adminRevokeTutorPaid('${t.id}')" class="bg-slate-600 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-[10px] font-bold shadow-sm">Revoke Paid</button>`}
+                                ${!t.verified ? `<button onclick="adminGrantVerifiedTick('${t.id}')" class="bg-brand-blue hover:bg-blue-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm">Grant Tick</button>` : `<button onclick="adminRevokeVerifiedTick('${t.id}')" class="bg-slate-600 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-[10px] font-bold shadow-sm">Revoke Tick</button>`}
+                                <button onclick="adminEditTutor('${t.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button onclick="adminDeleteTutor('${t.id}')" class="bg-red-600 hover:bg-red-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>`;
                 });
@@ -11644,74 +11644,33 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 <script id="gc-mobile-menu-final-script">
 (function(){function add(){const menu=document.getElementById('mainMenu')||document.getElementById('menuPanel')||document.querySelector('.menu-panel')||document.querySelector('.gc-menu-panel')||document.querySelector('[data-menu-panel]');if(!menu||menu.querySelector('.gc-login-menu-group'))return;menu.querySelectorAll('a,button').forEach(e=>{if((e.textContent||'').trim())e.classList.add('gc-menu-normal')});const g=document.createElement('div');g.className='gc-login-menu-group mt-3 pt-3 border-t border-slate-200';g.innerHTML='<div class="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2 px-1">Account & Staff Access</div><div class="grid gap-2"><button type="button" data-login="student" class="gc-menu-login-student rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-graduation-cap"></i> STUDENT LOGIN</button><button type="button" data-login="tutor" class="gc-menu-login-tutor rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-chalkboard-user"></i> TUTOR LOGIN</button><button type="button" data-login="staff" class="gc-menu-login-staff rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-user-tie"></i> STAFF LOGIN</button></div>';menu.appendChild(g);g.querySelectorAll('button').forEach(b=>b.onclick=function(){try{if(typeof closeNavMenu==='function')closeNavMenu()}catch(_){};const k=b.dataset.login;if(k==='staff'){if(typeof openStaffLoginModal==='function')openStaffLoginModal();else if(typeof openStaffLogin==='function')openStaffLogin();else document.querySelector('#staffLoginModal')?.classList.remove('hidden')}else if(k==='student'){if(typeof openStudentLoginModal==='function')openStudentLoginModal();else if(typeof openLoginModal==='function')openLoginModal('student');else document.querySelector('#studentLoginModal')?.classList.remove('hidden')}else{if(typeof openTutorLoginModal==='function')openTutorLoginModal();else if(typeof openLoginModal==='function')openLoginModal('tutor');else document.querySelector('#tutorLoginModal')?.classList.remove('hidden')}})}window.addEventListener('load',add);setTimeout(add,500);setTimeout(add,1500)})();
 </script>
-<style>
-#gcV8TutorEditor{position:fixed;inset:0;z-index:2147483647;display:none;align-items:center;justify-content:center;background:rgba(15,23,42,.8);padding:16px}
-#gcV8TutorEditor.gc-show{display:flex!important}
-#gcV8TutorEditor .gc8-card{width:min(920px,96vw);max-height:94vh;overflow:auto;background:#fff;border-radius:22px;padding:22px;box-shadow:0 30px 100px rgba(0,0,0,.45)}
-.gc8-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
-.gc8-field label{display:block;font-size:10px;font-weight:900;text-transform:uppercase;color:#475569;margin-bottom:5px}
-.gc8-field input,.gc8-field textarea{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:11px;padding:11px;background:#fff;font:inherit}
-.gc8-save{border:0;border-radius:12px;padding:13px;background:#2563eb;color:#fff;font-weight:900;cursor:pointer}
-.gc8-save:hover{background:#1d4ed8}.gc8-save:active{transform:scale(.97)}
-.gc8-cancel{border:0;border-radius:12px;padding:13px;background:#e2e8f0;color:#0f172a;font-weight:900;cursor:pointer}
-#stuSubmitBtn:not(:disabled),#tutorSubmitBtn:not(:disabled){background:linear-gradient(135deg,#2563eb,#06b6d4)!important;color:#fff!important;opacity:1!important;cursor:pointer!important;box-shadow:0 8px 22px rgba(37,99,235,.25)!important}
-#stuSubmitBtn:not(:disabled):hover,#tutorSubmitBtn:not(:disabled):hover{filter:brightness(1.08)!important;box-shadow:0 10px 28px rgba(37,99,235,.38)!important}
+
+<style id="gc-v9-submit-visual">
+#stuSubmitBtn:not(:disabled),#tutorSubmitBtn:not(:disabled){
+ background:linear-gradient(135deg,#2563eb,#06b6d4)!important;color:#fff!important;
+ opacity:1!important;cursor:pointer!important;box-shadow:0 8px 22px rgba(37,99,235,.25)!important;
+ transition:transform .12s ease,filter .12s ease,box-shadow .12s ease!important;
+}
+#stuSubmitBtn:not(:disabled):hover,#tutorSubmitBtn:not(:disabled):hover{
+ filter:brightness(1.08)!important;box-shadow:0 10px 28px rgba(37,99,235,.38)!important;
+}
 #stuSubmitBtn:not(:disabled):active,#tutorSubmitBtn:not(:disabled):active{transform:scale(.975)!important}
-@media(max-width:650px){.gc8-grid{grid-template-columns:1fr}.gc8-card{padding:16px!important}}
 </style>
-<script>
+<script id="gc-v9-tutor-id-safety">
 (function(){
-'use strict';
-function staffOK(){return localStorage.getItem('is_staff_logged')==='true'}
-function list(){try{return typeof tutorDirectoryList!=='undefined'&&Array.isArray(tutorDirectoryList)?tutorDirectoryList:[]}catch(e){return[]}}
-function find(id){return list().find(function(t){return String(t.id)===String(id)})}
-function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-function close(){var m=document.getElementById('gcV8TutorEditor');if(m)m.classList.remove('gc-show')}
-function persist(){
- try{if(typeof saveRegisteredDirectories==='function')saveRegisteredDirectories()}catch(e){}
- try{if(typeof saveDirs==='function')saveDirs()}catch(e){}
- try{if(typeof renderAdminQueue==='function')renderAdminQueue()}catch(e){}
- try{if(typeof renderTutorDirectory==='function')renderTutorDirectory()}catch(e){}
-}
-function open(id){
- if(!staffOK()){alert('Please login through STAFF LOGIN first.');return}
- var t=find(id);if(!t){alert('Tutor record not found. Please refresh Admin Dashboard.');return}
- var m=document.getElementById('gcV8TutorEditor');
- if(!m){m=document.createElement('div');m.id='gcV8TutorEditor';document.body.appendChild(m);m.addEventListener('click',function(e){if(e.target===m)close()})}
- m.innerHTML='<div class="gc8-card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px"><div><div style="font-size:23px;font-weight:900;color:#0f172a">TUTOR ADMIN EDIT</div><div style="font-size:12px;color:#64748b">Independent Tutor Editor · ID '+esc(t.id)+'</div></div><button type="button" id="gc8x" class="gc8-cancel">×</button></div><form id="gc8Form"><div class="gc8-grid">'+
- '<div class="gc8-field"><label>Name</label><input id="gc8name" required value="'+esc(t.name)+'"></div>'+
- '<div class="gc8-field"><label>Email</label><input id="gc8email" value="'+esc(t.email)+'"></div>'+
- '<div class="gc8-field"><label>Phone</label><input id="gc8phone" value="'+esc(t.phone)+'"></div>'+
- '<div class="gc8-field"><label>Qualification</label><input id="gc8qual" value="'+esc(t.qualification)+'"></div>'+
- '<div class="gc8-field"><label>Experience</label><input id="gc8exp" value="'+esc(t.experience)+'"></div>'+
- '<div class="gc8-field"><label>College / Institute</label><input id="gc8college" value="'+esc(t.teachingCollege||t.college)+'"></div>'+
- '<div class="gc8-field"><label>Subject</label><input id="gc8subject" value="'+esc(t.subject)+'"></div>'+
- '<div class="gc8-field"><label>Rate / Hour</label><input id="gc8price" value="'+esc(t.price)+'"></div>'+
- '<div class="gc8-field"><label>Rating</label><input id="gc8rating" type="number" min="1" max="5" step=".1" value="'+esc(t._manualRating||5)+'"></div>'+
- '<div class="gc8-field"><label>Students</label><input id="gc8students" value="'+esc(t.students)+'"></div></div>'+
- '<div class="gc8-field" style="margin-top:12px"><label>About Me</label><textarea id="gc8about" rows="5">'+esc(t.aboutMe)+'</textarea></div>'+
- '<label style="display:flex;align-items:center;gap:8px;margin-top:14px;padding:13px;border-radius:12px;background:#eff6ff;font-weight:900"><input id="gc8verified" type="checkbox" '+(t.verified?'checked':'')+' style="width:18px;height:18px"> VERIFIED TUTOR</label>'+
- '<div id="gc8status" style="text-align:center;font-size:12px;font-weight:800;color:#64748b;padding:13px">Ready</div>'+
- '<div style="display:flex;gap:10px"><button type="button" id="gc8cancel" class="gc8-cancel" style="flex:1">CANCEL</button><button type="submit" class="gc8-save" style="flex:1">SAVE ALL CHANGES</button></div></form></div>';
- m.classList.add('gc-show');
- document.getElementById('gc8x').onclick=close;document.getElementById('gc8cancel').onclick=close;
- document.getElementById('gc8Form').onsubmit=function(e){
-  e.preventDefault();var b=this.querySelector('button[type=submit]'),s=document.getElementById('gc8status');b.disabled=true;b.textContent='SAVING...';
-  try{
-   t.name=document.getElementById('gc8name').value.trim()||t.name;t.email=document.getElementById('gc8email').value.trim();t.phone=document.getElementById('gc8phone').value.trim();t.qualification=document.getElementById('gc8qual').value.trim();t.experience=document.getElementById('gc8exp').value.trim();t.teachingCollege=document.getElementById('gc8college').value.trim();t.college=t.teachingCollege;t.subject=document.getElementById('gc8subject').value.trim();t.price=document.getElementById('gc8price').value.trim();t._manualRating=Math.min(5,Math.max(1,Number(document.getElementById('gc8rating').value)||5));t.students=document.getElementById('gc8students').value.trim();t.aboutMe=document.getElementById('gc8about').value.trim();t.verified=document.getElementById('gc8verified').checked;if(t.verified)t.paidStatus='PAID';
-   persist();s.textContent='✓ Saved successfully';s.style.color='#059669';setTimeout(function(){close();alert('Tutor profile updated successfully by Admin.')},200);
-  }catch(err){s.textContent='Save failed';s.style.color='#dc2626';alert('Tutor edit failed: '+(err.message||err))}
-  finally{b.disabled=false;b.textContent='SAVE ALL CHANGES'}
- };
-}
-document.addEventListener('click',function(e){
- var b=e.target&&e.target.closest?e.target.closest('button'):null;if(!b)return;
- var a=b.getAttribute('onclick')||'';if(a.indexOf('adminEditTutor')<0)return;
- var m=a.match(/adminEditTutor\s*\(\s*String\s*\(\s*([0-9]+)\s*\)\s*\)/);if(!m)m=a.match(/adminEditTutor\s*\(\s*['"]?([^'")\s]+)['"]?\s*\)/);if(!m)return;
- e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();open(m[1]);
-},true);
-window.gcV8OpenTutorAdminEdit=open;
+  'use strict';
+  /*
+   * Tutor IDs are strings. Keep a safe final adapter for any legacy call
+   * that reaches adminEditTutor with a string-like value.
+   */
+  var original = window.adminEditTutor;
+  if(typeof original === 'function'){
+    window.adminEditTutor = function(id){
+      return original(String(id));
+    };
+  }
 })();
 </script>
+
 </body>
 </html>
