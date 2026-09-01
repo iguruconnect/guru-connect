@@ -8555,7 +8555,7 @@ body {
       if (role === 'tutor') {
         const row = gcTutorCloudRow(profile, user.id);
         const res = await gcSupabase.from('tutor_profiles')
-          .upsert(row, { onConflict: 'user_id' })
+          .insert(row)
           .select('*').single();
         if (res.error) throw res.error;
         return { ok: true, row: res.data, userId: user.id };
@@ -8564,7 +8564,7 @@ body {
       gcPageCache.clear();
       const row = gcStudentCloudRow(profile, user.id);
       const res = await gcSupabase.from('student_profiles')
-        .upsert(row, { onConflict: 'user_id' })
+        .insert(row)
         .select('*').single();
       if (res.error) throw res.error;
       return { ok: true, row: res.data, userId: user.id };
@@ -8851,7 +8851,7 @@ body {
 
     const cloud = await window.gcSaveProfileToCloud('student', profile);
     if (!cloud.ok) {
-      const detail = cloud.error && cloud.error.message ? '\n\nSupabase: ' + cloud.error.message : '';
+      const detail = cloud.error ? '\n\nSupabase: ' + (window.gcFormatCloudError ? window.gcFormatCloudError(cloud.error) : (cloud.error.message || cloud.error)) : '';
       alert('REGISTRATION NOT COMPLETED. Your Student profile could not be saved to the GURU CONNECT cloud database.' + detail + '\n\nPlease try again. No local-only registration has been created.');
       return;
     }
@@ -8916,7 +8916,7 @@ body {
 
     const cloud = await window.gcSaveProfileToCloud('tutor', profile);
     if (!cloud.ok) {
-      const detail = cloud.error && cloud.error.message ? '\n\nSupabase: ' + cloud.error.message : '';
+      const detail = cloud.error ? '\n\nSupabase: ' + (window.gcFormatCloudError ? window.gcFormatCloudError(cloud.error) : (cloud.error.message || cloud.error)) : '';
       alert('REGISTRATION NOT COMPLETED. Your Tutor profile could not be saved to the GURU CONNECT cloud database.' + detail + '\n\nPlease try again. No local-only registration has been created.');
       return;
     }
@@ -9583,6 +9583,26 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
   }
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',boot);
   else boot();
+})();
+</script>
+
+
+<script id="gc-cloud-error-helper">
+(function(){
+  window.gcFormatCloudError=function(err){
+    if(!err) return 'Unknown Supabase error.';
+    const msg=String(err.message||err.error_description||err.details||err.hint||err);
+    if(/row-level security|permission denied|violates row-level security/i.test(msg)){
+      return 'Supabase security policy blocked this registration. The database is connected, but its INSERT policy needs to allow this registration flow.';
+    }
+    if(/not-null|null value/i.test(msg)){
+      return 'Supabase rejected the registration because a required database field is missing.';
+    }
+    if(/column .* does not exist|schema cache/i.test(msg)){
+      return 'Supabase rejected the registration because the website and database columns do not match.';
+    }
+    return msg;
+  };
 })();
 </script>
 
