@@ -3410,6 +3410,12 @@ body.gc-registration-lock{overflow:hidden !important;}
 @media(max-width:768px){header{overflow:visible!important}.gc-header-actions,.header-actions,.desktop-actions{display:none!important}#mainMenu,#menuPanel,.menu-panel,.gc-menu-panel{max-width:calc(100vw - 20px)!important;width:calc(100vw - 20px)!important;left:10px!important;right:10px!important;box-sizing:border-box!important;overflow-x:hidden!important}}
 .gc-menu-normal{background:linear-gradient(135deg,#facc15,#f59e0b)!important;color:#172c67!important}.gc-menu-login-student{background:linear-gradient(135deg,#2563eb,#06b6d4)!important;color:#fff!important}.gc-menu-login-tutor{background:linear-gradient(135deg,#7c3aed,#ec4899)!important;color:#fff!important}.gc-menu-login-staff{background:linear-gradient(135deg,#059669,#10b981)!important;color:#fff!important}
 </style>
+
+<style id="gc-render-guard">
+/* Prevent the old card renderer(s) from flashing before the final card renderer wins. */
+#tutorGrid, #studentGridContainer { visibility: hidden !important; }
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -11792,7 +11798,19 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
     }
   `;
   document.head.appendChild(s);
-  function boot(){try{window.renderTutorDirectory()}catch(e){}try{window.renderStudentDirectory()}catch(e){}}
+  function boot(){
+    try{window.renderTutorDirectory()}catch(e){}
+    try{window.renderStudentDirectory()}catch(e){}
+    /* Let any previously registered DOMContentLoaded renderers finish first,
+       then reveal only the final card layout. */
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        const t=document.getElementById('tutorGrid'), s=document.getElementById('studentGridContainer');
+        if(t)t.style.setProperty('visibility','visible','important');
+        if(s)s.style.setProperty('visibility','visible','important');
+      });
+    });
+  }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
