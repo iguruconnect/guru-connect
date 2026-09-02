@@ -11815,6 +11815,32 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 })();
 </script>
 
+
+<script id="gc-final-render-authority">
+(function(){
+  function lockFinalRenderer(){
+    if(typeof window.gcFinalRenderTutors === 'function'){
+      window.renderTutorDirectory = window.gcFinalRenderTutors;
+    }
+    if(typeof window.gcFinalRenderStudents === 'function'){
+      window.renderStudentDirectory = window.gcFinalRenderStudents;
+    }
+    try{
+      if(typeof window.gcFinalRenderTutors === 'function') window.gcFinalRenderTutors();
+      if(typeof window.gcFinalRenderStudents === 'function') window.gcFinalRenderStudents();
+    }catch(e){}
+    const t=document.getElementById('tutorGrid');
+    const s=document.getElementById('studentGridContainer');
+    if(t)t.style.setProperty('visibility','visible','important');
+    if(s)s.style.setProperty('visibility','visible','important');
+  }
+  if(document.readyState === 'complete'){
+    lockFinalRenderer();
+  }else{
+    window.addEventListener('load',lockFinalRenderer,{once:true});
+  }
+})();
+</script>
 </body>
 </html>
 
