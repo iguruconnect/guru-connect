@@ -3415,6 +3415,78 @@ body.gc-registration-lock{overflow:hidden !important;}
 /* Keep the directory blank until the single final renderer has painted. */
 #tutorGrid,#studentGridContainer{visibility:hidden!important;}
 </style>
+
+<style id="gc-stable-responsive-v2">
+/* V2: give the fields real horizontal space on desktop and a readable 2x2 layout on phones. */
+.gc-stable-card{
+  height:116px!important;min-height:116px!important;max-height:116px!important;
+  grid-template-columns:72px minmax(180px,1.15fr) repeat(4,minmax(92px,1fr)) 44px 106px!important;
+  gap:7px!important;padding:9px 11px!important;
+}
+.gc-stable-avatar{width:72px!important;height:96px!important}
+.gc-stable-main{min-width:0!important;display:flex!important;flex-direction:column!important;justify-content:center!important}
+.gc-stable-name{margin-bottom:6px!important;font-size:16px!important}
+.gc-stable-fields{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:5px!important}
+.gc-stable-field{height:43px!important;padding:4px 6px!important}
+.gc-stable-field small{font-size:6.5px!important;margin-bottom:4px!important}
+.gc-stable-field strong{font-size:9.5px!important}
+.gc-stable-icons{height:96px!important}
+.gc-stable-actions{height:96px!important}
+
+/* Tablet */
+@media (max-width:899px){
+  .gc-stable-card{
+    height:138px!important;min-height:138px!important;max-height:138px!important;
+    grid-template-columns:52px minmax(0,1fr) 26px 68px!important;
+    gap:5px!important;padding:6px!important;border-radius:13px!important;
+  }
+  .gc-stable-avatar{width:52px!important;height:126px!important;border-radius:9px!important}
+  .gc-stable-avatar img,.gc-stable-avatar-fallback{border-radius:7px!important}
+  .gc-stable-name{font-size:12px!important;padding:5px 7px!important;margin-bottom:5px!important;border-radius:7px!important}
+  .gc-stable-tick{width:18px!important;height:18px!important;min-width:18px!important;flex-basis:18px!important}
+  .gc-stable-fields{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:4px!important}
+  .gc-stable-field{height:43px!important;padding:4px 5px!important;border-radius:6px!important}
+  .gc-stable-field small{font-size:5.2px!important;margin-bottom:3px!important}
+  .gc-stable-field strong{font-size:8px!important}
+  .gc-stable-icons{height:126px!important}
+  .gc-stable-chip{width:20px!important;height:15px!important}
+  .gc-stable-wifi{font-size:21px!important}
+  .gc-stable-actions{height:126px!important;gap:5px!important}
+  .gc-stable-actions button{height:45px!important;min-height:45px!important;font-size:7px!important;border-radius:7px!important}
+}
+/* Narrow phones: do NOT shrink the card into unreadable text. Use a slightly taller,
+   still-horizontal card with two columns of fields. */
+@media (max-width:430px){
+  .gc-stable-card{
+    height:146px!important;min-height:146px!important;max-height:146px!important;
+    grid-template-columns:48px minmax(0,1fr) 22px 61px!important;
+    gap:4px!important;padding:6px 5px!important;
+  }
+  .gc-stable-avatar{width:48px!important;height:134px!important}
+  .gc-stable-name{font-size:11px!important;padding:5px 6px!important;margin-bottom:5px!important}
+  .gc-stable-tick{width:17px!important;height:17px!important;min-width:17px!important;flex-basis:17px!important}
+  .gc-stable-fields{gap:3px!important}
+  .gc-stable-field{height:45px!important;padding:4px!important}
+  .gc-stable-field small{font-size:5px!important}
+  .gc-stable-field strong{font-size:7.5px!important}
+  .gc-stable-icons{height:134px!important}
+  .gc-stable-chip{width:18px!important;height:14px!important}
+  .gc-stable-wifi{font-size:19px!important}
+  .gc-stable-actions{height:134px!important;gap:5px!important}
+  .gc-stable-actions button{height:48px!important;min-height:48px!important;font-size:6.5px!important}
+}
+/* Very narrow phones: keep readable rather than compressing the four fields to tiny slivers. */
+@media (max-width:350px){
+  .gc-stable-card{
+    height:150px!important;min-height:150px!important;max-height:150px!important;
+    grid-template-columns:44px minmax(0,1fr) 20px 57px!important;
+  }
+  .gc-stable-avatar{width:44px!important;height:138px!important}
+  .gc-stable-name{font-size:10px!important}
+  .gc-stable-field strong{font-size:7px!important}
+  .gc-stable-actions button{font-size:6px!important}
+}
+</style>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -11867,5 +11939,63 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply,{once:true});else apply();
 })();
 </script>
-</body>
+<style id="gc-layout-correction-final">
+/* FINAL CORRECTION: desktop uses the entire card width; mobile uses a real compact 3-zone card. */
+.gc-stable-card{grid-template-columns:76px minmax(220px,1.35fr) repeat(4,minmax(95px,1fr)) 48px 112px!important;gap:8px!important}
+.gc-stable-main{display:contents!important}
+.gc-stable-fields{display:contents!important}
+.gc-stable-name{grid-column:2!important;margin:0!important;width:100%!important}
+.gc-stable-field{height:48px!important}
+.gc-stable-icons{grid-column:7!important}
+.gc-stable-actions{grid-column:8!important}
+@media(max-width:899px){
+ .gc-stable-card{height:112px!important;min-height:112px!important;max-height:112px!important;
+   display:grid!important;grid-template-columns:50px minmax(0,1fr) 66px!important;gap:6px!important;
+   padding:6px!important;border-radius:13px!important;position:relative!important}
+ .gc-stable-avatar{width:50px!important;height:98px!important;grid-column:1!important;grid-row:1!important}
+ .gc-stable-main{display:flex!important;grid-column:2!important;grid-row:1!important;min-width:0!important;
+   flex-direction:column!important;gap:5px!important;padding-right:0!important}
+ .gc-stable-name{grid-column:auto!important;width:100%!important;height:30px!important;min-height:30px!important;
+   margin:0!important;font-size:11px!important;padding:5px 7px!important;border-radius:7px!important}
+ .gc-stable-tick{width:17px!important;height:17px!important;min-width:17px!important;flex-basis:17px!important}
+ .gc-stable-fields{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:4px!important}
+ .gc-stable-field{height:28px!important;min-width:0!important;padding:3px 5px!important;border-radius:6px!important}
+ .gc-stable-field small{font-size:5px!important;margin-bottom:2px!important}
+ .gc-stable-field strong{font-size:7.5px!important}
+ .gc-stable-icons{position:absolute!important;right:72px!important;top:7px!important;width:22px!important;height:95px!important;
+   display:flex!important;grid-column:auto!important;grid-row:auto!important}
+ .gc-stable-chip{width:18px!important;height:13px!important}.gc-stable-wifi{font-size:19px!important}
+ .gc-stable-actions{position:absolute!important;right:5px!important;top:6px!important;width:61px!important;height:100px!important;
+   display:flex!important;grid-column:auto!important;grid-row:auto!important;gap:5px!important}
+ .gc-stable-actions button{height:43px!important;min-height:43px!important;font-size:6.5px!important;border-radius:7px!important}
+}
+@media(max-width:380px){
+ .gc-stable-card{grid-template-columns:44px minmax(0,1fr) 58px!important;gap:4px!important;height:108px!important;min-height:108px!important;max-height:108px!important;padding:5px!important}
+ .gc-stable-avatar{width:44px!important;height:96px!important}.gc-stable-name{font-size:10px!important;height:28px!important;min-height:28px!important}
+ .gc-stable-field{height:27px!important;padding:2px 4px!important}.gc-stable-field small{font-size:4.5px!important}.gc-stable-field strong{font-size:7px!important}
+ .gc-stable-icons{right:63px!important;height:91px!important}.gc-stable-actions{width:54px!important;right:4px!important;height:96px!important}
+ .gc-stable-actions button{height:41px!important;min-height:41px!important;font-size:6px!important}
+}
+</style><script id="gc-final-render-lock">
+(function(){
+  const t=()=>document.getElementById('tutorGrid'), s=()=>document.getElementById('studentGridContainer');
+  let busy=false, timer=0;
+  function stable(){
+    if(busy)return; busy=true;
+    try{
+      if(typeof window.renderTutorDirectory==='function') window.renderTutorDirectory();
+      if(typeof window.renderStudentDirectory==='function') window.renderStudentDirectory();
+    }catch(e){}
+    const a=t(),b=s(); if(a)a.style.setProperty('visibility','visible','important'); if(b)b.style.setProperty('visibility','visible','important');
+    busy=false;
+  }
+  function watch(){
+    const opts={childList:true};
+    const mo=new MutationObserver(()=>{ if(busy)return; clearTimeout(timer); timer=setTimeout(stable,0); });
+    if(t())mo.observe(t(),opts); if(s())mo.observe(s(),opts);
+    stable();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watch,{once:true});else watch();
+})();
+</script></body>
 </html>
