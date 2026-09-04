@@ -3463,6 +3463,82 @@ body.gc-registration-lock{overflow:hidden !important;}
   .gc-authoritative-card .gc-auth-box strong{font-size:7px!important}
 }
 </style>
+
+<style id="gc-final-card-polish">
+/* FINAL CARD POLISH: top-right connectivity icons, wider name, compact buttons */
+.gc-signature-card{position:relative!important;overflow:hidden!important;}
+.gc-signature-head{position:relative!important;padding-right:92px!important;}
+.gc-signature-name,.gc-signature-name-strip,.gc-signature-title{min-width:0!important;width:100%!important;max-width:none!important;}
+.gc-signature-name{white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;font-size:clamp(16px,2.1vw,20px)!important;letter-spacing:-.2px!important;}
+.gc-signature-connectivity,.gc-connectivity,.gc-signature-icons{position:absolute!important;top:10px!important;right:10px!important;z-index:8!important;display:flex!important;align-items:center!important;gap:7px!important;}
+.gc-signature-connectivity i,.gc-connectivity i,.gc-signature-icons i{font-size:19px!important;}
+/* metallic SIM + Wi-Fi appearance */
+.gc-signature-connectivity .sim-icon,.gc-connectivity .sim-icon,.gc-signature-icons .sim-icon{background:linear-gradient(145deg,#f8fafc,#94a3b8 45%,#e2e8f0)!important;color:#1e3a8a!important;border:1px solid #64748b!important;box-shadow:inset 1px 1px 2px #fff, inset -1px -1px 2px #64748b,0 2px 4px rgba(15,23,42,.28)!important;border-radius:6px!important;padding:4px 6px!important;}
+.gc-signature-connectivity .wifi-icon,.gc-connectivity .wifi-icon,.gc-signature-icons .wifi-icon{background:linear-gradient(145deg,#e0f2fe,#60a5fa 48%,#1d4ed8)!important;color:#fff!important;border:1px solid #1e40af!important;box-shadow:inset 1px 1px 2px rgba(255,255,255,.8),inset -1px -1px 2px rgba(30,64,175,.7),0 2px 4px rgba(15,23,42,.28)!important;border-radius:50%!important;padding:5px!important;}
+.gc-signature-data-box{background:#fff!important;border:1px solid #dbe3ef!important;box-shadow:0 2px 7px rgba(15,23,42,.08)!important;}
+.gc-signature-data-value,.gc-signature-data-text,.gc-signature-data-content{color:#0b2a63!important;}
+.gc-signature-data-label{color:#1e3a8a!important;}
+.gc-signature-actions button,.gc-signature-actions .btn,.gc-signature-btn,.gc-signature-more,.gc-signature-connect{padding:7px 11px!important;font-size:12px!important;min-height:32px!important;border-radius:8px!important;}
+@media(max-width:600px){
+ .gc-signature-head{padding-right:82px!important;}
+ .gc-signature-name{font-size:15px!important;line-height:1.25!important;}
+ .gc-signature-connectivity,.gc-connectivity,.gc-signature-icons{top:8px!important;right:8px!important;gap:5px!important;}
+ .gc-signature-connectivity i,.gc-connectivity i,.gc-signature-icons i{font-size:16px!important;}
+ .gc-signature-data-box{padding:6px 7px!important;}
+ .gc-signature-actions button,.gc-signature-actions .btn,.gc-signature-btn,.gc-signature-more,.gc-signature-connect{padding:6px 9px!important;font-size:11px!important;min-height:29px!important;}
+}
+</style>
+
+<style id="gc-compact-fields-beautiful-borders">
+/* Compact white field chips: white background hugs the content instead of filling the card */
+.gc-signature-data-grid{display:flex!important;flex-wrap:wrap!important;gap:7px!important;align-items:flex-start!important;}
+.gc-signature-data-box{
+  display:inline-flex!important;align-items:center!important;
+  width:max-content!important;max-width:100%!important;
+  flex:0 1 auto!important;
+  min-height:30px!important;height:auto!important;
+  padding:5px 10px 5px 7px!important;
+  margin:0!important;
+  background:#fff!important;
+  border:1.5px solid #2563eb!important;
+  border-radius:10px!important;
+  box-shadow:0 2px 7px rgba(15,23,42,.10)!important;
+}
+.gc-signature-data-box .gc-signature-data-label{
+  color:#64748b!important;font-size:10px!important;font-weight:700!important;
+  line-height:1.05!important;margin-right:5px!important;white-space:nowrap!important;
+}
+.gc-signature-data-box .gc-signature-data-value{
+  color:#0b2a66!important;font-size:12px!important;font-weight:800!important;
+  line-height:1.15!important;white-space:nowrap!important;
+}
+.gc-signature-data-icon{
+  width:23px!important;height:23px!important;min-width:23px!important;
+  margin-right:6px!important;border-radius:7px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  box-shadow:inset 0 1px 2px rgba(255,255,255,.7),0 1px 3px rgba(15,23,42,.18)!important;
+}
+/* Distinct premium borders */
+.gc-signature-data-box:nth-child(1){border-color:#2563eb!important}
+.gc-signature-data-box:nth-child(2){border-color:#16a34a!important}
+.gc-signature-data-box:nth-child(3){border-color:#f59e0b!important}
+.gc-signature-data-box:nth-child(4){border-color:#db2777!important}
+.gc-signature-data-box:nth-child(5){border-color:#7c3aed!important}
+.gc-signature-card{
+  border:2px solid #2563eb!important;
+  border-radius:18px!important;
+  box-shadow:0 8px 24px rgba(15,23,42,.14),0 0 0 3px rgba(37,99,235,.07)!important;
+  overflow:hidden!important;
+}
+@media(max-width:600px){
+ .gc-signature-data-grid{gap:5px!important}
+ .gc-signature-data-box{min-height:28px!important;padding:4px 8px 4px 6px!important;border-radius:9px!important}
+ .gc-signature-data-value{font-size:11px!important}
+ .gc-signature-data-label{font-size:9px!important}
+ .gc-signature-data-icon{width:21px!important;height:21px!important;min-width:21px!important;margin-right:5px!important}
+ .gc-signature-card{border-width:1.5px!important;border-radius:15px!important}
+}
+</style>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
