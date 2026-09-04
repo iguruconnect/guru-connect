@@ -7282,7 +7282,7 @@ body.gc-registration-lock{overflow:hidden !important;}
     @media(max-width:760px){#tutorGrid,#studentGridContainer{grid-template-columns:1fr!important;gap:10px!important}.gc-v3-preview-card{min-height:92px;padding:9px;gap:9px;border-radius:15px}.gc-v3-preview-photo{width:52px;height:52px;flex-basis:52px}.gc-v3-preview-name h3{font-size:15px}.gc-v3-preview-meta{margin-top:5px;gap:4px}.gc-v3-preview-meta span{font-size:9px;padding:4px 5px}.gc-v3-preview-meta b{font-size:7px}.gc-v3-more{font-size:9px;padding:8px 8px}.gc-v3-verified-badge{width:30px;height:30px;flex-basis:30px}.gc-v3-full-head{padding:22px 50px 20px 18px;gap:12px}.gc-v3-full-avatar{width:78px;height:78px;flex-basis:78px}.gc-v3-full-title h2{font-size:22px}.gc-v3-full-body{padding:15px}.gc-v3-stat-row{grid-template-columns:1fr 1fr}.gc-v3-stat-row span:last-child{grid-column:1/-1}.gc-v3-detail-grid{grid-template-columns:1fr}.gc-v3-ach-grid{grid-template-columns:1fr 1fr}.gc-v3-ach-grid img{height:105px}.gc-v3-modal{padding:8px}.gc-v3-modal-card{max-height:95vh;border-radius:20px}.gc-v3-modal-actions{flex-direction:column}}
     @media(max-width:390px){.gc-v3-preview-card{gap:7px}.gc-v3-preview-photo{width:46px;height:46px;flex-basis:46px}.gc-v3-preview-name h3{font-size:14px}.gc-v3-preview-meta{display:block}.gc-v3-preview-meta span{display:inline-block;max-width:100%;margin:2px 2px 0 0}.gc-v3-more{padding:7px 6px;font-size:8px}}
   `; document.head.appendChild(css);
-  setTimeout(()=>{try{renderTutorDirectory()}catch(e){} try{renderStudentDirectory()}catch(e){}},0);
+  try{window.renderTutorDirectory&&window.renderTutorDirectory();}catch(e){} try{window.renderStudentDirectory&&window.renderStudentDirectory();}catch(e){}
 })();
 </script>
 <script id="gc-v4-final-requested-patch">
@@ -7511,7 +7511,7 @@ body.gc-registration-lock{overflow:hidden !important;}
     .gc-v4-actions{margin-top:22px}.gc-v4-ok{border:0;border-radius:13px;padding:12px 22px;background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff;font-weight:950;font-size:12px;cursor:pointer;box-shadow:0 8px 18px rgba(37,99,235,.25)}
     @media(max-width:760px){#tutorGrid,#studentGridContainer{grid-template-columns:1fr!important;gap:8px!important}.gc-v4-preview-card{min-height:70px;padding:8px 9px;border-radius:13px;gap:7px}.gc-v4-preview-name h3{font-size:14px}.gc-v4-verified-patch{width:34px;height:34px;min-width:34px;flex-basis:34px;padding:3px}.gc-v4-preview-meta{margin-top:5px;gap:3px}.gc-v4-preview-meta span{font-size:8px;padding:3px 4px}.gc-v4-preview-meta b{font-size:6.5px}.gc-v4-more{font-size:8px;padding:7px 7px}.gc-v4-modal-tick{width:39px;height:39px}.gc-v4-notice-card{padding:28px 20px 22px;border-radius:23px}.gc-v4-icon{width:70px;height:70px;font-size:27px}.gc-v4-notice-card h2{font-size:19px}.gc-v4-notice-card p{font-size:13px}}
   `;document.head.appendChild(style);
-  setTimeout(()=>{try{renderTutorDirectory()}catch(e){}try{renderStudentDirectory()}catch(e){}},30);
+  try{window.renderTutorDirectory&&window.renderTutorDirectory();}catch(e){} try{window.renderStudentDirectory&&window.renderStudentDirectory();}catch(e){}
 })();
 </script>
 
@@ -7567,7 +7567,7 @@ body.gc-registration-lock{overflow:hidden !important;}
     }
   `;
   document.head.appendChild(style);
-  setTimeout(()=>{try{renderTutorDirectory()}catch(e){} try{renderStudentDirectory()}catch(e){}},40);
+  try{window.renderTutorDirectory&&window.renderTutorDirectory();}catch(e){} try{window.renderStudentDirectory&&window.renderStudentDirectory();}catch(e){}
 })();
 </script>
 <script id="gc-v6-more-fix">
@@ -11797,24 +11797,6 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 })();
 </script>
 
-
-<style id="gc-final-no-flicker-visual">
-:root{--gc-sky:#38bdf8;--gc-sky-dark:#0284c7;--gc-yellow:#facc15;--gc-yellow-soft:#fff7bf}
-.gc-signature-avatar-fallback{display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important;height:100%!important;border-radius:50%!important;background:linear-gradient(135deg,#e0f6ff,#38bdf8)!important;color:#075985!important;font-size:28px!important}
-.gc-signature-avatar-fallback.gc-student-default-avatar{background:linear-gradient(135deg,#fff9cc,#facc15)!important;color:#7a5b00!important}
-#gcV3FullProfileModal{z-index:2147483000!important}
-#gcV3FullProfileModal .gc-profile-hero,#gcV3FullProfileModal .gc-tutor-profile-hero{background:linear-gradient(135deg,#0284c7 0%,#38bdf8 55%,#facc15 100%)!important;color:#fff!important}
-#gcV3FullProfileModal .gc-stat-card{border-top:4px solid #facc15!important}
-#gcV3FullProfileModal .gc-detail-card{border-left:5px solid #38bdf8!important}
-#gcV3FullProfileModal .gc-profile-name,#gcV3FullProfileModal h1,#gcV3FullProfileModal h2{color:#075985!important}
-#gcV3FullProfileModal .gc-primary,#gcV3FullProfileModal .gc-connect{background:#0284c7!important;color:#fff!important}
-#gcV3FullProfileModal .gc-secondary,#gcV3FullProfileModal .gc-more{border-color:#facc15!important;color:#075985!important}
-.gc-signature-name{max-width:100%!important;width:max-content!important;display:flex!important;align-items:center!important;gap:7px!important;background:#fff!important;color:#13213d!important}
-.gc-signature-name-text{min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
-.gc-signature-tick{display:inline-flex!important;align-items:center!important;justify-content:center!important;background:transparent!important;border:0!important;padding:0!important;min-width:0!important}
-.gc-signature-tick i{font-size:22px!important;color:#2563eb!important;line-height:1!important}
-@media(max-width:700px){.gc-signature-name{font-size:16px!important;gap:5px!important}.gc-signature-tick i{font-size:19px!important}}
-</style>
 </body>
 </html>
 
@@ -12028,31 +12010,35 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
   }
 </style>
 
+<style id="gc-profile-card-authority-css">
+/* GURU CONNECT — one authoritative directory card renderer. Older card renderers may run for legacy features, but their visual cards are never allowed to replace the final design. */
+#tutorGrid > article:not(.gc-signature-card), #studentGridContainer > article:not(.gc-signature-card){display:none!important}
+#tutorGrid.gc-signature-directory, #studentGridContainer.gc-signature-directory{display:grid!important}
+</style>
+
 <script id="gc-horizontal-signature-cards-js">
 (function(){
   'use strict';
   var esc=function(v){return String(v??'').replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})};
+  var tick=function(){try{return (typeof VERIFIED_TICK_LOGO_URL!=='undefined'&&VERIFIED_TICK_LOGO_URL)||''}catch(e){return ''}};
   var photo=function(x){return x&&(x.photoData||x.photo||x.image||x.avatar||x.profileImage||'')};
   var initials=function(n){return String(n||'').trim().split(/\s+/).slice(0,2).map(function(x){return x[0]||''}).join('').toUpperCase()||'GC'};
-  var avatar=function(src,name,icon,role){
-    if(src)return '<img src="'+esc(src)+'" alt="'+esc(name)+'" onerror="this.onerror=null;this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'+
-      '<span class="gc-signature-avatar-fallback gc-default-avatar-fallback" style="display:none"><i class="fa-solid '+icon+'"></i></span>';
-    return '<span class="gc-signature-avatar-fallback gc-default-avatar-fallback '+(role==='student'?'gc-student-default-avatar':'')+'"><i class="fa-solid '+icon+'"></i></span>';
-  };
+  var avatar=function(src,name,icon){return src?'<img src="'+esc(src)+'" alt="'+esc(name)+'" onerror="this.onerror=null;this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><span class="gc-signature-avatar-fallback" style="display:none"><i class="fa-solid '+icon+'"></i></span>':'<span class="gc-signature-avatar-fallback">'+esc(initials(name))+'</span>'};
   var getList=function(name){try{return Array.isArray(window[name])?window[name]:[]}catch(e){return[]}};
+
   function tutorRender(){
-    var c=document.getElementById('tutorGrid');if(!c)return false;
-    var list=getList('tutorDirectoryList'); if(!list.length) return false;
+    var c=document.getElementById('tutorGrid');if(!c)return;
     c.classList.add('gc-signature-directory');c.classList.remove('gc-beautiful-directory');
-    var per=6,page=1;try{per=window.tutorsPerPage||6;page=window.currentTutorPage||1}catch(e){}
+    var list=getList('tutorDirectoryList'), per=6, page=1;
+    try{per=window.tutorsPerPage||6;page=window.currentTutorPage||1}catch(e){}
     var start=(page-1)*per,items=list.slice(start,start+per);c.innerHTML='';
     items.forEach(function(t){
       var id=String(t.id??''),name=String(t.name||'Tutor'),verified=t.verified===true;
       var subject=String(t.subject||'Not specified'),rate=String(t.price||t.rate||'—'),exp=String(t.experience||'—');
-      var rating=String(t.rating||'—'),reviews=Number(t.reviewCount||t.reviewsCount||0);
+      var rating=String(t.rating||'—'),reviews=Number(t.reviewCount||t.reviewsCount||0),students=String(t.students||'—');
       var card=document.createElement('article');card.className='gc-signature-card gc-signature-tutor';
-      card.innerHTML='<div class="gc-signature-left"><span class="gc-signature-role"><i class="fa-solid fa-user-tie"></i>TUTOR</span><div class="gc-signature-avatar">'+avatar(photo(t),name,'fa-chalkboard-user','tutor')+'</div><span class="gc-signature-chip"></span><i class="fa-solid fa-wifi gc-signature-wifi"></i></div>'+ 
-      '<div class="gc-signature-main"><div class="gc-signature-name-row"><h3 class="gc-signature-name" title="'+esc(name)+'"><span class="gc-signature-name-text">'+esc(name)+'</span>'+(verified?'<span class="gc-signature-tick" title="Verified" aria-label="Verified"><i class="fa-solid fa-circle-check"></i></span>':'')+'</h3></div>'+ 
+      card.innerHTML='<div class="gc-signature-left"><span class="gc-signature-role"><i class="fa-solid fa-user-tie"></i>TUTOR</span><div class="gc-signature-avatar">'+avatar(photo(t),name,'fa-chalkboard-user')+'</div><span class="gc-signature-chip"></span><i class="fa-solid fa-wifi gc-signature-wifi"></i></div>'+
+      '<div class="gc-signature-main"><div class="gc-signature-name-row"><h3 class="gc-signature-name" title="'+esc(name)+'"><span class="gc-signature-name-text">'+esc(name)+'</span>'+(verified?'<span class="gc-signature-tick" title="Verified Tutor" aria-label="Verified Tutor"><i class="fa-solid fa-circle-check"></i></span>':'')+'</h3></div>'+
       '<div class="gc-signature-subtitle"><i class="fa-solid fa-graduation-cap"></i>Junior College Faculty</div><div class="gc-signature-data">'+
       '<div class="gc-signature-data-box"><span class="gc-signature-data-icon"><i class="fa-solid fa-book-open"></i></span><div><small>SUBJECTS</small><strong>'+esc(subject)+'</strong></div></div>'+ 
       '<div class="gc-signature-data-box"><span class="gc-signature-data-icon"><i class="fa-solid fa-briefcase"></i></span><div><small>EXPERIENCE</small><strong>'+esc(exp)+'</strong></div></div>'+ 
@@ -12062,21 +12048,21 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
       c.appendChild(card);
     });
     try{var total=Math.max(1,Math.ceil(list.length/per)),el=document.getElementById('tutorTotalPagesText'),inp=document.getElementById('tutorPageJumpInput');if(el)el.textContent='/ '+total;if(inp){inp.value=page;inp.max=total}}catch(e){}
-    return true;
   }
+
   function studentRender(){
-    var c=document.getElementById('studentGridContainer');if(!c)return false;
-    var list=getList('studentDirectoryList').filter(function(s){return !s||!s._hideFromProfileDirectory}); if(!list.length)return false;
+    var c=document.getElementById('studentGridContainer');if(!c)return;
     c.classList.add('gc-signature-directory');c.classList.remove('gc-beautiful-directory');
-    var per=6,page=1;try{page=window.currentStudentPage||1}catch(e){}
+    var list=getList('studentDirectoryList').filter(function(s){return !s||!s._hideFromProfileDirectory}),per=6,page=1;
+    try{page=window.currentStudentPage||1}catch(e){}
     var start=(page-1)*per,items=list.slice(start,start+per);c.innerHTML='';
     items.forEach(function(s){
       var id=String(s.id??''),name=String(s.name||'Student'),course=String(s.course||s.std||'—'),stream=String(s.stream||'—');
       var req=(typeof window.gcGetStudentRequirementV2==='function')?window.gcGetStudentRequirementV2(s):String(s.learningRequirement||s.subject||'Not specified');
       var rating=String(s.rating||'—'),reviews=Number(s.reviewCount||s.reviewsCount||0),record=String(s.recordNo||s.gcId||s.id||'—');
       var card=document.createElement('article');card.className='gc-signature-card gc-signature-student';
-      card.innerHTML='<div class="gc-signature-left"><span class="gc-signature-role"><i class="fa-solid fa-user-graduate"></i>STUDENT</span><div class="gc-signature-avatar">'+avatar(photo(s),name,'fa-user-graduate','student')+'</div><span class="gc-signature-chip"></span><i class="fa-solid fa-wifi gc-signature-wifi"></i></div>'+ 
-      '<div class="gc-signature-main"><div class="gc-signature-name-row"><h3 class="gc-signature-name" title="'+esc(name)+'"><span class="gc-signature-name-text">'+esc(name)+'</span></h3></div><div class="gc-signature-subtitle"><i class="fa-solid fa-graduation-cap"></i>Junior College Student</div><div class="gc-signature-data">'+
+      card.innerHTML='<div class="gc-signature-left"><span class="gc-signature-role"><i class="fa-solid fa-user-graduate"></i>STUDENT</span><div class="gc-signature-avatar">'+avatar(photo(s),name,'fa-user-graduate')+'</div><span class="gc-signature-chip"></span><i class="fa-solid fa-wifi gc-signature-wifi"></i></div>'+ 
+      '<div class="gc-signature-main"><div class="gc-signature-name-row"><h3 class="gc-signature-name" title="'+esc(name)+'">'+esc(name)+'</h3></div><div class="gc-signature-subtitle"><i class="fa-solid fa-graduation-cap"></i>Junior College Student</div><div class="gc-signature-data">'+
       '<div class="gc-signature-data-box"><span class="gc-signature-data-icon"><i class="fa-solid fa-book-open"></i></span><div><small>CLASS & STREAM</small><strong>'+esc(course)+' • '+esc(stream)+'</strong></div></div>'+ 
       '<div class="gc-signature-data-box"><span class="gc-signature-data-icon"><i class="fa-solid fa-id-card"></i></span><div><small>GC ID</small><strong>'+esc(record)+'</strong></div></div>'+ 
       '<div class="gc-signature-data-box"><span class="gc-signature-data-icon"><i class="fa-solid fa-bullseye"></i></span><div><small>REQUIREMENT</small><strong>'+esc(req)+'</strong></div></div>'+ 
@@ -12084,25 +12070,14 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
       '<div class="gc-signature-side"><button type="button" class="gc-signature-more" data-student-id="'+esc(id)+'">MORE <i class="fa-solid fa-ellipsis-vertical"></i></button><button type="button" class="gc-signature-connect" data-student-connect="'+esc(id)+'">CONNECT</button></div>';
       c.appendChild(card);
     });
-    return true;
   }
+
   function bind(){
     var tc=document.getElementById('tutorGrid');if(tc&&!tc.dataset.gcSignatureBound){tc.dataset.gcSignatureBound='1';tc.addEventListener('click',function(e){var b=e.target.closest('.gc-signature-more[data-tutor-id]');if(b){e.preventDefault();e.stopPropagation();if(typeof window.openTutorProfile==='function')window.openTutorProfile(b.dataset.tutorId);return}var x=e.target.closest('[data-tutor-connect]');if(x){e.preventDefault();e.stopPropagation();if(typeof window.connectWithTutor==='function')window.connectWithTutor(x.dataset.tutorConnect)}},true)}
     var sc=document.getElementById('studentGridContainer');if(sc&&!sc.dataset.gcSignatureBound){sc.dataset.gcSignatureBound='1';sc.addEventListener('click',function(e){var b=e.target.closest('.gc-signature-more[data-student-id]');if(b){e.preventDefault();e.stopPropagation();if(typeof window.openStudentProfile==='function')window.openStudentProfile(b.dataset.studentId);return}var x=e.target.closest('[data-student-connect]');if(x){e.preventDefault();e.stopPropagation();if(typeof window.connectWithStudent==='function')window.connectWithStudent(x.dataset.studentConnect)}},true)}
   }
-  function apply(){
-    var a=tutorRender(),b=studentRender();
-    if(a)window.renderTutorDirectory=tutorRender;
-    if(b)window.renderStudentDirectory=studentRender;
-    bind();
-    return a||b;
-  }
-  function boot(){
-    if(apply())return;
-    var tries=0;
-    var timer=setInterval(function(){tries++;if(apply()||tries>80)clearInterval(timer)},250);
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  function apply(){try{window.renderTutorDirectory=tutorRender}catch(e){}try{window.renderStudentDirectory=studentRender}catch(e){}var t=getList('tutorDirectoryList'),st=getList('studentDirectoryList');if(t.length||st.length){tutorRender();studentRender();bind();}else{setTimeout(apply,50)}}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',apply);else apply();
 })();
 </script>
 
