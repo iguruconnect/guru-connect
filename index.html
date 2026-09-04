@@ -4753,14 +4753,12 @@ body.gc-registration-lock{overflow:hidden !important;}
             "Kamble","Borkar","Kharat","Gore","Inamdar","Mane","Kshirsagar","Vaidya","Bhujbal","Londhe"
         ];
 
-        for(let i=1; i<=60; i++) {
+        for(let i=1; i<=500; i++) {
             const first = GC_STUDENT_FIRST_NAMES[(i - 1) % GC_STUDENT_FIRST_NAMES.length];
-            const lastIndex = Math.floor((i - 1) / GC_STUDENT_FIRST_NAMES.length) % GC_STUDENT_LAST_NAMES.length;
-            const last = GC_STUDENT_LAST_NAMES[lastIndex];
-            const cycle = Math.floor((i - 1) / (GC_STUDENT_FIRST_NAMES.length * GC_STUDENT_LAST_NAMES.length));
-            const uniqueName = cycle > 0
-                ? `${first} ${last} ${cycle + 1}`
-                : `${first} ${last}`;
+            const lastA = GC_STUDENT_LAST_NAMES[(i - 1) % GC_STUDENT_LAST_NAMES.length];
+            const lastB = GC_STUDENT_LAST_NAMES[(Math.floor((i - 1) / GC_STUDENT_LAST_NAMES.length) * 17 + i * 7) % GC_STUDENT_LAST_NAMES.length];
+            const last = lastA.toLowerCase() === lastB.toLowerCase() ? GC_STUDENT_LAST_NAMES[(i + 31) % GC_STUDENT_LAST_NAMES.length] : `${lastA}-${lastB}`;
+            const uniqueName = `${first} ${last}`;
             const stream = JC_STREAMS[deterministicIndex(i * 17, JC_STREAMS.length)];
             const subject = validSubjectForStream(stream, "", i * 31);
 
@@ -4949,14 +4947,12 @@ body.gc-registration-lock{overflow:hidden !important;}
             "Limaye","Phadke","Gokhale","Lele","Oke","Tambe","Vartak","Karnik","Godbole","Kelkar"
         ];
 
-        for(let j=1; j<=60; j++) {
+        for(let j=1; j<=500; j++) {
             const first = GC_TUTOR_FIRST_NAMES[(j - 1) % GC_TUTOR_FIRST_NAMES.length];
-            const lastIndex = Math.floor((j - 1) / GC_TUTOR_FIRST_NAMES.length) % GC_TUTOR_LAST_NAMES.length;
-            const last = GC_TUTOR_LAST_NAMES[lastIndex];
-            const cycle = Math.floor((j - 1) / (GC_TUTOR_FIRST_NAMES.length * GC_TUTOR_LAST_NAMES.length));
-            const uniqueName = cycle > 0
-                ? `${first} ${last} ${cycle + 1}`
-                : `${first} ${last}`;
+            const lastA = GC_TUTOR_LAST_NAMES[(j - 1) % GC_TUTOR_LAST_NAMES.length];
+            const lastB = GC_TUTOR_LAST_NAMES[(Math.floor((j - 1) / GC_TUTOR_LAST_NAMES.length) * 19 + j * 11 + 7) % GC_TUTOR_LAST_NAMES.length];
+            const last = lastA.toLowerCase() === lastB.toLowerCase() ? GC_TUTOR_LAST_NAMES[(j + 43) % GC_TUTOR_LAST_NAMES.length] : `${lastA}-${lastB}`;
+            const uniqueName = `${first} ${last}`;
             const stream = JC_STREAMS[deterministicIndex(j * 17, JC_STREAMS.length)];
             const subject = validSubjectForStream(stream, "", j * 31);
             const verified = (j % 4 === 0 || j % 11 === 0);
@@ -11563,6 +11559,83 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 })();
 </script>
 
+
+<style id="gc-card-final-sizing-2026">
+/* FINAL CARD SIZING — keeps the approved design, prevents bottom clipping, compact on phones. */
+.gc-profile-card.gc-new-student-card,
+.gc-profile-card.gc-new-tutor-card{
+  width:100%!important; max-width:450px!important; min-width:0!important;
+  height:auto!important; min-height:0!important; max-height:none!important;
+  overflow:hidden!important; box-sizing:border-box!important;
+  padding:12px!important; border-radius:18px!important;
+}
+#tutorGrid,#studentGridContainer{align-items:start!important;}
+.gc-new-card-top{margin-bottom:4px!important;}
+.gc-new-card-code{font-size:10px!important;}
+.gc-new-role{font-size:11px!important;padding:5px 9px 5px 6px!important;gap:5px!important;}
+.gc-new-role-icon{width:22px!important;height:22px!important;font-size:11px!important;}
+.gc-new-chip-row{height:34px!important;}
+.gc-new-chip{width:52px!important;height:32px!important;}
+.gc-new-contactless{font-size:25px!important;}
+.gc-new-student-identity{gap:10px!important;margin-bottom:8px!important;}
+.gc-new-photo-wrap{width:88px!important;height:88px!important;flex-basis:88px!important;padding:4px!important;}
+.gc-new-name-block{max-width:calc(100% - 98px)!important;}
+.gc-new-name-block h3{font-size:20px!important;line-height:1.05!important;padding:6px 8px!important;border-radius:8px!important;}
+.gc-new-student-sub{font-size:10px!important;margin-top:4px!important;gap:5px!important;}
+.gc-new-info-grid{gap:5px!important;margin-bottom:6px!important;}
+.gc-new-info-box{min-height:58px!important;padding:6px!important;border-radius:9px!important;gap:6px!important;}
+.gc-new-info-icon{width:31px!important;height:31px!important;flex-basis:31px!important;font-size:13px!important;}
+.gc-new-info-box small{font-size:7px!important;line-height:1!important;}
+.gc-new-info-box strong{font-size:11px!important;line-height:1.05!important;margin-top:3px!important;}
+.gc-new-status-strip{min-height:55px!important;margin-bottom:6px!important;border-radius:9px!important;}
+.gc-new-status-strip>div{gap:5px!important;padding:5px!important;}
+.gc-new-status-strip>div>i{font-size:23px!important;}
+.gc-new-status-strip>div:nth-child(3)>i{font-size:19px!important;}
+.gc-new-status-strip small{font-size:7px!important;}
+.gc-new-status-strip strong{font-size:11px!important;margin-top:2px!important;}
+.gc-new-status-strip em{font-size:6px!important;}
+.gc-new-status-strip>b{height:36px!important;}
+.gc-new-subject-box{min-height:48px!important;padding:6px 8px!important;margin-bottom:6px!important;border-radius:9px!important;}
+.gc-new-subject-box div{font-size:8px!important;}
+.gc-new-subject-box div i{font-size:13px!important;}
+.gc-new-subject-box>strong{font-size:11px!important;margin-top:2px!important;}
+.gc-new-action-row{gap:5px!important;margin-top:0!important;}
+.gc-new-view-btn,.gc-new-connect-btn{min-height:38px!important;padding:7px 6px!important;font-size:10px!important;border-radius:8px!important;}
+@media(max-width:640px){
+  .gc-profile-card.gc-new-student-card,.gc-profile-card.gc-new-tutor-card{max-width:100%!important;padding:8px!important;border-radius:15px!important;}
+  .gc-new-card-top{margin-bottom:2px!important;}
+  .gc-new-role{font-size:8px!important;padding:4px 7px 4px 5px!important;}
+  .gc-new-role-icon{width:18px!important;height:18px!important;font-size:9px!important;}
+  .gc-new-card-code{font-size:8px!important;}
+  .gc-new-chip-row{height:27px!important;}
+  .gc-new-chip{width:42px!important;height:25px!important;}
+  .gc-new-contactless{font-size:20px!important;}
+  .gc-new-student-identity{gap:7px!important;margin-bottom:5px!important;}
+  .gc-new-photo-wrap{width:64px!important;height:64px!important;flex-basis:64px!important;padding:3px!important;}
+  .gc-new-name-block{max-width:calc(100% - 71px)!important;}
+  .gc-new-name-block h3{font-size:15px!important;padding:5px 6px!important;border-radius:6px!important;}
+  .gc-new-student-sub{font-size:7px!important;margin-top:2px!important;gap:3px!important;}
+  .gc-new-info-grid{gap:3px!important;margin-bottom:4px!important;}
+  .gc-new-info-box{min-height:47px!important;padding:4px!important;border-radius:7px!important;gap:4px!important;}
+  .gc-new-info-icon{width:24px!important;height:24px!important;flex-basis:24px!important;font-size:10px!important;}
+  .gc-new-info-box small{font-size:5.5px!important;}
+  .gc-new-info-box strong{font-size:8.5px!important;margin-top:2px!important;}
+  .gc-new-status-strip{min-height:43px!important;margin-bottom:4px!important;border-radius:7px!important;}
+  .gc-new-status-strip>div{gap:3px!important;padding:3px!important;}
+  .gc-new-status-strip>div>i{font-size:18px!important;}
+  .gc-new-status-strip>div:nth-child(3)>i{font-size:15px!important;}
+  .gc-new-status-strip small{font-size:5.5px!important;}
+  .gc-new-status-strip strong{font-size:8px!important;margin-top:1px!important;}
+  .gc-new-status-strip em{font-size:5px!important;}
+  .gc-new-status-strip>b{height:28px!important;}
+  .gc-new-subject-box{min-height:38px!important;padding:4px 5px!important;margin-bottom:4px!important;border-radius:7px!important;}
+  .gc-new-subject-box div{font-size:6px!important;}
+  .gc-new-subject-box div i{font-size:10px!important;}
+  .gc-new-subject-box>strong{font-size:8px!important;margin-top:1px!important;}
+  .gc-new-action-row{gap:3px!important;}
+  .gc-new-view-btn,.gc-new-connect-btn{min-height:31px!important;padding:5px 4px!important;font-size:8px!important;border-radius:6px!important;}
+}
+</style>
 </body>
 </html>
 <!-- =========================================================
@@ -11580,3 +11653,116 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 @media(max-width:700px){.gc-signature-name{font-size:16px!important;gap:5px!important;max-width:100%!important}.gc-signature-tick i{font-size:20px!important}}
 @media(max-width:430px){.gc-signature-name{font-size:13px!important;gap:4px!important}.gc-signature-tick i{font-size:17px!important}}
 </style>
+<style id="gc-final-v12-profile-polish">
+/* GURU CONNECT FINAL PROFILE POLISH — one visual authority */
+#tutorGrid.gc-target-directory,#studentGridContainer.gc-target-directory{grid-template-columns:repeat(2,minmax(0,450px))!important;max-width:940px!important;gap:20px!important;align-items:start!important}
+.gc-target-card{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;width:100%!important;max-width:450px!important;padding:12px!important}
+.gc-target-identity{height:auto!important;min-height:126px!important;align-items:center!important}
+.gc-target-avatar{width:112px!important;height:112px!important;min-width:112px!important}
+.gc-target-name{font-size:22px!important;line-height:1.08!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;align-items:flex-start!important}
+.gc-target-name-text{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;word-break:break-word!important}
+.gc-target-subtitle{font-size:14px!important;line-height:1.2!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;word-break:break-word!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important}
+.gc-target-info-box{height:47px!important;min-height:47px!important}
+.gc-target-info-text span{white-space:normal!important;overflow:visible!important;text-overflow:clip!important;word-break:break-word!important;line-height:1.1!important}
+.gc-target-actions{margin-top:7px!important;margin-bottom:1px!important}
+.gc-target-more i,.gc-target-student-more i{color:#fff!important;opacity:1!important}
+@media(max-width:700px){
+ #tutorGrid.gc-target-directory,#studentGridContainer.gc-target-directory{grid-template-columns:1fr!important;max-width:450px!important;gap:12px!important}
+ .gc-target-card{max-width:100%!important;padding:9px!important;border-radius:13px!important}
+ .gc-target-top{height:35px!important}
+ .gc-target-role{font-size:10px!important;padding:5px 8px!important}
+ .gc-target-chip{width:27px!important;height:34px!important}
+ .gc-target-wifi{font-size:28px!important}
+ .gc-target-chip-wifi{gap:6px!important}
+ .gc-target-identity{min-height:92px!important;gap:8px!important}
+ .gc-target-avatar{width:82px!important;height:82px!important;min-width:82px!important}
+ .gc-target-avatar-fallback{font-size:42px!important}
+ .gc-target-name{font-size:17px!important;padding:4px 6px!important;margin-bottom:4px!important}
+ .gc-target-verified{width:21px!important;height:21px!important;font-size:19px!important}
+ .gc-target-subtitle{font-size:11px!important}
+ .gc-target-info{gap:3px!important;margin-top:4px!important}
+ .gc-target-info-box{height:43px!important;min-height:43px!important;padding:4px 5px!important;gap:4px!important}
+ .gc-target-icon{width:22px!important;min-width:22px!important;font-size:16px!important}
+ .gc-target-info-text b{font-size:9px!important}
+ .gc-target-info-text span{font-size:9px!important}
+ .gc-target-actions{gap:6px!important;margin:5px 15px 0!important}
+ .gc-target-btn{min-height:34px!important;font-size:12px!important}
+}
+/* Admin area gets the same premium language without changing its functionality */
+#adminDashboard,#adminPanel{border-radius:18px!important}
+#adminDashboard .rounded-xl,#adminPanel .rounded-xl{border-radius:14px!important}
+#adminDashboard button,#adminPanel button{border-radius:9px!important;font-weight:800!important}
+</style>
+<script id="gc-final-v12-profile-authority">
+(function(){
+ 'use strict';
+ const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+ const arr=n=>Array.isArray(window[n])?window[n]:[];
+ const clean=v=>String(v==null?'':v).trim();
+ const val=(...xs)=>{for(const x of xs){const s=clean(x);if(s)return s}return '—'};
+ function page(n){return Math.max(1,Number(window[n])||1)}
+ function setPage(n,p){window[n]=Math.max(1,Number(p)||1)}
+ function photo(item,name,student){
+   const p=item&&(item.photoData||item.photo||item.image||item.avatar||item.profileImage||'');
+   if(p)return '<img src="'+esc(p)+'" alt="'+esc(name)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">'+
+     '<span class="gc-target-avatar-fallback" style="display:none">'+(student?'👩🏻‍🎓':'👨🏻‍🏫')+'</span>';
+   return '<span class="gc-target-avatar-fallback">'+(student?'👩🏻‍🎓':'👨🏻‍🏫')+'</span>';
+ }
+ function box(i,l,v){return '<div class="gc-target-info-box"><span class="gc-target-icon">'+i+'</span><div class="gc-target-info-text"><b>'+esc(l)+'</b><span title="'+esc(v)+'">'+esc(v)+'</span></div></div>'}
+ function tick(){return clean(window.VERIFIED_TICK_LOGO_URL||window.VERIFIED_TICK_V3||window.GC_TICK_V2||'')}
+ function tutorSource(){return arr('tutorDirectoryList').filter(x=>x&&!x._hideFromProfileDirectory)}
+ function studentSource(){return arr('studentDirectoryList').filter(x=>x&&!x._hideFromProfileDirectory)}
+ function perTutor(){return Math.max(1,Number(window.tutorsPerPage||window.GC_TUTORS_PER_PAGE||6))}
+ function perStudent(){return Math.max(1,Number(window.studentsPerPage||window.GC_STUDENTS_PER_PAGE||6))}
+ function renderTutor(){
+   const c=document.getElementById('tutorGrid');if(!c)return;
+   const list=tutorSource(), per=perTutor(), total=Math.max(1,Math.ceil(list.length/per));let p=Math.min(page('currentTutorPage'),total);setPage('currentTutorPage',p);
+   c.classList.add('gc-target-directory','gc-directory-ready');c.classList.remove('gc-directory-loading');c.innerHTML='';
+   list.slice((p-1)*per,p*per).forEach(t=>{
+     const id=val(t.id),name=val(t.name,'Tutor');const verified=t.verified===true||t.verified==='true';const q=val(t.qualification,t.qualifications,t.education,t.degree,'Tutor');
+     const subject=val(t.subject,t.subjects,'Not specified'),rate=val(t.price,t.rate,t.hourlyRate,'—'),exp=val(t.experience,t.experienceYears,'—');
+     const rating=val(t.rating,'4.5'),reviews=val(t.reviewCount,t.reviewsCount,'0'),students=val(t.students,t.studentsTaught,'—'),mode=val(t.mode,t.teachingMode,'Online / Offline'),loc=val(t.location,'—'),langs=val(t.languages,'Hindi, English'),avail=val(t.availability,'Mon - Sun');
+     const card=document.createElement('article');card.className='gc-target-card gc-target-tutor';card.dataset.tutorId=id;
+     card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✓ VERIFIED TUTOR':'TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi">⌁</span></div></div>'+
+       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified&&tick()?'<span class="gc-target-verified"><img src="'+esc(tick())+'" alt="Verified"></span>':'')+'</h3><div class="gc-target-subtitle">'+esc(q)+' · '+esc(subject)+'</div></div></div>'+
+       '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('💬','Languages',langs)+box('◷','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
+       '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-tutor-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
+     c.appendChild(card);
+   });
+   updateTutorPages(total,p);
+ }
+ function renderStudent(){
+   const c=document.getElementById('studentGridContainer');if(!c)return;
+   const list=studentSource(),per=perStudent(),total=Math.max(1,Math.ceil(list.length/per));let p=Math.min(page('currentStudentPage'),total);setPage('currentStudentPage',p);
+   c.classList.add('gc-target-directory','gc-directory-ready');c.classList.remove('gc-directory-loading');c.innerHTML='';
+   list.slice((p-1)*per,p*per).forEach(s=>{
+     const id=val(s.id),name=val(s.name,'Student'),edu=val(s.course,s.std,s.education,'Student');const stream=val(s.stream,'—'),college=val(s.college,s.institution,'—'),year=val(s.year,s.semester,'—'),cgpa=val(s.cgpa,'—');
+     let req=val(s.learningRequirement,s.subject,s.requirement,'Not specified');try{if(typeof window.gcGetStudentRequirementV2==='function')req=val(window.gcGetStudentRequirementV2(s),req)}catch(e){}
+     const mode=val(s.mode,s.teachingMode,'Online'),loc=val(s.location,'—'),langs=val(s.languages,'Hindi, English'),avail=val(s.availability,'Mon - Sat'),help=val(s.helplinePlan,s.helplineStatus,'Not subscribed');
+     const card=document.createElement('article');card.className='gc-target-card gc-target-student';card.dataset.studentId=id;
+     card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">🎓 STUDENT</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi">⌁</span></div></div>'+
+       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(s,name,true)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span></h3><div class="gc-target-subtitle">'+esc(edu)+' · '+esc(stream)+'</div></div></div>'+
+       '<div class="gc-target-info">'+box('🎓','Education',edu)+box('🗓','Year / Sem',year)+box('🏫','College',college)+box('📊','CGPA',cgpa)+box('🎯','Looking For',req)+box('💻','Mode',mode)+box('📍','Location',loc)+box('💬','Languages',langs)+box('◷','Availability',avail)+box('🛡','Helpline Plan',help)+'</div>'+ 
+       '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more gc-target-student-more" data-student-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-student="'+esc(id)+'">CONNECT ➤</button></div>';
+     c.appendChild(card);
+   });
+   updateStudentPages(total,p);
+ }
+ function nums(id,prevId,nextId,total,p,handler){
+   const wrap=document.getElementById(id);if(wrap){wrap.innerHTML='';const start=Math.max(1,Math.min(p-2,total-4)),end=Math.min(total,start+4);for(let i=start;i<=end;i++){const b=document.createElement('button');b.type='button';b.textContent=i;b.className='w-8 h-8 rounded-lg text-xs font-bold transition '+(i===p?'bg-brand-blue text-white shadow':'bg-slate-100 text-slate-600 hover:bg-slate-200');b.onclick=()=>handler(i);wrap.appendChild(b)}}
+   const pr=document.getElementById(prevId),nx=document.getElementById(nextId);if(pr)pr.disabled=p<=1;if(nx)nx.disabled=p>=total;
+ }
+ function updateTutorPages(total,p){const e=document.getElementById('tutorTotalPagesText'),i=document.getElementById('tutorPageJumpInput');if(e)e.textContent='/ '+total;if(i){i.value=p;i.max=total}nums('tutorPaginationNumbers','tutorPrevBtn','tutorNextBtn',total,p,x=>{setPage('currentTutorPage',x);renderTutor()})}
+ function updateStudentPages(total,p){const i=document.getElementById('pageJumpInput');if(i){i.value=p;i.max=total}nums('paginationNumbers','prevBtn','nextBtn',total,p,x=>{setPage('currentStudentPage',x);renderStudent()})}
+ window.renderTutorDirectory=renderTutor;window.renderStudentDirectory=renderStudent;
+ window.changeTutorPage=d=>{setPage('currentTutorPage',page('currentTutorPage')+Number(d||0));renderTutor()};
+ window.jumpToTutorPageInput=v=>{setPage('currentTutorPage',v);renderTutor()};
+ window.changePage=d=>{setPage('currentStudentPage',page('currentStudentPage')+Number(d||0));renderStudent()};
+ window.jumpToPageInput=v=>{setPage('currentStudentPage',v);renderStudent()};
+ function bind(){
+   document.addEventListener('click',function(e){const b=e.target.closest('.gc-target-more');if(!b)return;e.preventDefault();e.stopPropagation();if(b.dataset.tutorId&&typeof window.openTutorProfile==='function')window.openTutorProfile(b.dataset.tutorId);else if(b.dataset.studentId&&typeof window.openStudentProfile==='function')window.openStudentProfile(b.dataset.studentId)},true);
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{renderTutor();renderStudent();bind()},{once:true});else{renderTutor();renderStudent();bind()}
+ window.addEventListener('load',()=>{setTimeout(()=>{renderTutor();renderStudent()},50)},{once:true});
+})();
+</script>
