@@ -11734,6 +11734,226 @@ header a[href="#home"] img[alt="Guru Connect Logo"]{
 })();
 </script>
 
+
+<style id="gc-login-menu-added-final">
+.gc-account-login-group{
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  margin-left:8px!important;
+}
+.gc-account-login-group .gc-account-btn{
+  border:0!important;
+  border-radius:10px!important;
+  padding:9px 12px!important;
+  font-weight:800!important;
+  font-size:12px!important;
+  line-height:1!important;
+  cursor:pointer!important;
+  white-space:nowrap!important;
+  transition:transform .15s ease,box-shadow .15s ease!important;
+}
+.gc-account-login-group .gc-account-btn:hover{
+  transform:translateY(-1px)!important;
+  box-shadow:0 5px 14px rgba(0,0,0,.14)!important;
+}
+.gc-student-login-btn{background:#f59e0b!important;color:#fff!important}
+.gc-tutor-login-btn{background:#2563eb!important;color:#fff!important}
+.gc-staff-login-btn{background:#16a34a!important;color:#fff!important}
+@media(max-width:900px){
+  .gc-account-login-group{
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    width:100%!important;
+    margin:10px 0 0!important;
+    gap:7px!important;
+  }
+  .gc-account-login-group .gc-account-btn{
+    width:100%!important;
+    text-align:left!important;
+    padding:11px 13px!important;
+  }
+}
+</style>
+<script id="gc-login-menu-added-script">
+(function(){
+  function openLogin(kind){
+    var candidates = kind==='student'
+      ? ['openStudentLoginModal','openStudentLogin','openLoginModal']
+      : kind==='tutor'
+      ? ['openTutorLoginModal','openTutorLogin','openLoginModal']
+      : ['openStaffLoginModal','openStaffLogin','openAdminLogin'];
+    for(var i=0;i<candidates.length;i++){
+      var fn=window[candidates[i]];
+      if(typeof fn==='function'){
+        try{
+          if(candidates[i]==='openLoginModal') fn(kind);
+          else fn();
+          return;
+        }catch(e){}
+      }
+    }
+    var ids=kind==='student'
+      ? ['studentLoginModal','loginModal']
+      : kind==='tutor'
+      ? ['tutorLoginModal','loginModal']
+      : ['staffLoginModal','adminLoginModal'];
+    for(var j=0;j<ids.length;j++){
+      var el=document.getElementById(ids[j]);
+      if(el){el.classList.remove('hidden'); el.style.display=''; return;}
+    }
+  }
+
+  function add(){
+    var nav =
+      document.querySelector('#publicNavbarLinks') ||
+      document.querySelector('#mainMenu') ||
+      document.querySelector('.menu-panel') ||
+      document.querySelector('.gc-menu-panel') ||
+      document.querySelector('nav');
+
+    if(!nav || nav.querySelector('.gc-account-login-group')) return;
+
+    var group=document.createElement('div');
+    group.className='gc-account-login-group';
+    group.innerHTML=
+      '<button type="button" class="gc-account-btn gc-student-login-btn">🎓 STUDENT LOGIN</button>'+
+      '<button type="button" class="gc-account-btn gc-tutor-login-btn">👨‍🏫 TUTOR LOGIN</button>'+
+      '<button type="button" class="gc-account-btn gc-staff-login-btn">🔐 STAFF LOGIN</button>';
+
+    group.querySelector('.gc-student-login-btn').addEventListener('click',function(){openLogin('student')});
+    group.querySelector('.gc-tutor-login-btn').addEventListener('click',function(){openLogin('tutor')});
+    group.querySelector('.gc-staff-login-btn').addEventListener('click',function(){openLogin('staff')});
+    nav.appendChild(group);
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',add,{once:true});
+  else add();
+  window.addEventListener('load',add,{once:true});
+})();
+</script>
+
+
+<style id="gc-brand-font-size-final-2026">
+/* Make GURU CONNECT branding noticeably larger without changing card dimensions. */
+.gc-beautiful-brand-text{
+  font-size:16px!important;
+  line-height:1.05!important;
+  font-weight:1000!important;
+  letter-spacing:.03em!important;
+}
+.gc-beautiful-brand{
+  gap:7px!important;
+  height:25px!important;
+  margin-bottom:0!important;
+}
+.gc-beautiful-brand-mark{
+  width:27px!important;
+  height:27px!important;
+  min-width:27px!important;
+  font-size:16px!important;
+}
+.gc-beautiful-brand-sub{
+  font-size:7px!important;
+}
+
+/* Any standalone/public branding text should also read clearly. */
+.gc-public-brand{
+  font-size:clamp(20px,2.2vw,30px)!important;
+  font-weight:1000!important;
+  letter-spacing:.02em!important;
+}
+
+/* Keep the larger branding comfortable on smaller screens. */
+@media(max-width:760px){
+  .gc-beautiful-brand-text{font-size:14px!important}
+  .gc-beautiful-brand{height:23px!important}
+  .gc-beautiful-brand-mark{
+    width:24px!important;height:24px!important;min-width:24px!important;
+    font-size:15px!important;
+  }
+  .gc-beautiful-brand-sub{font-size:6px!important}
+}
+@media(max-width:390px){
+  .gc-beautiful-brand-text{font-size:13px!important}
+  .gc-beautiful-brand-mark{
+    width:22px!important;height:22px!important;min-width:22px!important;
+    font-size:14px!important;
+  }
+}
+</style>
+
+
+<style id="gc-login-menu-as-standard-list-final-2026">
+/* Student / Tutor / Staff Login should look exactly like normal MENU entries,
+   not like separate colored buttons. */
+#publicNavbarLinks .gc-account-login-group{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:0!important;
+  width:100%!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+}
+#publicNavbarLinks .gc-account-login-group::before{
+  content:"";
+  display:block;
+  height:1px;
+  margin:5px 12px;
+  background:#e5e7eb;
+}
+#publicNavbarLinks .gc-account-login-group .gc-account-btn{
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  padding:12px 20px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:#475569!important;
+  box-shadow:none!important;
+  text-align:left!important;
+  font-size:12px!important;
+  font-weight:700!important;
+  line-height:1.2!important;
+  white-space:nowrap!important;
+  transform:none!important;
+}
+#publicNavbarLinks .gc-account-login-group .gc-account-btn:hover,
+#publicNavbarLinks .gc-account-login-group .gc-account-btn:focus{
+  background:#2563eb!important;
+  color:#fff!important;
+  box-shadow:none!important;
+  transform:none!important;
+}
+#publicNavbarLinks .gc-account-login-group .gc-student-login-btn,
+#publicNavbarLinks .gc-account-login-group .gc-tutor-login-btn,
+#publicNavbarLinks .gc-account-login-group .gc-staff-login-btn{
+  background:transparent!important;
+  color:#475569!important;
+}
+#publicNavbarLinks .gc-account-login-group .gc-student-login-btn:hover,
+#publicNavbarLinks .gc-account-login-group .gc-tutor-login-btn:hover,
+#publicNavbarLinks .gc-account-login-group .gc-staff-login-btn:hover{
+  background:#2563eb!important;
+  color:#fff!important;
+}
+@media(max-width:900px){
+  #publicNavbarLinks .gc-account-login-group{
+    display:flex!important;
+    width:100%!important;
+    margin:0!important;
+  }
+  #publicNavbarLinks .gc-account-login-group .gc-account-btn{
+    width:100%!important;
+    text-align:left!important;
+    padding:12px 20px!important;
+  }
+}
+</style>
+
 </body>
 </html>
 <!-- =========================================================
