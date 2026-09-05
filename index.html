@@ -11834,125 +11834,274 @@ header a[href="#home"] img[alt="Guru Connect Logo"]{
 </script>
 
 
-<style id="gc-brand-font-size-final-2026">
-/* Make GURU CONNECT branding noticeably larger without changing card dimensions. */
-.gc-beautiful-brand-text{
-  font-size:16px!important;
-  line-height:1.05!important;
-  font-weight:1000!important;
-  letter-spacing:.03em!important;
-}
-.gc-beautiful-brand{
-  gap:7px!important;
-  height:25px!important;
-  margin-bottom:0!important;
-}
-.gc-beautiful-brand-mark{
-  width:27px!important;
-  height:27px!important;
-  min-width:27px!important;
-  font-size:16px!important;
-}
-.gc-beautiful-brand-sub{
-  font-size:7px!important;
-}
+<script id="gc-admin-edit-reflect-profile-final-2026">
+(function(){
+  'use strict';
 
-/* Any standalone/public branding text should also read clearly. */
-.gc-public-brand{
-  font-size:clamp(20px,2.2vw,30px)!important;
-  font-weight:1000!important;
-  letter-spacing:.02em!important;
-}
+  function staffOK(){
+    return localStorage.getItem('is_staff_logged') === 'true';
+  }
 
-/* Keep the larger branding comfortable on smaller screens. */
-@media(max-width:760px){
-  .gc-beautiful-brand-text{font-size:14px!important}
-  .gc-beautiful-brand{height:23px!important}
-  .gc-beautiful-brand-mark{
-    width:24px!important;height:24px!important;min-width:24px!important;
-    font-size:15px!important;
+  function tutors(){
+    return Array.isArray(window.tutorDirectoryList) ? window.tutorDirectoryList : [];
   }
-  .gc-beautiful-brand-sub{font-size:6px!important}
-}
-@media(max-width:390px){
-  .gc-beautiful-brand-text{font-size:13px!important}
-  .gc-beautiful-brand-mark{
-    width:22px!important;height:22px!important;min-width:22px!important;
-    font-size:14px!important;
+  function students(){
+    return Array.isArray(window.studentDirectoryList) ? window.studentDirectoryList : [];
   }
-}
-</style>
 
+  function findTutor(id){
+    return tutors().find(x => String(x.id) === String(id)) || null;
+  }
+  function findStudent(id){
+    return students().find(x => String(x.id) === String(id)) || null;
+  }
 
-<style id="gc-login-menu-as-standard-list-final-2026">
-/* Student / Tutor / Staff Login should look exactly like normal MENU entries,
-   not like separate colored buttons. */
-#publicNavbarLinks .gc-account-login-group{
-  display:flex!important;
-  flex-direction:column!important;
-  align-items:stretch!important;
-  gap:0!important;
-  width:100%!important;
-  margin:0!important;
-  padding:0!important;
-  border:0!important;
-}
-#publicNavbarLinks .gc-account-login-group::before{
-  content:"";
-  display:block;
-  height:1px;
-  margin:5px 12px;
-  background:#e5e7eb;
-}
-#publicNavbarLinks .gc-account-login-group .gc-account-btn{
-  display:block!important;
-  width:100%!important;
-  margin:0!important;
-  padding:12px 20px!important;
-  border:0!important;
-  border-radius:0!important;
-  background:transparent!important;
-  color:#475569!important;
-  box-shadow:none!important;
-  text-align:left!important;
-  font-size:12px!important;
-  font-weight:700!important;
-  line-height:1.2!important;
-  white-space:nowrap!important;
-  transform:none!important;
-}
-#publicNavbarLinks .gc-account-login-group .gc-account-btn:hover,
-#publicNavbarLinks .gc-account-login-group .gc-account-btn:focus{
-  background:#2563eb!important;
-  color:#fff!important;
-  box-shadow:none!important;
-  transform:none!important;
-}
-#publicNavbarLinks .gc-account-login-group .gc-student-login-btn,
-#publicNavbarLinks .gc-account-login-group .gc-tutor-login-btn,
-#publicNavbarLinks .gc-account-login-group .gc-staff-login-btn{
-  background:transparent!important;
-  color:#475569!important;
-}
-#publicNavbarLinks .gc-account-login-group .gc-student-login-btn:hover,
-#publicNavbarLinks .gc-account-login-group .gc-tutor-login-btn:hover,
-#publicNavbarLinks .gc-account-login-group .gc-staff-login-btn:hover{
-  background:#2563eb!important;
-  color:#fff!important;
-}
-@media(max-width:900px){
-  #publicNavbarLinks .gc-account-login-group{
-    display:flex!important;
-    width:100%!important;
-    margin:0!important;
+  function clean(v){
+    return typeof window.gcCleanText === 'function'
+      ? window.gcCleanText(v)
+      : String(v == null ? '' : v).trim();
   }
-  #publicNavbarLinks .gc-account-login-group .gc-account-btn{
-    width:100%!important;
-    text-align:left!important;
-    padding:12px 20px!important;
+
+  function redrawTutor(){
+    try{ if(typeof window.saveRegisteredDirectories === 'function') window.saveRegisteredDirectories(); }catch(_){}
+    try{ if(typeof window.saveDirs === 'function') window.saveDirs(); }catch(_){}
+    try{ if(typeof window.renderTutorDirectory === 'function') window.renderTutorDirectory(); }catch(_){}
+    try{ if(typeof window.renderAdminQueue === 'function') window.renderAdminQueue(); }catch(_){}
   }
-}
-</style>
+
+  function redrawStudent(){
+    try{ if(typeof window.saveRegisteredDirectories === 'function') window.saveRegisteredDirectories(); }catch(_){}
+    try{ if(typeof window.saveDirs === 'function') window.saveDirs(); }catch(_){}
+    try{ if(typeof window.renderStudentDirectory === 'function') window.renderStudentDirectory(); }catch(_){}
+    try{ if(typeof window.renderAdminQueue === 'function') window.renderAdminQueue(); }catch(_){}
+  }
+
+  function clearCloudDirectoryCache(){
+    try{
+      if(window.gcPageCache && typeof window.gcPageCache.clear === 'function'){
+        window.gcPageCache.clear();
+      }
+    }catch(_){}
+    try{
+      if(window.gcPageCache && typeof window.gcPageCache === 'object'){
+        window.gcPageCache = new Map();
+      }
+    }catch(_){}
+  }
+
+  async function ensureStaffSession(){
+    const sb=window.gcSupabase;
+    if(!sb) return {ok:false,error:new Error('Supabase client is not available.')};
+    try{
+      const u=await sb.auth.getUser();
+      if(u && u.data && u.data.user) return {ok:true};
+    }catch(_){}
+    if(typeof window.ensureStaffSupabaseSession === 'function'){
+      try{
+        const r=await window.ensureStaffSupabaseSession();
+        if(r && r.ok) return r;
+      }catch(_){}
+    }
+    return {ok:false,error:new Error('Staff cloud session is not active.')};
+  }
+
+  /* Tutor: save EVERY editable value to tutor_profiles, then refresh the
+     same in-memory object used by the public Tutor Profile/MORE page. */
+  async function saveTutorCloud(t){
+    if(!t || !t.isCloud) return {ok:true,skipped:true};
+    if(!window.gcSupabase) return {ok:false,error:new Error('Supabase client is not available.')};
+
+    const session=await ensureStaffSession();
+    if(!session.ok) return session;
+
+    const patch={
+      name:clean(t.name),
+      subject:clean(t.subject),
+      stream:clean(t.stream),
+      experience:clean(t.experience),
+      qualification:clean(t.qualification),
+      college:clean(t.college),
+      teaching_college:clean(t.teachingCollege || t.college),
+      address:clean(t.address),
+      price:clean(t.price),
+      about_me:clean(t.aboutMe),
+      photo_url:clean(t.photoData || t.photo || ''),
+      verified:t.verified===true,
+      paid_status:t.paidStatus==='PAID' ? 'PAID' : 'PENDING'
+    };
+
+    /* No .select() here: UPDATE can succeed even when SELECT/RLS policies
+       prevent returning the changed row. */
+    const r=await window.gcSupabase.from('tutor_profiles').update(patch).eq('id',t.id);
+    if(r.error) return {ok:false,error:r.error};
+
+    clearCloudDirectoryCache();
+    return {ok:true};
+  }
+
+  /* Student: the previous admin editor only changed the browser object.
+     This now writes the same fields to student_profiles. */
+  window.gcSupabaseAdminUpdateStudent = async function(s){
+    if(!s || !s.isCloud) return {ok:true,skipped:true};
+    if(!window.gcSupabase) return {ok:false,error:new Error('Supabase client is not available.')};
+
+    const session=await ensureStaffSession();
+    if(!session.ok) return session;
+
+    const patch={
+      name:clean(s.name),
+      course:clean(s.course || s.std),
+      stream:clean(s.stream),
+      learning_requirement:clean(s.learningRequirement || s.subject),
+      photo_url:clean(s.photoData || s.photo || '')
+    };
+
+    const r=await window.gcSupabase.from('student_profiles').update(patch).eq('id',s.id);
+    if(r.error) return {ok:false,error:r.error};
+
+    /* Email/phone live in the public profiles table in this website's cloud
+       model, so update that row too when the student has a user_id. */
+    if(s.user_id){
+      const profilePatch={
+        full_name:clean(s.name),
+        phone:clean(s.phone) || null,
+        email:clean(s.email) || null,
+        photo_url:clean(s.photoData || s.photo || '')
+      };
+      const pr=await window.gcSupabase.from('profiles').update(profilePatch).eq('id',s.user_id);
+      if(pr.error){
+        console.warn('Student public profiles row was not updated:',pr.error);
+        /* The student_profiles update itself succeeded, so do not report the
+           whole operation as failed. */
+      }
+    }
+
+    clearCloudDirectoryCache();
+    return {ok:true};
+  };
+
+  /* Reinstall the Tutor editor submit handler so it cannot be replaced by an
+     older duplicate handler later in the file. */
+  window.gcInstallFinalTutorEditReflector = function(){
+    if(!staffOK()) return;
+    const form=document.getElementById('gcAdminTutorFormFinal');
+    if(!form || form.dataset.gcReflectBound==='1') return;
+    form.dataset.gcReflectBound='1';
+
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+
+      const t=findTutor(window.currentEditingTutorId);
+      if(!t) return alert('Tutor record not found.');
+
+      const val=id=>{
+        const el=document.getElementById(id);
+        return el ? el.value.trim() : '';
+      };
+
+      const btn=document.getElementById('gcAdminTutorSaveBtnFinal');
+      if(btn){btn.disabled=true;btn.textContent='SAVING...';}
+
+      try{
+        t.name=val('gc_a_t_name') || t.name;
+        t.email=val('gc_a_t_email');
+        t.phone=val('gc_a_t_phone');
+        t.qualification=val('gc_a_t_qualification');
+        t.experience=val('gc_a_t_experience');
+        t.teachingCollege=val('gc_a_t_teaching');
+        t.college=t.teachingCollege;
+        t.subject=val('gc_a_t_subject');
+        t.price=val('gc_a_t_price');
+        t._manualRating=Math.min(5,Math.max(1,Number(val('gc_a_t_rating'))||Number(t._manualRating||5)));
+        t.students=val('gc_a_t_students');
+        t.aboutMe=val('gc_a_t_about');
+        t.verified=!!document.getElementById('gc_a_t_verified')?.checked;
+        if(t.verified) t.paidStatus='PAID';
+
+        const cloud=await saveTutorCloud(t);
+        if(!cloud.ok && t.isCloud) throw cloud.error || new Error('Tutor cloud save failed.');
+
+        redrawTutor();
+        if(typeof window.closeAdminEditTutorModal==='function') window.closeAdminEditTutorModal();
+        try{window.showSuccessPopup?.('Tutor profile updated successfully. The public Tutor Profile now uses the updated information.');}
+        catch(_){alert('Tutor profile updated successfully.');}
+      }catch(err){
+        console.error('Final tutor profile sync failed:',err);
+        alert('Tutor profile could not be fully saved.\n\n'+(err.message||err));
+      }finally{
+        if(btn){btn.disabled=false;btn.textContent='SAVE ALL CHANGES';}
+      }
+    },true);
+  };
+
+  /* Reinstall the Student editor with the same cloud + public-directory sync. */
+  window.gcInstallFinalStudentEditReflector = function(){
+    const form=document.getElementById('adminEditStudentModal')?.querySelector('form');
+    if(!form || form.dataset.gcReflectBound==='1') return;
+    form.dataset.gcReflectBound='1';
+
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+      if(!staffOK()) return;
+
+      const s=findStudent(window.currentEditingStudentId);
+      if(!s) return alert('Student record not found.');
+
+      const val=id=>{
+        const el=document.getElementById(id);
+        return el ? el.value.trim() : '';
+      };
+
+      const btn=form.querySelector('button[type="submit"]');
+      if(btn){btn.disabled=true;btn.textContent='SAVING...';}
+
+      try{
+        s.name=val('editStudentName') || s.name;
+        s.std=val('editStudentStd') || s.std || s.course || '';
+        s.course=s.std;
+        s.stream=val('editStudentStream') || s.stream;
+        s.subject=val('editStudentSubject') || s.subject || s.learningRequirement || '';
+        s.learningRequirement=s.subject;
+        s.phone=val('editStudentPhone');
+
+        const cloud=await window.gcSupabaseAdminUpdateStudent(s);
+        if(!cloud.ok && s.isCloud) throw cloud.error || new Error('Student cloud save failed.');
+
+        redrawStudent();
+        if(typeof window.closeAdminEditStudentModal==='function') window.closeAdminEditStudentModal();
+        try{window.showSuccessPopup?.('Student profile updated successfully. The public Student Profile now uses the updated information.');}
+        catch(_){alert('Student profile updated successfully.');}
+      }catch(err){
+        console.error('Final student profile sync failed:',err);
+        alert('Student profile could not be fully saved.\n\n'+(err.message||err));
+      }finally{
+        if(btn){btn.disabled=false;btn.textContent='SAVE CHANGES';}
+      }
+    },true);
+  };
+
+  /* If the modal is rebuilt dynamically, bind to it again automatically. */
+  function install(){
+    window.gcInstallFinalTutorEditReflector();
+    window.gcInstallFinalStudentEditReflector();
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',function(){
+      install();
+      setTimeout(install,250);
+      setTimeout(install,800);
+    },{once:true});
+  }else{
+    install();
+    setTimeout(install,250);
+    setTimeout(install,800);
+  }
+
+  /* Also make the existing tutor cloud updater available to the final editor. */
+  window.gcFinalAdminProfileSyncReady=true;
+})();
+</script>
 
 </body>
 </html>
