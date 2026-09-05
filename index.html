@@ -10251,64 +10251,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
   window.addEventListener('popstate',bootPublic);
 })();
 </script>
-<script id="gc-mobile-login-menu-items">
-(function(){
-  function findFirst(selectors){
-    for(const s of selectors){
-      const el=document.querySelector(s);
-      if(el) return el;
-    }
-    return null;
-  }
 
-  function addMenuItem(){
-    const menu=document.getElementById('publicNavbarLinks');
-    if(!menu) return;
-
-    if(!menu.querySelector('.gc-mobile-login-item')){
-      const login=document.createElement('button');
-      login.type='button';
-      login.className='gc-mobile-login-item';
-      login.textContent='Student / Tutor Login';
-      login.addEventListener('click',function(){
-        const target=findFirst([
-          '#loginBtn','#navLoginBtn','[onclick*="loginModal"]',
-          '[onclick*="openLogin"]'
-        ]);
-        if(target) target.click();
-        else {
-          const modal=document.getElementById('loginModal');
-          if(modal) modal.classList.remove('hidden');
-        }
-      });
-      menu.appendChild(login);
-    }
-
-    if(!menu.querySelector('.gc-mobile-staff-item')){
-      const staff=document.createElement('button');
-      staff.type='button';
-      staff.className='gc-mobile-staff-item';
-      staff.textContent='STAFF LOGIN';
-      staff.addEventListener('click',function(){
-        const target=findFirst([
-          '#staffLoginBtn','#navStaffBtn','[onclick*="staffLoginModal"]',
-          '[onclick*="openStaffLogin"]'
-        ]);
-        if(target) target.click();
-        else {
-          const modal=document.getElementById('staffLoginModal');
-          if(modal) modal.classList.remove('hidden');
-        }
-      });
-      menu.appendChild(staff);
-    }
-  }
-
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addMenuItem);
-  else addMenuItem();
-  setTimeout(addMenuItem,500);
-})();
-</script>
 <style id="gc-helpline-plan-ui">
 .gc-helpline-plan-panel{
   display:none;
@@ -11438,7 +11381,6 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 })();
 </script>
 <script id="gc-mobile-menu-final-script">
-(function(){function add(){const menu=document.getElementById('mainMenu')||document.getElementById('menuPanel')||document.querySelector('.menu-panel')||document.querySelector('.gc-menu-panel')||document.querySelector('[data-menu-panel]');if(!menu||menu.querySelector('.gc-login-menu-group'))return;menu.querySelectorAll('a,button').forEach(e=>{if((e.textContent||'').trim())e.classList.add('gc-menu-normal')});const g=document.createElement('div');g.className='gc-login-menu-group mt-3 pt-3 border-t border-slate-200';g.innerHTML='<div class="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2 px-1">Account & Staff Access</div><div class="grid gap-2"><button type="button" data-login="student" class="gc-menu-login-student rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-graduation-cap"></i> STUDENT LOGIN</button><button type="button" data-login="tutor" class="gc-menu-login-tutor rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-chalkboard-user"></i> TUTOR LOGIN</button><button type="button" data-login="staff" class="gc-menu-login-staff rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-user-tie"></i> STAFF LOGIN</button></div>';menu.appendChild(g);g.querySelectorAll('button').forEach(b=>b.onclick=function(){try{if(typeof closeNavMenu==='function')closeNavMenu()}catch(_){};const k=b.dataset.login;if(k==='staff'){if(typeof openStaffLoginModal==='function')openStaffLoginModal();else if(typeof openStaffLogin==='function')openStaffLogin();else document.querySelector('#staffLoginModal')?.classList.remove('hidden')}else if(k==='student'){if(typeof openStudentLoginModal==='function')openStudentLoginModal();else if(typeof openLoginModal==='function')openLoginModal('student');else document.querySelector('#studentLoginModal')?.classList.remove('hidden')}else{if(typeof openTutorLoginModal==='function')openTutorLoginModal();else if(typeof openLoginModal==='function')openLoginModal('tutor');else document.querySelector('#tutorLoginModal')?.classList.remove('hidden')}})}window.addEventListener('load',add);setTimeout(add,500);setTimeout(add,1500)})();
 </script>
 <style id="gc-v9-submit-visual">
 #stuSubmitBtn:not(:disabled),#tutorSubmitBtn:not(:disabled){
@@ -12484,5 +12426,27 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
   setTimeout(init,500);
+})();
+</script>
+
+<script id="gc-final-menu-deduplicate">
+(function(){
+  'use strict';
+  function cleanMenu(){
+    const m=document.getElementById('publicNavbarLinks');
+    if(!m) return;
+    m.querySelectorAll('.gc-login-menu-group,.gc-mobile-login-item,.gc-mobile-staff-item').forEach(function(el){el.remove();});
+    const seen={student:false,tutor:false,staff:false};
+    Array.from(m.querySelectorAll('a.gc-menu-login')).forEach(function(a){
+      const tx=(a.textContent||'').toLowerCase();
+      const key=tx.includes('student')?'student':tx.includes('tutor')?'tutor':tx.includes('staff')?'staff':null;
+      if(key){
+        if(seen[key]) a.remove(); else seen[key]=true;
+      }
+    });
+  }
+  function run(){cleanMenu();setTimeout(cleanMenu,50);setTimeout(cleanMenu,500);setTimeout(cleanMenu,1500);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
+  window.addEventListener('load',run,{once:true});
 })();
 </script>
