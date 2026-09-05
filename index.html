@@ -10770,7 +10770,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
         t.subject=document.getElementById('gc_a_t_subject').value.trim();
         t.price=document.getElementById('gc_a_t_price').value.trim();
         t._manualRating=Math.min(5,Math.max(1,Number(document.getElementById('gc_a_t_rating').value)||Number(tutorRating(t))));
-        t.students=document.getElementById('gc_a_t_students').value.trim();
+        t.students=document.getElementById('gc_a_t_students').value.trim(); t.studentsTaught=t.students;
         t.aboutMe=document.getElementById('gc_a_t_about').value.trim();
         t.verified=document.getElementById('gc_a_t_verified').checked;
         if(t.verified) t.paidStatus='PAID';
@@ -11862,7 +11862,7 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
       college:row.college||'',teachingCollege:row.teaching_college||'',
       address:row.address||'',price:row.price||'',aboutMe:row.about_me||'',
       photoData:row.photo_url||'',verified:row.verified===true,
-      paidStatus:row.paid_status||'PENDING',isCloud:true
+      paidStatus:row.paid_status||'PENDING',_manualRating:row.rating!=null?Number(row.rating):null,rating:row.rating!=null?String(row.rating):'',reviewCount:row.review_count!=null?Number(row.review_count):0,students:row.students_taught!=null?String(row.students_taught):'',studentsTaught:row.students_taught!=null?String(row.students_taught):'',mode:row.teaching_mode||'',teachingMode:row.teaching_mode||'',location:row.location||'',languages:row.languages||'',availability:row.availability||'',teachingSince:row.teaching_since||'',memberSince:row.teaching_since||'',isCloud:true
     });
 
     if(t.user_id){
