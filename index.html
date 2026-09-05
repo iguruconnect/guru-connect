@@ -7855,7 +7855,10 @@ body.gc-registration-lock{overflow:hidden !important;}
           '<div><small>QUALIFICATION</small><strong>'+esc(t.qualification||'Not provided')+'</strong></div>'+
           '<div><small>COLLEGE / INSTITUTE</small><strong>'+esc(t.teachingCollege||t.college||'Not provided')+'</strong></div>'+
           '<div><small>SUBJECT / EXPERTISE</small><strong>'+esc(t.subject||'Not provided')+'</strong></div>'+
+          '<div><small>LOCATION</small><strong>'+esc(t.location||'Not provided')+'</strong></div>'+
           '<div><small>ADDRESS</small><strong>'+esc(t.address||'Not provided')+'</strong></div>'+
+          '<div><small>TEACHING MODE</small><strong>'+esc(t.mode||t.teachingMode||'Not provided')+'</strong></div>'+
+          '<div><small>LANGUAGES</small><strong>'+esc(t.languages||'Not provided')+'</strong></div>'+
         '</div>'+
         '<section class="gc-v3-about"><h3><i class="fa-solid fa-user-tie"></i> ABOUT THE TUTOR</h3><p>'+esc(t.aboutMe||'This tutor has not added an About Me section yet.')+'</p></section>'+
         (ach.length?'<section class="gc-v3-ach"><h3><i class="fa-solid fa-award"></i> ACHIEVEMENTS</h3><div class="gc-v3-ach-grid">'+ach.map(function(a){return '<img src="'+esc(a)+'" alt="Tutor achievement">';}).join('')+'</div></section>':'')+
@@ -12333,7 +12336,7 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
      const card=document.createElement('article');card.className='gc-target-card gc-target-tutor';card.dataset.tutorId=id;
      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✓ VERIFIED TUTOR':'TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
        '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified&&tick()?'<span class="gc-target-verified"><img src="'+esc(tick())+'" alt="Verified"></span>':'')+'</h3><div class="gc-target-subtitle">'+esc(q)+' · '+esc(subject)+'</div></div></div>'+
-       '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('💬','Languages',langs)+box('◷','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
+       '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🏠','Address',val(t.address,'—'))+box('💬','Languages',langs)+box('◷','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
        '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-tutor-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
      c.appendChild(card);
    });
@@ -12537,5 +12540,27 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
   }
   guard();
   window.addEventListener('load',guard,{once:true});
+})();
+</script>
+
+<script id="gc-final-tutor-location-address-normalizer">
+(function(){
+  'use strict';
+  function normalize(){
+    try{
+      const lists=[window.tutorDirectoryList,window.registeredTutors,window.tutors];
+      lists.forEach(function(list){
+        if(!Array.isArray(list)) return;
+        list.forEach(function(t){
+          if(!t) return;
+          t.location = String(t.location || t.city || t.locality || '').trim();
+          t.address = String(t.address || t.fullAddress || t.teachingAddress || '').trim();
+          if(!t.location && t.address) t.location=t.address;
+        });
+      });
+    }catch(_){}
+  }
+  normalize();
+  window.addEventListener('load',normalize,{once:true});
 })();
 </script>
