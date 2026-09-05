@@ -11152,7 +11152,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
   };
 
   async function updateTutorCloud(t){
-    const sb=cloud();
+    const sb=staffClient();
     if(!t || !t.isCloud) return {ok:true,skipped:true};
     if(!sb) return {ok:false,error:new Error('Supabase client is not available.')};
 
@@ -12087,8 +12087,36 @@ header a[href="#home"] img[alt="Guru Connect Logo"]{
 
   const STAFF_EMAIL = 'Swami@gmail.com';
   const STAFF_PASSWORD = 'Roller@1329007/';
+  const STAFF_SUPABASE_URL = 'https://hzqqswrnawrfgufbxgay.supabase.co';
+  const STAFF_SUPABASE_KEY = 'sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
 
-  function sb(){ return window.gcSupabase || null; }
+  // IMPORTANT: Admin writes must NEVER use the public/anonymous client.
+  // This final admin block has its own Staff Auth client reference so it
+  // cannot accidentally fall back to window.gcSupabase.
+  function staffClient(){
+    if(window.gcStaffSupabase) return window.gcStaffSupabase;
+    if(!window.supabase) return null;
+    try{
+      window.gcStaffSupabase = window.supabase.createClient(
+        STAFF_SUPABASE_URL,
+        STAFF_SUPABASE_KEY,
+        {
+          auth:{
+            persistSession:true,
+            autoRefreshToken:true,
+            detectSessionInUrl:false,
+            storageKey:'guru-connect-staff-auth'
+          }
+        }
+      );
+      return window.gcStaffSupabase;
+    }catch(err){
+      console.error('Final Staff Auth client could not start:',err);
+      return null;
+    }
+  }
+
+  function sb(){ return staffClient(); }
   function clean(v){ return String(v == null ? '' : v).trim(); }
   function admin(){ return localStorage.getItem('is_staff_logged') === 'true'; }
   function list(role){
@@ -12111,17 +12139,30 @@ header a[href="#home"] img[alt="Guru Connect Logo"]{
   }
 
   async function staffCloudSession(){
-    const client=sb();
-    if(!client) throw new Error('Supabase client is not available.');
+    const client=staffClient();
+    if(!client) throw new Error('Supabase Staff Auth client is not available.');
+
     const current=await client.auth.getUser();
     const u=current?.data?.user;
-    if(u && u.is_anonymous!==true) return u;
-    if(u && u.is_anonymous===true){ try{ await client.auth.signOut(); }catch(_){} }
-    const login=await client.auth.signInWithPassword({email:STAFF_EMAIL,password:STAFF_PASSWORD});
+    if(u && u.is_anonymous!==true){
+      localStorage.setItem('gc_staff_supabase_auth','true');
+      return u;
+    }
+
+    if(u && u.is_anonymous===true){
+      try{ await client.auth.signOut(); }catch(_){}
+    }
+
+    const login=await client.auth.signInWithPassword({
+      email:STAFF_EMAIL,
+      password:STAFF_PASSWORD
+    });
     if(login.error) throw login.error;
-    if(!login.data?.user || login.data.user.is_anonymous===true){
+
+    if(!login.data?.user || login.data.user.is_anonymous===true || !login.data.session){
       throw new Error('Staff Supabase authentication was not established.');
     }
+
     localStorage.setItem('gc_staff_supabase_auth','true');
     return login.data.user;
   }
@@ -12177,8 +12218,10 @@ header a[href="#home"] img[alt="Guru Connect Logo"]{
 
   async function reloadAuthoritative(){
     clearCaches();
-    // Use the existing complete-directory loader, but never allow its old
-    // cached result to survive this save.
+
+    // The write is verified against the Staff-authenticated client first.
+    // Now rebuild the public directory from Supabase, not from the old in-memory
+    // cache.  This is what makes an Admin edit immediately visible on the site.
     if(typeof window.gcLoadCloudDirectories==='function'){
       const ok=await window.gcLoadCloudDirectories(
         Math.max(1,Number(window.currentTutorPage)||1),
@@ -12186,6 +12229,8 @@ header a[href="#home"] img[alt="Guru Connect Logo"]{
       );
       if(ok===false) throw new Error('The directory reload from Supabase failed after the save.');
     }
+
+    // Do not leave the just-fetched result cached for the next public refresh.
     clearCaches();
     redraw();
   }
