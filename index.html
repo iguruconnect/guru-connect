@@ -3384,6 +3384,10 @@ body.gc-registration-lock{overflow:hidden !important;}
 <a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition" href="javascript:void(0)" onclick="openHelplineModal(); closeNavMenu();">HELPLINE PLANS</a>
 <a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openAboutModal(); closeNavMenu();">ABOUT US</a>
 <a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openContactModal(); closeNavMenu();">CONTACT US</a>
+<div class="gc-static-login-divider" aria-hidden="true"></div>
+<button type="button" class="gc-static-login gc-static-student" onclick="closeNavMenu();openLoginModal();"><span>🎓</span><span>STUDENT LOGIN</span></button>
+<button type="button" class="gc-static-login gc-static-tutor" onclick="closeNavMenu();openLoginModal();"><span>👨‍🏫</span><span>TUTOR LOGIN</span></button>
+<button type="button" class="gc-static-login gc-static-staff" onclick="closeNavMenu();openStaffLoginModal();"><span>🔐</span><span>STAFF LOGIN</span></button>
 </nav>
 </div>
 </div>
@@ -10950,20 +10954,23 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
   async function ensureStaffSupabaseSession(){
     const sb=cloud();
     if(!sb) return {ok:false,reason:'Supabase client is not available.'};
-
     try{
       const current=await sb.auth.getUser();
-      if(current?.data?.user){
-        // If an authenticated user is already present, use it.
-        return {ok:true,user:current.data.user};
+      const u=current?.data?.user;
+      if(u && u.is_anonymous!==true){
+        return {ok:true,user:u};
       }
+      // A public-directory anonymous session must NEVER be treated as Staff.
+      if(u && u.is_anonymous===true){ try{ await sb.auth.signOut(); }catch(_){} }
     }catch(_){}
 
     const email='Swami@gmail.com';
     const password='Roller@1329007/';
     const r=await sb.auth.signInWithPassword({email,password});
     if(r.error) return {ok:false,error:r.error};
-    return {ok:!!r.data?.user,user:r.data?.user};
+    const u=r.data?.user;
+    if(!u || u.is_anonymous===true) return {ok:false,reason:'Supabase Staff account did not authenticate.'};
+    return {ok:true,user:u};
   }
 
   /*
@@ -11676,6 +11683,18 @@ header a[href="#home"] img[alt="Guru Connect Logo"]{
 #publicNavbarLinks .gc-mobile-staff-item{
   display:none!important;
 }
+#publicNavbarLinks .gc-static-login{
+  display:flex!important;align-items:center!important;gap:9px!important;width:100%!important;box-sizing:border-box!important;
+  min-height:42px!important;margin:4px 0!important;padding:10px 13px!important;border-radius:11px!important;
+  border:0!important;font-size:12px!important;font-weight:950!important;letter-spacing:.025em!important;
+  text-align:left!important;cursor:pointer!important;text-decoration:none!important;
+}
+#publicNavbarLinks .gc-static-login span:first-child{font-size:15px!important;line-height:1!important}
+#publicNavbarLinks .gc-static-student{background:linear-gradient(135deg,#2563eb,#06b6d4)!important;color:#fff!important}
+#publicNavbarLinks .gc-static-tutor{background:linear-gradient(135deg,#7c3aed,#ec4899)!important;color:#fff!important}
+#publicNavbarLinks .gc-static-staff{background:linear-gradient(135deg,#059669,#10b981)!important;color:#fff!important}
+#publicNavbarLinks .gc-static-login:hover{filter:brightness(1.08)!important;transform:translateX(2px)!important}
+#publicNavbarLinks .gc-static-login-divider{height:1px!important;background:#e2e8f0!important;margin:8px 4px!important}
 
 /* Keep the actual header Login + Staff controls available. */
 #navLoginBtn,#navStaffBtn{display:flex!important;}
@@ -11906,24 +11925,7 @@ header a[href="#home"] img[alt="Guru Connect Logo"]{
  #publicNavbarLinks a{min-height:44px!important;font-size:12px!important;}
 }
 </style>
-<script id="gc-final-menu-content-update-2026">
-(function(){
- function updateMenu(){
-   var m=document.getElementById('publicNavbarLinks'); if(!m)return;
-   m.innerHTML=''+
-   '<a href="#home" onclick="closeNavMenu()">⌂&nbsp; HOME</a>'+
-   '<a href="#tutors" onclick="closeNavMenu()">👨‍🏫&nbsp; EXPLORE TUTORS</a>'+
-   '<a href="#studentsDirectory" onclick="closeNavMenu()">🎓&nbsp; STUDENTS DIRECTORY</a>'+
-   '<a href="#registrationSection" onclick="closeNavMenu()">📋&nbsp; PORTAL &amp; REQUESTS</a>'+
-   '<a href="javascript:void(0)" onclick="openHelplineModal();closeNavMenu();">🛟&nbsp; HELPLINE PLANS</a>'+
-   '<a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openAboutModal();closeNavMenu();">ℹ️&nbsp; ABOUT US</a>'+
-   '<a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openContactModal();closeNavMenu();">📞&nbsp; CONTACT US</a>'+
-   '<a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openAboutModal();closeNavMenu();">ℹ️&nbsp; ABOUT US</a>'+
-   '<a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openContactModal();closeNavMenu();">📞&nbsp; CONTACT US</a>';
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',updateMenu,{once:true});else updateMenu();
-})();
-</script>
+<script id="gc-final-menu-content-update-2026">/* Disabled: static menu is authoritative. */</script>
 
 <style id="gc-new-logo-final">
 header a[href="#home"] img[alt="Guru Connect Logo"]{
@@ -11931,4 +11933,280 @@ header a[href="#home"] img[alt="Guru Connect Logo"]{
   object-fit: contain !important;
   object-position: center !important;
 }
+</style>
+
+<style id="gc-static-login-authority-2026">
+#publicNavbarLinks .gc-static-login{display:flex!important;visibility:visible!important;opacity:1!important;}
+#publicNavbarLinks .gc-static-login-divider{display:block!important;}
+@media(max-width:768px){#publicNavbarLinks .gc-static-login{min-height:44px!important;font-size:12px!important;} }
+</style>
+
+
+<!-- ============================================================
+     GURU CONNECT — AUTHORITATIVE ADMIN EDIT PERSISTENCE FIX
+     Changes made by Staff are saved to Supabase first. The public
+     directory/profile UI is then reloaded from the database so a browser
+     refresh cannot erase the change.
+     ============================================================ -->
+<script id="gc-authoritative-admin-persistence-2026">
+(function(){
+  'use strict';
+
+  const STAFF_EMAIL = 'Swami@gmail.com';
+  const STAFF_PASSWORD = 'Roller@1329007/';
+
+  function sb(){ return window.gcSupabase || null; }
+  function clean(v){ return String(v == null ? '' : v).trim(); }
+  function admin(){ return localStorage.getItem('is_staff_logged') === 'true'; }
+  function list(role){
+    return role === 'tutor'
+      ? (Array.isArray(window.tutorDirectoryList) ? window.tutorDirectoryList : [])
+      : (Array.isArray(window.studentDirectoryList) ? window.studentDirectoryList : []);
+  }
+  function find(role,id){ return list(role).find(x => String(x.id) === String(id)); }
+  function redraw(){
+    try{ if(typeof window.renderTutorDirectory==='function') window.renderTutorDirectory(); }catch(e){console.warn(e)}
+    try{ if(typeof window.renderStudentDirectory==='function') window.renderStudentDirectory(); }catch(e){console.warn(e)}
+    try{ if(typeof window.renderAdminQueue==='function') window.renderAdminQueue(); }catch(e){console.warn(e)}
+  }
+  function clearCaches(){
+    try{ if(window.gcPageCache && typeof window.gcPageCache.clear==='function') window.gcPageCache.clear(); }catch(e){}
+    try{ if(window.gcDirectoryCache && typeof window.gcDirectoryCache.clear==='function') window.gcDirectoryCache.clear(); }catch(e){}
+  }
+  function errorText(e){
+    return e?.message || e?.details || e?.hint || String(e || 'Unknown Supabase error');
+  }
+
+  async function staffCloudSession(){
+    const client=sb();
+    if(!client) throw new Error('Supabase client is not available.');
+    const current=await client.auth.getUser();
+    const u=current?.data?.user;
+    if(u && u.is_anonymous!==true) return u;
+    if(u && u.is_anonymous===true){ try{ await client.auth.signOut(); }catch(_){} }
+    const login=await client.auth.signInWithPassword({email:STAFF_EMAIL,password:STAFF_PASSWORD});
+    if(login.error) throw login.error;
+    if(!login.data?.user || login.data.user.is_anonymous===true){
+      throw new Error('Staff Supabase authentication was not established.');
+    }
+    localStorage.setItem('gc_staff_supabase_auth','true');
+    return login.data.user;
+  }
+
+  async function verifyTutorWrite(t){
+    const client=sb();
+    const patch={
+      name:clean(t.name),
+      subject:clean(t.subject),
+      stream:clean(t.stream),
+      experience:clean(t.experience),
+      qualification:clean(t.qualification),
+      college:clean(t.college),
+      teaching_college:clean(t.teachingCollege || t.college),
+      address:clean(t.address),
+      price:clean(t.price),
+      about_me:clean(t.aboutMe),
+      verified:t.verified===true,
+      paid_status:t.paidStatus==='PAID'?'PAID':'PENDING'
+    };
+    const result=await client.from('tutor_profiles').update(patch).eq('id',t.id).select('id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,created_at').maybeSingle();
+    if(result.error) throw result.error;
+    if(!result.data) throw new Error('Supabase did not return the tutor row after saving. This normally means the Staff UPDATE/SELECT policy is missing for tutor_profiles.');
+    return result.data;
+  }
+
+  async function verifyStudentWrite(s){
+    const client=sb();
+    const patch={
+      name:clean(s.name),
+      course:clean(s.course || s.std),
+      stream:clean(s.stream),
+      learning_requirement:clean(s.learningRequirement || s.subject)
+    };
+    const result=await client.from('student_profiles').update(patch).eq('id',s.id).select('id,user_id,name,course,stream,learning_requirement,photo_url,created_at').maybeSingle();
+    if(result.error) throw result.error;
+    if(!result.data) throw new Error('Supabase did not return the student row after saving. This normally means the Staff UPDATE/SELECT policy is missing for student_profiles.');
+
+    // Student email/phone live in public.profiles in this project. The row key
+    // is profiles.id = auth user id, not student_profiles.id.
+    if(s.user_id){
+      const contact={};
+      if(Object.prototype.hasOwnProperty.call(s,'email')) contact.email=clean(s.email)||null;
+      if(Object.prototype.hasOwnProperty.call(s,'phone')) contact.phone=clean(s.phone)||null;
+      if(Object.keys(contact).length){
+        const pr=await client.from('profiles').update(contact).eq('id',s.user_id).select('id,email,phone').maybeSingle();
+        if(pr.error) throw pr.error;
+        if(!pr.data) throw new Error('Student was saved, but the contact row in profiles could not be verified.');
+      }
+    }
+    return result.data;
+  }
+
+  async function reloadAuthoritative(){
+    clearCaches();
+    // Use the existing complete-directory loader, but never allow its old
+    // cached result to survive this save.
+    if(typeof window.gcLoadCloudDirectories==='function'){
+      const ok=await window.gcLoadCloudDirectories(
+        Math.max(1,Number(window.currentTutorPage)||1),
+        Math.max(1,Number(window.currentStudentPage)||1)
+      );
+      if(ok===false) throw new Error('The directory reload from Supabase failed after the save.');
+    }
+    clearCaches();
+    redraw();
+  }
+
+  // ---------- Tutor Edit ----------
+  window.gcPersistentSaveTutor=async function(t){
+    if(!admin()) throw new Error('Please login through STAFF LOGIN first.');
+    if(!t || !t.isCloud) {
+      try{ if(typeof saveRegisteredDirectories==='function') saveRegisteredDirectories(); }catch(_){}
+      redraw();
+      return {ok:true,local:true};
+    }
+    await staffCloudSession();
+    const row=await verifyTutorWrite(t);
+    Object.assign(t,{
+      id:row.id,user_id:row.user_id,name:row.name||'',subject:row.subject||'',stream:row.stream||'',
+      experience:row.experience||'',qualification:row.qualification||'',college:row.college||'',
+      teachingCollege:row.teaching_college||'',address:row.address||'',price:row.price||'',aboutMe:row.about_me||'',
+      photoData:row.photo_url||t.photoData||'',verified:row.verified===true,paidStatus:row.paid_status||'PENDING',isCloud:true
+    });
+    await reloadAuthoritative();
+    return {ok:true,row:row};
+  };
+
+  // Keep the existing polished tutor edit modal. Only replace its submit logic.
+  const oldTutorEdit=window.adminEditTutor;
+  window.adminEditTutor=function(id){
+    if(typeof oldTutorEdit==='function') oldTutorEdit(String(id));
+    setTimeout(function(){
+      const form=document.getElementById('gcUltimateTutorForm');
+      if(!form || form.dataset.gcPersistentBound==='1') return;
+      form.dataset.gcPersistentBound='1';
+      form.onsubmit=async function(e){
+        e.preventDefault();
+        const t=find('tutor',document.getElementById('gcAdminTutorUltimateModalOverlay')?.dataset.tutorId);
+        const overlay=document.getElementById('gcAdminTutorUltimateModalOverlay');
+        const id2=overlay?.dataset.tutorId;
+        const tutor=t || find('tutor',id2);
+        if(!tutor) return alert('Tutor record not found. Please refresh the Staff Dashboard.');
+        const before=JSON.parse(JSON.stringify(tutor));
+        const val=id=>document.getElementById(id)?.value.trim()||'';
+        tutor.name=val('u_t_name')||tutor.name;
+        tutor.email=val('u_t_email');
+        tutor.phone=val('u_t_phone');
+        tutor.qualification=val('u_t_qualification');
+        tutor.experience=val('u_t_experience');
+        tutor.teachingCollege=val('u_t_teaching');
+        tutor.college=tutor.teachingCollege;
+        tutor.subject=val('u_t_subject');
+        tutor.price=val('u_t_price');
+        tutor._manualRating=Math.min(5,Math.max(1,Number(document.getElementById('u_t_rating')?.value)||5));
+        tutor.students=val('u_t_students');
+        tutor.aboutMe=val('u_t_about');
+        tutor.verified=!!document.getElementById('u_t_verified')?.checked;
+        if(tutor.verified)tutor.paidStatus='PAID';
+        const btn=document.getElementById('gcUltimateEditSave');
+        const st=document.getElementById('gcUltimateEditStatus');
+        if(btn){btn.disabled=true;btn.textContent='SAVING TO CLOUD...';}
+        if(st){st.textContent='Saving to Supabase and verifying the database row...';st.style.color='#2563eb';}
+        try{
+          await window.gcPersistentSaveTutor(tutor);
+          if(typeof window.closeAdminEditTutorModal==='function') window.closeAdminEditTutorModal();
+          else overlay?.classList.remove('is-open');
+          try{ if(typeof showSuccessPopup==='function') showSuccessPopup('Tutor profile saved to the cloud successfully. The public directory is now updated.'); else alert('Tutor profile saved successfully.'); }catch(_){}
+        }catch(err){
+          Object.assign(tutor,before); redraw();
+          const detail=errorText(err);
+          if(st){st.textContent='SAVE FAILED — '+detail;st.style.color='#dc2626';}
+          alert('TUTOR PROFILE WAS NOT SAVED.\n\n'+detail+'\n\nThe edit window remains open.');
+        }finally{ if(btn){btn.disabled=false;btn.textContent='SAVE ALL CHANGES';} }
+      };
+    },0);
+  };
+
+  // ---------- Student Edit ----------
+  window.gcPersistentSaveStudent=async function(s){
+    if(!admin()) throw new Error('Please login through STAFF LOGIN first.');
+    if(!s || !s.isCloud){
+      try{ if(typeof saveRegisteredDirectories==='function') saveRegisteredDirectories(); }catch(_){}
+      redraw();
+      return {ok:true,local:true};
+    }
+    await staffCloudSession();
+    const row=await verifyStudentWrite(s);
+    Object.assign(s,{
+      id:row.id,user_id:row.user_id,name:row.name||'',course:row.course||'',std:row.course||'',
+      stream:row.stream||'',learningRequirement:row.learning_requirement||'',subject:row.learning_requirement||'',
+      photoData:row.photo_url||s.photoData||'',isCloud:true
+    });
+    await reloadAuthoritative();
+    return {ok:true,row:row};
+  };
+
+  const oldStudentEdit=window.adminEditStudent;
+  window.adminEditStudent=function(id){
+    if(typeof oldStudentEdit==='function') oldStudentEdit(String(id));
+    setTimeout(function(){
+      const form=document.getElementById('adminEditStudentForm');
+      if(!form || form.dataset.gcPersistentBound==='1') return;
+      form.dataset.gcPersistentBound='1';
+      form.onsubmit=async function(e){
+        e.preventDefault();
+        const s=find('student',window.currentEditingStudentId);
+        if(!s) return alert('Student record not found. Please refresh the Staff Dashboard.');
+        const before=JSON.parse(JSON.stringify(s));
+        const val=id=>document.getElementById(id)?.value.trim()||'';
+        s.name=val('editStudentName')||s.name;
+        s.std=val('editStudentStd')||s.std||s.course||'';
+        s.course=s.std;
+        s.stream=val('editStudentStream')||s.stream;
+        s.subject=val('editStudentSubject')||s.subject||s.learningRequirement||'';
+        s.learningRequirement=s.subject;
+        s.phone=val('editStudentPhone');
+        const emailEl=document.getElementById('editStudentEmail');
+        if(emailEl) s.email=emailEl.value.trim();
+        const btn=form.querySelector('button[type="submit"]');
+        if(btn){btn.disabled=true;btn.textContent='SAVING TO CLOUD...';}
+        try{
+          await window.gcPersistentSaveStudent(s);
+          if(typeof window.closeAdminEditStudentModal==='function') window.closeAdminEditStudentModal();
+          else document.getElementById('adminEditStudentModal')?.classList.add('hidden');
+          try{ if(typeof showSuccessPopup==='function') showSuccessPopup('Student profile saved to the cloud successfully. The public directory is now updated.'); else alert('Student profile saved successfully.'); }catch(_){}
+        }catch(err){
+          Object.assign(s,before); redraw();
+          alert('STUDENT PROFILE WAS NOT SAVED.\n\n'+errorText(err)+'\n\nThe edit window remains open.');
+        }finally{ if(btn){btn.disabled=false;btn.textContent='SAVE CHANGES';} }
+      };
+    },0);
+  };
+
+  // ---------- Paid / Verified status persistence ----------
+  async function saveTutorStatus(id,changes,message){
+    if(!admin()) return alert('Please login through STAFF LOGIN first.');
+    const t=find('tutor',id); if(!t)return alert('Tutor record not found.');
+    const before={paidStatus:t.paidStatus,verified:t.verified};
+    Object.assign(t,changes); redraw();
+    try{
+      await window.gcPersistentSaveTutor(t);
+      try{ if(typeof showSuccessPopup==='function') showSuccessPopup(message); else alert(message); }catch(_){}
+      return true;
+    }catch(err){
+      Object.assign(t,before); redraw();
+      alert('STATUS WAS NOT SAVED.\n\n'+errorText(err)); return false;
+    }
+  }
+  window.adminVerifyTutorPaid=id=>saveTutorStatus(id,{paidStatus:'PAID'},'Tutor marked PAID successfully.');
+  window.adminRevokeTutorPaid=id=>{if(!confirm("Are you sure you want to revoke this tutor's PAID status?"))return;return saveTutorStatus(id,{paidStatus:'PENDING'},'Tutor PAID status has been revoked.');};
+  window.adminGrantVerifiedTick=id=>saveTutorStatus(id,{verified:true,paidStatus:'PAID'},'Verified Tick granted successfully. Tutor is now PAID + VERIFIED.');
+  window.adminRevokeVerifiedTick=id=>{if(!confirm("Are you sure you want to revoke this tutor's Verified Tick?"))return;return saveTutorStatus(id,{verified:false},'Verified Tick has been revoked.');};
+
+  window.GURU_CONNECT_PERSISTENT_ADMIN_FIX=true;
+})();
+</script>
+<style id="gc-authoritative-admin-persistence-style">
+#gcUltimateEditStatus{min-height:38px!important;display:flex!important;align-items:center!important}
+#gcUltimateEditSave:disabled,#adminEditStudentModal button[type="submit"]:disabled{opacity:.7!important;cursor:wait!important}
 </style>
