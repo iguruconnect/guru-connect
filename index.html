@@ -9033,7 +9033,7 @@ body {
       students: row.students_taught != null ? String(row.students_taught) : '',
       mode: row.teaching_mode || '',
       teachingMode: row.teaching_mode || '',
-      location: row.location || '',
+      location: row.location || row.address || '',
       languages: row.languages || '',
       availability: row.availability || '',
       teachingSince: row.teaching_since || '',
@@ -10666,6 +10666,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div><label class="gc-v2-label">NAME</label><input id="gc_a_t_name" class="gc-v2-input" required value="${esc(t.name)}"></div>
           <div><label class="gc-v2-label">EMAIL</label><input id="gc_a_t_email" type="email" class="gc-v2-input" value="${esc(t.email)}"></div>
+          <div><label class="gc-v2-label">PHONE NUMBER</label><input id="gc_a_t_phone" type="tel" inputmode="numeric" class="gc-v2-input" placeholder="9876543210" value="${esc(t.phone||'')}"></div>
           
           <div><label class="gc-v2-label">QUALIFICATION</label><input id="gc_a_t_qualification" class="gc-v2-input" value="${esc(t.qualification)}"></div>
           <div><label class="gc-v2-label">EXPERIENCE</label><input id="gc_a_t_experience" class="gc-v2-input" value="${esc(t.experience)}"></div>
@@ -10705,6 +10706,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
       try{
         t.name=document.getElementById('gc_a_t_name').value.trim()||t.name;
         t.email=document.getElementById('gc_a_t_email').value.trim();
+        t.phone=document.getElementById('gc_a_t_phone')?.value.trim()||t.phone||'';
         
         t.qualification=document.getElementById('gc_a_t_qualification').value.trim();
         t.experience=document.getElementById('gc_a_t_experience').value.trim();
@@ -10714,6 +10716,12 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
         t.price=document.getElementById('gc_a_t_price').value.trim();
         t._manualRating=Math.min(5,Math.max(1,Number(document.getElementById('gc_a_t_rating').value)||Number(tutorRating(t))));
         t.students=document.getElementById('gc_a_t_students').value.trim(); t.studentsTaught=t.students;
+        t.reviewCount=Math.max(0,Number(document.getElementById('gc_a_t_reviews').value)||0);
+        t.location=document.getElementById('gc_a_t_location').value.trim();
+        t.mode=t.teachingMode=document.getElementById('gc_a_t_mode').value.trim();
+        t.languages=document.getElementById('gc_a_t_languages').value.trim();
+        t.availability=document.getElementById('gc_a_t_availability').value.trim();
+        t.teachingSince=t.memberSince=document.getElementById('gc_a_t_since').value.trim();
         t.aboutMe=document.getElementById('gc_a_t_about').value.trim();
         t.verified=document.getElementById('gc_a_t_verified').checked;
         if(t.verified) t.paidStatus='PAID';
@@ -12318,7 +12326,7 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
    list.slice((p-1)*per,p*per).forEach(t=>{
      const id=val(t.id),name=val(t.name,'Tutor');const verified=t.verified===true||t.verified==='true';const q=val(t.qualification,t.qualifications,t.education,t.degree,'Tutor');
      const subject=val(t.subject,t.subjects,'Not specified'),rate=val(t.price,t.rate,t.hourlyRate,'—'),exp=val(t.experience,t.experienceYears,'—');
-     const rating=val(t.rating,'4.5'),reviews=val(t.reviewCount,t.reviewsCount,'0'),students=val(t.students,t.studentsTaught,'—'),mode=val(t.mode,t.teachingMode,'Online / Offline'),loc=val(t.location,'—'),langs=val(t.languages,'Hindi, English'),avail=val(t.availability,'Mon - Sun');
+     const rating=val(t.rating,'4.5'),reviews=val(t.reviewCount,t.reviewsCount,'0'),students=val(t.students,t.studentsTaught,'—'),mode=val(t.mode,t.teachingMode,'Online / Offline'),loc=val(t.location,t.address,'—'),langs=val(t.languages,'Hindi, English'),avail=val(t.availability,'Mon - Sun');
      const card=document.createElement('article');card.className='gc-target-card gc-target-tutor';card.dataset.tutorId=id;
      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✓ VERIFIED TUTOR':'TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
        '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified&&tick()?'<span class="gc-target-verified"><img src="'+esc(tick())+'" alt="Verified"></span>':'')+'</h3><div class="gc-target-subtitle">'+esc(q)+' · '+esc(subject)+'</div></div></div>'+
@@ -12480,5 +12488,33 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
   function run(){cleanMenu();setTimeout(cleanMenu,50);setTimeout(cleanMenu,500);setTimeout(cleanMenu,1500);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
   window.addEventListener('load',run,{once:true});
+})();
+</script>
+
+<script id="gc-final-tutor-card-fields-sync">
+(function(){
+  'use strict';
+  function sync(){
+    const form=document.getElementById('gcAdminTutorFormFinal');
+    if(!form || form.dataset.gcCardSync==='1') return;
+    form.dataset.gcCardSync='1';
+    form.addEventListener('input',function(e){
+      const el=e.target;
+      if(!el) return;
+      const id=el.id;
+      if(!['gc_a_t_location','gc_a_t_mode','gc_a_t_languages','gc_a_t_phone'].includes(id)) return;
+      try{
+        const list=Array.isArray(window.tutorDirectoryList)?window.tutorDirectoryList:[];
+        const t=list.find(x=>String(x.id)===String(window.currentEditingTutorId));
+        if(!t) return;
+        if(id==='gc_a_t_location') t.location=el.value.trim();
+        if(id==='gc_a_t_mode') t.mode=t.teachingMode=el.value.trim();
+        if(id==='gc_a_t_languages') t.languages=el.value.trim();
+        if(id==='gc_a_t_phone') t.phone=el.value.trim();
+      }catch(_){}
+    });
+  }
+  sync();
+  new MutationObserver(sync).observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>
