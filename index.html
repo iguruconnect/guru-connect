@@ -11956,6 +11956,130 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 })();
 </script>
 
+<!-- GURU CONNECT FINAL AUTH + RLS EDIT FIX -->
+<script id="gc-final-auth-rules-fix">
+(function(){
+  'use strict';
+
+  const sb=()=>window.gcSupabase||null;
+  const STAFF_EMAIL='Swami@gmail.com';
+
+  // The old implementation treated ANY Supabase user (including the anonymous
+  // user created for public registration) as a valid Staff session. That made
+  // RLS UPDATE silently affect zero rows. Staff must have a real authenticated
+  // Supabase user, never an anonymous one.
+  async function realStaffSession(){
+    const s=sb();
+    if(!s) return {ok:false,error:new Error('Supabase client is not loaded.')};
+    try{
+      const r=await s.auth.getUser();
+      const u=r?.data?.user;
+      if(u && u.is_anonymous!==true && String(u.email||'').toLowerCase()===STAFF_EMAIL.toLowerCase()){
+        return {ok:true,user:u};
+      }
+      // An anonymous/public session is NOT a Staff session.
+      if(u){ try{await s.auth.signOut();}catch(_){} }
+    }catch(_){ }
+
+    // Re-authenticate the existing Staff account through Supabase Auth.
+    const email=(document.getElementById('staffUserInput')?.value||STAFF_EMAIL).trim() || STAFF_EMAIL;
+    const password=(document.getElementById('staffPassInput')?.value||'').trim();
+    if(email.toLowerCase()!==STAFF_EMAIL.toLowerCase()){
+      return {ok:false,error:new Error('The Staff Supabase account email does not match the configured Staff account.')};
+    }
+    if(!password){
+      return {ok:false,error:new Error('Please enter the Staff password so Supabase can create the authenticated Staff session.')};
+    }
+    const r=await s.auth.signInWithPassword({email,password});
+    if(r.error) return {ok:false,error:r.error};
+    const u=r.data?.user;
+    if(!u || u.is_anonymous===true) return {ok:false,error:new Error('Supabase did not create a real Staff session.')};
+    return {ok:true,user:u};
+  }
+
+  // Replace Staff Login so it ALWAYS destroys the anonymous session first and
+  // creates a real Supabase Auth session. The old UI/localStorage flag remains.
+  window.handleStaffLogin=async function(e){
+    if(e)e.preventDefault();
+    const u=(document.getElementById('staffUserInput')?.value||'').trim();
+    const p=(document.getElementById('staffPassInput')?.value||'').trim();
+    if(!u || !p){ alert('Please enter the Staff username and password.'); return false; }
+
+    const btn=document.querySelector('#staffLoginModal button[type="submit"]');
+    if(btn){btn.disabled=true;btn.textContent='CONNECTING TO CLOUD...';}
+    try{
+      const s=sb();
+      if(!s) throw new Error('Supabase client is not loaded.');
+      // Critical: anonymous users must not be reused as Staff.
+      try{await s.auth.signOut();}catch(_){ }
+      const r=await s.auth.signInWithPassword({email:u,password:p});
+      if(r.error) throw r.error;
+      const user=r.data?.user;
+      if(!user || user.is_anonymous===true) throw new Error('Supabase Staff authentication did not create a real authenticated user.');
+
+      localStorage.setItem('is_staff_logged','true');
+      localStorage.setItem('gc_staff_supabase_auth','true');
+      try{window.closeStaffLoginModal?.();}catch(_){ }
+      try{window.checkStaffSessionState?.();}catch(_){ }
+      try{window.renderAdminQueue?.();}catch(_){ }
+      try{window.showSuccessPopup?.('Staff Login Successful — Cloud Staff Session Active.');}
+      catch(_){alert('Staff Login Successful — Cloud Staff Session Active.');}
+    }catch(err){
+      localStorage.removeItem('gc_staff_supabase_auth');
+      console.error('GURU CONNECT Staff Supabase login failed:',err);
+      alert('STAFF CLOUD LOGIN FAILED.\n\n'+(err?.message||String(err))+'\n\nThe Staff dashboard was not given a fake/local cloud session.');
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent='LOGIN';}
+    }
+    return false;
+  };
+
+  // Every cloud edit now verifies that the active Supabase identity is the
+  // real Staff Auth account before attempting UPDATE.
+  window.gcRequireRealStaffCloudSession=async function(){
+    const r=await realStaffSession();
+    if(!r.ok) throw (r.error||new Error('Real Staff Supabase session is required.'));
+    return r.user;
+  };
+
+  // Re-wrap the final cloud updaters. No anonymous session is ever accepted.
+  const oldStudent=window.gcSupabaseAdminUpdateStudent;
+  window.gcSupabaseAdminUpdateStudent=async function(st){
+    await window.gcRequireRealStaffCloudSession();
+    if(typeof oldStudent!=='function') throw new Error('Student cloud updater is missing.');
+    return oldStudent(st);
+  };
+
+  const oldTutor=window.gcSupabaseAdminUpdateTutor;
+  window.gcSupabaseAdminUpdateTutor=async function(t){
+    await window.gcRequireRealStaffCloudSession();
+    if(typeof oldTutor!=='function') throw new Error('Tutor cloud updater is missing.');
+    return oldTutor(t);
+  };
+
+  // Logout must also end the Supabase Staff session, otherwise the next public
+  // visitor on the same browser can inherit the Staff JWT.
+  const oldLogout=window.logoutStaff;
+  window.logoutStaff=async function(){
+    try{if(sb()) await sb().auth.signOut();}catch(e){console.warn('Supabase Staff sign-out:',e);}
+    localStorage.removeItem('gc_staff_supabase_auth');
+    localStorage.removeItem('is_staff_logged');
+    try{if(typeof oldLogout==='function') oldLogout();}catch(_){ }
+  };
+
+  // If this page is already in Staff mode when the patch loads, verify the
+  // Supabase identity. Do not silently accept an anonymous session.
+  setTimeout(async function(){
+    if(localStorage.getItem('is_staff_logged')==='true'){
+      try{
+        const r=await realStaffSession();
+        if(!r.ok) console.warn('GURU CONNECT: Staff UI is active but no real Staff Supabase session is active.',r.error||r.reason);
+      }catch(e){console.warn('GURU CONNECT Staff session check:',e);}
+    }
+  },500);
+})();
+</script>
+
 </body>
 </html>
 <!-- =========================================================
