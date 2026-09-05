@@ -3063,7 +3063,7 @@ header, .header, .topbar, .navbar, .nav, .site-header {
     gap: 4px !important;
   }
 
-  /* Standalone Login/Staff controls are moved into the mobile menu by JS below. */
+  /* Standalone Login/Staff controls stay inside the single public menu. */
   header #navLoginBtn,
   header #loginBtn,
   header #staffLoginBtn,
@@ -10251,64 +10251,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
   window.addEventListener('popstate',bootPublic);
 })();
 </script>
-<script id="gc-mobile-login-menu-items">
-(function(){
-  function findFirst(selectors){
-    for(const s of selectors){
-      const el=document.querySelector(s);
-      if(el) return el;
-    }
-    return null;
-  }
 
-  function addMenuItem(){
-    const menu=document.getElementById('publicNavbarLinks');
-    if(!menu) return;
-
-    if(!menu.querySelector('.gc-mobile-login-item')){
-      const login=document.createElement('button');
-      login.type='button';
-      login.className='gc-mobile-login-item';
-      login.textContent='Student / Tutor Login';
-      login.addEventListener('click',function(){
-        const target=findFirst([
-          '#loginBtn','#navLoginBtn','[onclick*="loginModal"]',
-          '[onclick*="openLogin"]'
-        ]);
-        if(target) target.click();
-        else {
-          const modal=document.getElementById('loginModal');
-          if(modal) modal.classList.remove('hidden');
-        }
-      });
-      menu.appendChild(login);
-    }
-
-    if(!menu.querySelector('.gc-mobile-staff-item')){
-      const staff=document.createElement('button');
-      staff.type='button';
-      staff.className='gc-mobile-staff-item';
-      staff.textContent='STAFF LOGIN';
-      staff.addEventListener('click',function(){
-        const target=findFirst([
-          '#staffLoginBtn','#navStaffBtn','[onclick*="staffLoginModal"]',
-          '[onclick*="openStaffLogin"]'
-        ]);
-        if(target) target.click();
-        else {
-          const modal=document.getElementById('staffLoginModal');
-          if(modal) modal.classList.remove('hidden');
-        }
-      });
-      menu.appendChild(staff);
-    }
-  }
-
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addMenuItem);
-  else addMenuItem();
-  setTimeout(addMenuItem,500);
-})();
-</script>
 <style id="gc-helpline-plan-ui">
 .gc-helpline-plan-panel{
   display:none;
