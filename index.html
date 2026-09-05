@@ -3063,7 +3063,7 @@ header, .header, .topbar, .navbar, .nav, .site-header {
     gap: 4px !important;
   }
 
-  /* Standalone Login/Staff controls stay inside the single public menu. */
+  /* Standalone Login/Staff controls are moved into the mobile menu by JS below. */
   header #navLoginBtn,
   header #loginBtn,
   header #staffLoginBtn,
@@ -10251,7 +10251,64 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
   window.addEventListener('popstate',bootPublic);
 })();
 </script>
+<script id="gc-mobile-login-menu-items">
+(function(){
+  function findFirst(selectors){
+    for(const s of selectors){
+      const el=document.querySelector(s);
+      if(el) return el;
+    }
+    return null;
+  }
 
+  function addMenuItem(){
+    const menu=document.getElementById('publicNavbarLinks');
+    if(!menu) return;
+
+    if(!menu.querySelector('.gc-mobile-login-item')){
+      const login=document.createElement('button');
+      login.type='button';
+      login.className='gc-mobile-login-item';
+      login.textContent='Student / Tutor Login';
+      login.addEventListener('click',function(){
+        const target=findFirst([
+          '#loginBtn','#navLoginBtn','[onclick*="loginModal"]',
+          '[onclick*="openLogin"]'
+        ]);
+        if(target) target.click();
+        else {
+          const modal=document.getElementById('loginModal');
+          if(modal) modal.classList.remove('hidden');
+        }
+      });
+      menu.appendChild(login);
+    }
+
+    if(!menu.querySelector('.gc-mobile-staff-item')){
+      const staff=document.createElement('button');
+      staff.type='button';
+      staff.className='gc-mobile-staff-item';
+      staff.textContent='STAFF LOGIN';
+      staff.addEventListener('click',function(){
+        const target=findFirst([
+          '#staffLoginBtn','#navStaffBtn','[onclick*="staffLoginModal"]',
+          '[onclick*="openStaffLogin"]'
+        ]);
+        if(target) target.click();
+        else {
+          const modal=document.getElementById('staffLoginModal');
+          if(modal) modal.classList.remove('hidden');
+        }
+      });
+      menu.appendChild(staff);
+    }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addMenuItem);
+  else addMenuItem();
+  setTimeout(addMenuItem,500);
+})();
+</script>
 <style id="gc-helpline-plan-ui">
 .gc-helpline-plan-panel{
   display:none;
@@ -12088,6 +12145,120 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 })();
 </script>
 
+
+<!-- GURU CONNECT FINAL ADMIN DELETE FIX -->
+<script id="gc-final-admin-delete-fix">
+(function(){
+  'use strict';
+  const sb=()=>window.gcSupabase||null;
+  const staffOk=()=>localStorage.getItem('is_staff_logged')==='true';
+  const clean=v=>String(v==null?'':v).trim();
+
+  async function requireStaff(){
+    if(!staffOk()) throw new Error('Please login as Staff first.');
+    if(typeof window.gcRequireRealStaffCloudSession==='function'){
+      await window.gcRequireRealStaffCloudSession();
+      return;
+    }
+    const s=sb();
+    if(!s) throw new Error('Supabase client is not loaded.');
+    const r=await s.auth.getUser();
+    if(!r?.data?.user || r.data.user.is_anonymous) throw new Error('Real Staff Supabase session is required. Please login again as Staff.');
+  }
+
+  function redraw(){
+    try{ if(typeof gcPageCache!=='undefined' && gcPageCache?.clear) gcPageCache.clear(); }catch(_){ }
+    try{ localStorage.removeItem('gc_tutor_directory_cache'); localStorage.removeItem('gc_student_directory_cache'); }catch(_){ }
+    try{ window.saveRegisteredDirectories?.(); }catch(_){ }
+    try{ window.renderTutorDirectory?.(); }catch(_){ }
+    try{ window.renderStudentDirectory?.(); }catch(_){ }
+    try{ window.renderAdminQueue?.(); }catch(_){ }
+  }
+
+  async function deleteCloudProfile(table, row){
+    const s=sb();
+    if(!s) throw new Error('Supabase client is not loaded.');
+    await requireStaff();
+
+    const id=clean(row?.id);
+    if(!id) throw new Error('Profile ID is missing.');
+
+    // Delete the public role profile first. This is the actual directory row.
+    const d=await s.from(table).delete().eq('id',id);
+    if(d.error) throw d.error;
+
+    // The shared profiles row contains contact details. Remove it as cleanup
+    // when user_id is known. Failure here must not undo the successful role-row
+    // deletion because profiles may have a separate restrictive DELETE policy.
+    if(row?.user_id){
+      try{
+        const p=await s.from('profiles').delete().eq('id',row.user_id);
+        if(p.error) console.warn('Profile contact-row cleanup skipped:',p.error);
+      }catch(e){ console.warn('Profile contact-row cleanup skipped:',e); }
+    }
+
+    try{ if(typeof gcPageCache!=='undefined' && gcPageCache?.clear) gcPageCache.clear(); }catch(_){ }
+    return true;
+  }
+
+  window.adminDeleteTutor=async function(tutorId){
+    const list=Array.isArray(window.tutorDirectoryList)?window.tutorDirectoryList:[];
+    const t=list.find(x=>String(x.id)===String(tutorId));
+    if(!t){ alert('Tutor profile not found. Please refresh the Staff dashboard.'); return false; }
+    if(!confirm('DELETE THIS TUTOR PROFILE?\n\nThis will remove the tutor from the public directory and Supabase. This action cannot be undone.')) return false;
+
+    const btn=event?.currentTarget;
+    if(btn) btn.disabled=true;
+    try{
+      if(t.isCloud){
+        await deleteCloudProfile('tutor_profiles',t);
+        await window.gcLoadCloudDirectories?.(1,1);
+      }else{
+        window.tutorDirectoryList=list.filter(x=>String(x.id)!==String(tutorId));
+        redraw();
+      }
+      try{window.renderAdminQueue?.();}catch(_){ }
+      try{window.showSuccessPopup?.('Tutor profile deleted successfully from GURU CONNECT.');}
+      catch(_){alert('Tutor profile deleted successfully from GURU CONNECT.');}
+      return true;
+    }catch(err){
+      console.error('GURU CONNECT TUTOR DELETE FAILED',err);
+      alert('TUTOR PROFILE WAS NOT DELETED.\n\n'+(err?.message||String(err))+'\n\nNo success was reported.');
+      return false;
+    }finally{ if(btn) btn.disabled=false; }
+  };
+
+  window.adminDeleteStudent=async function(studentId){
+    const list=Array.isArray(window.studentDirectoryList)?window.studentDirectoryList:[];
+    const s=list.find(x=>String(x.id)===String(studentId));
+    if(!s){ alert('Student profile not found. Please refresh the Staff dashboard.'); return false; }
+    if(!confirm('DELETE THIS STUDENT PROFILE?\n\nThis will remove the student from the public directory and Supabase. This action cannot be undone.')) return false;
+
+    const btn=event?.currentTarget;
+    if(btn) btn.disabled=true;
+    try{
+      if(s.isCloud){
+        await deleteCloudProfile('student_profiles',s);
+        await window.gcLoadCloudDirectories?.(1,1);
+      }else{
+        window.studentDirectoryList=list.filter(x=>String(x.id)!==String(studentId));
+        redraw();
+      }
+      try{window.renderAdminQueue?.();}catch(_){ }
+      try{window.showSuccessPopup?.('Student profile deleted successfully from GURU CONNECT.');}
+      catch(_){alert('Student profile deleted successfully from GURU CONNECT.');}
+      return true;
+    }catch(err){
+      console.error('GURU CONNECT STUDENT DELETE FAILED',err);
+      alert('STUDENT PROFILE WAS NOT DELETED.\n\n'+(err?.message||String(err))+'\n\nNo success was reported.');
+      return false;
+    }finally{ if(btn) btn.disabled=false; }
+  };
+
+  window.GURU_CONNECT_ADMIN_DELETE_FIX=true;
+})();
+</script>
+
 </body>
 </html>
 <!-- =========================================================
@@ -12313,279 +12484,5 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
   setTimeout(init,500);
-})();
-</script>
-
-
-<!-- GURU CONNECT — FINAL SINGLE AUTHORITATIVE TUTOR ADMIN EDITOR -->
-<script id="gc-final-single-tutor-admin-editor-2026">
-(function(){
-  'use strict';
-
-  const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
-  const clean = v => String(v == null ? '' : v).trim();
-  const getTutor = id => {
-    const a = Array.isArray(window.tutorDirectoryList) ? window.tutorDirectoryList : [];
-    return a.find(x => String(x.id) === String(id)) || null;
-  };
-
-  async function loadContact(t){
-    if(!t || !t.user_id || !window.gcSupabase) return;
-    try{
-      const r = await window.gcSupabase
-        .from('profiles')
-        .select('id,full_name,email,phone,photo_url')
-        .eq('id', t.user_id)
-        .maybeSingle();
-      if(!r.error && r.data){
-        if(r.data.email != null) t.email = r.data.email;
-        if(r.data.phone != null) t.phone = r.data.phone;
-        if(r.data.photo_url && !t.photoData) t.photoData = r.data.photo_url;
-      }
-    }catch(e){
-      console.warn('Tutor contact details could not be loaded:', e);
-    }
-  }
-
-  async function refreshCloud(){
-    try{
-      if(typeof window.gcLoadCloudDirectories === 'function'){
-        await window.gcLoadCloudDirectories(1, Number(window.currentStudentPage)||1);
-      }
-    }catch(e){ console.warn('Tutor directory refresh:', e); }
-    try{ window.renderTutorDirectory?.(); }catch(e){}
-    try{ window.renderAdminQueue?.(); }catch(e){}
-    try{ window.saveRegisteredDirectories?.(); }catch(e){}
-  }
-
-  window.adminEditTutor = async function(id){
-    if(localStorage.getItem('is_staff_logged') !== 'true'){
-      alert('Please login through STAFF LOGIN first.');
-      return;
-    }
-
-    window.currentEditingTutorId = String(id);
-    const t = getTutor(id);
-    if(!t){
-      alert('Tutor record not found. Please refresh the Staff Dashboard.');
-      return;
-    }
-
-    const modal = document.getElementById('adminEditTutorModal');
-    if(!modal){
-      alert('Tutor edit window is missing.');
-      return;
-    }
-
-    await loadContact(t);
-
-    const box = modal.querySelector(':scope > div') || modal.querySelector('div');
-    if(!box) return;
-
-    const rating = t._manualRating != null ? Number(t._manualRating) :
-                   (t.rating != null && t.rating !== '' ? Number(t.rating) : 5);
-    const reviewCount = Number(t.reviewCount || t.reviewsCount || 0) || 0;
-
-    box.innerHTML = `
-      <div class="flex justify-between items-center mb-5">
-        <div>
-          <h3 class="text-xl font-black text-brand-dark">Edit Tutor Profile</h3>
-          <p class="text-xs text-slate-500 mt-1">
-            ${t.isCloud ? 'Cloud tutor — ALL changes will be saved to Supabase.' : 'Local tutor — changes will be saved locally.'}
-          </p>
-        </div>
-        <button type="button" id="gcFinalTutorClose" class="text-slate-400 hover:text-red-500 text-xl">×</button>
-      </div>
-
-      <form id="gcFinalTutorForm" class="space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-          <div><label class="gc-v2-label">NAME</label>
-            <input id="gcF_name" class="gc-v2-input" required value="${esc(t.name)}"></div>
-
-          <div><label class="gc-v2-label">EMAIL</label>
-            <input id="gcF_email" type="email" class="gc-v2-input" value="${esc(t.email || '')}"></div>
-
-          <div><label class="gc-v2-label">PHONE NUMBER</label>
-            <input id="gcF_phone" type="tel" class="gc-v2-input" value="${esc(t.phone || '')}" placeholder="Tutor phone number"></div>
-
-          <div><label class="gc-v2-label">QUALIFICATION</label>
-            <input id="gcF_qualification" class="gc-v2-input" value="${esc(t.qualification || '')}"></div>
-
-          <div><label class="gc-v2-label">EXPERIENCE</label>
-            <input id="gcF_experience" class="gc-v2-input" value="${esc(t.experience || '')}"></div>
-
-          <div><label class="gc-v2-label">TEACHING COLLEGE / INSTITUTE</label>
-            <input id="gcF_college" class="gc-v2-input" value="${esc(t.teachingCollege || t.college || '')}"></div>
-
-          <div><label class="gc-v2-label">SUBJECT</label>
-            <input id="gcF_subject" class="gc-v2-input" value="${esc(t.subject || '')}"></div>
-
-          <div><label class="gc-v2-label">STREAM</label>
-            <input id="gcF_stream" class="gc-v2-input" value="${esc(t.stream || '')}"></div>
-
-          <div><label class="gc-v2-label">RATE / HOUR</label>
-            <input id="gcF_price" class="gc-v2-input" value="${esc(t.price || '')}"></div>
-
-          <div><label class="gc-v2-label">RATING</label>
-            <input id="gcF_rating" type="number" min="1" max="5" step="0.1" class="gc-v2-input" value="${esc(rating)}"></div>
-
-          <div><label class="gc-v2-label">REVIEW COUNT</label>
-            <input id="gcF_review_count" type="number" min="0" step="1" class="gc-v2-input" value="${esc(reviewCount)}"></div>
-
-          <div><label class="gc-v2-label">STUDENTS TAUGHT</label>
-            <input id="gcF_students_taught" class="gc-v2-input" value="${esc(t.students || t.studentsTaught || '')}"></div>
-
-          <div><label class="gc-v2-label">LOCATION</label>
-            <input id="gcF_location" class="gc-v2-input" value="${esc(t.location || t.address || '')}"></div>
-
-          <div><label class="gc-v2-label">ADDRESS</label>
-            <input id="gcF_address" class="gc-v2-input" value="${esc(t.address || t.location || '')}"></div>
-
-          <div><label class="gc-v2-label">TEACHING MODE</label>
-            <input id="gcF_mode" class="gc-v2-input" value="${esc(t.mode || t.teachingMode || '')}" placeholder="Online / Offline"></div>
-
-          <div><label class="gc-v2-label">LANGUAGES</label>
-            <input id="gcF_languages" class="gc-v2-input" value="${esc(t.languages || '')}" placeholder="Hindi, English"></div>
-
-          <div><label class="gc-v2-label">AVAILABILITY</label>
-            <input id="gcF_availability" class="gc-v2-input" value="${esc(t.availability || '')}" placeholder="Mon - Sun"></div>
-
-          <div><label class="gc-v2-label">TEACHING SINCE</label>
-            <input id="gcF_teaching_since" class="gc-v2-input" value="${esc(t.teachingSince || t.memberSince || '')}"></div>
-
-        </div>
-
-        <div>
-          <label class="gc-v2-label">ABOUT ME</label>
-          <textarea id="gcF_about" class="gc-v2-textarea" rows="5">${esc(t.aboutMe || '')}</textarea>
-        </div>
-
-        <div class="gc-v2-panel">
-          <label class="flex items-center gap-3 text-sm font-black cursor-pointer">
-            <input id="gcF_verified" type="checkbox" class="w-5 h-5" ${t.verified ? 'checked' : ''}>
-            VERIFIED TICK
-          </label>
-          <div class="text-xs text-slate-500 mt-2">
-            CURRENT PAID STATUS: <b>${esc(t.paidStatus || 'PENDING')}</b>
-          </div>
-        </div>
-
-        <div id="gcFinalTutorStatus" class="text-xs font-bold text-slate-500 text-center">Ready to save all tutor fields.</div>
-
-        <div class="flex gap-3">
-          <button type="button" id="gcFinalTutorCancel" class="flex-1 bg-slate-100 py-3 rounded-xl font-bold">CANCEL</button>
-          <button id="gcFinalTutorSave" type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-xl font-black shadow-lg">SAVE ALL CHANGES</button>
-        </div>
-      </form>
-    `;
-
-    modal.classList.remove('hidden');
-
-    const close = () => modal.classList.add('hidden');
-    document.getElementById('gcFinalTutorClose').onclick = close;
-    document.getElementById('gcFinalTutorCancel').onclick = close;
-
-    document.getElementById('gcFinalTutorForm').onsubmit = async function(e){
-      e.preventDefault();
-
-      const btn = document.getElementById('gcFinalTutorSave');
-      const state = document.getElementById('gcFinalTutorStatus');
-      const old = JSON.parse(JSON.stringify(t));
-
-      btn.disabled = true;
-      btn.textContent = 'SAVING TO CLOUD...';
-      state.textContent = 'Saving ALL tutor fields to Supabase...';
-      state.style.color = '#2563eb';
-
-      const v = id => document.getElementById(id)?.value ?? '';
-
-      try{
-        t.name = clean(v('gcF_name')) || t.name;
-        t.email = clean(v('gcF_email'));
-        t.phone = clean(v('gcF_phone'));
-
-        t.qualification = clean(v('gcF_qualification'));
-        t.experience = clean(v('gcF_experience'));
-        t.teachingCollege = clean(v('gcF_college'));
-        t.college = t.teachingCollege;
-
-        t.subject = clean(v('gcF_subject'));
-        t.stream = clean(v('gcF_stream'));
-        t.price = clean(v('gcF_price'));
-
-        const rv = Number(v('gcF_rating'));
-        t._manualRating = Number.isFinite(rv) ? Math.min(5, Math.max(1, rv)) : 5;
-        t.rating = String(t._manualRating);
-
-        const rc = Number(v('gcF_review_count'));
-        t.reviewCount = Number.isFinite(rc) ? Math.max(0, Math.floor(rc)) : 0;
-
-        t.students = clean(v('gcF_students_taught'));
-        t.studentsTaught = t.students;
-
-        t.location = clean(v('gcF_location'));
-        t.address = clean(v('gcF_address'));
-
-        t.mode = clean(v('gcF_mode'));
-        t.teachingMode = t.mode;
-        t.languages = clean(v('gcF_languages'));
-        t.availability = clean(v('gcF_availability'));
-        t.teachingSince = clean(v('gcF_teaching_since'));
-        t.memberSince = t.teachingSince;
-
-        t.aboutMe = clean(v('gcF_about'));
-
-        const verified = document.getElementById('gcF_verified');
-        t.verified = !!verified?.checked;
-        if(t.verified) t.paidStatus = 'PAID';
-
-        if(!t.isCloud){
-          throw new Error('This tutor is not a cloud record. Please refresh the Staff Dashboard and edit the cloud tutor again.');
-        }
-
-        /*
-         * ONE AND ONLY cloud save call.
-         * The existing final updater already writes:
-         * rating, review_count, students_taught, location, mode,
-         * languages, availability, teaching_since and all legacy fields.
-         */
-        if(typeof window.gcSupabaseAdminUpdateTutor !== 'function'){
-          throw new Error('Tutor cloud updater is missing.');
-        }
-
-        await window.gcSupabaseAdminUpdateTutor(t);
-        await refreshCloud();
-
-        close();
-        try{
-          window.showSuccessPopup?.('Tutor profile saved to Supabase. Rating, Students Taught, Phone and all profile fields are updated.');
-        }catch(_){
-          alert('Tutor profile saved to Supabase. All tutor fields were updated.');
-        }
-
-      }catch(err){
-        Object.assign(t, old);
-        try{ window.renderTutorDirectory?.(); }catch(_){}
-        console.error('GURU CONNECT FINAL TUTOR SAVE FAILED:', err);
-
-        state.textContent = 'SAVE FAILED: ' + (err?.message || String(err));
-        state.style.color = '#dc2626';
-
-        alert(
-          'TUTOR PROFILE WAS NOT SAVED.\\n\\n' +
-          (err?.message || String(err)) +
-          '\\n\\nNo success message was shown.'
-        );
-      }finally{
-        btn.disabled = false;
-        btn.textContent = 'SAVE ALL CHANGES';
-      }
-    };
-  };
-
-  window.GURU_CONNECT_FINAL_SINGLE_TUTOR_EDITOR = true;
 })();
 </script>
