@@ -10947,80 +10947,208 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
     catch(_){ alert(s); }
   }
 
-  function cloud(){
+  /*
+   * CLOUD STAFF AUTH FIX
+   * Keep the public/anonymous Supabase client separate from the Staff Auth
+   * client. Supabase auth sessions are persisted per storageKey; using the
+   * same client for anonymous visitors and Staff was causing the Staff login
+   * to collide with the anonymous session.
+   */
+  const STAFF_EMAIL='Swami@gmail.com';
+  const STAFF_PASSWORD='Roller@1329007/';
+  const STAFF_SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
+  const STAFF_SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+
+  function publicCloud(){
     return window.gcSupabase || null;
   }
 
+  function staffCloud(){
+    return window.gcStaffSupabase || null;
+  }
+
+  function cloud(){
+    /* Admin writes MUST use the authenticated Staff client. */
+    return staffCloud() || publicCloud();
+  }
+
+  function createStaffClient(){
+    if(window.gcStaffSupabase) return window.gcStaffSupabase;
+    if(!window.supabase || !STAFF_SUPABASE_URL || !STAFF_SUPABASE_KEY){
+      return null;
+    }
+    try{
+      window.gcStaffSupabase=window.supabase.createClient(
+        STAFF_SUPABASE_URL,
+        STAFF_SUPABASE_KEY,
+        {
+          auth:{
+            persistSession:true,
+            autoRefreshToken:true,
+            detectSessionInUrl:false,
+            storageKey:'guru-connect-staff-auth'
+          }
+        }
+      );
+      return window.gcStaffSupabase;
+    }catch(err){
+      console.error('GURU CONNECT Staff Auth client could not start:',err);
+      return null;
+    }
+  }
+
   async function ensureStaffSupabaseSession(){
-    const sb=cloud();
-    if(!sb) return {ok:false,reason:'Supabase client is not available.'};
+    const sb=createStaffClient();
+    if(!sb) return {
+      ok:false,
+      reason:'Supabase Staff Auth client could not be created.'
+    };
+
     try{
       const current=await sb.auth.getUser();
-      const u=current?.data?.user;
-      if(u && u.is_anonymous!==true){
-        return {ok:true,user:u};
+      const existing=current?.data?.user;
+      if(existing && existing.is_anonymous!==true){
+        return {ok:true,user:existing};
       }
-      // A public-directory anonymous session must NEVER be treated as Staff.
-      if(u && u.is_anonymous===true){ try{ await sb.auth.signOut(); }catch(_){} }
-    }catch(_){}
+    }catch(err){
+      console.warn('Existing Staff Auth session check failed:',err);
+    }
 
-    const email='Swami@gmail.com';
-    const password='Roller@1329007/';
-    const r=await sb.auth.signInWithPassword({email,password});
-    if(r.error) return {ok:false,error:r.error};
-    const u=r.data?.user;
-    if(!u || u.is_anonymous===true) return {ok:false,reason:'Supabase Staff account did not authenticate.'};
-    return {ok:true,user:u};
+    try{
+      const r=await sb.auth.signInWithPassword({
+        email:STAFF_EMAIL,
+        password:STAFF_PASSWORD
+      });
+
+      if(r.error){
+        return {ok:false,error:r.error};
+      }
+
+      const user=r.data?.user;
+      const session=r.data?.session;
+
+      if(!user || user.is_anonymous===true || !session){
+        return {
+          ok:false,
+          reason:'Supabase accepted the request but did not return a Staff Auth session.'
+        };
+      }
+
+      return {ok:true,user:user,session:session};
+    }catch(err){
+      return {ok:false,error:err};
+    }
   }
+
+  window.gcEnsureStaffSupabaseSession=ensureStaffSupabaseSession;
 
   /*
    * STAFF LOGIN:
-   * The old login only set localStorage, which left Supabase in an anonymous
-   * session. New cloud tutors therefore could be read but not updated.
-   * This version signs the same Staff credentials into Supabase as well.
+   * This authenticates Staff against Supabase without touching the public
+   * anonymous session used by students/tutors.
    */
   window.handleStaffLogin=async function(e){
     if(e) e.preventDefault();
 
-    const u=(document.getElementById('staffUserInput')?.value||'').trim();
-    const p=(document.getElementById('staffPassInput')?.value||'').trim();
+    const enteredEmail=(document.getElementById('staffUserInput')?.value||'').trim();
+    const enteredPassword=(document.getElementById('staffPassInput')?.value||'').trim();
 
-    if(u!=='Swami@gmail.com' || p!=='Roller@1329007/'){
+    if(enteredEmail!==STAFF_EMAIL || enteredPassword!==STAFF_PASSWORD){
       alert('Invalid Staff Credentials. Please check username and password.');
       return false;
     }
 
     const btn=document.querySelector('#staffLoginModal button[type="submit"]');
-    if(btn){btn.disabled=true;btn.textContent='SIGNING IN...';}
+    if(btn){
+      btn.disabled=true;
+      btn.textContent='CONNECTING TO CLOUD...';
+    }
 
     try{
       const session=await ensureStaffSupabaseSession();
 
-      // Keep the existing Staff UI session flag.
-      localStorage.setItem('is_staff_logged','true');
-
-      if(session.ok){
-        localStorage.setItem('gc_staff_supabase_auth','true');
-      }else{
-        // Legacy/local mode remains usable, but cloud actions will clearly
-        // report the database permission problem instead of silently failing.
+      if(!session.ok){
         localStorage.removeItem('gc_staff_supabase_auth');
-        console.warn('Staff Supabase authentication was not established:',session.error||session.reason);
+        console.error(
+          'Staff Supabase authentication failed:',
+          session.error||session.reason
+        );
+
+        const detail=session.error?.message || session.reason || 'Unknown Supabase Auth error.';
+        alert(
+          'STAFF LOGIN COULD NOT CONNECT TO CLOUD.\\n\\n'+detail+
+          '\\n\\nThe Staff Auth account must exist in Supabase Authentication with this same email/password and must be allowed to sign in.'
+        );
+        return false;
       }
 
-      try{ if(typeof window.closeStaffLoginModal==='function') window.closeStaffLoginModal(); }catch(_){}
-      try{ if(typeof window.checkStaffSessionState==='function') window.checkStaffSessionState(); }catch(_){}
-      try{ if(typeof window.renderAdminQueue==='function') window.renderAdminQueue(); }catch(_){}
+      localStorage.setItem('is_staff_logged','true');
+      localStorage.setItem('gc_staff_supabase_auth','true');
 
-      if(session.ok){
-        msg('Staff Login Successful — Cloud Staff Session Active.');
-      }else{
-        alert('Staff Login Successful, but the cloud Staff session could not be established. Local admin actions may work, but Supabase updates require a valid Staff Auth account and UPDATE policy.');
-      }
+      try{
+        if(typeof window.closeStaffLoginModal==='function'){
+          window.closeStaffLoginModal();
+        }
+      }catch(_){}
+
+      try{
+        if(typeof window.checkStaffSessionState==='function'){
+          window.checkStaffSessionState();
+        }
+      }catch(_){}
+
+      try{
+        if(typeof window.renderAdminQueue==='function'){
+          window.renderAdminQueue();
+        }
+      }catch(_){}
+
+      msg('Staff Login Successful — Cloud Staff Session Active.');
     }finally{
-      if(btn){btn.disabled=false;btn.textContent='LOGIN';}
+      if(btn){
+        btn.disabled=false;
+        btn.textContent='LOGIN';
+      }
     }
     return false;
+  };
+
+  /*
+   * Staff logout clears only the Staff Auth session. The public anonymous
+   * client is intentionally left untouched.
+   */
+  window.logoutStaff=async function(){
+    try{
+      const sb=staffCloud();
+      if(sb){
+        try{ await sb.auth.signOut(); }catch(err){
+          console.warn('Staff cloud sign-out failed:',err);
+        }
+      }
+    }finally{
+      localStorage.removeItem('is_staff_logged');
+      localStorage.removeItem('gc_staff_supabase_auth');
+
+      try{
+        if(typeof window.checkStaffSessionState==='function'){
+          window.checkStaffSessionState();
+        }
+      }catch(_){}
+
+      try{
+        if(typeof window.renderTutorDirectory==='function'){
+          window.renderTutorDirectory();
+        }
+      }catch(_){}
+
+      try{
+        if(typeof window.renderStudentDirectory==='function'){
+          window.renderStudentDirectory();
+        }
+      }catch(_){}
+
+      alert('Exited Staff Admin Mode.');
+    }
   };
 
   async function updateTutorCloud(t){
@@ -11028,13 +11156,18 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
     if(!t || !t.isCloud) return {ok:true,skipped:true};
     if(!sb) return {ok:false,error:new Error('Supabase client is not available.')};
 
-    // Do not create/restore an anonymous session here: Staff must remain
-    // authenticated for protected UPDATE policies.
+    // Never use the public anonymous session for Staff UPDATEs.
     try{
       const current=await sb.auth.getUser();
-      if(!current?.data?.user){
+      const user=current?.data?.user;
+      if(!user || user.is_anonymous===true){
         const auth=await ensureStaffSupabaseSession();
-        if(!auth.ok) return {ok:false,error:auth.error||new Error(auth.reason||'Staff Supabase session missing.')};
+        if(!auth.ok){
+          return {
+            ok:false,
+            error:auth.error||new Error(auth.reason||'Staff Supabase session missing.')
+          };
+        }
       }
     }catch(err){
       return {ok:false,error:err};
