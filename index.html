@@ -8940,6 +8940,14 @@ body {
       photo_url: gcCleanText(t.photoData || t.photo || ''),
       verified: false,
       paid_status: 'PENDING',
+      rating: t.rating != null ? Number(t.rating) : null,
+      review_count: Number(t.reviewCount || t.reviewsCount || 0) || 0,
+      students_taught: gcCleanText(t.students || t.studentsTaught || ''),
+      teaching_mode: gcCleanText(t.mode || t.teachingMode || ''),
+      location: gcCleanText(t.location || ''),
+      languages: gcCleanText(t.languages || ''),
+      availability: gcCleanText(t.availability || ''),
+      teaching_since: gcCleanText(t.teachingSince || t.memberSince || ''),
       is_illustrative: false,
       registration_status: 'registered'
     };
@@ -9019,6 +9027,17 @@ body {
       photoData: row.photo_url || '',
       verified: row.verified === true,
       paidStatus: row.paid_status || 'PENDING',
+      rating: row.rating != null ? String(row.rating) : '',
+      _manualRating: row.rating != null ? Number(row.rating) : null,
+      reviewCount: row.review_count != null ? Number(row.review_count) : 0,
+      students: row.students_taught != null ? String(row.students_taught) : '',
+      mode: row.teaching_mode || '',
+      teachingMode: row.teaching_mode || '',
+      location: row.location || '',
+      languages: row.languages || '',
+      availability: row.availability || '',
+      teachingSince: row.teaching_since || '',
+      memberSince: row.teaching_since || '',
       registrationDate: row.created_at || new Date().toISOString(),
       isDummy: false,
       isCloud: true,
@@ -9063,7 +9082,7 @@ body {
     if (cached) return cached;
 
     const fields = table === 'tutor_profiles'
-      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,created_at'
+      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at'
       : 'id,user_id,name,course,stream,learning_requirement,photo_url,created_at';
 
     const result = await gcSupabase.from(table)
@@ -9101,7 +9120,7 @@ body {
     if (!gcCloudEnabled) return { rows: [], total: 0 };
 
     const fields = table === 'tutor_profiles'
-      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,created_at'
+      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at'
       : 'id,user_id,name,course,stream,learning_requirement,photo_url,created_at';
 
     const cacheKey = 'ALL:' + table;
@@ -10580,6 +10599,14 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
       price:clean(t.price),
       about_me:clean(t.aboutMe),
       photo_url:clean(t.photoData||t.photo||''),
+      rating: t._manualRating != null ? Number(t._manualRating) : (t.rating != null ? Number(t.rating) : null),
+      review_count: Number(t.reviewCount || t.reviewsCount || 0) || 0,
+      students_taught: clean(t.students || t.studentsTaught || ''),
+      teaching_mode: clean(t.mode || t.teachingMode || ''),
+      location: clean(t.location || ''),
+      languages: clean(t.languages || ''),
+      availability: clean(t.availability || ''),
+      teaching_since: clean(t.teachingSince || t.memberSince || ''),
       verified:t.verified===true,
       paid_status:t.paidStatus==='PAID'?'PAID':'PENDING'
     };
@@ -10588,7 +10615,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
     const result=await window.gcSupabase.from('tutor_profiles')
       .update(patch)
       .eq('id',t.id)
-      .select('id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,created_at')
+      .select('id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at')
       .single();
     if(result.error) throw result.error;
 
@@ -10607,6 +10634,17 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
         price:result.data.price||'',
         aboutMe:result.data.about_me||'',
         photoData:result.data.photo_url||'',
+        _manualRating:result.data.rating != null ? Number(result.data.rating) : null,
+        rating:result.data.rating != null ? String(result.data.rating) : '',
+        reviewCount:result.data.review_count != null ? Number(result.data.review_count) : 0,
+        students:result.data.students_taught || '',
+        mode:result.data.teaching_mode || '',
+        teachingMode:result.data.teaching_mode || '',
+        location:result.data.location || '',
+        languages:result.data.languages || '',
+        availability:result.data.availability || '',
+        teachingSince:result.data.teaching_since || '',
+        memberSince:result.data.teaching_since || '',
         verified:result.data.verified===true,
         paidStatus:result.data.paid_status||'PENDING',
         isCloud:true
@@ -10689,10 +10727,17 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
           <div><label class="gc-v2-label">QUALIFICATION</label><input id="gc_a_t_qualification" class="gc-v2-input" value="${esc(t.qualification)}"></div>
           <div><label class="gc-v2-label">EXPERIENCE</label><input id="gc_a_t_experience" class="gc-v2-input" value="${esc(t.experience)}"></div>
           <div><label class="gc-v2-label">TEACHING COLLEGE / INSTITUTE</label><input id="gc_a_t_teaching" class="gc-v2-input" value="${esc(t.teachingCollege||t.college)}"></div>
+          <div><label class="gc-v2-label">STREAM</label><input id="gc_a_t_stream" class="gc-v2-input" value="${esc(t.stream)}"></div>
           <div><label class="gc-v2-label">SUBJECT</label><input id="gc_a_t_subject" class="gc-v2-input" value="${esc(t.subject)}"></div>
           <div><label class="gc-v2-label">RATE / HOUR</label><input id="gc_a_t_price" class="gc-v2-input" value="${esc(t.price)}"></div>
           <div><label class="gc-v2-label">RATING</label><input id="gc_a_t_rating" type="number" min="1" max="5" step="0.1" class="gc-v2-input" value="${esc(t._manualRating||tutorRating(t))}"></div>
-          <div><label class="gc-v2-label">STUDENTS</label><input id="gc_a_t_students" class="gc-v2-input" value="${esc(t.students||'')}"></div>
+          <div><label class="gc-v2-label">STUDENTS TAUGHT</label><input id="gc_a_t_students" class="gc-v2-input" value="${esc(t.students||t.studentsTaught||'')}"></div>
+          <div><label class="gc-v2-label">REVIEW COUNT</label><input id="gc_a_t_reviews" type="number" min="0" step="1" class="gc-v2-input" value="${esc(t.reviewCount||t.reviewsCount||0)}"></div>
+          <div><label class="gc-v2-label">LOCATION</label><input id="gc_a_t_location" class="gc-v2-input" value="${esc(t.location||'')}"></div>
+          <div><label class="gc-v2-label">TEACHING MODE</label><input id="gc_a_t_mode" class="gc-v2-input" value="${esc(t.mode||t.teachingMode||'')}"></div>
+          <div><label class="gc-v2-label">LANGUAGES</label><input id="gc_a_t_languages" class="gc-v2-input" value="${esc(t.languages||'')}"></div>
+          <div><label class="gc-v2-label">AVAILABILITY</label><input id="gc_a_t_availability" class="gc-v2-input" value="${esc(t.availability||'')}"></div>
+          <div><label class="gc-v2-label">TEACHING SINCE</label><input id="gc_a_t_since" class="gc-v2-input" value="${esc(t.teachingSince||t.memberSince||'')}"></div>
         </div>
         <div><label class="gc-v2-label">ABOUT ME</label><textarea id="gc_a_t_about" class="gc-v2-textarea" rows="5">${esc(t.aboutMe||'')}</textarea></div>
         <div class="gc-v2-panel">
@@ -11806,7 +11851,7 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
     };
     const row=await updateAndVerify(
       'tutor_profiles',t.id,patch,
-      'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,created_at'
+      'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at'
     );
 
     Object.assign(t,{
@@ -11908,12 +11953,25 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
         t.experience=get('gc_a_t_experience','gcRExp','u_t_experience');
         t.teachingCollege=get('gc_a_t_teaching','gcRCollege','u_t_teaching');
         t.college=t.teachingCollege;
+        t.stream=get('gc_a_t_stream','gcRStream','u_t_stream') || t.stream;
         t.subject=get('gc_a_t_subject','gcRSubject','u_t_subject');
         t.price=get('gc_a_t_price','gcRPrice','u_t_price');
         const r=document.getElementById('gc_a_t_rating')||document.getElementById('gcRRating')||document.getElementById('u_t_rating');
         if(r)t._manualRating=Math.min(5,Math.max(1,Number(r.value)||5));
         const students=document.getElementById('gc_a_t_students')||document.getElementById('gcRStudents')||document.getElementById('u_t_students');
         if(students)t.students=clean(students.value);
+        const reviews=document.getElementById('gc_a_t_reviews')||document.getElementById('gcRReviews')||document.getElementById('u_t_reviews');
+        if(reviews)t.reviewCount=Math.max(0,Number(reviews.value)||0);
+        const locationEl=document.getElementById('gc_a_t_location')||document.getElementById('gcRLocation')||document.getElementById('u_t_location');
+        if(locationEl)t.location=clean(locationEl.value);
+        const modeEl=document.getElementById('gc_a_t_mode')||document.getElementById('gcRMode')||document.getElementById('u_t_mode');
+        if(modeEl)t.mode=t.teachingMode=clean(modeEl.value);
+        const langsEl=document.getElementById('gc_a_t_languages')||document.getElementById('gcRLanguages')||document.getElementById('u_t_languages');
+        if(langsEl)t.languages=clean(langsEl.value);
+        const availEl=document.getElementById('gc_a_t_availability')||document.getElementById('gcRAvailability')||document.getElementById('u_t_availability');
+        if(availEl)t.availability=clean(availEl.value);
+        const sinceEl=document.getElementById('gc_a_t_since')||document.getElementById('gcRSince')||document.getElementById('u_t_since');
+        if(sinceEl)t.teachingSince=t.memberSince=clean(sinceEl.value);
         t.aboutMe=get('gc_a_t_about','gcRAbout','u_t_about');
         const v=document.getElementById('gc_a_t_verified')||document.getElementById('gcRVerified')||document.getElementById('u_t_verified');
         if(v)t.verified=!!v.checked;
