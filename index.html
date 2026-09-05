@@ -11527,7 +11527,7 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
     items.forEach(function(t){
       var id=val(t.id,'');var name=val(t.name,'Tutor');var verified=t.verified===true;var subject=val(t.subject,'Not specified');var exp=val(t.experience,'—');var rate=val(t.price||t.rate,'—');var rating=val(t.rating,'4.5');var reviews=Number(t.reviewCount||t.reviewsCount||0);var students=val(t.students,'—');var mode=val(t.mode||t.teachingMode,'Online / Offline');var loc=val(t.location,'—');var langs=val(t.languages,'Hindi, English');var availability=val(t.availability,'Mon - Sun');var since=val(t.teachingSince||t.memberSince,'—');
       var card=document.createElement('article');card.className='gc-target-card gc-target-tutor';
-      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✔ VERIFIED TUTOR':'👤 TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
+      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✔ VERIFIED TUTOR':'👤 TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi">⌁</span></div></div>'+
       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photoMarkup(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified?(tick()?'<img class="gc-target-verified" src="'+esc(tick())+'" alt="Verified">':'<span class="gc-target-verified">✓</span>'):'')+'</h3><div class="gc-target-subtitle">'+esc(val(t.qualification||t.title||t.subject,'Tutor'))+'</div></div></div>'+ 
       '<div class="gc-target-info">'+info('📚','Subjects',subject)+info('💼','Experience',exp)+info('₹','Rate / Hour',rate)+info('⭐','Rating',rating+(reviews?' ('+reviews+')':''))+info('👥','Students Taught',students)+info('💻','Mode',mode)+info('📍','Location',loc)+info('💬','Languages',langs)+info('◷','Availability',availability)+info('🗓','Teaching Since',since)+'</div>'+ 
       '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-gc-more-tutor="'+esc(id)+'">MORE ✚ 👤</button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
@@ -11543,7 +11543,7 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
     items.forEach(function(s){
       var id=val(s.id,'GC-STU');var name=val(s.name,'Student');var edu=val(s.course||s.education,'Junior College');var year=val(s.year||s.semester||s.std,'—');var college=val(s.college,'—');var cgpa=val(s.cgpa,'—');var req=val(s.learningRequirement||s.subject,'Not specified');var mode=val(s.mode||s.teachingMode,'Online');var loc=val(s.location,'—');var langs=val(s.languages,'Hindi, English');var availability=val(s.availability,'Mon - Sat');var help=val(s.helplinePlan||s.helplineStatus,'Active');
       var card=document.createElement('article');card.className='gc-target-card gc-target-student';
-      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">🎓 STUDENT</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
+      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">🎓 STUDENT</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi">⌁</span></div></div>'+
       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photoMarkup(s,name,true)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span></h3><div class="gc-target-subtitle">'+esc(edu)+'</div></div></div>'+ 
       '<div class="gc-target-info">'+info('🎓','Education',edu)+info('🗓','Year / Sem',year)+info('🏫','College',college)+info('📊','CGPA',cgpa)+info('🎯','Looking For',req)+info('💻','Mode',mode)+info('📍','Location',loc)+info('💬','Languages',langs)+info('◷','Availability',availability)+info('🛡','Helpline Plan',help)+'</div>'+ 
       '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-gc-more-student="'+esc(id)+'">MORE ✚ 👤</button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-student="'+esc(id)+'">CONNECT ➤</button></div>';
@@ -11636,30 +11636,6 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
   .gc-new-view-btn,.gc-new-connect-btn{min-height:31px!important;padding:5px 4px!important;font-size:8px!important;border-radius:6px!important;}
 }
 </style>
-
-<style id="gc-user-final-sim-wifi-correct-2026">
-/* FINAL SIM + WIFI: no black X, golden SIM, real 5-beam Wi-Fi on far right */
-.gc-profile-card .gc-chip-row{position:absolute!important;top:7px!important;right:10px!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:8px!important;width:auto!important;height:24px!important;margin:0!important;z-index:999!important;}
-.gc-profile-card .gc-chip{display:grid!important;visibility:visible!important;opacity:1!important;width:30px!important;height:19px!important;min-width:30px!important;flex:0 0 30px!important;border-radius:5px!important;background:linear-gradient(135deg,#fff0a0 0%,#e4b12e 38%,#ffd95a 65%,#c68b17 100%)!important;border:1px solid #b87c08!important;box-shadow:0 2px 6px rgba(0,0,0,.22)!important;overflow:hidden!important;}
-.gc-profile-card .gc-chip span{display:block!important;border:1px solid rgba(100,65,0,.45)!important;}
-.gc-profile-card .gc-contactless{position:relative!important;display:block!important;width:24px!important;height:20px!important;min-width:24px!important;margin:0!important;font-size:0!important;line-height:0!important;transform:none!important;color:transparent!important;}
-.gc-profile-card .gc-contactless:before,.gc-profile-card .gc-contactless:after{content:""!important;position:absolute!important;left:50%!important;bottom:2px!important;transform:translateX(-50%)!important;border:2px solid currentColor!important;border-bottom:0!important;border-left-color:transparent!important;border-right-color:transparent!important;border-radius:20px 20px 0 0!important;}
-.gc-profile-card .gc-contactless:before{width:22px!important;height:16px!important;color:#fff!important;}
-.gc-profile-card .gc-contactless:after{width:14px!important;height:10px!important;color:#fff!important;}
-.gc-profile-card .gc-contactless{color:#fff!important;}
-/* Hide legacy close/X glyphs that can appear inside the chip row. */
-.gc-profile-card .gc-chip-row .fa-xmark,.gc-profile-card .gc-chip-row .fa-times,.gc-profile-card .gc-chip-row .fa-close,.gc-profile-card .gc-chip-row button[aria-label*="lose" i]{display:none!important;}
-</style>
-<script id="gc-user-final-sim-wifi-script-2026">
-(function(){
-  function clean(){document.querySelectorAll('.gc-profile-card .gc-chip-row').forEach(function(r){
-    r.querySelectorAll('.fa-xmark,.fa-times,.fa-close').forEach(function(x){x.style.display='none';});
-  });}
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',clean); else clean();
-  new MutationObserver(clean).observe(document.documentElement,{subtree:true,childList:true});
-})();
-</script>
-
 </body>
 </html>
 <!-- =========================================================
@@ -11747,7 +11723,7 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
      const subject=val(t.subject,t.subjects,'Not specified'),rate=val(t.price,t.rate,t.hourlyRate,'—'),exp=val(t.experience,t.experienceYears,'—');
      const rating=val(t.rating,'4.5'),reviews=val(t.reviewCount,t.reviewsCount,'0'),students=val(t.students,t.studentsTaught,'—'),mode=val(t.mode,t.teachingMode,'Online / Offline'),loc=val(t.location,'—'),langs=val(t.languages,'Hindi, English'),avail=val(t.availability,'Mon - Sun');
      const card=document.createElement('article');card.className='gc-target-card gc-target-tutor';card.dataset.tutorId=id;
-     card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✓ VERIFIED TUTOR':'TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
+     card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✓ VERIFIED TUTOR':'TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi">⌁</span></div></div>'+
        '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified&&tick()?'<span class="gc-target-verified"><img src="'+esc(tick())+'" alt="Verified"></span>':'')+'</h3><div class="gc-target-subtitle">'+esc(q)+' · '+esc(subject)+'</div></div></div>'+
        '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('💬','Languages',langs)+box('◷','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
        '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-tutor-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
@@ -11764,7 +11740,7 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
      let req=val(s.learningRequirement,s.subject,s.requirement,'Not specified');try{if(typeof window.gcGetStudentRequirementV2==='function')req=val(window.gcGetStudentRequirementV2(s),req)}catch(e){}
      const mode=val(s.mode,s.teachingMode,'Online'),loc=val(s.location,'—'),langs=val(s.languages,'Hindi, English'),avail=val(s.availability,'Mon - Sat'),help=val(s.helplinePlan,s.helplineStatus,'Not subscribed');
      const card=document.createElement('article');card.className='gc-target-card gc-target-student';card.dataset.studentId=id;
-     card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">🎓 STUDENT</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
+     card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">🎓 STUDENT</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi">⌁</span></div></div>'+
        '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(s,name,true)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span></h3><div class="gc-target-subtitle">'+esc(edu)+' · '+esc(stream)+'</div></div></div>'+
        '<div class="gc-target-info">'+box('🎓','Education',edu)+box('🗓','Year / Sem',year)+box('🏫','College',college)+box('📊','CGPA',cgpa)+box('🎯','Looking For',req)+box('💻','Mode',mode)+box('📍','Location',loc)+box('💬','Languages',langs)+box('◷','Availability',avail)+box('🛡','Helpline Plan',help)+'</div>'+ 
        '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more gc-target-student-more" data-student-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-student="'+esc(id)+'">CONNECT ➤</button></div>';
@@ -11788,67 +11764,5 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{renderTutor();renderStudent();bind()},{once:true});else{renderTutor();renderStudent();bind()}
  window.addEventListener('load',()=>{setTimeout(()=>{renderTutor();renderStudent()},50)},{once:true});
-})();
-</script>
-
-<style id="gc-actual-target-sim-wifi-final-2026">
-/* ACTUAL FINAL DIRECTORY CARDS: these are gc-target-card, not legacy gc-profile-card. */
-.gc-target-card .gc-target-chip-wifi{position:absolute!important;top:7px!important;right:8px!important;display:flex!important;align-items:center!important;justify-content:flex-end!important;gap:9px!important;z-index:20!important;}
-.gc-target-card .gc-target-chip{width:32px!important;height:21px!important;min-width:32px!important;border-radius:5px!important;border:1px solid #b77a08!important;background:linear-gradient(135deg,#fff4a8 0%,#e4b12e 35%,#ffd95a 62%,#c88e18 100%)!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.42),0 2px 5px rgba(0,0,0,.22)!important;position:relative!important;overflow:hidden!important;}
-.gc-target-card .gc-target-chip:before{content:""!important;position:absolute!important;left:7px!important;right:7px!important;top:4px!important;bottom:4px!important;border:1px solid rgba(104,67,0,.55)!important;border-radius:2px!important;box-shadow:inset 0 0 0 2px rgba(255,231,130,.35)!important;}
-.gc-target-card .gc-target-chip:after{content:""!important;position:absolute!important;left:15px!important;top:0!important;bottom:0!important;width:1px!important;background:rgba(104,67,0,.5)!important;box-shadow:-8px 7px 0 rgba(104,67,0,.45),8px 7px 0 rgba(104,67,0,.45)!important;}
-.gc-target-card .gc-target-wifi{width:31px!important;height:28px!important;display:flex!important;align-items:center!important;justify-content:center!important;font-size:0!important;line-height:0!important;color:#fff!important;transform:none!important;}
-.gc-target-card .gc-target-wifi svg{display:block!important;width:31px!important;height:27px!important;overflow:visible!important;}
-.gc-target-card .gc-target-wifi svg path{fill:none!important;stroke:#fff!important;stroke-width:2.5!important;stroke-linecap:round!important;}
-.gc-target-card .gc-target-wifi svg circle{fill:#fff!important;}
-/* Keep role text clear of the top-right icon cluster. */
-.gc-target-card .gc-target-role{max-width:62%!important;overflow:hidden!important;text-overflow:ellipsis!important;}
-</style>
-
-<style id="gc-final-wifi-blue-menu-update-2026">
-/* Final requested Wi-Fi: blue, 5-beam, right aligned */
-.gc-target-card .gc-target-chip-wifi{right:8px!important;top:7px!important;gap:8px!important;}
-.gc-target-card .gc-target-wifi{width:31px!important;height:28px!important;color:#1677ff!important;}
-.gc-target-card .gc-target-wifi svg{width:31px!important;height:27px!important;}
-.gc-target-card .gc-target-wifi svg path{stroke:#1677ff!important;stroke-width:2.7!important;}
-.gc-target-card .gc-target-wifi svg circle{fill:#1677ff!important;}
-
-/* Updated clean website menu */
-#publicMenuWrapper{position:relative!important;z-index:10000!important;}
-#publicNavbarLinks{width:270px!important;max-height:calc(100vh - 95px)!important;overflow-y:auto!important;overflow-x:hidden!important;padding:8px!important;border-radius:18px!important;background:#fff!important;box-shadow:0 18px 45px rgba(15,23,42,.22)!important;}
-#publicNavbarLinks a{display:flex!important;align-items:center!important;min-height:42px!important;margin:2px 0!important;padding:10px 13px!important;border-radius:11px!important;font-size:12px!important;font-weight:800!important;letter-spacing:.15px!important;text-decoration:none!important;transition:.18s ease!important;}
-#publicNavbarLinks a:not(.gc-menu-yellow-item){color:#334155!important;background:#f8fafc!important;}
-#publicNavbarLinks a:not(.gc-menu-yellow-item):hover{color:#fff!important;background:#2563eb!important;transform:translateX(2px)!important;}
-#publicNavbarLinks .gc-menu-yellow-item{color:#172554!important;background:linear-gradient(135deg,#fff4a3,#ffd43b)!important;}
-#publicNavbarLinks .gc-menu-yellow-item:hover{background:linear-gradient(135deg,#ffd43b,#f59e0b)!important;transform:translateX(2px)!important;}
-#publicNavbarLinks .gc-menu-login{color:#fff!important;font-weight:900!important;}
-#publicNavbarLinks .gc-menu-student{background:linear-gradient(135deg,#f97316,#ea580c)!important;}
-#publicNavbarLinks .gc-menu-tutor{background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;}
-#publicNavbarLinks .gc-menu-staff{background:linear-gradient(135deg,#7c3aed,#5b21b6)!important;}
-#publicNavbarLinks .gc-menu-login:hover{filter:brightness(1.08)!important;transform:translateX(2px)!important;}
-#publicNavbarLinks .gc-menu-divider{height:1px!important;background:#e2e8f0!important;margin:7px 4px!important;padding:0!important;min-height:1px!important;}
-@media(max-width:768px){
- #publicNavbarLinks{position:fixed!important;top:62px!important;right:8px!important;width:min(285px,calc(100vw - 16px))!important;max-height:calc(100vh - 78px)!important;}
- #publicNavbarLinks a{min-height:44px!important;font-size:12px!important;}
-}
-</style>
-<script id="gc-final-menu-content-update-2026">
-(function(){
- function updateMenu(){
-   var m=document.getElementById('publicNavbarLinks'); if(!m)return;
-   m.innerHTML=''+
-   '<a href="#home" onclick="closeNavMenu()">⌂&nbsp; HOME</a>'+
-   '<a href="#tutors" onclick="closeNavMenu()">👨‍🏫&nbsp; EXPLORE TUTORS</a>'+
-   '<a href="#studentsDirectory" onclick="closeNavMenu()">🎓&nbsp; STUDENTS DIRECTORY</a>'+
-   '<a href="#registrationSection" onclick="closeNavMenu()">📋&nbsp; PORTAL &amp; REQUESTS</a>'+
-   '<a href="javascript:void(0)" onclick="openHelplineModal();closeNavMenu();">🛟&nbsp; HELPLINE PLANS</a>'+
-   '<a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openAboutModal();closeNavMenu();">ℹ️&nbsp; ABOUT US</a>'+
-   '<a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openContactModal();closeNavMenu();">📞&nbsp; CONTACT US</a>'+
-   '<div class="gc-menu-divider"></div>'+
-   '<a class="gc-menu-login gc-menu-student" href="javascript:void(0)" onclick="openStudentLoginModal();closeNavMenu();">👨‍🎓&nbsp; STUDENT LOGIN</a>'+
-   '<a class="gc-menu-login gc-menu-tutor" href="javascript:void(0)" onclick="openTutorLoginModal();closeNavMenu();">👨‍🏫&nbsp; TUTOR LOGIN</a>'+
-   '<a class="gc-menu-login gc-menu-staff" href="javascript:void(0)" onclick="openStaffLoginModal();closeNavMenu();">🔐&nbsp; STAFF LOGIN</a>';
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',updateMenu,{once:true});else updateMenu();
 })();
 </script>
