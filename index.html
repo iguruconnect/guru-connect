@@ -11256,22 +11256,52 @@ function notify(m){try{if(typeof showSuccessPopup==='function')showSuccessPopup(
 async function cloudUpdate(t){
   if(!t || !t.isCloud) return {ok:true};
   if(!window.gcSupabase) return {ok:false,error:new Error('Supabase client is not loaded.')};
+
+  // IMPORTANT: this is the SAVE function used by the active Tutor editor.
+  // It must write every field shown in that editor, not only the old basic fields.
   const patch={
     name:String(t.name||'').trim(),
     subject:String(t.subject||'').trim(),
     stream:String(t.stream||'').trim(),
     experience:String(t.experience||'').trim(),
     qualification:String(t.qualification||'').trim(),
-    college:String(t.college||'').trim(),
+    college:String(t.college||t.teachingCollege||'').trim(),
     teaching_college:String(t.teachingCollege||t.college||'').trim(),
     address:String(t.address||'').trim(),
     price:String(t.price||'').trim(),
     about_me:String(t.aboutMe||'').trim(),
+    rating:t._manualRating!=null ? Number(t._manualRating) : (t.rating!=null ? Number(t.rating) : null),
+    review_count:Number(t.reviewCount||t.reviewsCount||0)||0,
+    students_taught:String(t.students||t.studentsTaught||'').trim(),
+    teaching_mode:String(t.mode||t.teachingMode||'').trim(),
+    location:String(t.location||'').trim(),
+    languages:String(t.languages||'').trim(),
+    availability:String(t.availability||'').trim(),
+    teaching_since:String(t.teachingSince||t.memberSince||'').trim(),
     verified:t.verified===true,
     paid_status:t.paidStatus==='PAID'?'PAID':'PENDING'
   };
+
   const r=await window.gcSupabase.from('tutor_profiles').update(patch).eq('id',t.id);
   if(r.error)return {ok:false,error:r.error};
+
+  // Phone/email live in profiles in this build. Keep Tutor phone editable
+  // without making contact-sync failure block the main tutor profile save.
+  if(t.user_id){
+    try{
+      const pr=await window.gcSupabase.from('profiles').update({
+        full_name:String(t.name||'').trim(),
+        email:String(t.email||'').trim()||null,
+        phone:String(t.phone||'').trim()||null,
+        photo_url:String(t.photoData||t.photo||'').trim()||null
+      }).eq('id',t.user_id);
+      if(pr.error) console.warn('Tutor contact sync skipped:',pr.error);
+    }catch(e){console.warn('Tutor contact sync skipped:',e);}
+  }
+
+  // Clear the directory cache so the freshly saved rating/students count is
+  // fetched from Supabase instead of an older cached row.
+  try{ if(window.gcPageCache && typeof window.gcPageCache.clear==='function') window.gcPageCache.clear(); }catch(_){}
   return {ok:true};
 }
 
@@ -11322,6 +11352,7 @@ window.adminEditTutor=function(id){
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div><label class="gc-v2-label">NAME</label><input id="gcRName" class="gc-v2-input" required value="${esc(t.name)}"></div>
       <div><label class="gc-v2-label">EMAIL</label><input id="gcREmail" type="email" class="gc-v2-input" value="${esc(t.email)}"></div>
+      <div><label class="gc-v2-label">PHONE NUMBER</label><input id="gcRPhone" class="gc-v2-input" type="tel" inputmode="numeric" placeholder="9876543210" value="${esc(t.phone||'')}"></div>
       
       <div><label class="gc-v2-label">QUALIFICATION</label><input id="gcRQual" class="gc-v2-input" value="${esc(t.qualification)}"></div>
       <div><label class="gc-v2-label">EXPERIENCE</label><input id="gcRExp" class="gc-v2-input" value="${esc(t.experience)}"></div>
@@ -11354,6 +11385,7 @@ window.adminEditTutor=function(id){
     try{
       t.name=document.getElementById('gcRName').value.trim()||t.name;
       t.email=document.getElementById('gcREmail').value.trim();
+      t.phone=document.getElementById('gcRPhone').value.trim();
       
       t.qualification=document.getElementById('gcRQual').value.trim();
       t.experience=document.getElementById('gcRExp').value.trim();
