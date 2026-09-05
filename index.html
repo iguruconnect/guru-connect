@@ -11852,38 +11852,3 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',updateMenu,{once:true});else updateMenu();
 })();
 </script>
-
-<style id="gc-page-navigation-final-2026">
-#tutorGrid,#studentGridContainer{scroll-margin-top:100px!important;}
-</style>
-<script id="gc-page-navigation-final-2026-script">
-(function(){
-  let pending=null;
-  function go(id){
-    setTimeout(function(){
-      const box=document.getElementById(id); if(!box)return;
-      const card=box.querySelector('.gc-target-card,.gc-profile-card');
-      const el=card||box; const y=el.getBoundingClientRect().top+window.pageYOffset-100;
-      window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
-    },180);
-  }
-  function wrap(name,id){
-    const old=window[name]; if(typeof old!=='function'||old.__gcNav)return;
-    function f(){pending=id; const r=old.apply(this,arguments); go(id); return r;}
-    f.__gcNav=true; window[name]=f;
-  }
-  function init(){
-    wrap('changePage','studentGridContainer'); wrap('jumpToPageInput','studentGridContainer');
-    wrap('changeTutorPage','tutorGrid'); wrap('jumpToTutorPageInput','tutorGrid');
-    document.addEventListener('click',function(e){
-      const b=e.target.closest('#paginationNumbers button,#studentGridContainer button,#tutorPaginationNumbers button,#tutorGrid button');
-      if(!b)return;
-      const student=!!b.closest('#studentGridContainer,#paginationNumbers');
-      const tutor=!!b.closest('#tutorGrid,#tutorPaginationNumbers');
-      if(student)go('studentGridContainer'); else if(tutor)go('tutorGrid');
-    },true);
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
-  setTimeout(init,500);
-})();
-</script>
