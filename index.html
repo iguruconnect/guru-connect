@@ -11878,25 +11878,38 @@ header a[href="#home"] img[alt="Guru Connect Logo"]{
  #publicNavbarLinks a{min-height:44px!important;font-size:12px!important;}
 }
 </style>
+<style id="gc-login-menu-button-authority">
+#publicNavbarLinks .gc-menu-login-item{
+ display:flex!important;align-items:center!important;width:100%!important;box-sizing:border-box!important;
+ min-height:44px!important;margin:4px 0!important;padding:11px 13px!important;border:0!important;border-radius:11px!important;
+ font-size:12px!important;font-weight:900!important;letter-spacing:.15px!important;cursor:pointer!important;
+ text-align:left!important;white-space:normal!important;opacity:1!important;visibility:visible!important;
+}
+#publicNavbarLinks .gc-menu-login-student{background:linear-gradient(135deg,#2563eb,#06b6d4)!important;color:#fff!important;}
+#publicNavbarLinks .gc-menu-login-tutor{background:linear-gradient(135deg,#7c3aed,#ec4899)!important;color:#fff!important;}
+#publicNavbarLinks .gc-menu-login-staff{background:linear-gradient(135deg,#059669,#10b981)!important;color:#fff!important;}
+#publicNavbarLinks .gc-menu-login-item:hover{filter:brightness(1.08)!important;transform:translateX(2px)!important;}
+</style>
 <script id="gc-final-menu-content-update-2026">
 (function(){
- function updateMenu(){
-   var m=document.getElementById('publicNavbarLinks'); if(!m)return;
-   m.innerHTML=''+
-   '<a href="#home" onclick="closeNavMenu()">⌂&nbsp; HOME</a>'+
-   '<a href="#tutors" onclick="closeNavMenu()">👨‍🏫&nbsp; EXPLORE TUTORS</a>'+
-   '<a href="#studentsDirectory" onclick="closeNavMenu()">🎓&nbsp; STUDENTS DIRECTORY</a>'+
-   '<a href="#registrationSection" onclick="closeNavMenu()">📋&nbsp; PORTAL &amp; REQUESTS</a>'+
-   '<a href="javascript:void(0)" onclick="openHelplineModal();closeNavMenu();">🛟&nbsp; HELPLINE PLANS</a>'+
-   '<a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openAboutModal();closeNavMenu();">ℹ️&nbsp; ABOUT US</a>'+
-   '<a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openContactModal();closeNavMenu();">📞&nbsp; CONTACT US</a>'+
-   '<div class="gc-menu-login-divider" aria-hidden="true"></div>'+
-   '<div class="gc-menu-login-title">ACCOUNT LOGIN</div>'+
-   '<button type="button" class="gc-menu-login-item gc-menu-login-student" onclick="gcMenuOpenRoleLogin('student')">🎓&nbsp; STUDENT LOGIN</button>'+
-   '<button type="button" class="gc-menu-login-item gc-menu-login-tutor" onclick="gcMenuOpenRoleLogin('tutor')">👨‍🏫&nbsp; TUTOR LOGIN</button>'+
-   '<button type="button" class="gc-menu-login-item gc-menu-login-staff" onclick="gcMenuOpenStaffLogin()">🔐&nbsp; STAFF LOGIN</button>';
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',updateMenu,{once:true});else updateMenu();
+  function updateMenu(){
+    var m=document.getElementById('publicNavbarLinks'); if(!m)return;
+    m.innerHTML =
+      '<a href="#home" onclick="closeNavMenu()">⌂&nbsp; HOME</a>' +
+      '<a href="#tutors" onclick="closeNavMenu()">👨‍🏫&nbsp; EXPLORE TUTORS</a>' +
+      '<a href="#studentsDirectory" onclick="closeNavMenu()">🎓&nbsp; STUDENTS DIRECTORY</a>' +
+      '<a href="#registrationSection" onclick="closeNavMenu()">📋&nbsp; PORTAL &amp; REQUESTS</a>' +
+      '<a href="javascript:void(0)" onclick="openHelplineModal();closeNavMenu();">🛟&nbsp; HELPLINE PLANS</a>' +
+      '<a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openAboutModal();closeNavMenu();">ℹ️&nbsp; ABOUT US</a>' +
+      '<a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openContactModal();closeNavMenu();">📞&nbsp; CONTACT US</a>' +
+      '<div class="gc-menu-login-divider" aria-hidden="true"></div>' +
+      '<div class="gc-menu-login-title">ACCOUNT LOGIN</div>' +
+      '<button type="button" class="gc-menu-login-item gc-menu-login-student" onclick="gcMenuOpenRoleLogin(\"student\")">🎓&nbsp; STUDENT LOGIN</button>' +
+      '<button type="button" class="gc-menu-login-item gc-menu-login-tutor" onclick="gcMenuOpenRoleLogin(\"tutor\")">👨‍🏫&nbsp; TUTOR LOGIN</button>' +
+      '<button type="button" class="gc-menu-login-item gc-menu-login-staff" onclick="gcMenuOpenStaffLogin()">🔐&nbsp; STAFF LOGIN</button>';
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',updateMenu,{once:true});
+  else updateMenu();
 })();
 </script>
 
