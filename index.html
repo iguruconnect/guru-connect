@@ -3432,6 +3432,76 @@ body.gc-registration-lock{overflow:hidden !important;}
   }
 </style>
 
+
+<style id="gc-login-menu-visible-final">
+#publicNavbarLinks{
+  display:none !important;
+  position:absolute !important;
+  z-index:2147483647 !important;
+  width:310px !important;
+  max-width:calc(100vw - 16px) !important;
+  max-height:calc(100vh - 80px) !important;
+  overflow-y:auto !important;
+  overflow-x:hidden !important;
+  box-sizing:border-box !important;
+}
+#publicNavbarLinks:not(.hidden){
+  display:flex !important;
+}
+#publicNavbarLinks .gc-menu-login-divider{
+  display:block !important;
+  height:1px !important;
+  background:#dbe3ef !important;
+  margin:8px 4px !important;
+}
+#publicNavbarLinks .gc-menu-login-title{
+  display:block !important;
+  padding:6px 12px !important;
+  color:#64748b !important;
+  font:900 10px/1.2 Roboto,Arial,sans-serif !important;
+  letter-spacing:.12em !important;
+}
+#publicNavbarLinks .gc-menu-login-item{
+  display:flex !important;
+  visibility:visible !important;
+  opacity:1 !important;
+  width:100% !important;
+  min-height:48px !important;
+  align-items:center !important;
+  gap:12px !important;
+  margin:3px 0 !important;
+  padding:11px 13px !important;
+  border:0 !important;
+  border-radius:12px !important;
+  background:#fff !important;
+  color:#172554 !important;
+  font:900 13px/1.1 Roboto,Arial,sans-serif !important;
+  text-align:left !important;
+  cursor:pointer !important;
+  box-sizing:border-box !important;
+}
+#publicNavbarLinks .gc-menu-login-item i{
+  display:inline-block !important;
+  visibility:visible !important;
+  width:25px !important;
+  flex:0 0 25px !important;
+  text-align:center !important;
+}
+#publicNavbarLinks .gc-student-login-item i{color:#16a34a !important}
+#publicNavbarLinks .gc-tutor-login-item i{color:#2563eb !important}
+#publicNavbarLinks .gc-staff-login-item i{color:#dc2626 !important}
+#publicNavbarLinks .gc-menu-login-item:hover{background:#eef4ff !important}
+
+@media(max-width:768px){
+  #publicNavbarLinks{
+    width:min(310px,calc(100vw - 12px)) !important;
+    max-width:calc(100vw - 12px) !important;
+    right:0 !important;
+    left:auto !important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 <!-- Header / Navbar -->
@@ -3482,24 +3552,20 @@ body.gc-registration-lock{overflow:hidden !important;}
   <a class="gc-public-menu-item" href="javascript:void(0)" onclick="openHelplineModal(); closeNavMenu();">HELPLINE PLANS</a>
   <a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openAboutModal(); closeNavMenu();">ABOUT US</a>
   <a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openContactModal(); closeNavMenu();">CONTACT US</a>
-
-  <div class="gc-menu-login-divider" aria-hidden="true"></div>
-  <div class="gc-menu-login-title">ACCOUNT LOGIN</div>
-
-  <button type="button" class="gc-menu-login-item gc-student-login-item"
-          onclick="gcMenuOpenRoleLogin('student')">
-    <i class="fa-solid fa-user-graduate"></i><span>STUDENT LOGIN</span>
-  </button>
-
-  <button type="button" class="gc-menu-login-item gc-tutor-login-item"
-          onclick="gcMenuOpenRoleLogin('tutor')">
-    <i class="fa-solid fa-chalkboard-user"></i><span>TUTOR LOGIN</span>
-  </button>
-
-  <button type="button" class="gc-menu-login-item gc-staff-login-item"
-          onclick="gcMenuOpenStaffLogin()">
-    <i class="fa-solid fa-lock"></i><span>STAFF LOGIN</span>
-  </button>
+<div class="gc-menu-login-divider" aria-hidden="true"></div>
+<div class="gc-menu-login-title">ACCOUNT LOGIN</div>
+<button type="button" class="gc-menu-login-item gc-student-login-item"
+        onclick="gcMenuOpenRoleLogin('student'); closeNavMenu();">
+  <i class="fa-solid fa-user-graduate"></i><span>STUDENT LOGIN</span>
+</button>
+<button type="button" class="gc-menu-login-item gc-tutor-login-item"
+        onclick="gcMenuOpenRoleLogin('tutor'); closeNavMenu();">
+  <i class="fa-solid fa-chalkboard-user"></i><span>TUTOR LOGIN</span>
+</button>
+<button type="button" class="gc-menu-login-item gc-staff-login-item"
+        onclick="gcMenuOpenStaffLogin(); closeNavMenu();">
+  <i class="fa-solid fa-lock"></i><span>STAFF LOGIN</span>
+</button>
 </nav>
 </div>
 </div>
@@ -10348,64 +10414,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
   window.addEventListener('popstate',bootPublic);
 })();
 </script>
-<script id="gc-mobile-login-menu-items">
-(function(){
-  function findFirst(selectors){
-    for(const s of selectors){
-      const el=document.querySelector(s);
-      if(el) return el;
-    }
-    return null;
-  }
-
-  function addMenuItem(){
-    const menu=document.getElementById('publicNavbarLinks');
-    if(!menu) return;
-
-    if(false && !menu.querySelector('.gc-mobile-login-item')){
-      const login=document.createElement('button');
-      login.type='button';
-      login.className='gc-mobile-login-item';
-      login.textContent='Student / Tutor Login';
-      login.addEventListener('click',function(){
-        const target=findFirst([
-          '#loginBtn','#navLoginBtn','[onclick*="loginModal"]',
-          '[onclick*="openLogin"]'
-        ]);
-        if(target) target.click();
-        else {
-          const modal=document.getElementById('loginModal');
-          if(modal) modal.classList.remove('hidden');
-        }
-      });
-      menu.appendChild(login);
-    }
-
-    if(false && !menu.querySelector('.gc-mobile-staff-item')){
-      const staff=document.createElement('button');
-      staff.type='button';
-      staff.className='gc-mobile-staff-item';
-      staff.textContent='STAFF LOGIN';
-      staff.addEventListener('click',function(){
-        const target=findFirst([
-          '#staffLoginBtn','#navStaffBtn','[onclick*="staffLoginModal"]',
-          '[onclick*="openStaffLogin"]'
-        ]);
-        if(target) target.click();
-        else {
-          const modal=document.getElementById('staffLoginModal');
-          if(modal) modal.classList.remove('hidden');
-        }
-      });
-      menu.appendChild(staff);
-    }
-  }
-
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addMenuItem);
-  else addMenuItem();
-  setTimeout(addMenuItem,500);
-})();
-</script>
+<script id="gc-mobile-login-menu-items"><!-- Login rows are now source-level menu items. --></script>
 <style id="gc-helpline-plan-ui">
 .gc-helpline-plan-panel{
   display:none;
@@ -11879,6 +11888,38 @@ header a[href="#home"] img[alt="Guru Connect Logo"]{
         if(m) m.classList.remove('hidden');
       }
       if(typeof window.closeNavMenu === 'function') window.closeNavMenu();
+    }catch(e){
+      var m=document.getElementById('staffLoginModal');
+      if(m) m.classList.remove('hidden');
+    }
+  };
+})();
+</script>
+
+
+<script id="gc-login-menu-final-handlers">
+(function(){
+  window.gcMenuOpenRoleLogin=function(role){
+    try{
+      var r=document.getElementById('loginRoleInput');
+      if(r) r.value=role;
+      if(typeof window.openLoginModal==='function') window.openLoginModal();
+      else {
+        var m=document.getElementById('loginModal');
+        if(m) m.classList.remove('hidden');
+      }
+    }catch(e){
+      var m=document.getElementById('loginModal');
+      if(m) m.classList.remove('hidden');
+    }
+  };
+  window.gcMenuOpenStaffLogin=function(){
+    try{
+      if(typeof window.openStaffLoginModal==='function') window.openStaffLoginModal();
+      else {
+        var m=document.getElementById('staffLoginModal');
+        if(m) m.classList.remove('hidden');
+      }
     }catch(e){
       var m=document.getElementById('staffLoginModal');
       if(m) m.classList.remove('hidden');
