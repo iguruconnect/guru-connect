@@ -11887,3 +11887,324 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
   setTimeout(init,500);
 })();
 </script>
+
+
+<!-- GURU CONNECT FINAL CLOUD PROFILE EDIT REPAIR -->
+<script id="gc-final-cloud-profile-edit-repair">
+(function(){
+  'use strict';
+
+  const sb = () => window.gcSupabase || null;
+  const clean = v => String(v == null ? '' : v).trim();
+
+  async function requireStaffCloudSession(){
+    const supa = sb();
+    if(!supa) throw new Error('Supabase client is not loaded.');
+
+    const r = await supa.auth.getUser();
+    if(r?.data?.user) return r.data.user;
+
+    throw new Error('Staff Supabase session is not active. Please logout and use STAFF LOGIN again.');
+  }
+
+  function clearCloudCache(){
+    try { if(typeof gcPageCache !== 'undefined') gcPageCache.clear(); } catch(_){}
+  }
+
+  async function reloadDirectories(){
+    clearCloudCache();
+    if(typeof window.gcLoadCloudDirectories === 'function'){
+      await window.gcLoadCloudDirectories(1,1);
+    } else {
+      try { if(typeof window.renderTutorDirectory === 'function') window.renderTutorDirectory(); } catch(_){}
+      try { if(typeof window.renderStudentDirectory === 'function') window.renderStudentDirectory(); } catch(_){}
+    }
+  }
+
+  /* ---------- AUTHORITATIVE STUDENT UPDATE ---------- */
+  window.gcSupabaseAdminUpdateStudent = async function(s){
+    if(!s || !s.isCloud) return {ok:true, skipped:true};
+
+    const supa = sb();
+    if(!supa) throw new Error('Supabase client is not loaded.');
+
+    await requireStaffCloudSession();
+
+    const patch = {
+      name: clean(s.name),
+      course: clean(s.course || s.std),
+      stream: clean(s.stream),
+      learning_requirement: clean(s.learningRequirement || s.subject)
+    };
+
+    const result = await supa
+      .from('student_profiles')
+      .update(patch)
+      .eq('id', s.id)
+      .select('id,user_id,name,course,stream,learning_requirement,photo_url,created_at')
+      .maybeSingle();
+
+    if(result.error) throw result.error;
+    if(!result.data) throw new Error('Supabase updated 0 student rows. Check the Staff UPDATE policy and the student ID.');
+
+    Object.assign(s, {
+      id: result.data.id,
+      user_id: result.data.user_id || s.user_id,
+      name: result.data.name || '',
+      course: result.data.course || '',
+      std: result.data.course || '',
+      stream: result.data.stream || '',
+      learningRequirement: result.data.learning_requirement || '',
+      subject: result.data.learning_requirement || '',
+      photoData: result.data.photo_url || s.photoData || '',
+      isCloud: true
+    });
+
+    /* Keep login/contact profile data in sync when those columns exist. */
+    if(s.user_id){
+      try{
+        const pr = await supa.from('profiles')
+          .update({
+            full_name: clean(s.name),
+            phone: clean(s.phone) || null,
+            email: clean(s.email) || null,
+            photo_url: clean(s.photoData || '') || null
+          })
+          .eq('id', s.user_id);
+        if(pr.error) console.warn('profiles contact sync skipped:', pr.error);
+      }catch(_){}
+    }
+
+    clearCloudCache();
+    return {ok:true,row:result.data};
+  };
+
+  /* ---------- AUTHORITATIVE TUTOR UPDATE ---------- */
+  window.gcSupabaseAdminUpdateTutorFinal = async function(t){
+    if(!t || !t.isCloud) return {ok:true, skipped:true};
+
+    const supa = sb();
+    if(!supa) throw new Error('Supabase client is not loaded.');
+
+    await requireStaffCloudSession();
+
+    const patch = {
+      name: clean(t.name),
+      subject: clean(t.subject),
+      stream: clean(t.stream),
+      experience: clean(t.experience),
+      qualification: clean(t.qualification),
+      college: clean(t.college),
+      teaching_college: clean(t.teachingCollege || t.college),
+      address: clean(t.address),
+      price: clean(t.price),
+      about_me: clean(t.aboutMe),
+      photo_url: clean(t.photoData || t.photo || ''),
+      verified: t.verified === true,
+      paid_status: t.paidStatus === 'PAID' ? 'PAID' : 'PENDING'
+    };
+
+    const result = await supa
+      .from('tutor_profiles')
+      .update(patch)
+      .eq('id', t.id)
+      .select('id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,created_at')
+      .maybeSingle();
+
+    if(result.error) throw result.error;
+    if(!result.data) throw new Error('Supabase updated 0 tutor rows. Check the Staff UPDATE policy and the tutor ID.');
+
+    const row = result.data;
+    Object.assign(t, {
+      id: row.id,
+      user_id: row.user_id || t.user_id,
+      name: row.name || '',
+      subject: row.subject || '',
+      stream: row.stream || '',
+      experience: row.experience || '',
+      qualification: row.qualification || '',
+      college: row.college || '',
+      teachingCollege: row.teaching_college || '',
+      address: row.address || '',
+      price: row.price || '',
+      aboutMe: row.about_me || '',
+      photoData: row.photo_url || '',
+      verified: row.verified === true,
+      paidStatus: row.paid_status || 'PENDING',
+      isCloud: true
+    });
+
+    /* Email/phone live in the shared profiles table in this build. */
+    if(t.user_id){
+      try{
+        const pr = await supa.from('profiles')
+          .update({
+            full_name: clean(t.name),
+            email: clean(t.email) || null,
+            phone: clean(t.phone) || null,
+            photo_url: clean(t.photoData || '') || null
+          })
+          .eq('id', t.user_id);
+        if(pr.error) console.warn('profiles contact sync skipped:', pr.error);
+      }catch(_){}
+    }
+
+    clearCloudCache();
+    return {ok:true,row};
+  };
+
+  /* ---------- REPLACE STUDENT SAVE: wait for cloud result ---------- */
+  window.saveStudentEdit = async function(e){
+    if(e) e.preventDefault();
+    if(window.currentEditingStudentId == null) return;
+
+    const list = Array.isArray(window.studentDirectoryList) ? window.studentDirectoryList : [];
+    const s = list.find(x => String(x.id) === String(window.currentEditingStudentId));
+    if(!s) return;
+
+    const value = id => clean(document.getElementById(id)?.value || '');
+    const before = JSON.parse(JSON.stringify(s));
+    const btn = document.querySelector('#adminEditStudentModal button[type="submit"]');
+
+    if(btn){ btn.disabled=true; btn.textContent='SAVING...'; }
+
+    try{
+      s.name = value('editStudentName') || s.name;
+      s.std = value('editStudentStd') || s.std || s.course || '';
+      s.course = s.std;
+      const stream = value('editStudentStream');
+      if(stream) s.stream = stream;
+      s.subject = value('editStudentSubject') || s.subject || s.learningRequirement || '';
+      s.learningRequirement = s.subject;
+      s.phone = value('editStudentPhone');
+      s.email = s.email || '';
+
+      if(s.isCloud){
+        await window.gcSupabaseAdminUpdateStudent(s);
+      }
+
+      try{ if(typeof saveRegisteredDirectories==='function') saveRegisteredDirectories(); }catch(_){}
+      try{ if(typeof renderStudentDirectory==='function') renderStudentDirectory(); }catch(_){}
+      await reloadDirectories();
+
+      if(typeof closeAdminEditStudentModal==='function') closeAdminEditStudentModal();
+      if(typeof showSuccessPopup==='function') showSuccessPopup('Student profile saved to Supabase and website.');
+      else alert('Student profile saved to Supabase and website.');
+    }catch(err){
+      Object.assign(s,before);
+      try{ if(typeof saveRegisteredDirectories==='function') saveRegisteredDirectories(); }catch(_){}
+      try{ if(typeof renderStudentDirectory==='function') renderStudentDirectory(); }catch(_){}
+      console.error('FINAL STUDENT CLOUD SAVE FAILED:',err);
+      alert('Student profile was NOT saved to Supabase.\n\n' + (err?.message || err) +
+        '\n\nPlease check the Staff Supabase session and the student_profiles UPDATE policy.');
+    }finally{
+      if(btn){ btn.disabled=false; btn.textContent='SAVE CHANGES'; }
+    }
+  };
+
+  /* ---------- WRAP THE EXISTING TUTOR EDITER AND REPLACE ITS SAVE ---------- */
+  const originalAdminEditTutor = window.adminEditTutor;
+  if(typeof originalAdminEditTutor === 'function'){
+    window.adminEditTutor = function(id){
+      const result = originalAdminEditTutor(String(id));
+
+      /* The existing editor creates the form synchronously. */
+      setTimeout(function(){
+        const form = document.getElementById('gcUltimateTutorForm') ||
+                     document.getElementById('gcRealTutorForm');
+        if(!form) return;
+
+        const list = Array.isArray(window.tutorDirectoryList) ? window.tutorDirectoryList : [];
+        const t = list.find(x => String(x.id) === String(id));
+        if(!t) return;
+
+        form.onsubmit = async function(e){
+          e.preventDefault();
+
+          const btn = form.querySelector('button[type="submit"]');
+          const state = form.querySelector('#gcUltimateEditStatus,#gcRStatus');
+          const before = JSON.parse(JSON.stringify(t));
+
+          if(btn){btn.disabled=true;btn.textContent='SAVING...';}
+          if(state){state.textContent='Saving to Supabase...';state.style.color='#2563eb';}
+
+          try{
+            const get = (...ids) => {
+              for(const x of ids){
+                const el=document.getElementById(x);
+                if(el) return clean(el.value);
+              }
+              return '';
+            };
+
+            t.name = get('u_t_name','gcRName') || t.name;
+            t.email = get('u_t_email','gcREmail');
+            t.phone = get('u_t_phone','gcRPhone');
+            t.qualification = get('u_t_qualification','gcRQual');
+            t.experience = get('u_t_experience','gcRExp');
+            t.teachingCollege = get('u_t_teaching','gcRCollege');
+            t.college = t.teachingCollege;
+            t.subject = get('u_t_subject','gcRSubject');
+            t.price = get('u_t_price','gcRPrice');
+
+            const ratingEl = document.getElementById('u_t_rating') || document.getElementById('gcRRating');
+            if(ratingEl) t._manualRating = Math.min(5,Math.max(1,Number(ratingEl.value)||5));
+
+            const studentsEl = document.getElementById('u_t_students') || document.getElementById('gcRStudents');
+            if(studentsEl) t.students = clean(studentsEl.value);
+
+            t.aboutMe = get('u_t_about','gcRAbout');
+
+            const ver = document.getElementById('u_t_verified') || document.getElementById('gcRVerified');
+            if(ver) t.verified = !!ver.checked;
+            if(t.verified) t.paidStatus='PAID';
+
+            await window.gcSupabaseAdminUpdateTutorFinal(t);
+
+            try{ if(typeof saveRegisteredDirectories==='function') saveRegisteredDirectories(); }catch(_){}
+            try{ if(typeof saveDirs==='function') saveDirs(); }catch(_){}
+            try{ if(typeof renderTutorDirectory==='function') renderTutorDirectory(); }catch(_){}
+            await reloadDirectories();
+
+            if(state){state.textContent='Saved to Supabase ✓';state.style.color='#16a34a';}
+            const modal = document.getElementById('adminEditTutorModal');
+            const ultimate = document.getElementById('gcAdminTutorUltimateModalOverlay');
+            if(modal) modal.classList.add('hidden');
+            if(ultimate) ultimate.classList.remove('is-open');
+
+            if(typeof showSuccessPopup==='function') showSuccessPopup('Tutor profile saved to Supabase and website.');
+            else alert('Tutor profile saved to Supabase and website.');
+          }catch(err){
+            Object.assign(t,before);
+            try{ if(typeof saveRegisteredDirectories==='function') saveRegisteredDirectories(); }catch(_){}
+            try{ if(typeof renderTutorDirectory==='function' ) renderTutorDirectory(); }catch(_){}
+            console.error('FINAL TUTOR CLOUD SAVE FAILED:',err);
+            if(state){state.textContent='Save failed: '+(err?.message||err);state.style.color='#dc2626';}
+            alert('Tutor profile was NOT saved to Supabase.\n\n' + (err?.message||err) +
+              '\n\nPlease check the Staff Supabase session and tutor_profiles UPDATE policy.');
+          }finally{
+            if(btn){btn.disabled=false;btn.textContent='SAVE ALL CHANGES';}
+          }
+        };
+      },0);
+
+      return result;
+    };
+  }
+
+  /* Re-render after the page is fully ready, using the cloud as source of truth. */
+  async function boot(){
+    try{
+      if(typeof window.gcLoadCloudDirectories === 'function'){
+        await reloadDirectories();
+      }
+    }catch(err){
+      console.warn('Cloud profile repair boot refresh skipped:',err);
+    }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,900));
+  else setTimeout(boot,900);
+
+})();
+</script>
