@@ -7855,10 +7855,7 @@ body.gc-registration-lock{overflow:hidden !important;}
           '<div><small>QUALIFICATION</small><strong>'+esc(t.qualification||'Not provided')+'</strong></div>'+
           '<div><small>COLLEGE / INSTITUTE</small><strong>'+esc(t.teachingCollege||t.college||'Not provided')+'</strong></div>'+
           '<div><small>SUBJECT / EXPERTISE</small><strong>'+esc(t.subject||'Not provided')+'</strong></div>'+
-          '<div><small>LOCATION</small><strong>'+esc(t.location||'Not provided')+'</strong></div>'+
           '<div><small>ADDRESS</small><strong>'+esc(t.address||'Not provided')+'</strong></div>'+
-          '<div><small>TEACHING MODE</small><strong>'+esc(t.mode||t.teachingMode||'Not provided')+'</strong></div>'+
-          '<div><small>LANGUAGES</small><strong>'+esc(t.languages||'Not provided')+'</strong></div>'+
         '</div>'+
         '<section class="gc-v3-about"><h3><i class="fa-solid fa-user-tie"></i> ABOUT THE TUTOR</h3><p>'+esc(t.aboutMe||'This tutor has not added an About Me section yet.')+'</p></section>'+
         (ach.length?'<section class="gc-v3-ach"><h3><i class="fa-solid fa-award"></i> ACHIEVEMENTS</h3><div class="gc-v3-ach-grid">'+ach.map(function(a){return '<img src="'+esc(a)+'" alt="Tutor achievement">';}).join('')+'</div></section>':'')+
@@ -9036,7 +9033,7 @@ body {
       students: row.students_taught != null ? String(row.students_taught) : '',
       mode: row.teaching_mode || '',
       teachingMode: row.teaching_mode || '',
-      location: row.location || row.address || '',
+      location: row.location || '',
       languages: row.languages || '',
       availability: row.availability || '',
       teachingSince: row.teaching_since || '',
@@ -10254,7 +10251,64 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
   window.addEventListener('popstate',bootPublic);
 })();
 </script>
+<script id="gc-mobile-login-menu-items">
+(function(){
+  function findFirst(selectors){
+    for(const s of selectors){
+      const el=document.querySelector(s);
+      if(el) return el;
+    }
+    return null;
+  }
 
+  function addMenuItem(){
+    const menu=document.getElementById('publicNavbarLinks');
+    if(!menu) return;
+
+    if(!menu.querySelector('.gc-mobile-login-item')){
+      const login=document.createElement('button');
+      login.type='button';
+      login.className='gc-mobile-login-item';
+      login.textContent='Student / Tutor Login';
+      login.addEventListener('click',function(){
+        const target=findFirst([
+          '#loginBtn','#navLoginBtn','[onclick*="loginModal"]',
+          '[onclick*="openLogin"]'
+        ]);
+        if(target) target.click();
+        else {
+          const modal=document.getElementById('loginModal');
+          if(modal) modal.classList.remove('hidden');
+        }
+      });
+      menu.appendChild(login);
+    }
+
+    if(!menu.querySelector('.gc-mobile-staff-item')){
+      const staff=document.createElement('button');
+      staff.type='button';
+      staff.className='gc-mobile-staff-item';
+      staff.textContent='STAFF LOGIN';
+      staff.addEventListener('click',function(){
+        const target=findFirst([
+          '#staffLoginBtn','#navStaffBtn','[onclick*="staffLoginModal"]',
+          '[onclick*="openStaffLogin"]'
+        ]);
+        if(target) target.click();
+        else {
+          const modal=document.getElementById('staffLoginModal');
+          if(modal) modal.classList.remove('hidden');
+        }
+      });
+      menu.appendChild(staff);
+    }
+  }
+
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addMenuItem);
+  else addMenuItem();
+  setTimeout(addMenuItem,500);
+})();
+</script>
 <style id="gc-helpline-plan-ui">
 .gc-helpline-plan-panel{
   display:none;
@@ -10669,7 +10723,6 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div><label class="gc-v2-label">NAME</label><input id="gc_a_t_name" class="gc-v2-input" required value="${esc(t.name)}"></div>
           <div><label class="gc-v2-label">EMAIL</label><input id="gc_a_t_email" type="email" class="gc-v2-input" value="${esc(t.email)}"></div>
-          <div><label class="gc-v2-label">PHONE NUMBER</label><input id="gc_a_t_phone" type="tel" inputmode="numeric" class="gc-v2-input" placeholder="9876543210" value="${esc(t.phone||'')}"></div>
           
           <div><label class="gc-v2-label">QUALIFICATION</label><input id="gc_a_t_qualification" class="gc-v2-input" value="${esc(t.qualification)}"></div>
           <div><label class="gc-v2-label">EXPERIENCE</label><input id="gc_a_t_experience" class="gc-v2-input" value="${esc(t.experience)}"></div>
@@ -10680,8 +10733,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
           <div><label class="gc-v2-label">RATING</label><input id="gc_a_t_rating" type="number" min="1" max="5" step="0.1" class="gc-v2-input" value="${esc(t._manualRating||tutorRating(t))}"></div>
           <div><label class="gc-v2-label">STUDENTS TAUGHT</label><input id="gc_a_t_students" class="gc-v2-input" value="${esc(t.students||t.studentsTaught||'')}"></div>
           <div><label class="gc-v2-label">REVIEW COUNT</label><input id="gc_a_t_reviews" type="number" min="0" step="1" class="gc-v2-input" value="${esc(t.reviewCount||t.reviewsCount||0)}"></div>
-          <div><label class="gc-v2-label">LOCATION</label><input id="gc_a_t_location" class="gc-v2-input" placeholder="e.g. Mumbai" value="${esc(t.location||'')}"></div>
-          <div><label class="gc-v2-label">ADDRESS</label><input id="gc_a_t_address" class="gc-v2-input" placeholder="Full teaching/home address" value="${esc(t.address||'')}"></div>
+          <div><label class="gc-v2-label">LOCATION</label><input id="gc_a_t_location" class="gc-v2-input" value="${esc(t.location||'')}"></div>
           <div><label class="gc-v2-label">TEACHING MODE</label><input id="gc_a_t_mode" class="gc-v2-input" value="${esc(t.mode||t.teachingMode||'')}"></div>
           <div><label class="gc-v2-label">LANGUAGES</label><input id="gc_a_t_languages" class="gc-v2-input" value="${esc(t.languages||'')}"></div>
           <div><label class="gc-v2-label">AVAILABILITY</label><input id="gc_a_t_availability" class="gc-v2-input" value="${esc(t.availability||'')}"></div>
@@ -10710,7 +10762,6 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
       try{
         t.name=document.getElementById('gc_a_t_name').value.trim()||t.name;
         t.email=document.getElementById('gc_a_t_email').value.trim();
-        t.phone=document.getElementById('gc_a_t_phone')?.value.trim()||t.phone||'';
         
         t.qualification=document.getElementById('gc_a_t_qualification').value.trim();
         t.experience=document.getElementById('gc_a_t_experience').value.trim();
@@ -10720,12 +10771,6 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
         t.price=document.getElementById('gc_a_t_price').value.trim();
         t._manualRating=Math.min(5,Math.max(1,Number(document.getElementById('gc_a_t_rating').value)||Number(tutorRating(t))));
         t.students=document.getElementById('gc_a_t_students').value.trim(); t.studentsTaught=t.students;
-        t.reviewCount=Math.max(0,Number(document.getElementById('gc_a_t_reviews').value)||0);
-        t.location=document.getElementById('gc_a_t_location').value.trim();
-        t.mode=t.teachingMode=document.getElementById('gc_a_t_mode').value.trim();
-        t.languages=document.getElementById('gc_a_t_languages').value.trim();
-        t.availability=document.getElementById('gc_a_t_availability').value.trim();
-        t.teachingSince=t.memberSince=document.getElementById('gc_a_t_since').value.trim();
         t.aboutMe=document.getElementById('gc_a_t_about').value.trim();
         t.verified=document.getElementById('gc_a_t_verified').checked;
         if(t.verified) t.paidStatus='PAID';
@@ -11268,52 +11313,22 @@ function notify(m){try{if(typeof showSuccessPopup==='function')showSuccessPopup(
 async function cloudUpdate(t){
   if(!t || !t.isCloud) return {ok:true};
   if(!window.gcSupabase) return {ok:false,error:new Error('Supabase client is not loaded.')};
-
-  // IMPORTANT: this is the SAVE function used by the active Tutor editor.
-  // It must write every field shown in that editor, not only the old basic fields.
   const patch={
     name:String(t.name||'').trim(),
     subject:String(t.subject||'').trim(),
     stream:String(t.stream||'').trim(),
     experience:String(t.experience||'').trim(),
     qualification:String(t.qualification||'').trim(),
-    college:String(t.college||t.teachingCollege||'').trim(),
+    college:String(t.college||'').trim(),
     teaching_college:String(t.teachingCollege||t.college||'').trim(),
     address:String(t.address||'').trim(),
     price:String(t.price||'').trim(),
     about_me:String(t.aboutMe||'').trim(),
-    rating:t._manualRating!=null ? Number(t._manualRating) : (t.rating!=null ? Number(t.rating) : null),
-    review_count:Number(t.reviewCount||t.reviewsCount||0)||0,
-    students_taught:String(t.students||t.studentsTaught||'').trim(),
-    teaching_mode:String(t.mode||t.teachingMode||'').trim(),
-    location:String(t.location||'').trim(),
-    languages:String(t.languages||'').trim(),
-    availability:String(t.availability||'').trim(),
-    teaching_since:String(t.teachingSince||t.memberSince||'').trim(),
     verified:t.verified===true,
     paid_status:t.paidStatus==='PAID'?'PAID':'PENDING'
   };
-
   const r=await window.gcSupabase.from('tutor_profiles').update(patch).eq('id',t.id);
   if(r.error)return {ok:false,error:r.error};
-
-  // Phone/email live in profiles in this build. Keep Tutor phone editable
-  // without making contact-sync failure block the main tutor profile save.
-  if(t.user_id){
-    try{
-      const pr=await window.gcSupabase.from('profiles').update({
-        full_name:String(t.name||'').trim(),
-        email:String(t.email||'').trim()||null,
-        phone:String(t.phone||'').trim()||null,
-        photo_url:String(t.photoData||t.photo||'').trim()||null
-      }).eq('id',t.user_id);
-      if(pr.error) console.warn('Tutor contact sync skipped:',pr.error);
-    }catch(e){console.warn('Tutor contact sync skipped:',e);}
-  }
-
-  // Clear the directory cache so the freshly saved rating/students count is
-  // fetched from Supabase instead of an older cached row.
-  try{ if(window.gcPageCache && typeof window.gcPageCache.clear==='function') window.gcPageCache.clear(); }catch(_){}
   return {ok:true};
 }
 
@@ -11364,7 +11379,6 @@ window.adminEditTutor=function(id){
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div><label class="gc-v2-label">NAME</label><input id="gcRName" class="gc-v2-input" required value="${esc(t.name)}"></div>
       <div><label class="gc-v2-label">EMAIL</label><input id="gcREmail" type="email" class="gc-v2-input" value="${esc(t.email)}"></div>
-      <div><label class="gc-v2-label">PHONE NUMBER</label><input id="gcRPhone" class="gc-v2-input" type="tel" inputmode="numeric" placeholder="9876543210" value="${esc(t.phone||'')}"></div>
       
       <div><label class="gc-v2-label">QUALIFICATION</label><input id="gcRQual" class="gc-v2-input" value="${esc(t.qualification)}"></div>
       <div><label class="gc-v2-label">EXPERIENCE</label><input id="gcRExp" class="gc-v2-input" value="${esc(t.experience)}"></div>
@@ -11397,7 +11411,6 @@ window.adminEditTutor=function(id){
     try{
       t.name=document.getElementById('gcRName').value.trim()||t.name;
       t.email=document.getElementById('gcREmail').value.trim();
-      t.phone=document.getElementById('gcRPhone').value.trim();
       
       t.qualification=document.getElementById('gcRQual').value.trim();
       t.experience=document.getElementById('gcRExp').value.trim();
@@ -11425,6 +11438,7 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 })();
 </script>
 <script id="gc-mobile-menu-final-script">
+(function(){function add(){const menu=document.getElementById('mainMenu')||document.getElementById('menuPanel')||document.querySelector('.menu-panel')||document.querySelector('.gc-menu-panel')||document.querySelector('[data-menu-panel]');if(!menu||menu.querySelector('.gc-login-menu-group'))return;menu.querySelectorAll('a,button').forEach(e=>{if((e.textContent||'').trim())e.classList.add('gc-menu-normal')});const g=document.createElement('div');g.className='gc-login-menu-group mt-3 pt-3 border-t border-slate-200';g.innerHTML='<div class="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2 px-1">Account & Staff Access</div><div class="grid gap-2"><button type="button" data-login="student" class="gc-menu-login-student rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-graduation-cap"></i> STUDENT LOGIN</button><button type="button" data-login="tutor" class="gc-menu-login-tutor rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-chalkboard-user"></i> TUTOR LOGIN</button><button type="button" data-login="staff" class="gc-menu-login-staff rounded-xl px-4 py-3 font-black text-sm flex items-center gap-3"><i class="fa-solid fa-user-tie"></i> STAFF LOGIN</button></div>';menu.appendChild(g);g.querySelectorAll('button').forEach(b=>b.onclick=function(){try{if(typeof closeNavMenu==='function')closeNavMenu()}catch(_){};const k=b.dataset.login;if(k==='staff'){if(typeof openStaffLoginModal==='function')openStaffLoginModal();else if(typeof openStaffLogin==='function')openStaffLogin();else document.querySelector('#staffLoginModal')?.classList.remove('hidden')}else if(k==='student'){if(typeof openStudentLoginModal==='function')openStudentLoginModal();else if(typeof openLoginModal==='function')openLoginModal('student');else document.querySelector('#studentLoginModal')?.classList.remove('hidden')}else{if(typeof openTutorLoginModal==='function')openTutorLoginModal();else if(typeof openLoginModal==='function')openLoginModal('tutor');else document.querySelector('#tutorLoginModal')?.classList.remove('hidden')}})}window.addEventListener('load',add);setTimeout(add,500);setTimeout(add,1500)})();
 </script>
 <style id="gc-v9-submit-visual">
 #stuSubmitBtn:not(:disabled),#tutorSubmitBtn:not(:disabled){
@@ -11957,8 +11971,6 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
         if(reviews)t.reviewCount=Math.max(0,Number(reviews.value)||0);
         const locationEl=document.getElementById('gc_a_t_location')||document.getElementById('gcRLocation')||document.getElementById('u_t_location');
         if(locationEl)t.location=clean(locationEl.value);
-        const addressEl=document.getElementById('gc_a_t_address')||document.getElementById('gcRAddress')||document.getElementById('u_t_address');
-        if(addressEl)t.address=clean(addressEl.value);
         const modeEl=document.getElementById('gc_a_t_mode')||document.getElementById('gcRMode')||document.getElementById('u_t_mode');
         if(modeEl)t.mode=t.teachingMode=clean(modeEl.value);
         const langsEl=document.getElementById('gc_a_t_languages')||document.getElementById('gcRLanguages')||document.getElementById('u_t_languages');
@@ -12133,120 +12145,6 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 })();
 </script>
 
-
-<!-- GURU CONNECT FINAL ADMIN DELETE FIX -->
-<script id="gc-final-admin-delete-fix">
-(function(){
-  'use strict';
-  const sb=()=>window.gcSupabase||null;
-  const staffOk=()=>localStorage.getItem('is_staff_logged')==='true';
-  const clean=v=>String(v==null?'':v).trim();
-
-  async function requireStaff(){
-    if(!staffOk()) throw new Error('Please login as Staff first.');
-    if(typeof window.gcRequireRealStaffCloudSession==='function'){
-      await window.gcRequireRealStaffCloudSession();
-      return;
-    }
-    const s=sb();
-    if(!s) throw new Error('Supabase client is not loaded.');
-    const r=await s.auth.getUser();
-    if(!r?.data?.user || r.data.user.is_anonymous) throw new Error('Real Staff Supabase session is required. Please login again as Staff.');
-  }
-
-  function redraw(){
-    try{ if(typeof gcPageCache!=='undefined' && gcPageCache?.clear) gcPageCache.clear(); }catch(_){ }
-    try{ localStorage.removeItem('gc_tutor_directory_cache'); localStorage.removeItem('gc_student_directory_cache'); }catch(_){ }
-    try{ window.saveRegisteredDirectories?.(); }catch(_){ }
-    try{ window.renderTutorDirectory?.(); }catch(_){ }
-    try{ window.renderStudentDirectory?.(); }catch(_){ }
-    try{ window.renderAdminQueue?.(); }catch(_){ }
-  }
-
-  async function deleteCloudProfile(table, row){
-    const s=sb();
-    if(!s) throw new Error('Supabase client is not loaded.');
-    await requireStaff();
-
-    const id=clean(row?.id);
-    if(!id) throw new Error('Profile ID is missing.');
-
-    // Delete the public role profile first. This is the actual directory row.
-    const d=await s.from(table).delete().eq('id',id);
-    if(d.error) throw d.error;
-
-    // The shared profiles row contains contact details. Remove it as cleanup
-    // when user_id is known. Failure here must not undo the successful role-row
-    // deletion because profiles may have a separate restrictive DELETE policy.
-    if(row?.user_id){
-      try{
-        const p=await s.from('profiles').delete().eq('id',row.user_id);
-        if(p.error) console.warn('Profile contact-row cleanup skipped:',p.error);
-      }catch(e){ console.warn('Profile contact-row cleanup skipped:',e); }
-    }
-
-    try{ if(typeof gcPageCache!=='undefined' && gcPageCache?.clear) gcPageCache.clear(); }catch(_){ }
-    return true;
-  }
-
-  window.adminDeleteTutor=async function(tutorId){
-    const list=Array.isArray(window.tutorDirectoryList)?window.tutorDirectoryList:[];
-    const t=list.find(x=>String(x.id)===String(tutorId));
-    if(!t){ alert('Tutor profile not found. Please refresh the Staff dashboard.'); return false; }
-    if(!confirm('DELETE THIS TUTOR PROFILE?\n\nThis will remove the tutor from the public directory and Supabase. This action cannot be undone.')) return false;
-
-    const btn=event?.currentTarget;
-    if(btn) btn.disabled=true;
-    try{
-      if(t.isCloud){
-        await deleteCloudProfile('tutor_profiles',t);
-        await window.gcLoadCloudDirectories?.(1,1);
-      }else{
-        window.tutorDirectoryList=list.filter(x=>String(x.id)!==String(tutorId));
-        redraw();
-      }
-      try{window.renderAdminQueue?.();}catch(_){ }
-      try{window.showSuccessPopup?.('Tutor profile deleted successfully from GURU CONNECT.');}
-      catch(_){alert('Tutor profile deleted successfully from GURU CONNECT.');}
-      return true;
-    }catch(err){
-      console.error('GURU CONNECT TUTOR DELETE FAILED',err);
-      alert('TUTOR PROFILE WAS NOT DELETED.\n\n'+(err?.message||String(err))+'\n\nNo success was reported.');
-      return false;
-    }finally{ if(btn) btn.disabled=false; }
-  };
-
-  window.adminDeleteStudent=async function(studentId){
-    const list=Array.isArray(window.studentDirectoryList)?window.studentDirectoryList:[];
-    const s=list.find(x=>String(x.id)===String(studentId));
-    if(!s){ alert('Student profile not found. Please refresh the Staff dashboard.'); return false; }
-    if(!confirm('DELETE THIS STUDENT PROFILE?\n\nThis will remove the student from the public directory and Supabase. This action cannot be undone.')) return false;
-
-    const btn=event?.currentTarget;
-    if(btn) btn.disabled=true;
-    try{
-      if(s.isCloud){
-        await deleteCloudProfile('student_profiles',s);
-        await window.gcLoadCloudDirectories?.(1,1);
-      }else{
-        window.studentDirectoryList=list.filter(x=>String(x.id)!==String(studentId));
-        redraw();
-      }
-      try{window.renderAdminQueue?.();}catch(_){ }
-      try{window.showSuccessPopup?.('Student profile deleted successfully from GURU CONNECT.');}
-      catch(_){alert('Student profile deleted successfully from GURU CONNECT.');}
-      return true;
-    }catch(err){
-      console.error('GURU CONNECT STUDENT DELETE FAILED',err);
-      alert('STUDENT PROFILE WAS NOT DELETED.\n\n'+(err?.message||String(err))+'\n\nNo success was reported.');
-      return false;
-    }finally{ if(btn) btn.disabled=false; }
-  };
-
-  window.GURU_CONNECT_ADMIN_DELETE_FIX=true;
-})();
-</script>
-
 </body>
 </html>
 <!-- =========================================================
@@ -12332,11 +12230,11 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
    list.slice((p-1)*per,p*per).forEach(t=>{
      const id=val(t.id),name=val(t.name,'Tutor');const verified=t.verified===true||t.verified==='true';const q=val(t.qualification,t.qualifications,t.education,t.degree,'Tutor');
      const subject=val(t.subject,t.subjects,'Not specified'),rate=val(t.price,t.rate,t.hourlyRate,'—'),exp=val(t.experience,t.experienceYears,'—');
-     const rating=val(t.rating,'4.5'),reviews=val(t.reviewCount,t.reviewsCount,'0'),students=val(t.students,t.studentsTaught,'—'),mode=val(t.mode,t.teachingMode,'Online / Offline'),loc=val(t.location,t.address,'—'),langs=val(t.languages,'Hindi, English'),avail=val(t.availability,'Mon - Sun');
+     const rating=val(t.rating,'4.5'),reviews=val(t.reviewCount,t.reviewsCount,'0'),students=val(t.students,t.studentsTaught,'—'),mode=val(t.mode,t.teachingMode,'Online / Offline'),loc=val(t.location,'—'),langs=val(t.languages,'Hindi, English'),avail=val(t.availability,'Mon - Sun');
      const card=document.createElement('article');card.className='gc-target-card gc-target-tutor';card.dataset.tutorId=id;
      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✓ VERIFIED TUTOR':'TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
        '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified&&tick()?'<span class="gc-target-verified"><img src="'+esc(tick())+'" alt="Verified"></span>':'')+'</h3><div class="gc-target-subtitle">'+esc(q)+' · '+esc(subject)+'</div></div></div>'+
-       '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🏠','Address',val(t.address,'—'))+box('💬','Languages',langs)+box('◷','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
+       '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('💬','Languages',langs)+box('◷','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
        '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-tutor-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
      c.appendChild(card);
    });
@@ -12475,92 +12373,276 @@ window.GURU_CONNECT_ADMIN_REAL_FIX=true;
 })();
 </script>
 
-<script id="gc-final-menu-deduplicate">
+
+<!-- GURU CONNECT — FINAL SINGLE AUTHORITATIVE TUTOR ADMIN EDITOR -->
+<script id="gc-final-single-tutor-admin-editor-2026">
 (function(){
   'use strict';
-  function cleanMenu(){
-    const m=document.getElementById('publicNavbarLinks');
-    if(!m) return;
-    m.querySelectorAll('.gc-login-menu-group,.gc-mobile-login-item,.gc-mobile-staff-item').forEach(function(el){el.remove();});
-    const seen={student:false,tutor:false,staff:false};
-    Array.from(m.querySelectorAll('a.gc-menu-login')).forEach(function(a){
-      const tx=(a.textContent||'').toLowerCase();
-      const key=tx.includes('student')?'student':tx.includes('tutor')?'tutor':tx.includes('staff')?'staff':null;
-      if(key){
-        if(seen[key]) a.remove(); else seen[key]=true;
+
+  const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+  const clean = v => String(v == null ? '' : v).trim();
+  const getTutor = id => {
+    const a = Array.isArray(window.tutorDirectoryList) ? window.tutorDirectoryList : [];
+    return a.find(x => String(x.id) === String(id)) || null;
+  };
+
+  async function loadContact(t){
+    if(!t || !t.user_id || !window.gcSupabase) return;
+    try{
+      const r = await window.gcSupabase
+        .from('profiles')
+        .select('id,full_name,email,phone,photo_url')
+        .eq('id', t.user_id)
+        .maybeSingle();
+      if(!r.error && r.data){
+        if(r.data.email != null) t.email = r.data.email;
+        if(r.data.phone != null) t.phone = r.data.phone;
+        if(r.data.photo_url && !t.photoData) t.photoData = r.data.photo_url;
       }
-    });
+    }catch(e){
+      console.warn('Tutor contact details could not be loaded:', e);
+    }
   }
-  function run(){cleanMenu();setTimeout(cleanMenu,50);setTimeout(cleanMenu,500);setTimeout(cleanMenu,1500);}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
-  window.addEventListener('load',run,{once:true});
-})();
-</script>
 
-<script id="gc-final-tutor-card-fields-sync">
-(function(){
-  'use strict';
-  function sync(){
-    const form=document.getElementById('gcAdminTutorFormFinal');
-    if(!form || form.dataset.gcCardSync==='1') return;
-    form.dataset.gcCardSync='1';
-    form.addEventListener('input',function(e){
-      const el=e.target;
-      if(!el) return;
-      const id=el.id;
-      if(!['gc_a_t_location','gc_a_t_mode','gc_a_t_languages','gc_a_t_phone'].includes(id)) return;
+  async function refreshCloud(){
+    try{
+      if(typeof window.gcLoadCloudDirectories === 'function'){
+        await window.gcLoadCloudDirectories(1, Number(window.currentStudentPage)||1);
+      }
+    }catch(e){ console.warn('Tutor directory refresh:', e); }
+    try{ window.renderTutorDirectory?.(); }catch(e){}
+    try{ window.renderAdminQueue?.(); }catch(e){}
+    try{ window.saveRegisteredDirectories?.(); }catch(e){}
+  }
+
+  window.adminEditTutor = async function(id){
+    if(localStorage.getItem('is_staff_logged') !== 'true'){
+      alert('Please login through STAFF LOGIN first.');
+      return;
+    }
+
+    window.currentEditingTutorId = String(id);
+    const t = getTutor(id);
+    if(!t){
+      alert('Tutor record not found. Please refresh the Staff Dashboard.');
+      return;
+    }
+
+    const modal = document.getElementById('adminEditTutorModal');
+    if(!modal){
+      alert('Tutor edit window is missing.');
+      return;
+    }
+
+    await loadContact(t);
+
+    const box = modal.querySelector(':scope > div') || modal.querySelector('div');
+    if(!box) return;
+
+    const rating = t._manualRating != null ? Number(t._manualRating) :
+                   (t.rating != null && t.rating !== '' ? Number(t.rating) : 5);
+    const reviewCount = Number(t.reviewCount || t.reviewsCount || 0) || 0;
+
+    box.innerHTML = `
+      <div class="flex justify-between items-center mb-5">
+        <div>
+          <h3 class="text-xl font-black text-brand-dark">Edit Tutor Profile</h3>
+          <p class="text-xs text-slate-500 mt-1">
+            ${t.isCloud ? 'Cloud tutor — ALL changes will be saved to Supabase.' : 'Local tutor — changes will be saved locally.'}
+          </p>
+        </div>
+        <button type="button" id="gcFinalTutorClose" class="text-slate-400 hover:text-red-500 text-xl">×</button>
+      </div>
+
+      <form id="gcFinalTutorForm" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+          <div><label class="gc-v2-label">NAME</label>
+            <input id="gcF_name" class="gc-v2-input" required value="${esc(t.name)}"></div>
+
+          <div><label class="gc-v2-label">EMAIL</label>
+            <input id="gcF_email" type="email" class="gc-v2-input" value="${esc(t.email || '')}"></div>
+
+          <div><label class="gc-v2-label">PHONE NUMBER</label>
+            <input id="gcF_phone" type="tel" class="gc-v2-input" value="${esc(t.phone || '')}" placeholder="Tutor phone number"></div>
+
+          <div><label class="gc-v2-label">QUALIFICATION</label>
+            <input id="gcF_qualification" class="gc-v2-input" value="${esc(t.qualification || '')}"></div>
+
+          <div><label class="gc-v2-label">EXPERIENCE</label>
+            <input id="gcF_experience" class="gc-v2-input" value="${esc(t.experience || '')}"></div>
+
+          <div><label class="gc-v2-label">TEACHING COLLEGE / INSTITUTE</label>
+            <input id="gcF_college" class="gc-v2-input" value="${esc(t.teachingCollege || t.college || '')}"></div>
+
+          <div><label class="gc-v2-label">SUBJECT</label>
+            <input id="gcF_subject" class="gc-v2-input" value="${esc(t.subject || '')}"></div>
+
+          <div><label class="gc-v2-label">STREAM</label>
+            <input id="gcF_stream" class="gc-v2-input" value="${esc(t.stream || '')}"></div>
+
+          <div><label class="gc-v2-label">RATE / HOUR</label>
+            <input id="gcF_price" class="gc-v2-input" value="${esc(t.price || '')}"></div>
+
+          <div><label class="gc-v2-label">RATING</label>
+            <input id="gcF_rating" type="number" min="1" max="5" step="0.1" class="gc-v2-input" value="${esc(rating)}"></div>
+
+          <div><label class="gc-v2-label">REVIEW COUNT</label>
+            <input id="gcF_review_count" type="number" min="0" step="1" class="gc-v2-input" value="${esc(reviewCount)}"></div>
+
+          <div><label class="gc-v2-label">STUDENTS TAUGHT</label>
+            <input id="gcF_students_taught" class="gc-v2-input" value="${esc(t.students || t.studentsTaught || '')}"></div>
+
+          <div><label class="gc-v2-label">LOCATION</label>
+            <input id="gcF_location" class="gc-v2-input" value="${esc(t.location || t.address || '')}"></div>
+
+          <div><label class="gc-v2-label">ADDRESS</label>
+            <input id="gcF_address" class="gc-v2-input" value="${esc(t.address || t.location || '')}"></div>
+
+          <div><label class="gc-v2-label">TEACHING MODE</label>
+            <input id="gcF_mode" class="gc-v2-input" value="${esc(t.mode || t.teachingMode || '')}" placeholder="Online / Offline"></div>
+
+          <div><label class="gc-v2-label">LANGUAGES</label>
+            <input id="gcF_languages" class="gc-v2-input" value="${esc(t.languages || '')}" placeholder="Hindi, English"></div>
+
+          <div><label class="gc-v2-label">AVAILABILITY</label>
+            <input id="gcF_availability" class="gc-v2-input" value="${esc(t.availability || '')}" placeholder="Mon - Sun"></div>
+
+          <div><label class="gc-v2-label">TEACHING SINCE</label>
+            <input id="gcF_teaching_since" class="gc-v2-input" value="${esc(t.teachingSince || t.memberSince || '')}"></div>
+
+        </div>
+
+        <div>
+          <label class="gc-v2-label">ABOUT ME</label>
+          <textarea id="gcF_about" class="gc-v2-textarea" rows="5">${esc(t.aboutMe || '')}</textarea>
+        </div>
+
+        <div class="gc-v2-panel">
+          <label class="flex items-center gap-3 text-sm font-black cursor-pointer">
+            <input id="gcF_verified" type="checkbox" class="w-5 h-5" ${t.verified ? 'checked' : ''}>
+            VERIFIED TICK
+          </label>
+          <div class="text-xs text-slate-500 mt-2">
+            CURRENT PAID STATUS: <b>${esc(t.paidStatus || 'PENDING')}</b>
+          </div>
+        </div>
+
+        <div id="gcFinalTutorStatus" class="text-xs font-bold text-slate-500 text-center">Ready to save all tutor fields.</div>
+
+        <div class="flex gap-3">
+          <button type="button" id="gcFinalTutorCancel" class="flex-1 bg-slate-100 py-3 rounded-xl font-bold">CANCEL</button>
+          <button id="gcFinalTutorSave" type="submit" class="flex-1 bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-3 rounded-xl font-black shadow-lg">SAVE ALL CHANGES</button>
+        </div>
+      </form>
+    `;
+
+    modal.classList.remove('hidden');
+
+    const close = () => modal.classList.add('hidden');
+    document.getElementById('gcFinalTutorClose').onclick = close;
+    document.getElementById('gcFinalTutorCancel').onclick = close;
+
+    document.getElementById('gcFinalTutorForm').onsubmit = async function(e){
+      e.preventDefault();
+
+      const btn = document.getElementById('gcFinalTutorSave');
+      const state = document.getElementById('gcFinalTutorStatus');
+      const old = JSON.parse(JSON.stringify(t));
+
+      btn.disabled = true;
+      btn.textContent = 'SAVING TO CLOUD...';
+      state.textContent = 'Saving ALL tutor fields to Supabase...';
+      state.style.color = '#2563eb';
+
+      const v = id => document.getElementById(id)?.value ?? '';
+
       try{
-        const list=Array.isArray(window.tutorDirectoryList)?window.tutorDirectoryList:[];
-        const t=list.find(x=>String(x.id)===String(window.currentEditingTutorId));
-        if(!t) return;
-        if(id==='gc_a_t_location') t.location=el.value.trim();
-        if(id==='gc_a_t_mode') t.mode=t.teachingMode=el.value.trim();
-        if(id==='gc_a_t_languages') t.languages=el.value.trim();
-        if(id==='gc_a_t_phone') t.phone=el.value.trim();
-      }catch(_){}
-    });
-  }
-  sync();
-  new MutationObserver(sync).observe(document.documentElement,{childList:true,subtree:true});
-})();
-</script>
+        t.name = clean(v('gcF_name')) || t.name;
+        t.email = clean(v('gcF_email'));
+        t.phone = clean(v('gcF_phone'));
 
-<script id="gc-final-location-address-guard">
-(function(){
-  'use strict';
-  function guard(){
-    try{
-      const list=Array.isArray(window.tutorDirectoryList)?window.tutorDirectoryList:[];
-      list.forEach(function(t){
-        if(t && !String(t.location||'').trim() && String(t.address||'').trim()){
-          t.location=t.address;
+        t.qualification = clean(v('gcF_qualification'));
+        t.experience = clean(v('gcF_experience'));
+        t.teachingCollege = clean(v('gcF_college'));
+        t.college = t.teachingCollege;
+
+        t.subject = clean(v('gcF_subject'));
+        t.stream = clean(v('gcF_stream'));
+        t.price = clean(v('gcF_price'));
+
+        const rv = Number(v('gcF_rating'));
+        t._manualRating = Number.isFinite(rv) ? Math.min(5, Math.max(1, rv)) : 5;
+        t.rating = String(t._manualRating);
+
+        const rc = Number(v('gcF_review_count'));
+        t.reviewCount = Number.isFinite(rc) ? Math.max(0, Math.floor(rc)) : 0;
+
+        t.students = clean(v('gcF_students_taught'));
+        t.studentsTaught = t.students;
+
+        t.location = clean(v('gcF_location'));
+        t.address = clean(v('gcF_address'));
+
+        t.mode = clean(v('gcF_mode'));
+        t.teachingMode = t.mode;
+        t.languages = clean(v('gcF_languages'));
+        t.availability = clean(v('gcF_availability'));
+        t.teachingSince = clean(v('gcF_teaching_since'));
+        t.memberSince = t.teachingSince;
+
+        t.aboutMe = clean(v('gcF_about'));
+
+        const verified = document.getElementById('gcF_verified');
+        t.verified = !!verified?.checked;
+        if(t.verified) t.paidStatus = 'PAID';
+
+        if(!t.isCloud){
+          throw new Error('This tutor is not a cloud record. Please refresh the Staff Dashboard and edit the cloud tutor again.');
         }
-      });
-    }catch(_){}
-  }
-  guard();
-  window.addEventListener('load',guard,{once:true});
-})();
-</script>
 
-<script id="gc-final-tutor-location-address-normalizer">
-(function(){
-  'use strict';
-  function normalize(){
-    try{
-      const lists=[window.tutorDirectoryList,window.registeredTutors,window.tutors];
-      lists.forEach(function(list){
-        if(!Array.isArray(list)) return;
-        list.forEach(function(t){
-          if(!t) return;
-          t.location = String(t.location || t.city || t.locality || '').trim();
-          t.address = String(t.address || t.fullAddress || t.teachingAddress || '').trim();
-          if(!t.location && t.address) t.location=t.address;
-        });
-      });
-    }catch(_){}
-  }
-  normalize();
-  window.addEventListener('load',normalize,{once:true});
+        /*
+         * ONE AND ONLY cloud save call.
+         * The existing final updater already writes:
+         * rating, review_count, students_taught, location, mode,
+         * languages, availability, teaching_since and all legacy fields.
+         */
+        if(typeof window.gcSupabaseAdminUpdateTutor !== 'function'){
+          throw new Error('Tutor cloud updater is missing.');
+        }
+
+        await window.gcSupabaseAdminUpdateTutor(t);
+        await refreshCloud();
+
+        close();
+        try{
+          window.showSuccessPopup?.('Tutor profile saved to Supabase. Rating, Students Taught, Phone and all profile fields are updated.');
+        }catch(_){
+          alert('Tutor profile saved to Supabase. All tutor fields were updated.');
+        }
+
+      }catch(err){
+        Object.assign(t, old);
+        try{ window.renderTutorDirectory?.(); }catch(_){}
+        console.error('GURU CONNECT FINAL TUTOR SAVE FAILED:', err);
+
+        state.textContent = 'SAVE FAILED: ' + (err?.message || String(err));
+        state.style.color = '#dc2626';
+
+        alert(
+          'TUTOR PROFILE WAS NOT SAVED.\\n\\n' +
+          (err?.message || String(err)) +
+          '\\n\\nNo success message was shown.'
+        );
+      }finally{
+        btn.disabled = false;
+        btn.textContent = 'SAVE ALL CHANGES';
+      }
+    };
+  };
+
+  window.GURU_CONNECT_FINAL_SINGLE_TUTOR_EDITOR = true;
 })();
 </script>
