@@ -3886,6 +3886,224 @@ footer:before{
 @media(max-width:520px){.gc-logo3-lockup{flex-basis:285px!important;width:285px!important;min-width:285px!important;max-width:285px!important;height:72px!important}.gc-logo3-image{width:285px!important}}
 @media(max-width:390px){.gc-logo3-lockup{flex-basis:250px!important;width:250px!important;min-width:250px!important;max-width:250px!important;height:66px!important}.gc-logo3-image{width:250px!important}}
 </style>
+
+<style id="gc-final-logo-and-hero-no-cut">
+/* =========================================================
+   FINAL FIX — HD HEADER LOGO + HERO IMAGE
+   ========================================================= */
+
+/* Header must be tall enough for the complete 2048×684 logo artwork.
+   The logo image itself contains the GURU CONNECT brand + slogan. */
+.gc-beautiful-header{
+  position:relative!important;
+  overflow:visible!important;
+  z-index:10000!important;
+}
+.gc-header-inner{
+  min-height:130px!important;
+  height:130px!important;
+  padding:6px 22px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:28px!important;
+  box-sizing:border-box!important;
+  overflow:visible!important;
+}
+
+/* Give the logo a real, protected area so CONNECT can never touch HOME. */
+.gc-logo3-lockup{
+  flex:0 0 390px!important;
+  width:390px!important;
+  min-width:390px!important;
+  max-width:390px!important;
+  height:130px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  overflow:visible!important;
+  background:transparent!important;
+  z-index:10002!important;
+}
+.gc-logo3-image{
+  display:block!important;
+  width:390px!important;
+  height:auto!important;
+  max-width:none!important;
+  flex:none!important;
+  object-fit:contain!important;
+  object-position:left center!important;
+  background:transparent!important;
+  border:0!important;
+  outline:0!important;
+  box-shadow:none!important;
+  image-rendering:auto!important;
+}
+
+/* Navigation gets its own space and cannot overlap the logo. */
+.gc-beautiful-nav{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:4px!important;
+  overflow:visible!important;
+}
+.gc-beautiful-nav a{
+  flex-shrink:0!important;
+  white-space:nowrap!important;
+}
+
+/* HERO: show the COMPLETE tutor/student artwork.
+   Do not crop it with object-fit:cover or a constrained wrapper. */
+.gc-beautiful-hero{
+  min-height:600px!important;
+  overflow:hidden!important;
+}
+.gc-beautiful-hero-inner{
+  min-height:600px!important;
+  grid-template-columns:minmax(0,0.92fr) minmax(520px,1.08fr)!important;
+  align-items:center!important;
+  gap:20px!important;
+  padding:42px 34px 30px!important;
+  box-sizing:border-box!important;
+}
+.gc-hero-art-wrap{
+  align-self:center!important;
+  min-height:0!important;
+  height:auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:visible!important;
+  margin:0!important;
+  background:transparent!important;
+}
+.gc-hero-art{
+  display:block!important;
+  position:relative!important;
+  width:min(100%,760px)!important;
+  max-width:760px!important;
+  height:auto!important;
+  margin:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  filter:saturate(1.03) contrast(1.01)!important;
+  -webkit-mask-image:none!important;
+  mask-image:none!important;
+}
+
+/* Blend the outer artwork into the hero without cutting its content. */
+.gc-hero-art-wrap:before{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  pointer-events:none!important;
+  z-index:1!important;
+  background:linear-gradient(90deg,rgba(4,168,213,.18) 0%,transparent 18%,transparent 82%,rgba(255,216,46,.08) 100%)!important;
+  border-radius:0!important;
+}
+.gc-hero-art{z-index:2!important}
+
+/* Large screens: preserve breathing room between logo and HOME. */
+@media(min-width:1200px){
+  .gc-header-inner{gap:30px!important;}
+  .gc-logo3-lockup{flex-basis:390px!important;width:390px!important;min-width:390px!important;max-width:390px!important;}
+  .gc-logo3-image{width:390px!important;}
+}
+
+/* Medium desktop/tablet */
+@media(max-width:1199px) and (min-width:851px){
+  .gc-header-inner{
+    min-height:116px!important;
+    height:116px!important;
+    gap:18px!important;
+    padding:5px 14px!important;
+  }
+  .gc-logo3-lockup{
+    flex-basis:340px!important;width:340px!important;min-width:340px!important;max-width:340px!important;height:116px!important;
+  }
+  .gc-logo3-image{width:340px!important;}
+  .gc-beautiful-nav a{padding:9px 6px!important;font-size:10px!important;}
+  .gc-beautiful-hero-inner{
+    grid-template-columns:minmax(0,1fr) minmax(430px,1fr)!important;
+    min-height:560px!important;
+  }
+  .gc-beautiful-hero{min-height:560px!important;}
+}
+
+/* Mobile: logo stays complete and menu remains usable. */
+@media(max-width:850px){
+  .gc-header-inner{
+    min-height:92px!important;
+    height:92px!important;
+    padding:5px 10px!important;
+    gap:8px!important;
+  }
+  .gc-logo3-lockup{
+    flex:0 0 285px!important;
+    width:285px!important;
+    min-width:285px!important;
+    max-width:285px!important;
+    height:92px!important;
+  }
+  .gc-logo3-image{width:285px!important;}
+  .gc-beautiful-nav{display:none!important;}
+
+  .gc-beautiful-hero{
+    min-height:0!important;
+  }
+  .gc-beautiful-hero-inner{
+    grid-template-columns:1fr!important;
+    min-height:0!important;
+    padding:32px 20px 0!important;
+    gap:18px!important;
+  }
+  .gc-hero-art-wrap{
+    order:2!important;
+    width:100%!important;
+    min-height:0!important;
+    height:auto!important;
+    margin:0!important;
+    overflow:visible!important;
+  }
+  .gc-hero-art{
+    width:100%!important;
+    max-width:740px!important;
+    height:auto!important;
+    object-fit:contain!important;
+  }
+}
+
+@media(max-width:520px){
+  .gc-header-inner{
+    min-height:78px!important;
+    height:78px!important;
+    padding:4px 7px!important;
+  }
+  .gc-logo3-lockup{
+    flex-basis:245px!important;
+    width:245px!important;
+    min-width:245px!important;
+    max-width:245px!important;
+    height:78px!important;
+  }
+  .gc-logo3-image{width:245px!important;}
+}
+
+@media(max-width:380px){
+  .gc-logo3-lockup{
+    flex-basis:220px!important;
+    width:220px!important;
+    min-width:220px!important;
+    max-width:220px!important;
+  }
+  .gc-logo3-image{width:220px!important;}
+}
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 <!-- Header / Navbar -->
