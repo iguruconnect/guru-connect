@@ -4328,6 +4328,106 @@ footer:before{
 }
 </style>
 
+
+<style id="gc-final-multi-device-responsive">
+/* FINAL RESPONSIVE PASS: desktop + tablet + mobile */
+html,body{width:100%!important;max-width:100%!important;overflow-x:hidden!important}
+*,*::before,*::after{box-sizing:border-box}
+img,svg,video,canvas{max-width:100%;height:auto}
+
+/* Header: never let brand and controls overlap */
+.gc-beautiful-header{width:100%!important;overflow:visible!important}
+.gc-header-inner{width:100%!important;max-width:1500px!important;margin:0 auto!important;min-width:0!important}
+.gc-logo3-lockup{flex:0 1 390px!important;width:min(390px,34vw)!important;min-width:260px!important;max-width:390px!important;height:auto!important;min-height:76px!important}
+.gc-logo3-image{width:100%!important;max-width:390px!important;height:auto!important}
+.gc-beautiful-nav{min-width:0!important;flex:1 1 auto!important;overflow:visible!important}
+.gc-beautiful-nav a{font-size:clamp(11px,1vw,13px)!important;padding:10px clamp(7px,1vw,13px)!important}
+.gc-header-actions{flex:0 0 auto!important;min-width:0!important}
+.gc-header-contact{font-size:12px!important;padding:11px 16px!important}
+
+/* Hero */
+.gc-beautiful-hero{width:100%!important;min-height:0!important;overflow:hidden!important}
+.gc-beautiful-hero-inner{width:100%!important;max-width:1500px!important;padding:clamp(34px,4vw,58px) clamp(20px,3vw,42px) 30px!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:clamp(20px,3vw,42px)!important}
+.gc-beautiful-hero h1{font-size:clamp(38px,5vw,70px)!important;line-height:1.03!important;overflow-wrap:normal!important}
+.gc-beautiful-hero-sub{font-size:clamp(16px,1.6vw,20px)!important}
+.gc-hero-points{gap:clamp(10px,1.5vw,18px)!important}
+.gc-hero-point{min-width:0!important}
+.gc-hero-art-wrap{width:100%!important;min-width:0!important;align-self:center!important;overflow:hidden!important}
+.gc-hero-art{width:100%!important;max-width:740px!important;height:auto!important;object-fit:contain!important;border-radius:28px 28px 0 0!important;box-shadow:none!important}
+
+/* Action cards sit clearly below hero and remain readable */
+.gc-quick-grid{width:100%!important;max-width:1500px!important;margin:0 auto!important;padding:34px clamp(16px,3vw,42px) 36px!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:18px!important}
+.gc-quick-card{min-width:0!important;width:100%!important}
+.gc-quick-card h3,.gc-quick-card p{overflow-wrap:anywhere}
+
+/* Large tablets / small laptops */
+@media (max-width:1100px){
+  .gc-header-inner{gap:10px!important;padding-left:12px!important;padding-right:12px!important}
+  .gc-logo3-lockup{flex-basis:310px!important;width:310px!important;min-width:230px!important}
+  .gc-beautiful-nav{gap:1px!important}
+  .gc-beautiful-nav a{padding:9px 7px!important;font-size:11px!important}
+  .gc-header-contact{padding:10px 12px!important}
+  .gc-beautiful-hero-inner{grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr)!important}
+  .gc-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+
+/* Tablet */
+@media (max-width:850px){
+  .gc-header-inner{min-height:76px!important;height:auto!important;padding:6px 10px!important;gap:8px!important}
+  .gc-logo3-lockup{flex:1 1 auto!important;width:auto!important;min-width:0!important;max-width:none!important;height:auto!important;min-height:60px!important}
+  .gc-logo3-image{width:100%!important;max-width:330px!important}
+  .gc-beautiful-nav{display:none!important}
+  .gc-header-contact{display:none!important}
+  .gc-header-actions{margin-left:auto!important}
+  #navLoginBtn,#navStaffBtn{display:none!important}
+  .gc-menu-button{padding:10px 16px!important;font-size:12px!important;white-space:nowrap!important}
+  .gc-beautiful-hero-inner{grid-template-columns:1fr!important;padding:34px 24px 24px!important;gap:28px!important}
+  .gc-beautiful-hero h1{font-size:clamp(40px,8vw,58px)!important}
+  .gc-hero-art-wrap{order:2!important}
+  .gc-hero-art{max-width:100%!important}
+  .gc-quick-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;padding:28px 18px 34px!important}
+}
+
+/* Phone */
+@media (max-width:600px){
+  .gc-header-inner{padding:5px 8px!important;min-height:66px!important}
+  .gc-logo3-lockup{min-height:52px!important;max-height:62px!important}
+  .gc-logo3-image{max-width:255px!important;max-height:60px!important;object-fit:contain!important}
+  .gc-menu-button{padding:10px 15px!important;border-radius:999px!important;min-width:76px!important;justify-content:center!important}
+  .gc-beautiful-hero-inner{padding:30px 18px 24px!important;gap:26px!important}
+  .gc-hero-badge{font-size:13px!important;padding:8px 14px!important}
+  .gc-beautiful-hero h1{font-size:clamp(36px,10.5vw,48px)!important;letter-spacing:-1.5px!important;margin:17px 0 13px!important}
+  .gc-beautiful-hero-sub{font-size:17px!important;line-height:1.45!important;margin-bottom:20px!important}
+  .gc-hero-points{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:14px 10px!important;margin:8px 0 24px!important}
+  .gc-hero-point{font-size:13px!important;line-height:1.2!important;gap:7px!important}
+  .gc-hero-icon{width:42px!important;height:42px!important;flex:0 0 42px!important}
+  .gc-beautiful-actions{display:grid!important;grid-template-columns:1fr!important;gap:12px!important}
+  .gc-beautiful-primary,.gc-beautiful-secondary{width:100%!important;min-width:0!important;padding:13px 18px!important;font-size:14px!important}
+  .gc-hero-art-wrap{width:100%!important;margin-top:0!important}
+  .gc-hero-art{width:100%!important;border-radius:22px 22px 0 0!important}
+  .gc-quick-grid{grid-template-columns:1fr!important;padding:22px 14px 30px!important;gap:14px!important}
+  .gc-quick-card{min-height:165px!important;padding:18px!important;border-radius:18px!important}
+  .gc-quick-card h3{font-size:17px!important}
+  .gc-quick-card p{font-size:12px!important}
+}
+
+/* Small phones */
+@media (max-width:390px){
+  .gc-logo3-image{max-width:225px!important;max-height:54px!important}
+  .gc-menu-button{min-width:70px!important;padding:9px 12px!important}
+  .gc-beautiful-hero-inner{padding:26px 14px 20px!important}
+  .gc-beautiful-hero h1{font-size:35px!important}
+  .gc-hero-points{gap:12px 6px!important}
+  .gc-hero-point{font-size:12px!important}
+  .gc-hero-icon{width:38px!important;height:38px!important;flex-basis:38px!important}
+}
+
+/* Prevent long content anywhere else on the site from creating horizontal scrolling */
+section,header,footer,main,nav,.container,.max-w-7xl,.max-w-6xl{max-width:100%!important}
+input,select,textarea,button{max-width:100%}
+.table-responsive,.table-wrap,.responsive-table{max-width:100%!important;overflow-x:auto!important}
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 <!-- Header / Navbar -->
