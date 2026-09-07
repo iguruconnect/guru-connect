@@ -11170,6 +11170,158 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
 
 <!-- GURU CONNECT FINAL AUTH + RLS EDIT FIX -->
 
+
+<!-- GURU CONNECT FINAL UI PATCH -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style id="gc-final-ui-overrides">
+/* ---------- MODERN SLEEK TYPOGRAPHY ---------- */
+:root{--gc-modern-font:'Inter','Manrope',Arial,sans-serif;}
+html,body{font-family:var(--gc-modern-font)!important;}
+header,.gc-beautiful-header,.gc-beautiful-header *{font-family:var(--gc-modern-font)!important;}
+header .gc-beautiful-name{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  color:#123b8f!important;background:none!important;-webkit-text-fill-color:#123b8f!important;
+  font-size:clamp(20px,2vw,28px)!important;font-weight:800!important;letter-spacing:-.8px!important;
+  line-height:1!important;margin:0!important;padding:0!important;box-shadow:none!important;border-radius:0!important;
+}
+header .gc-beautiful-connect{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  font-family:var(--gc-modern-font)!important;font-weight:400!important;color:#1264d8!important;
+  font-size:clamp(10px,1.1vw,15px)!important;letter-spacing:5px!important;line-height:1!important;
+}
+header .gc-beautiful-slogan{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  font-family:var(--gc-modern-font)!important;font-weight:500!important;color:#52637e!important;
+  font-size:clamp(6px,.62vw,8px)!important;letter-spacing:1.15px!important;line-height:1.1!important;
+}
+header .gc-beautiful-lockup{display:flex!important;align-items:center!important;gap:11px!important;min-width:270px!important;flex:0 0 auto!important;}
+header .gc-beautiful-brand{display:flex!important;flex-direction:column!important;justify-content:center!important;min-width:0!important;overflow:visible!important;}
+header .gc-logo-holder{width:76px!important;height:76px!important;flex:0 0 76px!important;background:transparent!important;border:0!important;box-shadow:none!important;overflow:visible!important;}
+header .gc-beautiful-mark{width:100%!important;height:100%!important;object-fit:contain!important;background:transparent!important;}
+
+/* Navigation: sleek, not heavy */
+header .gc-beautiful-nav a{
+  font-family:var(--gc-modern-font)!important;font-size:12px!important;font-weight:650!important;
+  letter-spacing:.01em!important;color:#173565!important;text-decoration:none!important;
+  padding:9px 10px!important;border-radius:10px!important;transition:.18s ease!important;
+}
+header .gc-beautiful-nav a:hover{background:#eef6ff!important;color:#1264d8!important;transform:none!important;}
+header .gc-beautiful-nav .gc-beautiful-home{
+  background:#1264d8!important;color:#fff!important;box-shadow:0 7px 16px rgba(18,100,216,.20)!important;
+}
+header .gc-header-contact{
+  background:#ff8a00!important;color:#fff!important;border:0!important;
+  box-shadow:0 7px 16px rgba(255,138,0,.20)!important;
+  font-family:var(--gc-modern-font)!important;font-weight:650!important;
+}
+header .gc-menu-button{
+  background:#1264d8!important;border:1px solid #0d55bd!important;color:#fff!important;
+  font-family:var(--gc-modern-font)!important;font-weight:700!important;box-shadow:0 7px 16px rgba(18,100,216,.20)!important;
+}
+header .gc-menu-button:hover{background:#0d55bd!important;}
+
+/* ---------- WHITE MENU + COLORED SELECTED TAB ---------- */
+#publicNavbarLinks{background:#fff!important;border:1px solid #dbe5f0!important;}
+#publicNavbarLinks a,
+#publicNavbarLinks .gc-menu-yellow-item,
+#publicNavbarLinks > a:not(.gc-mobile-login-item):not(.gc-mobile-staff-item){
+  background:#fff!important;color:#334b70!important;border:1px solid transparent!important;
+  font-family:var(--gc-modern-font)!important;font-size:12px!important;font-weight:600!important;
+  letter-spacing:.01em!important;box-shadow:none!important;transform:none!important;
+}
+#publicNavbarLinks a:hover,
+#publicNavbarLinks .gc-menu-yellow-item:hover,
+#publicNavbarLinks > a:not(.gc-mobile-login-item):not(.gc-mobile-staff-item):hover{
+  background:#eef6ff!important;color:#1264d8!important;border-color:#cfe3ff!important;
+  box-shadow:none!important;transform:none!important;
+}
+#publicNavbarLinks a.gc-menu-active{
+  background:#1264d8!important;color:#fff!important;border-color:#1264d8!important;
+  box-shadow:0 6px 14px rgba(18,100,216,.18)!important;
+}
+#publicNavbarLinks .gc-mobile-login-item,#publicNavbarLinks .gc-mobile-staff-item{font-family:var(--gc-modern-font)!important;font-weight:650!important;}
+
+/* ---------- HERO IMAGE: REMOVE CARD LOOK + BLEND INTO HERO ---------- */
+.gc-beautiful-hero{background:linear-gradient(115deg,#0c4ed8 0%,#087ddc 25%,#04a8d5 48%,#8d54e9 72%,#ffd82e 100%)!important;}
+.gc-hero-art-wrap{
+  position:relative!important;align-self:stretch!important;min-height:360px!important;
+  display:flex!important;justify-content:center!important;align-items:flex-end!important;
+  background:radial-gradient(circle at 48% 45%,rgba(255,255,255,.12),transparent 48%),linear-gradient(115deg,rgba(12,78,216,.15),rgba(4,168,213,.12),rgba(141,84,233,.16),rgba(255,216,46,.12))!important;
+  overflow:hidden!important;
+}
+.gc-hero-art-wrap:after{display:none!important;}
+.gc-hero-art{
+  width:min(100%,760px)!important;max-width:760px!important;height:auto!important;
+  border-radius:0!important;box-shadow:none!important;object-fit:cover!important;
+  filter:saturate(1.03) contrast(1.01)!important;
+  -webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 82%,rgba(0,0,0,.75) 91%,transparent 100%)!important;
+  mask-image:linear-gradient(to bottom,#000 0%,#000 82%,rgba(0,0,0,.75) 91%,transparent 100%)!important;
+}
+/* Blend the outer right edge instead of leaving a hard rectangular boundary. */
+@media(min-width:851px){
+ .gc-hero-art{margin-right:-28px!important;}
+ .gc-hero-art-wrap{margin-right:-24px!important;}
+}
+
+/* ---------- HEADINGS / SECTIONS ---------- */
+h1,h2,h3,h4,h5,h6{font-family:var(--gc-modern-font)!important;}
+.gc-beautiful-hero h1{font-family:var(--gc-modern-font)!important;font-weight:800!important;letter-spacing:-1.8px!important;}
+.gc-beautiful-hero-sub,.gc-hero-point{font-family:var(--gc-modern-font)!important;font-weight:550!important;}
+
+/* ---------- NO BLACK X IN MENU / HEADER ---------- */
+#publicMenuWrapper .fa-xmark,#publicMenuWrapper .fa-times,#publicMenuWrapper .fa-close,
+header .menu-close,header .mobile-menu-close,header .gc-mobile-menu-close,
+header button[aria-label*="close" i]{display:none!important;}
+/* Registration X is shown only while registration is actually open. */
+.gc-registration-close{display:none!important;}
+.gc-registration-overlay .gc-registration-close{display:flex!important;}
+
+/* Keep mobile menu clean and white */
+@media(max-width:760px){
+  header .gc-header-inner{min-height:72px!important;padding:5px 10px!important;gap:7px!important;}
+  header .gc-beautiful-lockup{min-width:0!important;gap:7px!important;flex:1 1 auto!important;}
+  header .gc-logo-holder{width:64px!important;height:64px!important;flex-basis:64px!important;}
+  header .gc-beautiful-name{font-size:18px!important;letter-spacing:-.55px!important;}
+  header .gc-beautiful-connect{font-size:8.5px!important;letter-spacing:2.7px!important;margin-top:3px!important;}
+  header .gc-beautiful-slogan{font-size:5.5px!important;letter-spacing:.55px!important;margin-top:4px!important;}
+  header .gc-beautiful-nav{display:none!important;}
+  #publicNavbarLinks{background:#fff!important;}
+  .gc-hero-art-wrap{min-height:300px!important;margin:0!important;background:linear-gradient(135deg,#087ddc,#04a8d5,#8d54e9)!important;}
+  .gc-hero-art{width:112%!important;max-width:none!important;margin:0 -6% -2px!important;}
+}
+@media(max-width:430px){
+  header .gc-logo-holder{width:60px!important;height:60px!important;flex-basis:60px!important;}
+  header .gc-beautiful-name{font-size:16px!important;}
+  header .gc-beautiful-connect{font-size:7.5px!important;letter-spacing:2.2px!important;}
+  header .gc-beautiful-slogan{font-size:5px!important;letter-spacing:.35px!important;}
+}
+</style>
+<script id="gc-final-active-menu-patch">
+(function(){
+  function setActive(){
+    var hash=location.hash||'#home';
+    var links=document.querySelectorAll('#publicNavbarLinks a');
+    links.forEach(function(a){
+      a.classList.remove('gc-menu-active');
+      var href=a.getAttribute('href')||'';
+      if(href===hash || (hash==='#home' && href==='#home')) a.classList.add('gc-menu-active');
+    });
+  }
+  document.addEventListener('DOMContentLoaded',function(){
+    setActive();
+    document.addEventListener('click',function(e){
+      var a=e.target.closest && e.target.closest('#publicNavbarLinks a');
+      if(a){
+        document.querySelectorAll('#publicNavbarLinks a').forEach(function(x){x.classList.remove('gc-menu-active');});
+        a.classList.add('gc-menu-active');
+      }
+    },true);
+  });
+  window.addEventListener('hashchange',setActive);
+})();
+</script>
 </body>
 </html>
 <!-- =========================================================
