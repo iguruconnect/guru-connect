@@ -12711,3 +12711,67 @@ header button[aria-label*="close" i]{display:none!important;}
   .gc-beautiful-connect{font-size:7px!important;letter-spacing:1.4px!important;}
 }
 </style>
+<style id="gc-final-mobile-no-cut-clean">
+/* FINAL MOBILE HEADER/SEAM FIX */
+@media (max-width:850px){
+  .gc-beautiful-header{overflow:visible!important;border-bottom:0!important;box-shadow:none!important;}
+  .gc-header-inner{
+    min-height:0!important;
+    height:auto!important;
+    padding:5px 8px!important;
+    gap:10px!important;
+    align-items:center!important;
+    box-sizing:border-box!important;
+    border-bottom:0!important;
+  }
+  .gc-logo3-lockup{
+    flex:1 1 auto!important;
+    width:auto!important;
+    min-width:0!important;
+    max-width:calc(100% - 82px)!important;
+    height:auto!important;
+    aspect-ratio:2048 / 684!important;
+    background:transparent!important;
+    overflow:visible!important;
+  }
+  .gc-logo3-image{
+    width:100%!important;
+    height:auto!important;
+    max-width:400px!important;
+    display:block!important;
+    background:transparent!important;
+    object-fit:contain!important;
+  }
+  #publicMenuWrapper{flex:0 0 auto!important;width:70px!important;min-width:70px!important;max-width:70px!important;}
+  .gc-menu-button{width:70px!important;min-width:70px!important;height:40px!important;padding:0!important;border-radius:18px!important;}
+
+  /* No separator line between header and hero. */
+  .gc-beautiful-header + *,
+  .gc-beautiful-hero{border-top:0!important;box-shadow:none!important;}
+
+  /* Hero artwork: fade all four edges into the hero background, without cropping. */
+  .gc-hero-art-wrap{overflow:hidden!important;background:transparent!important;}
+  .gc-hero-art{
+    width:100%!important;
+    max-width:740px!important;
+    height:auto!important;
+    object-fit:contain!important;
+    -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 5%,#000 90%,transparent 100%),linear-gradient(to right,transparent 0%,#000 5%,#000 95%,transparent 100%)!important;
+    -webkit-mask-composite:source-in!important;
+    mask-image:linear-gradient(to bottom,transparent 0%,#000 5%,#000 90%,transparent 100%),linear-gradient(to right,transparent 0%,#000 5%,#000 95%,transparent 100%)!important;
+    mask-composite:intersect!important;
+  }
+}
+@media (max-width:520px){
+  .gc-header-inner{padding:4px 7px!important;gap:9px!important;}
+  .gc-logo3-lockup{max-width:calc(100% - 74px)!important;}
+  .gc-logo3-image{max-width:270px!important;}
+  #publicMenuWrapper{width:64px!important;min-width:64px!important;max-width:64px!important;}
+  .gc-menu-button{width:64px!important;min-width:64px!important;height:38px!important;font-size:10px!important;}
+}
+@media (max-width:380px){
+  .gc-logo3-image{max-width:235px!important;}
+  .gc-logo3-lockup{max-width:calc(100% - 70px)!important;}
+  #publicMenuWrapper,.gc-menu-button{width:60px!important;min-width:60px!important;max-width:60px!important;}
+}
+</style>
