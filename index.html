@@ -11330,6 +11330,177 @@ header button[aria-label*="close" i]{display:none!important;}
 @media(max-width:1100px){.gc-beautiful-lockup{min-width:350px!important}.gc-beautiful-name{font-size:25px!important}}
 @media(max-width:768px){.gc-beautiful-lockup{min-width:0!important;max-width:calc(100vw - 120px)!important}.gc-beautiful-name{font-size:18px!important;letter-spacing:-.6px!important;white-space:nowrap!important}.gc-beautiful-connect{font-size:8px!important}.gc-beautiful-slogan{font-size:5.5px!important;letter-spacing:.5px!important}}
 </style>
+
+<!-- GURU CONNECT FINAL HEADER / HERO / ICON CLEANUP PATCH -->
+<style id="gc-final-brand-visibility-and-hero-merge">
+/* ===== BRAND: permanently visible beside logo ===== */
+.gc-beautiful-header .gc-header-inner{
+  display:flex!important;
+  align-items:center!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  padding-left:24px!important;
+  padding-right:24px!important;
+  gap:22px!important;
+}
+.gc-beautiful-header .gc-beautiful-lockup{
+  display:flex!important;
+  align-items:center!important;
+  flex:0 0 390px!important;
+  width:390px!important;
+  min-width:390px!important;
+  max-width:390px!important;
+  gap:12px!important;
+  overflow:visible!important;
+  position:relative!important;
+  z-index:20!important;
+}
+.gc-beautiful-header .gc-logo-holder{
+  flex:0 0 82px!important;
+  width:82px!important;
+  height:82px!important;
+}
+.gc-beautiful-header .gc-beautiful-brand{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  flex:0 0 auto!important;
+  min-width:0!important;
+  width:auto!important;
+  overflow:visible!important;
+  white-space:nowrap!important;
+}
+.gc-beautiful-header .gc-beautiful-name{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  white-space:nowrap!important;
+  color:#123b8f!important;
+  -webkit-text-fill-color:#123b8f!important;
+  background:none!important;
+  font-size:28px!important;
+  font-weight:800!important;
+  line-height:1.05!important;
+  letter-spacing:-.8px!important;
+  width:max-content!important;
+  max-width:none!important;
+}
+.gc-beautiful-header .gc-beautiful-connect{
+  display:block!important;
+  white-space:nowrap!important;
+  font-size:14px!important;
+  letter-spacing:5px!important;
+  font-weight:400!important;
+}
+.gc-beautiful-header .gc-beautiful-slogan{
+  display:block!important;
+  white-space:nowrap!important;
+  font-size:7px!important;
+  letter-spacing:1.1px!important;
+  margin-top:5px!important;
+}
+.gc-beautiful-header .gc-beautiful-nav{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  display:flex!important;
+  justify-content:flex-end!important;
+  align-items:center!important;
+  overflow:visible!important;
+}
+.gc-beautiful-header .gc-header-actions{
+  flex:0 0 auto!important;
+}
+
+/* ===== REMOVE SQUARE/UNKNOWN ICONS FROM CONTACT + MENU ===== */
+.gc-beautiful-header .gc-header-contact i,
+.gc-beautiful-header .gc-menu-button i{display:none!important;}
+.gc-beautiful-header .gc-header-contact,
+.gc-beautiful-header .gc-menu-button{
+  font-family:var(--gc-modern-font)!important;
+  font-size:13px!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+.gc-beautiful-header .gc-header-contact::after{content:'Contact Us';}
+.gc-beautiful-header .gc-header-contact{font-size:0!important;}
+.gc-beautiful-header .gc-header-contact::after{font-size:13px!important;}
+.gc-beautiful-header .gc-menu-button::after{content:'MENU';font-size:13px!important;}
+.gc-beautiful-header .gc-menu-button{font-size:0!important;}
+
+/* ===== HERO ART: seamless blend, no pasted-card appearance ===== */
+.gc-beautiful-hero-inner{overflow:visible!important;}
+.gc-hero-art-wrap{
+  overflow:hidden!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.gc-hero-art{
+  width:min(110%,820px)!important;
+  max-width:820px!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  background:transparent!important;
+  mix-blend-mode:normal!important;
+  -webkit-mask-image:
+    linear-gradient(to right,transparent 0%,#000 7%,#000 93%,transparent 100%),
+    linear-gradient(to bottom,#000 0%,#000 84%,rgba(0,0,0,.78) 93%,transparent 100%)!important;
+  -webkit-mask-composite:source-in!important;
+  mask-image:
+    linear-gradient(to right,transparent 0%,#000 7%,#000 93%,transparent 100%),
+    linear-gradient(to bottom,#000 0%,#000 84%,rgba(0,0,0,.78) 93%,transparent 100%)!important;
+  mask-composite:intersect!important;
+}
+@media(min-width:851px){
+  .gc-hero-art-wrap{margin-right:-36px!important;}
+  .gc-hero-art{margin-right:-34px!important;}
+}
+
+/* ===== RESPONSIVE BRAND ===== */
+@media(max-width:1180px){
+  .gc-beautiful-header .gc-header-inner{padding-left:14px!important;padding-right:14px!important;gap:12px!important;}
+  .gc-beautiful-header .gc-beautiful-lockup{flex-basis:330px!important;width:330px!important;min-width:330px!important;max-width:330px!important;gap:9px!important;}
+  .gc-beautiful-header .gc-logo-holder{flex-basis:70px!important;width:70px!important;height:70px!important;}
+  .gc-beautiful-header .gc-beautiful-name{font-size:23px!important;}
+  .gc-beautiful-header .gc-beautiful-connect{font-size:12px!important;letter-spacing:4px!important;}
+  .gc-beautiful-header .gc-beautiful-slogan{font-size:6px!important;letter-spacing:.8px!important;}
+}
+@media(max-width:850px){
+  .gc-beautiful-header .gc-header-inner{padding:6px 10px!important;}
+  .gc-beautiful-header .gc-beautiful-lockup{flex:1 1 auto!important;width:auto!important;min-width:0!important;max-width:none!important;}
+  .gc-beautiful-header .gc-beautiful-nav{display:none!important;}
+  .gc-beautiful-header .gc-beautiful-name{font-size:21px!important;}
+  .gc-beautiful-header .gc-beautiful-connect{font-size:10px!important;letter-spacing:3px!important;}
+  .gc-beautiful-header .gc-beautiful-slogan{font-size:5.8px!important;letter-spacing:.55px!important;}
+  .gc-beautiful-header .gc-logo-holder{flex-basis:64px!important;width:64px!important;height:64px!important;}
+  .gc-beautiful-header .gc-header-actions{flex:0 0 auto!important;}
+  .gc-hero-art-wrap{min-height:330px!important;margin:0!important;}
+  .gc-hero-art{width:112%!important;max-width:none!important;margin:0 -6% -4px!important;}
+}
+@media(max-width:520px){
+  .gc-beautiful-header .gc-header-inner{gap:7px!important;padding:5px 8px!important;}
+  .gc-beautiful-header .gc-logo-holder{flex-basis:58px!important;width:58px!important;height:58px!important;}
+  .gc-beautiful-header .gc-beautiful-lockup{gap:7px!important;}
+  .gc-beautiful-header .gc-beautiful-name{font-size:18px!important;letter-spacing:-.5px!important;}
+  .gc-beautiful-header .gc-beautiful-connect{font-size:8px!important;letter-spacing:2.2px!important;}
+  .gc-beautiful-header .gc-beautiful-slogan{font-size:5px!important;letter-spacing:.35px!important;}
+  .gc-beautiful-header .gc-header-contact{display:none!important;}
+  .gc-beautiful-header .gc-menu-button{min-width:58px!important;padding:9px 11px!important;}
+}
+</style>
+<script id="gc-final-header-clean-text">
+(function(){
+  function cleanHeader(){
+    var c=document.querySelector('.gc-beautiful-header .gc-header-contact');
+    var m=document.querySelector('.gc-beautiful-header .gc-menu-button');
+    if(c){c.innerHTML='Contact Us';}
+    if(m){m.innerHTML='MENU';}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',cleanHeader,{once:true});
+  else cleanHeader();
+})();
+</script>
 </body>
 </html>
 <!-- =========================================================
