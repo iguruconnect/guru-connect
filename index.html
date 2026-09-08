@@ -11889,167 +11889,44 @@ header button[aria-label*="close" i]{display:none!important;}
 </style>
 
 
-<!-- =========================================================
- GURU CONNECT — FINAL INTEGRATION
- A) Menu Student/Tutor Login fix
- B) Learning Requests + Coins
- C) Admin "View as Student" dashboard/profile panel
- ========================================================= -->
-<style id="gc-final-integration-style">
-.gc-final-banner{max-width:1280px;margin:18px auto;padding:0 16px}
-.gc-final-banner-inner{border:1px solid #bfdbfe;background:linear-gradient(135deg,#eff6ff,#fff7ed);border-radius:24px;padding:18px 20px;display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.gc-final-banner h3{margin:0;color:#172c67;font-size:18px;font-weight:950}.gc-final-banner p{margin:5px 0 0;color:#475569;font-size:12px;font-weight:650}
-.gc-final-btn{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:13px;padding:11px 15px;background:#172c67;color:#fff;font-weight:900;font-size:12px;cursor:pointer}
-.gc-final-page{display:none;max-width:1280px;margin:22px auto 50px;padding:0 16px}.gc-final-page.open{display:block}
-.gc-final-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:14px}
-.gc-final-card{background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:17px;box-shadow:0 10px 28px rgba(15,23,42,.06)}
-.gc-final-card h4{margin:0;color:#172c67;font-size:15px;font-weight:950}.gc-final-meta{font-size:11px;color:#64748b;margin-top:7px;line-height:1.6}.gc-final-desc{font-size:12px;color:#334155;margin-top:10px;line-height:1.6;white-space:pre-line}
-.gc-final-tag{display:inline-block;background:#eff6ff;color:#1d4ed8;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:900;margin:9px 5px 0 0}.gc-final-status{display:inline-block;border-radius:999px;padding:5px 8px;font-size:10px;font-weight:900;background:#ecfdf5;color:#047857}
-.gc-final-empty{padding:30px;text-align:center;color:#64748b;background:#f8fafc;border:1px dashed #cbd5e1;border-radius:18px;font-size:12px;font-weight:700}
-.gc-final-launcher{position:fixed;right:20px;bottom:88px;z-index:60;background:linear-gradient(135deg,#172c67,#2563eb);color:#fff;border-radius:18px;padding:13px 16px;box-shadow:0 18px 45px rgba(23,44,103,.28);font-weight:900;font-size:12px;border:0;cursor:pointer}
-.gc-final-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 14px}.gc-final-tab{border:1px solid #cbd5e1;background:#fff;border-radius:999px;padding:8px 11px;font-size:11px;font-weight:900;color:#334155;cursor:pointer}.gc-final-tab.active{background:#172c67;color:#fff;border-color:#172c67}
-.gc-final-panel{display:none}.gc-final-panel.active{display:block}.gc-final-balance{font-size:30px;font-weight:950;color:#172c67}.gc-final-table{width:100%;border-collapse:collapse;font-size:11px}.gc-final-table th,.gc-final-table td{padding:9px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:top}.gc-final-table th{color:#64748b;font-size:9px;text-transform:uppercase}
-.gc-admin-view{margin-top:15px;border-top:1px solid #e2e8f0;padding-top:15px}.gc-admin-view h3{font-size:16px;font-weight:950;color:#172c67}
-@media(max-width:640px){.gc-final-launcher{right:12px;bottom:76px}}
-</style>
+<!-- GURU CONNECT — Menu Student/Tutor Login Fix -->
+<script id="gc-menu-login-fix">
+(function () {
+  function resetOtpModal(role) {
+    var modal = document.getElementById('loginModal');
+    if (!modal) return;
+    var roleInput = document.getElementById('loginRoleInput');
+    var phoneInput = document.getElementById('loginPhoneInput');
+    var otpInput = document.getElementById('otpCodeInput');
+    var step1 = document.getElementById('otpStep1');
+    var step2 = document.getElementById('otpStep2');
+    var generated = document.getElementById('generatedOtpDisplay');
 
-<section class="gc-final-banner" id="gcLearningRequestsHighlight">
-  <div class="gc-final-banner-inner">
-    <div><h3><i class="fa-solid fa-bullhorn"></i> LIVE LEARNING REQUESTS</h3><p>Students can post learning requirements and registered tutors can view and claim them.</p></div>
-    <button class="gc-final-btn" type="button" onclick="GC_FINAL.openRequests()">VIEW LEARNING REQUESTS</button>
-  </div>
-</section>
-<section class="gc-final-page" id="gcLearningRequestsPage">
-  <div class="flex items-start justify-between gap-3 flex-wrap mb-4">
-    <div><h2 class="text-2xl font-black text-brand-dark">Learning Requests Board</h2><p class="text-xs text-slate-500 mt-1">Every request is stored in Supabase with Student/Tutor IDs and timestamps.</p></div>
-    <button class="gc-final-btn" type="button" onclick="GC_FINAL.closeRequests()">CLOSE</button>
-  </div>
-  <div id="gcLearningRequestsList" class="gc-final-grid"></div>
-</section>
-<button class="gc-final-launcher" type="button" onclick="GC_FINAL.openRequests()"><i class="fa-solid fa-clipboard-list"></i> LEARNING REQUESTS</button>
+    if (roleInput) roleInput.value = role;
+    if (phoneInput) phoneInput.value = '';
+    if (otpInput) otpInput.value = '';
+    if (generated) generated.textContent = '';
+    if (step1) step1.classList.remove('hidden');
+    if (step2) step2.classList.add('hidden');
 
-<script id="gc-final-integration-script">
-(function(){
-"use strict";
-const COST=100;
-const $=id=>document.getElementById(id);
-const esc=v=>String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-function profile(){try{return typeof getCurrentUserProfile==="function"?getCurrentUserProfile():null}catch(e){return null}}
-function role(p){return String(p?.registrationRole||p?.role||localStorage.getItem("active_user_role")||"").toLowerCase()}
-function pid(p){return String(p?.id||p?.gcId||p?.studentId||p?.tutorId||"")}
-async function rpc(name,args){if(!window.gcSupabase)throw Error("Supabase connection is unavailable.");const r=await window.gcSupabase.rpc(name,args);if(r.error)throw r.error;return r.data}
-async function authId(){try{const r=await window.gcSupabase.auth.getUser();return r?.data?.user?.id||null}catch(e){return null}}
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    setTimeout(function () {
+      if (phoneInput) phoneInput.focus();
+    }, 80);
+  }
 
-async function loadRequests(){
- const box=$("gcLearningRequestsList"); if(!box)return;
- box.innerHTML='<div class="gc-final-empty">Loading learning requests…</div>';
- if(!window.gcSupabase){box.innerHTML='<div class="gc-final-empty">Supabase is not connected.</div>';return}
- const {data,error}=await window.gcSupabase.from("gc_learning_requests").select("*").order("created_at",{ascending:false}).limit(100);
- if(error){box.innerHTML='<div class="gc-final-empty">Could not load requests. Check that the Supabase SQL setup has been completed.</div>';return}
- if(!data?.length){box.innerHTML='<div class="gc-final-empty">No learning requests yet.</div>';return}
- const p=profile(),r=role(p);
- box.innerHTML=data.map(x=>`<article class="gc-final-card">
- <div class="flex items-start justify-between gap-3"><h4>${esc(x.subject||"Learning Request")}</h4><span class="gc-final-status">${esc(x.status||"open").toUpperCase()}</span></div>
- <div class="gc-final-meta">Student ID: <b>${esc(x.student_id)}</b><br>Course: ${esc(x.course||"—")} • Stream: ${esc(x.stream||"—")}<br>Topic: ${esc(x.topic||"—")}<br>Date & Time: ${x.created_at?new Date(x.created_at).toLocaleString():"—"}</div>
- <span class="gc-final-tag">100 coins</span><span class="gc-final-tag">${esc(x.mode||"Online")}</span>
- <div class="gc-final-desc">${esc(x.problem||"")}</div>
- ${r==="tutor"&&x.status==="open"?`<button class="gc-final-btn mt-3 w-full" type="button" onclick="GC_FINAL.claim('${esc(x.id)}')">CONNECT / TAKE THIS REQUEST</button>`:""}
- </article>`).join("");
-}
+  window.openStudentLoginModal = function () {
+    resetOtpModal('student');
+  };
 
-async function submitRequest(e){
- e.preventDefault();const p=profile();
- if(!p||role(p)!=="student"){alert("Please log in as a Student to post a learning request.");return}
- const sid=pid(p), subject=$("req_subject")?.value.trim(), topic=$("req_topic")?.value.trim(), problem=$("req_desc")?.value.trim(), mode=$("req_mode")?.value||"Online";
- if(!sid||!subject||!problem){alert("Please complete Subject and Problem/Issue.");return}
- const b=e.target.querySelector('[type="submit"]');const old=b?.textContent;if(b){b.disabled=true;b.textContent="POSTING…"}
- try{
-  const id=await authId();
-  await rpc("gc_submit_learning_request",{p_student_id:sid,p_student_auth_id:id,p_course:String(p.course||p.std||""),p_stream:String(p.stream||""),p_subject:subject,p_topic:topic||subject,p_mode:mode,p_problem:problem,p_cost:COST});
-  alert("Learning request posted. 100 coins have been recorded as spent.");e.target.reset();await loadRequests();await renderOwnRecords();
- }catch(err){console.error(err);alert(err?.message||"Request could not be posted.");}
- finally{if(b){b.disabled=false;b.textContent=old}}
-}
+  window.openTutorLoginModal = function () {
+    resetOtpModal('tutor');
+  };
 
-async function claim(id){
- const p=profile();if(!p||role(p)!=="tutor"){alert("Only a Tutor can claim a request.");return}
- try{await rpc("gc_tutor_claim_learning_request",{p_request_id:id,p_tutor_id:pid(p),p_tutor_auth_id:await authId()});alert("Request connection recorded.");await loadRequests();await renderOwnRecords()}
- catch(e){console.error(e);alert(e?.message||"Could not claim request.")}
-}
-
-async function recordsFor(p){
- if(!window.gcSupabase||!p)return {requests:[],coins:[],balance:0};
- const id=pid(p),r=role(p);
- const rq=window.gcSupabase.from("gc_learning_requests").select("*").order("created_at",{ascending:false}).limit(200);
- if(r==="student")rq.eq("student_id",id);else rq.eq("tutor_id",id);
- const [a,b,c]=await Promise.all([rq,window.gcSupabase.from("gc_coin_ledger").select("*").eq("profile_id",id).order("created_at",{ascending:false}).limit(200),window.gcSupabase.from("gc_coin_wallets").select("balance").eq("profile_id",id).maybeSingle()]);
- return {requests:a.data||[],coins:b.data||[],balance:Number(c.data?.balance||0)};
-}
-
-async function renderOwnRecords(){
- const host=$("userDashboardContent");const p=profile();if(!host||!p)return;
- let d;try{d=await recordsFor(p)}catch(e){return}
- $("gcOwnRecords")?.remove();
- const req=d.requests.map(x=>`<tr><td>${esc(x.id)}</td><td>${esc(x.student_id)}</td><td>${esc(x.tutor_id||"—")}</td><td>${esc(x.subject)}</td><td>${esc(x.topic||"—")}</td><td>${esc(x.status)}</td><td>${new Date(x.created_at).toLocaleString()}</td></tr>`).join("")||'<tr><td colspan="7">No records yet.</td></tr>';
- const coins=d.coins.map(x=>`<tr><td>${esc(x.entry_type)}</td><td>${Number(x.amount)>0?"+":""}${Number(x.amount)}</td><td>${esc(x.reason)}</td><td>${new Date(x.created_at).toLocaleString()}</td></tr>`).join("")||'<tr><td colspan="4">No coin entries yet.</td></tr>';
- const s=document.createElement("section");s.id="gcOwnRecords";s.className="mt-6";
- s.innerHTML=`<div class="gc-final-tabs"><button class="gc-final-tab active" data-t="r">REQUEST RECORDS</button><button class="gc-final-tab" data-t="c">COINS</button></div>
- <div class="gc-final-panel active" data-p="r"><div class="overflow-x-auto"><table class="gc-final-table"><thead><tr><th>Request ID</th><th>Student ID</th><th>Tutor ID</th><th>Subject</th><th>Topic</th><th>Status</th><th>Date & Time</th></tr></thead><tbody>${req}</tbody></table></div></div>
- <div class="gc-final-panel" data-p="c"><div class="gc-final-card"><div class="text-[10px] text-slate-500 font-bold">CURRENT COIN BALANCE</div><div class="gc-final-balance">${d.balance} 🪙</div></div><div class="overflow-x-auto mt-3"><table class="gc-final-table"><thead><tr><th>Entry</th><th>Coins</th><th>Reason</th><th>Date & Time</th></tr></thead><tbody>${coins}</tbody></table></div></div>`;
- s.querySelectorAll(".gc-final-tab").forEach(b=>b.onclick=()=>{s.querySelectorAll(".gc-final-tab").forEach(x=>x.classList.remove("active"));s.querySelectorAll(".gc-final-panel").forEach(x=>x.classList.remove("active"));b.classList.add("active");s.querySelector(`[data-p="${b.dataset.t}"]`).classList.add("active")});
- host.appendChild(s);
-}
-
-function patchRequestForm(){
- const f=$("protectedReqForm");if(!f)return;
- if(!$("req_topic")){const d=$("req_desc")?.closest("div");if(d)d.insertAdjacentHTML("beforebegin",`<div><label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase mb-1">Topic / Chapter *</label><input id="req_topic" class="w-full border rounded-xl p-3 text-xs sm:text-sm bg-white" placeholder="e.g. Chapter 3 / Newton's Laws" required type="text"></div><div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-xs text-amber-900 font-bold"><i class="fa-solid fa-coins"></i> Posting costs <b>100 GURU COINS</b>. This transaction is permanently recorded.</div>`)}
- f.onsubmit=submitRequest;
-}
-
-function addMenuRequest(){
- const nav=document.querySelector("nav");if(!nav||nav.querySelector("[data-gc-final-request-menu]"))return;
- const b=document.createElement("button");b.type="button";b.dataset.gcFinalRequestMenu="1";b.textContent="LEARNING REQUESTS";b.className="text-xs font-black text-brand-dark hover:text-brand-blue whitespace-nowrap";b.onclick=()=>GC_FINAL.openRequests();nav.appendChild(b);
-}
-
-/* Menu login fix: safely reuses the site's existing modal. */
-function menuLogin(roleName){
- if(typeof window.openLoginModal==="function"){window.openLoginModal();setTimeout(()=>{
-   const r=$("loginRoleInput");if(r)r.value=roleName;
-   document.querySelectorAll('input[name="loginRole"],select[name="loginRole"]').forEach(x=>{x.value=roleName;x.dispatchEvent(new Event("change",{bubbles:true}))});
- },80);return}
- const modal=$("loginModal");if(!modal){alert("Login modal was not found on this page.");return}
- modal.classList.remove("hidden");modal.classList.add("flex");
- const r=$("loginRoleInput");if(r)r.value=roleName;
-}
-window.openStudentLoginModal=()=>menuLogin("student");
-window.openTutorLoginModal=()=>menuLogin("tutor");
-
-/* Admin read-only student dashboard viewer. */
-async function adminViewStudent(studentId){
- if(!window.gcSupabase){alert("Supabase is not connected.");return}
- try{
-  const [p,r,c,w]=await Promise.all([
-   window.gcSupabase.from("students").select("*").eq("id",studentId).maybeSingle(),
-   window.gcSupabase.from("gc_learning_requests").select("*").eq("student_id",studentId).order("created_at",{ascending:false}).limit(200),
-   window.gcSupabase.from("gc_coin_ledger").select("*").eq("profile_id",studentId).order("created_at",{ascending:false}).limit(200),
-   window.gcSupabase.from("gc_coin_wallets").select("balance").eq("profile_id",studentId).maybeSingle()
-  ]);
-  const panel=$("gcAdminStudentViewer")||document.createElement("section");panel.id="gcAdminStudentViewer";panel.className="gc-admin-view";
-  const pr=p.data||{};const rr=r.data||[];const cc=c.data||[];
-  panel.innerHTML=`<div class="flex justify-between gap-3 items-center flex-wrap"><div><h3>Student Dashboard — ${esc(pr.name||pr.fullName||studentId)}</h3><div class="text-xs text-slate-500">Read-only Admin view • Student ID: ${esc(studentId)}</div></div><button class="gc-final-btn" type="button" onclick="this.closest('#gcAdminStudentViewer').remove()">CLOSE</button></div>
-  <div class="gc-final-card mt-3"><b>Profile</b><div class="gc-final-meta">Student ID: ${esc(studentId)}<br>Course: ${esc(pr.course||"—")} • Stream: ${esc(pr.stream||"—")}<br>Coin Balance: <b>${Number(w.data?.balance||0)} 🪙</b></div></div>
-  <div class="overflow-x-auto mt-3"><table class="gc-final-table"><thead><tr><th>Request</th><th>Subject</th><th>Topic</th><th>Tutor ID</th><th>Status</th><th>Date & Time</th></tr></thead><tbody>${rr.map(x=>`<tr><td>${esc(x.id)}</td><td>${esc(x.subject)}</td><td>${esc(x.topic||"—")}</td><td>${esc(x.tutor_id||"—")}</td><td>${esc(x.status)}</td><td>${new Date(x.created_at).toLocaleString()}</td></tr>`).join("")||'<tr><td colspan="6">No requests.</td></tr>'}</tbody></table></div>
-  <h4 class="mt-4 font-black text-brand-dark">Coin History</h4><div class="overflow-x-auto"><table class="gc-final-table"><thead><tr><th>Type</th><th>Coins</th><th>Reason</th><th>Date & Time</th></tr></thead><tbody>${cc.map(x=>`<tr><td>${esc(x.entry_type)}</td><td>${esc(x.amount)}</td><td>${esc(x.reason)}</td><td>${new Date(x.created_at).toLocaleString()}</td></tr>`).join("")||'<tr><td colspan="4">No coin history.</td></tr>'}</tbody></table></div>`;
-  const target=$("adminDashboardContent")||document.querySelector("#adminDashboard")||document.body;target.appendChild(panel);panel.scrollIntoView({behavior:"smooth"});
- }catch(e){console.error(e);alert("Student could not be loaded. Check the Student table name/ID used by your existing Admin Dashboard.")}
-}
-window.GC_FINAL={openRequests(){ $("gcLearningRequestsPage")?.classList.add("open");$("gcLearningRequestsPage")?.scrollIntoView({behavior:"smooth"});loadRequests()},closeRequests(){ $("gcLearningRequestsPage")?.classList.remove("open")},claim,adminViewStudent,renderOwnRecords};
-
-document.addEventListener("DOMContentLoaded",()=>{
- patchRequestForm();addMenuRequest();loadRequests();
- setTimeout(renderOwnRecords,500);
- if(window.gcSupabase?.channel){try{window.gcSupabase.channel("gc-final-learning-requests").on("postgres_changes",{event:"*",schema:"public",table:"gc_learning_requests"},loadRequests).subscribe()}catch(e){}}
-});
+  window.openLoginModalForRole = function (role) {
+    resetOtpModal(role === 'tutor' ? 'tutor' : 'student');
+  };
 })();
 </script>
 
