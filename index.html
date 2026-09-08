@@ -4336,7 +4336,29 @@ footer:before{
 .gc-admin-coin-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.gc-admin-coin-kicker{font-size:10px;font-weight:950;letter-spacing:.14em;color:var(--gc-accent)}.gc-admin-coin-head h4{margin:3px 0 0;font-size:20px;font-weight:950;color:#0f172a}.gc-admin-coin-balance{font-size:24px;font-weight:950;padding:10px 16px;border-radius:14px;background:#fff;border:1px solid #dbeafe;white-space:nowrap}.gc-admin-coin-grid{display:grid;grid-template-columns:minmax(220px,.75fr) minmax(320px,1.25fr);gap:16px}.gc-admin-coin-grid label{display:block;font-size:10px;font-weight:950;letter-spacing:.08em;color:#475569;margin:0 0 7px}.gc-admin-coin-grid input,.gc-admin-coin-grid textarea{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:14px;background:#fff;padding:13px 14px;font-weight:750;outline:none}.gc-admin-coin-grid textarea{min-height:125px;resize:vertical;line-height:1.5}.gc-admin-coin-grid input:focus,.gc-admin-coin-grid textarea:focus{border-color:var(--gc-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--gc-accent) 12%,transparent)}.gc-admin-coin-actions{display:flex;align-items:center;gap:14px;margin-top:15px;flex-wrap:wrap}.gc-admin-coin-btn{border:0;border-radius:14px;padding:13px 18px;background:var(--gc-accent);color:#fff;font-weight:950;cursor:pointer;box-shadow:0 8px 20px rgba(15,23,42,.14)}.gc-admin-coin-btn:disabled{opacity:.65;cursor:wait}.gc-admin-coin-actions span{font-size:11px;font-weight:800;color:#64748b}@media(max-width:700px){#adminEditTutorModal>div,#adminEditStudentModal>div{padding:18px!important;width:98vw!important}.gc-admin-coin-grid{grid-template-columns:1fr}.gc-admin-coin-head{align-items:flex-start;flex-direction:column}.gc-admin-coin-balance{font-size:20px}}
 </style>
 </head>
-<body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative"><style id="gc-clean-boot-v4">
+<body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative"><script id="gc-profile-card-coins-v5">
+(function(){
+  function cleanCard(card){
+    if(!card)return;
+    var boxes=card.querySelectorAll('.gc-target-info-box,.gc-info-box,.gc-profile-field,.info-box');
+    var coin=null, langs=[];
+    boxes.forEach(function(b){
+      var txt=(b.innerText||b.textContent||'').trim();
+      var label=(b.querySelector('.label,.gc-target-info-label,.field-label,strong,b')?.textContent||'').trim().toUpperCase();
+      if(label==='COINS' || /^COINS\b/i.test(txt)) coin=b;
+      if(label==='LANGUAGES' || /^LANGUAGES\b/i.test(txt)) langs.push(b);
+    });
+    if(coin) langs.forEach(function(x){ if(x!==coin) x.remove(); });
+  }
+  function scan(){
+    document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card').forEach(cleanCard);
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',scan,{once:true});
+  else scan();
+  new MutationObserver(function(){ scan(); }).observe(document.documentElement,{subtree:true,childList:true});
+})();
+</script>
+<style id="gc-clean-boot-v4">
 #gcCleanBootShield{
   position:fixed!important;inset:0!important;z-index:2147483647!important;
   display:flex!important;align-items:center!important;justify-content:center!important;
@@ -12101,6 +12123,139 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
 <style id="gc-editor-dollar-v4">
 .gc-editor-dollar{display:inline-block;color:#8A5A00;font-family:Arial,Helvetica,sans-serif;font-weight:1000;font-size:1.08em;line-height:1;text-shadow:0 .4px 0 #6F4700}
 </style>
+<style id="gc-egyptian-gold-coin-v5">
+.gc-card-coin-mark,.gc-auth-coin-field .gc-dollar-coin-icon{
+  position:relative!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  flex:0 0 auto!important;
+  width:21px!important;height:21px!important;min-width:21px!important;
+  border-radius:50%!important;
+  background:linear-gradient(145deg,#fff0a3 0%,#ffd85a 16%,#d99a00 58%,#a86500 100%)!important;
+  border:1.5px solid #7b4b00!important;
+  box-shadow:inset 0 0 0 1px #ffe88a,inset 1px 1px 2px rgba(255,255,255,.7),0 1px 1px rgba(55,35,0,.28)!important;
+  color:#704200!important;
+  font-family:Georgia,'Times New Roman',serif!important;
+  font-size:10px!important;font-weight:900!important;line-height:1!important;
+  text-shadow:0 1px 0 #ffec9a!important;
+}
+.gc-auth-coin-field .gc-dollar-coin-icon{width:22px!important;height:22px!important;min-width:22px!important}
+@media(max-width:640px){
+  .gc-card-coin-mark{width:19px!important;height:19px!important;min-width:19px!important;font-size:9px!important}
+  .gc-auth-coin-field .gc-dollar-coin-icon{width:20px!important;height:20px!important;min-width:20px!important;font-size:9px!important}
+}
+</style>
+
+<style id="gc-final-coins-ui-v6">
+.gc-target-card .gc-target-info-box.gc-final-coins-box{
+  position:relative!important;
+}
+.gc-target-card .gc-final-coins-box .gc-target-icon{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  width:22px!important;min-width:22px!important;height:22px!important;
+}
+.gc-target-card .gc-final-coins-box .gc-final-gold-coin{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  width:20px!important;height:20px!important;min-width:20px!important;
+  border-radius:50%!important;
+  background:linear-gradient(145deg,#fff2a6 0%,#ffd34f 20%,#d99a00 58%,#9a6100 100%)!important;
+  border:1.5px solid #754700!important;
+  box-shadow:inset 0 0 0 1px #ffe990,inset 1px 1px 2px rgba(255,255,255,.72),0 1px 1px rgba(60,38,0,.25)!important;
+  color:#6d4100!important;
+  font-family:Georgia,"Times New Roman",serif!important;
+  font-size:9px!important;font-weight:900!important;line-height:1!important;
+  text-shadow:0 1px 0 #ffef9c!important;
+}
+.gc-target-card .gc-final-coins-box .gc-target-info-text b{color:inherit!important}
+.gc-target-card .gc-final-coins-box .gc-target-info-text span{font-weight:900!important}
+@media(max-width:520px){
+  .gc-target-card .gc-final-coins-box .gc-final-gold-coin{width:18px!important;height:18px!important;min-width:18px!important;font-size:8px!important}
+}
+</style>
+<script id="gc-final-coins-authority-v6">
+(function(){
+'use strict';
+const SB=()=>window.gcSupabase||null;
+const money=v=>Number(v||0).toLocaleString('en-IN');
+
+async function getBalances(ids){
+  const s=SB(), clean=[...new Set(ids.map(x=>String(x||'')).filter(Boolean))];
+  if(!s||!clean.length)return {};
+  try{
+    const r=await s.rpc('gc_public_coin_balances',{p_profile_ids:clean});
+    if(!r.error && Array.isArray(r.data)){
+      return Object.fromEntries(r.data.map(x=>[String(x.profile_id),Number(x.balance||0)]));
+    }
+  }catch(e){}
+  // Fallback for authenticated/admin sessions if the public RPC has not been
+  // installed yet.
+  try{
+    const r=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',clean);
+    if(!r.error)return Object.fromEntries((r.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]));
+  }catch(e){}
+  return {};
+}
+
+function label(box){
+  const e=box.querySelector('b,small,strong');
+  return String(e?.textContent||'').trim().replace(/^📍\s*/,'').toUpperCase();
+}
+function makeCoin(box,balance){
+  if(!box)return;
+  box.classList.add('gc-final-coins-box');
+  const lab=box.querySelector('b,small,strong');
+  if(lab)lab.textContent='COINS';
+  const icon=box.querySelector('.gc-target-icon,.gc-info-icon');
+  if(icon)icon.innerHTML='<span class="gc-final-gold-coin" aria-hidden="true">1</span>';
+  let value=box.querySelector('.gc-coin-value');
+  if(!value){
+    const text=box.querySelector('.gc-target-info-text');
+    if(text){
+      value=[...text.querySelectorAll('span,strong')].find(x=>x!==lab) || null;
+    }
+  }
+  if(value){
+    value.classList.add('gc-coin-value');
+    value.textContent=money(balance)+' COINS';
+  }
+}
+function fixCard(card,balance){
+  if(!card)return;
+  const boxes=[...card.querySelectorAll('.gc-target-info-box,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box')];
+  let coin=boxes.find(b=>label(b)==='COINS');
+  let languages=boxes.filter(b=>label(b)==='LANGUAGES');
+  if(!coin && languages.length) coin=languages[0];
+  if(!coin)return;
+  languages.forEach(b=>{if(b!==coin)b.remove()});
+  makeCoin(coin,balance);
+}
+async function paint(){
+  const cards=[...document.querySelectorAll('.gc-target-card')];
+  const ids=cards.map(c=>String(c.dataset.tutorId||c.dataset.studentId||'')).filter(Boolean);
+  if(!ids.length)return;
+  const map=await getBalances(ids);
+  cards.forEach(c=>fixCard(c,map[String(c.dataset.tutorId||c.dataset.studentId)]??0));
+}
+function wrapRender(name){
+  const old=window[name];
+  if(typeof old!=='function'||old.__gcFinalCoinsV6)return;
+  const f=function(){
+    const r=old.apply(this,arguments);
+    setTimeout(paint,20);
+    return r;
+  };
+  f.__gcFinalCoinsV6=true;
+  window[name]=f;
+}
+function boot(){
+  wrapRender('renderTutorDirectory');
+  wrapRender('renderStudentDirectory');
+  paint();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+window.addEventListener('load',function(){boot();setTimeout(paint,300);});
+setInterval(paint,2500);
+})();
+</script>
 </body>
 </html>
 <!-- =========================================================
