@@ -11924,13 +11924,13 @@ header button[aria-label*="close" i]{display:none!important;}
 @media(max-width:850px){.gc-auth-admin-search{grid-template-columns:1fr 1fr}.gc-auth-admin-search input{grid-column:1/-1}.gc-auth-adjust{grid-template-columns:1fr 1fr}.gc-auth-adjust button{grid-column:1/-1}}
 @media(max-width:560px){.gc-auth-dashboard-strip{grid-template-columns:1fr}.gc-auth-admin-search,.gc-auth-adjust{grid-template-columns:1fr}.gc-auth-person{align-items:flex-start;flex-direction:column}}
 </style>
-<script id="gc-coins-authoritative-v11-js">
+<script id="gc-coins-authoritative-v12-js">
 (function(){
 'use strict';
 const S=()=>window.gcSupabase||null;
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const clean=v=>String(v??'').trim();
-function hash6(v){let h=2166136261>>>0;for(const ch of String(v??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return (h.toString(36).toUpperCase().padStart(6,'0')).slice(-6)}
+function hash6(v){let h=2166136261>>>0;for(const ch of String(v??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return h.toString(36).toUpperCase().padStart(6,'0').slice(-6)}
 function publicId(id,role){return 'GC-'+(role==='student'?'S':'T')+'-'+hash6(id)}
 async function balance(id){const s=S();if(!s||!id)return 0;try{const q=await s.from('gc_coin_wallets').select('balance').eq('profile_id',String(id)).maybeSingle();return Number(q.data?.balance||0)}catch(e){return 0}}
 async function balances(ids){const s=S();if(!s||!ids.length)return{};try{const q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',[...new Set(ids.map(String))]);if(q.error)throw q.error;return Object.fromEntries((q.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]))}catch(e){return{}}}
@@ -11938,25 +11938,26 @@ function cardMeta(c){
  let role=c.classList.contains('gc-target-student')||c.classList.contains('gc-beautiful-student')||c.classList.contains('gc-new-student-card')||/student/i.test(c.className)?'student':'tutor';
  let id=c.dataset.studentId||c.dataset.tutorId||'';
  if(!id){const n=c.querySelector('[data-student-id],[data-tutor-id],[data-gc-more-tutor],[data-gc-more-student]');id=n?.dataset.studentId||n?.dataset.tutorId||n?.getAttribute('data-gc-more-tutor')||n?.getAttribute('data-gc-more-student')||''}
- if(!id){const b=c.querySelector('button[onclick*="openTutorProfile"],button[onclick*="openStudentProfile"],button[onclick*="openPublicTutorProfile"]');const m=String(b?.getAttribute('onclick')||'').match(/(?:openTutorProfile|openStudentProfile|openPublicTutorProfile)\(\s*[\'\"]?([^\'\")]+)[\'\"]?\s*\)/);id=m?.[1]||''}
+ if(!id){const b=c.querySelector('button[onclick*="openTutorProfile"],button[onclick*="openStudentProfile"],button[onclick*="openPublicTutorProfile"]');const m=String(b?.getAttribute('onclick')||'').match(/(?:openTutorProfile|openStudentProfile|openPublicTutorProfile)\(\s*[\'\"]?([^\'")]+)[\'\"]?\s*\)/);id=m?.[1]||''}
  return {id:String(id||''),role};
 }
 function publicIdBadge(c,pid){let h=c.querySelector('.gc-auth-public-id');if(!h){const host=c.querySelector('.gc-target-name,.gc-clean-name,.gc-beautiful-name,.gc-new-name,h3,h4');if(host){h=document.createElement('span');h.className='gc-auth-public-id';host.appendChild(h)}}if(h)h.textContent=pid}
-function coinField(c,b){
- // Use one existing LOCATION/ADDRESS field only. Never append repeatedly.
- let fields=[...c.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box')];
- let box=fields.find(x=>{const l=x.querySelector('b,small,strong')?.textContent?.trim()||'';return /^(📍\s*)?(LOCATION|ADDRESS)$/i.test(l)});
- if(!box) return;
+function labelOf(box){return (box.querySelector('b,small,strong')?.textContent||'').trim().replace(/^📍\s*/,'').toUpperCase()}
+function setBoxValue(box,label,value){const lab=box.querySelector('b,small');if(lab)lab.textContent=label;let val=box.querySelector('.gc-coin-value');if(!val){val=[...box.querySelectorAll('span,strong')].find(x=>!x.classList.contains('gc-target-icon')&&!x.classList.contains('gc-info-icon'))}if(val){val.classList.add('gc-coin-value');val.textContent='🪙 '+Number(value||0).toLocaleString('en-IN')+' COINS'}}
+function coinBox(c){
+ const fields=[...c.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box')];
+ // User requested: remove Languages field and use that exact slot for Coins. Location remains untouched.
+ let box=fields.find(x=>/^LANGUAGES$/i.test(labelOf(x)));
+ if(!box) box=fields.find(x=>/COINS/i.test(labelOf(x)) && !/LOCATION|ADDRESS/i.test(labelOf(x)));
+ if(!box)return null;
  box.classList.add('gc-auth-coin-field');
- const lab=box.querySelector('b,small');if(lab)lab.textContent='COINS';
- let val=box.querySelector('.gc-coin-value');if(!val){val=box.querySelector('strong,span:not(.gc-target-info-icon):not(.gc-info-icon)');}
- if(val){val.classList.add('gc-coin-value');val.textContent='🪙 '+Number(b||0).toLocaleString('en-IN')+' COINS'}
+ return box;
 }
 async function paintCards(){
  const cards=[...document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card')];
  const metas=cards.map(cardMeta);const ids=[...new Set(metas.map(x=>x.id).filter(Boolean))];if(!ids.length)return;
  const map=await balances(ids);
- cards.forEach((c,i)=>{const m=metas[i];if(!m.id)return;publicIdBadge(c,publicId(m.id,m.role));coinField(c,map[m.id]??0)});
+ cards.forEach((c,i)=>{const m=metas[i];if(!m.id)return;publicIdBadge(c,publicId(m.id,m.role));const b=coinBox(c);if(b)setBoxValue(b,'COINS',map[m.id]??0);});
 }
 function profileId(p){return String(p?.id||p?.userId||p?.user_id||'')}
 async function paintDashboard(p){
@@ -11965,12 +11966,14 @@ async function paintDashboard(p){
  if(!strip){strip=document.createElement('div');strip.id='gcAuthDashboardStrip';strip.className='gc-auth-dashboard-strip';host.prepend(strip)}
  strip.innerHTML='<div class="gc-auth-dashboard-card"><small>GURU CONNECT ID</small><strong>'+esc(publicId(id,role))+'</strong></div><div class="gc-auth-dashboard-card"><small>GURU COINS BALANCE</small><strong>🪙 '+Number(b).toLocaleString('en-IN')+' COINS</strong></div>';
 }
-function hookDashboard(){const old=window.renderUserDashboard;if(typeof old!=='function'||old.__gcAuthHook)return;const f=function(p){const r=old.apply(this,arguments);window.__gcAuthProfile=p;setTimeout(()=>paintDashboard(p),30);return r};f.__gcAuthHook=true;window.renderUserDashboard=f}
+function hookDashboard(){const old=window.renderUserDashboard;if(typeof old!=='function'||old.__gcAuthHook)return;const f=function(p){const r=old.apply(this,arguments);window.__gcAuthProfile=p;setTimeout(()=>paintDashboard(p),50);return r};f.__gcAuthHook=true;window.renderUserDashboard=f}
 async function loadPeople(q,kind){
  const s=S();if(!s||!q)return[];let out=[];
  async function one(table,role){if(kind!=='all'&&kind!==role)return;let r=await s.from(table).select('*').limit(3000);if(r.error){console.warn(table,r.error);return}for(const x of (r.data||[])){
    if(x.is_illustrative===true)continue;
-   const id=String(x.id||x.user_id||'');if(!id)continue;const sid=publicId(id,role);const vals=Object.values(x).map(v=>String(v??'')).join(' ');if(vals.toLowerCase().includes(q)||sid.toLowerCase().includes(q)){out.push({...x,__role:role,__id:id,__sid:sid})}
+   const id=String(x.id||'');if(!id)continue;const sid=publicId(id,role);
+   const vals=Object.entries(x).map(([k,v])=>String(v??'')).join(' ')+' '+sid;
+   if(vals.toLowerCase().includes(q))out.push({...x,__role:role,__id:id,__sid:sid});
  }}
  await Promise.all([one('tutor_profiles','tutor'),one('student_profiles','student')]);return out.slice(0,50);
 }
@@ -11980,16 +11983,17 @@ function adminPanel(){
  if(!panel){panel=document.createElement('section');panel.id='gcAuthAdminCoins';panel.className='gc-auth-admin';dash.prepend(panel)}
  if(panel.dataset.ready==='1')return;
  panel.dataset.ready='1';panel.innerHTML='<h3>🪙 GURU COINS — ADMIN ACCOUNTABILITY & CONTROL</h3><div class="gc-auth-admin-sub">Search registered Tutor/Student by short ID, full ID, name, mobile or email. Manage balance with a mandatory reason. Every change is permanently logged.</div><div class="gc-auth-admin-search"><input id="gcAuthSearch" autocomplete="off" placeholder="Search Name / Mobile / Short ID / Email"><select id="gcAuthKind"><option value="all">Tutor + Student</option><option value="tutor">Tutor</option><option value="student">Student</option></select><button type="button" class="gc-auth-admin-btn" id="gcAuthSearchBtn">SEARCH</button></div><div id="gcAuthResults" class="gc-auth-results"></div><div id="gcAuthSelected"></div>';
- const input=panel.querySelector('#gcAuthSearch');panel.querySelector('#gcAuthSearchBtn').onclick=()=>doSearch();input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doSearch()}});
+ const input=panel.querySelector('#gcAuthSearch');const btn=panel.querySelector('#gcAuthSearchBtn');btn.onclick=doSearch;input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doSearch()}});
 }
-async function doSearch(){const input=document.getElementById('gcAuthSearch'),out=document.getElementById('gcAuthResults');if(!input||!out)return;const q=clean(input.value).toLowerCase();if(!q){out.innerHTML='<div class="gc-auth-admin-sub">Type a name, mobile number or ID to search.</div>';return}out.innerHTML='<div class="gc-auth-admin-sub">Searching all registered profiles…</div>';const rows=await loadPeople(q,document.getElementById('gcAuthKind')?.value||'all');window.__gcAuthRows=rows;if(!rows.length){out.innerHTML='<div class="gc-auth-admin-sub">No Tutor/Student found. Try the exact name, mobile number, short ID or full ID.</div>';return}out.innerHTML=rows.map((x,i)=>'<div class="gc-auth-person"><div><div class="gc-auth-person-name">'+esc(x.name||x.full_name||'Unnamed')+' <span class="gc-auth-public-id">'+esc(x.__sid)+'</span></div><div class="gc-auth-person-meta">'+x.__role.toUpperCase()+' • '+esc(x.phone||x.mobile||x.mobile_number||x.email||'No contact')+'</div></div><button type="button" class="gc-auth-select" data-select="'+i+'">MANAGE COINS</button></div>').join('');out.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>selectPerson(Number(b.dataset.select)))}
-async function selectPerson(i){const p=window.__gcAuthRows?.[i];if(!p)return;const host=document.getElementById('gcAuthSelected');if(!host)return;const b=await balance(p.__id);const rows=await ledger(p.__id);host.innerHTML='<div class="gc-auth-selected"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><div class="gc-auth-person-name">'+esc(p.name||'Unnamed')+' <span class="gc-auth-public-id">'+esc(p.__sid)+'</span></div><div class="gc-auth-person-meta">'+p.__role.toUpperCase()+' • Mobile: '+esc(p.phone||p.mobile||p.mobile_number||'—')+'</div></div><div><div class="gc-auth-person-meta">CURRENT COINS</div><div id="gcAuthBalance" class="gc-auth-balance">🪙 '+Number(b).toLocaleString('en-IN')+'</div></div></div><div class="gc-auth-adjust"><input id="gcAuthAmount" type="number" step="1" placeholder="+100 / -100"><input id="gcAuthReason" placeholder="Mandatory reason"><button type="button" class="gc-auth-admin-btn" id="gcAuthApply">UPDATE COINS</button></div><div id="gcAuthStatus" class="gc-auth-admin-sub"></div><div class="gc-auth-ledger">'+(rows.length?'<table><thead><tr><th>Time</th><th>Type</th><th>Amount</th><th>Reason</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>'+esc(r.created_at||'')+'</td><td>'+esc(r.transaction_type||r.type||'')+'</td><td>'+Number(r.amount||0)+(Number(r.amount||0)>=0?' 🪙':' 🪙')+'</td><td>'+esc(r.reason||'')+'</td></tr>').join('')+'</tbody></table>':'<div class="gc-auth-admin-sub">No coin transactions yet.</div>')+'</div></div>';
- document.getElementById('gcAuthApply').onclick=async()=>{const amount=Number(document.getElementById('gcAuthAmount').value),reason=clean(document.getElementById('gcAuthReason').value),st=document.getElementById('gcAuthStatus');if(!Number.isFinite(amount)||amount===0)return alert('Enter a non-zero coin amount.');if(!reason)return alert('Reason is mandatory.');st.textContent='Updating secure coin ledger…';try{const s=S();const r=await s.rpc('gc_staff_adjust_coins',{p_profile_id:p.__id,p_role:p.__role,p_amount:amount,p_reason:reason});if(r.error)throw r.error;st.textContent='Coins updated successfully and permanently logged.';await selectPerson(i);await doSearch()}catch(e){st.textContent='';alert('Coin update failed: '+(e.message||e))}};
+async function doSearch(){const input=document.getElementById('gcAuthSearch'),out=document.getElementById('gcAuthResults');if(!input||!out)return;const q=clean(input.value).toLowerCase();if(!q){out.innerHTML='<div class="gc-auth-admin-sub">Type a name, mobile number or ID to search.</div>';return}out.innerHTML='<div class="gc-auth-admin-sub">Searching registered profiles…</div>';const rows=await loadPeople(q,document.getElementById('gcAuthKind')?.value||'all');window.__gcAuthRows=rows;if(!rows.length){out.innerHTML='<div class="gc-auth-admin-sub">No registered Tutor/Student matched this search.</div>';return}out.innerHTML=rows.map((x,i)=>'<div class="gc-auth-person"><div><div class="gc-auth-person-name">'+esc(x.name||x.full_name||'Unnamed')+' <span class="gc-auth-public-id">'+esc(x.__sid)+'</span></div><div class="gc-auth-person-meta">'+x.__role.toUpperCase()+' • '+esc(x.phone||x.mobile||x.mobile_number||x.email||'No contact')+'</div></div><button type="button" class="gc-auth-select" data-select="'+i+'">MANAGE COINS</button></div>').join('');out.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>selectPerson(Number(b.dataset.select)))}
+async function selectPerson(i){const p=window.__gcAuthRows?.[i];if(!p)return;const host=document.getElementById('gcAuthSelected');if(!host)return;const b=await balance(p.__id);const rows=await ledger(p.__id);host.innerHTML='<div class="gc-auth-selected"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><div class="gc-auth-person-name">'+esc(p.name||'Unnamed')+' <span class="gc-auth-public-id">'+esc(p.__sid)+'</span></div><div class="gc-auth-person-meta">'+p.__role.toUpperCase()+' • Mobile: '+esc(p.phone||p.mobile||p.mobile_number||'—')+'</div></div><div><div class="gc-auth-person-meta">CURRENT COINS</div><div id="gcAuthBalance" class="gc-auth-balance">🪙 '+Number(b).toLocaleString('en-IN')+'</div></div></div><div class="gc-auth-adjust"><input id="gcAuthAmount" type="number" step="1" placeholder="+100 / -100"><input id="gcAuthReason" placeholder="Mandatory reason"><button type="button" class="gc-auth-admin-btn" id="gcAuthApply">UPDATE COINS</button></div><div id="gcAuthStatus" class="gc-auth-admin-sub"></div><div class="gc-auth-ledger">'+(rows.length?'<table><thead><tr><th>Time</th><th>Type</th><th>Amount</th><th>Reason</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>'+esc(r.created_at||'')+'</td><td>'+esc(r.transaction_type||r.type||'')+'</td><td>'+Number(r.amount||0)+' 🪙</td><td>'+esc(r.reason||'')+'</td></tr>').join('')+'</tbody></table>':'<div class="gc-auth-admin-sub">No coin transactions yet.</div>')+'</div></div>';
+ document.getElementById('gcAuthApply').onclick=async()=>{const amount=Number(document.getElementById('gcAuthAmount').value),reason=clean(document.getElementById('gcAuthReason').value),st=document.getElementById('gcAuthStatus');if(!Number.isFinite(amount)||amount===0)return alert('Enter a non-zero coin amount.');if(!reason)return alert('Reason is mandatory.');st.textContent='Updating secure coin ledger…';try{const r=await S().rpc('gc_staff_adjust_coins',{p_profile_id:p.__id,p_role:p.__role,p_amount:amount,p_reason:reason});if(r.error)throw r.error;st.textContent='Coins updated successfully and permanently logged.';await selectPerson(i);await doSearch();paintCards()}catch(e){st.textContent='';alert('Coin update failed: '+(e.message||e))}};
 }
-function boot(){adminPanel();hookDashboard();paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile);setTimeout(()=>{adminPanel();hookDashboard();paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile)},600)}
-document.addEventListener('DOMContentLoaded',boot);window.addEventListener('load',boot);setInterval(()=>{adminPanel();hookDashboard();paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile)},5000);
-new MutationObserver(()=>{clearTimeout(window.__gcAuthPaint);window.__gcAuthPaint=setTimeout(()=>{paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile)},350)}).observe(document.body,{subtree:true,childList:true});
-window.GC_AUTH_COINS={search:doSearch,select:selectPerson};
+function hookStatus(name,amount,type,reason){const old=window[name];if(typeof old!=='function'||old.__gcCoinHook)return;const f=async function(id){try{const r=await S()?.rpc('gc_staff_charge_tutor_service',{p_tutor_id:String(id),p_amount:amount,p_transaction_type:type,p_reason:reason});if(r?.error)throw r.error;return await old.apply(this,arguments)}catch(e){alert('Action not completed: '+(e.message||e));return null}};f.__gcCoinHook=true;window[name]=f}
+function boot(){adminPanel();hookDashboard();paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile);hookStatus('adminVerifyTutorPaid',100,'SPEND_TUTOR_LISTING','Tutor Monthly Listing');hookStatus('adminGrantVerifiedTick',200,'SPEND_VERIFIED_TICK','Verified Tick service')}
+document.addEventListener('DOMContentLoaded',boot);window.addEventListener('load',boot);setInterval(()=>{adminPanel();hookDashboard();paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile)},3500);
+new MutationObserver(()=>{clearTimeout(window.__gcAuthPaint);window.__gcAuthPaint=setTimeout(()=>{paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile)},450)}).observe(document.body,{subtree:true,childList:true});
+window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
 })();
 </script>
 </body>
@@ -13045,18 +13049,49 @@ document.addEventListener('DOMContentLoaded',boot);setTimeout(boot,1200);setInte
 <style id="gc-coins-lr-v2-extra-css">
 .gc-profile-coin-badge{display:inline-flex;align-items:center;gap:5px;margin:5px 0 0;padding:6px 10px;border-radius:999px;background:#fff!important;color:#0f3d91!important;border:1px solid rgba(255,255,255,.65)!important;font-size:10px!important;font-weight:950!important;box-shadow:0 3px 10px rgba(0,0,0,.12)!important}.gc-student-coin-badge{color:#991b1b!important}
 </style>
-<script id="gc-coins-lr-v2-final-hooks">
+
+
+
+<style id="gc-coins-admin-edit-v13-css">
+.gc-edit-coin-panel{border:1px solid #bfdbfe!important;background:linear-gradient(135deg,#eff6ff,#fff)!important;border-radius:16px!important;padding:14px!important;margin-top:4px!important}
+.gc-edit-coin-row{display:grid!important;grid-template-columns:1fr 1fr auto!important;gap:9px!important;align-items:end!important;margin-top:9px!important}
+.gc-edit-coin-row input{width:100%!important;box-sizing:border-box!important;border:1px solid #cbd5e1!important;border-radius:10px!important;padding:10px!important;background:#fff!important;font-weight:750!important}
+.gc-edit-coin-btn{border:0!important;border-radius:10px!important;padding:10px 14px!important;background:#0f3d91!important;color:#fff!important;font-weight:950!important;cursor:pointer!important;white-space:nowrap!important}
+.gc-edit-coin-balance{font-size:24px!important;font-weight:1000!important;color:#0f3d91!important}
+@media(max-width:560px){.gc-edit-coin-row{grid-template-columns:1fr}.gc-edit-coin-btn{width:100%!important}}
+/* Keep LOCATION and COINS as two independent fields. */
+.gc-auth-coin-field{border-color:#bfdbfe!important;background:#f8fbff!important}
+.gc-auth-coin-field .gc-coin-value{color:#0f3d91!important;font-weight:950!important}
+</style>
+<script id="gc-coins-admin-edit-v13-js">
 (function(){
 'use strict';
-const sb=()=>window.gcSupabase||null;
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-async function balances(ids){const s=sb();if(!s||!ids.length)return{};try{let q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',ids);if(q.error)return{};return Object.fromEntries((q.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]))}catch(e){return{}}}
-async function paintCards(){let ids=[];document.querySelectorAll('.gc-target-card,.gc-profile-card').forEach(c=>{let b=c.querySelector('[data-tutor-id],[data-student-id]');if(b){let id=b.dataset.tutorId||b.dataset.studentId;if(id){c.dataset.gcCoinId=id;ids.push(String(id))}}});if(!ids.length)return;let m=await balances([...new Set(ids)]);document.querySelectorAll('.gc-target-card,.gc-profile-card').forEach(c=>{let id=c.dataset.gcCoinId;if(!id)return;let d=c.querySelector('.gc-profile-coin-badge');if(!d){let student=!!c.querySelector('[data-student-id]')||c.classList.contains('gc-new-student-card');d=document.createElement('span');d.className='gc-profile-coin-badge'+(student?' gc-student-coin-badge':'');let host=c.querySelector('.gc-target-actions')||c.querySelector('.gc-target-copy')||c;host.appendChild(d)}d.textContent='🪙 '+(m[id]??0)+' COINS'})}
-async function preCharge(tutorId,amount,type,reason){const s=sb();if(!s)throw new Error('Supabase is not connected.');let r=await s.rpc('gc_staff_charge_tutor_service',{p_tutor_id:String(tutorId),p_amount:amount,p_transaction_type:type,p_reason:reason});if(r.error)throw r.error;return r.data}
-function wrapStatus(name,amount,type,reason){const old=window[name];if(typeof old!=='function'||old.__gcCoinHook)return;async function f(id){if(id==null||id==='')return old.apply(this,arguments);try{await preCharge(id,amount,type,reason);return old.apply(this,arguments)}catch(e){alert('Action not completed: '+(e.message||e));return null}}f.__gcCoinHook=true;window[name]=f}
-function hook(){wrapStatus('adminVerifyTutorPaid',100,'SPEND_TUTOR_LISTING','Tutor Monthly Listing');wrapStatus('adminGrantVerifiedTick',200,'SPEND_VERIFIED_TICK','Verified Tick service');paintCards()}
-function observe(){if(window.__gcCoinObserver)return;window.__gcCoinObserver=new MutationObserver(()=>{clearTimeout(window.__gcCoinPaintTimer);window.__gcCoinPaintTimer=setTimeout(paintCards,180)});window.__gcCoinObserver.observe(document.body,{subtree:true,childList:true})}
-document.addEventListener('DOMContentLoaded',()=>{hook();setTimeout(hook,800);setTimeout(paintCards,1400);observe()});window.addEventListener('load',()=>{hook();paintCards()});
+const S=()=>window.gcSupabase||null;
+const clean=v=>String(v??'').trim();
+function short(id,role){let h=2166136261>>>0;for(const ch of String(id??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return 'GC-'+(role==='student'?'S':'T')+'-'+h.toString(36).toUpperCase().padStart(6,'0').slice(-6)}
+async function getBalance(id){const s=S();if(!s||!id)return 0;try{const q=await s.from('gc_coin_wallets').select('balance').eq('profile_id',String(id)).maybeSingle();return Number(q.data?.balance||0)}catch(e){return 0}}
+function roleOf(id){return String(id||'').toLowerCase().includes('student')?'student':'tutor'}
+async function addCoinPanel(modal,id,role){
+ const form=modal.querySelector('form');if(!form||form.querySelector('.gc-edit-coin-panel'))return;
+ const bal=await getBalance(id);
+ const panel=document.createElement('div');panel.className='gc-edit-coin-panel';panel.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><div class="gc-v2-label">🪙 GURU COINS</div><div class="gc-edit-coin-balance">'+bal.toLocaleString('en-IN')+' COINS</div></div><div style="font-size:10px;font-weight:900;color:#64748b">'+short(id,role)+'</div></div><div class="gc-edit-coin-row"><input class="gc-edit-coin-amount" type="number" step="1" placeholder="+100 add / -100 minus"><input class="gc-edit-coin-reason" type="text" placeholder="Mandatory reason"><button type="button" class="gc-edit-coin-btn">UPDATE COINS</button></div><div class="gc-edit-coin-status" style="font-size:10px;font-weight:800;color:#64748b;margin-top:7px"></div>';
+ form.insertBefore(panel,form.querySelector('.flex.gap-3:last-child')||form.lastElementChild);
+ const btn=panel.querySelector('.gc-edit-coin-btn');btn.onclick=async()=>{const amt=Number(panel.querySelector('.gc-edit-coin-amount').value),reason=clean(panel.querySelector('.gc-edit-coin-reason').value),st=panel.querySelector('.gc-edit-coin-status');if(!Number.isFinite(amt)||amt===0)return alert('Enter a non-zero coin amount.');if(!reason)return alert('Reason is mandatory.');btn.disabled=true;st.textContent='Updating secure coin ledger…';try{const r=await S()?.rpc('gc_staff_adjust_coins',{p_profile_id:String(id),p_role:role,p_amount:amt,p_reason:reason});if(r?.error)throw r.error;const nb=await getBalance(id);panel.querySelector('.gc-edit-coin-balance').textContent=nb.toLocaleString('en-IN')+' COINS';panel.querySelector('.gc-edit-coin-amount').value='';panel.querySelector('.gc-edit-coin-reason').value='';st.textContent='Coins updated and permanently logged.';window.GC_AUTH_COINS?.search?.();}catch(e){st.textContent='Update failed: '+(e.message||e);alert(st.textContent)}finally{btn.disabled=false}};
+}
+function hook(){
+ const oldT=window.adminEditTutor;if(typeof oldT==='function'&&!oldT.__gcEditCoinHook){const f=async function(id){const r=await oldT.apply(this,arguments);setTimeout(()=>addCoinPanel(document.getElementById('adminEditTutorModal'),id,'tutor'),80);return r};f.__gcEditCoinHook=true;window.adminEditTutor=f}
+ const oldS=window.adminEditStudent;if(typeof oldS==='function'&&!oldS.__gcEditCoinHook){const f=async function(id){const r=await oldS.apply(this,arguments);setTimeout(()=>addCoinPanel(document.getElementById('adminEditStudentModal'),id,'student'),80);return r};f.__gcEditCoinHook=true;window.adminEditStudent=f}
+}
+function cleanCardFields(){
+ document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card').forEach(c=>{
+  const fields=[...c.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box')];
+  const lang=fields.find(x=>/^LANGUAGES$/i.test((x.querySelector('b,small,strong')?.textContent||'').trim()));
+  if(lang){const lab=lang.querySelector('b,small');if(lab)lab.textContent='COINS';}
+  // Delete any old floating coin badge; coin must live only inside the information grid.
+  c.querySelectorAll('.gc-profile-coin-badge,.gc-coins-pill').forEach(x=>x.remove());
+ });
+}
+function boot(){hook();cleanCardFields();setTimeout(hook,500);setTimeout(cleanCardFields,900)}
+document.addEventListener('DOMContentLoaded',boot);window.addEventListener('load',boot);setInterval(()=>{hook();cleanCardFields()},2500);
 })();
 </script>
-
