@@ -4335,21 +4335,43 @@ footer:before{
 .gc-admin-coin-editor{margin:10px 0 6px;padding:22px;border:1px solid #cbd5e1;border-radius:22px;background:linear-gradient(135deg,#f8fafc,#eef6ff);box-shadow:0 12px 30px rgba(15,23,42,.08)}
 .gc-admin-coin-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.gc-admin-coin-kicker{font-size:10px;font-weight:950;letter-spacing:.14em;color:var(--gc-accent)}.gc-admin-coin-head h4{margin:3px 0 0;font-size:20px;font-weight:950;color:#0f172a}.gc-admin-coin-balance{font-size:24px;font-weight:950;padding:10px 16px;border-radius:14px;background:#fff;border:1px solid #dbeafe;white-space:nowrap}.gc-admin-coin-grid{display:grid;grid-template-columns:minmax(220px,.75fr) minmax(320px,1.25fr);gap:16px}.gc-admin-coin-grid label{display:block;font-size:10px;font-weight:950;letter-spacing:.08em;color:#475569;margin:0 0 7px}.gc-admin-coin-grid input,.gc-admin-coin-grid textarea{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:14px;background:#fff;padding:13px 14px;font-weight:750;outline:none}.gc-admin-coin-grid textarea{min-height:125px;resize:vertical;line-height:1.5}.gc-admin-coin-grid input:focus,.gc-admin-coin-grid textarea:focus{border-color:var(--gc-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--gc-accent) 12%,transparent)}.gc-admin-coin-actions{display:flex;align-items:center;gap:14px;margin-top:15px;flex-wrap:wrap}.gc-admin-coin-btn{border:0;border-radius:14px;padding:13px 18px;background:var(--gc-accent);color:#fff;font-weight:950;cursor:pointer;box-shadow:0 8px 20px rgba(15,23,42,.14)}.gc-admin-coin-btn:disabled{opacity:.65;cursor:wait}.gc-admin-coin-actions span{font-size:11px;font-weight:800;color:#64748b}@media(max-width:700px){#adminEditTutorModal>div,#adminEditStudentModal>div{padding:18px!important;width:98vw!important}.gc-admin-coin-grid{grid-template-columns:1fr}.gc-admin-coin-head{align-items:flex-start;flex-direction:column}.gc-admin-coin-balance{font-size:20px}}
 </style>
-<style id="gc-startup-no-flash">
-html.gc-startup:not(.gc-ready) body{visibility:hidden!important}
+</head>
+<body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative"><style id="gc-clean-boot-v4">
+#gcCleanBootShield{
+  position:fixed!important;inset:0!important;z-index:2147483647!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  background:#fff!important;opacity:1!important;visibility:visible!important;
+  transition:opacity .22s ease,visibility .22s ease!important;
+  pointer-events:auto!important;
+}
+#gcCleanBootShield.gc-hide{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+#gcCleanBootShield .gc-boot-mark{
+  width:54px;height:54px;border-radius:16px;
+  display:flex;align-items:center;justify-content:center;
+  background:#0b3b91;color:#fff;font-size:24px;font-weight:900;
+  box-shadow:0 8px 24px rgba(11,59,145,.18);
+}
 </style>
-<script id="gc-startup-no-flash-js">
+<script id="gc-clean-boot-v4">
 (function(){
-  document.documentElement.classList.add('gc-startup');
-  var revealed=false;
-  function reveal(){if(revealed)return;revealed=true;document.documentElement.classList.add('gc-ready');}
-  window.addEventListener('load',function(){setTimeout(reveal,650);},{once:true});
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(reveal,1800);},{once:true});
-  setTimeout(reveal,3500);
+  try{
+    if(!document.getElementById('gcCleanBootShield')){
+      var sh=document.createElement('div');
+      sh.id='gcCleanBootShield';
+      sh.innerHTML='<div class="gc-boot-mark" aria-label="GURU CONNECT">GC</div>';
+      (document.body||document.documentElement).prepend(sh);
+    }
+  }catch(e){}
+  function reveal(){
+    var sh=document.getElementById('gcCleanBootShield');
+    if(!sh)return;
+    requestAnimationFrame(function(){requestAnimationFrame(function(){sh.classList.add('gc-hide');setTimeout(function(){sh.remove()},280);});});
+  }
+  window.addEventListener('load',function(){setTimeout(reveal,220)},{once:true});
+  setTimeout(reveal,1600);
 })();
 </script>
-</head>
-<body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
+
 <!-- Header / Navbar -->
 <header class="gc-beautiful-header">
   <div class="gc-header-inner">
@@ -11501,11 +11523,11 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
     var list=arr('tutorDirectoryList');var per=Number(window.tutorsPerPage)||6;var page=Math.max(1,Number(window.currentTutorPage)||1);var start=(page-1)*per;var items=list.slice(start,start+per);c.innerHTML='';
     c.classList.add('gc-target-directory','gc-directory-ready');c.classList.remove('gc-directory-loading');
     items.forEach(function(t){
-      var id=val(t.id,'');var name=val(t.name,'Tutor');var verified=t.verified===true;var subject=val(t.subject,'Not specified');var exp=val(t.experience,'—');var rate=val(t.price||t.rate,'—');var rating=val(t.rating,'4.5');var reviews=Number(t.reviewCount||t.reviewsCount||0);var students=val(t.students,'—');var mode=val(t.mode||t.teachingMode,'Online / Offline');var loc=val(t.location,'—');var langs=val(t.languages,'Hindi, English');var availability=val(t.availability,'Mon - Sun');var since=val(t.teachingSince||t.memberSince,'—');
+      var id=val(t.id,'');var name=val(t.name,'Tutor');var verified=t.verified===true;var subject=val(t.subject,'Not specified');var exp=val(t.experience,'—');var rate=val(t.price||t.rate,'—');var rating=val(t.rating,'4.5');var reviews=Number(t.reviewCount||t.reviewsCount||0);var students=val(t.students,'—');var mode=val(t.mode||t.teachingMode,'Online / Offline');var loc=val(t.location,'—');var availability=val(t.availability,'Mon - Sun');var since=val(t.teachingSince||t.memberSince,'—');
       var card=document.createElement('article');card.className='gc-target-card gc-target-tutor';
       card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✔ VERIFIED TUTOR':'👤 TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photoMarkup(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified?(tick()?'<img class="gc-target-verified" src="'+esc(tick())+'" alt="Verified">':'<span class="gc-target-verified">✓</span>'):'')+'</h3><div class="gc-target-subtitle">'+esc(val(t.qualification||t.title||t.subject,'Tutor'))+'</div></div></div>'+ 
-      '<div class="gc-target-info">'+info('📚','Subjects',subject)+info('💼','Experience',exp)+info('₹','Rate / Hour',rate)+info('⭐','Rating',rating+(reviews?' ('+reviews+')':''))+info('👥','Students Taught',students)+info('💻','Mode',mode)+info('📍','Location',loc)+info('🪙','Coins','0')+info('◷','Availability',availability)+info('🗓','Teaching Since',since)+'</div>'+ 
+      '<div class="gc-target-info">'+info('📚','Subjects',subject)+info('💼','Experience',exp)+info('₹','Rate / Hour',rate)+info('⭐','Rating',rating+(reviews?' ('+reviews+')':''))+info('👥','Students Taught',students)+info('💻','Mode',mode)+info('📍','Location',loc)+info('<span class="gc-card-coin-mark" aria-hidden="true">1</span>','COINS','0')+info('◷','Availability',availability)+info('🗓','Teaching Since',since)+'</div>'+ 
       '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-gc-more-tutor="'+esc(id)+'">MORE ✚ 👤</button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
       c.appendChild(card);
     });
@@ -11517,11 +11539,11 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
     var list=arr('studentDirectoryList').filter(function(s){return !s||!s._hideFromProfileDirectory});var per=Number(window.GC_STUDENTS_PER_PAGE||window.studentsPerPage)||6;var page=Math.max(1,Number(window.currentStudentPage)||1);var start=(page-1)*per;var items=list.slice(start,start+per);c.innerHTML='';
     c.classList.add('gc-target-directory','gc-directory-ready');c.classList.remove('gc-directory-loading');
     items.forEach(function(s){
-      var id=val(s.id,'GC-STU');var name=val(s.name,'Student');var edu=val(s.course||s.education,'Junior College');var year=val(s.year||s.semester||s.std,'—');var college=val(s.college,'—');var cgpa=val(s.cgpa,'—');var req=val(s.learningRequirement||s.subject,'Not specified');var mode=val(s.mode||s.teachingMode,'Online');var loc=val(s.location,'—');var langs=val(s.languages,'Hindi, English');var availability=val(s.availability,'Mon - Sat');var help=val(s.helplinePlan||s.helplineStatus,'Active');
+      var id=val(s.id,'GC-STU');var name=val(s.name,'Student');var edu=val(s.course||s.education,'Junior College');var year=val(s.year||s.semester||s.std,'—');var college=val(s.college,'—');var cgpa=val(s.cgpa,'—');var req=val(s.learningRequirement||s.subject,'Not specified');var mode=val(s.mode||s.teachingMode,'Online');var loc=val(s.location,'—');var availability=val(s.availability,'Mon - Sat');var help=val(s.helplinePlan||s.helplineStatus,'Active');
       var card=document.createElement('article');card.className='gc-target-card gc-target-student';
       card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">🎓 STUDENT</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photoMarkup(s,name,true)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span></h3><div class="gc-target-subtitle">'+esc(edu)+'</div></div></div>'+ 
-      '<div class="gc-target-info">'+info('🎓','Education',edu)+info('🗓','Year / Sem',year)+info('🏫','College',college)+info('📊','CGPA',cgpa)+info('🎯','Looking For',req)+info('💻','Mode',mode)+info('📍','Location',loc)+info('🪙','Coins','0')+info('◷','Availability',availability)+info('🛡','Helpline Plan',help)+'</div>'+ 
+      '<div class="gc-target-info">'+info('🎓','Education',edu)+info('🗓','Year / Sem',year)+info('🏫','College',college)+info('📊','CGPA',cgpa)+info('🎯','Looking For',req)+info('💻','Mode',mode)+info('📍','Location',loc)+info('<span class="gc-card-coin-mark" aria-hidden="true">1</span>','COINS','0')+info('◷','Availability',availability)+info('🛡','Helpline Plan',help)+'</div>'+ 
       '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-gc-more-student="'+esc(id)+'">MORE ✚ 👤</button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-student="'+esc(id)+'">CONNECT ➤</button></div>';
       c.appendChild(card);
     });
@@ -11966,13 +11988,16 @@ function cardMeta(c){
 }
 function publicIdBadge(c,pid){let h=c.querySelector('.gc-auth-public-id');if(!h){const host=c.querySelector('.gc-target-name,.gc-clean-name,.gc-beautiful-name,.gc-new-name,h3,h4');if(host){h=document.createElement('span');h.className='gc-auth-public-id';host.appendChild(h)}}if(h)h.textContent=pid}
 function labelOf(box){return (box.querySelector('b,small,strong')?.textContent||'').trim().replace(/^📍\s*/,'').toUpperCase()}
-function setBoxValue(box,label,value){const lab=box.querySelector('b,small');if(lab)lab.textContent=label;const icon=box.querySelector('.gc-target-icon,.gc-info-icon');if(icon){icon.innerHTML='<span class="gc-dollar-coin-icon" aria-hidden="true"><span>$</span></span>';icon.classList.add('gc-golden-coin-icon');}let val=box.querySelector('.gc-coin-value');if(!val){val=[...box.querySelectorAll('span,strong')].find(x=>!x.classList.contains('gc-target-icon')&&!x.classList.contains('gc-info-icon'))}if(val){val.classList.add('gc-coin-value');val.textContent=Number(value||0).toLocaleString('en-IN')+' COINS'}}
+function setBoxValue(box,label,value){const lab=box.querySelector('b,small');if(lab)lab.textContent=label;const icon=box.querySelector('.gc-target-icon,.gc-info-icon');if(icon){icon.innerHTML='<span class="gc-dollar-coin-icon" aria-hidden="true">$</span>';icon.classList.add('gc-golden-coin-icon');}let val=box.querySelector('.gc-coin-value');if(!val){val=[...box.querySelectorAll('span,strong')].find(x=>!x.classList.contains('gc-target-icon')&&!x.classList.contains('gc-info-icon'))}if(val){val.classList.add('gc-coin-value');val.textContent=Number(value||0).toLocaleString('en-IN')+' COINS'}}
 function coinBox(c){
  const fields=[...c.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box')];
  // User requested: remove Languages field and use that exact slot for Coins. Location remains untouched.
- let box=fields.find(x=>/^LANGUAGES$/i.test(labelOf(x)));
+ let box=fields.find(x=>/^COINS$/i.test(labelOf(x)));
+ if(!box) box=fields.find(x=>/^LANGUAGES$/i.test(labelOf(x)));
  if(!box) box=fields.find(x=>/COINS/i.test(labelOf(x)) && !/LOCATION|ADDRESS/i.test(labelOf(x)));
  if(!box)return null;
+ /* Remove any other legacy Languages boxes from the same profile card. */
+ fields.forEach(x=>{if(x!==box && /^LANGUAGES$/i.test(labelOf(x))) x.remove();});
  box.classList.add('gc-auth-coin-field');
  return box;
 }
@@ -12009,7 +12034,7 @@ function adminPanel(){
  const input=panel.querySelector('#gcAuthSearch');const btn=panel.querySelector('#gcAuthSearchBtn');btn.onclick=doSearch;input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doSearch()}});
 }
 async function doSearch(){const input=document.getElementById('gcAuthSearch'),out=document.getElementById('gcAuthResults');if(!input||!out)return;const q=clean(input.value).toLowerCase();if(!q){out.innerHTML='<div class="gc-auth-admin-sub">Type a name, mobile number or ID to search.</div>';return}out.innerHTML='<div class="gc-auth-admin-sub">Searching registered profiles…</div>';const rows=await loadPeople(q,document.getElementById('gcAuthKind')?.value||'all');window.__gcAuthRows=rows;if(!rows.length){out.innerHTML='<div class="gc-auth-admin-sub">No registered Tutor/Student matched this search.</div>';return}out.innerHTML=rows.map((x,i)=>'<div class="gc-auth-person"><div><div class="gc-auth-person-name">'+esc(x.name||x.full_name||'Unnamed')+' <span class="gc-auth-public-id">'+esc(x.__sid)+'</span></div><div class="gc-auth-person-meta">'+x.__role.toUpperCase()+' • '+esc(x.phone||x.mobile||x.mobile_number||x.email||'No contact')+'</div></div><button type="button" class="gc-auth-select" data-select="'+i+'">MANAGE COINS</button></div>').join('');out.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>selectPerson(Number(b.dataset.select)))}
-async function selectPerson(i){const p=window.__gcAuthRows?.[i];if(!p)return;const host=document.getElementById('gcAuthSelected');if(!host)return;const b=await balance(p.__id);const rows=await ledger(p.__id);host.innerHTML='<div class="gc-auth-selected"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><div class="gc-auth-person-name">'+esc(p.name||'Unnamed')+' <span class="gc-auth-public-id">'+esc(p.__sid)+'</span></div><div class="gc-auth-person-meta">'+p.__role.toUpperCase()+' • Mobile: '+esc(p.phone||p.mobile||p.mobile_number||'—')+'</div></div><div><div class="gc-auth-person-meta">CURRENT COINS</div><div id="gcAuthBalance" class="gc-auth-balance">🪙 '+Number(b).toLocaleString('en-IN')+'</div></div></div><div class="gc-auth-adjust"><input id="gcAuthAmount" type="number" step="1" placeholder="+100 / -100"><input id="gcAuthReason" placeholder="Mandatory reason"><button type="button" class="gc-auth-admin-btn" id="gcAuthApply">UPDATE COINS</button></div><div id="gcAuthStatus" class="gc-auth-admin-sub"></div><div class="gc-auth-ledger">'+(rows.length?'<table><thead><tr><th>Time</th><th>Type</th><th>Amount</th><th>Reason</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>'+esc(r.created_at||'')+'</td><td>'+esc(r.transaction_type||r.type||'')+'</td><td>'+Number(r.amount||0)+' 🪙</td><td>'+esc(r.reason||'')+'</td></tr>').join('')+'</tbody></table>':'<div class="gc-auth-admin-sub">No coin transactions yet.</div>')+'</div></div>';
+async function selectPerson(i){const p=window.__gcAuthRows?.[i];if(!p)return;const host=document.getElementById('gcAuthSelected');if(!host)return;const b=await balance(p.__id);const rows=await ledger(p.__id);host.innerHTML='<div class="gc-auth-selected"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><div class="gc-auth-person-name">'+esc(p.name||'Unnamed')+' <span class="gc-auth-public-id">'+esc(p.__sid)+'</span></div><div class="gc-auth-person-meta">'+p.__role.toUpperCase()+' • Mobile: '+esc(p.phone||p.mobile||p.mobile_number||'—')+'</div></div><div><div class="gc-auth-person-meta">CURRENT COINS</div><div id="gcAuthBalance" class="gc-auth-balance"><span class="gc-editor-dollar">$</span> '+Number(b).toLocaleString('en-IN')+'</div></div></div><div class="gc-auth-adjust"><input id="gcAuthAmount" type="number" step="1" placeholder="+100 / -100"><input id="gcAuthReason" placeholder="Mandatory reason"><button type="button" class="gc-auth-admin-btn" id="gcAuthApply">UPDATE COINS</button></div><div id="gcAuthStatus" class="gc-auth-admin-sub"></div><div class="gc-auth-ledger">'+(rows.length?'<table><thead><tr><th>Time</th><th>Type</th><th>Amount</th><th>Reason</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>'+esc(r.created_at||'')+'</td><td>'+esc(r.transaction_type||r.type||'')+'</td><td>'+Number(r.amount||0)+' 🪙</td><td>'+esc(r.reason||'')+'</td></tr>').join('')+'</tbody></table>':'<div class="gc-auth-admin-sub">No coin transactions yet.</div>')+'</div></div>';
  document.getElementById('gcAuthApply').onclick=async()=>{const amount=Number(document.getElementById('gcAuthAmount').value),reason=clean(document.getElementById('gcAuthReason').value),st=document.getElementById('gcAuthStatus');if(!Number.isFinite(amount)||amount===0)return alert('Enter a non-zero coin amount.');if(!reason)return alert('Reason is mandatory.');st.textContent='Updating secure coin ledger…';try{const r=await S().rpc('gc_staff_adjust_coins',{p_profile_id:p.__id,p_role:p.__role,p_amount:amount,p_reason:reason});if(r.error)throw r.error;st.textContent='Coins updated successfully and permanently logged.';await selectPerson(i);await doSearch();paintCards()}catch(e){st.textContent='';alert('Coin update failed: '+(e.message||e))}};
 }
 function hookStatus(name,amount,type,reason){const old=window[name];if(typeof old!=='function'||old.__gcCoinHook)return;const f=async function(id){try{const r=await S()?.rpc('gc_staff_charge_tutor_service',{p_tutor_id:String(id),p_amount:amount,p_transaction_type:type,p_reason:reason});if(r?.error)throw r.error;return await old.apply(this,arguments)}catch(e){alert('Action not completed: '+(e.message||e));return null}};f.__gcCoinHook=true;window[name]=f}
@@ -12035,37 +12060,46 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
   .gc-auth-coin-field .gc-dollar-coin-icon{font-size:20px!important}
 }
 </style>
-<style id="gc-final-gold-coin-style">
-.gc-auth-coin-field .gc-golden-coin-icon{
+<style id="gc-pure-gold-coin-v4">
+.gc-card-coin-mark{
   display:inline-flex!important;align-items:center!important;justify-content:center!important;
-  width:28px!important;min-width:28px!important;height:28px!important;
-  background:linear-gradient(145deg,#FFE08A 0%,#D9A21B 42%,#A66B00 100%)!important;
-  border:1.5px solid #8A5A00!important;border-radius:50%!important;
-  box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 1px rgba(88,53,0,.45),0 1px 2px rgba(0,0,0,.22)!important;
-  color:#6E4300!important;overflow:hidden!important;
+  width:20px!important;height:20px!important;min-width:20px!important;
+  border-radius:50%!important;
+  background:radial-gradient(circle at 35% 30%,#fff1a8 0%,#f7d45a 22%,#d99b00 62%,#9a6200 100%)!important;
+  border:1.5px solid #8a5700!important;
+  box-shadow:inset 0 0 0 1px rgba(255,248,190,.72),0 1px 1px rgba(75,48,0,.22)!important;
+  color:#7b4b00!important;font-family:Arial,Helvetica,sans-serif!important;
+  font-size:9px!important;font-weight:1000!important;line-height:1!important;
+  text-shadow:0 .4px 0 #fff0a0!important;
+}
+.gc-auth-coin-field .gc-golden-coin-icon{
+  width:29px!important;min-width:29px!important;height:29px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  background:transparent!important;border:0!important;box-shadow:none!important;
 }
 .gc-auth-coin-field .gc-dollar-coin-icon{
   display:inline-flex!important;align-items:center!important;justify-content:center!important;
-  width:22px!important;height:22px!important;border-radius:50%!important;
-  color:#6E4300!important;font-family:Arial,Helvetica,sans-serif!important;
-  font-size:16px!important;font-weight:1000!important;line-height:1!important;
-  text-shadow:0 1px 0 rgba(255,232,150,.75)!important;
+  width:23px!important;height:23px!important;border-radius:50%!important;
+  background:radial-gradient(circle at 35% 30%,#fff3ad 0%,#f8d45c 20%,#dca000 58%,#9a6100 100%)!important;
+  border:1.5px solid #835000!important;
+  box-shadow:inset 0 0 0 1px rgba(255,248,190,.75),0 1px 1px rgba(70,45,0,.25)!important;
+  color:#734600!important;font-family:Arial,Helvetica,sans-serif!important;
+  font-size:11px!important;font-weight:1000!important;line-height:1!important;
+  text-shadow:0 .4px 0 #fff0a0!important;
 }
-.gc-auth-coin-field .gc-dollar-coin-icon>span{transform:translateY(-.5px)!important}
 @media(max-width:640px){
+ .gc-card-coin-mark{width:18px!important;height:18px!important;min-width:18px!important;font-size:8px!important}
  .gc-auth-coin-field .gc-golden-coin-icon{width:24px!important;min-width:24px!important;height:24px!important}
- .gc-auth-coin-field .gc-dollar-coin-icon{width:19px!important;height:19px!important;font-size:14px!important}
+ .gc-auth-coin-field .gc-dollar-coin-icon{width:20px!important;height:20px!important;font-size:10px!important}
 }
 </style>
-<style id="gc-editor-gold-coin-style">
-.gc-editor-gold-coin{
- display:inline-flex!important;align-items:center!important;justify-content:center!important;
- width:24px!important;height:24px!important;border-radius:50%!important;
- background:linear-gradient(145deg,#FFE08A 0%,#D9A21B 42%,#A66B00 100%)!important;
- border:1.25px solid #8A5A00!important;color:#6E4300!important;
- font-family:Arial,Helvetica,sans-serif!important;font-size:14px!important;font-weight:1000!important;
- line-height:1!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 1px rgba(88,53,0,.4),0 1px 2px rgba(0,0,0,.18)!important;
-}
+<style id="gc-remove-languages-from-profile-cards-v4">
+.gc-target-card .gc-target-info-box[data-gc-language-field],
+.gc-target-card .gc-target-info-box.gc-language-field,
+.gc-profile-card .gc-info-box.gc-language-field{display:none!important}
+</style>
+<style id="gc-editor-dollar-v4">
+.gc-editor-dollar{display:inline-block;color:#8A5A00;font-family:Arial,Helvetica,sans-serif;font-weight:1000;font-size:1.08em;line-height:1;text-shadow:0 .4px 0 #6F4700}
 </style>
 </body>
 </html>
@@ -12154,7 +12188,7 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
      const card=document.createElement('article');card.className='gc-target-card gc-target-tutor';card.dataset.tutorId=id;
      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✓ VERIFIED TUTOR':'TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
        '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified&&tick()?'<span class="gc-target-verified"><img src="'+esc(tick())+'" alt="Verified"></span>':'')+'</h3><div class="gc-target-subtitle">'+esc(q)+' · '+esc(subject)+'</div></div></div>'+
-       '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🪙','Coins','0')+box('◷','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
+       '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('💬','Languages',langs)+box('◷','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
        '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-tutor-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
      c.appendChild(card);
    });
@@ -12171,7 +12205,7 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
      const card=document.createElement('article');card.className='gc-target-card gc-target-student';card.dataset.studentId=id;
      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">🎓 STUDENT</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
        '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(s,name,true)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span></h3><div class="gc-target-subtitle">'+esc(edu)+' · '+esc(stream)+'</div></div></div>'+
-       '<div class="gc-target-info">'+box('🎓','Education',edu)+box('🗓','Year / Sem',year)+box('🏫','College',college)+box('📊','CGPA',cgpa)+box('🎯','Looking For',req)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🪙','Coins','0')+box('◷','Availability',avail)+box('🛡','Helpline Plan',help)+'</div>'+ 
+       '<div class="gc-target-info">'+box('🎓','Education',edu)+box('🗓','Year / Sem',year)+box('🏫','College',college)+box('📊','CGPA',cgpa)+box('🎯','Looking For',req)+box('💻','Mode',mode)+box('📍','Location',loc)+box('💬','Languages',langs)+box('◷','Availability',avail)+box('🛡','Helpline Plan',help)+'</div>'+ 
        '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more gc-target-student-more" data-student-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-student="'+esc(id)+'">CONNECT ➤</button></div>';
      c.appendChild(card);
    });
@@ -12591,7 +12625,7 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
     const accent=role==='student'?'#ea580c':'#2563eb';
     const label=role==='student'?'STUDENT':'TUTOR';
     return `<div class="gc-admin-coin-editor" style="--gc-accent:${accent}">
-      <div class="gc-admin-coin-head"><div><div class="gc-admin-coin-kicker">GURU COINS ACCOUNTABILITY</div><h4>🪙 ${label} COINS</h4></div><div class="gc-admin-coin-balance" id="${role==='student'?'gcS':'gcT'}_coin_balance"><span class="gc-editor-dollar gc-editor-gold-coin"><span>$</span></span> ${Number(balance)||0}</div></div>
+      <div class="gc-admin-coin-head"><div><div class="gc-admin-coin-kicker">GURU COINS ACCOUNTABILITY</div><h4>🪙 ${label} COINS</h4></div><div class="gc-admin-coin-balance" id="${role==='student'?'gcS':'gcT'}_coin_balance"><span class="gc-editor-dollar">$</span> ${Number(balance)||0}</div></div>
       <div class="gc-admin-coin-grid">
         <div><label>ADD / DEDUCT COINS</label><input id="${role==='student'?'gcS':'gcT'}_coin_amount" type="number" step="1" placeholder="+100 to add / -100 to deduct"></div>
         <div><label>MANDATORY REASON</label><textarea id="${role==='student'?'gcS':'gcT'}_coin_reason" rows="5" placeholder="Write a detailed reason for this coin adjustment... e.g. Promotional grant, correction, penalty, refund, service adjustment, etc."></textarea></div>
@@ -12601,7 +12635,7 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
   }
   async function wireCoinEditor(role,id){
     const pre=role==='student'?'gcS':'gcT';
-    try{const b=await getCoinBalance(id);const el=document.getElementById(pre+'_coin_balance');if(el)el.innerHTML='<span class="gc-editor-dollar gc-editor-gold-coin"><span>$</span></span> '+(Number(b)||0);}
+    try{const b=await getCoinBalance(id);const el=document.getElementById(pre+'_coin_balance');if(el)el.innerHTML='<span class="gc-editor-dollar">$</span> '+(Number(b)||0);}
     catch(e){const st=document.getElementById(pre+'_coin_status');if(st)st.textContent='Unable to read wallet: '+(e.message||e);return;}
     const btn=document.getElementById(pre+'_coin_apply');
     if(!btn||btn.dataset.bound)return; btn.dataset.bound='1';
@@ -12614,7 +12648,7 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
       btn.disabled=true;btn.textContent='UPDATING COINS...';if(st)st.textContent='Authenticating Staff and saving to permanent ledger...';
       try{
         await staffAdjustCoins(id,role,amt,reason);
-        const b=await getCoinBalance(id);const el=document.getElementById(pre+'_coin_balance');if(el)el.innerHTML='<span class="gc-editor-dollar gc-editor-gold-coin"><span>$</span></span> '+(Number(b)||0);
+        const b=await getCoinBalance(id);const el=document.getElementById(pre+'_coin_balance');if(el)el.innerHTML='<span class="gc-editor-dollar">$</span> '+(Number(b)||0);
         document.getElementById(pre+'_coin_amount').value='';document.getElementById(pre+'_coin_reason').value='';
         if(st)st.textContent='✓ Saved successfully. Permanent ledger updated.';
         try{refreshUI();}catch(_){}
