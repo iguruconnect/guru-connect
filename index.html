@@ -11906,9 +11906,9 @@ header button[aria-label*="close" i]{display:none!important;}
 
 <style id="gc-coins-authoritative-v11-css">
 .gc-auth-coin-field{min-width:0!important;box-sizing:border-box!important}
-.gc-auth-coin-field .gc-golden-coin-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;color:#9A6700!important;background:#fff!important;border:0!important;box-shadow:none!important;width:29px!important;min-width:29px!important;height:29px!important;font-size:18px!important;line-height:1!important}
-.gc-auth-coin-field .gc-golden-coin-icon i{color:#9A6700!important;font-size:18px!important;line-height:1!important}
-@media(max-width:640px){.gc-auth-coin-field .gc-golden-coin-icon{width:24px!important;min-width:24px!important;height:24px!important;font-size:16px!important}.gc-auth-coin-field .gc-golden-coin-icon i{font-size:16px!important}}
+.gc-auth-coin-field .gc-golden-coin-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;color:#8A5A00!important;background:transparent!important;border:0!important;box-shadow:none!important;width:29px!important;min-width:29px!important;height:29px!important;font-size:23px!important;line-height:1!important}
+.gc-auth-coin-field .gc-dollar-coin-icon{display:inline-block!important;color:#8A5A00!important;font-family:Arial,Helvetica,sans-serif!important;font-size:23px!important;font-weight:1000!important;line-height:1!important;text-shadow:0 .5px 0 #6F4700!important}
+@media(max-width:640px){.gc-auth-coin-field .gc-golden-coin-icon{width:24px!important;min-width:24px!important;height:24px!important;font-size:20px!important}.gc-auth-coin-field .gc-dollar-coin-icon{font-size:20px!important}}
 .gc-auth-coin-field .gc-coin-value{font-weight:950!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 .gc-auth-public-id{display:inline-flex!important;align-items:center!important;margin-left:7px!important;padding:3px 7px!important;border-radius:7px!important;background:#0f172a!important;color:#fff!important;font:900 9px/1.1 ui-monospace,SFMono-Regular,Menlo,monospace!important;letter-spacing:.35px!important;vertical-align:middle!important;white-space:nowrap!important}
 .gc-auth-dashboard-strip{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;margin:16px 0 0!important;width:100%!important;box-sizing:border-box!important}
@@ -11953,7 +11953,7 @@ function cardMeta(c){
 }
 function publicIdBadge(c,pid){let h=c.querySelector('.gc-auth-public-id');if(!h){const host=c.querySelector('.gc-target-name,.gc-clean-name,.gc-beautiful-name,.gc-new-name,h3,h4');if(host){h=document.createElement('span');h.className='gc-auth-public-id';host.appendChild(h)}}if(h)h.textContent=pid}
 function labelOf(box){return (box.querySelector('b,small,strong')?.textContent||'').trim().replace(/^📍\s*/,'').toUpperCase()}
-function setBoxValue(box,label,value){const lab=box.querySelector('b,small');if(lab)lab.textContent=label;const icon=box.querySelector('.gc-target-icon,.gc-info-icon');if(icon){icon.innerHTML='<i class="fa-solid fa-coins" aria-hidden="true"></i>';icon.classList.add('gc-golden-coin-icon');}let val=box.querySelector('.gc-coin-value');if(!val){val=[...box.querySelectorAll('span,strong')].find(x=>!x.classList.contains('gc-target-icon')&&!x.classList.contains('gc-info-icon'))}if(val){val.classList.add('gc-coin-value');val.textContent=Number(value||0).toLocaleString('en-IN')+' COINS'}}
+function setBoxValue(box,label,value){const lab=box.querySelector('b,small');if(lab)lab.textContent=label;const icon=box.querySelector('.gc-target-icon,.gc-info-icon');if(icon){icon.innerHTML='<span class="gc-dollar-coin-icon" aria-hidden="true">$</span>';icon.classList.add('gc-golden-coin-icon');}let val=box.querySelector('.gc-coin-value');if(!val){val=[...box.querySelectorAll('span,strong')].find(x=>!x.classList.contains('gc-target-icon')&&!x.classList.contains('gc-info-icon'))}if(val){val.classList.add('gc-coin-value');val.textContent=Number(value||0).toLocaleString('en-IN')+' COINS'}}
 function coinBox(c){
  const fields=[...c.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box')];
  // User requested: remove Languages field and use that exact slot for Coins. Location remains untouched.
@@ -12006,6 +12006,22 @@ new MutationObserver(()=>{clearTimeout(window.__gcAuthPaint);window.__gcAuthPain
 window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
 })();
 </script>
+<style id="gc-dollar-coin-editor-style">
+.gc-editor-dollar{display:inline-block!important;color:#8A5A00!important;font-family:Arial,Helvetica,sans-serif!important;font-size:1.05em!important;font-weight:1000!important;line-height:1!important;text-shadow:0 .4px 0 #6F4700!important}
+</style>
+<style id="gc-dollar-coin-hard-override">
+.gc-auth-coin-field .gc-dollar-coin-icon{
+  display:inline-block!important;
+  width:auto!important;min-width:0!important;height:auto!important;
+  color:#8A5A00!important;
+  font-family:Arial,Helvetica,sans-serif!important;
+  font-size:23px!important;font-weight:1000!important;
+  line-height:1!important;text-shadow:0 .5px 0 #6F4700!important;
+}
+@media(max-width:640px){
+  .gc-auth-coin-field .gc-dollar-coin-icon{font-size:20px!important}
+}
+</style>
 </body>
 </html>
 <!-- =========================================================
@@ -12530,7 +12546,7 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
     const accent=role==='student'?'#ea580c':'#2563eb';
     const label=role==='student'?'STUDENT':'TUTOR';
     return `<div class="gc-admin-coin-editor" style="--gc-accent:${accent}">
-      <div class="gc-admin-coin-head"><div><div class="gc-admin-coin-kicker">GURU COINS ACCOUNTABILITY</div><h4>🪙 ${label} COINS</h4></div><div class="gc-admin-coin-balance" id="${role==='student'?'gcS':'gcT'}_coin_balance">${Number(balance)||0} 🪙</div></div>
+      <div class="gc-admin-coin-head"><div><div class="gc-admin-coin-kicker">GURU COINS ACCOUNTABILITY</div><h4>🪙 ${label} COINS</h4></div><div class="gc-admin-coin-balance" id="${role==='student'?'gcS':'gcT'}_coin_balance"><span class="gc-editor-dollar">$</span> ${Number(balance)||0}</div></div>
       <div class="gc-admin-coin-grid">
         <div><label>ADD / DEDUCT COINS</label><input id="${role==='student'?'gcS':'gcT'}_coin_amount" type="number" step="1" placeholder="+100 to add / -100 to deduct"></div>
         <div><label>MANDATORY REASON</label><textarea id="${role==='student'?'gcS':'gcT'}_coin_reason" rows="5" placeholder="Write a detailed reason for this coin adjustment... e.g. Promotional grant, correction, penalty, refund, service adjustment, etc."></textarea></div>
@@ -12540,7 +12556,7 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
   }
   async function wireCoinEditor(role,id){
     const pre=role==='student'?'gcS':'gcT';
-    try{const b=await getCoinBalance(id);const el=document.getElementById(pre+'_coin_balance');if(el)el.textContent=(Number(b)||0)+' 🪙';}
+    try{const b=await getCoinBalance(id);const el=document.getElementById(pre+'_coin_balance');if(el)el.innerHTML='<span class="gc-editor-dollar">$</span> '+(Number(b)||0);}
     catch(e){const st=document.getElementById(pre+'_coin_status');if(st)st.textContent='Unable to read wallet: '+(e.message||e);return;}
     const btn=document.getElementById(pre+'_coin_apply');
     if(!btn||btn.dataset.bound)return; btn.dataset.bound='1';
@@ -12553,7 +12569,7 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
       btn.disabled=true;btn.textContent='UPDATING COINS...';if(st)st.textContent='Authenticating Staff and saving to permanent ledger...';
       try{
         await staffAdjustCoins(id,role,amt,reason);
-        const b=await getCoinBalance(id);const el=document.getElementById(pre+'_coin_balance');if(el)el.textContent=(Number(b)||0)+' 🪙';
+        const b=await getCoinBalance(id);const el=document.getElementById(pre+'_coin_balance');if(el)el.innerHTML='<span class="gc-editor-dollar">$</span> '+(Number(b)||0);
         document.getElementById(pre+'_coin_amount').value='';document.getElementById(pre+'_coin_reason').value='';
         if(st)st.textContent='✓ Saved successfully. Permanent ledger updated.';
         try{refreshUI();}catch(_){}
@@ -13096,12 +13112,12 @@ function requestsView(){let isTutor=state.role==='tutor',isStaff=state.role==='s
 function postView(){return `<div class="gccl-card"><h3>Post a Learning Request</h3><div class="gccl-note">Posting one Learning Request costs <b>100 GURU COINS</b>. The deduction and request are recorded together by Supabase.</div><div class="gccl-form"><input id="gcCLCourse" placeholder="Course (e.g. HSC / JEE)"><input id="gcCLStream" placeholder="Stream"><input id="gcCLSubject" placeholder="Subject *"><input id="gcCLTopic" placeholder="Topic / Chapter"><textarea id="gcCLProblem" placeholder="Full Issue / Problem *"></textarea><button class="gccl-btn" onclick="GC_CL_V2.post()">POST REQUEST — 100 🪙</button></div></div>`}
 function coinsView(){return `<div class="gccl-grid"><div class="gccl-card"><h3>Current Balance</h3><div class="gccl-balance">${Number(state.balance)||0} 🪙</div><div class="gccl-muted">Live Supabase wallet</div></div><div class="gccl-card"><h3>Profile ID</h3><div style="font-weight:950;word-break:break-all">${esc(pid(state.profile)||'—')}</div><div class="gccl-muted">${esc(state.role.toUpperCase())}</div></div><div class="gccl-card"><h3>Service Prices</h3><div style="font-weight:850;line-height:1.8">Tutor Listing: 100 🪙<br>Verified Tick: 200 🪙<br>Learning Request: 100 🪙</div></div><div class="gccl-card full"><h3>Transaction History</h3>${ledger()}</div></div>`}
 function ledger(){if(!state.ledger.length)return '<div class="gccl-empty">No transactions found.</div>';return `<table class="gccl-table"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Reason</th><th>Transaction ID</th></tr></thead><tbody>${state.ledger.map(x=>`<tr><td>${esc(x.created_at||'')}</td><td>${esc(x.transaction_type||x.type||'')}</td><td class="${Number(x.amount)>0?'gccl-pos':'gccl-neg'}">${Number(x.amount)>0?'+':''}${esc(x.amount)}</td><td>${esc(x.reason||'')}</td><td>${esc(x.id||'')}</td></tr>`).join('')}</tbody></table>`}
-function adminView(){return `<div class="gccl-grid"><div class="gccl-card"><h3>Manual Coin Adjustment</h3><div class="gccl-note">Reason is mandatory. Negative balances are blocked by the database RPC.</div><div class="gccl-form"><input id="gcCLAid" placeholder="Student/Tutor Profile ID"><select id="gcCLAr"><option value="student">Student</option><option value="tutor">Tutor</option></select><input id="gcCLAmt" type="number" placeholder="Amount (+ add / - deduct)"><input id="gcCLReason" placeholder="Mandatory reason"><button class="gccl-btn" onclick="GC_CL_V2.adjust()">APPLY ADJUSTMENT</button></div></div><div class="gccl-card"><h3>Accountability</h3><p class="gccl-muted">Staff actions, promotional grants, deductions, Learning Request spending, Tutor rewards, monthly listing and Verified Tick spending must be recorded in the permanent ledger.</p></div><div class="gccl-card full"><h3>Learning Request Records</h3>${requestsView()}</div></div>`}
+function adminView(){return `<div class="gccl-grid"><div class="gccl-card full"><h3>Accountability</h3><p class="gccl-muted">Staff actions, promotional grants, deductions, Learning Request spending, Tutor rewards, monthly listing and Verified Tick spending are recorded in the permanent ledger. To change a member's balance, open that Tutor/Student from the Staff Dashboard and use the single GURU COINS ACCOUNTABILITY editor in the Edit window.</p></div><div class="gccl-card full"><h3>Learning Request Records</h3>${requestsView()}</div></div>`}
 async function load(){let s=sb();state.cloud=!!s;if(!s){render();return}state.loading=true;try{let q=await s.from('gc_learning_requests').select('*').order('created_at',{ascending:false}).limit(200);if(!q.error)state.requests=q.data||[];else console.warn('GC requests:',q.error);if(state.role==='student'||state.role==='tutor'){let id=pid(state.profile);let w=await s.from('gc_coin_wallets').select('balance').eq('profile_id',id).maybeSingle();if(!w.error)state.balance=Number(w.data?.balance||0);let l=await s.from('gc_coin_ledger').select('*').eq('profile_id',id).order('created_at',{ascending:false}).limit(200);if(!l.error)state.ledger=l.data||[]}}catch(e){console.warn('GC coin/request load',e)}state.loading=false;render()}
 async function post(){let s=sb();if(!s||state.role!=='student')return alert('Please login as Student and ensure Supabase is connected.');let subject=$('gcCLSubject').value.trim(),problem=$('gcCLProblem').value.trim();if(!subject||!problem)return alert('Subject and Full Issue / Problem are required.');try{let r=await s.rpc('gc_post_learning_request',{p_student_id:pid(state.profile),p_course:$('gcCLCourse').value.trim(),p_stream:$('gcCLStream').value.trim(),p_subject:subject,p_topic:$('gcCLTopic').value.trim(),p_problem:problem});if(r.error)throw r.error;alert('Learning Request posted. 100 GURU COINS deducted.');state.tab='requests';await load()}catch(e){alert('Could not post request: '+(e.message||e))}}
 async function claim(id){let s=sb();if(!s)return;try{let r=await s.rpc('gc_claim_learning_request',{p_request_id:id,p_tutor_id:pid(state.profile)});if(r.error)throw r.error;alert('Request claimed. Tutor ID is now attached.');await load()}catch(e){alert('Could not claim request: '+(e.message||e))}}
 async function solve(id){let s=sb();if(!s)return;try{let r=await s.rpc('gc_staff_solve_learning_request',{p_request_id:id});if(r.error)throw r.error;alert('Request marked SOLVED and 100 GURU COINS credited to Tutor.');await load()}catch(e){alert('Could not solve request: '+(e.message||e))}}
-async function adjust(){let s=sb();let id=$('gcCLAid')?.value.trim(),amt=Number($('gcCLAmt')?.value),reason=$('gcCLReason')?.value.trim(),rr=$('gcCLAr')?.value;if(!s)return alert('Supabase is not connected.');if(!id||!amt||!reason)return alert('Profile ID, non-zero amount and mandatory reason are required.');try{let r=await s.rpc('gc_staff_adjust_coins',{p_profile_id:id,p_role:rr,p_amount:amt,p_reason:reason});if(r.error)throw r.error;alert('Coin adjustment recorded in the permanent ledger.');await load()}catch(e){alert('Could not adjust coins: '+(e.message||e))}}
+async function adjust(){alert('Please use the single GURU COINS ACCOUNTABILITY editor inside the Tutor/Student Edit window.');}
 function tab(t){state.tab=t;render();if(t==='requests'||t==='mycoins'||t==='admin')load()}
 function addMenu(){let m=$('publicNavbarLinks');if(!m)return false;if(!m.querySelector('[data-gc-coins-menu]')){let a=document.createElement('a');a.href='javascript:void(0)';a.dataset.gcCoinsMenu='1';a.textContent='📚  LEARNING REQUESTS';a.style.cssText='font-weight:950!important;background:linear-gradient(135deg,#eff6ff,#dbeafe)!important;color:#0f3d91!important';a.onclick=function(){closeNavMenu?.();state.tab='requests';open()};m.insertBefore(a,m.firstChild)}return true}
 function injectPills(){let p=profile();if(!p)return;let balance=state.balance;document.querySelectorAll('.gc-target-card,.gc-profile-card').forEach(card=>{if(card.querySelector('.gc-coins-pill'))return;let isStudent=card.classList.contains('gc-new-student-card')||/student/i.test(card.textContent||'');let pill=document.createElement('span');pill.className='gc-coins-pill '+(isStudent?'red':'blue');pill.textContent='🪙 '+(balance||0)+' COINS';let host=card.querySelector('.gc-target-actions')||card.firstElementChild||card;host.appendChild(pill)})}
