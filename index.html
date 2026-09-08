@@ -11896,134 +11896,102 @@ header button[aria-label*="close" i]{display:none!important;}
 })();
 </script>
 
-<style id="gc-admin-coins-v7-css">
-.gc-admin-coins-panel{margin:0 0 22px;padding:20px;border-radius:22px;border:1px solid #bfdbfe;background:linear-gradient(135deg,#eff6ff,#fff,#f8fafc);box-shadow:0 10px 28px rgba(15,61,145,.08)}
-.gc-admin-coins-panel h3{margin:0;font-size:19px;font-weight:950;color:#0f172a}.gc-admin-coins-sub{font-size:11px;color:#64748b;font-weight:650;margin-top:4px}
-.gc-admin-search-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;margin-top:14px}.gc-admin-search-row input{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:12px;padding:12px;font-weight:750;background:#fff;outline:none}.gc-admin-search-btn,.gc-admin-coin-btn{border:0;border-radius:12px;padding:11px 16px;background:#0f3d91;color:#fff;font-weight:950;cursor:pointer}.gc-admin-results{display:grid;gap:8px;margin-top:10px}.gc-admin-person{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:11px 13px;border:1px solid #e2e8f0;background:#fff;border-radius:14px}.gc-admin-person-main{min-width:0}.gc-admin-person-name{font-weight:950;color:#0f172a}.gc-admin-person-meta{font-size:10px;color:#64748b;font-weight:700;margin-top:3px}.gc-admin-select{border:1px solid #bfdbfe;background:#eff6ff;color:#0f3d91;border-radius:10px;padding:8px 10px;font-weight:900;cursor:pointer}.gc-admin-selected{margin-top:12px;padding:13px;border-radius:14px;background:#f8fafc;border:1px solid #e2e8f0}.gc-admin-selected strong{font-weight:950}.gc-admin-balance{font-size:25px;font-weight:1000;color:#0f3d91}.gc-admin-adjust-grid{display:grid;grid-template-columns:.8fr 1fr 1.7fr auto;gap:9px;margin-top:10px}.gc-admin-adjust-grid input{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:11px;padding:10px 11px;font-weight:750;background:#fff}.gc-admin-ledger{margin-top:14px;overflow:auto}.gc-admin-ledger table{width:100%;border-collapse:collapse;font-size:10px}.gc-admin-ledger th,.gc-admin-ledger td{padding:8px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:top}.gc-admin-ledger th{font-size:9px;text-transform:uppercase;color:#64748b;white-space:nowrap}.gc-admin-shortid{display:inline-flex;padding:3px 7px;border-radius:999px;background:#e0e7ff;color:#3730a3;font-weight:950;font-size:9px}
-@media(max-width:850px){.gc-admin-adjust-grid{grid-template-columns:1fr 1fr}.gc-admin-adjust-grid button{grid-column:1/-1}.gc-admin-search-row{grid-template-columns:1fr}.gc-admin-person{align-items:flex-start;flex-direction:column}}
-@media(max-width:520px){.gc-admin-adjust-grid{grid-template-columns:1fr}}
-</style>
-<script id="gc-admin-coins-v7-js">
-(function(){
-'use strict';
-const SB=()=>window.gcSupabase||null;
-const E=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-const norm=v=>String(v??'').trim().toLowerCase();
-function shortId(row,role){
-  const rn=String(row?.record_no||row?.recordNo||'').trim();
-  if(rn) return rn;
-  const id=String(row?.id||'');
-  const tail=id.replace(/[^a-zA-Z0-9]/g,'').slice(-6).toUpperCase();
-  return (role==='student'?'GC-S-':'GC-T-')+(tail||'000001');
-}
-async function searchPeople(q){
- const s=SB(); if(!s) return [];
- q=norm(q); if(!q)return [];
- const out=[];
- try{
-   const tq=await s.from('tutor_profiles').select('id,name,phone,email,record_no,verified,paid_status').or(`name.ilike.%${q}%,phone.ilike.%${q}%,email.ilike.%${q}%,id.ilike.%${q}%,record_no.ilike.%${q}%`).limit(12);
-   (tq.data||[]).forEach(x=>out.push({...x,_role:'tutor',_short:shortId(x,'tutor')}));
- }catch(e){}
- try{
-   const sq=await s.from('student_profiles').select('id,name,phone,email,record_no').or(`name.ilike.%${q}%,phone.ilike.%${q}%,email.ilike.%${q}%,id.ilike.%${q}%,record_no.ilike.%${q}%`).limit(12);
-   (sq.data||[]).forEach(x=>out.push({...x,_role:'student',_short:shortId(x,'student')}));
- }catch(e){}
- return out.slice(0,20);
-}
-async function getBal(id){const s=SB();if(!s)return 0;const r=await s.from('gc_coin_wallets').select('balance').eq('profile_id',String(id)).maybeSingle();return Number(r.data?.balance||0)}
-async function ledgerFor(id){const s=SB();if(!s)return [];const r=await s.from('gc_coin_ledger').select('*').eq('profile_id',String(id)).order('created_at',{ascending:false}).limit(30);return r.data||[]}
-function panelHTML(){return `<section id="gcAdminCoinsPanel" class="gc-admin-coins-panel">
- <div><h3>🪙 GURU COINS — ACCOUNTABILITY & CONTROL</h3><div class="gc-admin-coins-sub">Search any Tutor or Student by short ID, full ID, name, mobile number or email. Add or deduct coins directly from their account/profile.</div></div>
- <div class="gc-admin-search-row"><input id="gcACSearch" placeholder="Search: Name / Mobile / ID / Email"><button class="gc-admin-search-btn" type="button" id="gcACSearchBtn">SEARCH</button></div>
- <div id="gcACResults" class="gc-admin-results"></div><div id="gcACSelected"></div>
- </section>`}
-function renderSelected(p){
- const host=document.getElementById('gcACSelected');if(!host)return;
- host.innerHTML=`<div class="gc-admin-selected"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><div class="gc-admin-person-name">${E(p.name||'Unnamed')} <span class="gc-admin-shortid">${E(p._short)}</span></div><div class="gc-admin-person-meta">${E(p._role.toUpperCase())} • Mobile: ${E(p.phone||'—')} • Internal ID: ${E(p.id)}</div></div><div><div class="gc-admin-person-meta">CURRENT COINS</div><div id="gcACBalance" class="gc-admin-balance">Loading…</div></div></div>
- <div class="gc-admin-adjust-grid"><input id="gcACAmount" type="number" step="1" placeholder="+100 / -100"><input id="gcACReason" placeholder="Mandatory reason"><input id="gcACNote" placeholder="Optional note"><button class="gc-admin-coin-btn" id="gcACApply" type="button">UPDATE COINS</button></div>
- <div id="gcACStatus" class="gc-admin-coins-sub"></div><div id="gcACLedger" class="gc-admin-ledger"></div></div>`;
- loadSelected(p);
- document.getElementById('gcACApply').onclick=()=>apply(p);
-}
-async function loadSelected(p){
- const b=await getBal(p.id);const el=document.getElementById('gcACBalance');if(el)el.textContent='🪙 '+b.toLocaleString('en-IN');
- const rows=await ledgerFor(p.id);const host=document.getElementById('gcACLedger');if(!host)return;
- if(!rows.length){host.innerHTML='<div class="gc-admin-coins-sub">No coin transactions yet.</div>';return}
- host.innerHTML='<table><thead><tr><th>Time</th><th>Type</th><th>Amount</th><th>Reason</th><th>Transaction ID</th></tr></thead><tbody>'+rows.map(r=>`<tr><td>${E(r.created_at||'')}</td><td>${E(r.transaction_type||r.type||'')}</td><td class="${Number(r.amount)<0?'gccl-neg':'gccl-pos'}">${Number(r.amount)>0?'+':''}${Number(r.amount||0)} 🪙</td><td>${E(r.reason||'')}</td><td>${E(r.id||r.transaction_id||'—')}</td></tr>`).join('')+'</tbody></table>';
-}
-async function apply(p){
- const s=SB();if(!s)return alert('Supabase is not connected.');
- const amount=Number(document.getElementById('gcACAmount')?.value),reason=document.getElementById('gcACReason')?.value.trim(),note=document.getElementById('gcACNote')?.value.trim(),st=document.getElementById('gcACStatus');
- if(!Number.isFinite(amount)||amount===0)return alert('Enter a non-zero coin amount.');if(!reason)return alert('Reason is mandatory.');
- if(st)st.textContent='Updating secure coin ledger…';
- try{const r=await s.rpc('gc_staff_adjust_coins',{p_profile_id:String(p.id),p_role:p._role,p_amount:amount,p_reason:reason+(note?' | '+note:'')});if(r.error)throw r.error;if(st)st.textContent='Coins updated successfully and permanently logged.';document.getElementById('gcACAmount').value='';document.getElementById('gcACReason').value='';document.getElementById('gcACNote').value='';await loadSelected(p);if(window.GC_CL_V2?.load)window.GC_CL_V2.load();}catch(e){if(st)st.textContent='';alert('Coin update failed: '+(e.message||e))}
-}
-async function doSearch(){const q=document.getElementById('gcACSearch')?.value.trim(),host=document.getElementById('gcACResults');if(!host)return;if(!q){host.innerHTML='';return}host.innerHTML='<div class="gc-admin-coins-sub">Searching…</div>';const rows=await searchPeople(q);if(!rows.length){host.innerHTML='<div class="gc-admin-coins-sub">No Student/Tutor found.</div>';return}host.innerHTML=rows.map((p,i)=>`<div class="gc-admin-person"><div class="gc-admin-person-main"><div class="gc-admin-person-name">${E(p.name||'Unnamed')} <span class="gc-admin-shortid">${E(p._short)}</span></div><div class="gc-admin-person-meta">${E(p._role.toUpperCase())} • ${E(p.phone||'No mobile')} • ${E(p.email||'No email')}</div></div><button class="gc-admin-select" type="button" data-i="${i}">SELECT</button></div>`).join('');host.querySelectorAll('[data-i]').forEach(btn=>btn.onclick=()=>{renderSelected(rows[Number(btn.dataset.i)]);host.innerHTML=''});}
-function ensure(){const dash=document.getElementById('staffAdminDashboard');if(!dash)return;let panel=document.getElementById('gcAdminCoinsPanel');if(!panel){const host=dash.querySelector('div.bg-white')||dash;const wrap=document.createElement('div');wrap.innerHTML=panelHTML();panel=wrap.firstElementChild;host.prepend(panel)}
- const b=document.getElementById('gcACSearchBtn');if(b&&!b.dataset.bound){b.dataset.bound='1';b.onclick=doSearch;document.getElementById('gcACSearch')?.addEventListener('keydown',e=>{if(e.key==='Enter')doSearch()})}}
-function boot(){ensure();setTimeout(ensure,700)}
-document.addEventListener('DOMContentLoaded',boot);window.addEventListener('load',boot);setInterval(ensure,2500);
-window.GC_ADMIN_COINS={search:doSearch};
-})();
-</script>
-<script id="gc-short-public-ids-v7-js">
-(function(){
-'use strict';
-function shortId2(row,role){const rn=String(row?.recordNo||row?.record_no||'').trim();if(rn)return rn;const id=String(row?.id||'');const tail=id.replace(/[^a-zA-Z0-9]/g,'').slice(-6).toUpperCase();return (role==='student'?'GC-S-':'GC-T-')+(tail||'000001')}
-function patchText(){
- document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card').forEach(card=>{
-   const isS=!!card.querySelector('[data-student-id]')||card.classList.contains('gc-beautiful-student')||/student/i.test(card.className);const id=card.querySelector('[data-tutor-id],[data-student-id]')?.dataset?.tutorId||card.querySelector('[data-tutor-id],[data-student-id]')?.dataset?.studentId||'';if(!id)return;
-   const source=isS?(window.studentDirectoryList||[]).find(x=>String(x.id)===String(id)):(window.tutorDirectoryList||[]).find(x=>String(x.id)===String(id));if(!source)return;
-   const sid=shortId2(source,isS?'student':'tutor');
-   card.querySelectorAll('*').forEach(n=>{if(n.children.length===0&&/^(STUDENT|TUTOR)\s*ID\s*:/i.test(n.textContent.trim()))n.textContent=n.textContent.replace(/^(STUDENT|TUTOR)\s*ID\s*:.*/i,(m)=>m.split(':')[0]+': '+sid)})
- });
-}
-setInterval(patchText,1800);document.addEventListener('DOMContentLoaded',patchText);window.addEventListener('load',patchText);
-})();
-</script>
 
-<style id="gc-real-coins-fix-v6">
-.gc-admin-search-wrap{margin-top:14px;display:grid;grid-template-columns:1fr 140px auto;gap:10px}.gc-admin-search-wrap input,.gc-admin-search-wrap select{border:1px solid #cbd5e1;border-radius:12px;padding:11px 12px;background:#fff;font-weight:700}.gc-admin-search-btn{border:0;border-radius:12px;padding:11px 18px;background:#0f3d91;color:#fff;font-weight:900;cursor:pointer}.gc-admin-search-results{margin-top:12px;display:grid;gap:8px}.gc-admin-person{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:12px;border:1px solid #e2e8f0;border-radius:14px;background:#fff}.gc-admin-person-name{font-weight:900}.gc-admin-person-meta{font-size:11px;color:#64748b;margin-top:3px}.gc-admin-person-coins{font-size:18px;font-weight:950;color:#0f3d91}.gc-admin-person button{border:0;border-radius:9px;padding:8px 12px;background:#2563eb;color:#fff;font-weight:900;cursor:pointer}.gc-admin-selected{margin-top:10px;padding:12px;border-radius:14px;background:#eff6ff;border:1px solid #bfdbfe}.gc-short-id{font-family:ui-monospace,monospace;font-weight:900}.gc-coins-field .gc-coin-value{font-size:1rem!important;font-weight:950!important}
-@media(max-width:700px){.gc-admin-search-wrap{grid-template-columns:1fr 1fr}.gc-admin-search-wrap input{grid-column:1/-1}.gc-admin-search-btn{grid-column:1/-1}.gc-admin-person{grid-template-columns:1fr}.gc-admin-person button{width:100%}}
+<style id="gc-coins-authoritative-v11-css">
+.gc-auth-coin-field{min-width:0!important;box-sizing:border-box!important}
+.gc-auth-coin-field .gc-coin-value{font-weight:950!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.gc-auth-public-id{display:inline-flex!important;align-items:center!important;margin-left:7px!important;padding:3px 7px!important;border-radius:7px!important;background:#0f172a!important;color:#fff!important;font:900 9px/1.1 ui-monospace,SFMono-Regular,Menlo,monospace!important;letter-spacing:.35px!important;vertical-align:middle!important;white-space:nowrap!important}
+.gc-auth-dashboard-strip{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;margin:16px 0 0!important;width:100%!important;box-sizing:border-box!important}
+.gc-auth-dashboard-card{min-width:0!important;padding:14px 16px!important;border:1px solid #bfdbfe!important;border-radius:16px!important;background:linear-gradient(135deg,#eff6ff,#fff)!important;box-sizing:border-box!important}
+.gc-auth-dashboard-card small{display:block!important;font-size:10px!important;font-weight:900!important;letter-spacing:.08em!important;color:#64748b!important;text-transform:uppercase!important}
+.gc-auth-dashboard-card strong{display:block!important;margin-top:5px!important;font-size:19px!important;font-weight:950!important;color:#123b8f!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.gc-auth-admin{margin:0 0 22px!important;padding:20px!important;border-radius:22px!important;border:1px solid #bfdbfe!important;background:linear-gradient(135deg,#eff6ff,#fff,#f8fafc)!important;box-shadow:0 10px 28px rgba(15,61,145,.08)!important}
+.gc-auth-admin h3{margin:0!important;font-size:19px!important;font-weight:950!important;color:#0f172a!important}
+.gc-auth-admin-sub{font-size:11px!important;color:#64748b!important;font-weight:650!important;margin-top:4px!important}
+.gc-auth-admin-search{display:grid!important;grid-template-columns:minmax(0,1fr) auto auto!important;gap:9px!important;margin-top:14px!important}
+.gc-auth-admin-search input,.gc-auth-admin-search select{width:100%!important;box-sizing:border-box!important;border:1px solid #cbd5e1!important;border-radius:12px!important;padding:12px!important;font-weight:750!important;background:#fff!important;outline:none!important}
+.gc-auth-admin-search input:focus{border-color:#2563eb!important;box-shadow:0 0 0 3px rgba(37,99,235,.12)!important}
+.gc-auth-admin-btn{border:0!important;border-radius:12px!important;padding:11px 16px!important;background:#0f3d91!important;color:#fff!important;font-weight:950!important;cursor:pointer!important;white-space:nowrap!important}
+.gc-auth-results{display:grid!important;gap:8px!important;margin-top:10px!important}
+.gc-auth-person{display:flex!important;justify-content:space-between!important;align-items:center!important;gap:12px!important;padding:11px 13px!important;border:1px solid #e2e8f0!important;background:#fff!important;border-radius:14px!important}
+.gc-auth-person-name{font-weight:950!important;color:#0f172a!important}.gc-auth-person-meta{font-size:10px!important;color:#64748b!important;font-weight:700!important;margin-top:3px!important}
+.gc-auth-select{border:1px solid #bfdbfe!important;background:#eff6ff!important;color:#0f3d91!important;border-radius:10px!important;padding:8px 10px!important;font-weight:900!important;cursor:pointer!important}
+.gc-auth-selected{margin-top:12px!important;padding:13px!important;border-radius:14px!important;background:#f8fafc!important;border:1px solid #e2e8f0!important}
+.gc-auth-balance{font-size:25px!important;font-weight:1000!important;color:#0f3d91!important}
+.gc-auth-adjust{display:grid!important;grid-template-columns:.8fr 1.7fr auto!important;gap:9px!important;margin-top:10px!important}
+.gc-auth-adjust input{width:100%!important;box-sizing:border-box!important;border:1px solid #cbd5e1!important;border-radius:11px!important;padding:10px 11px!important;font-weight:750!important;background:#fff!important}
+.gc-auth-ledger{margin-top:14px!important;overflow:auto!important}.gc-auth-ledger table{width:100%!important;border-collapse:collapse!important;font-size:10px!important}.gc-auth-ledger th,.gc-auth-ledger td{padding:8px!important;border-bottom:1px solid #e2e8f0!important;text-align:left!important;vertical-align:top!important}.gc-auth-ledger th{font-size:9px!important;text-transform:uppercase!important;color:#64748b!important;white-space:nowrap!important}
+@media(max-width:850px){.gc-auth-admin-search{grid-template-columns:1fr 1fr}.gc-auth-admin-search input{grid-column:1/-1}.gc-auth-adjust{grid-template-columns:1fr 1fr}.gc-auth-adjust button{grid-column:1/-1}}
+@media(max-width:560px){.gc-auth-dashboard-strip{grid-template-columns:1fr}.gc-auth-admin-search,.gc-auth-adjust{grid-template-columns:1fr}.gc-auth-person{align-items:flex-start;flex-direction:column}}
 </style>
-<script id="gc-real-coins-fix-v6-js">
+<script id="gc-coins-authoritative-v11-js">
 (function(){
 'use strict';
 const S=()=>window.gcSupabase||null;
-const E=v=>{try{return typeof escapeHtml==='function'?escapeHtml(String(v??'')):String(v??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]))}catch(e){return String(v??'')}};
-const shortId=v=>{let x=String(v??'').trim();if(!x)return '—';if(/^GC[-_]/i.test(x))return x.length>12?x.slice(0,12):x;return 'GC-'+x.replace(/[^A-Za-z0-9]/g,'').slice(-6).toUpperCase()};
-async function getBalance(id){const s=S();if(!s||!id)return 0;try{const q=await s.from('gc_coin_wallets').select('balance').eq('profile_id',String(id)).maybeSingle();return Number(q.data?.balance||0)}catch(e){return 0}}
-function identifyCards(){
- document.querySelectorAll('.gc-profile-card').forEach(card=>{
-  if(card.dataset.gcCoinId)return;
-  const btn=card.querySelector('button[onclick*="openTutorProfile"],button[onclick*="openPublicTutorProfile"],button[onclick*="openStudentProfile"]');
-  if(!btn)return; const m=String(btn.getAttribute('onclick')||'').match(/(?:openTutorProfile|openPublicTutorProfile|openStudentProfile)\(\s*['\"]?([^'\")]+)['\"]?\s*\)/); if(!m)return;
-  card.dataset.gcCoinId=m[1];card.dataset.gcCoinRole=/Student/i.test(card.className)?'student':'tutor';
-  const code=card.querySelector('.gc-card-code');if(code)code.textContent=shortId(m[1]);
- });
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const clean=v=>String(v??'').trim();
+function hash6(v){let h=2166136261>>>0;for(const ch of String(v??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return (h.toString(36).toUpperCase().padStart(6,'0')).slice(-6)}
+function publicId(id,role){return 'GC-'+(role==='student'?'S':'T')+'-'+hash6(id)}
+async function balance(id){const s=S();if(!s||!id)return 0;try{const q=await s.from('gc_coin_wallets').select('balance').eq('profile_id',String(id)).maybeSingle();return Number(q.data?.balance||0)}catch(e){return 0}}
+async function balances(ids){const s=S();if(!s||!ids.length)return{};try{const q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',[...new Set(ids.map(String))]);if(q.error)throw q.error;return Object.fromEntries((q.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]))}catch(e){return{}}}
+function cardMeta(c){
+ let role=c.classList.contains('gc-target-student')||c.classList.contains('gc-beautiful-student')||c.classList.contains('gc-new-student-card')||/student/i.test(c.className)?'student':'tutor';
+ let id=c.dataset.studentId||c.dataset.tutorId||'';
+ if(!id){const n=c.querySelector('[data-student-id],[data-tutor-id],[data-gc-more-tutor],[data-gc-more-student]');id=n?.dataset.studentId||n?.dataset.tutorId||n?.getAttribute('data-gc-more-tutor')||n?.getAttribute('data-gc-more-student')||''}
+ if(!id){const b=c.querySelector('button[onclick*="openTutorProfile"],button[onclick*="openStudentProfile"],button[onclick*="openPublicTutorProfile"]');const m=String(b?.getAttribute('onclick')||'').match(/(?:openTutorProfile|openStudentProfile|openPublicTutorProfile)\(\s*[\'\"]?([^\'\")]+)[\'\"]?\s*\)/);id=m?.[1]||''}
+ return {id:String(id||''),role};
 }
-async function paintCards(){identifyCards();const cards=[...document.querySelectorAll('.gc-profile-card')];const ids=[...new Set(cards.map(c=>c.dataset.gcCoinId).filter(Boolean))];if(!ids.length)return;let map={};try{const q=await S().from('gc_coin_wallets').select('profile_id,balance').in('profile_id',ids.map(String));if(!q.error)(q.data||[]).forEach(x=>map[String(x.profile_id)]=Number(x.balance||0))}catch(e){}
- cards.forEach(c=>{const id=String(c.dataset.gcCoinId||'');const b=map[id]??0;const student=c.dataset.gcCoinRole==='student'||/student/i.test(c.className);let field=[...c.querySelectorAll('small')].find(x=>/^(ADDRESS|LOCATION)$/i.test(String(x.textContent||'').trim()));if(field){const box=field.parentElement;field.textContent='COINS';let st=box.querySelector('strong');if(st)st.innerHTML='🪙 '+b.toLocaleString('en-IN');box.classList.add('gc-coins-field');}else{let grid=c.querySelector('.gc-info-grid');if(grid&&!grid.querySelector('.gc-card-coins-field')){let d=document.createElement('div');d.className='gc-info-box gc-card-coins-field';d.innerHTML='<span class="gc-info-icon"><i class="fa-solid fa-coins"></i></span><div><small>COINS</small><strong>🪙 '+b.toLocaleString('en-IN')+'</strong></div>';grid.appendChild(d)}}});
+function publicIdBadge(c,pid){let h=c.querySelector('.gc-auth-public-id');if(!h){const host=c.querySelector('.gc-target-name,.gc-clean-name,.gc-beautiful-name,.gc-new-name,h3,h4');if(host){h=document.createElement('span');h.className='gc-auth-public-id';host.appendChild(h)}}if(h)h.textContent=pid}
+function coinField(c,b){
+ // Use one existing LOCATION/ADDRESS field only. Never append repeatedly.
+ let fields=[...c.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box')];
+ let box=fields.find(x=>{const l=x.querySelector('b,small,strong')?.textContent?.trim()||'';return /^(📍\s*)?(LOCATION|ADDRESS)$/i.test(l)});
+ if(!box) return;
+ box.classList.add('gc-auth-coin-field');
+ const lab=box.querySelector('b,small');if(lab)lab.textContent='COINS';
+ let val=box.querySelector('.gc-coin-value');if(!val){val=box.querySelector('strong,span:not(.gc-target-info-icon):not(.gc-info-icon)');}
+ if(val){val.classList.add('gc-coin-value');val.textContent='🪙 '+Number(b||0).toLocaleString('en-IN')+' COINS'}
 }
-function replaceProfileModal(){const m=document.getElementById('gcV3FullProfileModal');if(!m||!m.classList.contains('open'))return;const c=document.getElementById('gcV3FullProfileContent');if(!c)return;const role=/TUTOR/i.test(c.textContent||'')?'tutor':'student';let id=m.dataset.gcRealId||'';if(!id){const h=c.querySelector('[data-profile-id]');id=h?.dataset.profileId||''}if(!id)return;getBalance(id).then(b=>{[...c.querySelectorAll('small')].filter(x=>/^(ADDRESS|LOCATION)$/i.test(String(x.textContent||'').trim())).forEach(sm=>{sm.textContent='COINS';const st=sm.parentElement?.querySelector('strong');if(st)st.innerHTML='🪙 '+b.toLocaleString('en-IN')})})}
-function hookModal(){['openTutorProfile','openPublicTutorProfile','openStudentProfile'].forEach(n=>{const old=window[n];if(typeof old!=='function'||old.__gcRealCoinHook)return;const f=function(id){const r=old.apply(this,arguments);const m=document.getElementById('gcV3FullProfileModal');if(m)m.dataset.gcRealId=String(id||'');setTimeout(replaceProfileModal,80);return r};f.__gcRealCoinHook=true;window[n]=f})}
-async function adminSearch(){const s=S(),qv=(document.getElementById('gcAdminPersonSearch')?.value||'').trim().toLowerCase(),kind=document.getElementById('gcAdminPersonType')?.value||'all',out=document.getElementById('gcAdminPersonResults');if(!out)return;if(!s)return out.innerHTML='<div class="gc-admin-person-meta">Supabase is not connected.</div>';if(!qv)return out.innerHTML='<div class="gc-admin-person-meta">Enter ID, name or mobile number.</div>';out.innerHTML='<div class="gc-admin-person-meta">Searching Student and Tutor records…</div>';
- let rows=[];async function one(table,role){if(kind!=='all'&&kind!==role)return;try{const r=await s.from(table).select('*').limit(2000);if(r.error)throw r.error;(r.data||[]).forEach(x=>{const vals=Object.entries(x).map(([k,v])=>String(v??'').toLowerCase()).join(' ');if(vals.includes(qv))rows.push({role,...x})})}catch(e){console.warn(table,e)}}await Promise.all([one('tutor_profiles','tutor'),one('student_profiles','student')]);rows=rows.slice(0,30);if(!rows.length){out.innerHTML='<div class="gc-admin-person-meta">No Tutor/Student found. Try exact name, mobile number or ID.</div>';return}
-out.innerHTML=rows.map((x,i)=>{const id=x.id||x.user_id||'';const name=x.name||x.full_name||'Unnamed';const phone=x.phone||x.mobile||x.mobile_number||'';return `<div class="gc-admin-person"><div><div class="gc-admin-person-name">${E(name)} <span class="gc-short-id">(${E(shortId(id))})</span></div><div class="gc-admin-person-meta">${x.role.toUpperCase()}${phone?' • '+E(phone):''}</div></div><div class="gc-admin-person-coins" id="gc-res-bal-${i}">🪙 …</div><button type="button" onclick="GC_ADMIN_COINS.select(${i})">MANAGE COINS</button></div>`}).join('');window.__gcAdminResults=rows;rows.forEach((x,i)=>getBalance(x.id||x.user_id).then(b=>{const el=document.getElementById('gc-res-bal-'+i);if(el)el.textContent='🪙 '+b.toLocaleString('en-IN')}));}
-function selectPerson(i){const x=window.__gcAdminResults?.[i];if(!x)return;const id=x.id||x.user_id||'',role=x.role;document.getElementById('gcAdminCoinProfileId').value=id;document.getElementById('gcAdminCoinRole').value=role;const sel=document.getElementById('gcAdminSelected');if(sel)sel.innerHTML=`Selected: <b>${E(x.name||'User')}</b> · ${E(shortId(id))} · ${role.toUpperCase()} · <b id="gcAdminSelectedBal">🪙 …</b>`;getBalance(id).then(b=>{const e=document.getElementById('gcAdminSelectedBal');if(e)e.textContent='🪙 '+b.toLocaleString('en-IN')})}
-function adminPanel(){const dash=document.getElementById('staffAdminDashboard');if(!dash)return;let panel=dash.querySelector('#gcAdminCoinsPanel');if(!panel){panel=document.createElement('section');panel.id='gcAdminCoinsPanel';panel.className='gc-admin-coins-panel';dash.prepend(panel)}panel.innerHTML=`<div><h3>🪙 GURU COINS — ADMIN ACCOUNTABILITY</h3><p class="text-xs text-slate-500 mt-1">Search any registered Tutor or Student by ID, name or mobile number, view balance, then add or deduct coins. Every change requires a reason and is permanently logged.</p></div><div class="gc-admin-search-wrap"><input id="gcAdminPersonSearch" placeholder="Search ID / Name / Mobile Number"><select id="gcAdminPersonType"><option value="all">All</option><option value="tutor">Tutor</option><option value="student">Student</option></select><button type="button" class="gc-admin-search-btn" onclick="GC_ADMIN_COINS.search()">SEARCH</button></div><div id="gcAdminPersonResults" class="gc-admin-search-results"></div><div id="gcAdminSelected" class="gc-admin-selected">No profile selected.</div><div class="gc-admin-coins-grid"><input id="gcAdminCoinProfileId" class="gc-admin-wide" placeholder="Selected profile ID"><select id="gcAdminCoinRole"><option value="student">student</option><option value="tutor">tutor</option></select><input id="gcAdminCoinAmount" type="number" step="1" placeholder="+100 / -100"><input id="gcAdminCoinReason" class="gc-admin-wide" placeholder="Mandatory reason"><button type="button" class="gc-admin-coins-btn" id="gcAdminCoinApply">APPLY COINS</button></div><div class="gc-admin-wallet-result">Current Balance: <b id="gcAdminCoinBalance">—</b></div>`;
- panel.querySelector('#gcAdminCoinApply').onclick=async()=>{const s=S(),id=panel.querySelector('#gcAdminCoinProfileId').value.trim(),role=panel.querySelector('#gcAdminCoinRole').value,amt=Number(panel.querySelector('#gcAdminCoinAmount').value),reason=panel.querySelector('#gcAdminCoinReason').value.trim();if(!s||!id||!Number.isFinite(amt)||amt===0||!reason)return alert(!s?'Supabase is not connected.':!id?'Select a Tutor/Student first.':amt===0?'Enter a non-zero amount.':'Reason is mandatory.');try{const r=await s.rpc('gc_staff_adjust_coins',{p_profile_id:id,p_role:role,p_amount:amt,p_reason:reason});if(r.error)throw r.error;alert('Coins updated successfully.');panel.querySelector('#gcAdminCoinAmount').value='';panel.querySelector('#gcAdminCoinReason').value='';const b=await getBalance(id);panel.querySelector('#gcAdminCoinBalance').textContent='🪙 '+b.toLocaleString('en-IN');adminSearch()}catch(e){alert('Coin update failed: '+(e.message||e))}};
+async function paintCards(){
+ const cards=[...document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card')];
+ const metas=cards.map(cardMeta);const ids=[...new Set(metas.map(x=>x.id).filter(Boolean))];if(!ids.length)return;
+ const map=await balances(ids);
+ cards.forEach((c,i)=>{const m=metas[i];if(!m.id)return;publicIdBadge(c,publicId(m.id,m.role));coinField(c,map[m.id]??0)});
 }
-function menuFix(){const m=document.getElementById('publicNavbarLinks');if(!m)return;[...m.querySelectorAll('a')].forEach(a=>{if(/GURU COINS|COINS & LEARNING/i.test(a.textContent||'')){a.textContent='📚 LEARNING REQUESTS';a.onclick=function(){try{closeNavMenu?.()}catch(e){};if(window.GC_CL_V2?.open){GC_CL_V2.open()}else if(window.gcOpenCoinsLearningRequests)gcOpenCoinsLearningRequests()}}})}
-window.GC_ADMIN_COINS={search:adminSearch,select:selectPerson};
-function boot(){menuFix();adminPanel();hookModal();paintCards();setTimeout(()=>{menuFix();adminPanel();hookModal();paintCards()},800)}
-document.addEventListener('DOMContentLoaded',boot);window.addEventListener('load',boot);setInterval(()=>{menuFix();adminPanel();hookModal();paintCards()},2500);
+function profileId(p){return String(p?.id||p?.userId||p?.user_id||'')}
+async function paintDashboard(p){
+ const host=document.getElementById('userDashboardContent');if(!host||!p)return;const id=profileId(p);if(!id)return;
+ const role=(p.registrationRole||localStorage.getItem('active_user_role')||'student').toLowerCase();const b=await balance(id);let strip=document.getElementById('gcAuthDashboardStrip');
+ if(!strip){strip=document.createElement('div');strip.id='gcAuthDashboardStrip';strip.className='gc-auth-dashboard-strip';host.prepend(strip)}
+ strip.innerHTML='<div class="gc-auth-dashboard-card"><small>GURU CONNECT ID</small><strong>'+esc(publicId(id,role))+'</strong></div><div class="gc-auth-dashboard-card"><small>GURU COINS BALANCE</small><strong>🪙 '+Number(b).toLocaleString('en-IN')+' COINS</strong></div>';
+}
+function hookDashboard(){const old=window.renderUserDashboard;if(typeof old!=='function'||old.__gcAuthHook)return;const f=function(p){const r=old.apply(this,arguments);window.__gcAuthProfile=p;setTimeout(()=>paintDashboard(p),30);return r};f.__gcAuthHook=true;window.renderUserDashboard=f}
+async function loadPeople(q,kind){
+ const s=S();if(!s||!q)return[];let out=[];
+ async function one(table,role){if(kind!=='all'&&kind!==role)return;let r=await s.from(table).select('*').limit(3000);if(r.error){console.warn(table,r.error);return}for(const x of (r.data||[])){
+   if(x.is_illustrative===true)continue;
+   const id=String(x.id||x.user_id||'');if(!id)continue;const sid=publicId(id,role);const vals=Object.values(x).map(v=>String(v??'')).join(' ');if(vals.toLowerCase().includes(q)||sid.toLowerCase().includes(q)){out.push({...x,__role:role,__id:id,__sid:sid})}
+ }}
+ await Promise.all([one('tutor_profiles','tutor'),one('student_profiles','student')]);return out.slice(0,50);
+}
+async function ledger(id){const s=S();if(!s)return[];try{const q=await s.from('gc_coin_ledger').select('*').eq('profile_id',String(id)).order('created_at',{ascending:false}).limit(30);return q.data||[]}catch(e){return[]}}
+function adminPanel(){
+ const dash=document.getElementById('staffAdminDashboard');if(!dash)return;let panel=document.getElementById('gcAuthAdminCoins');
+ if(!panel){panel=document.createElement('section');panel.id='gcAuthAdminCoins';panel.className='gc-auth-admin';dash.prepend(panel)}
+ if(panel.dataset.ready==='1')return;
+ panel.dataset.ready='1';panel.innerHTML='<h3>🪙 GURU COINS — ADMIN ACCOUNTABILITY & CONTROL</h3><div class="gc-auth-admin-sub">Search registered Tutor/Student by short ID, full ID, name, mobile or email. Manage balance with a mandatory reason. Every change is permanently logged.</div><div class="gc-auth-admin-search"><input id="gcAuthSearch" autocomplete="off" placeholder="Search Name / Mobile / Short ID / Email"><select id="gcAuthKind"><option value="all">Tutor + Student</option><option value="tutor">Tutor</option><option value="student">Student</option></select><button type="button" class="gc-auth-admin-btn" id="gcAuthSearchBtn">SEARCH</button></div><div id="gcAuthResults" class="gc-auth-results"></div><div id="gcAuthSelected"></div>';
+ const input=panel.querySelector('#gcAuthSearch');panel.querySelector('#gcAuthSearchBtn').onclick=()=>doSearch();input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doSearch()}});
+}
+async function doSearch(){const input=document.getElementById('gcAuthSearch'),out=document.getElementById('gcAuthResults');if(!input||!out)return;const q=clean(input.value).toLowerCase();if(!q){out.innerHTML='<div class="gc-auth-admin-sub">Type a name, mobile number or ID to search.</div>';return}out.innerHTML='<div class="gc-auth-admin-sub">Searching all registered profiles…</div>';const rows=await loadPeople(q,document.getElementById('gcAuthKind')?.value||'all');window.__gcAuthRows=rows;if(!rows.length){out.innerHTML='<div class="gc-auth-admin-sub">No Tutor/Student found. Try the exact name, mobile number, short ID or full ID.</div>';return}out.innerHTML=rows.map((x,i)=>'<div class="gc-auth-person"><div><div class="gc-auth-person-name">'+esc(x.name||x.full_name||'Unnamed')+' <span class="gc-auth-public-id">'+esc(x.__sid)+'</span></div><div class="gc-auth-person-meta">'+x.__role.toUpperCase()+' • '+esc(x.phone||x.mobile||x.mobile_number||x.email||'No contact')+'</div></div><button type="button" class="gc-auth-select" data-select="'+i+'">MANAGE COINS</button></div>').join('');out.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>selectPerson(Number(b.dataset.select)))}
+async function selectPerson(i){const p=window.__gcAuthRows?.[i];if(!p)return;const host=document.getElementById('gcAuthSelected');if(!host)return;const b=await balance(p.__id);const rows=await ledger(p.__id);host.innerHTML='<div class="gc-auth-selected"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><div class="gc-auth-person-name">'+esc(p.name||'Unnamed')+' <span class="gc-auth-public-id">'+esc(p.__sid)+'</span></div><div class="gc-auth-person-meta">'+p.__role.toUpperCase()+' • Mobile: '+esc(p.phone||p.mobile||p.mobile_number||'—')+'</div></div><div><div class="gc-auth-person-meta">CURRENT COINS</div><div id="gcAuthBalance" class="gc-auth-balance">🪙 '+Number(b).toLocaleString('en-IN')+'</div></div></div><div class="gc-auth-adjust"><input id="gcAuthAmount" type="number" step="1" placeholder="+100 / -100"><input id="gcAuthReason" placeholder="Mandatory reason"><button type="button" class="gc-auth-admin-btn" id="gcAuthApply">UPDATE COINS</button></div><div id="gcAuthStatus" class="gc-auth-admin-sub"></div><div class="gc-auth-ledger">'+(rows.length?'<table><thead><tr><th>Time</th><th>Type</th><th>Amount</th><th>Reason</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>'+esc(r.created_at||'')+'</td><td>'+esc(r.transaction_type||r.type||'')+'</td><td>'+Number(r.amount||0)+(Number(r.amount||0)>=0?' 🪙':' 🪙')+'</td><td>'+esc(r.reason||'')+'</td></tr>').join('')+'</tbody></table>':'<div class="gc-auth-admin-sub">No coin transactions yet.</div>')+'</div></div>';
+ document.getElementById('gcAuthApply').onclick=async()=>{const amount=Number(document.getElementById('gcAuthAmount').value),reason=clean(document.getElementById('gcAuthReason').value),st=document.getElementById('gcAuthStatus');if(!Number.isFinite(amount)||amount===0)return alert('Enter a non-zero coin amount.');if(!reason)return alert('Reason is mandatory.');st.textContent='Updating secure coin ledger…';try{const s=S();const r=await s.rpc('gc_staff_adjust_coins',{p_profile_id:p.__id,p_role:p.__role,p_amount:amount,p_reason:reason});if(r.error)throw r.error;st.textContent='Coins updated successfully and permanently logged.';await selectPerson(i);await doSearch()}catch(e){st.textContent='';alert('Coin update failed: '+(e.message||e))}};
+}
+function boot(){adminPanel();hookDashboard();paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile);setTimeout(()=>{adminPanel();hookDashboard();paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile)},600)}
+document.addEventListener('DOMContentLoaded',boot);window.addEventListener('load',boot);setInterval(()=>{adminPanel();hookDashboard();paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile)},5000);
+new MutationObserver(()=>{clearTimeout(window.__gcAuthPaint);window.__gcAuthPaint=setTimeout(()=>{paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile)},350)}).observe(document.body,{subtree:true,childList:true});
+window.GC_AUTH_COINS={search:doSearch,select:selectPerson};
 })();
 </script>
-<style id="gc-student-coins-final-fix">.gc-student-coins-box{display:flex!important;align-items:center;gap:10px}.gc-student-coins-box strong{font-weight:950!important}.gc-student-coins-box .gc-coin-value{color:inherit!important}</style>
-<script id="gc-student-coins-final-fix-js">(function(){'use strict';const S=()=>window.gcSupabase||null;const esc=v=>String(v??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]));async function get(ids){const s=S();if(!s||!ids.length)return{};try{const q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',[...new Set(ids.map(String))]);if(q.error)throw q.error;return Object.fromEntries((q.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]));}catch(e){console.warn('Student coin balance:',e);return{}}}function id(c){return c.dataset.studentId||c.querySelector('[data-student-id]')?.getAttribute('data-student-id')||''}async function paint(){const cards=[...document.querySelectorAll('.gc-target-student,.gc-beautiful-student,.gc-new-student-card')];const ids=cards.map(id).filter(Boolean);if(!ids.length)return;const m=await get(ids);cards.forEach(c=>{const sid=id(c);if(!sid)return;let box=[...c.querySelectorAll('.gc-target-info .gc-target-info-box,.gc-beautiful-field,.gc-new-info-box')].find(x=>/LOCATION|ADDRESS/i.test(x.textContent||''));if(box){const label=box.querySelector('b,small');const val=box.querySelector('span,strong');if(label)label.textContent='COINS';if(val)val.textContent='🪙 '+(m[String(sid)]??0).toLocaleString('en-IN')+' COINS';box.classList.add('gc-student-coins-box');}else if(c.classList.contains('gc-target-student')){const info=c.querySelector('.gc-target-info');if(info){const d=document.createElement('div');d.className='gc-target-info-box gc-student-coins-box';d.innerHTML='<span class="gc-target-info-icon">🪙</span><div><b>COINS</b><span>'+((m[String(sid)]??0).toLocaleString('en-IN'))+' COINS</span></div>';info.appendChild(d)}}});}function boot(){paint();setTimeout(paint,500);setTimeout(paint,1500)}document.addEventListener('DOMContentLoaded',boot);window.addEventListener('load',boot);setInterval(paint,2500);new MutationObserver(()=>{clearTimeout(window.__gcsct);window.__gcsct=setTimeout(paint,250)}).observe(document.body,{subtree:true,childList:true});})();</script>
-<style id="gc-student-coins-final-fix">.gc-student-coins-box{display:flex!important;align-items:center;gap:10px}.gc-student-coins-box strong{font-weight:950!important}</style>
-<script id="gc-student-coins-final-fix-js">(function(){'use strict';const S=()=>window.gcSupabase||null;async function get(ids){const s=S();if(!s||!ids.length)return{};try{const q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',[...new Set(ids.map(String))]);if(q.error)throw q.error;return Object.fromEntries((q.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]));}catch(e){console.warn('Student coin balance:',e);return{}}}function id(c){return c.dataset.studentId||c.querySelector('[data-student-id]')?.getAttribute('data-student-id')||''}async function paint(){const cards=[...document.querySelectorAll('.gc-target-student,.gc-beautiful-student,.gc-new-student-card')];const ids=cards.map(id).filter(Boolean);if(!ids.length)return;const m=await get(ids);cards.forEach(c=>{const sid=id(c);if(!sid)return;let box=[...c.querySelectorAll('.gc-target-info > div,.gc-beautiful-field,.gc-new-info-box')].find(x=>/LOCATION|ADDRESS/i.test(x.textContent||''));if(box){const label=box.querySelector('b,small');const val=box.querySelector('span,strong');if(label)label.textContent='COINS';if(val)val.textContent='🪙 '+(m[String(sid)]??0).toLocaleString('en-IN')+' COINS';box.classList.add('gc-student-coins-box');}else if(c.classList.contains('gc-target-student')){const info=c.querySelector('.gc-target-info');if(info){const d=document.createElement('div');d.className='gc-target-info-box gc-student-coins-box';d.innerHTML='<span class="gc-target-info-icon">🪙</span><div><b>COINS</b><span>'+((m[String(sid)]??0).toLocaleString('en-IN'))+' COINS</span></div>';info.appendChild(d)}}});}function boot(){paint();setTimeout(paint,500);setTimeout(paint,1500)}document.addEventListener('DOMContentLoaded',boot);window.addEventListener('load',boot);setInterval(paint,2500);new MutationObserver(()=>{clearTimeout(window.__gcsct);window.__gcsct=setTimeout(paint,250)}).observe(document.body,{subtree:true,childList:true});})();</script>
 </body>
 </html>
 <!-- =========================================================
@@ -13092,175 +13060,3 @@ document.addEventListener('DOMContentLoaded',()=>{hook();setTimeout(hook,800);se
 })();
 </script>
 
-<style id="gc-coins-ui-final-v5">
-/* Coins live inside the normal profile information area — no extra coin strip. */
-.gc-profile-coin-badge,.gc-coins-pill{display:none!important}
-.gc-coins-field{position:relative;overflow:hidden}
-.gc-coins-field .gc-coin-value{font-size:1.02rem;font-weight:950;color:#0f3d91}
-.gc-student-coins-field .gc-coin-value{color:#991b1b}
-.gc-admin-coins-panel{margin:0 0 22px;padding:20px;border-radius:22px;border:1px solid #bfdbfe;background:linear-gradient(135deg,#eff6ff,#fff,#f8fafc);box-shadow:0 10px 28px rgba(15,61,145,.08)}
-.gc-admin-coins-panel h3{margin:0;font-size:18px;font-weight:950;color:#0f172a}
-.gc-admin-coins-grid{display:grid;grid-template-columns:1.1fr .8fr .8fr 1.5fr auto;gap:10px;margin-top:14px}
-.gc-admin-coins-grid input,.gc-admin-coins-grid select{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:11px 12px;font-weight:750;background:#fff;outline:none}
-.gc-admin-coins-grid input:focus,.gc-admin-coins-grid select:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
-.gc-admin-coins-btn{border:0;border-radius:12px;padding:11px 16px;background:#0f3d91;color:#fff;font-weight:950;cursor:pointer;white-space:nowrap}
-.gc-admin-coins-btn:hover{background:#0b3278}
-.gc-admin-wallet-result{margin-top:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:12px}
-.gc-admin-wallet-balance{font-size:24px;font-weight:950;color:#0f3d91}
-@media(max-width:900px){.gc-admin-coins-grid{grid-template-columns:1fr 1fr}.gc-admin-coins-grid .gc-admin-wide{grid-column:1/-1}}
-@media(max-width:560px){.gc-admin-coins-grid{grid-template-columns:1fr}}
-</style>
-<script id="gc-coins-ui-final-v5-js">
-(function(){
-'use strict';
-const S=()=>window.gcSupabase||null;
-const escx=v=>{try{return typeof escapeHtml==='function'?escapeHtml(String(v??'')):String(v??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]))}catch(e){return String(v??'')}};
-async function wallet(id){const s=S(); if(!s||!id)return 0; try{const q=await s.from('gc_coin_wallets').select('balance').eq('profile_id',String(id)).maybeSingle(); return Number(q.data?.balance||0)}catch(e){return 0}}
-async function balances(ids){const s=S(); if(!s||!ids.length)return {}; try{const q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',ids);if(q.error)return {};return Object.fromEntries((q.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]))}catch(e){return {}}}
-function cardId(card){const b=card.querySelector('[data-tutor-id],[data-student-id]');return b?.dataset.tutorId||b?.dataset.studentId||card.dataset.gcCoinId||''}
-function replaceCardAddress(card,balance,isStudent){
-  if(!card)return;
-  let nodes=[...card.querySelectorAll('small')].filter(x=>String(x.textContent||'').trim().toUpperCase()==='ADDRESS');
-  nodes.forEach(sm=>{const wrap=sm.parentElement;if(!wrap)return;wrap.classList.add('gc-coins-field');if(isStudent)wrap.classList.add('gc-student-coins-field');sm.textContent='COINS';let strong=wrap.querySelector('strong');if(strong){strong.className='gc-coin-value';strong.textContent='🪙 '+Number(balance||0).toLocaleString('en-IN')+' COINS'}});
-}
-async function paintCards(){
- const cards=[...document.querySelectorAll('.gc-target-card,.gc-profile-card')];
- const ids=[...new Set(cards.map(cardId).filter(Boolean).map(String))]; if(!ids.length)return;
- const m=await balances(ids);
- cards.forEach(c=>{const id=cardId(c);if(!id)return;const isStudent=!!c.querySelector('[data-student-id]')||c.classList.contains('gc-new-student-card')||/student/i.test(c.className);replaceCardAddress(c,m[id]??0,isStudent);c.querySelectorAll('.gc-profile-coin-badge,.gc-coins-pill').forEach(x=>x.remove())});
-}
-function replaceDashboardAddress(){
- const role=String(localStorage.getItem('active_user_role')||'').toLowerCase();
- if(!['student','tutor'].includes(role))return;
- const p=typeof getCurrentUserProfile==='function'?getCurrentUserProfile():null;if(!p?.id)return;
- document.querySelectorAll('#userDashboardContent .gc-v3-detail-grid > div, #userDashboardContent > div div').forEach(()=>{});
- // Dashboard fields are generated as cards. Match the visible label and replace only that field.
- document.querySelectorAll('#userDashboardContent [class*="bg-slate-50"]').forEach(box=>{
-   const label=box.querySelector('div'); if(!label)return;
-   const text=String(label.textContent||'').trim().toUpperCase();
-   if(text.includes('RESIDENTIAL ADDRESS')){box.dataset.gcCoinDash='1';label.innerHTML='<i class="fa-solid fa-coins text-brand-blue"></i> GURU COINS';let val=box.querySelector('div.mt-2');if(val){val.innerHTML='<span class="gc-dash-coins">🪙 0 COINS</span>';}}
- });
- wallet(p.id).then(b=>document.querySelectorAll('.gc-dash-coins').forEach(x=>x.textContent='🪙 '+b.toLocaleString('en-IN')+' COINS'));
-}
-function replaceModalAddress(){
- const modal=document.getElementById('gcV3FullProfileModal');if(!modal)return;
- const id=modal.dataset.gcCoinProfileId;
- if(!id)return;
- wallet(id).then(b=>{
-   modal.querySelectorAll('small').forEach(sm=>{if(String(sm.textContent||'').trim().toUpperCase()==='ADDRESS'){const box=sm.parentElement;sm.textContent='COINS';const st=box.querySelector('strong');if(st){st.textContent='🪙 '+b.toLocaleString('en-IN')+' COINS';st.classList.add('gc-coin-value')}}});
- });
-}
-function captureOpenProfile(){
- const modal=document.getElementById('gcV3FullProfileModal');if(!modal)return;
- const old=window.openTutorProfile;
- if(old&& !old.__gcCoinWrap){const f=function(id){const r=old.apply(this,arguments);const m=document.getElementById('gcV3FullProfileModal');if(m)m.dataset.gcCoinProfileId=String(id||'');setTimeout(replaceModalAddress,50);return r};f.__gcCoinWrap=true;window.openTutorProfile=f}
- const oldS=window.openStudentProfile;
- if(oldS&& !oldS.__gcCoinWrap){const f=function(id){const r=oldS.apply(this,arguments);const m=document.getElementById('gcV3FullProfileModal');if(m)m.dataset.gcCoinProfileId=String(id||'');setTimeout(replaceModalAddress,50);return r};f.__gcCoinWrap=true;window.openStudentProfile=f}
-}
-function adminPanel(){
- const dash=document.getElementById('staffAdminDashboard');if(!dash||dash.querySelector('#gcAdminCoinsPanel'))return;
- const host=dash.querySelector('div.bg-white');if(!host)return;
- const panel=document.createElement('section');panel.id='gcAdminCoinsPanel';panel.className='gc-admin-coins-panel';
- panel.innerHTML=`<div class="flex flex-col md:flex-row md:items-center justify-between gap-2"><div><h3>🪙 GURU COINS — ADMIN CONTROL</h3><p class="text-xs text-slate-500 mt-1">View any Student/Tutor balance and add or deduct coins. Every manual change needs a reason and is permanently logged.</p></div><span class="text-[10px] font-black px-3 py-2 rounded-full bg-blue-100 text-blue-800">NO NEGATIVE BALANCES</span></div>
- <div class="gc-admin-coins-grid">
-  <input id="gcAdminCoinProfileId" class="gc-admin-wide" placeholder="Student / Tutor Profile ID">
-  <select id="gcAdminCoinRole"><option value="student">Student</option><option value="tutor">Tutor</option></select>
-  <input id="gcAdminCoinAmount" type="number" step="1" placeholder="+100 / -100">
-  <input id="gcAdminCoinReason" class="gc-admin-wide" placeholder="Mandatory reason (e.g. Promotional grant)">
-  <button type="button" class="gc-admin-coins-btn" id="gcAdminCoinApply">APPLY COINS</button>
- </div>
- <div class="gc-admin-wallet-result"><span>Current Balance:</span><span id="gcAdminCoinBalance" class="gc-admin-wallet-balance">—</span><button type="button" id="gcAdminCoinCheck" class="text-xs font-black text-blue-700 underline">CHECK BALANCE</button><span id="gcAdminCoinStatus" class="text-xs text-slate-500"></span></div>`;
- const first=host.querySelector('.flex.flex-col.md\\:flex-row')||host.firstElementChild; if(first)first.insertAdjacentElement('afterend',panel);else host.prepend(panel);
- const check=()=>{const id=document.getElementById('gcAdminCoinProfileId')?.value.trim();if(!id)return alert('Enter Student/Tutor Profile ID.');document.getElementById('gcAdminCoinBalance').textContent='Loading…';wallet(id).then(b=>document.getElementById('gcAdminCoinBalance').textContent='🪙 '+b.toLocaleString('en-IN')).catch(()=>document.getElementById('gcAdminCoinBalance').textContent='—')};
- document.getElementById('gcAdminCoinCheck').onclick=check;
- document.getElementById('gcAdminCoinApply').onclick=async()=>{
-   const s=S(),id=document.getElementById('gcAdminCoinProfileId').value.trim(),role=document.getElementById('gcAdminCoinRole').value,amount=Number(document.getElementById('gcAdminCoinAmount').value),reason=document.getElementById('gcAdminCoinReason').value.trim(),st=document.getElementById('gcAdminCoinStatus');
-   if(!s)return alert('Supabase is not connected.');if(!id)return alert('Enter Student/Tutor Profile ID.');if(!Number.isFinite(amount)||amount===0)return alert('Enter a non-zero amount.');if(!reason)return alert('Reason is mandatory.');
-   st.textContent='Saving to permanent ledger…';
-   try{const r=await s.rpc('gc_staff_adjust_coins',{p_profile_id:id,p_role:role,p_amount:amount,p_reason:reason});if(r.error)throw r.error;st.textContent='Saved successfully.';document.getElementById('gcAdminCoinAmount').value='';document.getElementById('gcAdminCoinReason').value='';check();if(window.GC_CL_V2?.load)window.GC_CL_V2.load();}catch(e){st.textContent='';alert('Coin adjustment failed: '+(e.message||e))}
- };
-}
-function boot(){adminPanel();captureOpenProfile();paintCards();replaceDashboardAddress();setTimeout(()=>{adminPanel();captureOpenProfile();paintCards();replaceDashboardAddress()},700)}
-document.addEventListener('DOMContentLoaded',boot);window.addEventListener('load',boot);setInterval(()=>{adminPanel();captureOpenProfile();paintCards();replaceDashboardAddress()},3000);
-})();
-</script>
-
-
-
-<style id="gc-final-coins-ids-v10-css">
-.gc-final-coins-pill{display:inline-flex!important;align-items:center!important;gap:5px!important;margin-top:7px!important;padding:5px 9px!important;border-radius:999px!important;background:#eef5ff!important;border:1px solid #bfdbfe!important;color:#123b8f!important;font-size:11px!important;font-weight:950!important;white-space:nowrap!important}
-.gc-final-public-id{display:inline-flex!important;align-items:center!important;margin-left:7px!important;padding:3px 7px!important;border-radius:7px!important;background:#0f172a!important;color:#fff!important;font:900 10px/1 ui-monospace,SFMono-Regular,Menlo,monospace!important;letter-spacing:.3px!important;vertical-align:middle!important}
-.gc-final-dashboard-strip{margin:18px 0 0!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
-.gc-final-dashboard-strip>div{border:1px solid #bfdbfe!important;border-radius:18px!important;padding:14px 16px!important;background:linear-gradient(135deg,#eff6ff,#fff)!important}
-.gc-final-dashboard-strip small{display:block!important;font-size:10px!important;font-weight:950!important;letter-spacing:.08em!important;color:#64748b!important;text-transform:uppercase!important}
-.gc-final-dashboard-strip strong{display:block!important;margin-top:5px!important;font-size:19px!important;font-weight:1000!important;color:#123b8f!important}
-@media(max-width:600px){.gc-final-dashboard-strip{grid-template-columns:1fr!important}.gc-final-public-id{display:block!important;width:max-content!important;margin:6px 0 0!important}}
-</style>
-<script id="gc-final-coins-ids-v10-js">
-(function(){
-'use strict';
-const S=()=>window.gcSupabase||null;
-const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-function hashId(v){let h=2166136261>>>0;for(const ch of String(v??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return h.toString(36).toUpperCase().padStart(8,'0').slice(-8)}
-function publicId(id,role){return 'GC-'+(role==='student'?'S':'T')+'-'+hashId(id)}
-async function balances(ids){const s=S();if(!s||!ids.length)return{};try{const q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',ids.map(String));if(q.error)throw q.error;return Object.fromEntries((q.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]))}catch(e){console.warn('GURU COINS:',e);return{}}}
-function cardInfo(card){
- let role=card.classList.contains('gc-target-student')||card.classList.contains('gc-beautiful-student')||card.classList.contains('gc-new-student-card')||/student/i.test(card.className)?'student':'tutor';
- let id=card.dataset.studentId||card.dataset.tutorId||'';
- if(!id){const b=card.querySelector('[data-student-id],[data-tutor-id]');id=b?.dataset.studentId||b?.dataset.tutorId||''}
- if(!id){const b=card.querySelector('[data-gc-more-tutor],[data-gc-more-student],[data-tutor-id],[data-student-id]');id=b?.dataset.tutorId||b?.dataset.studentId||b?.getAttribute('data-gc-more-tutor')||b?.getAttribute('data-gc-more-student')||''}
- if(!id){const b=card.querySelector('button[onclick*="openTutorProfile"],button[onclick*="openStudentProfile"],button[onclick*="openPublicTutorProfile"]');const m=String(b?.getAttribute('onclick')||'').match(/(?:openTutorProfile|openStudentProfile|openPublicTutorProfile)\(\s*[\'\"]?([^\'\")]+)[\'\"]?\s*\)/);id=m?.[1]||''}
- return {id:String(id||''),role}
-}
-function addIdToCard(card,pid){
- if(card.querySelector('.gc-final-public-id'))return;
- const host=card.querySelector('.gc-target-name,.gc-clean-name,.gc-beautiful-name,.gc-new-name,h3,h4');
- if(host)host.insertAdjacentHTML('beforeend','<span class="gc-final-public-id">'+esc(pid)+'</span>');
-}
-function replaceCoins(card,b){
- const candidates=[...card.querySelectorAll('.gc-target-info > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box')];
- let box=candidates.find(x=>/^(?:📍\s*)?(LOCATION|ADDRESS)$/i.test((x.querySelector('b,small,strong')?.textContent||'').trim()));
- if(!box) box=candidates.find(x=>/(LOCATION|ADDRESS)/i.test((x.textContent||'').trim()) && !/COINS/i.test(x.textContent||''));
- if(box){
-   const lab=box.querySelector('b,small'); if(lab)lab.textContent='COINS';
-   const val=box.querySelector('span:not(.gc-target-info-icon),strong'); if(val)val.textContent='🪙 '+Number(b||0).toLocaleString('en-IN')+' COINS';
-   box.classList.add('gc-coins-field'); return;
- }
- const grid=card.querySelector('.gc-target-info,.gc-info-grid');
- if(grid&&!grid.querySelector('.gc-final-added-coins')){
-   const d=document.createElement('div');d.className='gc-final-added-coins gc-target-info-box gc-info-box';d.innerHTML='<span class="gc-target-info-icon gc-info-icon">🪙</span><div><b>COINS</b><span>🪙 '+Number(b||0).toLocaleString('en-IN')+' COINS</span></div>';grid.appendChild(d);
- }
-}
-async function paintCards(){
- const cards=[...document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card')];
- const meta=cards.map(cardInfo).filter(x=>x.id); if(!meta.length)return;
- const map=await balances([...new Set(meta.map(x=>x.id))]);
- cards.forEach((c,i)=>{const x=meta[i];c.dataset.gcFinalPublicId=publicId(x.id,x.role);addIdToCard(c,c.dataset.gcFinalPublicId);replaceCoins(c,map[x.id]??0)});
-}
-async function paintDashboard(profile){
- const host=document.getElementById('userDashboardContent');if(!host||!profile)return;
- const role=profile.registrationRole||localStorage.getItem('active_user_role')||'student';const id=String(profile.id||profile.userId||'');if(!id)return;
- const pid=publicId(id,role),b=(await balances([id]))[id]??0;
- let strip=document.getElementById('gcFinalDashboardAccountability');
- if(!strip){strip=document.createElement('div');strip.id='gcFinalDashboardAccountability';strip.className='gc-final-dashboard-strip';host.prepend(strip)}
- strip.innerHTML='<div><small>GURU CONNECT ID</small><strong>'+esc(pid)+'</strong></div><div><small>GURU COINS BALANCE</small><strong>🪙 '+Number(b).toLocaleString('en-IN')+' COINS</strong></div>';
-}
-function hookDashboard(){const old=window.renderUserDashboard;if(typeof old!=='function'||old.__gcFinalCoinsHook)return;const f=function(p){const r=old.apply(this,arguments);window.__gcFinalDashProfile=p;setTimeout(()=>paintDashboard(p),40);return r};f.__gcFinalCoinsHook=true;window.renderUserDashboard=f}
-async function adminSearch(){
- const s=S(),out=document.getElementById('gcAdminPersonResults'),qv=(document.getElementById('gcAdminPersonSearch')?.value||'').trim().toLowerCase(),kind=document.getElementById('gcAdminPersonType')?.value||'all';if(!out)return;
- if(!s){out.innerHTML='<div class="gc-admin-person-meta">Supabase is not connected.</div>';return}
- if(!qv){out.innerHTML='<div class="gc-admin-person-meta">Enter short ID, name or mobile number.</div>';return}
- out.innerHTML='<div class="gc-admin-person-meta">Searching registered Tutor/Student records…</div>';let rows=[];
- async function load(table,role){if(kind!=='all'&&kind!==role)return;const r=await s.from(table).select('*').eq('registration_status','registered').limit(2000);if(r.error){console.warn(table,r.error);return}(r.data||[]).forEach(x=>{const id=String(x.id||x.user_id||'');const sid=publicId(id,role).toLowerCase();const vals=Object.values(x).map(v=>String(v??'').toLowerCase()).join(' ');if(sid.includes(qv)||vals.includes(qv))rows.push({...x,role,__id:id,__sid:publicId(id,role)})})}
- await Promise.all([load('tutor_profiles','tutor'),load('student_profiles','student')]);rows=rows.slice(0,50);
- if(!rows.length){out.innerHTML='<div class="gc-admin-person-meta">No Tutor/Student found. Try the short ID, exact name or mobile number.</div>';return}
- window.__gcAdminResults=rows;
- out.innerHTML=rows.map((x,i)=>{const name=x.name||x.full_name||'Unnamed';const phone=x.phone||x.mobile||x.mobile_number||'';return '<div class="gc-admin-person"><div><div class="gc-admin-person-name">'+esc(name)+' <span class="gc-short-id">('+esc(x.__sid)+')</span></div><div class="gc-admin-person-meta">'+x.role.toUpperCase()+(phone?' • '+esc(phone):'')+'</div></div><div class="gc-admin-person-coins" id="gc-final-admin-bal-'+i+'">🪙 …</div><button type="button" onclick="GC_ADMIN_COINS.select('+i+')">MANAGE COINS</button></div>'}).join('');
- rows.forEach((x,i)=>balances([x.__id]).then(m=>{const e=document.getElementById('gc-final-admin-bal-'+i);if(e)e.textContent='🪙 '+Number(m[x.__id]||0).toLocaleString('en-IN')}));
-}
-function patchAdmin(){if(window.GC_ADMIN_COINS){window.GC_ADMIN_COINS.search=adminSearch}}
-function boot(){hookDashboard();patchAdmin();paintCards();if(window.__gcFinalDashProfile)paintDashboard(window.__gcFinalDashProfile)}
-document.addEventListener('DOMContentLoaded',boot);window.addEventListener('load',boot);setTimeout(boot,800);setInterval(()=>{hookDashboard();patchAdmin();paintCards();if(window.__gcFinalDashProfile)paintDashboard(window.__gcFinalDashProfile)},3500);
-new MutationObserver(()=>{clearTimeout(window.__gcFinalMut);window.__gcFinalMut=setTimeout(()=>{hookDashboard();paintCards()},300)}).observe(document.body,{subtree:true,childList:true});
-})();
-</script>
