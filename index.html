@@ -4328,6 +4328,13 @@ footer:before{
 }
 </style>
 
+
+<style id="gc-admin-coin-editor-ui">
+#adminEditTutorModal>div,#adminEditStudentModal>div{width:min(1180px,96vw)!important;max-width:1180px!important;max-height:92vh!important;overflow-y:auto!important;border-radius:28px!important;padding:30px!important;box-sizing:border-box}
+#adminEditTutorModal,#adminEditStudentModal{z-index:99999!important;padding:20px!important}
+.gc-admin-coin-editor{margin:10px 0 6px;padding:22px;border:1px solid #cbd5e1;border-radius:22px;background:linear-gradient(135deg,#f8fafc,#eef6ff);box-shadow:0 12px 30px rgba(15,23,42,.08)}
+.gc-admin-coin-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.gc-admin-coin-kicker{font-size:10px;font-weight:950;letter-spacing:.14em;color:var(--gc-accent)}.gc-admin-coin-head h4{margin:3px 0 0;font-size:20px;font-weight:950;color:#0f172a}.gc-admin-coin-balance{font-size:24px;font-weight:950;padding:10px 16px;border-radius:14px;background:#fff;border:1px solid #dbeafe;white-space:nowrap}.gc-admin-coin-grid{display:grid;grid-template-columns:minmax(220px,.75fr) minmax(320px,1.25fr);gap:16px}.gc-admin-coin-grid label{display:block;font-size:10px;font-weight:950;letter-spacing:.08em;color:#475569;margin:0 0 7px}.gc-admin-coin-grid input,.gc-admin-coin-grid textarea{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:14px;background:#fff;padding:13px 14px;font-weight:750;outline:none}.gc-admin-coin-grid textarea{min-height:125px;resize:vertical;line-height:1.5}.gc-admin-coin-grid input:focus,.gc-admin-coin-grid textarea:focus{border-color:var(--gc-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--gc-accent) 12%,transparent)}.gc-admin-coin-actions{display:flex;align-items:center;gap:14px;margin-top:15px;flex-wrap:wrap}.gc-admin-coin-btn{border:0;border-radius:14px;padding:13px 18px;background:var(--gc-accent);color:#fff;font-weight:950;cursor:pointer;box-shadow:0 8px 20px rgba(15,23,42,.14)}.gc-admin-coin-btn:disabled{opacity:.65;cursor:wait}.gc-admin-coin-actions span{font-size:11px;font-weight:800;color:#64748b}@media(max-width:700px){#adminEditTutorModal>div,#adminEditStudentModal>div{padding:18px!important;width:98vw!important}.gc-admin-coin-grid{grid-template-columns:1fr}.gc-admin-coin-head{align-items:flex-start;flex-direction:column}.gc-admin-coin-balance{font-size:20px}}
+</style>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 <!-- Header / Navbar -->
@@ -12270,32 +12277,19 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
   async function ensureStaffCloud(){
     const s=sb();
     if(!s) throw new Error('Supabase client is not loaded.');
-
     try{
-      const r=await s.auth.getUser();
-      const u=r?.data?.user;
-      if(u && u.is_anonymous!==true &&
-         String(u.email||'').toLowerCase()===STAFF_EMAIL.toLowerCase()){
-        localStorage.setItem('is_staff_logged','true');
-        localStorage.setItem('gc_staff_supabase_auth','true');
-        return u;
+      const sess=await s.auth.getSession();
+      const su=sess?.data?.session?.user;
+      if(su && su.is_anonymous!==true && String(su.email||'').toLowerCase()===STAFF_EMAIL.toLowerCase()){
+        localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');return su;
       }
-      if(u){try{await s.auth.signOut();}catch(_){}}
     }catch(_){}
-
-    const r=await s.auth.signInWithPassword({
-      email:STAFF_EMAIL,password:STAFF_PASSWORD
-    });
-    if(r.error) throw r.error;
-
-    const u=r?.data?.user;
-    if(!u || u.is_anonymous===true ||
-       String(u.email||'').toLowerCase()!==STAFF_EMAIL.toLowerCase()){
-      throw new Error('Supabase did not create a valid Staff session.');
-    }
-    localStorage.setItem('is_staff_logged','true');
-    localStorage.setItem('gc_staff_supabase_auth','true');
-    return u;
+    try{await s.auth.signOut();}catch(_){}
+    const r=await s.auth.signInWithPassword({email:STAFF_EMAIL,password:STAFF_PASSWORD});
+    if(r.error) throw new Error('Staff Cloud Login failed: '+(r.error.message||'Invalid Supabase Staff credentials')+'. Make sure this Staff email exists in Supabase Authentication > Users and has the configured password.');
+    const u=r?.data?.user, session=r?.data?.session;
+    if(!u||!session||u.is_anonymous===true||String(u.email||'').toLowerCase()!==STAFF_EMAIL.toLowerCase()) throw new Error('Supabase did not create a valid Staff session.');
+    localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');return u;
   }
 
   async function updateAndVerify(table,id,patch,fields){
@@ -12505,6 +12499,68 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
     return {ok:true,row};
   };
 
+
+  // ---------- STAFF COIN EDITOR ----------
+  async function getCoinBalance(profileId){
+    const s=sb(); if(!s||!profileId)return 0;
+    await ensureStaffCloud();
+    const q=await s.from('gc_coin_wallets').select('balance').eq('profile_id',String(profileId)).maybeSingle();
+    if(q.error) throw q.error;
+    return Number(q.data?.balance||0);
+  }
+  async function staffAdjustCoins(profileId,role,amount,reason){
+    const s=sb(); if(!s)throw new Error('Supabase client is not loaded.');
+    await ensureStaffCloud();
+    const cleanReason=clean(reason);
+    if(!cleanReason)throw new Error('Reason is mandatory.');
+    const n=Number(amount);
+    if(!Number.isFinite(n)||n===0)throw new Error('Enter a non-zero coin amount.');
+    const r=await s.rpc('gc_staff_adjust_coins',{p_profile_id:String(profileId),p_role:role,p_amount:n,p_reason:cleanReason});
+    if(r.error){
+      const msg=String(r.error.message||r.error);
+      if(/authori|staff/i.test(msg)) throw new Error('Staff authorization failed. Please click STAFF LOGOUT, login again, and retry.');
+      throw r.error;
+    }
+    return r.data;
+  }
+  function coinEditor(role,id,balance){
+    const accent=role==='student'?'#ea580c':'#2563eb';
+    const label=role==='student'?'STUDENT':'TUTOR';
+    return `<div class="gc-admin-coin-editor" style="--gc-accent:${accent}">
+      <div class="gc-admin-coin-head"><div><div class="gc-admin-coin-kicker">GURU COINS ACCOUNTABILITY</div><h4>🪙 ${label} COINS</h4></div><div class="gc-admin-coin-balance" id="${role==='student'?'gcS':'gcT'}_coin_balance">${Number(balance)||0} 🪙</div></div>
+      <div class="gc-admin-coin-grid">
+        <div><label>ADD / DEDUCT COINS</label><input id="${role==='student'?'gcS':'gcT'}_coin_amount" type="number" step="1" placeholder="+100 to add / -100 to deduct"></div>
+        <div><label>MANDATORY REASON</label><textarea id="${role==='student'?'gcS':'gcT'}_coin_reason" rows="5" placeholder="Write a detailed reason for this coin adjustment... e.g. Promotional grant, correction, penalty, refund, service adjustment, etc."></textarea></div>
+      </div>
+      <div class="gc-admin-coin-actions"><button type="button" id="${role==='student'?'gcS':'gcT'}_coin_apply" class="gc-admin-coin-btn">UPDATE COINS &amp; SAVE LEDGER</button><span id="${role==='student'?'gcS':'gcT'}_coin_status">Every adjustment is permanently recorded.</span></div>
+    </div>`;
+  }
+  async function wireCoinEditor(role,id){
+    const pre=role==='student'?'gcS':'gcT';
+    try{const b=await getCoinBalance(id);const el=document.getElementById(pre+'_coin_balance');if(el)el.textContent=(Number(b)||0)+' 🪙';}
+    catch(e){const st=document.getElementById(pre+'_coin_status');if(st)st.textContent='Unable to read wallet: '+(e.message||e);return;}
+    const btn=document.getElementById(pre+'_coin_apply');
+    if(!btn||btn.dataset.bound)return; btn.dataset.bound='1';
+    btn.onclick=async()=>{
+      const amt=Number(document.getElementById(pre+'_coin_amount')?.value);
+      const reason=document.getElementById(pre+'_coin_reason')?.value.trim();
+      const st=document.getElementById(pre+'_coin_status');
+      if(!Number.isFinite(amt)||amt===0){alert('Enter a non-zero amount. Use + to add and - to deduct.');return;}
+      if(!reason){alert('Please enter the mandatory reason for this coin adjustment.');document.getElementById(pre+'_coin_reason')?.focus();return;}
+      btn.disabled=true;btn.textContent='UPDATING COINS...';if(st)st.textContent='Authenticating Staff and saving to permanent ledger...';
+      try{
+        await staffAdjustCoins(id,role,amt,reason);
+        const b=await getCoinBalance(id);const el=document.getElementById(pre+'_coin_balance');if(el)el.textContent=(Number(b)||0)+' 🪙';
+        document.getElementById(pre+'_coin_amount').value='';document.getElementById(pre+'_coin_reason').value='';
+        if(st)st.textContent='✓ Saved successfully. Permanent ledger updated.';
+        try{refreshUI();}catch(_){}
+      }catch(e){
+        if(st)st.textContent='UPDATE FAILED: '+(e.message||e);
+        alert('COINS WERE NOT UPDATED.\n\n'+(e.message||e));
+      }finally{btn.disabled=false;btn.textContent='UPDATE COINS & SAVE LEDGER';}
+    };
+  }
+
   // ---------- STUDENT EDITOR ----------
   function field(id,label,value,icon,type='text'){
     return `<div>
@@ -12590,6 +12646,8 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
           </label>
         </div>
 
+        ${coinEditor('student',s.id,0)}
+
         <div id="gcStudentEditStatus" class="text-xs font-bold text-slate-500 text-center">
           All student profile fields are editable.
         </div>
@@ -12603,6 +12661,7 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
       </form>`;
 
     modal.classList.remove('hidden');
+    wireCoinEditor('student',s.id);
     const close=()=>modal.classList.add('hidden');
     document.getElementById('gcStudentEditClose').onclick=close;
     document.getElementById('gcStudentEditCancel').onclick=close;
@@ -12756,6 +12815,8 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
           <input id="gcT_ach" type="file" accept="image/*" multiple class="w-full text-xs text-slate-500 mt-2">
         </div>
 
+        ${coinEditor('tutor',t.id,0)}
+
         <div id="gcTutorEditStatus" class="text-xs font-bold text-slate-500 text-center">All tutor profile fields are editable.</div>
         <div class="flex gap-3">
           <button type="button" id="gcTutorEditCancel" class="flex-1 bg-slate-100 py-3 rounded-xl font-bold">CANCEL</button>
@@ -12764,6 +12825,7 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
       </form>`;
 
     modal.classList.remove('hidden');
+    wireCoinEditor('tutor',t.id);
     const close=()=>modal.classList.add('hidden');
     document.getElementById('gcTutorEditClose').onclick=close;
     document.getElementById('gcTutorEditCancel').onclick=close;
