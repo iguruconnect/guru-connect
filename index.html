@@ -11906,6 +11906,8 @@ header button[aria-label*="close" i]{display:none!important;}
 
 <style id="gc-coins-authoritative-v11-css">
 .gc-auth-coin-field{min-width:0!important;box-sizing:border-box!important}
+.gc-auth-coin-field .gc-golden-coin-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;color:#F4B942!important;background:rgba(244,185,66,.14)!important;border:1px solid rgba(244,185,66,.35)!important;box-shadow:0 2px 8px rgba(244,185,66,.18)!important}
+.gc-auth-coin-field .gc-golden-coin-icon i{color:#F4B942!important;font-size:15px!important}
 .gc-auth-coin-field .gc-coin-value{font-weight:950!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 .gc-auth-public-id{display:inline-flex!important;align-items:center!important;margin-left:7px!important;padding:3px 7px!important;border-radius:7px!important;background:#0f172a!important;color:#fff!important;font:900 9px/1.1 ui-monospace,SFMono-Regular,Menlo,monospace!important;letter-spacing:.35px!important;vertical-align:middle!important;white-space:nowrap!important}
 .gc-auth-dashboard-strip{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;margin:16px 0 0!important;width:100%!important;box-sizing:border-box!important}
@@ -11950,7 +11952,7 @@ function cardMeta(c){
 }
 function publicIdBadge(c,pid){let h=c.querySelector('.gc-auth-public-id');if(!h){const host=c.querySelector('.gc-target-name,.gc-clean-name,.gc-beautiful-name,.gc-new-name,h3,h4');if(host){h=document.createElement('span');h.className='gc-auth-public-id';host.appendChild(h)}}if(h)h.textContent=pid}
 function labelOf(box){return (box.querySelector('b,small,strong')?.textContent||'').trim().replace(/^📍\s*/,'').toUpperCase()}
-function setBoxValue(box,label,value){const lab=box.querySelector('b,small');if(lab)lab.textContent=label;let val=box.querySelector('.gc-coin-value');if(!val){val=[...box.querySelectorAll('span,strong')].find(x=>!x.classList.contains('gc-target-icon')&&!x.classList.contains('gc-info-icon'))}if(val){val.classList.add('gc-coin-value');val.textContent='🪙 '+Number(value||0).toLocaleString('en-IN')+' COINS'}}
+function setBoxValue(box,label,value){const lab=box.querySelector('b,small');if(lab)lab.textContent=label;const icon=box.querySelector('.gc-target-icon,.gc-info-icon');if(icon){icon.innerHTML='<i class="fa-solid fa-coins" aria-hidden="true"></i>';icon.classList.add('gc-golden-coin-icon');icon.style.color='#F4B942';icon.style.background='rgba(244,185,66,.14)';icon.style.borderColor='rgba(244,185,66,.35)';}let val=box.querySelector('.gc-coin-value');if(!val){val=[...box.querySelectorAll('span,strong')].find(x=>!x.classList.contains('gc-target-icon')&&!x.classList.contains('gc-info-icon'))}if(val){val.classList.add('gc-coin-value');val.textContent='🪙 '+Number(value||0).toLocaleString('en-IN')+' COINS'}}
 function coinBox(c){
  const fields=[...c.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box')];
  // User requested: remove Languages field and use that exact slot for Coins. Location remains untouched.
@@ -13114,46 +13116,4 @@ document.addEventListener('DOMContentLoaded',boot);setTimeout(boot,1200);setInte
 
 
 
-<style id="gc-coins-admin-edit-v13-css">
-.gc-edit-coin-panel{border:1px solid #bfdbfe!important;background:linear-gradient(135deg,#eff6ff,#fff)!important;border-radius:16px!important;padding:14px!important;margin-top:4px!important}
-.gc-edit-coin-row{display:grid!important;grid-template-columns:1fr 1fr auto!important;gap:9px!important;align-items:end!important;margin-top:9px!important}
-.gc-edit-coin-row input{width:100%!important;box-sizing:border-box!important;border:1px solid #cbd5e1!important;border-radius:10px!important;padding:10px!important;background:#fff!important;font-weight:750!important}
-.gc-edit-coin-btn{border:0!important;border-radius:10px!important;padding:10px 14px!important;background:#0f3d91!important;color:#fff!important;font-weight:950!important;cursor:pointer!important;white-space:nowrap!important}
-.gc-edit-coin-balance{font-size:24px!important;font-weight:1000!important;color:#0f3d91!important}
-@media(max-width:560px){.gc-edit-coin-row{grid-template-columns:1fr}.gc-edit-coin-btn{width:100%!important}}
-/* Keep LOCATION and COINS as two independent fields. */
-.gc-auth-coin-field{border-color:#bfdbfe!important;background:#f8fbff!important}
-.gc-auth-coin-field .gc-coin-value{color:#0f3d91!important;font-weight:950!important}
-</style>
-<script id="gc-coins-admin-edit-v13-js">
-(function(){
-'use strict';
-const S=()=>window.gcSupabase||null;
-const clean=v=>String(v??'').trim();
-function short(id,role){let h=2166136261>>>0;for(const ch of String(id??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return 'GC-'+(role==='student'?'S':'T')+'-'+h.toString(36).toUpperCase().padStart(6,'0').slice(-6)}
-async function getBalance(id){const s=S();if(!s||!id)return 0;try{const q=await s.from('gc_coin_wallets').select('balance').eq('profile_id',String(id)).maybeSingle();return Number(q.data?.balance||0)}catch(e){return 0}}
-function roleOf(id){return String(id||'').toLowerCase().includes('student')?'student':'tutor'}
-async function addCoinPanel(modal,id,role){
- const form=modal.querySelector('form');if(!form||form.querySelector('.gc-edit-coin-panel'))return;
- const bal=await getBalance(id);
- const panel=document.createElement('div');panel.className='gc-edit-coin-panel';panel.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><div class="gc-v2-label">🪙 GURU COINS</div><div class="gc-edit-coin-balance">'+bal.toLocaleString('en-IN')+' COINS</div></div><div style="font-size:10px;font-weight:900;color:#64748b">'+short(id,role)+'</div></div><div class="gc-edit-coin-row"><input class="gc-edit-coin-amount" type="number" step="1" placeholder="+100 add / -100 minus"><input class="gc-edit-coin-reason" type="text" placeholder="Mandatory reason"><button type="button" class="gc-edit-coin-btn">UPDATE COINS</button></div><div class="gc-edit-coin-status" style="font-size:10px;font-weight:800;color:#64748b;margin-top:7px"></div>';
- form.insertBefore(panel,form.querySelector('.flex.gap-3:last-child')||form.lastElementChild);
- const btn=panel.querySelector('.gc-edit-coin-btn');btn.onclick=async()=>{const amt=Number(panel.querySelector('.gc-edit-coin-amount').value),reason=clean(panel.querySelector('.gc-edit-coin-reason').value),st=panel.querySelector('.gc-edit-coin-status');if(!Number.isFinite(amt)||amt===0)return alert('Enter a non-zero coin amount.');if(!reason)return alert('Reason is mandatory.');btn.disabled=true;st.textContent='Updating secure coin ledger…';try{const r=await S()?.rpc('gc_staff_adjust_coins',{p_profile_id:String(id),p_role:role,p_amount:amt,p_reason:reason});if(r?.error)throw r.error;const nb=await getBalance(id);panel.querySelector('.gc-edit-coin-balance').textContent=nb.toLocaleString('en-IN')+' COINS';panel.querySelector('.gc-edit-coin-amount').value='';panel.querySelector('.gc-edit-coin-reason').value='';st.textContent='Coins updated and permanently logged.';window.GC_AUTH_COINS?.search?.();}catch(e){st.textContent='Update failed: '+(e.message||e);alert(st.textContent)}finally{btn.disabled=false}};
-}
-function hook(){
- const oldT=window.adminEditTutor;if(typeof oldT==='function'&&!oldT.__gcEditCoinHook){const f=async function(id){const r=await oldT.apply(this,arguments);setTimeout(()=>addCoinPanel(document.getElementById('adminEditTutorModal'),id,'tutor'),80);return r};f.__gcEditCoinHook=true;window.adminEditTutor=f}
- const oldS=window.adminEditStudent;if(typeof oldS==='function'&&!oldS.__gcEditCoinHook){const f=async function(id){const r=await oldS.apply(this,arguments);setTimeout(()=>addCoinPanel(document.getElementById('adminEditStudentModal'),id,'student'),80);return r};f.__gcEditCoinHook=true;window.adminEditStudent=f}
-}
-function cleanCardFields(){
- document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card').forEach(c=>{
-  const fields=[...c.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box')];
-  const lang=fields.find(x=>/^LANGUAGES$/i.test((x.querySelector('b,small,strong')?.textContent||'').trim()));
-  if(lang){const lab=lang.querySelector('b,small');if(lab)lab.textContent='COINS';}
-  // Delete any old floating coin badge; coin must live only inside the information grid.
-  c.querySelectorAll('.gc-profile-coin-badge,.gc-coins-pill').forEach(x=>x.remove());
- });
-}
-function boot(){hook();cleanCardFields();setTimeout(hook,500);setTimeout(cleanCardFields,900)}
-document.addEventListener('DOMContentLoaded',boot);window.addEventListener('load',boot);setInterval(()=>{hook();cleanCardFields()},2500);
-})();
-</script>
+
