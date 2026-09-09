@@ -13468,3 +13468,37 @@ document.addEventListener('DOMContentLoaded',boot);setTimeout(boot,1200);setInte
 
 
 
+
+<!-- GURU CONNECT: HIDE DUPLICATE COINS INFO FIELD ON TUTOR/STUDENT CARDS -->
+<style id="gc-hide-duplicate-card-coins">
+.gc-profile-card .gc-auth-coin-field,
+.gc-target-card .gc-auth-coin-field,
+.gc-beautiful-card .gc-auth-coin-field,
+.gc-new-student-card .gc-auth-coin-field{display:none!important;}
+</style>
+<script id="gc-hide-duplicate-card-coins-js">
+(function(){
+'use strict';
+function hideDuplicateCoins(){
+  var cards=document.querySelectorAll('.gc-profile-card,.gc-target-card,.gc-beautiful-card,.gc-new-student-card');
+  cards.forEach(function(card){
+    card.querySelectorAll('.gc-auth-coin-field').forEach(function(el){
+      if(!el.closest('#gcProfileCoinsCard') && !el.classList.contains('gc-final-coin-box')) el.style.display='none';
+    });
+    var fields=card.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box');
+    fields.forEach(function(el){
+      if(el.closest('.gc-final-coin-box') || el.closest('#gcProfileCoinsCard')) return;
+      var text=(el.textContent||'').replace(/\s+/g,' ').trim();
+      if(/^COINS\s*(?:0|[0-9][0-9,]*)?\s*$/i.test(text) || /^COINS\b/i.test(text) && !/GURU COINS|GURU CONNECT/i.test(text)){
+        el.style.display='none';
+        el.classList.add('gc-duplicate-coin-hidden');
+      }
+    });
+  });
+}
+document.addEventListener('DOMContentLoaded',hideDuplicateCoins);
+window.addEventListener('load',hideDuplicateCoins);
+setInterval(hideDuplicateCoins,1200);
+new MutationObserver(function(){hideDuplicateCoins()}).observe(document.body,{subtree:true,childList:true});
+})();
+</script>
