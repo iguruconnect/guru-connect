@@ -12451,6 +12451,66 @@ function ready(){try{if(window.__gcHomeReady)window.__gcHomeReady();else{documen
 window.addEventListener('load',function(){setTimeout(ready,650)});setTimeout(ready,2450);
 })();
 </script>
+
+<!-- GURU CONNECT: FINAL PROFILE COINS + GOLD COIN ICON HARD FIX -->
+<style id="gc-profile-coins-final-hard-fix">
+.gc-target-card .gc-auth-coin-field,
+.gc-profile-card .gc-auth-coin-field,
+.gc-beautiful-card .gc-auth-coin-field,
+.gc-new-student-card .gc-auth-coin-field{
+  display:flex!important;visibility:visible!important;opacity:1!important;
+  min-height:54px!important;box-sizing:border-box!important;
+}
+.gc-auth-coin-field .gc-gold-coin-mark,
+.gc-target-info-box .gc-gold-coin-mark{
+  width:30px!important;height:30px!important;min-width:30px!important;
+  border-radius:50%!important;display:inline-grid!important;place-items:center!important;
+  background:radial-gradient(circle at 30% 25%,#fff7b0 0%,#ffd85a 20%,#e1a51d 48%,#a86a00 73%,#5b3500 100%)!important;
+  border:2px solid #704500!important;color:#fff4b0!important;
+  box-shadow:inset 0 2px 2px rgba(255,255,255,.8),inset 0 -3px 4px rgba(55,30,0,.45),0 2px 5px rgba(0,0,0,.24)!important;
+  font:1000 16px/1 Arial,sans-serif!important;text-shadow:0 1px 1px #6b3c00!important;
+}
+.gc-auth-coin-field .gc-coin-value{font-weight:1000!important;white-space:nowrap!important;overflow:visible!important;color:inherit!important}
+.gc-visible-gold-coin{display:inline-grid!important;place-items:center!important;width:22px!important;height:22px!important;min-width:22px!important;border-radius:50%!important;background:radial-gradient(circle at 30% 25%,#fff7b0 0%,#ffd85a 20%,#d99a16 50%,#9a5d00 75%,#5d3500 100%)!important;border:1.5px solid #704500!important;color:#fff4b0!important;font:1000 12px/1 Arial,sans-serif!important;box-shadow:inset 0 1px 2px rgba(255,255,255,.75),inset 0 -2px 3px rgba(55,30,0,.42),0 1px 3px rgba(0,0,0,.22)!important;text-shadow:0 1px 1px #6b3c00!important;vertical-align:-5px!important;margin-right:4px!important}
+</style>
+<script id="gc-profile-coins-final-hard-fix-js">
+(function(){
+'use strict';
+function sb(){return window.gcSupabase||null}
+function cardId(c){return String(c?.dataset?.studentId||c?.dataset?.tutorId||'')}
+function cards(){return [...document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card')]}
+function goldify(root){
+  if(!root||root.nodeType!==1)return;
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode(n){
+    const p=n.parentElement;if(!p||/^(SCRIPT|STYLE|TEXTAREA|INPUT|SELECT)$/i.test(p.tagName))return NodeFilter.FILTER_REJECT;
+    return n.nodeValue&&n.nodeValue.includes('🪙')?NodeFilter.FILTER_ACCEPT:NodeFilter.FILTER_REJECT;
+  }});
+  const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
+  nodes.forEach(n=>{const frag=document.createDocumentFragment(),parts=n.nodeValue.split('🪙');parts.forEach((part,i)=>{if(i){const s=document.createElement('span');s.className='gc-visible-gold-coin';s.textContent='G';frag.appendChild(s)}if(part)frag.appendChild(document.createTextNode(part))});n.parentNode?.replaceChild(frag,n)});
+}
+function ensureBox(c){
+  let b=c.querySelector('.gc-auth-coin-field');
+  if(!b)b=[...c.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box')].find(x=>/^COINS$/i.test((x.textContent||'').replace(/\s+/g,' ').trim().split(/\s+/)[0]||''));
+  if(!b){
+    const info=c.querySelector('.gc-target-info');
+    if(info){b=document.createElement('div');b.className='gc-target-info-box gc-auth-coin-field';b.innerHTML='<span class="gc-target-icon"><span class="gc-gold-coin-mark">G</span></span><div class="gc-target-info-text"><b>Coins</b><span class="gc-coin-value">0 COINS</span></div>';info.appendChild(b)}
+  }
+  if(b){b.classList.add('gc-auth-coin-field');let icon=b.querySelector('.gc-target-icon,.gc-info-icon');if(icon){icon.innerHTML='<span class="gc-gold-coin-mark">G</span>'}let v=b.querySelector('.gc-coin-value');if(!v){v=[...b.querySelectorAll('span,strong')].find(x=>!x.closest('.gc-target-icon,.gc-info-icon')&&!(x.classList.contains('gc-gold-coin-mark')));if(!v){v=document.createElement('span');b.querySelector('.gc-target-info-text')?.appendChild(v)}v.classList.add('gc-coin-value')}return v}
+  return null;
+}
+async function loadBalances(ids){const s=sb(),uniq=[...new Set(ids.map(String).filter(Boolean))];if(!s||!uniq.length)return{};
+  try{const r=await s.rpc('gc_public_coin_balances',{p_profile_ids:uniq});if(!r.error&&Array.isArray(r.data))return Object.fromEntries(r.data.map(x=>[String(x.profile_id),Number(x.balance||0)]))}catch(e){}
+  const out={};
+  for(const id of uniq){try{const r=await s.rpc('gc_public_coin_balance',{p_profile_id:id});if(!r.error){const x=Array.isArray(r.data)?r.data[0]:r.data;if(x)out[id]=Number(x.balance||0);}}catch(e){}}
+  return out;
+}
+async function paint(){const cs=cards();if(!cs.length)return;const ids=cs.map(cardId).filter(Boolean);if(!ids.length)return;const map=await loadBalances(ids);cs.forEach(c=>{const id=cardId(c);const v=ensureBox(c);if(v&&Object.prototype.hasOwnProperty.call(map,id))v.textContent=Number(map[id]||0).toLocaleString('en-IN')+' COINS';});goldify(document.body)}
+function boot(){paint();setTimeout(paint,400);setTimeout(paint,1200);setTimeout(paint,2500);goldify(document.body)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+window.addEventListener('load',()=>{paint();goldify(document.body)});setInterval(paint,4000);
+new MutationObserver(()=>{clearTimeout(window.__gcGoldFixT);window.__gcGoldFixT=setTimeout(()=>{paint();goldify(document.body)},300)}).observe(document.body,{subtree:true,childList:true});
+})();
+</script>
 </body>
 </html>
 <!-- =========================================================
