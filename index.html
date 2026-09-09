@@ -12283,7 +12283,7 @@ function coinBox(c){
  const fields=[...c.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box,.gc-final-coin-box')];
  let box=fields.find(x=>/\bCOINS\b/i.test(labelOf(x))||x.classList.contains('gc-final-coin-box'));
  if(!box)return null;
- box.classList.add('gc-auth-coin-field');
+ box.classList.remove('gc-auth-coin-field');
  return box;
 }
 async function resolveCoinRows(ids){
@@ -12351,7 +12351,7 @@ function cardCoinsFallback(c,value){
    const grid=c.querySelector('.gc-target-info,.gc-info-grid,.gc-beautiful-info,.gc-profile-info-grid,.gc-new-info-grid');
    if(grid)grid.appendChild(box); else c.appendChild(box);
  }
- box.classList.add('gc-auth-coin-field');
+ box.classList.remove('gc-auth-coin-field');
  const v=box.querySelector('.gc-coin-value,strong'); if(v)v.textContent=Number(value||0).toLocaleString('en-IN')+' COINS';
  return box;
 }
@@ -12810,6 +12810,70 @@ window.GC_FORCE_COINS_REFRESH=paint;
   window.addEventListener('load',forceCoinsVisible);
   setInterval(forceCoinsVisible,1000);
   new MutationObserver(forceCoinsVisible).observe(document.documentElement,{subtree:true,childList:true});
+})();
+</script>
+
+<!-- GURU CONNECT FINAL CARD COINS CLEANUP: keep one coin field, make value readable -->
+<style id="gc-final-card-coins-cleanup-2026">
+/* Never use the admin/auth coin styling on public profile cards. */
+.gc-profile-card .gc-final-coin-box,
+.gc-target-card .gc-final-coin-box,
+.gc-beautiful-card .gc-final-coin-box,
+.gc-new-student-card .gc-final-coin-box{
+  display:flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+  background:#fff!important;
+  color:#123b8f!important;
+  border:1px solid #cbd5e1!important;
+  box-shadow:0 2px 6px rgba(15,61,145,.08)!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:8px!important;
+  min-width:0!important;
+  overflow:hidden!important;
+}
+.gc-profile-card .gc-final-coin-box small,
+.gc-target-card .gc-final-coin-box small,
+.gc-beautiful-card .gc-final-coin-box small,
+.gc-new-student-card .gc-final-coin-box small{
+  display:block!important;color:#475569!important;font-weight:900!important;letter-spacing:.4px!important;
+}
+.gc-profile-card .gc-final-coin-box strong,
+.gc-target-card .gc-final-coin-box strong,
+.gc-beautiful-card .gc-final-coin-box strong,
+.gc-new-student-card .gc-final-coin-box strong,
+.gc-profile-card .gc-final-coin-box .gc-coin-value,
+.gc-target-card .gc-final-coin-box .gc-coin-value,
+.gc-beautiful-card .gc-final-coin-box .gc-coin-value,
+.gc-new-student-card .gc-final-coin-box .gc-coin-value{
+  display:block!important;color:#123b8f!important;font-weight:1000!important;white-space:nowrap!important;opacity:1!important;text-shadow:none!important;
+}
+/* The old secondary coin pill was creating the duplicate box under MORE. */
+.gc-profile-card .gc-coins-pill,
+.gc-target-card .gc-coins-pill,
+.gc-beautiful-card .gc-coins-pill,
+.gc-new-student-card .gc-coins-pill{display:none!important}
+</style>
+<script id="gc-final-card-coins-cleanup-2026-js">
+(function(){
+  'use strict';
+  function cleanPublicCoinCards(){
+    document.querySelectorAll('.gc-profile-card,.gc-target-card,.gc-beautiful-card,.gc-new-student-card').forEach(function(card){
+      card.querySelectorAll('.gc-final-coin-box').forEach(function(box){
+        box.classList.remove('gc-auth-coin-field');
+        box.style.display='flex';
+        box.style.visibility='visible';
+        box.style.opacity='1';
+        var v=box.querySelector('.gc-coin-value,strong');
+        if(v){v.style.color='#123b8f';v.style.fontWeight='1000';v.style.opacity='1';}
+      });
+      card.querySelectorAll('.gc-coins-pill').forEach(function(x){x.remove();});
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',cleanPublicCoinCards);else cleanPublicCoinCards();
+  window.addEventListener('load',function(){setTimeout(cleanPublicCoinCards,100);setTimeout(cleanPublicCoinCards,1000);});
+  new MutationObserver(function(){clearTimeout(window.__gcCleanCoinTimer);window.__gcCleanCoinTimer=setTimeout(cleanPublicCoinCards,80);}).observe(document.body,{subtree:true,childList:true});
 })();
 </script>
 </body>
