@@ -12393,6 +12393,16 @@ window.GC_PROFILE_COINS_REFRESH=paint;
 })();
 </script>
 
+<!-- GURU CONNECT: FINAL LIVE COINS ON PROFILE CARDS -->
+<script id="gc-live-profile-card-coins-final">
+(function(){
+'use strict';
+function run(){try{if(typeof window.GC_AUTH_COINS?.balance==='function'){/* authoritative painter already runs on DOM changes */} if(typeof window.GC_PROFILE_COINS_REFRESH==='function') window.GC_PROFILE_COINS_REFRESH();}catch(e){}}
+document.addEventListener('DOMContentLoaded',run);
+window.addEventListener('load',function(){setTimeout(run,500);setTimeout(run,1800)});
+setInterval(run,5000);
+})();
+</script>
 </body>
 </html>
 <!-- =========================================================
@@ -13512,10 +13522,11 @@ document.addEventListener('DOMContentLoaded',boot);setTimeout(boot,1200);setInte
 
 <!-- GURU CONNECT: HIDE DUPLICATE COINS INFO FIELD ON TUTOR/STUDENT CARDS -->
 <style id="gc-hide-duplicate-card-coins">
+/* Keep the authoritative Coins field visible on every Tutor/Student card. */
 .gc-profile-card .gc-auth-coin-field,
 .gc-target-card .gc-auth-coin-field,
 .gc-beautiful-card .gc-auth-coin-field,
-.gc-new-student-card .gc-auth-coin-field{display:none!important;}
+.gc-new-student-card .gc-auth-coin-field{display:flex!important;visibility:visible!important;opacity:1!important;}
 </style>
 <script id="gc-hide-duplicate-card-coins-js">
 (function(){
@@ -13523,14 +13534,12 @@ document.addEventListener('DOMContentLoaded',boot);setTimeout(boot,1200);setInte
 function hideDuplicateCoins(){
   var cards=document.querySelectorAll('.gc-profile-card,.gc-target-card,.gc-beautiful-card,.gc-new-student-card');
   cards.forEach(function(card){
-    card.querySelectorAll('.gc-auth-coin-field').forEach(function(el){
-      if(!el.closest('#gcProfileCoinsCard') && !el.classList.contains('gc-final-coin-box')) el.style.display='none';
-    });
+    /* Never hide .gc-auth-coin-field: it is the authoritative live Coins field. */
     var fields=card.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box');
     fields.forEach(function(el){
-      if(el.closest('.gc-final-coin-box') || el.closest('#gcProfileCoinsCard')) return;
+      if(el.classList.contains('gc-auth-coin-field') || el.closest('.gc-auth-coin-field') || el.closest('.gc-final-coin-box') || el.closest('#gcProfileCoinsCard')) return;
       var text=(el.textContent||'').replace(/\s+/g,' ').trim();
-      if(/^COINS\s*(?:0|[0-9][0-9,]*)?\s*$/i.test(text) || /^COINS\b/i.test(text) && !/GURU COINS|GURU CONNECT/i.test(text)){
+      if(/^COINS\s*(?:0|[0-9][0-9,]*)?\s*$/i.test(text) || (/^COINS\b/i.test(text) && !/GURU COINS|GURU CONNECT/i.test(text))){
         el.style.display='none';
         el.classList.add('gc-duplicate-coin-hidden');
       }
