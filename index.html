@@ -4540,6 +4540,26 @@ footer:before{
  .gc-auth-coin-field .gc-golden-coin-icon{width:36px!important;min-width:36px!important;height:36px!important;font-size:27px!important}
 }
 </style>
+
+<!-- GURU CONNECT: prevent initial unrendered/old cards and hero flash -->
+<style id="gc-home-stability-fix">
+html.gc-home-booting,body.gc-home-booting{background:#07152f!important}
+body.gc-home-booting>header,body.gc-home-booting>main,body.gc-home-booting>section,body.gc-home-booting>footer,body.gc-home-booting>.gc-beautiful-header{visibility:hidden!important}
+#gcHomeBootSplash{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 35%,#153d83 0%,#07152f 58%,#030817 100%);color:#fff;opacity:1;transition:opacity .35s ease;pointer-events:none}
+#gcHomeBootSplash.gc-hide{opacity:0}
+#gcHomeBootSplash .gc-hbs-inner{text-align:center;padding:28px 22px}
+#gcHomeBootSplash .gc-hbs-mark{width:76px;height:76px;border-radius:50%;margin:0 auto 14px;display:grid;place-items:center;background:linear-gradient(145deg,#fff8b0 0%,#f6c453 28%,#b97800 62%,#6b3f00 100%);border:3px solid #ffe28a;box-shadow:inset 0 3px 5px rgba(255,255,255,.75),inset 0 -5px 8px rgba(73,35,0,.4),0 8px 25px rgba(0,0,0,.35);font-size:35px;font-weight:1000;color:#fff7cf;text-shadow:0 2px 2px #5b3500}
+#gcHomeBootSplash strong{display:block;font-size:25px;letter-spacing:.08em}
+#gcHomeBootSplash span{display:block;margin-top:7px;font-size:11px;font-weight:800;letter-spacing:.18em;opacity:.8}
+</style>
+<script>(function(){try{document.documentElement.classList.add('gc-home-booting')}catch(e){};function start(){try{document.body.classList.add('gc-home-booting');var d=document.createElement('div');d.id='gcHomeBootSplash';d.innerHTML='<div class="gc-hbs-inner"><div class="gc-hbs-mark">G</div><strong>GURU CONNECT</strong><span>CONNECTING MINDS • CREATING FUTURES</span></div>';document.body.insertBefore(d,document.body.firstChild);var done=function(){document.body.classList.remove('gc-home-booting');document.documentElement.classList.remove('gc-home-booting');d.classList.add('gc-hide');setTimeout(function(){d.remove()},400)};window.__gcHomeReady=done;setTimeout(done,2200)}catch(e){document.body.classList.remove('gc-home-booting');document.documentElement.classList.remove('gc-home-booting')}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start()})();</script>
+
+<style id="gc-gold-metallic-coin-final">
+.gc-gold-coin-mark{width:28px!important;height:28px!important;min-width:28px!important;border-radius:50%!important;display:inline-grid!important;place-items:center!important;box-sizing:border-box!important;background:radial-gradient(circle at 32% 25%,#fff7b0 0%,#ffd85a 22%,#d99a16 52%,#9a5d00 76%,#5d3500 100%)!important;border:2px solid #6e4300!important;box-shadow:inset 0 2px 2px rgba(255,255,255,.8),inset 0 -3px 4px rgba(66,32,0,.42),0 2px 5px rgba(0,0,0,.24)!important;color:#fff5bd!important;font-family:Arial,sans-serif!important;font-size:15px!important;font-weight:1000!important;line-height:1!important;text-shadow:0 1px 1px #6b3c00!important}
+.gc-auth-coin-field .gc-gold-coin-mark{width:32px!important;height:32px!important;min-width:32px!important;font-size:17px!important}
+.gc-gold-coin-inline{width:22px!important;height:22px!important;min-width:22px!important;font-size:12px!important;vertical-align:middle!important}
+@media(max-width:640px){.gc-auth-coin-field .gc-gold-coin-mark{width:28px!important;height:28px!important;min-width:28px!important;font-size:15px!important}}
+</style>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -11693,7 +11713,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
     return '<span class="gc-target-avatar-fallback">'+(student?'👩🏻‍🎓':'👨🏻‍🏫')+'</span>';
   }
   function val(v,f){var s=String(v==null?'':v).trim();return s||f}
-  function info(icon,label,value){return '<div class="gc-target-info-box"><span class="gc-target-icon">'+icon+'</span><div class="gc-target-info-text"><b>'+esc(label)+'</b><span title="'+esc(value)+'">'+esc(value)+'</span></div></div>'}
+  function info(icon,label,value){var ico=icon==='__GOLD__'?'<span class="gc-gold-coin-mark">G</span>':esc(icon);return '<div class="gc-target-info-box"><span class="gc-target-icon">'+ico+'</span><div class="gc-target-info-text"><b>'+esc(label)+'</b><span title="'+esc(value)+'">'+esc(value)+'</span></div></div>'}
   function tutor(){
     var c=document.getElementById('tutorGrid');if(!c)return false;
     var list=arr('tutorDirectoryList');var per=Number(window.tutorsPerPage)||6;var page=Math.max(1,Number(window.currentTutorPage)||1);var start=(page-1)*per;var items=list.slice(start,start+per);c.innerHTML='';
@@ -11703,7 +11723,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
       var card=document.createElement('article');card.className='gc-target-card gc-target-tutor';
       card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✔ VERIFIED TUTOR':'👤 TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photoMarkup(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified?(tick()?'<img class="gc-target-verified" src="'+esc(tick())+'" alt="Verified">':'<span class="gc-target-verified">✓</span>'):'')+'</h3><div class="gc-target-subtitle">'+esc(val(t.qualification||t.title||t.subject,'Tutor'))+'</div></div></div>'+ 
-      '<div class="gc-target-info">'+info('📚','Subjects',subject)+info('💼','Experience',exp)+info('₹','Rate / Hour',rate)+info('⭐','Rating',rating+(reviews?' ('+reviews+')':''))+info('👥','Students Taught',students)+info('💻','Mode',mode)+info('📍','Location',loc)+info('🪙','Coins','0')+info('📅','Availability',availability)+info('🗓','Teaching Since',since)+'</div>'+ 
+      '<div class="gc-target-info">'+info('📚','Subjects',subject)+info('💼','Experience',exp)+info('₹','Rate / Hour',rate)+info('⭐','Rating',rating+(reviews?' ('+reviews+')':''))+info('👥','Students Taught',students)+info('💻','Mode',mode)+info('📍','Location',loc)+info('__GOLD__','Coins','0')+info('📅','Availability',availability)+info('🗓','Teaching Since',since)+'</div>'+ 
       '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-gc-more-tutor="'+esc(id)+'">MORE ✚ 👤</button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
       c.appendChild(card);
     });
@@ -11719,7 +11739,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
       var card=document.createElement('article');card.className='gc-target-card gc-target-student';
       card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">🎓 STUDENT</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photoMarkup(s,name,true)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span></h3><div class="gc-target-subtitle">'+esc(edu)+'</div></div></div>'+ 
-      '<div class="gc-target-info">'+info('🎓','Education',edu)+info('🗓','Year / Sem',year)+info('🏫','College',college)+info('📊','CGPA',cgpa)+info('🎯','Looking For',req)+info('💻','Mode',mode)+info('📍','Location',loc)+info('🪙','Coins','0')+info('📅','Availability',availability)+info('🛡','Helpline Plan',help)+'</div>'+ 
+      '<div class="gc-target-info">'+info('🎓','Education',edu)+info('🗓','Year / Sem',year)+info('🏫','College',college)+info('📊','CGPA',cgpa)+info('🎯','Looking For',req)+info('💻','Mode',mode)+info('📍','Location',loc)+info('__GOLD__','Coins','0')+info('📅','Availability',availability)+info('🛡','Helpline Plan',help)+'</div>'+ 
       '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-gc-more-student="'+esc(id)+'">MORE ✚ 👤</button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-student="'+esc(id)+'">CONNECT ➤</button></div>';
       c.appendChild(card);
     });
@@ -12167,8 +12187,8 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&
 const clean=v=>String(v??'').trim();
 function hash6(v){let h=2166136261>>>0;for(const ch of String(v??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return h.toString(36).toUpperCase().padStart(6,'0').slice(-6)}
 function publicId(id,role){return 'GC-'+(role==='student'?'S':'T')+'-'+hash6(id)}
-async function balance(id){const s=S();if(!s||!id)return 0;try{const q=await s.from('gc_coin_wallets').select('balance').eq('profile_id',String(id)).maybeSingle();return Number(q.data?.balance||0)}catch(e){return 0}}
-async function balances(ids){const s=S();if(!s||!ids.length)return{};try{const q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',[...new Set(ids.map(String))]);if(q.error)throw q.error;return Object.fromEntries((q.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]))}catch(e){return{}}}
+async function balance(id){const s=S();if(!s||!id)return 0;try{const r=await s.rpc('gc_public_coin_balance',{p_profile_id:String(id)});if(!r.error){const row=Array.isArray(r.data)?r.data[0]:r.data;return Number(row?.balance||0)}}catch(e){}try{const q=await s.from('gc_coin_wallets').select('balance').eq('profile_id',String(id)).maybeSingle();return Number(q.data?.balance||0)}catch(e){return 0}}
+async function balances(ids){const s=S();const uniq=[...new Set((ids||[]).map(String).filter(Boolean))];if(!s||!uniq.length)return{};try{const r=await s.rpc('gc_public_coin_balances',{p_profile_ids:uniq});if(!r.error){return Object.fromEntries((r.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]))}}catch(e){}try{const q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',uniq);if(q.error)throw q.error;return Object.fromEntries((q.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]))}catch(e){return{}}}
 function cardMeta(c){
  let role=c.classList.contains('gc-target-student')||c.classList.contains('gc-beautiful-student')||c.classList.contains('gc-new-student-card')||/student/i.test(c.className)?'student':'tutor';
  let id=c.dataset.studentId||c.dataset.tutorId||'';
@@ -12178,7 +12198,7 @@ function cardMeta(c){
 }
 function publicIdBadge(c,pid){let h=c.querySelector('.gc-auth-public-id');if(!h){const host=c.querySelector('.gc-target-name,.gc-clean-name,.gc-beautiful-name,.gc-new-name,h3,h4');if(host){h=document.createElement('span');h.className='gc-auth-public-id';host.appendChild(h)}}if(h)h.textContent=pid}
 function labelOf(box){return (box.querySelector('b,small,strong')?.textContent||'').trim().replace(/^📍\s*/,'').toUpperCase()}
-function setBoxValue(box,label,value){const lab=box.querySelector('b,small');if(lab)lab.textContent=label;const icon=box.querySelector('.gc-target-icon,.gc-info-icon');if(icon){icon.innerHTML='<span class="gc-dollar-coin-icon" aria-hidden="true">🪙</span>';icon.classList.add('gc-golden-coin-icon');}let val=box.querySelector('.gc-coin-value');if(!val){val=[...box.querySelectorAll('span,strong')].find(x=>!x.classList.contains('gc-target-icon')&&!x.classList.contains('gc-info-icon'))}if(val){val.classList.add('gc-coin-value');val.textContent=Number(value||0).toLocaleString('en-IN')+' COINS'}}
+function setBoxValue(box,label,value){const lab=box.querySelector('b,small');if(lab)lab.textContent=label;const icon=box.querySelector('.gc-target-icon,.gc-info-icon');if(icon){icon.innerHTML='<span class="gc-gold-coin-mark" aria-hidden="true">G</span>';icon.classList.add('gc-golden-coin-icon');}let val=box.querySelector('.gc-coin-value');if(!val){val=[...box.querySelectorAll('span,strong')].find(x=>!x.classList.contains('gc-target-icon')&&!x.classList.contains('gc-info-icon'))}if(val){val.classList.add('gc-coin-value');val.textContent=Number(value||0).toLocaleString('en-IN')+' COINS'}}
 function coinBox(c){
  const fields=[...c.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box')];
  // User requested: remove Languages field and use that exact slot for Coins. Location remains untouched.
@@ -12199,7 +12219,7 @@ async function paintDashboard(p){
  const host=document.getElementById('userDashboardContent');if(!host||!p)return;const id=profileId(p);if(!id)return;
  const role=(p.registrationRole||localStorage.getItem('active_user_role')||'student').toLowerCase();const b=await balance(id);let strip=document.getElementById('gcAuthDashboardStrip');
  if(!strip){strip=document.createElement('div');strip.id='gcAuthDashboardStrip';strip.className='gc-auth-dashboard-strip';host.prepend(strip)}
- strip.innerHTML='<div class="gc-auth-dashboard-card"><small>GURU CONNECT ID</small><strong>'+esc(publicId(id,role))+'</strong></div><div class="gc-auth-dashboard-card"><small>GURU COINS BALANCE</small><strong>🪙 '+Number(b).toLocaleString('en-IN')+' COINS</strong></div>';
+ strip.innerHTML='<div class="gc-auth-dashboard-card"><small>GURU CONNECT ID</small><strong>'+esc(publicId(id,role))+'</strong></div><div class="gc-auth-dashboard-card"><small>GURU COINS BALANCE</small><strong><span class="gc-gold-coin-mark gc-gold-coin-inline">G</span> '+Number(b).toLocaleString('en-IN')+' COINS</strong></div>';
 }
 function hookDashboard(){const old=window.renderUserDashboard;if(typeof old!=='function'||old.__gcAuthHook)return;const f=function(p){const r=old.apply(this,arguments);window.__gcAuthProfile=p;setTimeout(()=>paintDashboard(p),50);return r};f.__gcAuthHook=true;window.renderUserDashboard=f}
 async function loadPeople(q,kind){
@@ -12383,7 +12403,7 @@ async function paint(){
  var host=document.getElementById('userDashboardContent'),p=activeProfile();if(!host||!p)return;
  var id=idOf(p),role=roleOf(p);if(!id)return;
  var card=document.getElementById('gcProfileCoinsCard');
- if(!card){card=document.createElement('div');card.id='gcProfileCoinsCard';card.innerHTML='<div class="gc-pc-left"><div class="gc-pc-coin">🪙</div><div><div class="gc-pc-label">GURU COINS BALANCE</div><div class="gc-pc-balance" id="gcProfileCoinsValue">Loading…</div></div></div><div class="gc-pc-id">'+publicId(id,role)+'</div>';host.appendChild(card)}
+ if(!card){card=document.createElement('div');card.id='gcProfileCoinsCard';card.innerHTML='<div class="gc-pc-left"><div class="gc-pc-coin"><span class="gc-gold-coin-mark">G</span></div><div><div class="gc-pc-label">GURU COINS BALANCE</div><div class="gc-pc-balance" id="gcProfileCoinsValue">Loading…</div></div></div><div class="gc-pc-id">'+publicId(id,role)+'</div>';host.appendChild(card)}
  var value=document.getElementById('gcProfileCoinsValue');if(value)value.textContent=(await getBalance(id)).toLocaleString('en-IN')+' COINS';
 }
 function boot(){setTimeout(paint,100);setTimeout(paint,700);setTimeout(paint,1800)}
@@ -12401,6 +12421,34 @@ function run(){try{if(typeof window.GC_AUTH_COINS?.balance==='function'){/* auth
 document.addEventListener('DOMContentLoaded',run);
 window.addEventListener('load',function(){setTimeout(run,500);setTimeout(run,1800)});
 setInterval(run,5000);
+})();
+</script>
+
+<!-- GURU CONNECT: voice welcome -->
+<style id="gc-voice-welcome-style">
+#gcVoiceWelcome{position:fixed;right:18px;bottom:18px;z-index:2147482000;display:flex;align-items:center;gap:9px;border:1px solid rgba(255,255,255,.45);border-radius:999px;padding:10px 15px;background:linear-gradient(135deg,#0f3d91,#1264d8);color:#fff;font:900 12px Arial,sans-serif;box-shadow:0 10px 25px rgba(0,0,0,.22);cursor:pointer}
+#gcVoiceWelcome:hover{transform:translateY(-1px)}
+#gcVoiceWelcome .gc-vw-dot{width:9px;height:9px;border-radius:50%;background:#ffd42a;box-shadow:0 0 0 4px rgba(255,212,42,.18)}
+@media(max-width:640px){#gcVoiceWelcome{right:10px;bottom:10px;font-size:10px;padding:9px 12px}}
+</style>
+<script id="gc-voice-welcome-js">
+(function(){
+'use strict';
+var text='Welcome to GURU CONNECT, India’s only real platform that connects Tutors and Students. Discover the right learning connection, share knowledge, and create a brighter future together.';
+function speak(){try{if(!('speechSynthesis' in window))return false;window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text);u.lang='en-IN';u.rate=.92;u.pitch=1;window.speechSynthesis.speak(u);return true}catch(e){return false}}
+function setup(){var b=document.createElement('button');b.type='button';b.id='gcVoiceWelcome';b.setAttribute('aria-label','Hear GURU CONNECT welcome message');b.innerHTML='<span class="gc-vw-dot"></span><span>🔊 HEAR WELCOME</span>';b.onclick=function(){speak();b.querySelector('span:last-child').textContent='🔊 PLAY WELCOME AGAIN'};document.body.appendChild(b);
+ // Browser autoplay policies may block speech until the visitor interacts; try once, then the button remains available.
+ setTimeout(function(){speak()},2600);
+ ['pointerdown','keydown','touchstart'].forEach(function(ev){document.addEventListener(ev,function once(){if(!window.__gcVoicePlayed){window.__gcVoicePlayed=true;speak()}},{once:true,passive:true})});
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setup,{once:true});else setup();
+})();
+</script>
+
+<script id="gc-home-stability-ready">
+(function(){
+function ready(){try{if(window.__gcHomeReady)window.__gcHomeReady();else{document.body.classList.remove('gc-home-booting');document.documentElement.classList.remove('gc-home-booting')}}catch(e){}}
+window.addEventListener('load',function(){setTimeout(ready,650)});setTimeout(ready,2450);
 })();
 </script>
 </body>
@@ -12473,7 +12521,7 @@ setInterval(run,5000);
      '<span class="gc-target-avatar-fallback" style="display:none">'+(student?'👩🏻‍🎓':'👨🏻‍🏫')+'</span>';
    return '<span class="gc-target-avatar-fallback">'+(student?'👩🏻‍🎓':'👨🏻‍🏫')+'</span>';
  }
- function box(i,l,v){return '<div class="gc-target-info-box"><span class="gc-target-icon">'+i+'</span><div class="gc-target-info-text"><b>'+esc(l)+'</b><span title="'+esc(v)+'">'+esc(v)+'</span></div></div>'}
+ function box(i,l,v){var ico=i==='__GOLD__'?'<span class="gc-gold-coin-mark">G</span>':esc(i);return '<div class="gc-target-info-box"><span class="gc-target-icon">'+ico+'</span><div class="gc-target-info-text"><b>'+esc(l)+'</b><span title="'+esc(v)+'">'+esc(v)+'</span></div></div>'}
  function tick(){return clean(window.VERIFIED_TICK_LOGO_URL||window.VERIFIED_TICK_V3||window.GC_TICK_V2||'')}
  function tutorSource(){return arr('tutorDirectoryList').filter(x=>x&&!x._hideFromProfileDirectory)}
  function studentSource(){return arr('studentDirectoryList').filter(x=>x&&!x._hideFromProfileDirectory)}
@@ -12490,7 +12538,7 @@ setInterval(run,5000);
      const card=document.createElement('article');card.className='gc-target-card gc-target-tutor';card.dataset.tutorId=id;
      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✓ VERIFIED TUTOR':'TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
        '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified&&tick()?'<span class="gc-target-verified"><img src="'+esc(tick())+'" alt="Verified"></span>':'')+'</h3><div class="gc-target-subtitle">'+esc(q)+' · '+esc(subject)+'</div></div></div>'+
-       '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🪙','Coins','0')+box('📅','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
+       '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('__GOLD__','Coins','0')+box('📅','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
        '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-tutor-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
      c.appendChild(card);
    });
@@ -12507,7 +12555,7 @@ setInterval(run,5000);
      const card=document.createElement('article');card.className='gc-target-card gc-target-student';card.dataset.studentId=id;
      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">🎓 STUDENT</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
        '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(s,name,true)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span></h3><div class="gc-target-subtitle">'+esc(edu)+' · '+esc(stream)+'</div></div></div>'+
-       '<div class="gc-target-info">'+box('🎓','Education',edu)+box('🗓','Year / Sem',year)+box('🏫','College',college)+box('📊','CGPA',cgpa)+box('🎯','Looking For',req)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🪙','Coins','0')+box('📅','Availability',avail)+box('🛡','Helpline Plan',help)+'</div>'+ 
+       '<div class="gc-target-info">'+box('🎓','Education',edu)+box('🗓','Year / Sem',year)+box('🏫','College',college)+box('📊','CGPA',cgpa)+box('🎯','Looking For',req)+box('💻','Mode',mode)+box('📍','Location',loc)+box('__GOLD__','Coins','0')+box('📅','Availability',avail)+box('🛡','Helpline Plan',help)+'</div>'+ 
        '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more gc-target-student-more" data-student-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-student="'+esc(id)+'">CONNECT ➤</button></div>';
      c.appendChild(card);
    });
