@@ -4359,10 +4359,10 @@ html.gc-startup body{visibility:visible!important}
   }
   // Keep the original logo splash for a fixed, reliable duration.
   document.addEventListener('DOMContentLoaded',function(){
-    setTimeout(hideSplash,4500);
+    setTimeout(hideSplash,1000);
   },{once:true});
   // Safety fallback so the page can never remain blocked by the splash.
-  setTimeout(hideSplash,6500);
+  setTimeout(hideSplash,2500);
 })();
 </script>
 <style id="gc-user-requested-fixes">
@@ -4443,6 +4443,88 @@ html.gc-startup body{visibility:visible!important}
 /* Splash timing is handled by gc-startup-no-flash-js above. */
 </script>
 
+<style id="gc-tutor-name-id-final">
+/* Tutor identity: names may use a second line, but NEVER break in the middle of a word. */
+.gc-profile-card.gc-tutor-card .gc-name-area{
+  width:100%!important;
+  max-width:100%!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+.gc-profile-card.gc-tutor-card .gc-name-patch{
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  width:100%!important;
+  max-width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+  padding:7px 12px!important;
+  gap:7px!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  flex-wrap:nowrap!important;
+}
+.gc-profile-card.gc-tutor-card .gc-name-patch h3{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  font-family:"Roboto Condensed",Inter,Arial,sans-serif!important;
+  font-size:clamp(19px,2.25vw,29px)!important;
+  line-height:1.08!important;
+  font-weight:900!important;
+  text-align:center!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  hyphens:none!important;
+}
+.gc-profile-card.gc-tutor-card .gc-blue-tick{
+  flex:0 0 auto!important;
+  width:23px!important;
+  height:23px!important;
+  margin-top:2px!important;
+}
+.gc-profile-card.gc-tutor-card .gc-tutor-id-badge{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:5px!important;
+  width:max-content!important;
+  max-width:100%!important;
+  margin:4px auto 0!important;
+  padding:3px 9px!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.20)!important;
+  border:1px solid rgba(255,255,255,.35)!important;
+  color:#fff!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+}
+.gc-profile-card.gc-tutor-card .gc-tutor-id-badge span{
+  font-size:8px!important;
+  font-weight:800!important;
+  letter-spacing:.04em!important;
+  opacity:.9!important;
+}
+.gc-profile-card.gc-tutor-card .gc-tutor-id-badge strong{
+  font-size:10px!important;
+  font-weight:950!important;
+  letter-spacing:.02em!important;
+}
+@media(max-width:640px){
+  .gc-profile-card.gc-tutor-card .gc-name-patch{padding:6px 8px!important;gap:5px!important}
+  .gc-profile-card.gc-tutor-card .gc-name-patch h3{font-size:clamp(17px,5.1vw,22px)!important;line-height:1.08!important}
+  .gc-profile-card.gc-tutor-card .gc-blue-tick{width:19px!important;height:19px!important}
+  .gc-profile-card.gc-tutor-card .gc-tutor-id-badge{margin-top:3px!important;padding:3px 7px!important}
+  .gc-profile-card.gc-tutor-card .gc-tutor-id-badge span{font-size:6.5px!important}
+  .gc-profile-card.gc-tutor-card .gc-tutor-id-badge strong{font-size:8px!important}
+}
+</style>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 <div id="gcBrandSplash" aria-label="GURU CONNECT loading">
@@ -6213,6 +6295,7 @@ html.gc-startup body{visibility:visible!important}
                                 <h3>${t.name}</h3>
                                 ${verified ? `<img src="${VERIFIED_TICK_LOGO_URL}" alt="Verified" class="gc-blue-tick">` : ''}
                             </div>
+                            <div class="gc-tutor-id-badge"><span>GURU CONNECT ID</span><strong>${t.id || '—'}</strong></div>
                             <div class="gc-subtitle"><span></span><strong>Junior College Faculty</strong><span></span></div>
                         </div>
                     </div>
