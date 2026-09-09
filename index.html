@@ -4367,6 +4367,101 @@ html.gc-startup body{visibility:visible!important}
 .gc-auth-master-statement{margin-top:16px;padding:16px;border:1px solid #dbeafe;border-radius:16px;background:#fff;box-shadow:0 8px 22px rgba(15,61,145,.06)}
 @media(max-width:560px){.gc-download-btn{width:100%}}
 </style>
+
+<style id="gc-final-splash-name-fix">
+/* Splash: keep the original logo visible longer; don't let the text replace it. */
+#gcBrandSplash .gc-splash-fallback,
+#gcBrandSplash .gc-splash-title{
+  display:none!important;
+}
+#gcBrandSplash #gcSplashLogo{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  width:min(560px,82vw)!important;
+  max-width:90vw!important;
+  max-height:58vh!important;
+  height:auto!important;
+}
+
+/* Tutor names: always one clean line, with the verification tick beside the name. */
+.gc-profile-card:not(.gc-student-card) .gc-name-patch{
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  flex-wrap:nowrap!important;
+  padding-left:10px!important;
+  padding-right:10px!important;
+}
+.gc-profile-card:not(.gc-student-card) .gc-name-patch h3{
+  min-width:0!important;
+  flex:1 1 auto!important;
+  width:auto!important;
+  max-width:none!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  font-size:clamp(18px,2vw,27px)!important;
+  line-height:1.08!important;
+  letter-spacing:-.02em!important;
+}
+.gc-profile-card:not(.gc-student-card) .gc-blue-tick{
+  flex:0 0 auto!important;
+  width:22px!important;
+  height:22px!important;
+}
+@media(max-width:640px){
+  .gc-profile-card:not(.gc-student-card) .gc-name-patch{
+    padding-left:8px!important;
+    padding-right:8px!important;
+    gap:5px!important;
+  }
+  .gc-profile-card:not(.gc-student-card) .gc-name-patch h3{
+    font-size:clamp(16px,5vw,22px)!important;
+  }
+  .gc-profile-card:not(.gc-student-card) .gc-blue-tick{
+    width:19px!important;
+    height:19px!important;
+  }
+}
+</style>
+<script id="gc-final-splash-timing">
+(function(){
+  function keepLogoSplash(){
+    var splash=document.getElementById('gcBrandSplash');
+    var logo=document.getElementById('gcSplashLogo');
+    if(!splash)return;
+    splash.classList.remove('gc-splash-hide');
+    splash.style.opacity='1';
+    splash.style.visibility='visible';
+    splash.style.pointerEvents='auto';
+    if(logo){
+      logo.style.display='block';
+      logo.style.visibility='visible';
+      logo.style.opacity='1';
+    }
+  }
+  function hideLogoSplash(){
+    var splash=document.getElementById('gcBrandSplash');
+    if(!splash)return;
+    splash.classList.add('gc-splash-hide');
+    document.documentElement.classList.add('gc-ready');
+  }
+  /* Logo stays on screen for about 4.5 seconds instead of disappearing after ~0.5–1.8s. */
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', keepLogoSplash, {once:true});
+  }else{
+    keepLogoSplash();
+  }
+  setTimeout(keepLogoSplash, 50);
+  setTimeout(hideLogoSplash, 4500);
+})();
+</script>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 <div id="gcBrandSplash" aria-label="GURU CONNECT loading">
