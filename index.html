@@ -4639,6 +4639,7 @@ footer:before{
       <button class="gc-header-contact" type="button" onclick="openContactModal()"><i class="fa-solid fa-envelope mr-1"></i> Contact Us</button>
       <button class="bg-slate-100 hover:bg-slate-200 text-brand-dark text-[11px] sm:text-xs font-bold px-2 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition shadow flex items-center gap-1" id="navLoginBtn" onclick="openLoginModal()"><i class="fa-solid fa-right-to-bracket"></i><span class="hidden sm:inline">LOGIN</span></button>
       <button class="bg-brand-blue hover:bg-blue-700 text-white text-[11px] sm:text-xs font-bold px-2 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition shadow flex items-center gap-1" id="navStaffBtn" onclick="openStaffLoginModal()"><i class="fa-solid fa-lock"></i><span class="hidden sm:inline">STAFF</span></button>
+      <button class="bg-red-600 hover:bg-red-700 text-white text-[11px] sm:text-xs font-bold px-2 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition shadow flex items-center gap-1 hidden" id="navUserLogoutBtn" onclick="logoutUser()"><i class="fa-solid fa-right-from-bracket"></i><span class="hidden sm:inline">LOGOUT</span></button>
       <div class="relative" id="publicMenuWrapper">
         <button aria-label="Open website menu" class="gc-menu-button" onclick="toggleNavMenu()"><i class="fa-solid fa-bars"></i><span class="hidden sm:inline">MENU</span><i class="fa-solid fa-chevron-down text-[9px]"></i></button>
         <nav class="absolute top-full right-0 mt-2 sm:mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 flex-col hidden z-[60] origin-top-right" id="publicNavbarLinks">
@@ -4664,9 +4665,14 @@ footer:before{
 <h2 class="text-2xl sm:text-3xl md:text-4xl font-black mt-3" id="dashboardHeading">My Profile</h2>
 <p class="text-blue-100 text-xs sm:text-sm mt-1" id="dashboardSubheading">Your Guru Connect profile and account information.</p>
 </div>
+<div class="flex items-center gap-2 flex-wrap justify-end">
 <button class="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-black px-4 py-2.5 rounded-xl text-xs sm:text-sm transition" onclick="closeUserDashboard()">
 <i class="fa-solid fa-arrow-left mr-1"></i> BACK TO WEBSITE
                     </button>
+<button id="gcUserDashboardLogout" class="bg-red-500 hover:bg-red-600 border border-white/20 text-white font-black px-4 py-2.5 rounded-xl text-xs sm:text-sm transition" type="button" onclick="logoutUser()">
+<i class="fa-solid fa-right-from-bracket mr-1"></i> LOGOUT
+                    </button>
+</div>
 </div>
 </div>
 <div class="p-4 sm:p-6 md:p-9" id="userDashboardContent"></div>
@@ -6669,11 +6675,15 @@ footer:before{
             if (active && (role === 'student' || role === 'tutor')) {
                 if (badge) badge.classList.remove('hidden');
                 if (loginBtn) loginBtn.classList.add('hidden');
+                const navLogout = document.getElementById('navUserLogoutBtn');
+                if (navLogout) navLogout.classList.remove('hidden');
                 const nameEl = document.getElementById('navLoggedName');
                 if (nameEl) nameEl.textContent = active;
             } else {
                 if (badge) badge.classList.add('hidden');
                 if (loginBtn) loginBtn.classList.remove('hidden');
+                const navLogout = document.getElementById('navUserLogoutBtn');
+                if (navLogout) navLogout.classList.add('hidden');
             }
         }
 
@@ -12415,41 +12425,24 @@ function adminPanel(){
   panel.querySelector('#gcAdminMasterDownload')?.addEventListener('click',downloadAdminMaster);
  try{S()?.from('gc_learning_requests').select('*').order('created_at',{ascending:false}).limit(500).then(function(q){if(!q.error)window.__gcLearningRequestsCache=q.data||[]}).catch(function(){})}catch(e){}
 }
-function gcXml(v){
-  return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;').replace(/\r?\n/g,' ');
-}
+function gcXml(v){return String(v??'').replace(/[\x00-\x08\x0B\x0C\x0E-\x1F]/g,' ').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\"/g,'&quot;').replace(/'/g,'&apos;').replace(/\r?\n/g,' ')}
 function GC_downloadExcelRows(rows,filename,title,map,account){
-  rows=Array.isArray(rows)?rows:[];
-  const base=['Date / Time','User','Role','GURU CONNECT ID','Profile ID','Transaction Type','Amount','Reason','Learning Request ID','Transaction ID'];
-  const extras=[...new Set(rows.flatMap(r=>Object.keys(r||{})))].filter(k=>![
-    'created_at','profile_id','transaction_type','type','amount','reason','learning_request_id','request_id','learningRequestId','id','role'
-  ].includes(k));
-  const cols=[...base,...extras.map(k=>k)];
-  const esc=gcXml;
-  let xml='<?xml version="1.0" encoding="UTF-8"?><?mso-application progid="Excel.Sheet"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Worksheet ss:Name="Coin History"><Table>';
-  xml+='<Row>'+cols.map(c=>'<Cell><Data ss:Type="String">'+esc(c)+'</Data></Cell>').join('')+'</Row>';
-  rows.forEach(r=>{
-    const p=map?map[String(r.profile_id)]||{}:{};
-    const role=String(p.__role||r.role||account?.role||'').toLowerCase();
-    const user=account?.name||p.name||p.full_name||r.user_name||r.user||'Unknown User';
-    const pid=String(r.profile_id||account?.profileId||'');
-    const rid=publicId2(pid,role);
-    const vals=[
-      r.created_at||'',user,roleName(role),rid,pid,
-      r.transaction_type||r.type||'',r.amount??0,r.reason||'',
-      r.learning_request_id||r.request_id||r.learningRequestId||'',r.id||''
-    ];
-    extras.forEach(k=>vals.push(r[k]));
-    xml+='<Row>'+vals.map(v=>'<Cell><Data ss:Type="String">'+esc(typeof v==='object'?JSON.stringify(v):v)+'</Data></Cell>').join('')+'</Row>';
-  });
-  xml+='</Table></Worksheet></Workbook>';
-  const blob=new Blob([xml],{type:'application/vnd.ms-excel;charset=utf-8'});
-  downloadBlob(blob,filename.endsWith('.xls')?filename:filename+'.xls');
+ rows=Array.isArray(rows)?rows:[];
+ const base=['Date / Time','User','Role','GURU CONNECT ID','Profile ID','Transaction Type','Amount','Reason','Learning Request ID','Transaction ID'];
+ const reserved=new Set(['created_at','profile_id','transaction_type','type','amount','reason','learning_request_id','request_id','learningRequestId','id','role']);
+ const extras=[...new Set(rows.flatMap(r=>Object.keys(r||{})))].filter(k=>!reserved.has(k));
+ const cols=[...base,...extras];
+ let xml='<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"><Styles><Style ss:ID="Header"><Font ss:Bold="1"/></Style></Styles><Worksheet ss:Name="Coin History"><Table>';
+ xml+='<Row>'+cols.map(c=>'<Cell ss:StyleID="Header"><Data ss:Type="String">'+gcXml(c)+'</Data></Cell>').join('')+'</Row>';
+ rows.forEach(r=>{const p=map?map[String(r.profile_id)]||{}:{};const role=String(p.__role||r.role||account?.role||'').toLowerCase();const user=account?.name||p.name||p.full_name||r.user_name||r.user||'Unknown User';const pid=String(r.profile_id||account?.profileId||'');const vals=[r.created_at||'',user,roleName(role),publicId2(pid,role),pid,r.transaction_type||r.type||'',r.amount??0,r.reason||'',r.learning_request_id||r.request_id||r.learningRequestId||'',r.id||''];extras.forEach(k=>vals.push(r[k]));xml+='<Row>'+vals.map(v=>'<Cell><Data ss:Type="String">'+gcXml(typeof v==='object'?JSON.stringify(v):v)+'</Data></Cell>').join('')+'</Row>'});
+ xml+='</Table></Worksheet></Workbook>';
+ const blob=new Blob([xml],{type:'application/vnd.ms-excel'});downloadBlob(blob,filename.endsWith('.xls')?filename:filename+'.xls');
 }
-async function downloadAdminMaster(){const s=S();if(!s)return alert('Supabase is not connected.');try{const q=await s.from('gc_coin_ledger').select('*').order('created_at',{ascending:false});if(q.error)throw q.error;const map=await peopleMap();const data=q.data||[];GC_downloadExcelRows(data,'GURU_CONNECT_ADMIN_MASTER_COIN_HISTORY.xls','GURU CONNECT — COMPLETE COIN TRANSACTION HISTORY',map);const st=document.getElementById('gcAdminMasterStatus');if(st)st.textContent=`✓ Excel file downloaded with ${data.length} transaction(s).`}catch(e){alert('Could not download master Excel history: '+(e.message||e))}}
+async function downloadAdminMaster(){const s=S();if(!s)return alert('Supabase is not connected.');try{const data=await fetchLedgerPaged();const map=await peopleMap();GC_downloadExcelRows(data,'GURU_CONNECT_ADMIN_MASTER_COIN_HISTORY.xls','GURU CONNECT — COMPLETE COIN TRANSACTION HISTORY',map);const st=document.getElementById('gcAdminMasterStatus');if(st)st.textContent=`✓ Excel file downloaded with ${data.length} transaction(s).`;return data.length}catch(e){alert('Could not download master Excel history: '+(e.message||e))}}
+async function fetchLedgerPaged(profileId){const s=S();if(!s)throw new Error('Supabase is not connected.');let out=[],start=0,step=1000;while(true){let q=s.from('gc_coin_ledger').select('*').order('created_at',{ascending:false}).range(start,start+step-1);if(profileId!=null)q=q.eq('profile_id',String(profileId));q=await q;if(q.error)throw q.error;const rows=q.data||[];out.push(...rows);if(rows.length<step)break;start+=step;if(start>1000000)throw new Error('Ledger is unexpectedly large; export stopped at 1,001,000 rows.');}return out}
 async function doSearch(){const input=document.getElementById('gcAuthSearch'),out=document.getElementById('gcAuthResults');if(!input||!out)return;const q=clean(input.value).toLowerCase();if(!q){out.innerHTML='<div class="gc-auth-admin-sub">Type a name, mobile number or ID to search.</div>';return}out.innerHTML='<div class="gc-auth-admin-sub">Searching registered profiles…</div>';const rows=await loadPeople(q,document.getElementById('gcAuthKind')?.value||'all');window.__gcAuthRows=rows;if(!rows.length){out.innerHTML='<div class="gc-auth-admin-sub">No registered Tutor/Student matched this search.</div>';return}out.innerHTML=rows.map((x,i)=>'<div class="gc-auth-person"><div><div class="gc-auth-person-name">'+esc(x.name||x.full_name||'Unnamed')+' <span class="gc-auth-public-id">'+esc(x.__sid)+'</span></div><div class="gc-auth-person-meta">'+x.__role.toUpperCase()+' • '+esc(x.phone||x.mobile||x.mobile_number||x.email||'No contact')+'</div></div><button type="button" class="gc-auth-select" data-select="'+i+'">MANAGE COINS</button></div>').join('');out.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>selectPerson(Number(b.dataset.select)))}
 async function selectPerson(i){const p=window.__gcAuthRows?.[i];if(!p)return;const host=document.getElementById('gcAuthSelected');if(!host)return;const b=await balance(p.__id);const rows=await ledger(p.__id);host.innerHTML='<div class="gc-auth-selected"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><div class="gc-auth-person-name">'+esc(p.name||'Unnamed')+' <span class="gc-auth-public-id">'+esc(p.__sid)+'</span></div><div class="gc-auth-person-meta">'+p.__role.toUpperCase()+' • Mobile: '+esc(p.phone||p.mobile||p.mobile_number||'—')+'</div></div><div><div class="gc-auth-person-meta">CURRENT COINS</div><div id="gcAuthBalance" class="gc-auth-balance">🪙 '+Number(b).toLocaleString('en-IN')+'</div></div></div><div class="gc-auth-adjust"><input id="gcAuthAmount" type="number" step="1" placeholder="+100 / -100"><input id="gcAuthReason" placeholder="Mandatory reason"><button type="button" class="gc-auth-admin-btn" id="gcAuthApply">UPDATE COINS</button></div><div id="gcAuthStatus" class="gc-auth-admin-sub"></div><div class="gc-auth-ledger"><div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button type="button" class="gc-download-btn" id="gcAdminDownloadHistory">⬇ DOWNLOAD EXCEL</button></div>'+(rows.length?'<table><thead><tr><th>Time</th><th>Type</th><th>Amount</th><th>Reason</th><th>Learning Request ID</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>'+esc(r.created_at||'')+'</td><td>'+esc(r.transaction_type||r.type||'')+'</td><td>'+Number(r.amount||0)+' 🪙</td><td>'+esc(r.reason||'')+'</td><td>'+esc(window.GC_learningRequestId?window.GC_learningRequestId(r,window.__gcLearningRequestsCache||[]):'—')+'</td></tr>').join('')+'</tbody></table>':'<div class="gc-auth-admin-sub">No coin transactions yet.</div>')+'</div></div>';
- document.getElementById('gcAdminDownloadHistory')?.addEventListener('click',async()=>{try{const s=S();let all=[],start=0,step=1000;while(true){const q=await s.from('gc_coin_ledger').select('*').eq('profile_id',String(p.__id)).order('created_at',{ascending:false}).range(start,start+step-1);if(q.error)throw q.error;all=all.concat(q.data||[]);if(!q.data||q.data.length<step)break;start+=step;if(start>200000)break;}const oneMap={};oneMap[String(p.__id)]={...p,__role:p.__role};GC_downloadExcelRows(all,`GURU_CONNECT_${p.__role.toUpperCase()}_${p.__sid}_COIN_HISTORY.xls`,`GURU CONNECT — ${p.name||'Account'} COIN HISTORY`,oneMap,{name:p.name,role:p.__role,profileId:p.__id});}catch(e){alert('Could not download Excel history: '+(e.message||e))}});
+ document.getElementById('gcAdminDownloadHistory')?.addEventListener('click',async()=>{const b=document.getElementById('gcAdminDownloadHistory');try{if(b){b.disabled=true;b.textContent='PREPARING EXCEL...'}const all=await fetchLedgerPaged(p.__id);const oneMap={};oneMap[String(p.__id)]={...p,__role:p.__role};GC_downloadExcelRows(all,`GURU_CONNECT_${p.__role.toUpperCase()}_${p.__sid}_COIN_HISTORY.xls`,`GURU CONNECT — ${p.name||'Account'} COIN HISTORY`,oneMap,{name:p.name,role:p.__role,profileId:p.__id});if(b)b.textContent=`✓ DOWNLOADED (${all.length})`;}catch(e){alert('Could not download Excel history: '+(e.message||e));if(b)b.textContent='⬇ DOWNLOAD EXCEL'}finally{if(b){setTimeout(()=>{b.disabled=false;b.textContent='⬇ DOWNLOAD EXCEL'},1800)}}});
  document.getElementById('gcAuthApply').onclick=async()=>{const amount=Number(document.getElementById('gcAuthAmount').value),reason=clean(document.getElementById('gcAuthReason').value),st=document.getElementById('gcAuthStatus');if(!Number.isFinite(amount)||amount===0)return alert('Enter a non-zero coin amount.');if(!reason)return alert('Reason is mandatory.');st.textContent='Updating secure coin ledger…';try{const r=await S().rpc('gc_staff_adjust_coins',{p_profile_id:p.__id,p_role:p.__role,p_amount:amount,p_reason:reason});if(r.error)throw r.error;st.textContent='Coins updated successfully and permanently logged.';await selectPerson(i);await doSearch();paintCards()}catch(e){st.textContent='';alert('Coin update failed: '+(e.message||e))}};
 }
 function hookStatus(name,amount,type,reason){const old=window[name];if(typeof old!=='function'||old.__gcCoinHook)return;const f=async function(id){try{const r=await S()?.rpc('gc_staff_charge_tutor_service',{p_tutor_id:String(id),p_amount:amount,p_transaction_type:type,p_reason:reason});if(r?.error)throw r.error;return await old.apply(this,arguments)}catch(e){alert('Action not completed: '+(e.message||e));return null}};f.__gcCoinHook=true;window[name]=f}
