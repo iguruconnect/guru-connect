@@ -12284,10 +12284,6 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
 
 <!-- GURU CONNECT FINAL COINS LEDGER + PDF ACCOUNTABILITY PATCH -->
 <style id="gc-coins-final-ledger-pdf-css">
-.gc-final-coin-box{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;min-height:62px!important;padding:12px 14px!important;border:1px solid rgba(37,99,235,.22)!important;border-radius:14px!important;background:linear-gradient(135deg,#fffdf0,#fff)!important;box-sizing:border-box!important;grid-column:auto!important}
-.gc-final-coin-box .gc-final-coin-icon{font-size:25px!important;line-height:1!important;flex:0 0 auto!important}
-.gc-final-coin-box small{display:block!important;font-size:9px!important;font-weight:950!important;color:#64748b!important;text-transform:uppercase!important;letter-spacing:.08em!important}
-.gc-final-coin-box strong{display:block!important;margin-top:3px!important;font-size:16px!important;font-weight:1000!important;color:#123b8f!important;white-space:nowrap!important}
 .gc-auth-master-statement{margin-top:16px!important;padding:16px!important;border:1px solid #bfdbfe!important;border-radius:16px!important;background:linear-gradient(135deg,#f8fbff,#fff)!important}
 .gc-master-tools{display:flex!important;gap:8px!important;flex-wrap:wrap!important;margin-top:12px!important}
 .gc-master-table-wrap{margin-top:12px!important;overflow:auto!important;max-height:520px!important;border:1px solid #e2e8f0!important;border-radius:12px!important;background:#fff!important}
@@ -12346,9 +12342,7 @@ function ensure(){const panel=document.getElementById('gcAuthAdminCoins');if(!pa
 const oldAdmin=window.GC_AUTH_COINS;
 window.GC_COIN_ACCOUNTABILITY={masterPdf:buildMasterPdf,accountPdf:buildAccountPdf,refresh:renderMaster,ensure};
 setInterval(ensure,3500);document.addEventListener('DOMContentLoaded',ensure);window.addEventListener('load',ensure);
-// Strong card repair: always create a dedicated COINS field if the template does not expose one.
-async function repairCardCoins(){const s=S();if(!s)return;const cards=[...document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card')];const ids=[];const meta=[];cards.forEach(c=>{let role=(c.className.match(/student/i)||c.classList.contains('gc-target-student')||c.classList.contains('gc-new-student-card'))?'student':'tutor';let id=c.dataset.studentId||c.dataset.tutorId||'';if(!id){const n=c.querySelector('[data-student-id],[data-tutor-id],[data-gc-more-tutor],[data-gc-more-student]');id=n?.dataset.studentId||n?.dataset.tutorId||n?.getAttribute('data-gc-more-tutor')||n?.getAttribute('data-gc-more-student')||''}if(id){id=String(id);ids.push(id);meta.push({c,id,role})}});if(!ids.length)return;let map={};try{const q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',[...new Set(ids)]);if(!q.error)map=Object.fromEntries((q.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]))}catch(e){}meta.forEach(({c,id,role})=>{let box=c.querySelector('.gc-final-coin-box');if(!box){box=document.createElement('div');box.className='gc-final-coin-box';box.innerHTML='<span class="gc-final-coin-icon">🪙</span><div><small>GURU COINS</small><strong>0 COINS</strong></div>';const grids=c.querySelector('.gc-target-info,.gc-info-grid,.gc-beautiful-info,.gc-profile-info-grid,.gc-new-info-grid');if(grids)grids.appendChild(box);else{const host=c.querySelector('.gc-action-row,.gc-target-actions')||c.lastElementChild||c;host.parentNode.insertBefore(box,host)}}const strong=box.querySelector('strong');if(strong)strong.textContent=Number(map[id]??0).toLocaleString('en-IN')+' COINS';box.dataset.profileId=id;box.dataset.role=role})}
-setInterval(repairCardCoins,3500);document.addEventListener('DOMContentLoaded',repairCardCoins);window.addEventListener('load',repairCardCoins);
+
 })();
 </script>
 
