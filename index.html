@@ -4444,22 +4444,32 @@ html.gc-startup body{visibility:visible!important}
 </script>
 
 <style id="gc-tutor-name-id-final">
-/* Tutor identity: names may use a second line, but NEVER break in the middle of a word. */
+/* FINAL TUTOR IDENTITY FIX
+   - Keep normal words intact.
+   - Long names may wrap to the next line, but never split a normal word.
+   - Give the name the maximum available width.
+   - Keep the GURU CONNECT ID clearly visible below the name.
+*/
 .gc-profile-card.gc-tutor-card .gc-name-area{
-  width:100%!important;
-  max-width:100%!important;
-  margin-left:auto!important;
-  margin-right:auto!important;
+  min-width:0!important;
+  width:calc(100% - 78px)!important;
+  max-width:none!important;
+  flex:1 1 auto!important;
+  margin:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  justify-content:center!important;
 }
 .gc-profile-card.gc-tutor-card .gc-name-patch{
   display:flex!important;
-  align-items:flex-start!important;
-  justify-content:center!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
   width:100%!important;
-  max-width:100%!important;
+  max-width:none!important;
   min-width:0!important;
   box-sizing:border-box!important;
-  padding:7px 12px!important;
+  padding:6px 10px!important;
   gap:7px!important;
   white-space:normal!important;
   overflow:visible!important;
@@ -4468,26 +4478,28 @@ html.gc-startup body{visibility:visible!important}
 .gc-profile-card.gc-tutor-card .gc-name-patch h3{
   flex:1 1 auto!important;
   min-width:0!important;
-  width:100%!important;
+  width:auto!important;
   max-width:none!important;
   margin:0!important;
   font-family:"Roboto Condensed",Inter,Arial,sans-serif!important;
-  font-size:clamp(19px,2.25vw,29px)!important;
+  font-size:clamp(18px,2.35vw,29px)!important;
   line-height:1.08!important;
   font-weight:900!important;
-  text-align:center!important;
+  text-align:left!important;
   white-space:normal!important;
   overflow:visible!important;
   text-overflow:clip!important;
-  overflow-wrap:normal!important;
+  /* Do NOT split normal words such as Verizon or Academy. */
   word-break:normal!important;
+  overflow-wrap:break-word!important;
   hyphens:none!important;
 }
 .gc-profile-card.gc-tutor-card .gc-blue-tick{
   flex:0 0 auto!important;
   width:23px!important;
   height:23px!important;
-  margin-top:2px!important;
+  min-width:23px!important;
+  margin-top:0!important;
 }
 .gc-profile-card.gc-tutor-card .gc-tutor-id-badge{
   display:flex!important;
@@ -4496,11 +4508,11 @@ html.gc-startup body{visibility:visible!important}
   gap:5px!important;
   width:max-content!important;
   max-width:100%!important;
-  margin:4px auto 0!important;
+  margin:4px 0 0!important;
   padding:3px 9px!important;
   border-radius:999px!important;
   background:rgba(255,255,255,.20)!important;
-  border:1px solid rgba(255,255,255,.35)!important;
+  border:1px solid rgba(255,255,255,.38)!important;
   color:#fff!important;
   line-height:1!important;
   white-space:nowrap!important;
@@ -4517,14 +4529,74 @@ html.gc-startup body{visibility:visible!important}
   letter-spacing:.02em!important;
 }
 @media(max-width:640px){
-  .gc-profile-card.gc-tutor-card .gc-name-patch{padding:6px 8px!important;gap:5px!important}
-  .gc-profile-card.gc-tutor-card .gc-name-patch h3{font-size:clamp(17px,5.1vw,22px)!important;line-height:1.08!important}
-  .gc-profile-card.gc-tutor-card .gc-blue-tick{width:19px!important;height:19px!important}
-  .gc-profile-card.gc-tutor-card .gc-tutor-id-badge{margin-top:3px!important;padding:3px 7px!important}
+  .gc-profile-card.gc-tutor-card .gc-name-area{
+    width:calc(100% - 68px)!important;
+    max-width:none!important;
+  }
+  .gc-profile-card.gc-tutor-card .gc-name-patch{
+    width:100%!important;
+    max-width:none!important;
+    padding:6px 8px!important;
+    gap:5px!important;
+  }
+  .gc-profile-card.gc-tutor-card .gc-name-patch h3{
+    max-width:none!important;
+    font-size:clamp(18px,5.6vw,24px)!important;
+    line-height:1.08!important;
+    word-break:normal!important;
+    overflow-wrap:break-word!important;
+  }
+  .gc-profile-card.gc-tutor-card .gc-blue-tick{
+    width:20px!important;
+    height:20px!important;
+    min-width:20px!important;
+  }
+  .gc-profile-card.gc-tutor-card .gc-tutor-id-badge{
+    margin-top:3px!important;
+    padding:3px 7px!important;
+  }
   .gc-profile-card.gc-tutor-card .gc-tutor-id-badge span{font-size:6.5px!important}
   .gc-profile-card.gc-tutor-card .gc-tutor-id-badge strong{font-size:8px!important}
 }
 </style>
+
+<style id="gc-tutor-name-hard-override">
+/* Last CSS wins: tutor names wrap only between words. */
+.gc-profile-card.gc-tutor-card .gc-profile-identity .gc-name-area{min-width:0!important;max-width:none!important;flex:1 1 auto!important;}
+.gc-profile-card.gc-tutor-card .gc-profile-identity .gc-name-patch{width:100%!important;max-width:none!important;min-width:0!important;overflow:visible!important;}
+.gc-profile-card.gc-tutor-card .gc-profile-identity .gc-name-patch h3{
+  max-width:none!important;
+  min-width:0!important;
+  white-space:normal!important;
+  word-break:normal!important;
+  overflow-wrap:break-word!important;
+  hyphens:none!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+}
+@media(max-width:640px){
+  .gc-profile-card.gc-tutor-card .gc-profile-identity .gc-name-area{max-width:none!important;}
+  .gc-profile-card.gc-tutor-card .gc-profile-identity .gc-name-patch h3{max-width:none!important;overflow-wrap:break-word!important;word-break:normal!important;}
+}
+</style>
+
+<style id="gc-tutor-name-final-real-fix-2026">
+.gc-target-card.gc-target-tutor .gc-target-identity{display:grid!important;grid-template-columns:112px minmax(0,1fr)!important;align-items:center!important;gap:10px!important;height:auto!important;min-height:140px!important;overflow:visible!important}
+.gc-target-card.gc-target-tutor .gc-target-avatar{width:112px!important;height:112px!important;min-width:112px!important}
+.gc-target-card.gc-target-tutor .gc-target-copy{min-width:0!important;width:100%!important;max-width:none!important;overflow:visible!important}
+.gc-target-card.gc-target-tutor .gc-target-name{width:100%!important;max-width:none!important;min-width:0!important;box-sizing:border-box!important;display:block!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important;font-size:clamp(19px,2.5vw,28px)!important;line-height:1.08!important}
+.gc-target-card.gc-target-tutor .gc-target-name-text{display:inline!important;min-width:0!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:normal!important;word-break:normal!important;hyphens:none!important}
+.gc-target-card.gc-target-tutor .gc-target-verified{display:inline-flex!important;vertical-align:middle!important;margin-left:5px!important}
+.gc-target-card.gc-target-tutor .gc-auth-public-id{display:inline-flex!important;align-items:center!important;margin:4px 0 0 2px!important;padding:3px 8px!important;border-radius:8px!important;background:#172033!important;color:#fff!important;font:900 10px/1.15 ui-monospace,SFMono-Regular,Menlo,monospace!important;letter-spacing:.35px!important;white-space:nowrap!important;vertical-align:top!important;max-width:100%!important;box-sizing:border-box!important}
+@media(max-width:520px){.gc-target-card.gc-target-tutor .gc-target-identity{grid-template-columns:112px minmax(0,1fr)!important;gap:8px!important;min-height:140px!important}.gc-target-card.gc-target-tutor .gc-target-name{font-size:clamp(18px,5.2vw,23px)!important;padding:5px 7px!important}.gc-target-card.gc-target-tutor .gc-target-verified{width:22px!important;height:22px!important;font-size:20px!important}.gc-target-card.gc-target-tutor .gc-auth-public-id{font-size:8px!important;padding:3px 6px!important}}
+</style>
+<script id="gc-tutor-name-id-relocation-final-2026">
+(function(){
+ function fixTutorNames(){document.querySelectorAll('.gc-target-card.gc-target-tutor').forEach(function(card){var name=card.querySelector('.gc-target-name'),copy=card.querySelector('.gc-target-copy');if(!name||!copy)return;var id=card.querySelector('.gc-auth-public-id');if(id&&id.parentElement!==copy)copy.appendChild(id);id=card.querySelector('.gc-auth-public-id');if(id&&id.previousElementSibling!==name)name.insertAdjacentElement('afterend',id);var txt=card.querySelector('.gc-target-name-text');if(txt){txt.style.whiteSpace='normal';txt.style.wordBreak='normal';txt.style.overflowWrap='normal';txt.style.hyphens='none'}})}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fixTutorNames);else fixTutorNames();window.addEventListener('load',function(){setTimeout(fixTutorNames,100);setTimeout(fixTutorNames,1000)});new MutationObserver(function(){clearTimeout(window.__gcTutorNameFix);window.__gcTutorNameFix=setTimeout(fixTutorNames,40)}).observe(document.body,{subtree:true,childList:true});setInterval(fixTutorNames,1200);
+})();
+</script>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 <div id="gcBrandSplash" aria-label="GURU CONNECT loading">
