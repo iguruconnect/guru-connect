@@ -12366,6 +12366,76 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
  line-height:1!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),inset 0 -1px 1px rgba(88,53,0,.4),0 1px 2px rgba(0,0,0,.18)!important;
 }
 </style>
+
+<!-- GURU CONNECT FINAL COINS LEDGER + PDF ACCOUNTABILITY PATCH -->
+<style id="gc-coins-final-ledger-pdf-css">
+.gc-final-coin-box{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;min-height:62px!important;padding:12px 14px!important;border:1px solid rgba(37,99,235,.22)!important;border-radius:14px!important;background:linear-gradient(135deg,#fffdf0,#fff)!important;box-sizing:border-box!important;grid-column:auto!important}
+.gc-final-coin-box .gc-final-coin-icon{font-size:25px!important;line-height:1!important;flex:0 0 auto!important}
+.gc-final-coin-box small{display:block!important;font-size:9px!important;font-weight:950!important;color:#64748b!important;text-transform:uppercase!important;letter-spacing:.08em!important}
+.gc-final-coin-box strong{display:block!important;margin-top:3px!important;font-size:16px!important;font-weight:1000!important;color:#123b8f!important;white-space:nowrap!important}
+.gc-auth-master-statement{margin-top:16px!important;padding:16px!important;border:1px solid #bfdbfe!important;border-radius:16px!important;background:linear-gradient(135deg,#f8fbff,#fff)!important}
+.gc-master-tools{display:flex!important;gap:8px!important;flex-wrap:wrap!important;margin-top:12px!important}
+.gc-master-table-wrap{margin-top:12px!important;overflow:auto!important;max-height:520px!important;border:1px solid #e2e8f0!important;border-radius:12px!important;background:#fff!important}
+.gc-master-table{width:100%!important;border-collapse:collapse!important;font-size:10px!important;min-width:850px!important}
+.gc-master-table th,.gc-master-table td{padding:8px 7px!important;border-bottom:1px solid #e2e8f0!important;text-align:left!important;vertical-align:top!important}
+.gc-master-table th{position:sticky!important;top:0!important;background:#eff6ff!important;color:#475569!important;font-size:9px!important;text-transform:uppercase!important;z-index:1!important}
+.gc-master-pos{color:#047857!important;font-weight:950!important}.gc-master-neg{color:#dc2626!important;font-weight:950!important}
+.gc-pdf-btn{border:0!important;border-radius:12px!important;padding:11px 15px!important;background:#b91c1c!important;color:#fff!important;font-weight:950!important;cursor:pointer!important;white-space:nowrap!important}
+.gc-pdf-btn.blue{background:#0f3d91!important}.gc-pdf-btn:disabled{opacity:.55!important;cursor:wait!important}
+</style>
+<script id="gc-coins-final-ledger-pdf-js">
+(function(){
+'use strict';
+const S=()=>window.gcSupabase||null;
+const E=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+function roleName(r){return String(r||'').toLowerCase()==='student'?'STUDENT':'TUTOR'}
+function pidFor(x){return String(x?.id||x?.profile_id||x?.student_id||x?.tutor_id||'')}
+function publicId2(id,role){let h=2166136261>>>0;for(const ch of String(id??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return 'GC-'+(String(role).toLowerCase()==='student'?'S':'T')+'-'+(h.toString(36).toUpperCase().padStart(6,'0').slice(-6))}
+async function allRows(){
+ const s=S(); if(!s) throw new Error('Supabase is not connected.');
+ let out=[]; let start=0, step=1000;
+ while(true){const q=await s.from('gc_coin_ledger').select('*').order('created_at',{ascending:false}).range(start,start+step-1);if(q.error)throw q.error;out=out.concat(q.data||[]);if(!q.data||q.data.length<step)break;start+=step;if(start>200000)break;}
+ return out;
+}
+async function peopleMap(){
+ const s=S(); if(!s) throw new Error('Supabase is not connected.');
+ const m={};
+ const [t,st]=await Promise.all([s.from('tutor_profiles').select('id,name,full_name,email,phone,mobile,mobile_number'),s.from('student_profiles').select('id,name,full_name,email,phone,mobile,mobile_number')]);
+ if(t.error)console.warn('Tutor profile map:',t.error); if(st.error)console.warn('Student profile map:',st.error);
+ ;(t.data||[]).forEach(x=>m[String(x.id)]={...x,__role:'tutor'});(st.data||[]).forEach(x=>m[String(x.id)]={...x,__role:'student'}); return m;
+}
+function escPdf(v){return String(v??'').replace(/[\\\n\r]/g,' ').slice(0,150)}
+function loadJsPdf(){return new Promise((resolve,reject)=>{if(window.jspdf?.jsPDF)return resolve(window.jspdf.jsPDF);let sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js';sc.onload=()=>window.jspdf?.jsPDF?resolve(window.jspdf.jsPDF):reject(new Error('PDF engine unavailable'));sc.onerror=()=>reject(new Error('Could not load PDF engine.'));document.head.appendChild(sc)})}
+function pdfRows(doc,rows,title,subtitle){
+ const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();let y=18;
+ const page=()=>{doc.addPage();y=18};
+ doc.setFontSize(15);doc.setFont(undefined,'bold');doc.text(title,12,y);y+=7;doc.setFontSize(8);doc.setFont(undefined,'normal');doc.text(subtitle,12,y);y+=7;
+ const heads=['DATE / TIME','USER','ROLE','ID','TYPE','AMOUNT','REASON','REQUEST ID','TXN ID'];
+ const widths=[24,25,15,22,24,16,38,28,27];let x=6;
+ function header(){x=6;doc.setFontSize(6.5);doc.setFont(undefined,'bold');heads.forEach((h,i)=>{doc.text(h,x,y);x+=widths[i]});y+=5;doc.line(6,y,W-6,y);y+=4;doc.setFont(undefined,'normal')}
+ header();
+ rows.forEach(r=>{if(y>H-12){page();header()} const vals=[r.date,r.user,r.role,r.pid,r.type,r.amount,r.reason,r.req,r.txn];x=6;doc.setFontSize(6.2);vals.forEach((v,i)=>{let txt=escPdf(v);let max=Math.max(8,widths[i]-1);let lines=doc.splitTextToSize(txt,max);doc.text(lines[0]||'',x,y);x+=widths[i]});y+=5;});
+ doc.setFontSize(7);doc.text('Generated by GURU CONNECT • Coin Accountability Ledger',12,H-5);
+}
+async function buildMasterPdf(){
+ const [rows,map,JsPDF]=await Promise.all([allRows(),peopleMap(),loadJsPdf()]);
+ const data=rows.map(r=>{const p=map[String(r.profile_id)]||{};const role=p.__role||r.role||'unknown';return {date:r.created_at||'',user:p.name||p.full_name||'Unknown User',role:roleName(role),pid:publicId2(r.profile_id,role),type:r.transaction_type||r.type||'',amount:(Number(r.amount||0)>0?'+':'')+Number(r.amount||0)+' COINS',reason:r.reason||'',req:r.learning_request_id||r.request_id||r.learningRequestId||'—',txn:r.id||''}});
+ const doc=new JsPDF({orientation:'landscape',unit:'mm',format:'a4'});pdfRows(doc,data,'GURU CONNECT — ALL-TIME COIN ACCOUNTABILITY','Complete Tutor + Student coin transaction history • '+data.length+' transaction(s)');doc.save('GURU_CONNECT_ALL_TIME_COIN_ACCOUNTABILITY.pdf');return data.length;
+}
+async function buildAccountPdf(profileId,role,name){
+ const s=S();if(!s)throw new Error('Supabase is not connected.');let rows=[],start=0,step=1000;while(true){const q=await s.from('gc_coin_ledger').select('*').eq('profile_id',String(profileId)).order('created_at',{ascending:false}).range(start,start+step-1);if(q.error)throw q.error;rows=rows.concat(q.data||[]);if(!q.data||q.data.length<step)break;start+=step;if(start>100000)break;}
+ const JsPDF=await loadJsPdf();const data=rows.map(r=>({date:r.created_at||'',user:name||'Account',role:roleName(role),pid:publicId2(profileId,role),type:r.transaction_type||r.type||'',amount:(Number(r.amount||0)>0?'+':'')+Number(r.amount||0)+' COINS',reason:r.reason||'',req:r.learning_request_id||r.request_id||'—',txn:r.id||''}));const doc=new JsPDF({orientation:'landscape',unit:'mm',format:'a4'});pdfRows(doc,data,'GURU CONNECT — '+roleName(role)+' COIN HISTORY',String(name||'Account')+' • '+publicId2(profileId,role)+' • '+data.length+' transaction(s)');doc.save('GURU_CONNECT_'+roleName(role)+'_'+publicId2(profileId,role)+'_COIN_HISTORY.pdf');return data.length;
+}
+async function renderMaster(){const host=document.getElementById('gcMasterLedgerBody');if(!host)return;host.innerHTML='<div class="gc-auth-admin-sub">Loading complete all-time coin ledger…</div>';try{const [rows,map]=await Promise.all([allRows(),peopleMap()]);window.__gcMasterLedgerRows=rows;window.__gcMasterPeople=map;if(!rows.length){host.innerHTML='<div class="gc-auth-admin-sub">No coin transactions found.</div>';return}host.innerHTML='<div class="gc-master-table-wrap"><table class="gc-master-table"><thead><tr><th>Date / Time</th><th>User</th><th>Role</th><th>GURU CONNECT ID</th><th>Type</th><th>Amount</th><th>Reason</th><th>Learning Request ID</th><th>Transaction ID</th></tr></thead><tbody>'+rows.map(r=>{const p=map[String(r.profile_id)]||{},role=p.__role||r.role||'';const amt=Number(r.amount||0);return '<tr><td>'+E(r.created_at||'')+'</td><td>'+E(p.name||p.full_name||'Unknown User')+'</td><td>'+E(roleName(role))+'</td><td>'+E(publicId2(r.profile_id,role))+'</td><td>'+E(r.transaction_type||r.type||'')+'</td><td class="'+(amt>=0?'gc-master-pos':'gc-master-neg')+'">'+(amt>0?'+':'')+amt+' 🪙</td><td>'+E(r.reason||'')+'</td><td>'+E(r.learning_request_id||r.request_id||'—')+'</td><td>'+E(r.id||'')+'</td></tr>'}).join('')+'</tbody></table></div><div class="gc-auth-admin-sub" style="margin-top:8px">Showing '+rows.length+' all-time transaction(s).</div>'}catch(e){host.innerHTML='<div class="gc-auth-admin-sub">Ledger could not be loaded: '+E(e.message||e)+'</div>'}}
+function ensure(){const panel=document.getElementById('gcAuthAdminCoins');if(!panel)return;if(!panel.querySelector('#gcMasterLedger')){const box=document.createElement('div');box.id='gcMasterLedger';box.className='gc-auth-master-statement';box.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><h4 style="margin:0;font-weight:950">🧾 ALL-TIME COIN ACCOUNTABILITY LEDGER</h4><div class="gc-auth-admin-sub">Every Tutor + Student coin transaction, including staff grants, deductions, service charges and rewards.</div></div><div class="gc-master-tools"><button type="button" class="gc-auth-admin-btn" id="gcMasterRefresh">↻ REFRESH LEDGER</button><button type="button" class="gc-pdf-btn" id="gcMasterPdf">⬇ DOWNLOAD MASTER PDF</button></div></div><div id="gcMasterLedgerStatus" class="gc-auth-admin-sub" style="margin-top:8px"></div><div id="gcMasterLedgerBody"></div>';panel.appendChild(box);box.querySelector('#gcMasterRefresh').onclick=renderMaster;box.querySelector('#gcMasterPdf').onclick=async function(){this.disabled=true;const st=box.querySelector('#gcMasterLedgerStatus');st.textContent='Preparing PDF…';try{const n=await buildMasterPdf();st.textContent='✓ PDF downloaded with '+n+' transaction(s).'}catch(e){st.textContent='';alert('PDF download failed: '+(e.message||e))}finally{this.disabled=false}};renderMaster()}}
+const oldAdmin=window.GC_AUTH_COINS;
+window.GC_COIN_ACCOUNTABILITY={masterPdf:buildMasterPdf,accountPdf:buildAccountPdf,refresh:renderMaster,ensure};
+setInterval(ensure,3500);document.addEventListener('DOMContentLoaded',ensure);window.addEventListener('load',ensure);
+// Strong card repair: always create a dedicated COINS field if the template does not expose one.
+async function repairCardCoins(){const s=S();if(!s)return;const cards=[...document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card')];const ids=[];const meta=[];cards.forEach(c=>{let role=(c.className.match(/student/i)||c.classList.contains('gc-target-student')||c.classList.contains('gc-new-student-card'))?'student':'tutor';let id=c.dataset.studentId||c.dataset.tutorId||'';if(!id){const n=c.querySelector('[data-student-id],[data-tutor-id],[data-gc-more-tutor],[data-gc-more-student]');id=n?.dataset.studentId||n?.dataset.tutorId||n?.getAttribute('data-gc-more-tutor')||n?.getAttribute('data-gc-more-student')||''}if(id){id=String(id);ids.push(id);meta.push({c,id,role})}});if(!ids.length)return;let map={};try{const q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',[...new Set(ids)]);if(!q.error)map=Object.fromEntries((q.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]))}catch(e){}meta.forEach(({c,id,role})=>{let box=c.querySelector('.gc-final-coin-box');if(!box){box=document.createElement('div');box.className='gc-final-coin-box';box.innerHTML='<span class="gc-final-coin-icon">🪙</span><div><small>GURU COINS</small><strong>0 COINS</strong></div>';const grids=c.querySelector('.gc-target-info,.gc-info-grid,.gc-beautiful-info,.gc-profile-info-grid,.gc-new-info-grid');if(grids)grids.appendChild(box);else{const host=c.querySelector('.gc-action-row,.gc-target-actions')||c.lastElementChild||c;host.parentNode.insertBefore(box,host)}}const strong=box.querySelector('strong');if(strong)strong.textContent=Number(map[id]??0).toLocaleString('en-IN')+' COINS';box.dataset.profileId=id;box.dataset.role=role})}
+setInterval(repairCardCoins,3500);document.addEventListener('DOMContentLoaded',repairCardCoins);window.addEventListener('load',repairCardCoins);
+})();
+</script>
 </body>
 </html>
 <!-- =========================================================
