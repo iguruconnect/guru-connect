@@ -4511,44 +4511,35 @@ footer:before{
 
 <style id="gc-no-splash-final">#gcBrandSplash{display:none!important}</style>
 
-<style id="gc-coins-reliable-final-fix">
-/* Keep the real GURU COINS balance on every card, but remove only the old duplicate COINS 0 tile. */
-.gc-final-coin-box{min-height:54px!important;padding:9px 11px!important;gap:8px!important;border-radius:12px!important}
-.gc-final-coin-box .gc-final-coin-icon{font-size:21px!important}
-.gc-final-coin-box small{font-size:8px!important}
-.gc-final-coin-box strong{font-size:14px!important;margin-top:2px!important}
-@media(max-width:640px){.gc-final-coin-box{min-height:50px!important;padding:8px 10px!important}.gc-final-coin-box .gc-final-coin-icon{font-size:19px!important}.gc-final-coin-box strong{font-size:13px!important}}
+<style id="gc-coins-card-style-final">
+/* Coins card: same footprint as the other profile info fields, with a clean green treatment. */
+.gc-auth-coin-field{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  align-self:stretch!important;
+  background:linear-gradient(135deg,#159447,#0b7d3d)!important;
+  border-color:#087236!important;
+  color:#fff!important;
+}
+.gc-auth-coin-field small,.gc-auth-coin-field b,.gc-auth-coin-field strong,.gc-auth-coin-field span{
+  color:#fff!important;
+}
+.gc-auth-coin-field .gc-golden-coin-icon{
+  width:38px!important;min-width:38px!important;height:38px!important;
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  background:transparent!important;border:0!important;box-shadow:none!important;
+  font-size:29px!important;line-height:1!important;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.22))!important;
+}
+.gc-auth-coin-field .gc-coin-value{
+  color:#fff!important;font-weight:950!important;white-space:nowrap!important;
+  overflow:hidden!important;text-overflow:ellipsis!important;
+}
+@media(max-width:640px){
+ .gc-auth-coin-field .gc-golden-coin-icon{width:36px!important;min-width:36px!important;height:36px!important;font-size:27px!important}
+}
 </style>
-<script id="gc-coins-reliable-final-fix-js">
-(function(){'use strict';
- function cleanDuplicateCoinTiles(){
-   document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card').forEach(function(card){
-     card.querySelectorAll('.gc-target-info .gc-info-item,.gc-info-grid .gc-info-item,.gc-beautiful-info .gc-info-item,.gc-profile-info-grid .gc-info-item,.gc-new-info-grid .gc-info-item').forEach(function(item){
-       var t=(item.innerText||'').replace(/\s+/g,' ').trim();
-       if(/^COINS\s+0(?:\s|$)/i.test(t) || /^COINS\s*$/i.test(t)) item.remove();
-     });
-   });
- }
- function fixAvailabilityIcons(){
-   document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card').forEach(function(card){
-     card.querySelectorAll('.gc-info-item,.gc-info-box').forEach(function(item){
-       var text=(item.innerText||'').trim();
-       if(/^Availability\b/i.test(text)){
-         var icon=item.querySelector('span:first-child,i:first-child');
-         if(icon && !/Availability/i.test(icon.textContent||'')) icon.textContent='🗓️';
-       }
-     });
-   });
- }
- function repair(){cleanDuplicateCoinTiles();fixAvailabilityIcons();}
- window.GC_COIN_ACCOUNTABILITY=window.GC_COIN_ACCOUNTABILITY||{};
- window.GC_COIN_ACCOUNTABILITY.masterPdf=buildMasterPdf;
- window.GC_COIN_ACCOUNTABILITY.accountPdf=buildAccountPdf;
- document.addEventListener('DOMContentLoaded',function(){repair();setTimeout(repair,800);setTimeout(repair,2500);});
- window.addEventListener('load',function(){repair();setTimeout(repair,1200);});
- setInterval(repair,4000);
-})();
-</script>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -11710,7 +11701,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
       var card=document.createElement('article');card.className='gc-target-card gc-target-tutor';
       card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✔ VERIFIED TUTOR':'👤 TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photoMarkup(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified?(tick()?'<img class="gc-target-verified" src="'+esc(tick())+'" alt="Verified">':'<span class="gc-target-verified">✓</span>'):'')+'</h3><div class="gc-target-subtitle">'+esc(val(t.qualification||t.title||t.subject,'Tutor'))+'</div></div></div>'+ 
-      '<div class="gc-target-info">'+info('📚','Subjects',subject)+info('💼','Experience',exp)+info('₹','Rate / Hour',rate)+info('⭐','Rating',rating+(reviews?' ('+reviews+')':''))+info('👥','Students Taught',students)+info('💻','Mode',mode)+info('📍','Location',loc)+info('🪙','Coins','0')+info('🗓️','Availability',availability)+info('🗓','Teaching Since',since)+'</div>'+ 
+      '<div class="gc-target-info">'+info('📚','Subjects',subject)+info('💼','Experience',exp)+info('₹','Rate / Hour',rate)+info('⭐','Rating',rating+(reviews?' ('+reviews+')':''))+info('👥','Students Taught',students)+info('💻','Mode',mode)+info('📍','Location',loc)+info('🪙','Coins','0')+info('◷','Availability',availability)+info('🗓','Teaching Since',since)+'</div>'+ 
       '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-gc-more-tutor="'+esc(id)+'">MORE ✚ 👤</button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
       c.appendChild(card);
     });
@@ -11726,7 +11717,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
       var card=document.createElement('article');card.className='gc-target-card gc-target-student';
       card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">🎓 STUDENT</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photoMarkup(s,name,true)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span></h3><div class="gc-target-subtitle">'+esc(edu)+'</div></div></div>'+ 
-      '<div class="gc-target-info">'+info('🎓','Education',edu)+info('🗓','Year / Sem',year)+info('🏫','College',college)+info('📊','CGPA',cgpa)+info('🎯','Looking For',req)+info('💻','Mode',mode)+info('📍','Location',loc)+info('🪙','Coins','0')+info('🗓️','Availability',availability)+info('🛡','Helpline Plan',help)+'</div>'+ 
+      '<div class="gc-target-info">'+info('🎓','Education',edu)+info('🗓','Year / Sem',year)+info('🏫','College',college)+info('📊','CGPA',cgpa)+info('🎯','Looking For',req)+info('💻','Mode',mode)+info('📍','Location',loc)+info('🪙','Coins','0')+info('◷','Availability',availability)+info('🛡','Helpline Plan',help)+'</div>'+ 
       '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-gc-more-student="'+esc(id)+'">MORE ✚ 👤</button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-student="'+esc(id)+'">CONNECT ➤</button></div>';
       c.appendChild(card);
     });
@@ -12125,8 +12116,8 @@ header button[aria-label*="close" i]{display:none!important;}
 <style id="gc-coins-authoritative-v11-css">
 .gc-auth-coin-field{min-width:0!important;box-sizing:border-box!important}
 .gc-auth-coin-field .gc-golden-coin-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;color:#8A5A00!important;background:transparent!important;border:0!important;box-shadow:none!important;width:29px!important;min-width:29px!important;height:29px!important;font-size:23px!important;line-height:1!important}
-.gc-auth-coin-field .gc-dollar-coin-icon{display:inline-block!important;color:#8A5A00!important;font-family:Arial,Helvetica,sans-serif!important;font-size:23px!important;font-weight:1000!important;line-height:1!important;text-shadow:0 .5px 0 #6F4700!important}
-@media(max-width:640px){.gc-auth-coin-field .gc-golden-coin-icon{width:24px!important;min-width:24px!important;height:24px!important;font-size:20px!important}.gc-auth-coin-field .gc-dollar-coin-icon{font-size:20px!important}}
+.gc-auth-coin-field .gc-dollar-coin-icon{display:inline-flex!important;align-items:center!important;justify-content:center!important;color:inherit!important;font-family:"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji",sans-serif!important;font-size:27px!important;font-weight:normal!important;line-height:1!important;text-shadow:none!important}
+@media(max-width:640px){.gc-auth-coin-field .gc-golden-coin-icon{width:24px!important;min-width:24px!important;height:24px!important;font-size:20px!important}.gc-auth-coin-field .gc-dollar-coin-icon{font-size:24px!important}}
 .gc-auth-coin-field .gc-coin-value{font-weight:950!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
 .gc-auth-public-id{display:inline-flex!important;align-items:center!important;margin-left:7px!important;padding:3px 7px!important;border-radius:7px!important;background:#0f172a!important;color:#fff!important;font:900 9px/1.1 ui-monospace,SFMono-Regular,Menlo,monospace!important;letter-spacing:.35px!important;vertical-align:middle!important;white-space:nowrap!important}
 .gc-auth-dashboard-strip{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;margin:16px 0 0!important;width:100%!important;box-sizing:border-box!important}
@@ -12185,7 +12176,7 @@ function cardMeta(c){
 }
 function publicIdBadge(c,pid){let h=c.querySelector('.gc-auth-public-id');if(!h){const host=c.querySelector('.gc-target-name,.gc-clean-name,.gc-beautiful-name,.gc-new-name,h3,h4');if(host){h=document.createElement('span');h.className='gc-auth-public-id';host.appendChild(h)}}if(h)h.textContent=pid}
 function labelOf(box){return (box.querySelector('b,small,strong')?.textContent||'').trim().replace(/^📍\s*/,'').toUpperCase()}
-function setBoxValue(box,label,value){const lab=box.querySelector('b,small');if(lab)lab.textContent=label;const icon=box.querySelector('.gc-target-icon,.gc-info-icon');if(icon){icon.innerHTML='<span class="gc-dollar-coin-icon" aria-hidden="true"><span>$</span></span>';icon.classList.add('gc-golden-coin-icon');}let val=box.querySelector('.gc-coin-value');if(!val){val=[...box.querySelectorAll('span,strong')].find(x=>!x.classList.contains('gc-target-icon')&&!x.classList.contains('gc-info-icon'))}if(val){val.classList.add('gc-coin-value');val.textContent=Number(value||0).toLocaleString('en-IN')+' COINS'}}
+function setBoxValue(box,label,value){const lab=box.querySelector('b,small');if(lab)lab.textContent=label;const icon=box.querySelector('.gc-target-icon,.gc-info-icon');if(icon){icon.innerHTML='<span class="gc-dollar-coin-icon" aria-hidden="true">🪙</span>';icon.classList.add('gc-golden-coin-icon');}let val=box.querySelector('.gc-coin-value');if(!val){val=[...box.querySelectorAll('span,strong')].find(x=>!x.classList.contains('gc-target-icon')&&!x.classList.contains('gc-info-icon'))}if(val){val.classList.add('gc-coin-value');val.textContent=Number(value||0).toLocaleString('en-IN')+' COINS'}}
 function coinBox(c){
  const fields=[...c.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box')];
  // User requested: remove Languages field and use that exact slot for Coins. Location remains untouched.
@@ -12255,7 +12246,7 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
   line-height:1!important;text-shadow:0 .5px 0 #6F4700!important;
 }
 @media(max-width:640px){
-  .gc-auth-coin-field .gc-dollar-coin-icon{font-size:20px!important}
+  .gc-auth-coin-field .gc-dollar-coin-icon{font-size:24px!important}
 }
 </style>
 <style id="gc-final-gold-coin-style">
@@ -12328,44 +12319,27 @@ async function peopleMap(){
  if(t.error)console.warn('Tutor profile map:',t.error); if(st.error)console.warn('Student profile map:',st.error);
  ;(t.data||[]).forEach(x=>m[String(x.id)]={...x,__role:'tutor'});(st.data||[]).forEach(x=>m[String(x.id)]={...x,__role:'student'}); return m;
 }
-function pdfSafe(v){return String(v??'').replace(/[^\x20-\x7E]/g,' ').replace(/[\\\(\)]/g,' ').replace(/\s+/g,' ').trim().slice(0,120)}
-function makePdfBlob(title,subtitle,rows,filename){
-  const W=842,H=595,margin=28,lineH=16,perPage=30;
-  const heads=['DATE / TIME','USER','ROLE','GURU CONNECT ID','TYPE','AMOUNT','REASON','REQUEST ID','TRANSACTION ID'];
-  const widths=[70,80,45,75,80,60,120,95,120];
-  const pages=[];
-  for(let start=0;start<rows.length||start===0;start+=perPage){
-    const chunk=rows.slice(start,start+perPage), c=[];
-    const txt=(x,y,str,size=7,bold=false)=>c.push(`BT /F1 ${size} Tf ${bold?'1':'0'} Tr ${x} ${y} Td (${pdfSafe(str)}) Tj ET`);
-    txt(margin,H-34,title,14,true); txt(margin,H-50,subtitle,8,false);
-    let x=margin; heads.forEach((h,i)=>{txt(x,H-72,h,6.2,true);x+=widths[i]});
-    c.push(`${margin} ${H-78} m ${W-margin} ${H-78} l S`);
-    chunk.forEach((r,idx)=>{let y=H-96-idx*lineH,xx=margin;[r.date,r.user,r.role,r.pid,r.type,r.amount,r.reason,r.req,r.txn].forEach((v,i)=>{txt(xx,y,pdfSafe(v),6.1,false);xx+=widths[i]})});
-    txt(margin,18,`GURU CONNECT - Coin Accountability Ledger | Page ${pages.length+1}`,6,false); pages.push(c.join('\\n'));
-    if(rows.length===0)break;
-  }
-  const objs=[],add=o=>(objs.push(o),objs.length),catalog=add('<< /Type /Catalog /Pages 2 0 R >>'),pagesObjIndex=add(''),font=add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>');
-  const pageNums=[];
-  pages.forEach(content=>{const ci=add(`<< /Length ${content.length} >>\\nstream\\n${content}\\nendstream`);const pi=add(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 ${font} 0 R >> >> /Contents ${ci} 0 R >>`);pageNums.push(pi)});
-  objs[pagesObjIndex-1]=`<< /Type /Pages /Kids [${pageNums.map(n=>n+' 0 R').join(' ')}] /Count ${pageNums.length} >>`;
-  let pdf='%PDF-1.4\\n%\\xE2\\xE3\\xCF\\xD3\\n',offsets=[0];
-  objs.forEach((o,i)=>{offsets.push(pdf.length);pdf+=`${i+1} 0 obj\\n${o}\\nendobj\\n`});
-  const xref=pdf.length;pdf+=`xref\\n0 ${objs.length+1}\\n0000000000 65535 f \\n`;
-  for(let i=1;i<offsets.length;i++)pdf+=String(offsets[i]).padStart(10,'0')+' 00000 n \\n';
-  pdf+=`trailer << /Size ${objs.length+1} /Root ${catalog} 0 R >>\\nstartxref\\n${xref}\\n%%EOF`;
-  const blob=new Blob([pdf],{type:'application/pdf'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);
+function escPdf(v){return String(v??'').replace(/[\\\n\r]/g,' ').slice(0,150)}
+function loadJsPdf(){return new Promise((resolve,reject)=>{if(window.jspdf?.jsPDF)return resolve(window.jspdf.jsPDF);let sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js';sc.onload=()=>window.jspdf?.jsPDF?resolve(window.jspdf.jsPDF):reject(new Error('PDF engine unavailable'));sc.onerror=()=>reject(new Error('Could not load PDF engine.'));document.head.appendChild(sc)})}
+function pdfRows(doc,rows,title,subtitle){
+ const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();let y=18;
+ const page=()=>{doc.addPage();y=18};
+ doc.setFontSize(15);doc.setFont(undefined,'bold');doc.text(title,12,y);y+=7;doc.setFontSize(8);doc.setFont(undefined,'normal');doc.text(subtitle,12,y);y+=7;
+ const heads=['DATE / TIME','USER','ROLE','ID','TYPE','AMOUNT','REASON','REQUEST ID','TXN ID'];
+ const widths=[24,25,15,22,24,16,38,28,27];let x=6;
+ function header(){x=6;doc.setFontSize(6.5);doc.setFont(undefined,'bold');heads.forEach((h,i)=>{doc.text(h,x,y);x+=widths[i]});y+=5;doc.line(6,y,W-6,y);y+=4;doc.setFont(undefined,'normal')}
+ header();
+ rows.forEach(r=>{if(y>H-12){page();header()} const vals=[r.date,r.user,r.role,r.pid,r.type,r.amount,r.reason,r.req,r.txn];x=6;doc.setFontSize(6.2);vals.forEach((v,i)=>{let txt=escPdf(v);let max=Math.max(8,widths[i]-1);let lines=doc.splitTextToSize(txt,max);doc.text(lines[0]||'',x,y);x+=widths[i]});y+=5;});
+ doc.setFontSize(7);doc.text('Generated by GURU CONNECT • Coin Accountability Ledger',12,H-5);
 }
-function buildPdfDirect(data,title,subtitle,filename){makePdfBlob(title,subtitle,data,filename);return data.length}
 async function buildMasterPdf(){
-  const [rows,map]=await Promise.all([allRows(),peopleMap()]);
-  const data=rows.map(r=>{const p=map[String(r.profile_id)]||{},role=p.__role||r.role||'unknown';return {date:r.created_at||'',user:p.name||p.full_name||'Unknown User',role:roleName(role),pid:publicId2(r.profile_id,role),type:r.transaction_type||r.type||'',amount:(Number(r.amount||0)>0?'+':'')+Number(r.amount||0)+' COINS',reason:r.reason||'',req:r.learning_request_id||r.request_id||r.learningRequestId||'—',txn:r.id||''}});
-  return buildPdfDirect(data,'GURU CONNECT - ALL-TIME COIN ACCOUNTABILITY','Complete Tutor + Student coin transaction history - '+data.length+' transaction(s)','GURU_CONNECT_ALL_TIME_COIN_ACCOUNTABILITY.pdf');
+ const [rows,map,JsPDF]=await Promise.all([allRows(),peopleMap(),loadJsPdf()]);
+ const data=rows.map(r=>{const p=map[String(r.profile_id)]||{};const role=p.__role||r.role||'unknown';return {date:r.created_at||'',user:p.name||p.full_name||'Unknown User',role:roleName(role),pid:publicId2(r.profile_id,role),type:r.transaction_type||r.type||'',amount:(Number(r.amount||0)>0?'+':'')+Number(r.amount||0)+' COINS',reason:r.reason||'',req:r.learning_request_id||r.request_id||r.learningRequestId||'—',txn:r.id||''}});
+ const doc=new JsPDF({orientation:'landscape',unit:'mm',format:'a4'});pdfRows(doc,data,'GURU CONNECT — ALL-TIME COIN ACCOUNTABILITY','Complete Tutor + Student coin transaction history • '+data.length+' transaction(s)');doc.save('GURU_CONNECT_ALL_TIME_COIN_ACCOUNTABILITY.pdf');return data.length;
 }
 async function buildAccountPdf(profileId,role,name){
-  const s=S();if(!s)throw new Error('Supabase is not connected.');let rows=[],start=0,step=1000;
-  while(true){const q=await s.from('gc_coin_ledger').select('*').eq('profile_id',String(profileId)).order('created_at',{ascending:false}).range(start,start+step-1);if(q.error)throw q.error;rows=rows.concat(q.data||[]);if(!q.data||q.data.length<step)break;start+=step;if(start>100000)break;}
-  const data=rows.map(r=>({date:r.created_at||'',user:name||'Account',role:roleName(role),pid:publicId2(profileId,role),type:r.transaction_type||r.type||'',amount:(Number(r.amount||0)>0?'+':'')+Number(r.amount||0)+' COINS',reason:r.reason||'',req:r.learning_request_id||r.request_id||'—',txn:r.id||''}));
-  return buildPdfDirect(data,'GURU CONNECT - '+roleName(role)+' COIN HISTORY',String(name||'Account')+' - '+publicId2(profileId,role)+' - '+data.length+' transaction(s)','GURU_CONNECT_'+roleName(role)+'_'+publicId2(profileId,role)+'_COIN_HISTORY.pdf');
+ const s=S();if(!s)throw new Error('Supabase is not connected.');let rows=[],start=0,step=1000;while(true){const q=await s.from('gc_coin_ledger').select('*').eq('profile_id',String(profileId)).order('created_at',{ascending:false}).range(start,start+step-1);if(q.error)throw q.error;rows=rows.concat(q.data||[]);if(!q.data||q.data.length<step)break;start+=step;if(start>100000)break;}
+ const JsPDF=await loadJsPdf();const data=rows.map(r=>({date:r.created_at||'',user:name||'Account',role:roleName(role),pid:publicId2(profileId,role),type:r.transaction_type||r.type||'',amount:(Number(r.amount||0)>0?'+':'')+Number(r.amount||0)+' COINS',reason:r.reason||'',req:r.learning_request_id||r.request_id||'—',txn:r.id||''}));const doc=new JsPDF({orientation:'landscape',unit:'mm',format:'a4'});pdfRows(doc,data,'GURU CONNECT — '+roleName(role)+' COIN HISTORY',String(name||'Account')+' • '+publicId2(profileId,role)+' • '+data.length+' transaction(s)');doc.save('GURU_CONNECT_'+roleName(role)+'_'+publicId2(profileId,role)+'_COIN_HISTORY.pdf');return data.length;
 }
 async function renderMaster(){const host=document.getElementById('gcMasterLedgerBody');if(!host)return;host.innerHTML='<div class="gc-auth-admin-sub">Loading complete all-time coin ledger…</div>';try{const [rows,map]=await Promise.all([allRows(),peopleMap()]);window.__gcMasterLedgerRows=rows;window.__gcMasterPeople=map;if(!rows.length){host.innerHTML='<div class="gc-auth-admin-sub">No coin transactions found.</div>';return}host.innerHTML='<div class="gc-master-table-wrap"><table class="gc-master-table"><thead><tr><th>Date / Time</th><th>User</th><th>Role</th><th>GURU CONNECT ID</th><th>Type</th><th>Amount</th><th>Reason</th><th>Learning Request ID</th><th>Transaction ID</th></tr></thead><tbody>'+rows.map(r=>{const p=map[String(r.profile_id)]||{},role=p.__role||r.role||'';const amt=Number(r.amount||0);return '<tr><td>'+E(r.created_at||'')+'</td><td>'+E(p.name||p.full_name||'Unknown User')+'</td><td>'+E(roleName(role))+'</td><td>'+E(publicId2(r.profile_id,role))+'</td><td>'+E(r.transaction_type||r.type||'')+'</td><td class="'+(amt>=0?'gc-master-pos':'gc-master-neg')+'">'+(amt>0?'+':'')+amt+' 🪙</td><td>'+E(r.reason||'')+'</td><td>'+E(r.learning_request_id||r.request_id||'—')+'</td><td>'+E(r.id||'')+'</td></tr>'}).join('')+'</tbody></table></div><div class="gc-auth-admin-sub" style="margin-top:8px">Showing '+rows.length+' all-time transaction(s).</div>'}catch(e){host.innerHTML='<div class="gc-auth-admin-sub">Ledger could not be loaded: '+E(e.message||e)+'</div>'}}
 function ensure(){const panel=document.getElementById('gcAuthAdminCoins');if(!panel)return;if(!panel.querySelector('#gcMasterLedger')){const box=document.createElement('div');box.id='gcMasterLedger';box.className='gc-auth-master-statement';box.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><h4 style="margin:0;font-weight:950">🧾 ALL-TIME COIN ACCOUNTABILITY LEDGER</h4><div class="gc-auth-admin-sub">Every Tutor + Student coin transaction, including staff grants, deductions, service charges and rewards.</div></div><div class="gc-master-tools"><button type="button" class="gc-auth-admin-btn" id="gcMasterRefresh">↻ REFRESH LEDGER</button><button type="button" class="gc-pdf-btn" id="gcMasterPdf">⬇ DOWNLOAD MASTER PDF</button></div></div><div id="gcMasterLedgerStatus" class="gc-auth-admin-sub" style="margin-top:8px"></div><div id="gcMasterLedgerBody"></div>';panel.appendChild(box);box.querySelector('#gcMasterRefresh').onclick=renderMaster;box.querySelector('#gcMasterPdf').onclick=async function(){this.disabled=true;const st=box.querySelector('#gcMasterLedgerStatus');st.textContent='Preparing PDF…';try{const n=await buildMasterPdf();st.textContent='✓ PDF downloaded with '+n+' transaction(s).'}catch(e){st.textContent='';alert('PDF download failed: '+(e.message||e))}finally{this.disabled=false}};renderMaster()}}
@@ -12411,13 +12385,6 @@ window.GC_PROFILE_COINS_REFRESH=paint;
 })();
 </script>
 
-
-<script id="gc-coins-master-pdf-rebind">
-(function(){
- function bind(){var b=document.getElementById('gcMasterPdf');if(!b||b.dataset.gcBound==='1')return;b.dataset.gcBound='1';b.onclick=async function(){b.disabled=true;var st=document.getElementById('gcMasterLedgerStatus');if(st)st.textContent='Preparing PDF…';try{var n=await window.GC_COIN_ACCOUNTABILITY.masterPdf();if(st)st.textContent='✓ PDF downloaded with '+n+' transaction(s).';}catch(e){if(st)st.textContent='PDF download failed: '+(e.message||e);alert('PDF download failed: '+(e.message||e));}finally{b.disabled=false;}}}
- setInterval(bind,1500);document.addEventListener('DOMContentLoaded',bind);window.addEventListener('load',bind);
-})();
-</script>
 </body>
 </html>
 <!-- =========================================================
@@ -12505,7 +12472,7 @@ window.GC_PROFILE_COINS_REFRESH=paint;
      const card=document.createElement('article');card.className='gc-target-card gc-target-tutor';card.dataset.tutorId=id;
      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✓ VERIFIED TUTOR':'TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
        '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified&&tick()?'<span class="gc-target-verified"><img src="'+esc(tick())+'" alt="Verified"></span>':'')+'</h3><div class="gc-target-subtitle">'+esc(q)+' · '+esc(subject)+'</div></div></div>'+
-       '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🪙','Coins','0')+box('🗓️','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
+       '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🪙','Coins','0')+box('◷','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
        '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-tutor-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
      c.appendChild(card);
    });
@@ -12522,7 +12489,7 @@ window.GC_PROFILE_COINS_REFRESH=paint;
      const card=document.createElement('article');card.className='gc-target-card gc-target-student';card.dataset.studentId=id;
      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">🎓 STUDENT</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
        '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(s,name,true)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span></h3><div class="gc-target-subtitle">'+esc(edu)+' · '+esc(stream)+'</div></div></div>'+
-       '<div class="gc-target-info">'+box('🎓','Education',edu)+box('🗓','Year / Sem',year)+box('🏫','College',college)+box('📊','CGPA',cgpa)+box('🎯','Looking For',req)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🪙','Coins','0')+box('🗓️','Availability',avail)+box('🛡','Helpline Plan',help)+'</div>'+ 
+       '<div class="gc-target-info">'+box('🎓','Education',edu)+box('🗓','Year / Sem',year)+box('🏫','College',college)+box('📊','CGPA',cgpa)+box('🎯','Looking For',req)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🪙','Coins','0')+box('◷','Availability',avail)+box('🛡','Helpline Plan',help)+'</div>'+ 
        '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more gc-target-student-more" data-student-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-student="'+esc(id)+'">CONNECT ➤</button></div>';
      c.appendChild(card);
    });
