@@ -4553,7 +4553,7 @@ footer:before{
       <a class="gc-beautiful-home" href="#home">Home</a>
       <a href="#tutors">Find Tutor</a>
       <a href="#studentsDirectory">Find Student</a>
-      <a href="#registrationSection">Learning Request</a>
+      <a href="javascript:void(0)" onclick="GC_CL_V2.open(); return false;">Learning Request</a>
       <a href="#registrationSection">Register</a>
       <a href="javascript:void(0)" onclick="openLoginModal()">Login</a>
     </nav>
@@ -4708,7 +4708,7 @@ footer:before{
   </article>
   <article class="gc-quick-card gc-quick-green">
     <div class="gc-quick-top"><div class="gc-quick-icon"><i class="fa-solid fa-file-lines"></i></div><div><h3>Post Learning Request</h3><p>Tell us what you need. We'll help you find the right match.</p></div></div>
-    <a class="gc-quick-btn" href="#registrationSection" onclick="setTimeout(()=>switchTab('requirement'),0)">Post Request &nbsp;›</a>
+    <a class="gc-quick-btn" href="javascript:void(0)" onclick="GC_CL_V2.open(); return false;">Post Request &nbsp;›</a>
   </article>
   <article class="gc-quick-card gc-quick-blue">
     <div class="gc-quick-top"><div class="gc-quick-icon"><i class="fa-solid fa-users"></i></div><div><h3>Browse Tutors &amp; Students</h3><p>Explore verified profiles and connect easily.</p></div></div>
@@ -5478,29 +5478,31 @@ footer:before{
 <button class="w-full mt-6 bg-brand-blue hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl text-sm transition shadow" onclick="closeContactModal()">CLOSE</button>
 </div>
 </div>
-<!-- LOGIN MODAL -->
-<div class="fixed inset-0 bg-slate-900/75 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 z-[100]" id="loginModal">
-<div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border relative">
-<div class="text-center mb-4">
-<h3 class="text-xl font-black text-brand-dark">Student / Tutor Login</h3>
-<p class="text-[10px] sm:text-xs text-slate-500 mt-1">Enter your WhatsApp / Mobile Number.</p>
-</div>
-<div class="space-y-3" id="otpStep1">
-<select class="w-full border rounded-xl p-3 text-xs sm:text-sm font-bold bg-white" id="loginRoleInput">
-<option value="student">I am a Student</option>
-<option value="tutor">I am a Tutor</option>
-</select>
-<input class="w-full border rounded-xl p-3 text-xs sm:text-sm font-bold" id="loginPhoneInput" placeholder="9876543210" type="tel"/>
-<button class="w-full bg-brand-blue text-white font-bold py-3 rounded-xl text-xs" onclick="sendSimulatedOtp()" type="button">SEND OTP</button>
-</div>
-<div class="space-y-3 hidden" id="otpStep2">
-<p class="text-xs text-center text-slate-600">Code: <span class="font-black text-brand-blue" id="generatedOtpDisplay"></span></p>
-<input class="w-full border rounded-xl p-3 text-center text-sm font-black tracking-widest" id="otpCodeInput" maxlength="4" placeholder="1234" type="text"/>
-<button class="w-full bg-emerald-600 text-white font-bold py-3 rounded-xl text-xs" onclick="verifySimulatedOtp()" type="button">VERIFY &amp; LOGIN</button>
-</div>
+<!-- SECURE STUDENT / TUTOR LOGIN -->
+<div class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[2147483600] flex items-center justify-center hidden p-4" id="loginModal">
+<div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-7 border relative max-h-[92vh] overflow-y-auto">
+<button class="absolute right-4 top-4 text-slate-400 hover:text-red-500 text-xl" onclick="closeLoginModal()" type="button"><i class="fa-solid fa-xmark"></i></button>
+<div class="text-center mb-5 pr-6"><div class="mx-auto w-14 h-14 rounded-2xl bg-blue-100 text-brand-blue flex items-center justify-center text-2xl mb-3"><i class="fa-solid fa-shield-halved"></i></div>
+<h3 class="text-xl sm:text-2xl font-black text-brand-dark" id="gcSecureLoginTitle">Secure Login</h3>
+<p class="text-xs text-slate-500 mt-1">Registered email + password. Passwords are securely handled by Supabase Auth.</p></div>
+<div class="grid grid-cols-2 gap-2 mb-4"><button type="button" id="gcRoleStudent" class="gc-secure-role active" onclick="gcSetLoginRole('student')">STUDENT</button><button type="button" id="gcRoleTutor" class="gc-secure-role" onclick="gcSetLoginRole('tutor')">TUTOR</button></div>
+<form id="gcSecureLoginForm" class="space-y-3" onsubmit="gcSecureLogin(event)">
+<input id="gcSecureEmail" class="w-full border rounded-xl p-3 text-sm font-bold bg-slate-50" autocomplete="email" placeholder="Registered Email Address" required type="email">
+<input id="gcSecurePassword" class="w-full border rounded-xl p-3 text-sm font-bold bg-slate-50" autocomplete="current-password" placeholder="Password" required minlength="8" type="password">
+<button id="gcSecureLoginBtn" class="w-full bg-brand-blue hover:bg-blue-700 text-white font-black py-3.5 rounded-xl text-xs shadow" type="submit">LOGIN SECURELY</button>
+</form>
+<div class="flex justify-between gap-3 mt-4 text-[11px] font-black"><button type="button" class="text-brand-blue hover:underline" onclick="gcForgotPassword()">FORGOT PASSWORD?</button><button type="button" class="text-emerald-700 hover:underline" onclick="gcShowSignup()">FIRST TIME / CREATE PASSWORD</button></div>
+<div id="gcSecureStatus" class="mt-4 hidden text-xs font-bold rounded-xl p-3"></div>
 <button class="w-full mt-4 text-slate-400 text-xs font-bold" onclick="closeLoginModal()" type="button">CANCEL</button>
-</div>
-</div>
+</div></div>
+<!-- SECURE PASSWORD RESET MODAL -->
+<div class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[2147483700] flex items-center justify-center hidden p-4" id="gcResetPasswordModal">
+<div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-7 border">
+<div class="text-center mb-5"><div class="mx-auto w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl mb-3"><i class="fa-solid fa-key"></i></div><h3 class="text-xl font-black text-brand-dark" id="gcResetTitle">Reset Password</h3><p class="text-xs text-slate-500 mt-1" id="gcResetHelp">Use the secure email link to create a new password.</p></div>
+<div id="gcForgotBox" class="space-y-3"><input id="gcResetEmail" class="w-full border rounded-xl p-3 text-sm font-bold bg-slate-50" autocomplete="email" placeholder="Registered Email Address" type="email"><button class="w-full bg-brand-blue text-white font-black py-3.5 rounded-xl text-xs" onclick="gcSendResetEmail()" type="button">SEND SECURE RESET EMAIL</button></div>
+<form id="gcNewPasswordBox" class="space-y-3 hidden" onsubmit="gcSetNewPassword(event)"><input id="gcNewPassword" class="w-full border rounded-xl p-3 text-sm font-bold bg-slate-50" autocomplete="new-password" minlength="8" placeholder="New Password (8+ characters)" required type="password"><input id="gcNewPassword2" class="w-full border rounded-xl p-3 text-sm font-bold bg-slate-50" autocomplete="new-password" minlength="8" placeholder="Confirm New Password" required type="password"><button class="w-full bg-emerald-600 text-white font-black py-3.5 rounded-xl text-xs" type="submit">SAVE NEW PASSWORD</button></form>
+<div id="gcResetStatus" class="mt-4 hidden text-xs font-bold rounded-xl p-3"></div><button class="w-full mt-4 text-slate-400 text-xs font-bold" onclick="gcCloseReset()" type="button">CLOSE</button>
+</div></div>
 <!-- UPI QR Code Modal -->
 <div class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 z-[100]" id="upiQrModal">
 <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border text-center relative">
@@ -10101,7 +10103,7 @@ body {
   try {
     if (window.supabase && GC_SUPABASE_ANON_KEY && !GC_SUPABASE_ANON_KEY.includes('PASTE_YOUR')) {
       gcSupabase = window.supabase.createClient(GC_SUPABASE_URL, GC_SUPABASE_ANON_KEY, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
       });
       window.gcSupabase = gcSupabase;
       gcCloudEnabled = true;
@@ -11701,7 +11703,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
       var card=document.createElement('article');card.className='gc-target-card gc-target-tutor';
       card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✔ VERIFIED TUTOR':'👤 TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photoMarkup(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified?(tick()?'<img class="gc-target-verified" src="'+esc(tick())+'" alt="Verified">':'<span class="gc-target-verified">✓</span>'):'')+'</h3><div class="gc-target-subtitle">'+esc(val(t.qualification||t.title||t.subject,'Tutor'))+'</div></div></div>'+ 
-      '<div class="gc-target-info">'+info('📚','Subjects',subject)+info('💼','Experience',exp)+info('₹','Rate / Hour',rate)+info('⭐','Rating',rating+(reviews?' ('+reviews+')':''))+info('👥','Students Taught',students)+info('💻','Mode',mode)+info('📍','Location',loc)+info('🪙','Coins','0')+info('◷','Availability',availability)+info('🗓','Teaching Since',since)+'</div>'+ 
+      '<div class="gc-target-info">'+info('📚','Subjects',subject)+info('💼','Experience',exp)+info('₹','Rate / Hour',rate)+info('⭐','Rating',rating+(reviews?' ('+reviews+')':''))+info('👥','Students Taught',students)+info('💻','Mode',mode)+info('📍','Location',loc)+info('🪙','Coins','0')+info('📅','Availability',availability)+info('🗓','Teaching Since',since)+'</div>'+ 
       '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-gc-more-tutor="'+esc(id)+'">MORE ✚ 👤</button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
       c.appendChild(card);
     });
@@ -11717,7 +11719,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
       var card=document.createElement('article');card.className='gc-target-card gc-target-student';
       card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">🎓 STUDENT</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photoMarkup(s,name,true)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span></h3><div class="gc-target-subtitle">'+esc(edu)+'</div></div></div>'+ 
-      '<div class="gc-target-info">'+info('🎓','Education',edu)+info('🗓','Year / Sem',year)+info('🏫','College',college)+info('📊','CGPA',cgpa)+info('🎯','Looking For',req)+info('💻','Mode',mode)+info('📍','Location',loc)+info('🪙','Coins','0')+info('◷','Availability',availability)+info('🛡','Helpline Plan',help)+'</div>'+ 
+      '<div class="gc-target-info">'+info('🎓','Education',edu)+info('🗓','Year / Sem',year)+info('🏫','College',college)+info('📊','CGPA',cgpa)+info('🎯','Looking For',req)+info('💻','Mode',mode)+info('📍','Location',loc)+info('🪙','Coins','0')+info('📅','Availability',availability)+info('🛡','Helpline Plan',help)+'</div>'+ 
       '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-gc-more-student="'+esc(id)+'">MORE ✚ 👤</button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-student="'+esc(id)+'">CONNECT ➤</button></div>';
       c.appendChild(card);
     });
@@ -12165,14 +12167,8 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&
 const clean=v=>String(v??'').trim();
 function hash6(v){let h=2166136261>>>0;for(const ch of String(v??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return h.toString(36).toUpperCase().padStart(6,'0').slice(-6)}
 function publicId(id,role){return 'GC-'+(role==='student'?'S':'T')+'-'+hash6(id)}
-async function balances(ids){const s=S();if(!s||!ids.length)return{};const unique=[...new Set(ids.map(String).filter(Boolean))],map={};
- try{const q=await s.rpc('gc_public_profile_coin_balances',{p_profile_ids:unique});if(!q.error)(q.data||[]).forEach(x=>{const id=String(x.profile_id||'');if(id)map[id]=Number(x.balance||0)})}catch(e){}
- let missing=unique.filter(id=>map[id]===undefined);
- if(missing.length){try{const q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',missing);if(!q.error)(q.data||[]).forEach(x=>map[String(x.profile_id)]=Number(x.balance||0))}catch(e){}}
- missing=unique.filter(id=>map[id]===undefined);
- for(const table of ['tutor_profiles','student_profiles']){if(!missing.length)break;try{const q=await s.from(table).select('id,user_id').in('id',missing);if(q.error)continue;const rows=q.data||[],uids=rows.map(x=>String(x.user_id||'')).filter(Boolean);if(!uids.length)continue;const w=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',uids);if(w.error)continue;const wm=Object.fromEntries((w.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]));rows.forEach(x=>{const id=String(x.id||''),uid=String(x.user_id||'');if(wm[uid]!==undefined)map[id]=wm[uid]})}catch(e){}}
- return map}
-async function balance(id){const m=await balances([id]);return Number(m[String(id)]||0)}
+async function balance(id){const s=S();if(!s||!id)return 0;try{const q=await s.from('gc_coin_wallets').select('balance').eq('profile_id',String(id)).maybeSingle();return Number(q.data?.balance||0)}catch(e){return 0}}
+async function balances(ids){const s=S();if(!s||!ids.length)return{};try{const q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',[...new Set(ids.map(String))]);if(q.error)throw q.error;return Object.fromEntries((q.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]))}catch(e){return{}}}
 function cardMeta(c){
  let role=c.classList.contains('gc-target-student')||c.classList.contains('gc-beautiful-student')||c.classList.contains('gc-new-student-card')||/student/i.test(c.className)?'student':'tutor';
  let id=c.dataset.studentId||c.dataset.tutorId||'';
@@ -12182,20 +12178,13 @@ function cardMeta(c){
 }
 function publicIdBadge(c,pid){let h=c.querySelector('.gc-auth-public-id');if(!h){const host=c.querySelector('.gc-target-name,.gc-clean-name,.gc-beautiful-name,.gc-new-name,h3,h4');if(host){h=document.createElement('span');h.className='gc-auth-public-id';host.appendChild(h)}}if(h)h.textContent=pid}
 function labelOf(box){return (box.querySelector('b,small,strong')?.textContent||'').trim().replace(/^📍\s*/,'').toUpperCase()}
-function setBoxValue(box,label,value){const lab=box.querySelector('b,small');if(lab)lab.textContent=label;const icon=box.querySelector('.gc-target-icon,.gc-info-icon');if(icon){icon.innerHTML='<span class="gc-dollar-coin-icon" aria-hidden="true"></span>';icon.classList.add('gc-golden-coin-icon');}let val=box.querySelector('.gc-coin-value');if(!val){val=[...box.querySelectorAll('span,strong')].find(x=>!x.classList.contains('gc-target-icon')&&!x.classList.contains('gc-info-icon'))}if(val){val.classList.add('gc-coin-value');val.textContent=Number(value||0).toLocaleString('en-IN')+' COINS'}}
+function setBoxValue(box,label,value){const lab=box.querySelector('b,small');if(lab)lab.textContent=label;const icon=box.querySelector('.gc-target-icon,.gc-info-icon');if(icon){icon.innerHTML='<span class="gc-dollar-coin-icon" aria-hidden="true">🪙</span>';icon.classList.add('gc-golden-coin-icon');}let val=box.querySelector('.gc-coin-value');if(!val){val=[...box.querySelectorAll('span,strong')].find(x=>!x.classList.contains('gc-target-icon')&&!x.classList.contains('gc-info-icon'))}if(val){val.classList.add('gc-coin-value');val.textContent=Number(value||0).toLocaleString('en-IN')+' COINS'}}
 function coinBox(c){
  const fields=[...c.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box')];
  // User requested: remove Languages field and use that exact slot for Coins. Location remains untouched.
  let box=fields.find(x=>/^LANGUAGES$/i.test(labelOf(x)));
  if(!box) box=fields.find(x=>/COINS/i.test(labelOf(x)) && !/LOCATION|ADDRESS/i.test(labelOf(x)));
- if(!box){
-   const host=c.querySelector('.gc-target-info,.gc-info-grid');
-   if(!host)return null;
-   box=document.createElement('div');
-   box.className='gc-target-info-box gc-auth-coin-field';
-   box.innerHTML='<span class="gc-target-icon gc-final-coin-icon" aria-hidden="true"><span class="gc-golden-coin-icon gc-dollar-coin-icon"></span></span><div class="gc-target-info-text"><b>COINS</b><span class="gc-coin-value">0 COINS</span></div>';
-   host.appendChild(box);
- }
+ if(!box)return null;
  box.classList.add('gc-auth-coin-field');
  return box;
 }
@@ -12214,12 +12203,14 @@ async function paintDashboard(p){
 }
 function hookDashboard(){const old=window.renderUserDashboard;if(typeof old!=='function'||old.__gcAuthHook)return;const f=function(p){const r=old.apply(this,arguments);window.__gcAuthProfile=p;setTimeout(()=>paintDashboard(p),50);return r};f.__gcAuthHook=true;window.renderUserDashboard=f}
 async function loadPeople(q,kind){
- const s=S();if(!s||!q)return[];let out=[];
+ const s=S();if(!s||!q)return[];let out=[];let profileMap={};
+ try{const pr=await s.from('profiles').select('id,email,phone,role,full_name').limit(5000);if(!pr.error)(pr.data||[]).forEach(x=>profileMap[String(x.id)] = x)}catch(_){ }
  async function one(table,role){if(kind!=='all'&&kind!==role)return;let r=await s.from(table).select('*').limit(3000);if(r.error){console.warn(table,r.error);return}for(const x of (r.data||[])){
    if(x.is_illustrative===true)continue;
-   const id=String(x.id||'');if(!id)continue;const sid=publicId(id,role);
-   const vals=Object.entries(x).map(([k,v])=>String(v??'')).join(' ')+' '+sid;
-   if(vals.toLowerCase().includes(q))out.push({...x,__role:role,__id:id,__sid:sid});
+   const id=String(x.id||'');if(!id)continue;const sid=publicId(id,role);const prof=profileMap[String(x.user_id||'')]||{};
+   const merged={...x,email:x.email||prof.email||'',phone:x.phone||prof.phone||'',__role:role,__id:id,__sid:sid};
+   const vals=Object.entries(merged).map(([k,v])=>String(v??'')).join(' ')+' '+sid;
+   if(vals.toLowerCase().includes(q))out.push(merged);
  }}
  await Promise.all([one('tutor_profiles','tutor'),one('student_profiles','student')]);return out.slice(0,50);
 }
@@ -12228,15 +12219,15 @@ function adminPanel(){
  const dash=document.getElementById('staffAdminDashboard');if(!dash)return;let panel=document.getElementById('gcAuthAdminCoins');
  if(!panel){panel=document.createElement('section');panel.id='gcAuthAdminCoins';panel.className='gc-auth-admin';dash.prepend(panel)}
  if(panel.dataset.ready==='1')return;
- panel.dataset.ready='1';panel.innerHTML='<h3>🪙 GURU COINS — ADMIN ACCOUNTABILITY & CONTROL</h3><div class="gc-auth-admin-sub">Search registered Tutor/Student by short ID, full ID, name, mobile or email. Manage balance with a mandatory reason. Every change is permanently logged.</div><div class="gc-auth-admin-search"><input id="gcAuthSearch" autocomplete="off" placeholder="Search Name / Mobile / Short ID / Email"><select id="gcAuthKind"><option value="all">Tutor + Student</option><option value="tutor">Tutor</option><option value="student">Student</option></select><button type="button" class="gc-auth-admin-btn" id="gcAuthSearchBtn">SEARCH</button></div><div id="gcAuthResults" class="gc-auth-results"></div><div id="gcAuthSelected"></div><div class="gc-auth-master-statement"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><h4 style="margin:0;font-weight:950">🧾 MASTER COIN HISTORY</h4><div class="gc-auth-admin-sub">Complete Tutor + Student ledger export.</div></div><button type="button" class="gc-download-btn" id="gcAdminMasterDownload">⬇ DOWNLOAD MASTER HISTORY</button></div><div id="gcAdminMasterStatus" class="gc-auth-admin-sub" style="margin-top:8px"></div></div>';
+ panel.dataset.ready='1';panel.innerHTML='<h3>🪙 GURU COINS — ADMIN ACCOUNTABILITY & CONTROL</h3><div class="gc-auth-admin-sub">Search registered Tutor/Student by short ID, full ID, name, mobile or email. Manage balance with a mandatory reason. Every change is permanently logged.</div><div class="gc-auth-admin-search"><input id="gcAuthSearch" autocomplete="off" placeholder="Search Name / Mobile / Short ID / Email"><select id="gcAuthKind"><option value="all">Tutor + Student</option><option value="tutor">Tutor</option><option value="student">Student</option></select><button type="button" class="gc-auth-admin-btn" id="gcAuthSearchBtn">SEARCH</button></div><div id="gcAuthResults" class="gc-auth-results"></div><div id="gcAuthSelected"></div><div class="gc-auth-master-statement"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><h4 style="margin:0;font-weight:950">🧾 MASTER COIN HISTORY</h4><div class="gc-auth-admin-sub">Complete Tutor + Student ledger export.</div></div><button type="button" class="gc-pdf-btn blue" id="gcAdminMasterDownload">⬇ DOWNLOAD MASTER PDF</button></div><div id="gcAdminMasterStatus" class="gc-auth-admin-sub" style="margin-top:8px"></div></div>';
  const input=panel.querySelector('#gcAuthSearch');const btn=panel.querySelector('#gcAuthSearchBtn');btn.onclick=doSearch;input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();doSearch()}});
   panel.querySelector('#gcAdminMasterDownload')?.addEventListener('click',downloadAdminMaster);
  try{S()?.from('gc_learning_requests').select('*').order('created_at',{ascending:false}).limit(500).then(function(q){if(!q.error)window.__gcLearningRequestsCache=q.data||[]}).catch(function(){})}catch(e){}
 }
-async function downloadAdminMaster(){const s=S();if(!s)return alert('Supabase is not connected.');try{if(!window.__gcLearningRequestsCache){const lr=await s.from('gc_learning_requests').select('*').order('created_at',{ascending:false}).limit(500);if(!lr.error)window.__gcLearningRequestsCache=lr.data||[]}const q=await s.from('gc_coin_ledger').select('*').order('created_at',{ascending:false}).limit(5000);if(q.error)throw q.error;GC_downloadCoinRows(q.data||[],'GURU_CONNECT_ADMIN_MASTER_COIN_HISTORY.csv','GURU CONNECT — ADMIN MASTER COIN HISTORY',window.__gcLearningRequestsCache||[]);const st=document.getElementById('gcAdminMasterStatus');if(st)st.textContent=`Downloaded ${(q.data||[]).length} transaction(s).`}catch(e){alert('Could not download master history: '+(e.message||e))}}
+async function downloadAdminMaster(){const s=S();if(!s)return alert('Supabase is not connected.');try{if(!window.__gcLearningRequestsCache){const lr=await s.from('gc_learning_requests').select('*').order('created_at',{ascending:false}).limit(500);if(!lr.error)window.__gcLearningRequestsCache=lr.data||[]}const q=await s.from('gc_coin_ledger').select('*').order('created_at',{ascending:false}).limit(5000);if(q.error)throw q.error;window.GC_COIN_ACCOUNTABILITY?.masterPdf?.();const st=document.getElementById('gcAdminMasterStatus');if(st)st.textContent=`Preparing PDF for ${(q.data||[]).length} transaction(s)…`}catch(e){alert('Could not download master history: '+(e.message||e))}}
 async function doSearch(){const input=document.getElementById('gcAuthSearch'),out=document.getElementById('gcAuthResults');if(!input||!out)return;const q=clean(input.value).toLowerCase();if(!q){out.innerHTML='<div class="gc-auth-admin-sub">Type a name, mobile number or ID to search.</div>';return}out.innerHTML='<div class="gc-auth-admin-sub">Searching registered profiles…</div>';const rows=await loadPeople(q,document.getElementById('gcAuthKind')?.value||'all');window.__gcAuthRows=rows;if(!rows.length){out.innerHTML='<div class="gc-auth-admin-sub">No registered Tutor/Student matched this search.</div>';return}out.innerHTML=rows.map((x,i)=>'<div class="gc-auth-person"><div><div class="gc-auth-person-name">'+esc(x.name||x.full_name||'Unnamed')+' <span class="gc-auth-public-id">'+esc(x.__sid)+'</span></div><div class="gc-auth-person-meta">'+x.__role.toUpperCase()+' • '+esc(x.phone||x.mobile||x.mobile_number||x.email||'No contact')+'</div></div><button type="button" class="gc-auth-select" data-select="'+i+'">MANAGE COINS</button></div>').join('');out.querySelectorAll('[data-select]').forEach(b=>b.onclick=()=>selectPerson(Number(b.dataset.select)))}
-async function selectPerson(i){const p=window.__gcAuthRows?.[i];if(!p)return;const host=document.getElementById('gcAuthSelected');if(!host)return;const b=await balance(p.__id);const rows=await ledger(p.__id);host.innerHTML='<div class="gc-auth-selected"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><div class="gc-auth-person-name">'+esc(p.name||'Unnamed')+' <span class="gc-auth-public-id">'+esc(p.__sid)+'</span></div><div class="gc-auth-person-meta">'+p.__role.toUpperCase()+' • Mobile: '+esc(p.phone||p.mobile||p.mobile_number||'—')+'</div></div><div><div class="gc-auth-person-meta">CURRENT COINS</div><div id="gcAuthBalance" class="gc-auth-balance">🪙 '+Number(b).toLocaleString('en-IN')+'</div></div></div><div class="gc-auth-adjust"><input id="gcAuthAmount" type="number" step="1" placeholder="+100 / -100"><input id="gcAuthReason" placeholder="Mandatory reason"><button type="button" class="gc-auth-admin-btn" id="gcAuthApply">UPDATE COINS</button></div><div id="gcAuthStatus" class="gc-auth-admin-sub"></div><div class="gc-auth-ledger"><div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button type="button" class="gc-download-btn" id="gcAdminDownloadHistory">⬇ DOWNLOAD THIS ACCOUNT</button></div>'+(rows.length?'<table><thead><tr><th>Time</th><th>Type</th><th>Amount</th><th>Reason</th><th>Learning Request ID</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>'+esc(r.created_at||'')+'</td><td>'+esc(r.transaction_type||r.type||'')+'</td><td>'+Number(r.amount||0)+' 🪙</td><td>'+esc(r.reason||'')+'</td><td>'+esc(window.GC_learningRequestId?window.GC_learningRequestId(r,window.__gcLearningRequestsCache||[]):'—')+'</td></tr>').join('')+'</tbody></table>':'<div class="gc-auth-admin-sub">No coin transactions yet.</div>')+'</div></div>';
- document.getElementById('gcAdminDownloadHistory')?.addEventListener('click',async()=>{try{const r=await ledger(p.__id);GC_downloadCoinRows(r,`GURU_CONNECT_${p.__role.toUpperCase()}_${p.__sid}_COIN_HISTORY.csv`,`GURU CONNECT — ${p.name||'Account'} COIN HISTORY`,window.__gcLearningRequestsCache||[])}catch(e){alert('Could not download history: '+(e.message||e))}});
+async function selectPerson(i){const p=window.__gcAuthRows?.[i];if(!p)return;const host=document.getElementById('gcAuthSelected');if(!host)return;const b=await balance(p.__id);const rows=await ledger(p.__id);host.innerHTML='<div class="gc-auth-selected"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><div class="gc-auth-person-name">'+esc(p.name||'Unnamed')+' <span class="gc-auth-public-id">'+esc(p.__sid)+'</span></div><div class="gc-auth-person-meta">'+p.__role.toUpperCase()+' • Mobile: '+esc(p.phone||p.mobile||p.mobile_number||'—')+'</div></div><div><div class="gc-auth-person-meta">CURRENT COINS</div><div id="gcAuthBalance" class="gc-auth-balance">🪙 '+Number(b).toLocaleString('en-IN')+'</div></div></div><div class="gc-auth-adjust"><input id="gcAuthAmount" type="number" step="1" placeholder="+100 / -100"><input id="gcAuthReason" placeholder="Mandatory reason"><button type="button" class="gc-auth-admin-btn" id="gcAuthApply">UPDATE COINS</button></div><div id="gcAuthStatus" class="gc-auth-admin-sub"></div><div class="gc-auth-ledger"><div style="display:flex;justify-content:flex-end;margin-bottom:10px"><button type="button" class="gc-pdf-btn blue" id="gcAdminDownloadHistory">⬇ DOWNLOAD ACCOUNT PDF</button></div>'+(rows.length?'<table><thead><tr><th>Time</th><th>Type</th><th>Amount</th><th>Reason</th><th>Learning Request ID</th></tr></thead><tbody>'+rows.map(r=>'<tr><td>'+esc(r.created_at||'')+'</td><td>'+esc(r.transaction_type||r.type||'')+'</td><td>'+Number(r.amount||0)+' 🪙</td><td>'+esc(r.reason||'')+'</td><td>'+esc(window.GC_learningRequestId?window.GC_learningRequestId(r,window.__gcLearningRequestsCache||[]):'—')+'</td></tr>').join('')+'</tbody></table>':'<div class="gc-auth-admin-sub">No coin transactions yet.</div>')+'</div></div>';
+ document.getElementById('gcAdminDownloadHistory')?.addEventListener('click',async()=>{try{const r=await ledger(p.__id);window.GC_COIN_ACCOUNTABILITY?.accountPdf?.(p.__id,p.__role,p.name)}catch(e){alert('Could not download history: '+(e.message||e))}});
  document.getElementById('gcAuthApply').onclick=async()=>{const amount=Number(document.getElementById('gcAuthAmount').value),reason=clean(document.getElementById('gcAuthReason').value),st=document.getElementById('gcAuthStatus');if(!Number.isFinite(amount)||amount===0)return alert('Enter a non-zero coin amount.');if(!reason)return alert('Reason is mandatory.');st.textContent='Updating secure coin ledger…';try{const r=await S().rpc('gc_staff_adjust_coins',{p_profile_id:p.__id,p_role:p.__role,p_amount:amount,p_reason:reason});if(r.error)throw r.error;st.textContent='Coins updated successfully and permanently logged.';await selectPerson(i);await doSearch();paintCards()}catch(e){st.textContent='';alert('Coin update failed: '+(e.message||e))}};
 }
 function hookStatus(name,amount,type,reason){const old=window[name];if(typeof old!=='function'||old.__gcCoinHook)return;const f=async function(id){try{const r=await S()?.rpc('gc_staff_charge_tutor_service',{p_tutor_id:String(id),p_amount:amount,p_transaction_type:type,p_reason:reason});if(r?.error)throw r.error;return await old.apply(this,arguments)}catch(e){alert('Action not completed: '+(e.message||e));return null}};f.__gcCoinHook=true;window[name]=f}
@@ -12275,10 +12266,10 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
   display:inline-flex!important;align-items:center!important;justify-content:center!important;
   width:22px!important;height:22px!important;border-radius:50%!important;
   color:#6E4300!important;font-family:Arial,Helvetica,sans-serif!important;
-  font-size:0!important;font-weight:1000!important;line-height:1!important;
+  font-size:16px!important;font-weight:1000!important;line-height:1!important;
   text-shadow:0 1px 0 rgba(255,232,150,.75)!important;
 }
-.gc-auth-coin-field .gc-dollar-coin-icon:after{content:'';display:block;width:8px;height:8px;border:1px solid rgba(110,67,0,.7);border-radius:50%;box-shadow:0 0 0 1px rgba(255,235,150,.35) inset}
+.gc-auth-coin-field .gc-dollar-coin-icon>span{transform:translateY(-.5px)!important}
 @media(max-width:640px){
  .gc-auth-coin-field .gc-golden-coin-icon{width:24px!important;min-width:24px!important;height:24px!important}
  .gc-auth-coin-field .gc-dollar-coin-icon{width:19px!important;height:19px!important;font-size:14px!important}
@@ -12297,6 +12288,10 @@ window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
 
 <!-- GURU CONNECT FINAL COINS LEDGER + PDF ACCOUNTABILITY PATCH -->
 <style id="gc-coins-final-ledger-pdf-css">
+.gc-final-coin-box{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;min-height:62px!important;padding:12px 14px!important;border:1px solid rgba(37,99,235,.22)!important;border-radius:14px!important;background:linear-gradient(135deg,#fffdf0,#fff)!important;box-sizing:border-box!important;grid-column:auto!important}
+.gc-final-coin-box .gc-final-coin-icon{font-size:25px!important;line-height:1!important;flex:0 0 auto!important}
+.gc-final-coin-box small{display:block!important;font-size:9px!important;font-weight:950!important;color:#64748b!important;text-transform:uppercase!important;letter-spacing:.08em!important}
+.gc-final-coin-box strong{display:block!important;margin-top:3px!important;font-size:16px!important;font-weight:1000!important;color:#123b8f!important;white-space:nowrap!important}
 .gc-auth-master-statement{margin-top:16px!important;padding:16px!important;border:1px solid #bfdbfe!important;border-radius:16px!important;background:linear-gradient(135deg,#f8fbff,#fff)!important}
 .gc-master-tools{display:flex!important;gap:8px!important;flex-wrap:wrap!important;margin-top:12px!important}
 .gc-master-table-wrap{margin-top:12px!important;overflow:auto!important;max-height:520px!important;border:1px solid #e2e8f0!important;border-radius:12px!important;background:#fff!important}
@@ -12328,34 +12323,40 @@ async function peopleMap(){
  if(t.error)console.warn('Tutor profile map:',t.error); if(st.error)console.warn('Student profile map:',st.error);
  ;(t.data||[]).forEach(x=>m[String(x.id)]={...x,__role:'tutor'});(st.data||[]).forEach(x=>m[String(x.id)]={...x,__role:'student'}); return m;
 }
-function escPdf(v){return String(v??'').replace(/[\\\n\r]/g,' ').slice(0,150)}
-function loadJsPdf(){return new Promise((resolve,reject)=>{if(window.jspdf?.jsPDF)return resolve(window.jspdf.jsPDF);let sc=document.createElement('script');sc.src='https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js';sc.onload=()=>window.jspdf?.jsPDF?resolve(window.jspdf.jsPDF):reject(new Error('PDF engine unavailable'));sc.onerror=()=>reject(new Error('Could not load PDF engine.'));document.head.appendChild(sc)})}
-function pdfRows(doc,rows,title,subtitle){
- const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();let y=18;
- const page=()=>{doc.addPage();y=18};
- doc.setFontSize(15);doc.setFont(undefined,'bold');doc.text(title,12,y);y+=7;doc.setFontSize(8);doc.setFont(undefined,'normal');doc.text(subtitle,12,y);y+=7;
- const heads=['DATE / TIME','USER','ROLE','ID','TYPE','AMOUNT','REASON','REQUEST ID','TXN ID'];
- const widths=[24,25,15,22,24,16,38,28,27];let x=6;
- function header(){x=6;doc.setFontSize(6.5);doc.setFont(undefined,'bold');heads.forEach((h,i)=>{doc.text(h,x,y);x+=widths[i]});y+=5;doc.line(6,y,W-6,y);y+=4;doc.setFont(undefined,'normal')}
- header();
- rows.forEach(r=>{if(y>H-12){page();header()} const vals=[r.date,r.user,r.role,r.pid,r.type,r.amount,r.reason,r.req,r.txn];x=6;doc.setFontSize(6.2);vals.forEach((v,i)=>{let txt=escPdf(v);let max=Math.max(8,widths[i]-1);let lines=doc.splitTextToSize(txt,max);doc.text(lines[0]||'',x,y);x+=widths[i]});y+=5;});
- doc.setFontSize(7);doc.text('Generated by GURU CONNECT • Coin Accountability Ledger',12,H-5);
+function escPdf(v){return String(v??'').replace(/[\\\n\r]/g,' ').slice(0,220)}
+/* Offline PDF writer: no CDN, no external PDF engine, works even when jsPDF/CDNs are blocked. */
+function pdfAscii(v){return String(v??'').normalize('NFKD').replace(/[^\x20-\x7E]/g,'?').replace(/[()\\]/g,m=>'\\'+m).replace(/\r?\n/g,' ')}
+function makePdf(rows,title,subtitle,filename){
+  const W=842,H=595, margin=24, lineH=11, col=[82,92,48,72,78,60,128,105,105];
+  const heads=['DATE / TIME','USER','ROLE','ID','TYPE','AMOUNT','REASON','REQUEST ID','TXN ID'];
+  const wrap=(txt,max)=>{txt=pdfAscii(txt);let out=[],cur='';for(const word of txt.split(/\s+/)){if((cur?cur+' ':'') .length+word.length<=max)cur=(cur?cur+' ':'')+word;else{if(cur)out.push(cur);cur=word.slice(0,max)} }if(cur||!out.length)out.push(cur);return out};
+  let pages=[], ops=[], y=H-margin; const newPage=()=>{if(ops.length)pages.push(ops);ops=[];y=H-margin};
+  const text=(x,yy,size,t,bold=false)=>ops.push({x,y:yy,size,t:pdfAscii(t),bold});
+  const header=()=>{text(margin,y,18,title,true);y-=22;text(margin,y,8,subtitle,false);y-=18;let x=margin;heads.forEach((h,i)=>{text(x,y,7,h,true);x+=col[i]});y-=12;ops.push({line:[margin,y,W-margin,y]});y-=12};
+  header();
+  for(const r of rows){const vals=[r.date,r.user,r.role,r.pid,r.type,r.amount,r.reason,r.req,r.txn];const lines=vals.map((v,i)=>wrap(v,Math.max(8,Math.floor(col[i]/4.2))));const rh=Math.max(1,...lines.map(a=>a.length))*lineH;if(y-rh<margin+20){newPage();header()};let x=margin;for(let i=0;i<vals.length;i++){for(let j=0;j<lines[i].length;j++)text(x,y-j*lineH,6.2,lines[i][j],false);x+=col[i]}y-=rh;ops.push({line:[margin,y,W-margin,y]});y-=5;}
+  if(!rows.length){text(margin,y,9,'No coin transactions found.',false)}
+  if(ops.length)pages.push(ops);
+  const objs=[]; const pageIds=[], contentIds=[]; const add=o=>{objs.push(o);return objs.length};
+  const fontR=add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>'); const fontB=add('<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>');
+  pages.forEach(pg=>{let stream='BT\n';for(const op of pg){if(op.text){stream+=`/${op.bold?'F2':'F1'} ${op.size} Tf 1 0 0 1 ${op.x} ${op.y} Tm (${op.t}) Tj\n`}else if(op.line){stream+=`${op.line[0]} ${op.line[1]} m ${op.line[2]} ${op.line[3]} l S\n`}}stream+='ET\n';const cid=add(`<< /Length ${stream.length} >>\nstream\n${stream}endstream`);const pid=add(`<< /Type /Page /Parent PAGES /MediaBox [0 0 ${W} ${H}] /Resources << /Font << /F1 ${fontR} 0 R /F2 ${fontB} 0 R >> >> /Contents ${cid} 0 R >>`);contentIds.push(cid);pageIds.push(pid)});
+  const pagesId=add(`<< /Type /Pages /Count ${pageIds.length} /Kids [${pageIds.map(id=>id+' 0 R').join(' ')}] >>`);const catalogId=add(`<< /Type /Catalog /Pages ${pagesId} 0 R >>`);let pdf='%PDF-1.4\n%GC\n',offs=[0];for(let i=0;i<objs.length;i++){offs[i+1]=pdf.length;pdf+=(i+1)+' 0 obj\n'+objs[i].replace('PAGES',pagesId+' 0 R')+'\nendobj\n'}const xref=pdf.length;pdf+='xref\n0 '+(objs.length+1)+'\n0000000000 65535 f \n';for(let i=1;i<offs.length;i++)pdf+=String(offs[i]).padStart(10,'0')+' 00000 n \n';pdf+=`trailer\n<< /Size ${objs.length+1} /Root ${catalogId} 0 R >>\nstartxref\n${xref}\n%%EOF`;
+  const blob=new Blob([pdf],{type:'application/pdf'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),2000);return rows.length;
 }
 async function buildMasterPdf(){
- const [rows,map,JsPDF]=await Promise.all([allRows(),peopleMap(),loadJsPdf()]);
+ const [rows,map]=await Promise.all([allRows(),peopleMap()]);
  const data=rows.map(r=>{const p=map[String(r.profile_id)]||{};const role=p.__role||r.role||'unknown';return {date:r.created_at||'',user:p.name||p.full_name||'Unknown User',role:roleName(role),pid:publicId2(r.profile_id,role),type:r.transaction_type||r.type||'',amount:(Number(r.amount||0)>0?'+':'')+Number(r.amount||0)+' COINS',reason:r.reason||'',req:r.learning_request_id||r.request_id||r.learningRequestId||'—',txn:r.id||''}});
- const doc=new JsPDF({orientation:'landscape',unit:'mm',format:'a4'});pdfRows(doc,data,'GURU CONNECT — ALL-TIME COIN ACCOUNTABILITY','Complete Tutor + Student coin transaction history • '+data.length+' transaction(s)');doc.save('GURU_CONNECT_ALL_TIME_COIN_ACCOUNTABILITY.pdf');return data.length;
+ return makePdf(data,'GURU CONNECT - ALL-TIME COIN ACCOUNTABILITY','Complete Tutor + Student coin transaction history - '+data.length+' transaction(s)','GURU_CONNECT_ALL_TIME_COIN_ACCOUNTABILITY.pdf');
 }
 async function buildAccountPdf(profileId,role,name){
  const s=S();if(!s)throw new Error('Supabase is not connected.');let rows=[],start=0,step=1000;while(true){const q=await s.from('gc_coin_ledger').select('*').eq('profile_id',String(profileId)).order('created_at',{ascending:false}).range(start,start+step-1);if(q.error)throw q.error;rows=rows.concat(q.data||[]);if(!q.data||q.data.length<step)break;start+=step;if(start>100000)break;}
- const JsPDF=await loadJsPdf();const data=rows.map(r=>({date:r.created_at||'',user:name||'Account',role:roleName(role),pid:publicId2(profileId,role),type:r.transaction_type||r.type||'',amount:(Number(r.amount||0)>0?'+':'')+Number(r.amount||0)+' COINS',reason:r.reason||'',req:r.learning_request_id||r.request_id||'—',txn:r.id||''}));const doc=new JsPDF({orientation:'landscape',unit:'mm',format:'a4'});pdfRows(doc,data,'GURU CONNECT — '+roleName(role)+' COIN HISTORY',String(name||'Account')+' • '+publicId2(profileId,role)+' • '+data.length+' transaction(s)');doc.save('GURU_CONNECT_'+roleName(role)+'_'+publicId2(profileId,role)+'_COIN_HISTORY.pdf');return data.length;
+ const data=rows.map(r=>({date:r.created_at||'',user:name||'Account',role:roleName(role),pid:publicId2(profileId,role),type:r.transaction_type||r.type||'',amount:(Number(r.amount||0)>0?'+':'')+Number(r.amount||0)+' COINS',reason:r.reason||'',req:r.learning_request_id||r.request_id||'—',txn:r.id||''}));return makePdf(data,'GURU CONNECT - '+roleName(role)+' COIN HISTORY',String(name||'Account')+' - '+publicId2(profileId,role)+' - '+data.length+' transaction(s)','GURU_CONNECT_'+roleName(role)+'_'+publicId2(profileId,role)+'_COIN_HISTORY.pdf');
 }
 async function renderMaster(){const host=document.getElementById('gcMasterLedgerBody');if(!host)return;host.innerHTML='<div class="gc-auth-admin-sub">Loading complete all-time coin ledger…</div>';try{const [rows,map]=await Promise.all([allRows(),peopleMap()]);window.__gcMasterLedgerRows=rows;window.__gcMasterPeople=map;if(!rows.length){host.innerHTML='<div class="gc-auth-admin-sub">No coin transactions found.</div>';return}host.innerHTML='<div class="gc-master-table-wrap"><table class="gc-master-table"><thead><tr><th>Date / Time</th><th>User</th><th>Role</th><th>GURU CONNECT ID</th><th>Type</th><th>Amount</th><th>Reason</th><th>Learning Request ID</th><th>Transaction ID</th></tr></thead><tbody>'+rows.map(r=>{const p=map[String(r.profile_id)]||{},role=p.__role||r.role||'';const amt=Number(r.amount||0);return '<tr><td>'+E(r.created_at||'')+'</td><td>'+E(p.name||p.full_name||'Unknown User')+'</td><td>'+E(roleName(role))+'</td><td>'+E(publicId2(r.profile_id,role))+'</td><td>'+E(r.transaction_type||r.type||'')+'</td><td class="'+(amt>=0?'gc-master-pos':'gc-master-neg')+'">'+(amt>0?'+':'')+amt+' 🪙</td><td>'+E(r.reason||'')+'</td><td>'+E(r.learning_request_id||r.request_id||'—')+'</td><td>'+E(r.id||'')+'</td></tr>'}).join('')+'</tbody></table></div><div class="gc-auth-admin-sub" style="margin-top:8px">Showing '+rows.length+' all-time transaction(s).</div>'}catch(e){host.innerHTML='<div class="gc-auth-admin-sub">Ledger could not be loaded: '+E(e.message||e)+'</div>'}}
 function ensure(){const panel=document.getElementById('gcAuthAdminCoins');if(!panel)return;if(!panel.querySelector('#gcMasterLedger')){const box=document.createElement('div');box.id='gcMasterLedger';box.className='gc-auth-master-statement';box.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><h4 style="margin:0;font-weight:950">🧾 ALL-TIME COIN ACCOUNTABILITY LEDGER</h4><div class="gc-auth-admin-sub">Every Tutor + Student coin transaction, including staff grants, deductions, service charges and rewards.</div></div><div class="gc-master-tools"><button type="button" class="gc-auth-admin-btn" id="gcMasterRefresh">↻ REFRESH LEDGER</button><button type="button" class="gc-pdf-btn" id="gcMasterPdf">⬇ DOWNLOAD MASTER PDF</button></div></div><div id="gcMasterLedgerStatus" class="gc-auth-admin-sub" style="margin-top:8px"></div><div id="gcMasterLedgerBody"></div>';panel.appendChild(box);box.querySelector('#gcMasterRefresh').onclick=renderMaster;box.querySelector('#gcMasterPdf').onclick=async function(){this.disabled=true;const st=box.querySelector('#gcMasterLedgerStatus');st.textContent='Preparing PDF…';try{const n=await buildMasterPdf();st.textContent='✓ PDF downloaded with '+n+' transaction(s).'}catch(e){st.textContent='';alert('PDF download failed: '+(e.message||e))}finally{this.disabled=false}};renderMaster()}}
 const oldAdmin=window.GC_AUTH_COINS;
 window.GC_COIN_ACCOUNTABILITY={masterPdf:buildMasterPdf,accountPdf:buildAccountPdf,refresh:renderMaster,ensure};
 setInterval(ensure,3500);document.addEventListener('DOMContentLoaded',ensure);window.addEventListener('load',ensure);
-
 })();
 </script>
 
@@ -12479,7 +12480,7 @@ window.GC_PROFILE_COINS_REFRESH=paint;
      const card=document.createElement('article');card.className='gc-target-card gc-target-tutor';card.dataset.tutorId=id;
      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✓ VERIFIED TUTOR':'TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
        '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified&&tick()?'<span class="gc-target-verified"><img src="'+esc(tick())+'" alt="Verified"></span>':'')+'</h3><div class="gc-target-subtitle">'+esc(q)+' · '+esc(subject)+'</div></div></div>'+
-       '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🪙','Coins','0')+box('◷','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
+       '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🪙','Coins','0')+box('📅','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
        '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-tutor-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
      c.appendChild(card);
    });
@@ -12496,7 +12497,7 @@ window.GC_PROFILE_COINS_REFRESH=paint;
      const card=document.createElement('article');card.className='gc-target-card gc-target-student';card.dataset.studentId=id;
      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">🎓 STUDENT</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
        '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(s,name,true)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span></h3><div class="gc-target-subtitle">'+esc(edu)+' · '+esc(stream)+'</div></div></div>'+
-       '<div class="gc-target-info">'+box('🎓','Education',edu)+box('🗓','Year / Sem',year)+box('🏫','College',college)+box('📊','CGPA',cgpa)+box('🎯','Looking For',req)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🪙','Coins','0')+box('◷','Availability',avail)+box('🛡','Helpline Plan',help)+'</div>'+ 
+       '<div class="gc-target-info">'+box('🎓','Education',edu)+box('🗓','Year / Sem',year)+box('🏫','College',college)+box('📊','CGPA',cgpa)+box('🎯','Looking For',req)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🪙','Coins','0')+box('📅','Availability',avail)+box('🛡','Helpline Plan',help)+'</div>'+ 
        '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more gc-target-student-more" data-student-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-student="'+esc(id)+'">CONNECT ➤</button></div>';
      c.appendChild(card);
    });
@@ -13467,7 +13468,7 @@ window.GC_PROFILE_COINS_REFRESH=paint;
 <style id="gc-learning-request-visibility-final">
 .gccl-public-note{padding:12px 14px;border-radius:14px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;font-size:11px;font-weight:800;margin-bottom:12px}.gccl-public-note b{color:#047857}.gccl-cost-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border-radius:999px;background:#dcfce7;color:#166534;font-size:10px;font-weight:950}.gccl-login-banner{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:11px;font-weight:800;margin-bottom:12px}
 </style>
-<div id="gcCLV2" aria-hidden="true"><div class="gccl-shell"><div class="gccl-head"><div><h2>📚 GURU CONNECT — LEARNING REQUESTS</h2><p id="gcCLV2Sub">Public Learning Request Board • Everyone can view • Login required to post or connect</p></div><button class="gccl-close" type="button" onclick="GC_CL_V2.close()">✕</button></div><div class="gccl-body"><div id="gcCLV2Tabs" class="gccl-tabs"></div><div id="gcCLV2Content"></div></div></div></div>
+<div id="gcCLV2" aria-hidden="true"><div class="gccl-shell"><div class="gccl-head"><div><h2>📚 GURU CONNECT — LEARNING REQUESTS</h2><p id="gcCLV2Sub">Visible to Students &amp; Tutors • Login required to post or connect</p></div><button class="gccl-close" type="button" onclick="GC_CL_V2.close()">✕</button></div><div class="gccl-body"><div id="gcCLV2Tabs" class="gccl-tabs"></div><div id="gcCLV2Content"></div></div></div></div>
 <script id="gc-coins-lr-v2-js">
 (function(){
 'use strict';
@@ -13479,30 +13480,9 @@ function role(){let p=profile();return p?.registrationRole||localStorage.getItem
 function pid(p){return String(p?.id||p?.studentId||p?.tutorId||'')}
 function open(){state.profile=profile();state.role=role(); state.tab=state.role==='staff'?'admin':'requests'; $('gcCLV2').classList.add('gc-show');$('gcCLV2').setAttribute('aria-hidden','false');render();load()}
 function close(){$('gcCLV2').classList.remove('gc-show');$('gcCLV2').setAttribute('aria-hidden','true')}
-function tabs(){let a=[['requests','📚 LEARNING REQUESTS']]; if(state.role==='student')a.push(['post','➕ POST REQUEST']); if(state.role==='student'||state.role==='tutor')a.push(['mycoins','🪙 MY COINS']); if(state.role==='staff')a.push(['admin','🛡️ COINS + ACCOUNTABILITY']); if(!state.profile)a.push(['login','🔐 LOGIN TO POST']); $('gcCLV2Tabs').innerHTML=a.map(x=>`<button class="gccl-tab ${state.tab===x[0]?'active':''}" onclick="GC_CL_V2.tab('${x[0]}')">${x[1]}</button>`).join('')}
-function render(){
-  tabs(); let c=$('gcCLV2Content'); if(!c)return;
-  if(state.tab==='post') c.innerHTML=postView();
-  else if(state.tab==='mycoins') c.innerHTML=coinsView();
-  else if(state.tab==='admin') c.innerHTML=adminView();
-  else if(state.tab==='login') c.innerHTML=`<div class="gccl-card" style="text-align:center"><h3>Login Required to Post a Learning Request</h3><p class="gccl-muted">The Learning Request board is visible to everyone, but only a registered and logged-in Student can post a request.</p><button class="gccl-btn" onclick="openStudentLoginModal()">LOGIN NOW</button></div>`;
-  else c.innerHTML=`<div class="gccl-public-note">📚 <b>Learning Request Board:</b> Students and Tutors can view requests here. <span class="gccl-cost-badge">🪙 100 COINS / REQUEST</span> ${!state.profile?'Login is required only to post or connect.':''}</div>`+requestsView();
-}
-function requestsView(){
-  let isTutor=state.role==='tutor',isStaff=state.role==='staff',isStudent=state.role==='student';
-  let rows=state.requests||[];
-  if(!isStaff&&isStudent){rows=rows.filter(r=>String(r.student_id||r.studentId||'')===pid(state.profile));}
-  if(!rows.length)return `<div class="gccl-card gccl-empty"><div style="font-size:28px;margin-bottom:8px">📚</div>${!state.profile?'No learning requests are available right now.':(isTutor?'No open/claimed requests are available right now.':'No learning request records found.')}</div>`;
-  return rows.map(r=>{
-    let st=String(r.status||'Open').toLowerCase(),claimed=!!(r.tutor_id||r.tutorId),mineTutor=isTutor&&String(r.tutor_id||'')===pid(state.profile);
-    let isOwner=isStudent&&String(r.student_id||r.studentId||'')===pid(state.profile);
-    let canSeeProtected=isTutor||isStaff||isOwner;
-    let issue=canSeeProtected?(r.problem||r.issue||'—'):'🔒 Full requirement is visible to registered Tutors after login.';
-    let studentId=canSeeProtected?(r.student_id||'—'):'Protected';
-    let tutorId=canSeeProtected?(r.tutor_id||'Not connected'):'Protected';
-    return `<div class="gccl-req"><div class="gccl-req-top"><div><div class="gccl-req-title">${esc(r.subject||'Learning Request')}</div><div class="gccl-muted">${esc(r.topic||'')} ${r.course?'• '+esc(r.course):''}</div></div><span class="gccl-pill ${st}">${esc(r.status||'Open')}</span></div><div class="gccl-meta"><div><b>Student ID</b><span>${esc(studentId)}</span></div><div><b>Tutor ID</b><span>${esc(tutorId)}</span></div><div><b>Stream</b><span>${esc(r.stream||'—')}</span></div><div><b>Date / Time</b><span>${esc(r.created_at||r.date_time||'—')}</span></div><div><b>🪙 COIN VALUE</b><span style="color:#047857;font-weight:950">100 GURU COINS</span></div><div style="grid-column:1/-1"><b>Full Issue / Problem</b><span>${esc(issue)}</span></div></div><div class="gccl-actions">${isTutor&&!claimed&&st!=='solved'?`<button class="gccl-btn green" onclick="GC_CL_V2.claim('${esc(r.id)}')">CONNECT WITH STUDENT</button>`:''}${isStaff&&st!=='solved'&&claimed?`<button class="gccl-btn" onclick="GC_CL_V2.solve('${esc(r.id)}')">MARK SOLVED</button>`:''}${isStudent&&st==='open'?'<span class="gccl-muted">100 🪙 deducted when posted</span>':''}${mineTutor?'<span class="gccl-pill claimed">YOUR CONNECTION</span>':''}${!state.profile?'<span class="gccl-muted">🔒 Login as a registered Tutor to connect.</span>':''}</div></div>`
-  }).join('')
-}
+function tabs(){let a=[['requests','📚 LEARNING REQUESTS']]; if(state.role==='student')a.push(['post','➕ POST REQUEST']); if(state.role==='student'||state.role==='tutor')a.push(['mycoins','🪙 MY COINS']); if(state.role==='staff')a.push(['admin','🛡️ COINS + ACCOUNTABILITY']); if(!state.profile){a.push(['login','🔐 LOGIN TO POST / CONNECT']);} $('gcCLV2Tabs').innerHTML=a.map(x=>`<button class="gccl-tab ${state.tab===x[0]?'active':''}" onclick="GC_CL_V2.tab('${x[0]}')">${x[1]}</button>`).join('')}
+function render(){tabs();let c=$('gcCLV2Content'); if(!c)return; if(state.tab==='post')c.innerHTML=postView(); else if(state.tab==='mycoins')c.innerHTML=coinsView(); else if(state.tab==='admin')c.innerHTML=adminView(); else if(state.tab==='login'){c.innerHTML='<div class="gccl-card" style="text-align:center"><h3>Login from Learning Requests</h3><p class="gccl-muted">Everyone can view requests. Students can post and Tutors can connect after secure login.</p><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><button class="gccl-btn" onclick="openStudentLoginModal()">STUDENT LOGIN</button><button class="gccl-btn green" onclick="openTutorLoginModal()">TUTOR LOGIN</button></div></div>';} else c.innerHTML='<div class="gccl-public-note">📚 <b>Learning Request Board:</b> Students and Tutors can view requests here. <span class="gccl-cost-badge">🪙 100 COINS / REQUEST</span> '+(!state.profile?'Login is required to post or connect.':'')+'</div>'+requestsView()}
+function requestsView(){let isTutor=state.role==='tutor',isStaff=state.role==='staff',isStudent=state.role==='student';let rows=state.requests||[]; if(!isStaff&&isStudent){rows=rows.filter(r=>String(r.student_id||r.studentId||'')===pid(state.profile))} if(!rows.length)return `<div class="gccl-card gccl-empty"><div style="font-size:28px;margin-bottom:8px">📚</div>${!state.profile?'Learning Request board is ready. Login as a Student to post a request or as a registered Tutor to connect with one.':(isTutor?'No open/claimed requests are available right now.':'No learning request records found.')}</div>`;return rows.map(r=>{let st=String(r.status||'Open').toLowerCase();let claimed=!!(r.tutor_id||r.tutorId);let mineTutor=isTutor&&String(r.tutor_id||'')===pid(state.profile);return `<div class="gccl-req"><div class="gccl-req-top"><div><div class="gccl-req-title">${esc(r.subject||'Learning Request')}</div><div class="gccl-muted">${esc(r.topic||'')} ${r.course?'• '+esc(r.course):''}</div></div><span class="gccl-pill ${st}">${esc(r.status||'Open')}</span></div><div class="gccl-meta"><div><b>Student ID</b><span>${esc(r.student_id||'—')}</span></div><div><b>Tutor ID</b><span>${esc(r.tutor_id||'Not connected')}</span></div><div><b>Stream</b><span>${esc(r.stream||'—')}</span></div><div><b>Date / Time</b><span>${esc(r.created_at||r.date_time||'—')}</span></div><div><b>🪙 COIN VALUE</b><span style="color:#047857;font-weight:950">100 GURU COINS</span></div><div style="grid-column:1/-1"><b>Full Issue / Problem</b><span>${esc(r.problem||r.issue||'—')}</span></div></div><div class="gccl-actions">${isTutor&&!claimed&&st!=='solved'?`<button class="gccl-btn green" onclick="GC_CL_V2.claim('${esc(r.id)}')">CONNECT WITH STUDENT</button>`:''}${isStaff&&st!=='solved'&&claimed?`<button class="gccl-btn" onclick="GC_CL_V2.solve('${esc(r.id)}')">MARK SOLVED +100 🪙</button>`:''}${isStudent&&st==='open'?'<span class="gccl-muted">100 🪙 deducted when posted</span>':''}${mineTutor?'<span class="gccl-pill claimed">YOUR CONNECTION</span>':''}</div></div>`}).join('')}
 function postView(){if(state.role!=='student'||!state.profile)return `<div class="gccl-login-banner"><span>🔐 Only a registered &amp; logged-in Student can post a Learning Request.</span><button class="gccl-btn" onclick="openLoginModal?.()">LOGIN NOW</button></div>`;let bal=Number(state.balance)||0;let can=bal>=100;return `<div class="gccl-card"><h3>Post a Learning Request</h3><div class="gccl-note">Each Learning Request costs <b>100 GURU COINS</b>. The 100 coins are deducted from the Student when the request is posted and are transferred to the Tutor when the request is claimed.</div><div class="gccl-grid" style="margin-bottom:12px"><div class="gccl-card" style="padding:12px"><div class="gccl-muted">YOUR BALANCE</div><div class="gccl-balance" style="font-size:26px">${bal.toLocaleString('en-IN')} 🪙</div></div><div class="gccl-card" style="padding:12px"><div class="gccl-muted">REQUEST COST</div><div style="font-size:26px;font-weight:1000;color:#047857">100 🪙</div></div></div>${can?'':'<div class="gccl-note" style="background:#fef2f2;border-color:#fecaca;color:#991b1b"><b>Insufficient GURU COINS.</b> You need at least 100 coins to post a Learning Request.</div>'}<div class="gccl-form"><input id="gcCLCourse" placeholder="Course (e.g. HSC / JEE)"><input id="gcCLStream" placeholder="Stream"><input id="gcCLSubject" placeholder="Subject *"><input id="gcCLTopic" placeholder="Topic / Chapter"><textarea id="gcCLProblem" placeholder="Full Issue / Problem *"></textarea><button class="gccl-btn" ${can?'':'disabled'} onclick="GC_CL_V2.post()">POST REQUEST — 100 🪙</button></div></div>`}
 function coinsView(){return `<div class="gccl-grid"><div class="gccl-card"><h3>Current Balance</h3><div class="gccl-balance">${Number(state.balance)||0} 🪙</div><div class="gccl-muted">Live Supabase wallet</div></div><div class="gccl-card"><h3>Profile ID</h3><div style="font-weight:950;word-break:break-all">${esc(pid(state.profile)||'—')}</div><div class="gccl-muted">${esc(state.role.toUpperCase())}</div></div><div class="gccl-card"><h3>Service Prices</h3><div style="font-weight:850;line-height:1.8">Tutor Listing: 100 🪙<br>Verified Tick: 200 🪙<br>Learning Request: 100 🪙</div></div><div class="gccl-card full"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><h3 style="margin:0">Transaction History</h3><button type="button" class="gc-download-btn" onclick="GC_CL_V2.downloadMyHistory()">⬇ DOWNLOAD HISTORY</button></div>${ledger()}</div></div>`}
 function ledger(){if(!state.ledger.length)return '<div class="gccl-empty">No transactions found.</div>';return `<table class="gccl-table"><thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Reason</th><th>Learning Request ID</th><th>Transaction ID</th></tr></thead><tbody>${state.ledger.map(x=>`<tr><td>${esc(x.created_at||'')}</td><td>${esc(x.transaction_type||x.type||'')}</td><td class="${Number(x.amount)>0?'gccl-pos':'gccl-neg'}">${Number(x.amount)>0?'+':''}${esc(x.amount)}</td><td>${esc(x.reason||'')}</td><td>${esc(window.GC_learningRequestId?window.GC_learningRequestId(x,state.requests):'—')}</td><td>${esc(x.id||'')}</td></tr>`).join('')}</tbody></table>`}
@@ -13532,7 +13512,10 @@ document.addEventListener('DOMContentLoaded',boot);setTimeout(boot,1200);setInte
 
 <!-- GURU CONNECT: HIDE DUPLICATE COINS INFO FIELD ON TUTOR/STUDENT CARDS -->
 <style id="gc-hide-duplicate-card-coins">
-/* Keep the real GURU COINS field visible. Duplicate text fields are handled below. */
+.gc-profile-card .gc-auth-coin-field,
+.gc-target-card .gc-auth-coin-field,
+.gc-beautiful-card .gc-auth-coin-field,
+.gc-new-student-card .gc-auth-coin-field{display:none!important;}
 </style>
 <script id="gc-hide-duplicate-card-coins-js">
 (function(){
@@ -13540,7 +13523,9 @@ document.addEventListener('DOMContentLoaded',boot);setTimeout(boot,1200);setInte
 function hideDuplicateCoins(){
   var cards=document.querySelectorAll('.gc-profile-card,.gc-target-card,.gc-beautiful-card,.gc-new-student-card');
   cards.forEach(function(card){
-    /* Do NOT hide .gc-auth-coin-field: this is the authoritative Coins field. */
+    card.querySelectorAll('.gc-auth-coin-field').forEach(function(el){
+      if(!el.closest('#gcProfileCoinsCard') && !el.classList.contains('gc-final-coin-box')) el.style.display='none';
+    });
     var fields=card.querySelectorAll('.gc-target-info > div,.gc-info-grid > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box');
     fields.forEach(function(el){
       if(el.closest('.gc-final-coin-box') || el.closest('#gcProfileCoinsCard')) return;
@@ -13559,120 +13544,117 @@ new MutationObserver(function(){hideDuplicateCoins()}).observe(document.body,{su
 })();
 </script>
 
-
-<!-- GURU CONNECT: SECURE EMAIL + PASSWORD AUTHENTICATION -->
-<style id="gc-secure-auth-v1">
-#gcSecureAuthModal{position:fixed;inset:0;z-index:99999;background:rgba(2,6,23,.84);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:16px}
-#gcSecureAuthModal.gc-show{display:flex}
-.gc-auth-shell{width:min(440px,100%);max-height:92vh;overflow:auto;background:#fff;border-radius:26px;box-shadow:0 30px 80px rgba(0,0,0,.35);border:1px solid #e2e8f0}
-.gc-auth-head{padding:22px 22px 16px;background:linear-gradient(135deg,#eff6ff,#ecfeff);border-bottom:1px solid #dbeafe}
-.gc-auth-head h3{margin:0;font-size:20px;font-weight:1000;color:#0f172a}.gc-auth-head p{margin:5px 0 0;font-size:11px;color:#475569;font-weight:700}
-.gc-auth-body{padding:20px}.gc-auth-label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.08em;font-weight:950;color:#475569;margin:0 0 6px}.gc-auth-input{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:14px;padding:13px 14px;font-size:13px;font-weight:700;outline:none;background:#fff}.gc-auth-input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.12)}
-.gc-auth-btn{width:100%;border:0;border-radius:14px;padding:13px 14px;font-size:12px;font-weight:1000;cursor:pointer}.gc-auth-primary{background:linear-gradient(135deg,#2563eb,#0891b2);color:#fff}.gc-auth-green{background:linear-gradient(135deg,#059669,#047857);color:#fff}.gc-auth-soft{background:#f1f5f9;color:#334155}.gc-auth-link{border:0;background:transparent;color:#2563eb;font-size:11px;font-weight:900;cursor:pointer;padding:4px}.gc-auth-role{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:15px}.gc-auth-role button{border:2px solid #e2e8f0;background:#fff;border-radius:13px;padding:11px 8px;font-weight:950;font-size:11px;cursor:pointer}.gc-auth-role button.active{border-color:#2563eb;background:#eff6ff;color:#1d4ed8}.gc-auth-note{font-size:10px;line-height:1.5;color:#64748b;background:#f8fafc;border:1px solid #e2e8f0;border-radius:13px;padding:10px;margin-top:12px}.gc-auth-error{font-size:11px;font-weight:850;color:#b91c1c;background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:10px;display:none;margin-bottom:10px}.gc-auth-success{font-size:11px;font-weight:850;color:#047857;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:12px;padding:10px;display:none;margin-bottom:10px}
-@media(max-width:480px){.gc-auth-body{padding:16px}.gc-auth-head{padding:18px 16px 14px}.gc-auth-shell{border-radius:22px}}
+<style id="gc-secure-auth-and-learning-final">
+.gc-secure-role{border:1px solid #cbd5e1;background:#f8fafc;color:#475569;border-radius:12px;padding:11px;font-size:11px;font-weight:950}.gc-secure-role.active{background:#2563eb;color:#fff;border-color:#2563eb}.gc-secure-ok{background:#ecfdf5;border:1px solid #a7f3d0;color:#047857}.gc-secure-err{background:#fef2f2;border:1px solid #fecaca;color:#b91c1c}
+#tabRequirementBtn,#requirementFormCard{display:none!important}
+#gcCLV2{z-index:2147483500!important}
 </style>
-<div id="gcSecureAuthModal" aria-hidden="true">
- <div class="gc-auth-shell" role="dialog" aria-modal="true" aria-labelledby="gcSecureAuthTitle">
-  <div class="gc-auth-head"><div style="display:flex;justify-content:space-between;gap:12px;align-items:start"><div><h3 id="gcSecureAuthTitle">Secure Login</h3><p id="gcSecureAuthSub">Student & Tutor login now uses Email + Password.</p></div><button class="gc-auth-link" style="font-size:20px;color:#64748b" type="button" onclick="GC_SECURE_AUTH.close()">✕</button></div></div>
-  <div class="gc-auth-body">
-   <div class="gc-auth-role"><button id="gcAuthRoleStudent" class="active" type="button" onclick="GC_SECURE_AUTH.setRole('student')">👨‍🎓 STUDENT</button><button id="gcAuthRoleTutor" type="button" onclick="GC_SECURE_AUTH.setRole('tutor')">👨‍🏫 TUTOR</button></div>
-   <div id="gcAuthError" class="gc-auth-error"></div><div id="gcAuthSuccess" class="gc-auth-success"></div>
-   <form id="gcSecureLoginForm" onsubmit="GC_SECURE_AUTH.login(event)">
-    <label class="gc-auth-label">Registered Email</label><input id="gcAuthEmail" class="gc-auth-input" type="email" autocomplete="email" placeholder="you@example.com" required>
-    <div style="height:11px"></div><label class="gc-auth-label">Password</label><input id="gcAuthPassword" class="gc-auth-input" type="password" autocomplete="current-password" placeholder="Enter password" required>
-    <div style="display:flex;justify-content:flex-end;margin:8px 0 12px"><button class="gc-auth-link" type="button" onclick="GC_SECURE_AUTH.forgot()">Forgot Password?</button></div>
-    <button id="gcAuthLoginBtn" class="gc-auth-btn gc-auth-primary" type="submit">LOGIN SECURELY</button>
-   </form>
-   <div style="display:flex;justify-content:center;margin-top:10px"><button class="gc-auth-link" type="button" onclick="GC_SECURE_AUTH.showSetup()">First time / Need to create password?</button></div>
-   <div id="gcAuthSetup" style="display:none;margin-top:14px;border-top:1px solid #e2e8f0;padding-top:14px">
-    <div class="gc-auth-note" style="margin:0 0 12px">Use the same email that you used during GURU CONNECT registration. This creates your secure Supabase Auth account and links it to your registered profile.</div>
-    <label class="gc-auth-label">Create Password</label><input id="gcAuthNewPassword" class="gc-auth-input" type="password" minlength="8" autocomplete="new-password" placeholder="At least 8 characters">
-    <div style="height:9px"></div><label class="gc-auth-label">Confirm Password</label><input id="gcAuthConfirmPassword" class="gc-auth-input" type="password" minlength="8" autocomplete="new-password" placeholder="Repeat password">
-    <div style="height:11px"></div><button class="gc-auth-btn gc-auth-green" type="button" onclick="GC_SECURE_AUTH.setupPassword()">CREATE SECURE PASSWORD</button>
-   </div>
-   <div id="gcAuthReset" style="display:none;margin-top:14px;border-top:1px solid #e2e8f0;padding-top:14px">
-    <div class="gc-auth-note" style="margin:0 0 12px">Enter your email and we will send a secure password-reset link. GURU CONNECT never displays or stores your password.</div>
-    <button class="gc-auth-btn gc-auth-green" type="button" onclick="GC_SECURE_AUTH.sendReset()">SEND RESET LINK</button>
-   </div>
-   <div class="gc-auth-note">🔐 Passwords are handled by Supabase Authentication. They are not shown to Staff/Admin and are not stored in this HTML file.</div>
-   <button class="gc-auth-btn gc-auth-soft" style="margin-top:10px" type="button" onclick="GC_SECURE_AUTH.close()">CLOSE</button>
-  </div>
- </div>
-</div>
-<script id="gc-secure-auth-v1-js">
-(function(){
- 'use strict';
- const A={role:'student'};
- const client=()=>window.gcSupabase||window.GC_SUPABASE_CLIENT||null;
- const $=id=>document.getElementById(id);
- const clean=v=>String(v??'').trim();
- function msg(id,text){const e=$(id);if(e){e.textContent=text||'';e.style.display=text?'block':'none';}}
- function clearMsgs(){msg('gcAuthError','');msg('gcAuthSuccess','');}
- function setRole(role){A.role=role==='tutor'?'tutor':'student';$('gcAuthRoleStudent')?.classList.toggle('active',A.role==='student');$('gcAuthRoleTutor')?.classList.toggle('active',A.role==='tutor');$('gcAuthSetup').style.display='none';$('gcAuthReset').style.display='none';clearMsgs();}
- function open(role){setRole(role||'student');$('gcSecureAuthModal').classList.add('gc-show');$('gcSecureAuthModal').setAttribute('aria-hidden','false');setTimeout(()=>$('gcAuthEmail')?.focus(),60);}
- function close(){$('gcSecureAuthModal')?.classList.remove('gc-show');$('gcSecureAuthModal')?.setAttribute('aria-hidden','true');clearMsgs();}
- function showSetup(){ $('gcAuthSetup').style.display='block'; $('gcAuthReset').style.display='none'; clearMsgs(); }
- function showForgot(){ $('gcAuthReset').style.display='block'; $('gcAuthSetup').style.display='none'; clearMsgs(); }
- async function linkProfile(email,role,user){
-   let s=client(); if(!s) throw new Error('Supabase is not connected.');
-   // Preferred: secure server-side linker (SQL supplied with this build).
-   try{let r=await s.rpc('gc_link_auth_profile',{p_email:email,p_role:role}); if(!r.error && r.data) return r.data;}catch(_){ }
-   // Compatibility fallback: match the already loaded registered directory.
-   const list=role==='student'?(window.studentDirectoryList||[]):(window.tutorDirectoryList||[]);
-   const u=list.find(x=>clean(x.email).toLowerCase()===email.toLowerCase() && x.isDummy===false);
-   if(!u) throw new Error('Registered profile not found for this email. Please use the same email used during GURU CONNECT registration.');
-   localStorage.setItem('active_user_name',u.name||'');localStorage.setItem('active_user_phone',u.phone||'');localStorage.setItem('active_user_role',role);localStorage.setItem('gc_auth_user_id',user.id);
-   return u;
- }
- async function login(e){e?.preventDefault();clearMsgs();let s=client();if(!s)return msg('gcAuthError','Supabase is not connected.');let email=clean($('gcAuthEmail').value).toLowerCase(),password=$('gcAuthPassword').value;if(!email||!password)return;
-   const b=$('gcAuthLoginBtn');if(b){b.disabled=true;b.textContent='SIGNING IN...';}
-   try{
-     let r=await s.auth.signInWithPassword({email,password});if(r.error)throw r.error;let user=r.data?.user;if(!user||user.is_anonymous)throw new Error('Secure account session could not be created.');
-     let linked=await linkProfile(email,A.role,user); if(linked?.role && linked.role!==A.role)throw new Error('This email is registered under a different GURU CONNECT role.');
-     if(!localStorage.getItem('active_user_role')){localStorage.setItem('gc_auth_user_id',user.id);localStorage.setItem('active_user_role',A.role);}
-     try{window.updateAuthBadge?.()}catch(_){} try{window.gcLoadCloudDirectories?.()}catch(_){} close(); alert('Secure login successful.');
-     if(A.role==='student')setTimeout(()=>{try{window.openUserDashboard?.()}catch(_){}},180);
-   }catch(err){msg('gcAuthError','Login failed. Please check your email/password and make sure you are using the correct Student/Tutor account.');console.warn('Secure login:',err)}
-   finally{if(b){b.disabled=false;b.textContent='LOGIN SECURELY';}}
- }
- async function setupPassword(){clearMsgs();let s=client();if(!s)return msg('gcAuthError','Supabase is not connected.');let email=clean($('gcAuthEmail').value).toLowerCase(),p=$('gcAuthNewPassword').value,c=$('gcAuthConfirmPassword').value;if(!email)return msg('gcAuthError','Enter your registered email first.');if(p.length<8)return msg('gcAuthError','Password must be at least 8 characters.');if(p!==c)return msg('gcAuthError','Passwords do not match.');
-   try{
-     const r=await s.auth.signUp({email,password:p});if(r.error)throw r.error; const user=r.data?.user;if(!user)throw new Error('Could not create secure account.');
-     try{await linkProfile(email,A.role,user);}catch(err){console.warn('Profile link after sign-up:',err)}
-     if(r.data?.session){localStorage.setItem('gc_auth_user_id',user.id);msg('gcAuthSuccess','Secure account created. You can now log in with Email + Password.');$('gcAuthSetup').style.display='none';}
-     else msg('gcAuthSuccess','Account created. Please check your email and confirm it, then return here and log in with Email + Password.');
-   }catch(err){let text=String(err?.message||err);if(/already registered|already been registered/i.test(text))text='This email already has a secure account. Use Forgot Password to set a new password.';msg('gcAuthError',text)}
- }
- async function sendReset(){clearMsgs();let s=client();if(!s)return msg('gcAuthError','Supabase is not connected.');let email=clean($('gcAuthEmail').value).toLowerCase();if(!email)return msg('gcAuthError','Enter your registered email first.');try{let r=await s.auth.resetPasswordForEmail(email,{redirectTo:location.href.split('#')[0]});if(r.error)throw r.error;msg('gcAuthSuccess','If an account exists for this email, a secure password-reset link has been sent. Check your inbox.');}catch(err){msg('gcAuthError','We could not send the reset email right now. Please try again.');console.warn('Password reset:',err)}}
- async function finishRecovery(){let s=client();if(!s)return;try{let q=await s.auth.getSession();let u=q?.data?.session?.user;if(u){const hash=location.hash||'';if(/type=recovery/i.test(hash)||document.body.dataset.gcRecovery==='1'){document.body.dataset.gcRecovery='1';open(A.role||localStorage.getItem('pending_login_role')||'student');$('gcAuthSetup').style.display='block';$('gcAuthReset').style.display='none';$('gcAuthTitle')?.focus?.();msg('gcAuthSuccess','Recovery link accepted. Enter your new password below.');}}}catch(_){} }
- async function updatePassword(){let s=client();if(!s)return msg('gcAuthError','Supabase is not connected.');let p=$('gcAuthNewPassword').value,c=$('gcAuthConfirmPassword').value;if(p.length<8)return msg('gcAuthError','Password must be at least 8 characters.');if(p!==c)return msg('gcAuthError','Passwords do not match.');try{let r=await s.auth.updateUser({password:p});if(r.error)throw r.error;msg('gcAuthSuccess','Password updated successfully. You can now use Email + Password to log in.');$('gcAuthSetup').style.display='none';history.replaceState({},document.title,location.pathname+location.search);await s.auth.signOut();}catch(err){msg('gcAuthError','Could not update password. Please reopen the reset link and try again.')}}
- window.GC_SECURE_AUTH={open,close,setRole,login,setupPassword,forgot:showForgot,sendReset,showSetup,updatePassword};
- window.openStudentLoginModal=function(){open('student')}; window.openTutorLoginModal=function(){open('tutor')}; window.openLoginModal=function(role){open(role==='tutor'?'tutor':'student')}; window.closeLoginModal=close;
- // When a recovery link opens this same HTML, turn the setup box into a password-change screen.
- function recoveryBoot(){let hash=location.hash||'';if(/type=recovery/i.test(hash)){open(localStorage.getItem('pending_login_role')||'student');$('gcAuthSetup').style.display='block';$('gcAuthReset').style.display='none';$('gcAuthNewPassword').value='';$('gcAuthConfirmPassword').value='';const btn=$('#gcAuthSetup .gc-auth-green');if(btn){btn.textContent='UPDATE PASSWORD';btn.onclick=updatePassword;}msg('gcAuthSuccess','Secure recovery link accepted. Create your new password below.');}}
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',recoveryBoot,{once:true});else recoveryBoot();
- window.addEventListener('gc:auth-recovery',recoveryBoot);
+<script id="gc-secure-auth-final">
+(function(){'use strict';
+var role='student', signupMode=false, resetRecovery=false, resetRole='student';
+function S(){return window.gcSupabase||null} function $(id){return document.getElementById(id)}
+function clean(v){return String(v==null?'':v).trim()}
+/* Auth links must return to a real HTTPS page, never localhost/file://. On the live site the current URL is used; localhost falls back to the public Guru Connect domain. */
+function authRedirectUrl(){
+  var fallback='https://www.guruconnnect.in/';
+  try{
+    var u=new URL(location.href);
+    if(/^https?:$/.test(u.protocol) && /(^|\.)guruconnnect\.in$/i.test(u.hostname)) return u.origin+u.pathname;
+  }catch(_){ }
+  return fallback;
+}
+function status(msg,ok,where){var e=$(where);if(!e)return;e.textContent=msg;e.className='mt-4 text-xs font-bold rounded-xl p-3 '+(ok?'gc-secure-ok':'gc-secure-err');e.classList.remove('hidden')}
+function show(m){m?.classList.remove('hidden');document.body.classList.add('overflow-hidden')}
+function hide(m){m?.classList.add('hidden');if(!document.querySelector('#loginModal:not(.hidden),#gcResetPasswordModal:not(.hidden),#staffLoginModal:not(.hidden)'))document.body.classList.remove('overflow-hidden')}
+window.gcSetLoginRole=function(r){role=r==='tutor'?'tutor':'student';$('gcRoleStudent')?.classList.toggle('active',role==='student');$('gcRoleTutor')?.classList.toggle('active',role==='tutor');$('gcSecureLoginTitle').textContent=(role==='student'?'Student':'Tutor')+' Secure Login'};
+window.openStudentLoginModal=function(){signupMode=false;gcSetLoginRole('student');$('gcSecurePassword').value='';$('gcSecureStatus')?.classList.add('hidden');show($('loginModal'));setTimeout(()=>$('gcSecureEmail')?.focus(),50)};
+window.openTutorLoginModal=function(){signupMode=false;gcSetLoginRole('tutor');$('gcSecurePassword').value='';$('gcSecureStatus')?.classList.add('hidden');show($('loginModal'));setTimeout(()=>$('gcSecureEmail')?.focus(),50)};
+window.openLoginModal=function(r){if(r==='tutor')return openTutorLoginModal();if(r==='student')return openStudentLoginModal();signupMode=false;gcSetLoginRole('student');$('gcSecureStatus').textContent='Choose Student or Tutor, then enter your registered email and password.';show($('loginModal'))};
+window.closeLoginModal=function(){hide($('loginModal'))};
+window.gcShowSignup=function(){signupMode=true;$('gcSecureLoginTitle').textContent=(role==='student'?'Student':'Tutor')+' — Create Password';$('gcSecureLoginBtn').textContent='CREATE PASSWORD';$('gcSecureStatus').classList.add('hidden');$('gcSecurePassword').setAttribute('autocomplete','new-password');$('gcSecurePassword').placeholder='Create Password (8+ characters)'};
+async function linkProfile(email){var s=S();if(!s)throw new Error('Supabase is not connected.');var r=await s.rpc('gc_link_auth_profile',{p_email:email,p_role:role});if(r.error)throw r.error;if(!r.data)throw new Error('Registered '+role+' profile was not found for this email. Please register first.');var p=Array.isArray(r.data)?r.data[0]:r.data;localStorage.setItem('active_user_email',email);localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_name',p.name||'');localStorage.setItem('active_user_phone',p.phone||'');localStorage.setItem('active_user_id',p.id||'');return p}
+window.gcSecureLogin=async function(e){e.preventDefault();var s=S();if(!s)return status('Supabase is not connected.',false,'gcSecureStatus');var email=clean($('gcSecureEmail').value).toLowerCase(),pass=$('gcSecurePassword').value;if(pass.length<8)return status('Password must be at least 8 characters.',false,'gcSecureStatus');var b=$('gcSecureLoginBtn');b.disabled=true;b.textContent=signupMode?'CREATING…':'SIGNING IN…';try{if(signupMode){
+  var existing=await s.auth.getUser();
+  if(existing?.data?.user?.is_anonymous){
+    var up=await s.auth.updateUser({email:email,password:pass});
+    if(up.error)throw up.error;
+    localStorage.setItem('active_user_email',email);
+    localStorage.setItem('active_user_role',role);
+    status('Password created successfully. Please check your email and click the verification link. Your profile remains securely connected.',true,'gcSecureStatus');
+    return;
+  }
+  var cr=await s.auth.signUp({email,password:pass,options:{emailRedirectTo:authRedirectUrl()}});
+  if(cr.error)throw cr.error;
+  if(!cr.data?.session){status('Account created. Check your email and click the verification link. Then return here and login.',true,'gcSecureStatus');return}
+  try{await linkProfile(email)}catch(linkErr){console.warn('Profile link after signup:',linkErr);}
+  status('Account created and linked successfully.',true,'gcSecureStatus');
+}else{
+  var r=await s.auth.signInWithPassword({email,password:pass});
+  if(r.error)throw r.error;
+  try{await linkProfile(email)}catch(linkErr){
+    console.warn('Profile linking failed after login:',linkErr);
+    var roleTable=role==='student'?'student_profiles':'tutor_profiles';
+    var pq=role==='student'?await s.from(roleTable).select('id,name,email,phone').eq('email',email).limit(1):await s.from('tutor_profiles').select('id,name,phone').in('user_id',(await s.from('profiles').select('id').eq('email',email).eq('role','tutor').limit(10)).data?.map(x=>x.id)||[]).limit(1);
+    var pp=pq.data?.[0];
+    if(!pp)throw linkErr;
+    localStorage.setItem('active_user_email',email);localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_name',pp.name||pp.full_name||'');localStorage.setItem('active_user_phone',pp.phone||'');localStorage.setItem('active_user_id',pp.id||'');
+  }
+  status('Login successful.',true,'gcSecureStatus');closeLoginModal();try{updateAuthBadge?.()}catch(_){};setTimeout(()=>{try{openUserDashboard?.()}catch(_){};try{GC_CL_V2?.open?.()}catch(_){}},120)
+}}catch(err){try{await s.auth.signOut()}catch(_){}status(err?.message||String(err),false,'gcSecureStatus')}finally{b.disabled=false;b.textContent=signupMode?'CREATE PASSWORD':'LOGIN SECURELY'}};
+window.gcForgotPassword=function(){resetRole=role;var email=clean($('gcSecureEmail').value);$('gcResetEmail').value=email;$('gcForgotBox').classList.remove('hidden');$('gcNewPasswordBox').classList.add('hidden');$('gcResetStatus').classList.add('hidden');show($('gcResetPasswordModal'));setTimeout(()=>$('gcResetEmail')?.focus(),50)};
+window.gcSendResetEmail=async function(){var s=S();var email=clean($('gcResetEmail').value).toLowerCase();if(!s)return status('Supabase is not connected.',false,'gcResetStatus');if(!email)return status('Enter your registered email address.',false,'gcResetStatus');try{var r=await s.auth.resetPasswordForEmail(email,{redirectTo:authRedirectUrl()});if(r.error)throw r.error;status('Secure password reset email sent. Open the link in your email, create a new password, and you will return to the login page.',true,'gcResetStatus')}catch(err){status(err?.message||String(err),false,'gcResetStatus')}};
+window.gcSetNewPassword=async function(e){e.preventDefault();var s=S(),a=$('gcNewPassword').value,b=$('gcNewPassword2').value;if(a.length<8)return status('Password must be at least 8 characters.',false,'gcResetStatus');if(a!==b)return status('Passwords do not match.',false,'gcResetStatus');try{var r=await s.auth.updateUser({password:a});if(r.error)throw r.error;status('Password updated securely. Please login with your new password.',true,'gcResetStatus');setTimeout(()=>{gcCloseReset();(resetRole==='tutor'?openTutorLoginModal():openStudentLoginModal())},1200)}catch(err){status(err?.message||String(err),false,'gcResetStatus')}};
+window.gcCloseReset=function(){hide($('gcResetPasswordModal'));if(resetRecovery){resetRecovery=false;try{history.replaceState({},document.title,location.href.split('#')[0])}catch(_){};openLoginModal(role)}};
+function recovery(){resetRecovery=true;$('gcForgotBox').classList.add('hidden');$('gcNewPasswordBox').classList.remove('hidden');$('gcResetStatus').classList.add('hidden');$('gcResetTitle').textContent='Create New Password';$('gcResetHelp').textContent='Your secure reset link is active. Choose a new password.';show($('gcResetPasswordModal'))}
+try{S()?.auth?.onAuthStateChange?.(function(event){if(event==='PASSWORD_RECOVERY')setTimeout(recovery,0)})}catch(_){ }
+setTimeout(function(){try{var h=location.hash||'';if(/(?:^|[&#])type=recovery(?:[&#]|$)/i.test(h)){setTimeout(recovery,0);return}S()?.auth?.getSession?.().then(function(r){if(/(?:^|[&#])type=recovery(?:[&#]|$)/i.test(location.hash||''))recovery()}).catch(function(){})}catch(_){ }},300);
+// Show a clear success message after Supabase email verification.
+function gcShowVerifiedMessage(){
+  var h=location.hash||'', q=location.search||'';
+  if(/type=signup/i.test(h)||/type=signup/i.test(q)){
+    setTimeout(function(){try{gcV4Popup('EMAIL VERIFIED','Your email has been successfully verified. You can now login securely with your password.','success');}catch(_){try{alert('Your email has been successfully verified. You can now login securely.')}catch(__){}}},350);
+    try{history.replaceState({},document.title,location.href.split('#')[0].split('?')[0])}catch(_){}
+  }
+}
+try{S()?.auth?.onAuthStateChange?.(function(event){if(event==='PASSWORD_RECOVERY')setTimeout(recovery,0);if(event==='SIGNED_IN')setTimeout(gcShowVerifiedMessage,100)})}catch(_){}
+setTimeout(gcShowVerifiedMessage,500);
+
+// Admin/staff can send a reset email without ever seeing the user's password.
+window.gcAdminSendPasswordReset=async function(email){var s=S();email=clean(email).toLowerCase();if(!s||!email)return alert('A valid user email is required.');try{var sess=await s.auth.getSession();if(!sess.data?.session||localStorage.getItem('is_staff_logged')!=='true')return alert('Please login to Staff mode first.');var r=await s.auth.resetPasswordForEmail(email,{redirectTo:authRedirectUrl()});if(r.error)throw r.error;alert('Secure password reset email sent to '+email+'. The actual password is never shown to Staff.')}catch(err){alert('Could not send reset email: '+(err?.message||err))}};
+// Backdrop/ESC handling for secure modals.
+['loginModal','gcResetPasswordModal'].forEach(function(id){var m=$(id);if(m&&!m.dataset.gcSecureBound){m.dataset.gcSecureBound='1';m.addEventListener('click',function(e){if(e.target===m)hide(m)})}});document.addEventListener('keydown',function(e){if(e.key==='Escape'){hide($('loginModal'));hide($('gcResetPasswordModal'))}},true);
+// Replace legacy requirement quick links and keep only the separate Learning Request board.
+function fixLearningLinks(){document.querySelectorAll('a[href="#registrationSection"]').forEach(function(a){if(/learning request|post request/i.test(a.textContent||'')){a.removeAttribute('href');a.onclick=function(e){e.preventDefault();try{closeNavMenu?.()}catch(_){};GC_CL_V2.open()}}});var t=$('tabRequirementBtn');if(t)t.style.display='none';var f=$('requirementFormCard');if(f)f.style.display='none'}
+window.addEventListener('load',fixLearningLinks);setTimeout(fixLearningLinks,1000);
+// Add SEND PASSWORD RESET to Staff coin-management search results.
+function addAdminResetButtons(){var out=$('gcAuthResults');if(!out)return;out.querySelectorAll('[data-select]').forEach(function(b){if(b.parentElement.querySelector('.gc-admin-reset-btn'))return;var i=Number(b.dataset.select),p=window.__gcAuthRows?.[i];if(!p?.email)return;var x=document.createElement('button');x.type='button';x.className='gc-auth-select gc-admin-reset-btn';x.textContent='SEND PASSWORD RESET';x.onclick=function(){gcAdminSendPasswordReset(p.email)};b.parentElement.appendChild(x)})}
+new MutationObserver(addAdminResetButtons).observe(document.body,{subtree:true,childList:true});setTimeout(addAdminResetButtons,1500);
+// Prevent any legacy OTP handler from being used by the visible login.
+window.sendSimulatedOtp=function(){openLoginModal()};window.verifySimulatedOtp=function(){openLoginModal()};
 })();
 </script>
-
-<!-- GURU CONNECT: PUBLIC LEARNING REQUEST BOARD + COIN GATE FINAL OVERRIDE -->
-<style id="gc-learning-public-final">
-#gcCLV2{z-index:99990!important;background:rgba(2,6,23,.88)!important;backdrop-filter:blur(8px)!important}
-#gcCLV2 .gccl-shell{width:min(1180px,calc(100vw - 24px))!important;max-height:92vh!important;overflow:auto!important}
-.gccl-public-note{background:linear-gradient(135deg,#eff6ff,#ecfeff)!important;border:1px solid #bfdbfe!important;color:#0f3d91!important}
-.gccl-cost-badge{display:inline-flex;align-items:center;gap:4px;background:#dcfce7!important;color:#047857!important;border:1px solid #86efac!important;border-radius:999px;padding:5px 9px;font-weight:1000!important}
-.gccl-privacy-note{font-size:10px;font-weight:800;color:#475569;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:9px;margin-bottom:10px}
-</style>
-<script id="gc-learning-public-final-js">
-(function(){
- const oldPost=window.GC_CL_V2?.post;
- // Refresh balance immediately before showing the post tab; this prevents a stale UI balance from enabling posting.
- const originalTab=window.GC_CL_V2?.tab;
- if(window.GC_CL_V2&&originalTab){
-   window.GC_CL_V2.tab=function(t){
-     originalTab(t);
-     if(t==='post'&&typeof window.GC_CL_V2.refreshBalance==='function')window.GC_CL_V2.refreshBalance();
-   };
- }
-})();
-</script>
+<!-- SECURE STUDENT / TUTOR LOGIN -->
+<div class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[2147483600] flex items-center justify-center hidden p-4" id="loginModal">
+<div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-7 border relative max-h-[92vh] overflow-y-auto">
+<button class="absolute right-4 top-4 text-slate-400 hover:text-red-500 text-xl" onclick="closeLoginModal()" type="button"><i class="fa-solid fa-xmark"></i></button>
+<div class="text-center mb-5 pr-6"><div class="mx-auto w-14 h-14 rounded-2xl bg-blue-100 text-brand-blue flex items-center justify-center text-2xl mb-3"><i class="fa-solid fa-shield-halved"></i></div>
+<h3 class="text-xl sm:text-2xl font-black text-brand-dark" id="gcSecureLoginTitle">Secure Login</h3>
+<p class="text-xs text-slate-500 mt-1">Registered email + password. Passwords are securely handled by Supabase Auth.</p></div>
+<div class="grid grid-cols-2 gap-2 mb-4"><button type="button" id="gcRoleStudent" class="gc-secure-role active" onclick="gcSetLoginRole('student')">STUDENT</button><button type="button" id="gcRoleTutor" class="gc-secure-role" onclick="gcSetLoginRole('tutor')">TUTOR</button></div>
+<form id="gcSecureLoginForm" class="space-y-3" onsubmit="gcSecureLogin(event)">
+<input id="gcSecureEmail" class="w-full border rounded-xl p-3 text-sm font-bold bg-slate-50" autocomplete="email" placeholder="Registered Email Address" required type="email">
+<input id="gcSecurePassword" class="w-full border rounded-xl p-3 text-sm font-bold bg-slate-50" autocomplete="current-password" placeholder="Password" required minlength="8" type="password">
+<button id="gcSecureLoginBtn" class="w-full bg-brand-blue hover:bg-blue-700 text-white font-black py-3.5 rounded-xl text-xs shadow" type="submit">LOGIN SECURELY</button>
+</form>
+<div class="flex justify-between gap-3 mt-4 text-[11px] font-black"><button type="button" class="text-brand-blue hover:underline" onclick="gcForgotPassword()">FORGOT PASSWORD?</button><button type="button" class="text-emerald-700 hover:underline" onclick="gcShowSignup()">FIRST TIME / CREATE PASSWORD</button></div>
+<div id="gcSecureStatus" class="mt-4 hidden text-xs font-bold rounded-xl p-3"></div>
+<button class="w-full mt-4 text-slate-400 text-xs font-bold" onclick="closeLoginModal()" type="button">CANCEL</button>
+</div></div>
+<!-- SECURE PASSWORD RESET MODAL -->
+<div class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[2147483700] flex items-center justify-center hidden p-4" id="gcResetPasswordModal">
+<div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-6 sm:p-7 border">
+<div class="text-center mb-5"><div class="mx-auto w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl mb-3"><i class="fa-solid fa-key"></i></div><h3 class="text-xl font-black text-brand-dark" id="gcResetTitle">Reset Password</h3><p class="text-xs text-slate-500 mt-1" id="gcResetHelp">Use the secure email link to create a new password.</p></div>
+<div id="gcForgotBox" class="space-y-3"><input id="gcResetEmail" class="w-full border rounded-xl p-3 text-sm font-bold bg-slate-50" autocomplete="email" placeholder="Registered Email Address" type="email"><button class="w-full bg-brand-blue text-white font-black py-3.5 rounded-xl text-xs" onclick="gcSendResetEmail()" type="button">SEND SECURE RESET EMAIL</button></div>
+<form id="gcNewPasswordBox" class="space-y-3 hidden" onsubmit="gcSetNewPassword(event)"><input id="gcNewPassword" class="w-full border rounded-xl p-3 text-sm font-bold bg-slate-50" autocomplete="new-password" minlength="8" placeholder="New Password (8+ characters)" required type="password"><input id="gcNewPassword2" class="w-full border rounded-xl p-3 text-sm font-bold bg-slate-50" autocomplete="new-password" minlength="8" placeholder="Confirm New Password" required type="password"><button class="w-full bg-emerald-600 text-white font-black py-3.5 rounded-xl text-xs" type="submit">SAVE NEW PASSWORD</button></form>
+<div id="gcResetStatus" class="mt-4 hidden text-xs font-bold rounded-xl p-3"></div><button class="w-full mt-4 text-slate-400 text-xs font-bold" onclick="gcCloseReset()" type="button">CLOSE</button>
+</div></div>
