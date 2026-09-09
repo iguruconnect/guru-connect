@@ -14067,7 +14067,7 @@ async function solve(id){let s=sb();if(!s)return;try{let r=await s.rpc('gc_staff
 async function adjust(){alert('Please use the single GURU COINS ACCOUNTABILITY editor inside the Tutor/Student Edit window.');}
 function tab(t){state.tab=t;render();if(t==='requests'||t==='mycoins'||t==='admin')load()}
 function addMenu(){let m=$('publicNavbarLinks');if(!m)return false;if(!m.querySelector('[data-gc-coins-menu]')){let a=document.createElement('a');a.href='javascript:void(0)';a.dataset.gcCoinsMenu='1';a.textContent='📚  LEARNING REQUESTS';a.style.cssText='font-weight:950!important;background:linear-gradient(135deg,#eff6ff,#dbeafe)!important;color:#0f3d91!important';a.onclick=function(){closeNavMenu?.();state.tab='requests';open()};m.insertBefore(a,m.firstChild)}return true}
-function injectPills(){let p=profile();if(!p)return;let balance=state.balance;document.querySelectorAll('.gc-target-card,.gc-profile-card').forEach(card=>{if(card.querySelector('.gc-coins-pill'))return;let isStudent=card.classList.contains('gc-new-student-card')||/student/i.test(card.textContent||'');let pill=document.createElement('span');pill.className='gc-coins-pill '+(isStudent?'red':'blue');pill.textContent='🪙 '+(balance||0)+' COINS';let host=card.querySelector('.gc-target-actions')||card.firstElementChild||card;host.appendChild(pill)})}
+function injectPills(){return;}
 function boot(){addMenu();setTimeout(addMenu,600);setTimeout(addMenu,1500);try{let p=profile();if(p){let s=sb();if(s)load()}}catch(e){} }
 window.GC_CL_V2={open,close,tab,post,claim,solve,adjust,downloadMyHistory};
 window.gcOpenCoinsLearningRequests=open;
