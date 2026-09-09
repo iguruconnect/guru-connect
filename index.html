@@ -4349,10 +4349,20 @@ html.gc-startup body{visibility:visible!important}
 <script id="gc-startup-no-flash-js">
 (function(){
   document.documentElement.classList.add('gc-startup');
-  function hideSplash(){var el=document.getElementById('gcBrandSplash');if(el)el.classList.add('gc-splash-hide');document.documentElement.classList.add('gc-ready');}
-  window.addEventListener('load',function(){setTimeout(hideSplash,500);},{once:true});
-  document.addEventListener('DOMContentLoaded',function(){setTimeout(hideSplash,1800);},{once:true});
-  setTimeout(hideSplash,3500);
+  var hidden=false;
+  function hideSplash(){
+    if(hidden)return;
+    hidden=true;
+    var el=document.getElementById('gcBrandSplash');
+    if(el){el.classList.add('gc-splash-hide');el.style.pointerEvents='none';}
+    document.documentElement.classList.add('gc-ready');
+  }
+  // Keep the original logo splash for a fixed, reliable duration.
+  document.addEventListener('DOMContentLoaded',function(){
+    setTimeout(hideSplash,4500);
+  },{once:true});
+  // Safety fallback so the page can never remain blocked by the splash.
+  setTimeout(hideSplash,6500);
 })();
 </script>
 <style id="gc-user-requested-fixes">
@@ -4430,36 +4440,7 @@ html.gc-startup body{visibility:visible!important}
 }
 </style>
 <script id="gc-final-splash-timing">
-(function(){
-  function keepLogoSplash(){
-    var splash=document.getElementById('gcBrandSplash');
-    var logo=document.getElementById('gcSplashLogo');
-    if(!splash)return;
-    splash.classList.remove('gc-splash-hide');
-    splash.style.opacity='1';
-    splash.style.visibility='visible';
-    splash.style.pointerEvents='auto';
-    if(logo){
-      logo.style.display='block';
-      logo.style.visibility='visible';
-      logo.style.opacity='1';
-    }
-  }
-  function hideLogoSplash(){
-    var splash=document.getElementById('gcBrandSplash');
-    if(!splash)return;
-    splash.classList.add('gc-splash-hide');
-    document.documentElement.classList.add('gc-ready');
-  }
-  /* Logo stays on screen for about 4.5 seconds instead of disappearing after ~0.5–1.8s. */
-  if(document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', keepLogoSplash, {once:true});
-  }else{
-    keepLogoSplash();
-  }
-  setTimeout(keepLogoSplash, 50);
-  setTimeout(hideLogoSplash, 4500);
-})();
+/* Splash timing is handled by gc-startup-no-flash-js above. */
 </script>
 
 </head>
