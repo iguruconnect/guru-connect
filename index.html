@@ -4335,36 +4335,8 @@ footer:before{
 .gc-admin-coin-editor{margin:10px 0 6px;padding:22px;border:1px solid #cbd5e1;border-radius:22px;background:linear-gradient(135deg,#f8fafc,#eef6ff);box-shadow:0 12px 30px rgba(15,23,42,.08)}
 .gc-admin-coin-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.gc-admin-coin-kicker{font-size:10px;font-weight:950;letter-spacing:.14em;color:var(--gc-accent)}.gc-admin-coin-head h4{margin:3px 0 0;font-size:20px;font-weight:950;color:#0f172a}.gc-admin-coin-balance{font-size:24px;font-weight:950;padding:10px 16px;border-radius:14px;background:#fff;border:1px solid #dbeafe;white-space:nowrap}.gc-admin-coin-grid{display:grid;grid-template-columns:minmax(220px,.75fr) minmax(320px,1.25fr);gap:16px}.gc-admin-coin-grid label{display:block;font-size:10px;font-weight:950;letter-spacing:.08em;color:#475569;margin:0 0 7px}.gc-admin-coin-grid input,.gc-admin-coin-grid textarea{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:14px;background:#fff;padding:13px 14px;font-weight:750;outline:none}.gc-admin-coin-grid textarea{min-height:125px;resize:vertical;line-height:1.5}.gc-admin-coin-grid input:focus,.gc-admin-coin-grid textarea:focus{border-color:var(--gc-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--gc-accent) 12%,transparent)}.gc-admin-coin-actions{display:flex;align-items:center;gap:14px;margin-top:15px;flex-wrap:wrap}.gc-admin-coin-btn{border:0;border-radius:14px;padding:13px 18px;background:var(--gc-accent);color:#fff;font-weight:950;cursor:pointer;box-shadow:0 8px 20px rgba(15,23,42,.14)}.gc-admin-coin-btn:disabled{opacity:.65;cursor:wait}.gc-admin-coin-actions span{font-size:11px;font-weight:800;color:#64748b}@media(max-width:700px){#adminEditTutorModal>div,#adminEditStudentModal>div{padding:18px!important;width:98vw!important}.gc-admin-coin-grid{grid-template-columns:1fr}.gc-admin-coin-head{align-items:flex-start;flex-direction:column}.gc-admin-coin-balance{font-size:20px}}
 </style>
-<style id="gc-startup-no-flash">
-html.gc-startup body{visibility:visible!important}
-#gcBrandSplash{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#ffffff 0%,#f7fbff 55%,#fffaf2 100%);opacity:1;visibility:visible;pointer-events:auto;transition:opacity .42s ease,visibility .42s ease}
-#gcBrandSplash.gc-splash-hide{opacity:0;visibility:hidden;pointer-events:none}
-#gcBrandSplash .gc-splash-card{text-align:center;padding:28px 34px;max-width:min(720px,92vw)}
-#gcBrandSplash img{width:min(520px,76vw);height:auto;display:block;margin:0 auto;background:transparent!important;object-fit:contain;filter:drop-shadow(0 18px 34px rgba(15,61,145,.10))}
-#gcBrandSplash .gc-splash-title{margin-top:16px;font-size:clamp(12px,2vw,17px);font-weight:950;letter-spacing:.12em;color:#0f3d91}
-#gcBrandSplash .gc-splash-loader{width:150px;height:4px;margin:18px auto 0;border-radius:99px;background:#dbeafe;overflow:hidden}
-#gcBrandSplash .gc-splash-loader span{display:block;width:45%;height:100%;border-radius:99px;background:linear-gradient(90deg,#0f3d91,#16a34a,#f59e0b);animation:gcSplashLoad 1.15s ease-in-out infinite}
-@keyframes gcSplashLoad{0%{transform:translateX(-120%)}100%{transform:translateX(340%)}}
-</style>
-<script id="gc-startup-no-flash-js">
-(function(){
-  document.documentElement.classList.add('gc-startup');
-  var hidden=false;
-  function hideSplash(){
-    if(hidden)return;
-    hidden=true;
-    var el=document.getElementById('gcBrandSplash');
-    if(el){el.classList.add('gc-splash-hide');el.style.pointerEvents='none';}
-    document.documentElement.classList.add('gc-ready');
-  }
-  // Keep the original logo splash for a fixed, reliable duration.
-  document.addEventListener('DOMContentLoaded',function(){
-    setTimeout(hideSplash,1000);
-  },{once:true});
-  // Safety fallback so the page can never remain blocked by the splash.
-  setTimeout(hideSplash,2500);
-})();
-</script>
+
+
 <style id="gc-user-requested-fixes">
 .gc-logo3-lockup,.gc-logo3-image{background:transparent!important}.gc-logo3-lockup{overflow:visible!important}.gc-logo3-image{border:0!important;box-shadow:none!important}
 .gc-profile-card .gc-name-patch,.gc-profile-card .gc-name-patch h3,.gc-profile-card .gc-target-name,.gc-profile-card .gc-clean-name,.gc-profile-card .gc-beautiful-name,.gc-profile-card .gc-new-name{max-width:100%!important;width:auto!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important;word-break:normal!important}.gc-profile-card .gc-name-patch h3{font-size:clamp(22px,2.2vw,31px)!important;line-height:1.08!important}
@@ -4378,67 +4350,7 @@ html.gc-startup body{visibility:visible!important}
 @media(max-width:560px){.gc-download-btn{width:100%}}
 </style>
 
-<style id="gc-final-splash-name-fix">
-/* Splash: keep the original logo visible longer; don't let the text replace it. */
-#gcBrandSplash .gc-splash-fallback,
-#gcBrandSplash .gc-splash-title{
-  display:none!important;
-}
-#gcBrandSplash #gcSplashLogo{
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
-  width:min(560px,82vw)!important;
-  max-width:90vw!important;
-  max-height:58vh!important;
-  height:auto!important;
-}
 
-/* Tutor names: always one clean line, with the verification tick beside the name. */
-.gc-profile-card:not(.gc-student-card) .gc-name-patch{
-  width:100%!important;
-  max-width:100%!important;
-  box-sizing:border-box!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  flex-wrap:nowrap!important;
-  padding-left:10px!important;
-  padding-right:10px!important;
-}
-.gc-profile-card:not(.gc-student-card) .gc-name-patch h3{
-  min-width:0!important;
-  flex:1 1 auto!important;
-  width:auto!important;
-  max-width:none!important;
-  white-space:nowrap!important;
-  overflow:hidden!important;
-  text-overflow:ellipsis!important;
-  overflow-wrap:normal!important;
-  word-break:normal!important;
-  font-size:clamp(18px,2vw,27px)!important;
-  line-height:1.08!important;
-  letter-spacing:-.02em!important;
-}
-.gc-profile-card:not(.gc-student-card) .gc-blue-tick{
-  flex:0 0 auto!important;
-  width:22px!important;
-  height:22px!important;
-}
-@media(max-width:640px){
-  .gc-profile-card:not(.gc-student-card) .gc-name-patch{
-    padding-left:8px!important;
-    padding-right:8px!important;
-    gap:5px!important;
-  }
-  .gc-profile-card:not(.gc-student-card) .gc-name-patch h3{
-    font-size:clamp(16px,5vw,22px)!important;
-  }
-  .gc-profile-card:not(.gc-student-card) .gc-blue-tick{
-    width:19px!important;
-    height:19px!important;
-  }
-}
-</style>
 <script id="gc-final-splash-timing">
 /* Splash timing is handled by gc-startup-no-flash-js above. */
 </script>
@@ -4597,39 +4509,12 @@ html.gc-startup body{visibility:visible!important}
 })();
 </script>
 
+<style id="gc-no-splash-final">#gcBrandSplash{display:none!important}</style>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
-<div id="gcBrandSplash" aria-label="GURU CONNECT loading">
-  <div class="gc-splash-card">
-    <div id="gcSplashFallback" class="gc-splash-fallback" aria-hidden="true">GURU CONNECT</div>
-    <img id="gcSplashLogo" alt="" aria-hidden="true">
-    <div class="gc-splash-title">CONNECTING MINDS • CREATING FUTURE</div>
-    <div class="gc-splash-loader" aria-hidden="true"><span></span></div>
-  </div>
+
 </div>
-<script id="gc-splash-init">
-(function(){
- function init(){
-   var splash=document.getElementById('gcBrandSplash'),img=document.getElementById('gcSplashLogo'),fallback=document.getElementById('gcSplashFallback');
-   if(!splash||!img)return;
-   img.style.visibility='hidden';
-   img.style.opacity='0';
-   var source=document.querySelector('.gc-logo3-image');
-   function showLogo(){
-     if(fallback)fallback.style.display='none';
-     img.style.visibility='visible';
-     img.style.opacity='1';
-   }
-   if(source&&source.src){
-     img.onload=showLogo;
-     img.onerror=function(){ img.style.display='none'; if(fallback)fallback.style.display='block'; };
-     img.src=source.src;
-     if(img.complete && img.naturalWidth>0)showLogo();
-   }
- }
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
-})();
-</script>
+
 <!-- Header / Navbar -->
 <header class="gc-beautiful-header">
   <div class="gc-header-inner">
@@ -12436,6 +12321,40 @@ async function repairCardCoins(){const s=S();if(!s)return;const cards=[...docume
 setInterval(repairCardCoins,3500);document.addEventListener('DOMContentLoaded',repairCardCoins);window.addEventListener('load',repairCardCoins);
 })();
 </script>
+
+<!-- GURU CONNECT PROFILE COINS — FINAL VISIBILITY FIX -->
+<style id="gc-profile-coins-visibility-fix">
+#gcProfileCoinsCard{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:14px!important;margin:18px 0 0!important;padding:16px 18px!important;border-radius:20px!important;background:linear-gradient(135deg,#fffdf0,#fff7c2)!important;border:2px solid #f4c430!important;box-shadow:0 8px 24px rgba(15,61,145,.12)!important;box-sizing:border-box!important}
+#gcProfileCoinsCard .gc-pc-left{display:flex!important;align-items:center!important;gap:12px!important;min-width:0!important}
+#gcProfileCoinsCard .gc-pc-coin{width:46px!important;height:46px!important;border-radius:50%!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#f7c948!important;border:3px solid #d49b00!important;box-shadow:inset 0 2px 0 rgba(255,255,255,.7),0 4px 10px rgba(0,0,0,.12)!important;font-size:24px!important;flex:0 0 auto!important}
+#gcProfileCoinsCard .gc-pc-label{font-size:10px!important;font-weight:1000!important;color:#64748b!important;text-transform:uppercase!important;letter-spacing:.09em!important}
+#gcProfileCoinsCard .gc-pc-balance{font-size:23px!important;font-weight:1000!important;color:#123b8f!important;line-height:1.1!important;margin-top:3px!important;white-space:nowrap!important}
+#gcProfileCoinsCard .gc-pc-id{font-size:10px!important;font-weight:900!important;color:#475569!important;text-align:right!important;white-space:nowrap!important}
+@media(max-width:640px){#gcProfileCoinsCard{padding:13px!important;border-radius:16px!important}#gcProfileCoinsCard .gc-pc-coin{width:40px!important;height:40px!important;font-size:21px!important}#gcProfileCoinsCard .gc-pc-balance{font-size:19px!important}#gcProfileCoinsCard .gc-pc-id{font-size:8px!important}}
+</style>
+<script id="gc-profile-coins-visibility-fix-js">
+(function(){
+'use strict';
+function sb(){return window.gcSupabase||window.GC_SUPABASE_CLIENT||null}
+function activeProfile(){try{if(typeof getCurrentUserProfile==='function'){var p=getCurrentUserProfile();if(p)return p}}catch(e){}return window.__gcAuthProfile||null}
+function idOf(p){return String(p?.id||p?.userId||p?.user_id||'')}
+function roleOf(p){return String(p?.registrationRole||localStorage.getItem('active_user_role')||'student').toLowerCase()}
+function publicId(id,role){try{if(typeof window.GC_PUBLIC_ID==='function')return window.GC_PUBLIC_ID(id,role)}catch(e){}return String(id||'')}
+async function getBalance(id){var s=sb();if(!s||!id)return 0;try{var q=await s.from('gc_coin_wallets').select('balance').eq('profile_id',id).maybeSingle();if(q.error){console.warn('Profile coins wallet:',q.error);return 0}return Number(q.data?.balance||0)}catch(e){console.warn('Profile coins:',e);return 0}}
+async function paint(){
+ var host=document.getElementById('userDashboardContent'),p=activeProfile();if(!host||!p)return;
+ var id=idOf(p),role=roleOf(p);if(!id)return;
+ var card=document.getElementById('gcProfileCoinsCard');
+ if(!card){card=document.createElement('div');card.id='gcProfileCoinsCard';card.innerHTML='<div class="gc-pc-left"><div class="gc-pc-coin">🪙</div><div><div class="gc-pc-label">GURU COINS BALANCE</div><div class="gc-pc-balance" id="gcProfileCoinsValue">Loading…</div></div></div><div class="gc-pc-id">'+publicId(id,role)+'</div>';host.appendChild(card)}
+ var value=document.getElementById('gcProfileCoinsValue');if(value)value.textContent=(await getBalance(id)).toLocaleString('en-IN')+' COINS';
+}
+function boot(){setTimeout(paint,100);setTimeout(paint,700);setTimeout(paint,1800)}
+document.addEventListener('DOMContentLoaded',boot);window.addEventListener('load',boot);setInterval(paint,4000);
+new MutationObserver(function(){clearTimeout(window.__gcPcTimer);window.__gcPcTimer=setTimeout(paint,180)}).observe(document.body,{subtree:true,childList:true});
+window.GC_PROFILE_COINS_REFRESH=paint;
+})();
+</script>
+
 </body>
 </html>
 <!-- =========================================================
