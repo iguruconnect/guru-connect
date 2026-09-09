@@ -12256,6 +12256,244 @@ window.addEventListener('load',function(){boot();setTimeout(paint,300);});
 setInterval(paint,2500);
 })();
 </script>
+
+<style id="gc-polish-v7">
+@media (max-width:700px){
+  .gc-target-card .gc-target-name,.gc-target-card .gc-profile-name,.gc-target-card .gc-name,
+  .gc-profile-card .gc-target-name,.gc-profile-card .gc-profile-name,.gc-profile-card .gc-name{
+    display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;
+    overflow:visible!important;white-space:normal!important;overflow-wrap:anywhere!important;
+    word-break:normal!important;line-height:1.16!important;font-size:17px!important;
+  }
+  .gc-target-card .gc-card-header,.gc-target-card .gc-profile-header,
+  .gc-profile-card .gc-card-header,.gc-profile-card .gc-profile-header{
+    min-width:0!important;width:100%!important;
+  }
+  .gc-target-card .gc-verified-tick{flex:0 0 auto!important;margin-left:5px!important}
+}
+.gc-registration-form input:not([type="hidden"]),.gc-registration-form select,.gc-registration-form textarea,
+#studentRegistrationForm input:not([type="hidden"]),#studentRegistrationForm select,#studentRegistrationForm textarea,
+#tutorRegistrationForm input:not([type="hidden"]),#tutorRegistrationForm select,#tutorRegistrationForm textarea{
+  transition:background-color .16s ease,border-color .16s ease,box-shadow .16s ease,transform .12s ease,color .16s ease!important;
+}
+.gc-registration-form input:not([type="hidden"]):hover,.gc-registration-form select:hover,.gc-registration-form textarea:hover,
+#studentRegistrationForm input:not([type="hidden"]):hover,#studentRegistrationForm select:hover,#studentRegistrationForm textarea:hover,
+#tutorRegistrationForm input:not([type="hidden"]):hover,#tutorRegistrationForm select:hover,#tutorRegistrationForm textarea:hover{
+  background:#f4f8ff!important;border-color:#4776d8!important;
+}
+.gc-registration-form input:not([type="hidden"]):focus,.gc-registration-form select:focus,.gc-registration-form textarea:focus,
+#studentRegistrationForm input:not([type="hidden"]):focus,#studentRegistrationForm select:focus,#studentRegistrationForm textarea:focus,
+#tutorRegistrationForm input:not([type="hidden"]):focus,#tutorRegistrationForm select:focus,#tutorRegistrationForm textarea:focus{
+  background:#eef5ff!important;border-color:#1f5fd1!important;color:#102a56!important;outline:none!important;
+  box-shadow:0 0 0 3px rgba(31,95,209,.13),0 4px 12px rgba(31,95,209,.08)!important;
+}
+.gc-registration-form input:-webkit-autofill,.gc-registration-form input:-webkit-autofill:hover,
+.gc-registration-form input:-webkit-autofill:focus,#studentRegistrationForm input:-webkit-autofill,
+#studentRegistrationForm input:-webkit-autofill:hover,#studentRegistrationForm input:-webkit-autofill:focus,
+#tutorRegistrationForm input:-webkit-autofill,#tutorRegistrationForm input:-webkit-autofill:hover,
+#tutorRegistrationForm input:-webkit-autofill:focus{
+  -webkit-text-fill-color:#102a56!important;box-shadow:0 0 0 1000px #eef5ff inset!important;
+  transition:background-color 9999s ease-in-out 0s!important;
+}
+html.gc-app-booting body>*:not(#gcCleanBootShield){visibility:hidden!important}
+html.gc-app-booting #gcCleanBootShield{visibility:visible!important}
+</style>
+<script id="gc-polish-v7-js">
+(function(){
+'use strict';
+try{
+  document.documentElement.classList.add('gc-app-booting');
+  function finishBoot(){
+    document.documentElement.classList.remove('gc-app-booting');
+    var sh=document.getElementById('gcCleanBootShield');
+    if(sh){sh.classList.add('gc-hide');setTimeout(function(){if(sh.parentNode)sh.remove()},300)}
+  }
+  window.addEventListener('load',function(){setTimeout(finishBoot,180)},{once:true});
+  setTimeout(finishBoot,1800);
+}catch(e){}
+function enhanceForms(){
+  document.querySelectorAll('form').forEach(function(form){
+    var text=(form.id||'')+' '+(form.className||'');
+    var likely=/student|tutor|registration|register|signup/i.test(text) ||
+      !!form.querySelector('input[name*="student" i],input[name*="tutor" i]');
+    if(!likely)return;
+    form.classList.add('gc-registration-form');
+    form.querySelectorAll('input,select,textarea').forEach(function(el){
+      if(el.type==='hidden'||el.type==='file'||el.disabled)return;
+      if(!el.dataset.gcFocusV7){
+        el.dataset.gcFocusV7='1';
+        el.addEventListener('focus',function(){this.classList.add('gc-field-active')});
+        el.addEventListener('blur',function(){this.classList.remove('gc-field-active')});
+      }
+    });
+  });
+}
+function fixNames(){
+  document.querySelectorAll('.gc-target-card,.gc-profile-card').forEach(function(card){
+    card.querySelectorAll('[class*="name"],[class*="Name"]').forEach(function(el){
+      var txt=(el.textContent||'').trim();
+      if(!txt||txt.length<2||el.closest('.gc-target-info-box,.gc-info-box,.field,.gc-field'))return;
+      el.style.minWidth='0';el.style.maxWidth='100%';
+      if(innerWidth<=700){el.style.whiteSpace='normal';el.style.overflow='visible';el.style.textOverflow='clip';el.style.overflowWrap='anywhere';el.style.wordBreak='normal'}
+    });
+  });
+}
+function run(){enhanceForms();fixNames()}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
+window.addEventListener('load',function(){run();setTimeout(run,400)});
+new MutationObserver(function(){enhanceForms();fixNames()}).observe(document.documentElement,{subtree:true,childList:true});
+})();
+</script>
+
+<style id="gc-final-polish-v8">
+/* ===== 1) MOBILE NAME: NEVER BREAK A WORD INTO LETTERS ===== */
+@media (max-width:700px){
+  .gc-target-name{
+    display:flex!important;
+    align-items:center!important;
+    gap:5px!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    overflow:visible!important;
+    white-space:normal!important;
+    line-height:1.08!important;
+  }
+  .gc-target-name-text{
+    display:block!important;
+    flex:1 1 auto!important;
+    min-width:0!important;
+    width:auto!important;
+    max-width:100%!important;
+    white-space:normal!important;
+    overflow:visible!important;
+    text-overflow:clip!important;
+    overflow-wrap:normal!important;
+    word-break:normal!important;
+    hyphens:auto!important;
+    line-height:1.08!important;
+  }
+  .gc-target-verified{
+    flex:0 0 auto!important;
+    width:25px!important;
+    height:25px!important;
+    font-size:23px!important;
+  }
+  .gc-target-copy{min-width:0!important;flex:1 1 0!important;width:0!important}
+}
+
+/* ===== 2) REGISTRATION FIELDS: HOVER/FOCUS MUST LOOK ACTIVE, NOT BLANK ===== */
+form input:not([type="hidden"]):not([type="file"]),
+form select,
+form textarea{
+  background-color:#ffffff!important;
+  color:#12213f!important;
+  -webkit-text-fill-color:#12213f!important;
+}
+form input:not([type="hidden"]):not([type="file"]):hover,
+form select:hover,
+form textarea:hover{
+  background-color:#f1f6ff!important;
+  color:#102a56!important;
+  -webkit-text-fill-color:#102a56!important;
+  border-color:#3d73d8!important;
+}
+form input:not([type="hidden"]):not([type="file"]):focus,
+form select:focus,
+form textarea:focus{
+  background-color:#eaf2ff!important;
+  color:#0c2550!important;
+  -webkit-text-fill-color:#0c2550!important;
+  border-color:#155bd0!important;
+  outline:none!important;
+  box-shadow:0 0 0 3px rgba(21,91,208,.14),0 5px 14px rgba(21,91,208,.08)!important;
+}
+form input:not([type="hidden"]):not([type="file"]):focus::placeholder,
+form textarea:focus::placeholder{
+  color:#71809a!important;
+  opacity:1!important;
+}
+/* If a registration field is wrapped in a label/card, keep that wrapper visibly selected. */
+form label:has(input:focus),
+form label:has(select:focus),
+form label:has(textarea:focus),
+form [class*="field"]:has(input:focus),
+form [class*="field"]:has(select:focus),
+form [class*="field"]:has(textarea:focus){
+  background-color:#eef5ff!important;
+  border-color:#3d73d8!important;
+}
+
+/* ===== 3) FIRST LANDING PAINT: KEEP BOOT SHIELD UNTIL ROUTE HAS SETTLED ===== */
+html.gc-app-booting body>*:not(#gcCleanBootShield){visibility:hidden!important}
+html.gc-app-booting #gcCleanBootShield{visibility:visible!important}
+#gcCleanBootShield.gc-v8-settled{
+  opacity:0!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
+}
+</style>
+<script id="gc-final-polish-v8-js">
+(function(){
+'use strict';
+
+/* Replace the earlier short 220ms reveal with a route-settle reveal. */
+function revealAfterHomeSettles(){
+  var sh=document.getElementById('gcCleanBootShield');
+  if(!sh || sh.classList.contains('gc-v8-settled')) return;
+  var home=document.getElementById('home');
+  var homeReady=false;
+  if(home){
+    var cs=getComputedStyle(home);
+    var rect=home.getBoundingClientRect();
+    homeReady=cs.display!=='none' && cs.visibility!=='hidden' && rect.height>20;
+  }
+  if(homeReady || performance.now()>3200){
+    sh.classList.add('gc-v8-settled');
+    setTimeout(function(){if(sh.parentNode)sh.remove()},420);
+  }else{
+    setTimeout(revealAfterHomeSettles,120);
+  }
+}
+
+/* Disable the old clean-boot timeout/reveal from taking the shield away early. */
+try{
+  var old=document.getElementById('gc-clean-boot-v4');
+  if(old) old.dataset.gcSuperseded='1';
+}catch(e){}
+
+window.addEventListener('load',function(){
+  /* Give Supabase/routing/rendering a little time before showing the final home. */
+  setTimeout(revealAfterHomeSettles,650);
+},{once:true});
+
+setTimeout(revealAfterHomeSettles,900);
+
+/* Extra protection against a hash/router repaint immediately after load. */
+window.addEventListener('hashchange',function(){
+  var sh=document.getElementById('gcCleanBootShield');
+  if(sh && !sh.classList.contains('gc-v8-settled')){
+    setTimeout(revealAfterHomeSettles,300);
+  }
+});
+
+/* Re-apply the mobile name rules after cards are dynamically rendered. */
+function fixMobileNames(){
+  if(innerWidth>700)return;
+  document.querySelectorAll('.gc-target-name-text').forEach(function(el){
+    el.style.setProperty('white-space','normal','important');
+    el.style.setProperty('overflow','visible','important');
+    el.style.setProperty('text-overflow','clip','important');
+    el.style.setProperty('overflow-wrap','normal','important');
+    el.style.setProperty('word-break','normal','important');
+    el.style.setProperty('hyphens','auto','important');
+  });
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fixMobileNames,{once:true});else fixMobileNames();
+window.addEventListener('load',function(){setTimeout(fixMobileNames,500)});
+new MutationObserver(fixMobileNames).observe(document.documentElement,{subtree:true,childList:true});
+})();
+</script>
 </body>
 </html>
 <!-- =========================================================
