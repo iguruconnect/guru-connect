@@ -4577,7 +4577,29 @@ footer:before{
 .gc-final-coin-box strong{display:block!important;font-weight:950!important}
 @media(max-width:640px){.gc-auth-coin-field .gc-golden-coin-icon,.gc-final-coin-icon{width:24px!important;height:24px!important;min-width:24px!important}.gc-auth-coin-field .gc-dollar-coin-icon,.gc-final-coin-icon .gc-dollar-coin-icon{width:15px!important;height:15px!important}}
 </style>
-</head>
+<style id="gc-clean-metal-coin-final">
+.gc-auth-coin-field .gc-golden-coin-icon,.gc-auth-coin-field .gc-final-coin-icon{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ width:30px!important;height:30px!important;min-width:30px!important;border-radius:50%!important;
+ background:radial-gradient(circle at 32% 28%,#fff2a8 0 8%,#f6cf55 20%,#d69b18 55%,#9a6100 100%)!important;
+ border:2px solid #b47a08!important;
+ box-shadow:inset 0 0 0 2px rgba(255,232,125,.65),inset 0 -2px 3px rgba(88,51,0,.35),0 2px 4px rgba(0,0,0,.22)!important;
+ position:relative!important;overflow:hidden!important;
+}
+.gc-auth-coin-field .gc-dollar-coin-icon{
+ width:18px!important;height:18px!important;border-radius:50%!important;
+ border:1.5px solid rgba(111,67,0,.72)!important;background:transparent!important;
+ display:block!important;position:relative!important;
+}
+.gc-auth-coin-field .gc-dollar-coin-icon:after{
+ content:"";position:absolute;left:3px;right:3px;top:3px;bottom:3px;
+ border-radius:50%;border:1px solid rgba(255,235,150,.72);
+}
+@media(max-width:640px){
+ .gc-auth-coin-field .gc-golden-coin-icon,.gc-auth-coin-field .gc-final-coin-icon{width:26px!important;height:26px!important;min-width:26px!important}
+ .gc-auth-coin-field .gc-dollar-coin-icon{width:15px!important;height:15px!important}
+}
+</style></head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
 </div>
@@ -12203,12 +12225,43 @@ const clean=v=>String(v??'').trim();
 function hash6(v){let h=2166136261>>>0;for(const ch of String(v??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return h.toString(36).toUpperCase().padStart(6,'0').slice(-6)}
 function publicId(id,role){return 'GC-'+(role==='student'?'S':'T')+'-'+hash6(id)}
 async function balance(id){const s=S();if(!s||!id)return 0;try{const q=await s.from('gc_coin_wallets').select('balance').eq('profile_id',String(id)).maybeSingle();return Number(q.data?.balance||0)}catch(e){return 0}}
-async function balances(ids){const s=S();if(!s||!ids.length)return{};try{const q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',[...new Set(ids.map(String))]);if(q.error)throw q.error;return Object.fromEntries((q.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]))}catch(e){return{}}}
+async function balances(ids){
+ const ss=S(); if(!ss||!ids.length)return{};
+ const unique=[...new Set(ids.map(x=>String(x||'')).filter(Boolean))], out={};
+ // 1) Wallet may use the profile row id.
+ try{
+   const q=await ss.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',unique);
+   (q.data||[]).forEach(x=>out[String(x.profile_id)]=Number(x.balance||0));
+ }catch(e){}
+ // 2) Some wallets are keyed by Supabase auth user_id. Resolve both profile tables.
+ const missing=unique.filter(id=>out[id]===undefined);
+ for(const table of ['student_profiles','tutor_profiles']){
+   if(!missing.length)break;
+   try{
+     const q=await ss.from(table).select('id,user_id').in('id',missing);
+     if(q.error)continue;
+     const rows=q.data||[], uids=rows.map(r=>String(r.user_id||'')).filter(Boolean);
+     if(!uids.length)continue;
+     const w=await ss.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',uids);
+     if(w.error)continue;
+     const wm={}; (w.data||[]).forEach(x=>wm[String(x.profile_id)]=Number(x.balance||0));
+     rows.forEach(r=>{const id=String(r.id||''),uid=String(r.user_id||'');if(wm[uid]!==undefined)out[id]=wm[uid]});
+   }catch(e){}
+ }
+ return out;
+}
 function cardMeta(c){
- let role=c.classList.contains('gc-target-student')||c.classList.contains('gc-beautiful-student')||c.classList.contains('gc-new-student-card')||/student/i.test(c.className)?'student':'tutor';
+ let role=(c.classList.contains('gc-target-student')||c.classList.contains('gc-beautiful-student')||c.classList.contains('gc-new-student-card')||/student/i.test(c.className))?'student':'tutor';
  let id=c.dataset.studentId||c.dataset.tutorId||c.dataset.profileId||c.dataset.userId||'';
- if(!id){const n=c.querySelector('[data-student-id],[data-tutor-id],[data-profile-id],[data-user-id],[data-gc-more-tutor],[data-gc-more-student]');id=n?.dataset.studentId||n?.dataset.tutorId||n?.dataset.profileId||n?.dataset.userId||n?.getAttribute('data-gc-more-tutor')||n?.getAttribute('data-gc-more-student')||''}
- if(!id){const b=c.querySelector('button[onclick*="openTutorProfile"],button[onclick*="openStudentProfile"],button[onclick*="openPublicTutorProfile"]');const m=String(b?.getAttribute('onclick')||'').match(/(?:openTutorProfile|openStudentProfile|openPublicTutorProfile)\(\s*[\'\"]?([^\'")]+)[\'\"]?\s*\)/);id=m?.[1]||''}
+ if(!id){
+   const n=c.querySelector('[data-student-id],[data-tutor-id],[data-profile-id],[data-user-id],[data-gc-more-tutor],[data-gc-more-student]');
+   id=n?.dataset.studentId||n?.dataset.tutorId||n?.dataset.profileId||n?.dataset.userId||n?.getAttribute('data-gc-more-tutor')||n?.getAttribute('data-gc-more-student')||'';
+ }
+ if(!id){
+   const b=c.querySelector('button[onclick*="openTutorProfile"],button[onclick*="openStudentProfile"],button[onclick*="openPublicTutorProfile"]');
+   const m=String(b?.getAttribute('onclick')||'').match(/(?:openTutorProfile|openStudentProfile|openPublicTutorProfile)\(\s*[\'"]?([^\'")]+)[\'"]?\s*\)/);
+   id=m?.[1]||'';
+ }
  return {id:String(id||''),role};
 }
 function publicIdBadge(c,pid){let h=c.querySelector('.gc-auth-public-id');if(!h){const host=c.querySelector('.gc-target-name,.gc-clean-name,.gc-beautiful-name,.gc-new-name,h3,h4');if(host){h=document.createElement('span');h.className='gc-auth-public-id';host.appendChild(h)}}if(h)h.textContent=pid}
@@ -12271,7 +12324,7 @@ function cardCoinsFallback(c,value){
  return box;
 }
 async function paintCards(){
- const cards=[...document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card')];
+ const cards=[...document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card,[data-profile-id],[data-tutor-id],[data-student-id]')].filter((c,i,a)=>a.indexOf(c)===i);
  const metas=cards.map(cardMeta);const ids=[...new Set(metas.map(x=>x.id).filter(Boolean))];if(!ids.length)return;
  const map=await balances(ids);
  cards.forEach((c,i)=>{const m=metas[i];if(!m.id)return;publicIdBadge(c,publicId(m.id,m.role));const b=coinBox(c)||cardCoinsFallback(c,0);setBoxValue(b,'COINS',map[m.id]??0);});
@@ -12541,6 +12594,16 @@ window.GC_PROFILE_COINS_REFRESH=paint;
  function wire(){document.addEventListener('click',e=>{if(e.target.closest('a[href="#home"],#home,body')){if(home())speak()}},{once:false,capture:true});setTimeout(speak,1200)}
  if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=function(){};
  document.addEventListener('DOMContentLoaded',wire);
+})();
+</script>
+<script id="gc-coins-final-runtime">
+(function(){
+ let timer=0;
+ function run(){try{if(typeof paintCards==='function')paintCards()}catch(e){}}
+ run();
+ document.addEventListener('DOMContentLoaded',run);
+ new MutationObserver(function(){clearTimeout(timer);timer=setTimeout(run,250)}).observe(document.body,{childList:true,subtree:true});
+ setInterval(run,4000);
 })();
 </script>
 </body>
@@ -13631,7 +13694,8 @@ function pid(p){return String(p?.id||p?.studentId||p?.tutorId||'')}
 function open(){state.profile=profile();state.role=role(); state.tab=state.role==='staff'?'admin':'requests'; $('gcCLV2').classList.add('gc-show');$('gcCLV2').setAttribute('aria-hidden','false');render();load()}
 function close(){$('gcCLV2').classList.remove('gc-show');$('gcCLV2').setAttribute('aria-hidden','true')}
 function tabs(){let a=[['requests','📚 LEARNING REQUESTS']]; if(state.role==='student')a.push(['post','➕ POST REQUEST']); if(state.role==='student'||state.role==='tutor')a.push(['mycoins','🪙 MY COINS']); if(state.role==='staff')a.push(['admin','🛡️ COINS + ACCOUNTABILITY']); if(!state.profile)a.push(['login','🔐 LOGIN TO POST']); $('gcCLV2Tabs').innerHTML=a.map(x=>`<button class="gccl-tab ${state.tab===x[0]?'active':''}" onclick="GC_CL_V2.tab('${x[0]}')">${x[1]}</button>`).join('')}
-function render(){tabs();let c=$('gcCLV2Content'); if(!c)return; if(state.tab==='post')c.innerHTML=postView(); else if(state.tab==='mycoins')c.innerHTML=coinsView(); else if(state.tab==='admin')c.innerHTML=adminView(); else if(state.tab==='login'){c.innerHTML='<div class="gccl-card" style="text-align:center"><h3>Login Required to Post a Learning Request</h3><p class="gccl-muted">The Learning Request board is visible to everyone, but only a registered and logged-in Student can post a request.</p><button class="gccl-btn" onclick="(typeof openLoginModal==='function'?openLoginModal():(typeof openStudentLoginModal==='function'?openStudentLoginModal():alert('Please use Student Login from the Menu.')))">LOGIN NOW</button></div>';} else c.innerHTML='<div class="gccl-public-note">📚 <b>Learning Request Board:</b> Students and Tutors can view requests here. <span class="gccl-cost-badge">🪙 100 COINS / REQUEST</span> '+(!state.profile?'Login is required to post or connect.':'')+'</div>'+requestsView()}
+function render(){tabs();let c=$('gcCLV2Content');if(!c)return;if(state.tab==='post')c.innerHTML=postView();else if(state.tab==='mycoins')c.innerHTML=coinsView();else if(state.tab==='admin')c.innerHTML=adminView();else if(state.tab==='login'){c.innerHTML=`<div class="gccl-card" style="text-align:center"><h3>Login Required to Post a Learning Request</h3><p class="gccl-muted">The Learning Request board is visible to everyone, but only a registered and logged-in Student can post a request.</p><button class="gccl-btn" onclick="typeof openLoginModal===\'function\'?openLoginModal():(typeof openStudentLoginModal===\'function\'?openStudentLoginModal():alert(\'Please use Student Login from the Menu.\'))">LOGIN NOW</button></div>`;}else c.innerHTML=`<div class="gccl-public-note">📚 <b>Learning Request Board:</b> Students and Tutors can view requests here. <span class="gccl-cost-badge">100 COINS / REQUEST</span> ${!state.profile?'Login is required to post or connect.':''}</div>${requestsView()}`}
+
 function requestsView(){let isTutor=state.role==='tutor',isStaff=state.role==='staff',isStudent=state.role==='student';let rows=state.requests||[]; if(!isStaff&&isStudent){rows=rows.filter(r=>String(r.student_id||r.studentId||'')===pid(state.profile))} if(!rows.length)return `<div class="gccl-card gccl-empty"><div style="font-size:28px;margin-bottom:8px">📚</div>${!state.profile?'Learning Request board is ready. Login as a Student to post a request or as a registered Tutor to connect with one.':(isTutor?'No open/claimed requests are available right now.':'No learning request records found.')}</div>`;return rows.map(r=>{let st=String(r.status||'Open').toLowerCase();let claimed=!!(r.tutor_id||r.tutorId);let mineTutor=isTutor&&String(r.tutor_id||'')===pid(state.profile);return `<div class="gccl-req"><div class="gccl-req-top"><div><div class="gccl-req-title">${esc(r.subject||'Learning Request')}</div><div class="gccl-muted">${esc(r.topic||'')} ${r.course?'• '+esc(r.course):''}</div></div><span class="gccl-pill ${st}">${esc(r.status||'Open')}</span></div><div class="gccl-meta"><div><b>Student ID</b><span>${esc(r.student_id||'—')}</span></div><div><b>Tutor ID</b><span>${esc(r.tutor_id||'Not connected')}</span></div><div><b>Stream</b><span>${esc(r.stream||'—')}</span></div><div><b>Date / Time</b><span>${esc(r.created_at||r.date_time||'—')}</span></div><div><b>🪙 COIN VALUE</b><span style="color:#047857;font-weight:950">100 GURU COINS</span></div><div style="grid-column:1/-1"><b>Full Issue / Problem</b><span>${esc(r.problem||r.issue||'—')}</span></div></div><div class="gccl-actions">${isTutor&&!claimed&&st!=='solved'?`<button class="gccl-btn green" onclick="GC_CL_V2.claim('${esc(r.id)}')">CONNECT WITH STUDENT</button>`:''}${isStaff&&st!=='solved'&&claimed?`<button class="gccl-btn" onclick="GC_CL_V2.solve('${esc(r.id)}')">MARK SOLVED +100 🪙</button>`:''}${isStudent&&st==='open'?'<span class="gccl-muted">100 🪙 deducted when posted</span>':''}${mineTutor?'<span class="gccl-pill claimed">YOUR CONNECTION</span>':''}</div></div>`}).join('')}
 function postView(){if(state.role!=='student'||!state.profile)return `<div class="gccl-login-banner"><span>🔐 Only a registered &amp; logged-in Student can post a Learning Request.</span><button class="gccl-btn" onclick="openLoginModal?.()">LOGIN NOW</button></div>`;let bal=Number(state.balance)||0;let can=bal>=100;return `<div class="gccl-card"><h3>Post a Learning Request</h3><div class="gccl-note">Each Learning Request costs <b>100 GURU COINS</b>. The 100 coins are deducted from the Student when the request is posted and are transferred to the Tutor when the request is claimed.</div><div class="gccl-grid" style="margin-bottom:12px"><div class="gccl-card" style="padding:12px"><div class="gccl-muted">YOUR BALANCE</div><div class="gccl-balance" style="font-size:26px">${bal.toLocaleString('en-IN')} 🪙</div></div><div class="gccl-card" style="padding:12px"><div class="gccl-muted">REQUEST COST</div><div style="font-size:26px;font-weight:1000;color:#047857">100 🪙</div></div></div>${can?'':'<div class="gccl-note" style="background:#fef2f2;border-color:#fecaca;color:#991b1b"><b>Insufficient GURU COINS.</b> You need at least 100 coins to post a Learning Request.</div>'}<div class="gccl-form"><input id="gcCLCourse" placeholder="Course (e.g. HSC / JEE)"><input id="gcCLStream" placeholder="Stream"><input id="gcCLSubject" placeholder="Subject *"><input id="gcCLTopic" placeholder="Topic / Chapter"><textarea id="gcCLProblem" placeholder="Full Issue / Problem *"></textarea><button class="gccl-btn" ${can?'':'disabled'} onclick="GC_CL_V2.post()">POST REQUEST — 100 🪙</button></div></div>`}
 function coinsView(){return `<div class="gccl-grid"><div class="gccl-card"><h3>Current Balance</h3><div class="gccl-balance">${Number(state.balance)||0} 🪙</div><div class="gccl-muted">Live Supabase wallet</div></div><div class="gccl-card"><h3>Profile ID</h3><div style="font-weight:950;word-break:break-all">${esc(pid(state.profile)||'—')}</div><div class="gccl-muted">${esc(state.role.toUpperCase())}</div></div><div class="gccl-card"><h3>Service Prices</h3><div style="font-weight:850;line-height:1.8">Tutor Listing: 100 🪙<br>Verified Tick: 200 🪙<br>Learning Request: 100 🪙</div></div><div class="gccl-card full"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><h3 style="margin:0">Transaction History</h3><button type="button" class="gc-download-btn" onclick="GC_CL_V2.downloadMyHistory()">⬇ DOWNLOAD HISTORY</button></div>${ledger()}</div></div>`}
