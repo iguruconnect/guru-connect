@@ -13846,3 +13846,210 @@ function patch(){const m=document.getElementById('gcAdminMasterDownload');if(m&&
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',patch);else patch();setTimeout(patch,1500);setInterval(patch,3000);
 })();
 </script>
+
+
+<!-- GURU CONNECT — CONNECTION CHAT + HEADER PLACEMENT FINAL PATCH 2026 -->
+<style id="gc-connection-chat-final-style">
+/* Header: prevent navigation/account controls from colliding on smaller desktop windows. */
+.gc-beautiful-header{overflow:visible!important}
+.gc-header-inner{width:100%!important;max-width:1600px!important;margin:0 auto!important;box-sizing:border-box!important;overflow:visible!important}
+.gc-beautiful-lockup{flex:0 0 auto!important;min-width:0!important}
+.gc-beautiful-nav{min-width:0!important;overflow:visible!important}
+.gc-header-actions{flex:0 0 auto!important;min-width:0!important}
+@media (max-width:1250px){
+  .gc-header-inner{gap:8px!important;padding-left:12px!important;padding-right:12px!important}
+  .gc-logo3-lockup{flex-basis:250px!important;width:250px!important;min-width:250px!important;max-width:250px!important}
+  .gc-logo3-image{width:250px!important}
+  .gc-beautiful-nav{gap:1px!important;justify-content:flex-start!important}
+  .gc-beautiful-nav a{padding:9px 7px!important;font-size:10px!important}
+  .gc-header-contact{padding:10px 12px!important;font-size:10px!important}
+  #navStaffBtn,#navLoginBtn{display:none!important}
+  #currentUserBadge{max-width:185px!important}
+}
+@media (max-width:980px){
+  .gc-header-inner{min-height:72px!important;height:auto!important;padding:7px 10px!important}
+  .gc-logo3-lockup{flex:1 1 auto!important;width:auto!important;min-width:0!important;max-width:none!important;height:auto!important}
+  .gc-logo3-image{width:min(280px,62vw)!important;height:auto!important}
+  .gc-beautiful-nav{display:none!important}
+  .gc-header-contact{display:none!important}
+  #navStaffBtn,#navLoginBtn{display:none!important}
+  .gc-header-actions{margin-left:auto!important}
+  #currentUserBadge{max-width:190px!important}
+  #publicMenuWrapper{display:block!important;flex:0 0 auto!important}
+  .gc-menu-button{min-width:82px!important;height:40px!important;padding:0 13px!important;font-size:11px!important}
+}
+@media (max-width:560px){
+  .gc-header-inner{min-height:64px!important;padding:5px 8px!important}
+  .gc-logo3-image{width:min(225px,61vw)!important}
+  #currentUserBadge{max-width:145px!important}
+  .gc-menu-button{min-width:52px!important;width:52px!important;height:38px!important;padding:0!important}
+  .gc-menu-button span{display:none!important}
+  .gc-menu-button i.fa-chevron-down{display:none!important}
+  #publicNavbarLinks{width:min(290px,calc(100vw - 16px))!important;right:0!important;left:auto!important}
+}
+
+/* Connection chat modal */
+#gcConnectionChatModal{position:fixed;inset:0;z-index:100800;display:none;align-items:center;justify-content:center;padding:12px;background:rgba(2,6,23,.78);backdrop-filter:blur(8px)}
+#gcConnectionChatModal.is-open{display:flex}
+.gc-chat-card{width:min(760px,96vw);height:min(720px,92vh);display:flex;flex-direction:column;background:#fff;border-radius:26px;overflow:hidden;box-shadow:0 30px 100px rgba(0,0,0,.38)}
+.gc-chat-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;background:linear-gradient(135deg,#1264d8,#06a8d8,#19b957);color:#fff}
+.gc-chat-title{font-weight:950;font-size:17px}.gc-chat-sub{font-size:10px;font-weight:800;opacity:.9;margin-top:3px}
+.gc-chat-close{border:0;background:rgba(255,255,255,.16);color:#fff;width:38px;height:38px;border-radius:12px;font-size:20px;cursor:pointer}
+.gc-chat-meta{padding:9px 14px;background:#f8fafc;border-bottom:1px solid #e2e8f0;font-size:10px;color:#475569;font-weight:800;display:flex;gap:8px;flex-wrap:wrap}
+.gc-chat-messages{flex:1;overflow:auto;padding:16px;background:linear-gradient(180deg,#f8fbff,#eef5ff)}
+.gc-chat-empty{text-align:center;color:#94a3b8;font-size:12px;font-weight:800;padding:50px 20px}
+.gc-chat-row{display:flex;margin:8px 0}.gc-chat-row.mine{justify-content:flex-end}.gc-chat-row.theirs{justify-content:flex-start}
+.gc-chat-bubble{max-width:min(78%,560px);padding:10px 12px;border-radius:16px;background:#fff;border:1px solid #dbe5f2;box-shadow:0 4px 12px rgba(15,23,42,.06)}
+.gc-chat-row.mine .gc-chat-bubble{background:#1264d8;color:#fff;border-color:#1264d8;border-bottom-right-radius:5px}.gc-chat-row.theirs .gc-chat-bubble{border-bottom-left-radius:5px}
+.gc-chat-text{font-size:13px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}.gc-chat-time{font-size:8px;font-weight:800;opacity:.65;margin-top:4px}
+.gc-chat-compose{display:flex;gap:8px;padding:11px;border-top:1px solid #e2e8f0;background:#fff}.gc-chat-compose textarea{flex:1;resize:none;height:48px;border:1px solid #cbd5e1;border-radius:13px;padding:11px 12px;font-size:12px;outline:none}.gc-chat-compose textarea:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+.gc-chat-send{border:0;border-radius:13px;padding:0 17px;background:#1264d8;color:#fff;font-weight:950;cursor:pointer}.gc-chat-send:disabled{opacity:.55;cursor:wait}
+.gc-chat-action{border:0;border-radius:10px;padding:9px 12px;background:#1264d8;color:#fff;font-size:10px;font-weight:950;cursor:pointer;box-shadow:0 5px 12px rgba(18,100,216,.15)}
+.gc-chat-action.green{background:#16a34a}.gc-chat-action.gold{background:#f59e0b}.gc-chat-action:disabled{opacity:.5;cursor:wait}
+.gc-lr3-actions{display:flex!important;flex-wrap:wrap!important;gap:7px!important}
+
+/* Dashboard chat list */
+.gc-my-chat-panel{margin-top:20px;border:1px solid #dbe5f2;border-radius:20px;background:#f8fbff;overflow:hidden}.gc-my-chat-head{padding:14px 16px;background:linear-gradient(135deg,#092a66,#1264d8);color:#fff}.gc-my-chat-head h3{margin:0;font-size:15px;font-weight:950}.gc-my-chat-head p{margin:4px 0 0;font-size:10px;font-weight:700;opacity:.9}.gc-my-chat-list{padding:10px}.gc-my-chat-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 10px;border:1px solid #e2e8f0;background:#fff;border-radius:13px;margin-bottom:8px}.gc-my-chat-item:last-child{margin-bottom:0}.gc-my-chat-item strong{font-size:11px;color:#172c67}.gc-my-chat-item span{display:block;font-size:9px;color:#64748b;margin-top:3px;font-weight:700}
+
+/* Admin learning-request monitoring */
+#gcAdminLearningMonitor{margin-top:18px;border:1px solid #dbe5f2;border-radius:20px;overflow:hidden;background:#fff}.gc-admin-lr-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;background:linear-gradient(135deg,#092a66,#1264d8);color:#fff}.gc-admin-lr-head h3{margin:0;font-size:15px;font-weight:950}.gc-admin-lr-head p{margin:3px 0 0;font-size:9px;opacity:.9}.gc-admin-lr-refresh{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;border-radius:10px;padding:8px 10px;font-size:9px;font-weight:900;cursor:pointer}.gc-admin-lr-table{overflow:auto}.gc-admin-lr-table table{width:100%;border-collapse:collapse;min-width:900px}.gc-admin-lr-table th,.gc-admin-lr-table td{padding:9px 10px;border-bottom:1px solid #e2e8f0;text-align:left;font-size:9px;white-space:nowrap}.gc-admin-lr-table th{background:#f8fafc;color:#475569;text-transform:uppercase;font-weight:950}.gc-admin-lr-status{font-weight:950}.gc-held{color:#b45309;font-weight:950}.gc-connected{color:#15803d;font-weight:950}
+@media(max-width:640px){.gc-chat-card{width:100%;height:94vh;border-radius:20px}.gc-chat-bubble{max-width:86%}.gc-chat-compose{padding:8px}.gc-chat-send{padding:0 13px}.gc-chat-action{font-size:9px;padding:8px 9px}}
+</style>
+
+<script id="gc-connection-chat-final-js">
+(function(){
+'use strict';
+const SUP=()=>window.gcSupabase||null;
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const role=()=>String(localStorage.getItem('active_user_role')||'').toLowerCase();
+const pid=()=>String(localStorage.getItem('active_user_profile_id')||'');
+const uid=()=>String(localStorage.getItem('active_user_id')||'');
+const uname=()=>String(localStorage.getItem('active_user_name')||'User');
+const chatKey=(rid,a,b)=>'gc_chat_v1_'+String(rid)+'_'+String(a)+'_'+String(b);
+const localLoad=(k)=>{try{return JSON.parse(localStorage.getItem(k)||'[]')}catch(_){return[]}};
+const localSave=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(_){}};
+function fmt(t){try{return new Date(t).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}catch(_){return''}}
+function currentProfileId(){return pid()}
+function ensureModal(){
+ if(document.getElementById('gcConnectionChatModal'))return;
+ const m=document.createElement('div');m.id='gcConnectionChatModal';m.innerHTML=`<div class="gc-chat-card" role="dialog" aria-modal="true"><div class="gc-chat-head"><div><div class="gc-chat-title" id="gcChatTitle">Connected Chat</div><div class="gc-chat-sub" id="gcChatSub">Guru Connect internal chat</div></div><button class="gc-chat-close" onclick="GC_CHAT.close()" aria-label="Close">×</button></div><div class="gc-chat-meta" id="gcChatMeta"></div><div class="gc-chat-messages" id="gcChatMessages"></div><div class="gc-chat-compose"><textarea id="gcChatInput" maxlength="5000" placeholder="Type your message..."></textarea><button class="gc-chat-send" id="gcChatSend"><i class="fa-solid fa-paper-plane"></i> SEND</button></div></div>`;
+ document.body.appendChild(m);
+ m.addEventListener('click',e=>{if(e.target===m)GC_CHAT.close()});
+ document.getElementById('gcChatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();document.getElementById('gcChatSend').click()}});
+}
+let state=null,pollTimer=null;
+async function cloudMessages(st){
+ const s=SUP();if(!s)return[];
+ try{
+   const [a,b]=await Promise.all([
+    s.from('gc_messages').select('*').eq('from_id',String(st.me)).eq('to_id',String(st.other)).like('subject','GCCHAT|'+String(st.requestId)+'|%').order('created_at',{ascending:true}),
+    s.from('gc_messages').select('*').eq('from_id',String(st.other)).eq('to_id',String(st.me)).like('subject','GCCHAT|'+String(st.requestId)+'|%').order('created_at',{ascending:true})
+   ]);
+   if(a.error||b.error)return null;
+   return [...(a.data||[]),...(b.data||[])].sort((x,y)=>String(x.created_at).localeCompare(String(y.created_at)));
+ }catch(_){return null}
+}
+async function renderChat(){
+ if(!state)return;
+ const cloud=await cloudMessages(state);const local=localLoad(state.key);let rows=cloud===null?local:cloud.map(m=>({id:m.id,fromId:String(m.from_id),fromName:m.from_name,body:m.body,createdAt:m.created_at}));
+ const list=document.getElementById('gcChatMessages');if(!list)return;
+ list.innerHTML=rows.length?rows.map(m=>`<div class="gc-chat-row ${String(m.fromId)===String(state.me)?'mine':'theirs'}"><div class="gc-chat-bubble"><div class="gc-chat-text">${esc(m.body)}</div><div class="gc-chat-time">${esc(m.fromName||'User')} · ${esc(fmt(m.createdAt))}</div></div></div>`).join(''):'<div class="gc-chat-empty"><i class="fa-solid fa-comments text-3xl mb-3"></i><br>No messages yet. Start the conversation.</div>';
+ list.scrollTop=list.scrollHeight;
+}
+async function send(){
+ if(!state)return;const input=document.getElementById('gcChatInput'),btn=document.getElementById('gcChatSend'),body=input.value.trim();if(!body)return;
+ btn.disabled=true;const now=new Date().toISOString();const id='chat_'+Date.now()+'_'+Math.random().toString(36).slice(2);const subject='GCCHAT|'+state.requestId+'|'+state.subject;
+ const m={id,fromType:'user',fromId:String(state.me),fromName:uname(),toType:'user',toId:String(state.other),toRole:state.otherRole,toName:state.otherName,subject,body,createdAt:now,read:false};
+ const local=localLoad(state.key);local.push(m);localSave(state.key,local);input.value='';await renderChat();
+ const s=SUP();if(s){try{if(typeof window.gcGetAnonymousUser==='function')await window.gcGetAnonymousUser();const r=await s.from('gc_messages').upsert({id,from_type:'user',from_id:String(state.me),from_name:uname(),to_type:'user',to_id:String(state.other),to_role:state.otherRole,to_name:state.otherName,subject,body,created_at:now,read:false},{onConflict:'id'});if(r.error)console.warn('Chat cloud save failed; local copy retained.',r.error)}catch(e){console.warn('Chat cloud save skipped.',e)}}
+ btn.disabled=false;
+}
+function open(st){
+ if(!st||!st.requestId||!st.me||!st.other)return alert('This connection is not ready for chat yet.');
+ ensureModal();state={...st,key:chatKey(st.requestId,st.me,st.other)};
+ document.getElementById('gcChatTitle').textContent='Chat with '+st.otherName;
+ document.getElementById('gcChatSub').textContent='GURU CONNECT · Live internal conversation';
+ document.getElementById('gcChatMeta').innerHTML='<span>📚 '+esc(st.subject||'Learning Request')+'</span><span>🪙 Coins Held: '+Number(st.coinsHeld||0)+'</span><span>🔐 Request: '+esc(st.requestCode||st.requestId)+'</span>';
+ document.getElementById('gcConnectionChatModal').classList.add('is-open');renderChat();clearInterval(pollTimer);pollTimer=setInterval(renderChat,3500);setTimeout(()=>document.getElementById('gcChatInput')?.focus(),150);
+}
+function close(){document.getElementById('gcConnectionChatModal')?.classList.remove('is-open');clearInterval(pollTimer);pollTimer=null;state=null}
+window.GC_CHAT={open,close,send};
+document.addEventListener('click',e=>{if(e.target.closest('#gcChatSend'))send()});
+
+function requestState(r){
+ const me=currentProfileId(),myRole=role();
+ const student=String(r.student_id||''),tutor=String(r.tutor_id||'');
+ if(!me||!['student','tutor'].includes(myRole))return null;
+ if(myRole==='student'&&student===me&&tutor)return {me,other:tutor,otherRole:'tutor',otherName:r.tutor_name||r.tutorName||findName(tutor,'tutor'),subject:r.subject,coinsHeld:Number(r.coins_held||0),requestId:r.id,requestCode:r.request_code};
+ if(myRole==='tutor'&&tutor===me&&student)return {me,other:student,otherRole:'student',otherName:r.student_name||r.studentName||findName(student,'student'),subject:r.subject,coinsHeld:Number(r.coins_held||0),requestId:r.id,requestCode:r.request_code};
+ return null;
+}
+function findName(id,rr){
+ const arr=rr==='tutor'?(window.tutorDirectoryList||[]):(window.studentDirectoryList||[]);const x=arr.find(v=>String(v.id)===String(id)||String(v.gcId)===String(id));return x?.name||((rr==='tutor'?'Tutor':'Student')+' '+String(id).slice(0,6));
+}
+function chatButton(r,label){const st=requestState(r);if(!st)return '';const payload=encodeURIComponent(JSON.stringify(st));return `<button type="button" class="gc-chat-action green" onclick="GC_CHAT.open(JSON.parse(decodeURIComponent('${payload}')))"><i class="fa-solid fa-comments"></i> ${esc(label||'OPEN CHAT')}</button>`}
+
+/* Extend the Learning Request cards without replacing the existing secure RPC lifecycle. */
+const oldActions=window.GC_LR3?.accept;
+function patchLearningCards(){
+ document.querySelectorAll('.gc-lr3-card').forEach(card=>{
+   if(card.dataset.gcChatPatched==='1')return;
+   const code=card.querySelector('.gc-lr3-id')?.textContent?.trim();
+   if(!code)return;
+   const rows=window.__gcLearningRequestsCache||[];const r=rows.find(x=>String(x.request_code)===code);if(!r)return;
+   const acts=card.querySelector('.gc-lr3-actions');if(!acts)return;
+   const my=role(),me=pid();let should=false,label='OPEN CHAT';
+   if(my==='tutor'&&String(r.tutor_id)===me&&['TUTOR_ACCEPTED','TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED','APPROVED'].includes(String(r.status))){should=true;label='CHAT WITH STUDENT'}
+   if(my==='student'&&String(r.student_id)===me&&String(r.tutor_id)&&!['OPEN'].includes(String(r.status))){should=true;label='CHAT WITH TUTOR'}
+   if(should){acts.insertAdjacentHTML('afterbegin',chatButton(r,label));card.dataset.gcChatPatched='1'}
+ });
+}
+const oldRender=window.GC_LR3?.open;
+setInterval(patchLearningCards,1200);
+
+/* Wrap the final connect RPC so clicking Connect immediately opens the new chat. */
+if(window.GC_LR3&&typeof window.GC_LR3.accept==='function'){
+ const originalAccept=window.GC_LR3.accept;
+ window.GC_LR3.accept=async function(id){
+   const before=(window.__gcLearningRequestsCache||[]).find(x=>String(x.id)===String(id));
+   await originalAccept(id);
+   try{
+     const s=SUP();let fresh=before;
+     if(s){const q=await s.from('gc_learning_requests_v2').select('*').eq('id',String(id)).maybeSingle();if(q.data)fresh=q.data}
+     if(fresh){await new Promise(r=>setTimeout(r,300));const st=requestState({...fresh,tutor_id:fresh.tutor_id||pid()});if(st)open(st)}
+   }catch(e){console.warn('Auto-open chat skipped',e)}
+ }
+}
+
+/* Student/Tutor dashboard: show all active connected requests as a dedicated inbox/chat area. */
+async function renderMyChats(){
+ const host=document.getElementById('userDashboardContent');if(!host||!['student','tutor'].includes(role())||!pid())return;
+ let rows=[];const s=SUP();if(s){try{const field=role()==='student'?'student_id':'tutor_id';const q=await s.from('gc_learning_requests_v2').select('*').eq(field,pid()).order('created_at',{ascending:false}).limit(100);if(!q.error)rows=q.data||[]}catch(_){}}
+ if(!rows.length)return;
+ let panel=host.querySelector('#gcMyChatPanel');if(!panel){panel=document.createElement('section');panel.id='gcMyChatPanel';panel.className='gc-my-chat-panel';host.appendChild(panel)}
+ panel.innerHTML=`<div class="gc-my-chat-head"><h3><i class="fa-solid fa-comments"></i> CONNECTIONS & LIVE CHAT</h3><p>Your connected Learning Requests. Open the conversation directly from here.</p></div><div class="gc-my-chat-list">${rows.map(r=>{const st=requestState(r);return st?`<div class="gc-my-chat-item"><div><strong>${esc(r.subject||'Learning Request')}</strong><span>${esc(r.request_code||r.id)} · 🪙 ${Number(r.coins_held||0)} Held · ${esc(String(r.status||'').replaceAll('_',' '))}</span></div>${chatButton(r,role()==='student'?'CHAT WITH TUTOR':'CHAT WITH STUDENT')}</div>`:''}).filter(Boolean).join('')||'<div class="text-center text-slate-400 text-xs py-5">No active connections yet.</div>'}</div>`;
+}
+const originalDashboard=window.renderUserDashboard;
+if(typeof originalDashboard==='function'&&!originalDashboard.__gcChatWrapped){
+ const wrapped=function(p){originalDashboard(p);setTimeout(renderMyChats,250);};wrapped.__gcChatWrapped=true;window.renderUserDashboard=wrapped;
+}
+
+/* Staff dashboard: live Learning Request / Held Coins monitor. */
+async function adminMonitor(){
+ if(!document.getElementById('staffAdminDashboard')||!document.getElementById('staffAdminDashboard').classList.contains('hidden')===false)return;
+ const host=document.getElementById('staffAdminDashboard');if(!host)return;
+ let panel=document.getElementById('gcAdminLearningMonitor');if(!panel){panel=document.createElement('section');panel.id='gcAdminLearningMonitor';host.querySelector('.bg-white')?.appendChild(panel)}
+ const s=SUP();if(!s){panel.innerHTML='<div class="gc-admin-lr-head"><div><h3>Learning Request & Coins Monitor</h3><p>Secure cloud connection required for live monitoring.</p></div></div>';return}
+ try{
+  const q=await s.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(300);if(q.error)throw q.error;const rows=q.data||[];
+  panel.innerHTML=`<div class="gc-admin-lr-head"><div><h3><i class="fa-solid fa-shield-halved"></i> Learning Request & Coins Monitor</h3><p>Admin view of Student–Tutor connections, live chat state and Coins Held.</p></div><button class="gc-admin-lr-refresh" onclick="GC_CHAT_ADMIN.refresh()">↻ REFRESH</button></div><div class="gc-admin-lr-table"><table><thead><tr><th>Request</th><th>Student ID</th><th>Tutor ID</th><th>Subject</th><th>Status</th><th>Coins Held</th><th>Chat</th></tr></thead><tbody>${rows.map(r=>{const connected=!!r.tutor_id;return `<tr><td>${esc(r.request_code||r.id)}</td><td>${esc(r.student_short_id||String(r.student_id||'').slice(0,8))}</td><td>${esc(r.tutor_short_id||String(r.tutor_id||'Not connected').slice(0,8))}</td><td>${esc(r.subject||'—')}</td><td class="gc-admin-lr-status">${esc(String(r.status||'').replaceAll('_',' '))}</td><td class="gc-held">🪙 ${Number(r.coins_held||0)}</td><td class="${connected?'gc-connected':''}">${connected?'CONNECTED':'OPEN'}</td></tr>`}).join('')||'<tr><td colspan="7">No Learning Requests found.</td></tr>'}</tbody></table></div>`;
+ }catch(e){panel.innerHTML='<div class="p-4 text-sm text-red-600 font-bold">Could not load Learning Requests: '+esc(e.message||e)+'</div>'}
+}
+window.GC_CHAT_ADMIN={refresh:adminMonitor};
+function adminLoop(){if(document.getElementById('staffAdminDashboard')&&!document.getElementById('staffAdminDashboard').classList.contains('hidden'))adminMonitor()}
+setTimeout(adminLoop,700);setInterval(adminLoop,5000);
+
+/* Refresh the student/tutor chat inbox when dashboard is opened later by existing code. */
+setInterval(()=>{if(document.getElementById('gcMyChatPanel')&&role()!=='admin')renderMyChats()},7000);
+})();
+</script>
