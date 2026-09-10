@@ -12591,6 +12591,19 @@ window.GC_PROFILE_COINS_REFRESH=paint;
  setInterval(()=>{patchMaster();patchSelected()},1200);
 })();
 </script>
+
+<!-- GURU CONNECT: FINAL RECIPIENT-CONTROLLED CONNECTION WORKFLOW -->
+<script id="gc-final-connection-request-workflow">
+(function(){
+'use strict';
+function cloud(){return window.gcSupabase||null} function myRole(){return String(localStorage.getItem('active_user_role')||'').toLowerCase()} function myId(){return String(localStorage.getItem('active_user_profile_id')||'')}
+function notice(title,msg,icon){if(typeof gcV4Popup==='function'){gcV4Popup(title,msg,'success');return}if(typeof showProtectedPopup==='function'){showProtectedPopup(title,msg,icon||'fa-link');return}alert(title+'\n\n'+msg)}
+async function send(targetId,targetRole,learningRequestId){const s=cloud();if(!s)return alert('Secure connection is unavailable.');const role=myRole();if(!['student','tutor'].includes(role)||!myId())return alert('Please login as a registered Student or Tutor first.');const r=await s.rpc('gc_send_connection_request',{p_target_profile_id:String(targetId),p_target_role:targetRole,p_learning_request_id:learningRequestId?String(learningRequestId):null,p_message:learningRequestId?'Tutor would like to connect regarding your Learning Request.':'Connection request from GURU CONNECT member.'});if(r.error){notice('CONNECTION NOT SENT',r.error.message||'Please try again.','fa-circle-exclamation');return false}notice('CONNECTION REQUEST SENT',role==='tutor'?'Your request has been sent to the Student. The Student has complete freedom to ACCEPT or REJECT it.':'Your request has been sent to the Tutor. The Tutor must accept it before the private connection/chat becomes active.','fa-paper-plane');return true}
+window.GC_sendCloudConnectionRequest=send;
+window.connectWithTutor=async function(tutorId){const t=(typeof tutorDirectoryList!=='undefined')?tutorDirectoryList.find(x=>String(x.id)===String(tutorId)):null;if(!t)return;if(myRole()!=='student'){if(typeof showProtectedPopup==='function')showProtectedPopup('STUDENT ACCESS REQUIRED','Only a registered Student can send a connection request to a Tutor.','fa-user-graduate');else alert('Please login as a Student.');return}const real=typeof isRealTutor==='function'?isRealTutor(t):(t.isDummy===false);if(!real){notice('TUTOR CURRENTLY UNAVAILABLE','This profile is a pre-listed/illustrative profile and cannot receive a live connection request yet.','fa-clock');return}await send(t.id,'tutor',null)};
+window.connectWithStudent=async function(studentId){const st=(typeof studentDirectoryList!=='undefined')?studentDirectoryList.find(x=>String(x.id)===String(studentId)):null;if(!st)return;if(myRole()!=='tutor'){if(typeof showProtectedPopup==='function')showProtectedPopup('TUTOR ACCESS REQUIRED','Only a registered Tutor can send a connection request to a Student.','fa-user-tie');else alert('Please login as a Tutor.');return}const real=typeof isRealStudent==='function'?isRealStudent(st):(st.isDummy===false);if(!real){notice('STUDENT CURRENTLY UNAVAILABLE','This profile is a pre-listed/illustrative profile and cannot receive a live connection request yet.','fa-clock');return}await send(st.id,'student',null)};
+})();
+</script>
 </html>
 <!-- =========================================================
      GURU CONNECT — HORIZONTAL SIGNATURE PROFILE CARDS
