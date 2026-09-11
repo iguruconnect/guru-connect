@@ -41,7 +41,7 @@ async function boot(){
     $('subtitle').textContent=role==='student'?'Your profile, permanent Learning Request records, Tutor approvals, private chat, scheduling and Coins are all here.':'All Student Learning Requests, your sent connection requests, accepted chats, scheduling and Coins are all here.';
     $('nPost').classList.toggle('hidden',role!=='student');
     if(sb) await refresh();
-    const h=location.hash.replace('#','');tab(['home','requests','post','connections','coins','profile'].includes(h)?h:'home');
+    const h=location.hash.replace('#','');if(h==='learning-requests'){location.replace('learning.html');return}tab(['home','requests','post','connections','coins','profile'].includes(h)?h:'home');
   }catch(err){
     console.error('GURU CONNECT Kingdom boot error:',err);
     // Keep navigation working even if a cloud query temporarily fails.
@@ -84,5 +84,5 @@ document.addEventListener('click',function(e){
   if(!b)return;
   e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();logoutNow();
 },true);
-window.addEventListener('hashchange',()=>{const h=location.hash.replace('#','');if(h&&['home','requests','post','connections','coins','profile'].includes(h))tab(h)});boot();
+window.addEventListener('hashchange',()=>{const h=location.hash.replace('#','');if(h==='learning-requests'){location.replace('learning.html');return}if(h&&['home','requests','post','connections','coins','profile'].includes(h))tab(h)});boot();
 </script></body></html>
