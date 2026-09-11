@@ -5739,11 +5739,7 @@ footer:before{
 <footer id="gcStandardFooter" class="w-full">
   <div class="gc-footer-inner">
     <div class="gc-footer-brand">
-      <div class="gc-footer-logo-wrap"><img id="gcFooterLogo" alt="GURU CONNECT" /></div>
-      <div>
-        <div class="gc-footer-title">GURU CONNECT</div>
-        <div class="gc-footer-tagline">Education &amp; Tutor–Student Connecting Platform<br>Online Tutoring Service</div>
-      </div>
+      <div class="gc-footer-logo-wrap"><img id="gcFooterLogo" src="guru-connect-round-logo.png" alt="GURU CONNECT round logo" /></div>
     </div>
     <div class="gc-footer-links">
       <a href="javascript:void(0)" onclick="openAboutModal()">About Us</a>
@@ -5764,10 +5760,10 @@ footer:before{
 
 <style id="gc-standard-footer-style">
 #gcStandardFooter{background:linear-gradient(135deg,#07183f,#102d69,#07183f)!important;color:#cbd5e1!important;border-top:4px solid transparent!important;border-image:linear-gradient(90deg,#ef233c,#ff8a00,#ffd21a,#19b957,#06b6d4,#1264d8,#6d3df5) 1!important;padding:0!important;position:relative!important;box-sizing:border-box!important;min-height:0!important;height:auto!important;}
-.gc-footer-inner{max-width:1280px;margin:0 auto;padding:30px 22px 18px;box-sizing:border-box;}
-.gc-footer-brand{display:flex;align-items:center;gap:13px;}
-.gc-footer-logo-wrap{width:58px;height:58px;border-radius:16px;background:#fff;display:grid;place-items:center;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,.2);flex:0 0 auto;}
-#gcFooterLogo{width:52px;height:52px;object-fit:contain;display:block;}
+.gc-footer-inner{max-width:1280px;margin:0 auto;padding:22px 22px 16px;box-sizing:border-box;}
+.gc-footer-brand{display:flex;align-items:center;gap:0;}
+.gc-footer-logo-wrap{width:76px;height:76px;border-radius:50%;background:transparent;display:grid;place-items:center;overflow:hidden;box-shadow:none;flex:0 0 auto;}
+#gcFooterLogo{width:76px;height:76px;object-fit:contain;display:block;}
 .gc-footer-title{font-size:20px;font-weight:1000;letter-spacing:.04em;color:#fff;}
 .gc-footer-tagline{font-size:11px;line-height:1.55;color:#cbd5e1;margin-top:3px;font-weight:700;}
 .gc-footer-links{display:flex;flex-wrap:wrap;gap:10px 22px;margin-top:22px;padding-top:17px;border-top:1px solid rgba(255,255,255,.13);}
@@ -5779,7 +5775,7 @@ footer:before{
 @media(max-width:640px){.gc-footer-inner{padding:24px 15px 15px}.gc-footer-title{font-size:17px}.gc-footer-links{gap:9px 15px}.gc-footer-bottom{display:block}.gc-footer-bottom span{display:block;margin-top:5px}.gc-footer-policy{font-size:9px}}
 </style>
 <script id="gc-footer-logo-sync">
-(function(){function sync(){var src=document.querySelector('.gc-logo3-image')?.getAttribute('src');var img=document.getElementById('gcFooterLogo');if(src&&img)img.src=src;} if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();window.addEventListener('load',sync);setTimeout(sync,500);})();
+(function(){function sync(){var img=document.getElementById('gcFooterLogo');if(img)img.src='guru-connect-round-logo.png';}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();window.addEventListener('load',sync);})();
 </script>
 
 <!-- JavaScript Application Logic -->
@@ -10245,7 +10241,7 @@ body {
   try {
     if (window.supabase && GC_SUPABASE_ANON_KEY && !GC_SUPABASE_ANON_KEY.includes('PASTE_YOUR')) {
       gcSupabase = window.supabase.createClient(GC_SUPABASE_URL, GC_SUPABASE_ANON_KEY, {
-        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false }
+        auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
       });
       window.gcSupabase = gcSupabase;
       gcCloudEnabled = true;
@@ -10777,10 +10773,17 @@ body {
   async function gcResetPassword() {
     const email=(document.getElementById('loginEmailInput')?.value||'').trim().toLowerCase();
     if(!email){alert('Enter your registered email first.');return;}
-    if(!gcSupabase){alert('Supabase is not configured.');return;}
-    const r=await gcSupabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname+'?password_reset=1'});
-    if(r.error){alert(r.error.message||'Could not send reset email.');return;}
-    alert('Password reset email sent. Please check your inbox.');
+    if(!/^\S+@\S+\.\S+$/.test(email)){alert('Enter a valid registered email address.');return;}
+    if(!gcSupabase){alert('Supabase is not configured. Please refresh the website.');return;}
+    const redirectTo=window.location.origin+window.location.pathname+'?password_reset=1';
+    try{
+      const r=await gcSupabase.auth.resetPasswordForEmail(email,{redirectTo});
+      if(r.error) throw r.error;
+      alert('Reset link sent successfully. Please check your email Inbox and Spam/Junk folder.');
+    }catch(e){
+      console.error('Password reset email error:',e);
+      alert('Reset link could not be sent: '+(e?.message||'Supabase email service error.'));
+    }
   }
 
   window.gcEmailLogin=gcEmailLogin;
@@ -12751,7 +12754,7 @@ window.GC_PROFILE_COINS_REFRESH=paint;
  const S=()=>window.gcSupabase||null;
  function show(){const m=document.getElementById('gcPasswordRecoveryModal');if(m){m.classList.remove('hidden');m.classList.add('flex');}}
  window.gcFinishPasswordReset=async function(){const a=document.getElementById('gcRecoveryPassword')?.value||'',b=document.getElementById('gcRecoveryPassword2')?.value||'';if(a.length<8)return alert('Password must be at least 8 characters.');if(a!==b)return alert('Passwords do not match.');const s=S();if(!s)return alert('Supabase is not connected.');const btn=document.getElementById('gcRecoverySave');if(btn){btn.disabled=true;btn.textContent='UPDATING…'}try{const r=await s.auth.updateUser({password:a});if(r.error)throw r.error;alert('Password updated successfully. Please login with your new password.');document.getElementById('gcPasswordRecoveryModal')?.classList.add('hidden');document.getElementById('gcPasswordRecoveryModal')?.classList.remove('flex');try{await s.auth.signOut()}catch(_){}history.replaceState({},document.title,location.pathname);openLoginModal?.();}catch(e){alert('Password reset failed: '+(e.message||e));}finally{if(btn){btn.disabled=false;btn.textContent='UPDATE PASSWORD'}}};
- async function boot(){const s=S();if(!s)return;try{const u=new URL(location.href);if(u.searchParams.get('password_reset')==='1')show();}catch(_){};s.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY')show();});}
+ async function boot(){const s=S();if(!s)return;try{const u=new URL(location.href);if(u.searchParams.get('password_reset')==='1')setTimeout(show,120);if(location.hash.includes('access_token=')||location.hash.includes('type=recovery'))setTimeout(show,120);}catch(_){};s.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY')show();});}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
@@ -14443,3 +14446,11 @@ body{justify-content:flex-start!important}
 <script id="gc-user-final-ui-fix-js">
 (function(){'use strict';function instantRegistrationTab(){const student=document.getElementById('tabStudentBtn'),tutor=document.getElementById('tabTutorBtn');if(!student||!tutor)return;[student,tutor].forEach(btn=>btn.addEventListener('pointerdown',function(){[student,tutor].forEach(x=>{x.classList.remove('bg-brand-blue','text-white','shadow');x.classList.add('text-slate-600','hover:text-brand-dark','hover:bg-slate-200')});this.classList.remove('text-slate-600','hover:text-brand-dark','hover:bg-slate-200');this.classList.add('bg-brand-blue','text-white','shadow')},{passive:true}))}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',instantRegistrationTab);else instantRegistrationTab()})();
 </script>
+
+<style id="gc-home-account-controls-final">
+/* Student/Tutor dashboard and logout controls must never occupy homepage header space. */
+body:not(.gc-dashboard-page) #currentUserBadge,
+body:not(.gc-dashboard-page) #currentUserBadge.gc-auth-visible,
+body:not(.gc-dashboard-page) .gc-account-dashboard,
+body:not(.gc-dashboard-page) .gc-account-logout{display:none!important;}
+</style>
