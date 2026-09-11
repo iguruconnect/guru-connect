@@ -6593,6 +6593,8 @@ footer:before{
             localStorage.setItem('active_user_name', user.name);
             localStorage.setItem('active_user_phone', user.phone);
             localStorage.setItem('active_user_role', role);
+            localStorage.setItem('active_user_profile_id', user.id);
+            localStorage.setItem('active_user_id', user.user_id || user.id || '');
             alert('Login successful!');
             closeLoginModal();
             updateAuthBadge();
@@ -14130,5 +14132,35 @@ setInterval(()=>{if(document.getElementById('gcMyChatPanel')&&role()!=='admin')r
   }
   window.connectWithTutor=function(tutorId){return secureConnect(String(tutorId),'tutor')};
   window.connectWithStudent=function(studentId){return secureConnect(String(studentId),'student')};
+})();
+</script>
+
+
+<!-- GURU CONNECT FINAL KINGDOM / LEARNING PAGE / ADMIN ESCROW PATCH -->
+<style id="gc-final-kingdom-polish">
+#gcAdminLearningEscrow{margin-top:18px;border:1px solid #dbe5f2;border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 12px 35px rgba(16,35,78,.08)}
+.gc-esc-head{padding:17px 18px;background:linear-gradient(135deg,#071633,#123b8f,#155eef);color:#fff;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}.gc-esc-head h3{margin:0;font-size:17px;font-weight:950}.gc-esc-head p{margin:4px 0 0;font-size:10px;color:#dbeafe}.gc-esc-filter{display:flex;gap:7px;flex-wrap:wrap}.gc-esc-filter button{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.12);color:#fff;border-radius:10px;padding:8px 10px;font-size:9px;font-weight:900;cursor:pointer}.gc-esc-body{padding:14px}.gc-esc-table{overflow:auto}.gc-esc-table table{width:100%;border-collapse:collapse;min-width:1120px;font-size:10px}.gc-esc-table th,.gc-esc-table td{padding:9px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:top}.gc-esc-table th{font-size:8px;text-transform:uppercase;color:#64748b;background:#f8fafc}.gc-esc-hold{color:#b45309;font-weight:950}.gc-esc-ok{color:#047857;font-weight:950}.gc-esc-bad{color:#b91c1c;font-weight:950}.gc-esc-actions{display:flex;gap:5px;flex-wrap:wrap}.gc-esc-actions button{border:0;border-radius:8px;padding:7px 9px;color:#fff;font-size:8px;font-weight:950;cursor:pointer}.gc-esc-approve{background:#059669}.gc-esc-deny{background:#dc2626}.gc-esc-refresh{background:#155eef}
+</style>
+<script id="gc-final-kingdom-polish-js">
+(function(){
+'use strict';
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const S=()=>window.gcSupabase||null;
+function goLearning(e){const a=e.target.closest&&e.target.closest('#publicNavbarLinks a');if(!a)return;const txt=(a.textContent||'').trim().toLowerCase();if(txt.includes('learning request')){e.preventDefault();e.stopImmediatePropagation();location.href='learning.html';return false}}
+document.addEventListener('click',goLearning,true);
+function forceDashboard(){const r=localStorage.getItem('active_user_role');if(r==='student'||r==='tutor'){location.replace('dashboard.html');return true}return false}
+const oldOpen=window.openUserDashboard;window.openUserDashboard=function(){if(forceDashboard())return;if(typeof oldOpen==='function')return oldOpen.apply(this,arguments)};
+function hideLegacy(){try{document.getElementById('gcCLV2')?.classList.remove('gc-show')}catch(_){};try{const x=document.getElementById('gcCLV2');if(x)x.style.display='none'}catch(_){} }
+window.addEventListener('load',()=>{hideLegacy();setTimeout(hideLegacy,700);setTimeout(hideLegacy,1600);});
+async function adminEscrow(filter='ALL'){
+ const host=document.getElementById('gcAdminLearningEscrow');if(!host)return;const s=S();if(!s)return;
+ const q=await s.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(1000);if(q.error){host.innerHTML='<div class="gc-esc-head"><div><h3>Learning Request Escrow</h3><p>'+esc(q.error.message)+'</p></div></div>';return}
+ let rows=q.data||[];if(filter==='HOLD')rows=rows.filter(r=>Number(r.coins_held||0)>0);if(filter==='ACTION')rows=rows.filter(r=>['PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','TUTOR_COMPLETED'].includes(String(r.status||''))||!!r.student_outcome);
+ const body=rows.map(r=>{const st=String(r.status||'OPEN'),out=String(r.student_outcome||'PENDING');const actionable=['PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','TUTOR_COMPLETED'].includes(st)&&Number(r.coins_held||0)>0;return `<tr><td><b>${esc(r.request_code||r.id)}</b><br><span class="gc-esc-hold">🪙 ${Number(r.coins_held||0)} HELD</span></td><td>${esc(r.student_short_id||('ST-'+String(r.student_id||'').replaceAll('-','').slice(0,6).toUpperCase()))}</td><td>${esc(r.tutor_short_id||(r.tutor_id?'TU-'+String(r.tutor_id).replaceAll('-','').slice(0,6).toUpperCase():'Not connected'))}</td><td>${esc(r.course||'—')}<br>${esc(r.stream||'—')}</td><td><b>${esc(r.subject||'—')}</b><br>${esc(r.topic||'—')}</td><td>${esc(r.learning_deadline?new Date(r.learning_deadline).toLocaleString('en-IN'):'—')}</td><td>${esc(new Date(r.created_at).toLocaleString('en-IN'))}</td><td>${esc(st.replaceAll('_',' '))}</td><td>${esc(out)}${r.admin_decision_note?'<br><small>'+esc(r.admin_decision_note)+'</small>':''}</td><td>${esc(r.issue||r.problem||'—')}</td><td class="gc-esc-actions">${actionable?`<button class="gc-esc-approve" onclick="GC_ADMIN_ESCROW.decide('${esc(r.id)}','APPROVE')">✓ APPROVE +100</button><button class="gc-esc-deny" onclick="GC_ADMIN_ESCROW.decide('${esc(r.id)}','DENY')">✕ DENY / RETURN</button>`:'<span class="gc-esc-ok">MONITORED</span>'}</td></tr>`}).join('');
+ host.innerHTML=`<div class="gc-esc-head"><div><h3>🛡️ Learning Request • Coins Held • Admin Approval</h3><p>Student outcome/remark is visible here. 100 coins stay under Admin control until approval.</p></div><div class="gc-esc-filter"><button onclick="GC_ADMIN_ESCROW.refresh('ALL')">ALL</button><button onclick="GC_ADMIN_ESCROW.refresh('HOLD')">🪙 HOLD</button><button onclick="GC_ADMIN_ESCROW.refresh('ACTION')">⚡ NEEDS ACTION</button></div></div><div class="gc-esc-body"><div class="gc-esc-table"><table><thead><tr><th>Request</th><th>Student ID</th><th>Tutor ID</th><th>Course / Stream</th><th>Subject / Topic</th><th>Deadline</th><th>Requested</th><th>Status</th><th>Student Remark / Outcome</th><th>Issue / Problem</th><th>Admin Action</th></tr></thead><tbody>${body||'<tr><td colspan="11">No Learning Requests found.</td></tr>'}</tbody></table></div></div>`;
+}
+window.GC_ADMIN_ESCROW={refresh:adminEscrow,decide:async function(id,decision){const s=S();if(!s)return;let note='';if(decision==='DENY')note=prompt('Reason for denial / support message (optional):','Coins denied. Please contact Customer Support.')??'';try{const q=await s.rpc('gc_admin_decide_learning_request',{p_request_id:String(id),p_decision:decision,p_note:String(note).slice(0,1000)});if(q.error)throw q.error;alert(decision==='APPROVE'?'Approved. 100 coins have been released to the Tutor account.':'Denied. The Learning Request coins remain/revert according to the secure Admin workflow and the denial reason is recorded.');adminEscrow('ALL')}catch(e){alert('Admin decision failed: '+(e.message||e))}}};
+function mount(){const host=document.getElementById('staffAdminDashboard');if(!host||host.classList.contains('hidden'))return;let box=document.getElementById('gcAdminLearningEscrow');if(!box){box=document.createElement('section');box.id='gcAdminLearningEscrow';host.querySelector('.bg-white')?.appendChild(box)}adminEscrow('ALL')}
+window.addEventListener('load',()=>setTimeout(mount,900));setInterval(mount,6000);
 })();
 </script>
