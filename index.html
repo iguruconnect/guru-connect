@@ -12582,6 +12582,114 @@ window.GC_PROFILE_COINS_REFRESH=paint;
  },true);
 })();
 </script>
+
+<!-- GURU CONNECT RECOVERY: robust login bridge -->
+<script id="gc-recovery-login-bridge">
+(function(){
+  'use strict';
+  function setRole(role){
+    const s=document.getElementById('loginRoleInput');
+    if(s && (role==='student'||role==='tutor')) s.value=role;
+  }
+  const originalOpen=window.openLoginModal;
+  window.openLoginModal=function(role){
+    setRole(role);
+    if(typeof originalOpen==='function') return originalOpen.apply(this,arguments);
+    const m=document.getElementById('loginModal'); if(m)m.classList.remove('hidden');
+  };
+
+  function localMatch(role,email){
+    const list=role==='tutor'?(window.tutorDirectoryList||[]):(window.studentDirectoryList||[]);
+    const target=String(email||'').trim().toLowerCase();
+    return list.find(x=>!x.isDummy && String(x.email||'').trim().toLowerCase()===target) || null;
+  }
+
+  async function recoveryLogin(){
+    const email=(document.getElementById('loginEmailInput')?.value||'').trim().toLowerCase();
+    const password=document.getElementById('loginPasswordInput')?.value||'';
+    let role=document.getElementById('loginRoleInput')?.value||'student';
+    if(!email || !/^\S+@\S+\.\S+$/.test(email)){alert('Enter a valid registered email address.');return;}
+    if(!password){alert('Enter your password. If you forgot it, use Forgot password.');return;}
+    const s=window.gcSupabase;
+    if(!s || !s.auth){alert('Secure login could not start. Please refresh the page once and try again.');return;}
+    try{
+      const result=await s.auth.signInWithPassword({email,password});
+      if(result.error){
+        alert('Login failed: '+(result.error.message||'Invalid email or password.'));
+        return;
+      }
+      const user=result.data?.user;
+      if(!user){alert('Login failed: Supabase did not return a user session.');return;}
+
+      // Some projects return the confirmation error as a successful user object.
+      if(user.email_confirmed_at===null || user.email_confirmed_at===undefined && user.confirmed_at===null){
+        await s.auth.signOut().catch(()=>{});
+        alert('Please verify your email first, then login again.');
+        return;
+      }
+
+      let table=role==='tutor'?'tutor_profiles':'student_profiles';
+      let q=await s.from(table).select('*').eq('user_id',user.id).limit(1).maybeSingle();
+
+      // If the selected role is wrong, automatically check the other profile table.
+      if(!q.data && !q.error){
+        const otherRole=role==='tutor'?'student':'tutor';
+        const otherTable=otherRole==='tutor'?'tutor_profiles':'student_profiles';
+        const oq=await s.from(otherTable).select('*').eq('user_id',user.id).limit(1).maybeSingle();
+        if(oq.data){role=otherRole;table=otherTable;q=oq;}
+      }
+
+      // If cloud profile reading is temporarily blocked, use the already-loaded
+      // directory copy while keeping the real Supabase auth session alive.
+      if(!q.data){
+        const local=localMatch(role,email);
+        if(local){
+          local.user_id=user.id;
+          local.isCloud=true;
+          local.registrationRole=role;
+          window.__gcLoggedInProfile=local;
+          localStorage.setItem('active_user_name',local.name||email.split('@')[0]);
+          localStorage.setItem('active_user_email',email);
+          localStorage.setItem('active_user_phone',local.phone||'');
+          localStorage.setItem('active_user_role',role);
+          localStorage.setItem('active_user_profile_id',local.id||'');
+          localStorage.setItem('active_user_id',user.id);
+          if(typeof updateAuthBadge==='function')updateAuthBadge();
+          closeLoginModal();
+          alert('Login successful!');
+          setTimeout(()=>location.href='dashboard.html',150);
+          return;
+        }
+        const reason=q.error?.message || 'No profile is linked to this account.';
+        alert('Login successful, but profile could not be loaded: '+reason+'\n\nPlease check that you selected the same role used during registration.');
+        return;
+      }
+
+      const p=role==='tutor'
+        ? (typeof window.gcTutorFromCloud==='function'?window.gcTutorFromCloud(q.data):q.data)
+        : (typeof window.gcStudentFromCloud==='function'?window.gcStudentFromCloud(q.data):q.data);
+      localStorage.setItem('active_user_name',p.name||q.data.name||email.split('@')[0]);
+      localStorage.setItem('active_user_email',email);
+      localStorage.setItem('active_user_phone',p.phone||q.data.phone||'');
+      localStorage.setItem('active_user_role',role);
+      localStorage.setItem('active_user_profile_id',q.data.id||'');
+      localStorage.setItem('active_user_id',user.id);
+      window.__gcLoggedInProfile=p;
+      if(typeof updateAuthBadge==='function')updateAuthBadge();
+      closeLoginModal();
+      if(typeof window.renderStudentDirectory==='function')window.renderStudentDirectory();
+      if(typeof window.renderTutorDirectory==='function')window.renderTutorDirectory();
+      alert('Login successful!');
+      setTimeout(()=>location.href='dashboard.html',150);
+    }catch(err){
+      console.error('GURU CONNECT login recovery error',err);
+      alert('Login error: '+(err?.message||err));
+    }
+  }
+  window.gcEmailLogin=recoveryLogin;
+})();
+</script>
+
 </body>
 
 <style id="gc-final-load-hero-transfer-pdf-fix">
@@ -14130,7 +14238,7 @@ setInterval(()=>{if(document.getElementById('gcMyChatPanel')&&role()!=='admin')r
 <script id="gc-kingdom-profile-connect">
 (function(){
   const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
-  const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostID';
+  const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
   function client(){return window.gcSupabase||window.supabase?.createClient(URL,KEY)||null}
   async function session(){const s=client();if(!s)return null;const q=await s.auth.getSession();return q.data?.session?.user||null}
   async function findProfile(uid,kind){const s=client();if(!s)return null;const table=kind==='student'?'student_profiles':'tutor_profiles';const q=await s.from(table).select('*').eq('user_id',uid).maybeSingle();return q.data||null}
