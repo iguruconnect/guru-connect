@@ -10772,17 +10772,36 @@ body {
 
   async function gcResetPassword() {
     const email=(document.getElementById('loginEmailInput')?.value||'').trim().toLowerCase();
+    const role=(document.getElementById('loginRoleInput')?.value||'').trim().toLowerCase();
     if(!email){alert('Enter your registered email first.');return;}
     if(!/^\S+@\S+\.\S+$/.test(email)){alert('Enter a valid registered email address.');return;}
-    if(!gcSupabase){alert('Supabase is not configured. Please refresh the website.');return;}
-    const redirectTo=window.location.origin+window.location.pathname+'?password_reset=1';
+    if(!gcSupabase){alert('Secure password reset is unavailable because Supabase is not connected. Please refresh the website.');return;}
+
+    // Always use the production callback for the live GURU CONNECT website.
+    // Supabase Auth must have this URL in Authentication → URL Configuration → Redirect URLs.
+    const productionCallback='https://www.guruconnnect.in/index.html?password_reset=1';
+    const localCallback=(window.location.protocol==='http:'||window.location.protocol==='https:')
+      ? window.location.origin+window.location.pathname+'?password_reset=1' : productionCallback;
+    const redirectTo=/^(www\.)?guruconnnect\.in$/i.test(window.location.hostname) ? productionCallback : localCallback;
+
+    const btn=document.querySelector('button[onclick=\"gcResetPassword()\"]');
+    if(btn){btn.disabled=true;btn.textContent='SENDING RESET LINK…';}
     try{
       const r=await gcSupabase.auth.resetPasswordForEmail(email,{redirectTo});
       if(r.error) throw r.error;
-      alert('Reset link sent successfully. Please check your email Inbox and Spam/Junk folder.');
+      alert((role==='tutor'?'Tutor':'User')+' password reset link has been requested for '+email+'. Please check Inbox and Spam/Junk.');
     }catch(e){
       console.error('Password reset email error:',e);
-      alert('Reset link could not be sent: '+(e?.message||'Supabase email service error.'));
+      const msg=String(e?.message||'Supabase email service error.');
+      if(/redirect|url|allow|not allowed/i.test(msg)){
+        alert('Password reset email could not be sent because the Supabase Redirect URL is not allowed. Add this exact URL in Supabase Authentication → URL Configuration → Redirect URLs:\n\n'+productionCallback);
+      }else if(/smtp|email|mail/i.test(msg)){
+        alert('Password reset email could not be sent by Supabase Email Service. Please check the Supabase Auth SMTP/Email settings.\n\nDetails: '+msg);
+      }else{
+        alert('Reset link could not be sent: '+msg);
+      }
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent='Forgot password? Send reset email';}
     }
   }
 
@@ -13289,6 +13308,22 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
         }).eq('id',t.user_id);
         if(p.error) console.warn('Tutor profiles contact sync:',p.error);
       }catch(e){console.warn('Tutor profiles contact sync:',e);}
+
+      // CRITICAL: keep Supabase Auth's login email synchronized with the
+      // email edited by Staff. Forgot Password sends to auth.users.email,
+      // not merely to public.profiles.email.
+      const newEmail=clean(t.email).toLowerCase();
+      if(newEmail && /^\S+@\S+\.\S+$/.test(newEmail)){
+        try{
+          const ar=await sb().rpc('gc_admin_update_auth_email',{
+            p_user_id:String(t.user_id),
+            p_email:newEmail
+          });
+          if(ar.error) throw ar.error;
+        }catch(e){
+          throw new Error('Tutor profile was saved, but the Supabase Auth email could not be synchronized. Run the latest supplied SQL migration, then save this tutor again. Details: '+(e?.message||e));
+        }
+      }
     }
     clearCaches();
     return {ok:true,row};
@@ -13553,6 +13588,20 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
     if(!isStaff()){alert('Please login through STAFF LOGIN first.');return;}
     const t=tutorById(id);
     if(!t){alert('Tutor record not found. Please refresh the Staff Dashboard.');return;}
+    // Load the authoritative current contact email from public.profiles so the
+    // Staff editor never shows a stale/blank email before saving.
+    try{
+      if(t.user_id && sb()){
+        await ensureStaffCloud();
+        const pr=await sb().from('profiles').select('email,phone,full_name,photo_url').eq('id',t.user_id).maybeSingle();
+        if(pr?.data){
+          t.email=pr.data.email||t.email||'';
+          t.phone=pr.data.phone||t.phone||'';
+          if(!t.name)t.name=pr.data.full_name||'';
+          if(!t.photoData)t.photoData=pr.data.photo_url||'';
+        }
+      }
+    }catch(e){console.warn('Tutor contact prefill:',e);}
     window.currentEditingTutorId=t.id;
 
     const modal=document.getElementById('adminEditTutorModal');
@@ -14454,3 +14503,169 @@ body:not(.gc-dashboard-page) #currentUserBadge.gc-auth-visible,
 body:not(.gc-dashboard-page) .gc-account-dashboard,
 body:not(.gc-dashboard-page) .gc-account-logout{display:none!important;}
 </style>
+
+
+<style id="gc-final-mobile-menu-login-fix">
+/* FINAL MOBILE HEADER: always keep the MENU control visible and labelled. */
+@media (max-width:768px){
+  header.gc-beautiful-header,
+  header.gc-beautiful-header .gc-header-inner{
+    overflow:visible!important;
+  }
+  .gc-header-inner{
+    width:100%!important;
+    max-width:100%!important;
+    min-width:0!important;
+    display:flex!important;
+    align-items:center!important;
+    box-sizing:border-box!important;
+    gap:6px!important;
+    padding-left:7px!important;
+    padding-right:7px!important;
+  }
+  .gc-logo3-lockup{
+    flex:1 1 auto!important;
+    min-width:0!important;
+    max-width:calc(100% - 76px)!important;
+    overflow:hidden!important;
+  }
+  .gc-logo3-image{
+    width:min(270px,100%)!important;
+    max-width:100%!important;
+    height:auto!important;
+    object-fit:contain!important;
+  }
+  .gc-header-actions{
+    display:flex!important;
+    flex:0 0 64px!important;
+    width:64px!important;
+    min-width:64px!important;
+    max-width:64px!important;
+    margin-left:auto!important;
+    position:relative!important;
+    z-index:100000!important;
+  }
+  #publicMenuWrapper{
+    display:block!important;
+    position:relative!important;
+    width:64px!important;
+    min-width:64px!important;
+    max-width:64px!important;
+    z-index:100001!important;
+  }
+  .gc-menu-button{
+    display:flex!important;
+    width:64px!important;
+    min-width:64px!important;
+    max-width:64px!important;
+    height:40px!important;
+    padding:0 8px!important;
+    align-items:center!important;
+    justify-content:center!important;
+    gap:5px!important;
+    overflow:visible!important;
+    white-space:nowrap!important;
+    color:#fff!important;
+    background:#1264d8!important;
+    border:1px solid #0d55bd!important;
+  }
+  .gc-menu-button span{
+    display:inline!important;
+    visibility:visible!important;
+    opacity:1!important;
+    font-size:10px!important;
+    color:#fff!important;
+  }
+  .gc-menu-button i{
+    display:none!important;
+  }
+  #publicNavbarLinks{
+    display:none;
+    position:fixed!important;
+    top:70px!important;
+    right:8px!important;
+    left:auto!important;
+    width:min(300px,calc(100vw - 16px))!important;
+    max-width:calc(100vw - 16px)!important;
+    max-height:calc(100vh - 82px)!important;
+    overflow-y:auto!important;
+    overflow-x:hidden!important;
+    z-index:2147483000!important;
+  }
+  #publicNavbarLinks:not(.hidden){
+    display:flex!important;
+    flex-direction:column!important;
+  }
+}
+@media (max-width:420px){
+  .gc-header-inner{padding-left:5px!important;padding-right:5px!important;gap:5px!important;}
+  .gc-logo3-lockup{max-width:calc(100% - 70px)!important;}
+  .gc-header-actions,#publicMenuWrapper{width:60px!important;min-width:60px!important;max-width:60px!important;flex-basis:60px!important;}
+  .gc-menu-button{width:60px!important;min-width:60px!important;max-width:60px!important;height:38px!important;font-size:10px!important;}
+}
+</style>
+<script id="gc-final-login-menu-click-fix">
+(function(){
+  'use strict';
+  function openRole(role){
+    var r=String(role||'student').toLowerCase();
+    var input=document.getElementById('loginRoleInput');
+    if(input) input.value=(r==='tutor'?'tutor':'student');
+    var modal=document.getElementById('loginModal');
+    if(modal){
+      modal.classList.remove('hidden');
+      modal.style.display='';
+      setTimeout(function(){
+        var email=document.getElementById('loginEmailInput');
+        if(email) email.focus();
+      },60);
+    }
+    try{window.closeNavMenu?.();}catch(_){}
+  }
+  window.openStudentLoginModal=function(){openRole('student');};
+  window.openTutorLoginModal=function(){openRole('tutor');};
+
+  function bind(){
+    var menu=document.getElementById('publicNavbarLinks');
+    if(!menu || menu.dataset.gcLoginBound==='1') return;
+    menu.dataset.gcLoginBound='1';
+    menu.addEventListener('click',function(e){
+      var el=e.target.closest && e.target.closest('[data-gc-login-role]');
+      if(!el) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openRole(el.getAttribute('data-gc-login-role'));
+    },true);
+  }
+  function markLoginLinks(){
+    var menu=document.getElementById('publicNavbarLinks');
+    if(!menu)return;
+    menu.querySelectorAll('.gc-menu-login-student,.gc-menu-student').forEach(function(a){
+      a.setAttribute('data-gc-login-role','student');
+      a.removeAttribute('href');
+      a.removeAttribute('onclick');
+    });
+    menu.querySelectorAll('.gc-menu-login-tutor,.gc-menu-tutor').forEach(function(a){
+      a.setAttribute('data-gc-login-role','tutor');
+      a.removeAttribute('href');
+      a.removeAttribute('onclick');
+    });
+    menu.querySelectorAll('.gc-menu-login-staff,.gc-menu-staff').forEach(function(a){
+      a.setAttribute('data-gc-login-role','staff');
+    });
+    bind();
+  }
+  function init(){markLoginLinks();setTimeout(markLoginLinks,100);setTimeout(markLoginLinks,700);setTimeout(markLoginLinks,1600);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+
+  document.addEventListener('click',function(e){
+    var el=e.target.closest && e.target.closest('[data-gc-login-role]');
+    if(!el)return;
+    var role=el.getAttribute('data-gc-login-role');
+    if(role==='student'||role==='tutor'){
+      e.preventDefault();e.stopImmediatePropagation();
+      openRole(role);
+    }
+  },true);
+})();
+</script>
