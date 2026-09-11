@@ -14101,3 +14101,34 @@ setInterval(()=>{if(document.getElementById('gcMyChatPanel')&&role()!=='admin')r
   };
 })();
 </script>
+
+<!-- GURU CONNECT: KINGDOM + SECURE PROFILE CONNECTION OVERRIDE -->
+<style id="gc-kingdom-home-cleanup">
+/* Learning Requests now live in the dedicated dashboard page, not the homepage registration area. */
+#tabRequirementBtn{display:none!important}
+/* The old inline Learning Request panel must not appear on the public homepage. */
+#gcCLV2{display:none!important}
+</style>
+<script id="gc-kingdom-profile-connect">
+(function(){
+  const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
+  const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostID';
+  function client(){return window.gcSupabase||window.supabase?.createClient(URL,KEY)||null}
+  async function session(){const s=client();if(!s)return null;const q=await s.auth.getSession();return q.data?.session?.user||null}
+  async function findProfile(uid,kind){const s=client();if(!s)return null;const table=kind==='student'?'student_profiles':'tutor_profiles';const q=await s.from(table).select('*').eq('user_id',uid).maybeSingle();return q.data||null}
+  async function secureConnect(targetId,targetRole){
+    const s=client();const u=await session();if(!s||!u){if(typeof openLoginModal==='function')openLoginModal();else alert('Please login first.');return}
+    const mineStudent=await findProfile(u.id,'student');const mineTutor=await findProfile(u.id,'tutor');
+    const myRole=mineStudent?'student':mineTutor?'tutor':'';if(!myRole)return alert('Registered Student or Tutor login required.');
+    if(myRole===targetRole)return alert('Connection requires the opposite role.');
+    const x=await s.rpc('gc_send_connection_request',{p_target_profile_id:String(targetId),p_target_role:targetRole,p_learning_request_id:null,p_message:`${myRole==='student'?'Student':'Tutor'} wants to connect through the GURU CONNECT profile.`});
+    if(x.error)return alert(x.error.message||'Connection request could not be sent.');
+    if(typeof closeConnectionModal==='function')try{closeConnectionModal()}catch(_){}
+    if(typeof closePublicTutorProfile==='function')try{closePublicTutorProfile()}catch(_){}
+    if(typeof gcV3CloseProfile==='function')try{gcV3CloseProfile()}catch(_){}
+    alert('Connection request sent. The recipient can ACCEPT or REJECT it from their GURU CONNECT Kingdom.');
+  }
+  window.connectWithTutor=function(tutorId){return secureConnect(String(tutorId),'tutor')};
+  window.connectWithStudent=function(studentId){return secureConnect(String(studentId),'student')};
+})();
+</script>
