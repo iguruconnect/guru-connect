@@ -4568,6 +4568,87 @@ footer:before{
   .gc-account-dashboard,.gc-account-logout{width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;}
 }
 </style>
+
+<style id="gc-final-header-dashboard-contact-cleanup">
+/* Final header cleanup: Contact Us lives only inside MENU. */
+.gc-header-contact{display:none!important;}
+
+/* Do not let the logged-in dashboard/logout controls squeeze the main navigation. */
+#currentUserBadge{
+  flex:0 0 auto!important;
+  max-width:300px!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+#currentUserBadge .gc-account-name{max-width:110px!important;}
+#currentUserBadge .gc-account-dashboard,
+#currentUserBadge .gc-account-logout{
+  flex:0 0 auto!important;
+}
+
+/* At tablet/smaller desktop widths, use the same clean MENU-first header instead
+   of allowing the legacy inline navigation to collide with account controls. */
+@media (max-width:1100px){
+  .gc-beautiful-nav{display:none!important;}
+  .gc-header-inner{
+    display:flex!important;
+    align-items:center!important;
+    gap:7px!important;
+    min-width:0!important;
+    width:100%!important;
+    box-sizing:border-box!important;
+    overflow:visible!important;
+  }
+  .gc-beautiful-lockup{
+    flex:1 1 auto!important;
+    min-width:0!important;
+    overflow:visible!important;
+  }
+  .gc-header-actions{
+    display:flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    flex:0 0 auto!important;
+    min-width:0!important;
+    gap:6px!important;
+    margin-left:auto!important;
+  }
+  #currentUserBadge{
+    max-width:235px!important;
+    gap:4px!important;
+    padding:3px!important;
+  }
+  #currentUserBadge .gc-account-name{max-width:82px!important;font-size:9px!important;}
+  #currentUserBadge .gc-account-dashboard,
+  #currentUserBadge .gc-account-logout{
+    width:34px!important;
+    height:32px!important;
+    padding:0!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    font-size:10px!important;
+  }
+  #currentUserBadge .gc-account-dashboard span,
+  #currentUserBadge .gc-account-logout span{display:none!important;}
+  #publicMenuWrapper{flex:0 0 auto!important;}
+  .gc-menu-button{min-width:78px!important;width:78px!important;height:39px!important;padding:0 10px!important;}
+}
+
+@media (max-width:760px){
+  #currentUserBadge{max-width:178px!important;}
+  #currentUserBadge .gc-account-name{max-width:70px!important;}
+  #currentUserBadge .gc-account-dashboard,
+  #currentUserBadge .gc-account-logout{width:30px!important;height:30px!important;}
+}
+
+@media (max-width:480px){
+  #currentUserBadge{max-width:150px!important;}
+  #currentUserBadge .gc-account-name{max-width:60px!important;font-size:8px!important;}
+  .gc-menu-button{min-width:64px!important;width:64px!important;}
+}
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -4586,7 +4667,6 @@ footer:before{
       <a href="javascript:void(0)" onclick="openLoginModal()">Login</a>
     </nav>
     <div class="gc-header-actions">
-      <button class="gc-header-contact" type="button" onclick="openContactModal()"><i class="fa-solid fa-envelope mr-1"></i> Contact Us</button>
       <button class="bg-slate-100 hover:bg-slate-200 text-brand-dark text-[11px] sm:text-xs font-bold px-2 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition shadow flex items-center gap-1" id="navLoginBtn" onclick="openLoginModal()"><i class="fa-solid fa-right-to-bracket"></i><span class="hidden sm:inline">LOGIN</span></button> <div id="currentUserBadge" aria-label="Logged in user">
   <div class="px-1"><span class="gc-account-role" id="navLoggedRole">LOGGED IN</span><span class="gc-account-name" id="navLoggedName">User</span></div>
   <button type="button" class="gc-account-dashboard" onclick="openUserDashboard()" title="Open dashboard"><i class="fa-solid fa-gauge-high"></i><span> DASHBOARD</span></button>
