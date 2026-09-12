@@ -11179,12 +11179,12 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
   // Admin message center
   window.gcOpenAdminMessageCenter=function(){
     const existing=document.getElementById('gcAdminMessageModal');
-    if(existing){existing.classList.remove('hidden');window.gcRenderAdminMessages?.();return}
+    if(existing){existing.classList.remove('hidden');existing.classList.add('flex');window.gcRenderAdminMessages?.();return}
     const m=document.createElement('div');
     m.id='gcAdminMessageModal';
     m.className='fixed inset-0 bg-slate-950/75 backdrop-blur-sm z-[500] hidden items-center justify-center p-3 sm:p-5';
     m.innerHTML=`<div class="bg-white rounded-3xl shadow-2xl w-full max-w-4xl max-h-[94vh] overflow-y-auto">
-      <div class="gc-msg-head"><div><h3><i class="fa-solid fa-paper-plane"></i> Admin Message Center</h3><p>Message one registered member or a complete community.</p></div><button onclick="document.getElementById('gcAdminMessageModal').classList.add('hidden')" class="text-white text-xl">×</button></div>
+      <div class="gc-msg-head"><div><h3><i class="fa-solid fa-paper-plane"></i> Admin Message Center</h3><p>Message one registered member or a complete community.</p></div><button onclick="document.getElementById('gcAdminMessageModal').classList.add('hidden');document.getElementById('gcAdminMessageModal').classList.remove('flex')" class="text-white text-xl">×</button></div>
       <div class="p-4 sm:p-6">
         <div class="gc-msg-grid2">
           <div class="gc-msg-field"><label>SEND TO</label><select id="gcAdminMsgTo">
@@ -11204,7 +11204,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
         <div style="display:flex;justify-content:flex-end;margin-top:10px"><button class="gc-msg-send" id="gcAdminMsgSend"><i class="fa-solid fa-paper-plane"></i> SEND MESSAGE</button></div>
         <div class="mt-5 border-t pt-4"><h4 class="font-black text-slate-800 text-sm">RECENT SENT MESSAGES</h4><div class="gc-msg-list" id="gcAdminMsgSent"></div></div>
       </div></div>`;
-    document.body.appendChild(m);
+    document.body.appendChild(m);m.classList.remove('hidden');m.classList.add('flex');
 
     const fill=()=>{
       const type=document.getElementById('gcAdminMsgTo').value;
