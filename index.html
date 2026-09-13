@@ -14794,54 +14794,75 @@ window.GC_UNIFIED_LOGIN_READY=true;
 <script id="gc-admin-password-reset-js">
 (function(){
 'use strict';
-const STAFF_EMAIL='swami@gmail.com';
 const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
 const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
 const S=()=>window.gcSupabase||(window.supabase&&window.supabase.createClient?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null);
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function normPhone(v){return String(v||'').replace(/\D/g,'');}
+const normPhone=v=>String(v||'').replace(/\D/g,'');
+const cleanEmail=v=>String(v||'').trim().toLowerCase();
 function staff(){return localStorage.getItem('is_staff_logged')==='true';}
 async function find(){
  if(!staff()){alert('Please login as Staff/Admin first.');return}
- const s=S();if(!s){alert('Supabase is not connected.');return}
+ const s=S(), st=$('gcAdminResetStatus'), res=$('gcAdminResetResult');
+ if(!s){if(st)st.textContent='Supabase is not connected.';return}
  const term=String($('gcAdminResetSearch')?.value||'').trim();
- if(!term){$('gcAdminResetStatus').textContent='Enter an Email or Phone Number.';return}
- $('gcAdminResetStatus').textContent='Searching registered users…';$('gcAdminResetResult').innerHTML='';
+ if(!term){if(st)st.textContent='Enter a registered Email or Phone Number.';return}
+ if(st)st.textContent='Searching registered users…'; if(res)res.innerHTML='';
  try{
-   const email=term.toLowerCase(), phone=normPhone(term);
-   // Email/phone are stored in the shared profiles table; do not query nonexistent tutor_profiles.email.
-   const q=await s.from('profiles').select('id,full_name,email,phone,role').limit(5000);
-   if(q.error)throw q.error;
-   const matches=[];
-   for(const r of (q.data||[])){
-     const role=String(r.role||'').toLowerCase();
-     if(role!=='student'&&role!=='tutor')continue;
-     if((email&&String(r.email||'').trim().toLowerCase()===email)||(phone&&normPhone(r.phone)===phone))
-       matches.push({id:r.id,user_id:r.id,name:r.full_name||'User',email:r.email||'',phone:r.phone||'',role:role==='student'?'Student':'Tutor'});
+   const email=cleanEmail(term), phone=normPhone(term);
+   let matches=[];
+   // FIRST: use a security-definer RPC when installed. This is the reliable
+   // route because public.profiles may be protected by RLS from browser reads.
+   try{
+     const rpc=await s.rpc('gc_admin_find_user_for_password_reset',{p_search:term});
+     if(!rpc.error && Array.isArray(rpc.data)) matches=rpc.data.map(r=>({
+       id:r.profile_id||r.id,user_id:r.user_id||r.profile_id||r.id,
+       name:r.full_name||r.name||'User',email:r.email||'',phone:r.phone||'',
+       role:String(r.role||'').toLowerCase()==='student'?'Student':'Tutor'
+     })).filter(r=>r.email || r.phone);
+   }catch(e){ console.warn('Admin reset RPC unavailable:',e); }
+   // FALLBACK: direct profile tables. Student email/phone live there; tutor
+   // phone lives in tutor_profiles, while tutor email may live in profiles.
+   if(!matches.length){
+     const [sr,tr,pr]=await Promise.all([
+       s.from('student_profiles').select('id,user_id,name,email,phone,created_at').limit(5000),
+       s.from('tutor_profiles').select('id,user_id,name,phone,created_at').limit(5000),
+       s.from('profiles').select('id,full_name,email,phone,role').limit(5000)
+     ]);
+     const profileMap=new Map((pr.data||[]).map(r=>[String(r.id),r]));
+     const add=(r,role)=>{
+       const pp=profileMap.get(String(r.user_id||r.id))||profileMap.get(String(r.id))||{};
+       const em=cleanEmail(r.email||pp.email), ph=String(r.phone||pp.phone||'');
+       const ok=(email&&em===email)||(phone&&normPhone(ph)===phone);
+       if(ok)matches.push({id:r.id,user_id:r.user_id||r.id,name:r.name||pp.full_name||'User',email:em,phone:ph,role});
+     };
+     (sr.data||[]).forEach(r=>add(r,'Student'));
+     (tr.data||[]).forEach(r=>add(r,'Tutor'));
    }
-   $('gcAdminResetStatus').textContent=matches.length?`${matches.length} matching account(s) found.`:'No registered Student/Tutor found.';
-   $('gcAdminResetResult').innerHTML=matches.length?matches.map(r=>`<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-4 rounded-2xl bg-white border border-slate-200 mb-3"><div><div class="font-black text-slate-900">${esc(r.name||'User')} <span class="ml-1 text-[10px] px-2 py-1 rounded-full bg-blue-50 text-blue-700">${esc(r.role)}</span></div><div class="text-xs text-slate-500 mt-1">Email: ${esc(r.email||'Not provided')} • Phone: ${esc(r.phone||'Not provided')}</div></div><button type="button" class="gc-admin-reset-send bg-emerald-600 hover:bg-emerald-700 text-white font-black px-4 py-3 rounded-xl text-xs" data-email="${esc(r.email||'')}">SEND RESET LINK</button></div>`).join(''):'<div class="p-4 rounded-2xl bg-white border border-slate-200 text-sm font-bold text-slate-500">No matching registered account found.</div>';
- }catch(e){console.error(e);$('gcAdminResetStatus').textContent='Search failed: '+(e.message||e)}
+   // Remove duplicates by role+user id.
+   const seen=new Set(); matches=matches.filter(r=>{const k=r.role+'|'+String(r.user_id||r.id);if(seen.has(k))return false;seen.add(k);return true;});
+   if(st)st.textContent=matches.length?`${matches.length} matching account(s) found.`:'No registered Student/Tutor found for that Email/Phone.';
+   if(res)res.innerHTML=matches.length?matches.map(r=>`<div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff;margin-bottom:10px"><div><div style="font-weight:900;color:#0f172a">${esc(r.name)} <span style="font-size:10px;padding:4px 7px;border-radius:7px;background:#eff6ff;color:#1d4ed8">${esc(r.role)}</span></div><div style="font-size:12px;color:#64748b;margin-top:4px">Email: ${esc(r.email||'Not available')} • Phone: ${esc(r.phone||'Not available')}</div></div><button type="button" class="gc-admin-reset-send" data-email="${esc(r.email||'')}" style="background:#059669;color:#fff;border:0;border-radius:10px;padding:11px 14px;font-weight:900;cursor:pointer">SEND RESET LINK</button></div>`).join(''):'<div style="padding:14px;border:1px solid #e2e8f0;border-radius:14px;background:#fff;color:#64748b;font-weight:800">No matching registered account found.</div>';
+ }catch(e){console.error('Admin user lookup failed:',e);if(st)st.textContent='Search failed: '+(e.message||e)}
 }
 async function send(email,btn){
  if(!staff()){alert('Staff session expired. Please login again.');return}
- if(!email){alert('This account has no registered email address.');return}
+ if(!email){alert('This registered account does not have an email address available for password reset.');return}
  const s=S();if(!s)return alert('Supabase is not connected.');
  btn.disabled=true;btn.textContent='SENDING…';
  try{
-   const r=await s.auth.resetPasswordForEmail(String(email).trim().toLowerCase(),{redirectTo:'https://www.guruconnnect.in/reset-password.html'});
-   if(r.error)throw r.error;
-   alert('Password reset link sent to '+email+'.');
+   const r=await s.auth.resetPasswordForEmail(cleanEmail(email),{redirectTo:'https://www.guruconnnect.in/reset-password.html'});
+   if(r.error)throw r.error; alert('Password reset link sent to '+email+'. Please check Inbox and Spam/Junk.');
  }catch(e){
    const msg=String(e?.message||e||'');
-   if(/invalid api key|api key/i.test(msg))alert('Supabase rejected the current Publishable API Key. Update the live website with the current Supabase Publishable Key.');
+   if(/invalid api key|api key/i.test(msg))alert('Supabase rejected the current Publishable API Key.');
    else if(/redirect|url|allow/i.test(msg))alert('Add https://www.guruconnnect.in/reset-password.html to Supabase Authentication → URL Configuration → Redirect URLs.');
    else alert('Reset link could not be sent: '+msg);
  }finally{btn.disabled=false;btn.textContent='SEND RESET LINK'}
 }
 window.GC_ADMIN_PASSWORD_RESET={mount:function(){},find,send};
-document.addEventListener('click',e=>{if(e.target.closest('#gcAdminResetFindBtn'))find();const b=e.target.closest('.gc-admin-reset-send');if(b)send(b.dataset.email,b)});
+document.addEventListener('click',e=>{const f=e.target.closest?.('#gcAdminResetFindBtn');if(f){e.preventDefault();find();return}const b=e.target.closest?.('.gc-admin-reset-send');if(b)send(b.dataset.email,b)});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement?.id==='gcAdminResetSearch')find()});
 })();
 </script>
