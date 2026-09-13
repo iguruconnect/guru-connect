@@ -5600,6 +5600,7 @@ body:not(.gc-dashboard-page) #currentUserBadge .gc-account-logout{
       <select class="w-full border rounded-xl p-3 text-sm font-bold bg-white" id="loginRoleInput">
         <option value="student">I am a Student</option>
         <option value="tutor">I am a Tutor</option>
+        <option value="staff">I am Staff / Admin</option>
       </select>
       <input class="w-full border rounded-xl p-3 text-sm font-bold" id="loginEmailInput" placeholder="your@email.com" type="email" autocomplete="email"/>
       <input class="w-full border rounded-xl p-3 text-sm font-bold" id="loginPasswordInput" placeholder="Password" type="password" autocomplete="current-password"/>
@@ -13122,39 +13123,22 @@ setInterval(installAdminUserPanel,1500);
 <script id="gc-final-single-menu-login-fix-js">
 (function(){
   function installMenuLogin(){
-    var menu=document.getElementById('publicNavbarLinks');
-    if(!menu) return;
-    // Remove legacy login groups wherever they were inserted into this actual menu.
-    menu.querySelectorAll('.gc-login-menu-group').forEach(function(x){x.remove();});
-    var old=menu.querySelector('.gc-final-login-group');
-    if(old) return;
-    var group=document.createElement('div');
-    group.className='gc-final-login-group';
-    group.innerHTML='<div class="gc-final-login-title">ACCOUNT & STAFF ACCESS</div>'+
-      '<button type="button" class="gc-final-login-btn student"><i class="fa-solid fa-graduation-cap"></i> STUDENT LOGIN</button>'+
-      '<button type="button" class="gc-final-login-btn tutor"><i class="fa-solid fa-chalkboard-user"></i> TUTOR LOGIN</button>'+
-      '<button type="button" class="gc-final-login-btn staff"><i class="fa-solid fa-user-tie"></i> STAFF / ADMIN LOGIN</button>';
-    menu.appendChild(group);
-    var bs=group.querySelector('.student'),bt=group.querySelector('.tutor'),ba=group.querySelector('.staff');
-    function openUnified(role){
-      try{closeNavMenu();}catch(e){}
+    var menu=document.getElementById('publicNavbarLinks'); if(!menu)return;
+    menu.querySelectorAll('.gc-final-login-group,.gc-login-menu-group').forEach(function(x){x.remove();});
+    if(menu.querySelector('.gc-single-login-button'))return;
+    var wrap=document.createElement('div'); wrap.className='gc-final-login-group';
+    wrap.innerHTML='<button type="button" class="gc-single-login-button"><i class="fa-solid fa-right-to-bracket"></i> LOGIN</button>';
+    menu.appendChild(wrap);
+    wrap.querySelector('button').addEventListener('click',function(e){
+      e.preventDefault(); e.stopPropagation();
+      try{closeNavMenu();}catch(_){}
       var modal=document.getElementById('loginModal');
-      if(modal && typeof openLoginModal==='function'){
-        try{openLoginModal();}catch(e){modal.classList.remove('hidden');}
-        var r=document.getElementById('loginRoleInput');
-        if(r && role) r.value=role;
-        return;
-      }
-      if(role==='staff' && typeof openStaffLoginModal==='function'){openStaffLoginModal();return;}
-      if(role==='staff' && typeof openStaffLogin==='function'){openStaffLogin();return;}
-      alert('Login screen is temporarily unavailable. Please refresh the page and try again.');
-    }
-    bs.onclick=function(e){e.preventDefault();e.stopPropagation();openUnified('student');};
-    bt.onclick=function(e){e.preventDefault();e.stopPropagation();openUnified('tutor');};
-    ba.onclick=function(e){e.preventDefault();e.stopPropagation();openUnified('staff');};
+      if(!modal)return alert('Login screen is temporarily unavailable. Please refresh the page.');
+      modal.classList.remove('hidden'); modal.style.display='flex';
+      var role=document.getElementById('loginRoleInput'); if(role)role.focus();
+    });
   }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installMenuLogin);
-  else installMenuLogin();
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installMenuLogin);else installMenuLogin();
   [300,800,1500,3000].forEach(function(ms){setTimeout(installMenuLogin,ms);});
 })();
 </script>
@@ -13508,7 +13492,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
     if(e)e.preventDefault();
     const u=clean(document.getElementById('staffUserInput')?.value).toLowerCase();
     const p=clean(document.getElementById('staffPassInput')?.value);
-    if(!/^\\S+@\\S+\\.\\S+$/.test(u)){alert('Enter the Staff/Admin email address.');return false;}
+    if(!/^\S+@\S+\.\S+$/.test(u)){alert('Enter the Staff/Admin email address.');return false;}
     if(u!==STAFF_EMAIL.toLowerCase()){alert('Invalid Staff Credentials. Please use the authorized Staff/Admin email.');return false;}
     if(!p){alert('Enter the Staff/Admin password.');return false;}
     const s=sb();
@@ -15301,3 +15285,44 @@ body:not(.gc-dashboard-page) .gc-account-logout{display:none!important;}
 })();
 </script>
 
+
+<style id="gc-final-single-login-guarantee">\n#publicNavbarLinks .gc-single-login-button{width:100%;border:0;border-radius:12px;padding:12px 14px;margin:6px 0;background:linear-gradient(135deg,#123b8f,#1264d8);color:#fff;font-weight:950;font-size:12px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:9px;position:relative;z-index:100000;pointer-events:auto}\n#publicNavbarLinks .gc-single-login-button:hover{filter:brightness(1.05);transform:translateY(-1px)}\n</style>
+<script id="gc-final-reset-and-login-guarantee">
+(function(){
+  // Ensure the public reset page is reachable directly from the login screen.
+  function fixLogin(){
+    var role=document.getElementById('loginRoleInput');
+    if(role && !Array.from(role.options).some(function(o){return o.value==='staff';})){
+      var o=document.createElement('option');o.value='staff';o.textContent='I am Staff / Admin';role.appendChild(o);
+    }
+    var modal=document.getElementById('loginModal'); if(!modal)return;
+    var old=modal.querySelector('a[data-gc-reset-page]');
+    if(!old){
+      var btn=modal.querySelector('button[onclick="gcResetPassword()"]');
+      if(btn){
+        var a=document.createElement('a');a.href='reset-password.html';a.setAttribute('data-gc-reset-page','1');a.textContent='Open Password Reset Page';
+        a.style='display:block;text-align:center;color:#1264d8;font-size:11px;font-weight:900;text-decoration:underline;padding:4px 0;';
+        btn.insertAdjacentElement('afterend',a);
+      }
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fixLogin);else fixLogin();
+  [500,1500,3000].forEach(function(ms){setTimeout(fixLogin,ms);});
+
+  // The same login screen handles Student, Tutor and Staff/Admin. Staff login is
+  // delegated to the secure Staff handler already used by the Admin dashboard.
+  var oldLogin=window.gcEmailLogin;
+  window.gcEmailLogin=async function(){
+    var role=(document.getElementById('loginRoleInput')?.value||'student').toLowerCase();
+    if(role!=='staff'){return oldLogin.apply(this,arguments);}
+    var email=(document.getElementById('loginEmailInput')?.value||'').trim().toLowerCase();
+    var password=document.getElementById('loginPasswordInput')?.value||'';
+    if(!/^\S+@\S+\.\S+$/.test(email))return alert('Enter a valid Staff/Admin email address.');
+    if(!password)return alert('Enter your Staff/Admin password.');
+    var su=document.getElementById('staffUserInput'),sp=document.getElementById('staffPassInput');
+    if(su)su.value=email;if(sp)sp.value=password;
+    if(typeof window.handleStaffLogin==='function')return window.handleStaffLogin({preventDefault:function(){}});
+    return alert('Staff/Admin login is temporarily unavailable. Please refresh the website.');
+  };
+})();
+</script>
