@@ -12849,7 +12849,7 @@ window.gcResetPassword=async function(){
   const email=(by('loginEmailInput')?.value||'').trim().toLowerCase();if(!email)return alert('Enter your registered email first.');
   const s=S();if(!s)return alert('Supabase is not connected.');
   const btn=document.querySelector('#loginModal button[onclick="gcResetPassword()"]');if(btn){btn.disabled=true;btn.textContent='SENDING…';}
-  try{const r=await s.auth.resetPasswordForEmail(email,{redirectTo:'https://www.guruconnnect.in/reset-password.html'});if(r.error)throw r.error;alert('Password reset link sent to '+email+'. Check Inbox and Spam/Junk.');}
+  try{const r=await s.auth.resetPasswordForEmail(email,{redirectTo:'https://www.guruconnnect.in/reset-link.html'});if(r.error)throw r.error;alert('Password reset link sent to '+email+'. Check Inbox and Spam/Junk.');}
   catch(err){alert('Password reset failed:\n\n'+(err.message||err));}
   finally{if(btn){btn.disabled=false;btn.textContent='Forgot password? Send reset email';}}
 };
@@ -12880,7 +12880,7 @@ async function adminFind(){
 async function adminSend(email,btn){
   if(!email)return alert('No registered email is available for this user.');
   const s=S();if(!s)return alert('Supabase is not connected.');btn.disabled=true;btn.textContent='SENDING…';
-  try{const r=await s.auth.resetPasswordForEmail(email.toLowerCase(),{redirectTo:'https://www.guruconnnect.in/reset-password.html'});if(r.error)throw r.error;alert('Password reset link sent to '+email+'.');}
+  try{const r=await s.auth.resetPasswordForEmail(email.toLowerCase(),{redirectTo:'https://www.guruconnnect.in/reset-link.html'});if(r.error)throw r.error;alert('Password reset link sent to '+email+'.');}
   catch(e){alert('Reset link could not be sent:\n\n'+(e.message||e));}
   finally{btn.disabled=false;btn.textContent='SEND RESET LINK';}
 }
@@ -14747,7 +14747,7 @@ window.gcResetPassword=async function(){
   const btn=document.querySelector('button[onclick="gcResetPassword()"]');
   if(btn){btn.disabled=true;btn.textContent='SENDING RESET LINK…';}
   try{
-    const redirectTo='https://www.guruconnnect.in/reset-password.html';
+    const redirectTo='https://www.guruconnnect.in/reset-link.html';
     const r=await s.auth.resetPasswordForEmail(email,{redirectTo});
     if(r.error)throw r.error;
     alert('Password reset link sent to '+email+'. Please check Inbox and Spam/Junk.');
@@ -14757,7 +14757,7 @@ window.gcResetPassword=async function(){
     if(/invalid api key|api key/i.test(msg)){
       alert('Supabase rejected the website API key. Please make sure the LIVE website is using the current Supabase Publishable Key for project hzqqswrnawrfgufbxgay.');
     }else if(/redirect|url|allow|not allowed/i.test(msg)){
-      alert('Supabase is blocking the reset redirect. Add this exact URL in Authentication → URL Configuration → Redirect URLs:\n\nhttps://www.guruconnnect.in/reset-password.html');
+      alert('Supabase is blocking the reset redirect. Add this exact URL in Authentication → URL Configuration → Redirect URLs:\n\nhttps://www.guruconnnect.in/reset-link.html');
     }else alert('Password reset failed:\n\n'+msg);
   }finally{if(btn){btn.disabled=false;btn.textContent='Forgot password? Send reset email';}}
 };
@@ -14852,12 +14852,12 @@ async function send(email,btn){
  const s=S();if(!s)return alert('Supabase is not connected.');
  btn.disabled=true;btn.textContent='SENDING…';
  try{
-   const r=await s.auth.resetPasswordForEmail(cleanEmail(email),{redirectTo:'https://www.guruconnnect.in/reset-password.html'});
+   const r=await s.auth.resetPasswordForEmail(cleanEmail(email),{redirectTo:'https://www.guruconnnect.in/reset-link.html'});
    if(r.error)throw r.error; alert('Password reset link sent to '+email+'. Please check Inbox and Spam/Junk.');
  }catch(e){
    const msg=String(e?.message||e||'');
    if(/invalid api key|api key/i.test(msg))alert('Supabase rejected the current Publishable API Key.');
-   else if(/redirect|url|allow/i.test(msg))alert('Add https://www.guruconnnect.in/reset-password.html to Supabase Authentication → URL Configuration → Redirect URLs.');
+   else if(/redirect|url|allow/i.test(msg))alert('Add https://www.guruconnnect.in/reset-link.html to Supabase Authentication → URL Configuration → Redirect URLs.');
    else alert('Reset link could not be sent: '+msg);
  }finally{btn.disabled=false;btn.textContent='SEND RESET LINK'}
 }
