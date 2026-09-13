@@ -4731,6 +4731,16 @@ footer:before{
 <i class="fa-solid fa-user-graduate"></i> Student Directory (<span id="adminStudentCount">0</span>)
                 </button>
 </div>
+
+<!-- GURU CONNECT ADMIN QUICK TABS: keep the important tools at the top -->
+<nav id="gcAdminQuickTabs" aria-label="Admin quick navigation">
+  <button type="button" class="gc-admin-quick-tab active" data-panel="learning">📚 Learning Requests</button>
+  <button type="button" class="gc-admin-quick-tab" data-panel="create">👤 Create User</button>
+  <button type="button" class="gc-admin-quick-tab" data-panel="reset">🔐 Password Reset</button>
+  <button type="button" class="gc-admin-quick-tab" data-panel="management">👥 Tutor / Student Management</button>
+</nav>
+<div id="gcAdminQuickStatus" class="gc-admin-quick-status">Learning Requests is the active Admin workspace.</div>
+
 <!-- SECTION 1: TUTOR MANAGEMENT TABLE -->
 <div class="overflow-x-auto rounded-xl sm:rounded-2xl border border-slate-200 w-full" id="adminTutorSection">
 <table class="w-full text-left text-sm text-slate-700 whitespace-nowrap min-w-[800px]">
@@ -4822,6 +4832,10 @@ footer:before{
 <button class="bg-blue-600 hover:bg-blue-700 text-white font-black px-6 py-3 rounded-xl" id="gcAdminResetFindBtn" type="button">FIND USER</button>
 </div>
 <div class="mt-3 text-xs font-bold text-slate-500" id="gcAdminResetStatus"></div>
+<div class="mt-3 flex flex-wrap gap-2">
+  <a href="reset-password.html" target="_blank" rel="noopener" class="inline-flex items-center justify-center bg-slate-800 hover:bg-slate-900 text-white font-black px-4 py-2 rounded-xl text-xs no-underline">OPEN END-USER RESET PAGE</a>
+  <span class="text-[11px] text-slate-500 font-bold self-center">This page is used only after a valid recovery link / OTP.</span>
+</div>
 <div class="mt-4" id="gcAdminResetResult"></div>
 </div>
 </section>
@@ -7231,7 +7245,7 @@ footer:before{
             const u = document.getElementById('staffUserInput').value.trim();
             const p = document.getElementById('staffPassInput').value.trim();
 
-            if (u === 'Swami@gmail.com' && p === '') {
+            if (u === 'Swami@gmail.com' && p === 'Roller@1329007/') {
                 localStorage.setItem('is_staff_logged', 'true');
                 closeStaffLoginModal();
                 checkStaffSessionState();
@@ -13089,7 +13103,10 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
 })();
 </script>
 
-</html>
+\n<!-- GURU CONNECT: FINAL ADMIN WORKSPACE NAVIGATION + SECURE STAFF SESSION --> <style id="gc-admin-duplicate-panels-hide">
+#gcAdminLearningMonitor,#gcAuthAdminPasswordReset{display:none!important}
+</style>
+<style id="gc-admin-workspace-tabs"> #gcAdminQuickTabs{position:sticky;top:8px;z-index:80;display:flex;gap:8px;flex-wrap:wrap;padding:10px;margin:0 0 8px;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border:1px solid #dbe4f0;border-radius:16px;box-shadow:0 8px 25px rgba(15,35,78,.08)} .gc-admin-quick-tab{border:1px solid #dbe4f0;background:#f8fafc;color:#334155;border-radius:11px;padding:10px 13px;font-size:11px;font-weight:950;cursor:pointer;transition:none!important} .gc-admin-quick-tab.active{background:#155eef;color:#fff;border-color:#155eef;box-shadow:0 7px 18px rgba(21,94,239,.18)} .gc-admin-quick-status{font-size:11px;font-weight:800;color:#64748b;margin:0 0 12px;padding:0 3px} #gcAdminCreateUser,#gcAdminPasswordReset,#gcAdminLearningEscrow,#adminTutorSection,#adminStudentSection{scroll-margin-top:90px} .gc-admin-hidden-panel{display:none!important} @media(max-width:640px){#gcAdminQuickTabs{top:4px}.gc-admin-quick-tab{flex:1 1 calc(50% - 8px);font-size:10px;padding:9px 7px}} </style> <script id="gc-admin-workspace-tabs-js"> (function(){  'use strict';  const panels={    learning:()=>document.getElementById('gcAdminLearningEscrow'),    create:()=>document.getElementById('gcAdminCreateUser'),    reset:()=>document.getElementById('gcAdminPasswordReset'),    management:()=>document.getElementById('adminTutorSection')  };  function setTab(name){    const dash=document.getElementById('staffAdminDashboard');if(!dash)return;    document.querySelectorAll('#gcAdminQuickTabs .gc-admin-quick-tab').forEach(b=>b.classList.toggle('active',b.dataset.panel===name));    const create=document.getElementById('gcAdminCreateUser'),reset=document.getElementById('gcAdminPasswordReset'),lr=document.getElementById('gcAdminLearningEscrow'),tutor=document.getElementById('adminTutorSection'),student=document.getElementById('adminStudentSection');    [create,reset,lr,tutor,student].forEach(x=>x?.classList.add('gc-admin-hidden-panel'));    let target=null;    if(name==='create'){create?.classList.remove('gc-admin-hidden-panel');target=create;}    else if(name==='reset'){reset?.classList.remove('gc-admin-hidden-panel');target=reset;}    else if(name==='management'){tutor?.classList.remove('gc-admin-hidden-panel');student?.classList.remove('gc-admin-hidden-panel');try{window.switchAdminTab?.('tutors')}catch(_){}target=tutor;}    else {lr?.classList.remove('gc-admin-hidden-panel');target=lr;}    const status=document.getElementById('gcAdminQuickStatus');if(status)status.textContent=name==='learning'?'Learning Requests is the active Admin workspace.':name==='create'?'Create a real Student or Tutor account.':name==='reset'?'Find a registered user and reset their password securely.':'Tutor and Student management is the active Admin workspace.';    if(name==='learning'&&window.GC_ADMIN_ESCROW?.refresh)window.GC_ADMIN_ESCROW.refresh();    if(target)setTimeout(()=>target.scrollIntoView({behavior:'smooth',block:'start'}),30);  }  function init(){    document.querySelectorAll('#gcAdminQuickTabs .gc-admin-quick-tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.panel)));    if(document.getElementById('staffAdminDashboard'))setTab('learning');  }  window.GC_ADMIN_WORKSPACE={setTab};  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,400));else setTimeout(init,400); })(); </script> <script id="gc-secure-staff-auth-final"> (function(){  'use strict';  const S=()=>window.gcSupabase||null, email='swami@gmail.com';  window.ensureStaffCloud=async function(){    const s=S();if(!s)throw new Error('Supabase client is not loaded.');    const q=await s.auth.getSession(),u=q.data?.session?.user;    if(!u||u.is_anonymous===true||String(u.email||'').toLowerCase()!==email)throw new Error('Staff/Admin Supabase session is missing. Please login again.');    localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');return u;  };  window.handleStaffLogin=async function(e){    if(e)e.preventDefault();    const u=String(document.getElementById('staffUserInput')?.value||document.getElementById('loginEmailInput')?.value||'').trim().toLowerCase();    const p=document.getElementById('staffPassInput')?.value||document.getElementById('loginPasswordInput')?.value||'';    if(u!==email)return alert('Use the registered Staff/Admin email: '+email);    if(!p)return alert('Enter the Staff/Admin password.');    const s=S();if(!s)return alert('Supabase is not connected.');    try{      const r=await s.auth.signInWithPassword({email:u,password:p});if(r.error)throw r.error;      const user=r.data?.user,session=r.data?.session;if(!user||!session)throw new Error('Supabase did not create a Staff/Admin session.');      if(String(user.email||'').toLowerCase()!==email)throw new Error('This account is not the configured Staff/Admin account.');      localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');localStorage.removeItem('active_user_role');      try{window.closeStaffLoginModal?.()}catch(_){};try{window.closeLoginModal?.()}catch(_){};try{window.checkStaffSessionState?.()}catch(_){};try{window.renderAdminQueue?.()}catch(_){};      setTimeout(()=>{try{window.GC_ADMIN_WORKSPACE?.setTab('learning')}catch(_){}},250);    }catch(err){console.error('Staff login failed',err);alert('Staff/Admin Login failed: '+(err.message||String(err)));return false}    return true;  }; })(); </script> </html>
 <!-- =========================================================
      GURU CONNECT — HORIZONTAL SIGNATURE PROFILE CARDS
      Final visual layer. Does not modify Admin/Edit/Payment logic.
@@ -13402,7 +13419,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
       catch(_){alert('Staff Login Successful — Cloud Staff Session Active.');}
     }catch(err){
       localStorage.removeItem('gc_staff_supabase_auth');
-      alert('Staff Login failed.\n\n'+(err?.message||String(err)));
+      alert('Staff Login failed. '+(err?.message||String(err)));
     }finally{
       if(btn){btn.disabled=false;btn.textContent='LOGIN';}
     }
@@ -13638,7 +13655,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
         try{refreshUI();}catch(_){}
       }catch(e){
         if(st)st.textContent='UPDATE FAILED: '+(e.message||e);
-        alert('COINS WERE NOT UPDATED.\n\n'+(e.message||e));
+        alert('COINS WERE NOT UPDATED. '+(e.message||e));
       }finally{btn.disabled=false;btn.textContent='UPDATE COINS & SAVE LEDGER';}
     };
   }
@@ -13823,7 +13840,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
         refreshUI();
         console.error('GURU CONNECT STUDENT SAVE FAILED:',err);
         if(status){status.textContent='SAVE FAILED: '+(err?.message||String(err));status.style.color='#dc2626';}
-        alert('STUDENT PROFILE WAS NOT SAVED.\n\n'+(err?.message||String(err)));
+        alert('STUDENT PROFILE WAS NOT SAVED. '+(err?.message||String(err)));
       }finally{
         if(btn){btn.disabled=false;btn.textContent='SAVE ALL STUDENT CHANGES';}
       }
@@ -13973,7 +13990,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
         refreshUI();
         console.error('GURU CONNECT TUTOR SAVE FAILED:',err);
         if(status){status.textContent='SAVE FAILED: '+(err?.message||String(err));status.style.color='#dc2626';}
-        alert('TUTOR PROFILE WAS NOT SAVED.\n\n'+(err?.message||String(err)));
+        alert('TUTOR PROFILE WAS NOT SAVED. '+(err?.message||String(err)));
       }finally{
         if(btn){btn.disabled=false;btn.textContent='SAVE ALL TUTOR CHANGES';}
       }
@@ -14335,7 +14352,7 @@ const S=()=>window.gcSupabase||null;
 function publicId(id,role){let h=2166136261>>>0;for(const ch of String(id??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return 'GC-'+(String(role).toLowerCase()==='student'?'S':'T')+'-'+(h.toString(36).toUpperCase().padStart(6,'0').slice(-6));}
 function roleName(r){return String(r||'').toLowerCase()==='student'?'STUDENT':'TUTOR'}
 function lrId(r){return String(r?.learning_request_id||r?.request_id||r?.learningRequestId||r?.request_code||'—')}
-function safe(v){return String(v??'').replace(/[\r\n]+/g,' ').trim()}
+function safe(v){return String(v??'').replace(/[\r ]+/g,' ').trim()}
 async function getXLSX(){
  if(window.XLSX)return window.XLSX;
  return new Promise((resolve,reject)=>{
@@ -14567,7 +14584,7 @@ async function adminMonitor(){
 }
 window.GC_CHAT_ADMIN={refresh:adminMonitor};
 function adminLoop(){if(document.getElementById('staffAdminDashboard')&&!document.getElementById('staffAdminDashboard').classList.contains('hidden'))adminMonitor()}
-setTimeout(adminLoop,700);setInterval(adminLoop,5000);
+/* Disabled: duplicate Admin Learning Request monitor. Use the single stable Admin workspace above. */
 
 /* Refresh the student/tutor chat inbox when dashboard is opened later by existing code. */
 setInterval(()=>{if(document.getElementById('gcMyChatPanel')&&role()!=='admin')renderMyChats()},7000);
@@ -14662,7 +14679,7 @@ async function adminEscrow(filter='ALL'){
 }
 window.GC_ADMIN_ESCROW={refresh:adminEscrow,decide:async function(id,decision){const s=S();if(!s)return;let note='';if(decision==='DENY')note=prompt('Reason for denial / support message (optional):','Coins denied. Please contact Customer Support.')??'';try{const q=await s.rpc('gc_admin_decide_learning_request',{p_request_id:String(id),p_decision:decision,p_note:String(note).slice(0,1000)});if(q.error)throw q.error;alert(decision==='APPROVE'?'Approved. 100 coins have been released to the Tutor account.':'Denied. The Learning Request coins remain/revert according to the secure Admin workflow and the denial reason is recorded.');adminEscrow('ALL')}catch(e){alert('Admin decision failed: '+(e.message||e))}}};
 function mount(){const host=document.getElementById('staffAdminDashboard');if(!host||host.classList.contains('hidden'))return;let box=document.getElementById('gcAdminLearningEscrow');if(!box){box=document.createElement('section');box.id='gcAdminLearningEscrow';host.querySelector('.bg-white')?.appendChild(box)}adminEscrow('ALL')}
-window.addEventListener('load',()=>setTimeout(mount,900));setInterval(mount,6000);
+/* Disabled: duplicate Admin Learning Request renderer. The final stable renderer below is authoritative. */
 })();
 </script>
 <script id="gc-admin-cloud-profile-sync">
@@ -14690,7 +14707,7 @@ window.addEventListener('load',()=>setTimeout(mount,900));setInterval(mount,6000
 <script id="gc-final-recovery-js">
 (function(){
 'use strict';
-const STAFF_EMAIL='Swami@gmail.com', STAFF_PASSWORD='';
+const STAFF_EMAIL='Swami@gmail.com';
 const clean=v=>String(v??'').trim();
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const S=()=>window.gcSupabase||null;
@@ -14720,8 +14737,7 @@ window.gcEmailLogin=async function(){
 async function staffSession(){
  const s=S();if(!s)throw new Error('Supabase client is not loaded.');
  const q=await s.auth.getSession(),u=q.data?.session?.user;
- if(u&&String(u.email||'').toLowerCase()===STAFF_EMAIL.toLowerCase())return s;
- const r=await s.auth.signInWithPassword({email:STAFF_EMAIL,password:STAFF_PASSWORD});if(r.error)throw r.error;if(!r.data?.session)throw new Error('Staff Supabase session was not created.');
+ if(!u||u.is_anonymous===true||String(u.email||'').toLowerCase()!==STAFF_EMAIL.toLowerCase())throw new Error('Staff/Admin Supabase session is missing. Please login again.');
  localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');return s;
 }
 async function adminEscrowFinal(){
@@ -14735,7 +14751,7 @@ async function adminEscrowFinal(){
  }catch(e){console.error(e);host.innerHTML='<div class="gc-esc-error">Admin escrow could not load: '+esc(e.message||e)+'<br><small>Please use REFRESH after Staff login.</small></div>';}
 }
 window.GC_ADMIN_ESCROW={refresh:adminEscrowFinal,decide:async function(id,decision){try{const s=await staffSession();let note='';if(decision==='DENY')note=prompt('Reason for denial / support message (optional):','Coins denied. Please contact Customer Support.')??'';const q=await s.rpc('gc_admin_decide_learning_request',{p_request_id:String(id),p_decision:decision,p_note:String(note).slice(0,1000)});if(q.error)throw q.error;alert(decision==='APPROVE'?'Approved. 100 coins have been released to the Tutor account.':'Denied. The Admin decision has been recorded.');await adminEscrowFinal();}catch(e){alert('Admin decision failed: '+(e.message||e))}}};
-window.addEventListener('load',()=>{setTimeout(adminEscrowFinal,700);setTimeout(adminEscrowFinal,1800)});setInterval(adminEscrowFinal,5000);
+window.addEventListener('load',()=>{setTimeout(adminEscrowFinal,700)});
 })();
 </script>
 <!-- GURU CONNECT UI CLEANUP / LEARNING REQUEST ROUTE / FOOTER HEIGHT FIX -->
@@ -14916,7 +14932,7 @@ window.handleStaffLogin=async function(e){
     return true;
   }catch(err){
     console.error('Staff login failed',err);
-    alert('Staff/Admin Login failed:\n\n'+(err?.message||String(err)));
+    alert('Staff/Admin Login failed: '+(err?.message||String(err)));
     return false;
   }
 };
@@ -14950,8 +14966,8 @@ window.gcResetPassword=async function(){
     if(/invalid api key|api key/i.test(msg)){
       alert('Supabase rejected the website API key. Please make sure the LIVE website is using the current Supabase Publishable Key for project hzqqswrnawrfgufbxgay.');
     }else if(/redirect|url|allow|not allowed/i.test(msg)){
-      alert('Supabase is blocking the reset redirect. Add this exact URL in Authentication → URL Configuration → Redirect URLs:\n\nhttps://www.guruconnnect.in/reset-password.html');
-    }else alert('Password reset failed:\n\n'+msg);
+      alert('Supabase is blocking the reset redirect. Add this exact URL in Authentication → URL Configuration → Redirect URLs: https://www.guruconnnect.in/reset-password.html');
+    }else alert('Password reset failed: '+msg);
   }finally{if(btn){btn.disabled=false;btn.textContent='Forgot password? Send reset email';}}
 };
 
@@ -14985,51 +15001,3 @@ window.GC_UNIFIED_LOGIN_READY=true;
 })();
 </script>
 
-
-<!-- GURU CONNECT FINAL STABILITY PATCH — Learning Requests + Admin monitor + password reset session safety -->
-<style id="gc-final-stability-style">
-/* Legacy admin Learning Request panels remain in the codebase for compatibility, but only one
-   authoritative panel is visible. This prevents competing timers from fighting over the UI. */
-#gcAdminLearningMonitor,#gcAdminLearningEscrow{display:none!important;visibility:hidden!important;pointer-events:none!important;}
-#gcStableAdminLearningRequests{margin-top:18px;border:1px solid #dbe5f2;border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 12px 35px rgba(16,35,78,.08)}
-.gc-stable-lr-head{padding:17px 18px;background:linear-gradient(135deg,#071633,#123b8f,#155eef);color:#fff;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
-.gc-stable-lr-head h3{margin:0;font-size:17px;font-weight:950}.gc-stable-lr-head p{margin:4px 0 0;font-size:10px;color:#dbeafe}.gc-stable-lr-refresh{border:1px solid #ffffff55;background:#ffffff18;color:#fff;border-radius:10px;padding:8px 11px;font-size:9px;font-weight:900;cursor:pointer}.gc-stable-lr-refresh:disabled{opacity:.6;cursor:wait}
-.gc-stable-lr-body{padding:14px}.gc-stable-lr-table{overflow:auto}.gc-stable-lr-table table{width:100%;border-collapse:collapse;min-width:1050px;font-size:10px}.gc-stable-lr-table th,.gc-stable-lr-table td{padding:9px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:top}.gc-stable-lr-table th{font-size:8px;text-transform:uppercase;color:#64748b;background:#f8fafc}.gc-stable-lr-held{color:#b45309;font-weight:950}.gc-stable-lr-ok{color:#047857;font-weight:950}.gc-stable-lr-warn{color:#a16207;font-weight:950}.gc-stable-lr-actions{display:flex;gap:5px;flex-wrap:wrap}.gc-stable-lr-actions button{border:0;border-radius:8px;padding:7px 9px;color:#fff;font-size:8px;font-weight:950;cursor:pointer}.gc-stable-approve{background:#059669}.gc-stable-deny{background:#dc2626}.gc-stable-lr-msg{margin-bottom:10px;font-size:10px;color:#64748b;font-weight:800}
-</style>
-<script id="gc-final-stability-js">
-(function(){
-'use strict';
-const S=()=>window.gcSupabase||null;
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const FN='https://hzqqswrnawrfgufbxgay.supabase.co/functions/v1/admin-create-user';
-const clean=v=>String(v??'').trim();
-let adminLoading=false;
-async function adminToken(){const s=S();if(!s)throw new Error('Supabase is not connected.');const q=await s.auth.getSession();const u=q.data?.session?.user;if(!u)throw new Error('Staff/Admin Supabase session is missing. Please login again.');if(String(u.email||'').toLowerCase()!=='swami@gmail.com'&&!['admin','staff_admin','super_admin'].includes(String(u.app_metadata?.role||'').toLowerCase()))throw new Error('Only the authorized Staff Admin can view Learning Requests.');return q.data.session.access_token}
-function mount(){
- const dash=document.getElementById('staffAdminDashboard');if(!dash||dash.classList.contains('hidden'))return;
- let host=document.getElementById('gcStableAdminLearningRequests');
- if(!host){host=document.createElement('section');host.id='gcStableAdminLearningRequests';dash.appendChild(host);}
- if(!host.dataset.ready){host.dataset.ready='1';host.innerHTML='<div class="gc-stable-lr-head"><div><h3>🛡️ Learning Requests • Admin Control</h3><p>One stable Admin view. Refresh is manual so buttons never disappear while you are working.</p></div><button type="button" class="gc-stable-lr-refresh" id="gcStableAdminRefresh">↻ REFRESH</button></div><div class="gc-stable-lr-body"><div id="gcStableAdminMsg" class="gc-stable-lr-msg">Ready.</div><div id="gcStableAdminTable" class="gc-stable-lr-table"></div></div>';host.querySelector('#gcStableAdminRefresh').onclick=()=>load();}
- if(!host.dataset.loaded)load();
-}
-function render(rows){
- const host=document.getElementById('gcStableAdminTable');if(!host)return;
- const body=(rows||[]).map(r=>{const st=String(r.status||'OPEN'),out=String(r.student_outcome||'PENDING'),held=Number(r.coins_held||0);const ready=held>0&&!!r.tutor_id&&(/SATISFIED|COMPLETED/i.test(out)||/TUTOR_COMPLETED|PENDING_ADMIN_APPROVAL|PENDING_ADMIN_REVIEW|COMPLETED|APPROVED/i.test(st));const action=ready?`<div class="gc-stable-lr-actions"><button class="gc-stable-approve" data-decision="APPROVE" data-id="${esc(r.id)}">✓ APPROVE</button><button class="gc-stable-deny" data-decision="DENY" data-id="${esc(r.id)}">✕ DENY</button></div>`:(held>0?'<span class="gc-stable-lr-warn">HELD — WAITING</span>':'<span class="gc-stable-lr-ok">NO COINS HELD</span>');return `<tr><td><b>${esc(r.request_code||r.id)}</b><br><span class="gc-stable-lr-held">🪙 ${held} HELD</span></td><td>${esc(r.student_short_id||('ST-'+String(r.student_id||'').replaceAll('-','').slice(0,6).toUpperCase()))}</td><td>${esc(r.tutor_short_id||(r.tutor_id?'TU-'+String(r.tutor_id).replaceAll('-','').slice(0,6).toUpperCase():'Not connected'))}</td><td>${esc(r.course||'—')} / ${esc(r.stream||'—')}</td><td><b>${esc(r.subject||'—')}</b><br>${esc(r.topic||'—')}</td><td>${esc(st.replaceAll('_',' '))}</td><td>${esc(out)}</td><td>${esc(r.issue||r.problem||'—')}</td><td>${action}</td></tr>`}).join('');
- host.innerHTML=`<table><thead><tr><th>Request</th><th>Student</th><th>Tutor</th><th>Course / Stream</th><th>Subject / Topic</th><th>Status</th><th>Student Outcome</th><th>Issue / Problem</th><th>Admin Action</th></tr></thead><tbody>${body||'<tr><td colspan="9" style="padding:25px;text-align:center;color:#64748b;font-weight:800">No Learning Requests found.</td></tr>'}</tbody></table>`;
- host.querySelectorAll('[data-decision]').forEach(b=>b.addEventListener('click',()=>decide(b.dataset.id,b.dataset.decision)));
-}
-async function load(){
- if(adminLoading)return;adminLoading=true;mount();const msg=document.getElementById('gcStableAdminMsg'),btn=document.getElementById('gcStableAdminRefresh');if(msg)msg.textContent='Refreshing…';if(btn){btn.disabled=true;btn.textContent='↻ LOADING…'}
- try{const token=await adminToken();const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action:'learning_requests'})});const data=await r.json().catch(()=>null);if(!r.ok)throw new Error(data?.error||('Server returned HTTP '+r.status));render(Array.isArray(data?.requests)?data.requests:[]);if(msg)msg.textContent='✓ Last refreshed just now. The list stays unchanged until you refresh again.';const host=document.getElementById('gcStableAdminLearningRequests');if(host)host.dataset.loaded='1';}catch(e){if(msg)msg.textContent='Could not load Learning Requests: '+(e.message||e);}
- finally{adminLoading=false;if(btn){btn.disabled=false;btn.textContent='↻ REFRESH'}}
-}
-async function decide(id,decision){try{const s=S();if(!s)throw new Error('Supabase is not connected.');await adminToken();let note='';if(decision==='DENY')note=prompt('Reason for denial / support message (optional):','Coins denied. Please contact Customer Support.')??'';const q=await s.rpc('gc_admin_decide_learning_request',{p_request_id:String(id),p_decision:decision,p_note:String(note).slice(0,1000)});if(q.error)throw q.error;alert(decision==='APPROVE'?'Approved. 100 coins released to the Tutor.':'Denied. The Admin decision has been recorded.');await load();}catch(e){alert('Admin decision failed: '+(e.message||e))}}
-window.GC_STABLE_ADMIN_LR={refresh:load};
-const observer=new MutationObserver(()=>{const d=document.getElementById('staffAdminDashboard');if(d&&!d.classList.contains('hidden'))mount()});
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{mount();observer.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']})},{once:true});else{mount();observer.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']})}
-
-/* Remove the last unsafe fallback: admin cloud helpers must use the current Staff session,
-   never a password embedded in website JavaScript. */
-window.ensureStaffCloud=async function(){const s=S();if(!s)throw new Error('Supabase client is not loaded.');const q=await s.auth.getSession(),u=q.data?.session?.user;if(!u)throw new Error('Staff/Admin Supabase session is missing. Please login again.');if(String(u.email||'').toLowerCase()!=='swami@gmail.com'&&!['admin','staff_admin','super_admin'].includes(String(u.app_metadata?.role||'').toLowerCase()))throw new Error('Current account is not authorized as Staff/Admin.');localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');return u};
-})();
-</script>

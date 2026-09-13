@@ -10,105 +10,38 @@
 <footer class="footer">© 2026 GURU CONNECT Platform • Learning Requests are permanently recorded and managed through the secure cloud system.</footer>
 <div id="chatOverlay" class="overlay" aria-hidden="true"><div class="chat"><div class="chatHead"><div><h2 id="chatTitle">Private Chat</h2><p>GURU CONNECT Student ↔ Tutor internal chat</p></div><button class="close" onclick="closeChat()">×</button></div><div id="chatMeta" class="chatMeta"></div><div id="messages" class="messages"></div><div class="composer"><input id="chatInput" maxlength="5000" placeholder="Write a message…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"><button class="btn blue" onclick="sendMessage()">SEND</button></div></div></div>
 <script>
-'use strict';
-const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
-const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
-const FN_URL=SUPABASE_URL+'/functions/v1/gc-learning-requests';
-const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-let rows=[],meUser=null,connections=[],activeChat=null,chatPoll=null,loadSeq=0,loading=false;
-const $=id=>document.getElementById(id);
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const URL='https://hzqqswrnawrfgufbxgay.supabase.co',KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',sb=window.supabase.createClient(URL,KEY);let rows=[],meUser=null,connections=[],activeChat=null,chatPoll=null;
+const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt=v=>v?new Date(v).toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
 const role=()=>String(meUser?.role||''); const pid=()=>String(meUser?.id||'');
 function sid(id,r){return (r==='student'?'ST-':'TU-')+String(id||'').replaceAll('-','').slice(0,6).toUpperCase()}
-function myName(){return meUser?.name||meUser?.full_name||'User'}
-async function getMe(){
-  const q=await sb.auth.getSession(); const u=q.data?.session?.user; if(!u)return null;
-  const [st,tr]=await Promise.all([
-    sb.from('student_profiles').select('*').eq('user_id',u.id).maybeSingle(),
-    sb.from('tutor_profiles').select('*').eq('user_id',u.id).maybeSingle()
-  ]);
-  if(st.data)return {...st.data,role:'student',uid:u.id};
-  if(tr.data)return {...tr.data,role:'tutor',uid:u.id};
-  return null;
-}
+function myName(){return meUser?.name||'User'}
+async function getMe(){const q=await sb.auth.getSession();const u=q.data?.session?.user;if(!u)return null;const [st,tr]=await Promise.all([sb.from('student_profiles').select('*').eq('user_id',u.id).maybeSingle(),sb.from('tutor_profiles').select('*').eq('user_id',u.id).maybeSingle()]);if(st.data)return {...st.data,role:'student',uid:u.id};if(tr.data)return {...tr.data,role:'tutor',uid:u.id};return null}
+async function loadConnections(){connections=[];if(!meUser)return;const q=await sb.from('gc_connection_requests').select('*').or(`sender_profile_id.eq.${pid()},recipient_profile_id.eq.${pid()}`).order('created_at',{ascending:false}).limit(1000);if(!q.error)connections=q.data||[]}
 function connFor(r){return connections.find(c=>String(c.learning_request_id||'')===String(r.id))||null}
-function connectionState(r){const c=connFor(r);return c?String(c.status||'PENDING').toUpperCase():null}
-function otherFor(r,c){
-  if(role()==='student')return {id:String(c?.sender_profile_id||r.tutor_id||''),role:'tutor',name:r.tutor_name||r.tutorName||('Tutor '+sid(c?.sender_profile_id||r.tutor_id,'tutor'))};
-  return {id:String(c?.recipient_profile_id||r.student_id||''),role:'student',name:r.student_name||r.studentName||('Student '+sid(c?.recipient_profile_id||r.student_id,'student'))};
-}
-function setBusy(v){loading=v;const b=document.querySelector('.filters .btn');if(b){b.disabled=v;b.textContent=v?'↻ LOADING…':'↻ REFRESH'}}
-async function load(){
-  const seq=++loadSeq; setBusy(true);
-  try{
-    meUser=await getMe();
-    const sess=await sb.auth.getSession(); const token=sess.data?.session?.access_token||'';
-    const rr=await fetch(FN_URL,{method:'POST',headers:{'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{})},body:'{}'});
-    const data=await rr.json().catch(()=>null);
-    if(!rr.ok)throw new Error(data?.error||('Learning Request server returned HTTP '+rr.status));
-    if(seq!==loadSeq)return;
-    rows=Array.isArray(data?.requests)?data.requests:[];
-    connections=Array.isArray(data?.connections)?data.connections:[];
-    const ss=[...new Set(rows.map(r=>r.stream).filter(Boolean))].sort();
-    const current=$('stream').value;
-    $('stream').innerHTML='<option value="">All Streams</option>'+ss.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');
-    if(ss.includes(current))$('stream').value=current;
-    updateNotice(); render();
-  }catch(e){
-    console.error('Learning Request load failed:',e);
-    if(seq!==loadSeq)return;
-    rows=[];connections=[];updateNotice();
-    $('list').innerHTML=`<div class="card empty">Learning Requests could not be loaded right now.<br><small>${esc(e.message||e)}</small><br><button class="btn blue" style="margin-top:12px" onclick="load()">TRY AGAIN</button></div>`;
-  }finally{if(seq===loadSeq)setBusy(false)}
-}
-function updateNotice(){
-  const n=$('noticeArea');
-  if(!meUser)n.innerHTML='<div class="notice">👀 <b>Public view:</b> Everyone can view the Learning Request board. Login as a registered Tutor to send connection requests, or login as a Student to manage your own requests.</div>';
-  else if(role()==='tutor')n.innerHTML='<div class="notice successNotice">👨‍🏫 <b>Tutor mode:</b> Review every Student Learning Request below. Use <b>CONNECT WITH STUDENT</b> to request contact. The Student must accept before private chat becomes active.</div>';
-  else n.innerHTML='<div class="notice">🎓 <b>Student mode:</b> Your own Learning Requests are shown here. Incoming Tutor connection requests can be accepted or rejected, and private chat becomes available after acceptance.</div>';
-}
-function actions(r){
-  const isTutor=role()==='tutor',isStudent=role()==='student',mineStudent=isStudent&&String(r.student_id)===pid(),c=connFor(r),cs=String(c?.status||'').toUpperCase(),st=String(r.status||'OPEN');let h='';
-  if(isTutor&&st==='OPEN'&&!r.tutor_id&&!c)h+=`<button class="btn greenBtn" data-action="connect" data-id="${esc(r.id)}">🤝 CONNECT WITH STUDENT</button>`;
-  if(isTutor&&c&&cs==='PENDING')h+='<span class="pill gold">⏳ CONNECTION REQUEST SENT — WAITING FOR STUDENT</span>';
-  if(isTutor&&c&&cs==='REJECTED'&&st==='OPEN'&&!r.tutor_id)h+=`<button class="btn greenBtn" data-action="connect" data-id="${esc(r.id)}">🤝 CONNECT AGAIN</button>`;
-  if(isStudent&&mineStudent&&c&&cs==='PENDING'&&String(c.recipient_profile_id)===pid())h+=`<button class="btn greenBtn" data-action="respond" data-id="${esc(c.id)}" data-decision="ACCEPT">✓ ACCEPT CONNECTION</button><button class="btn redBtn" data-action="respond" data-id="${esc(c.id)}" data-decision="REJECT">✕ REJECT</button>`;
-  if(isStudent&&mineStudent&&c&&cs==='ACCEPTED')h+=`<button class="btn blue" data-action="chat" data-id="${esc(r.id)}">💬 CHAT WITH TUTOR</button>`;
-  if(isTutor&&c&&cs==='ACCEPTED')h+=`<button class="btn blue" data-action="chat" data-id="${esc(r.id)}">💬 CHAT WITH STUDENT</button>`;
-  if(isTutor&&String(r.tutor_id)===pid()&&!c)h+='<span class="pill green">✓ CONNECTED</span>';
-  if(isStudent&&mineStudent&&!c&&st==='OPEN')h+='<span class="action-note">Waiting for a Tutor connection request.</span>';
-  if(!h)h='<span class="action-note">Connection and chat actions are shown according to the request status.</span>';
-  return h;
-}
-function render(){
-  const search=$('search').value.trim().toLowerCase(),stream=$('stream').value,status=$('status').value;
-  let data=rows.filter(r=>{if(role()==='student'&&String(r.student_id)!==pid())return false;return status==='ALL'||String(r.status||'OPEN')==='OPEN'});
-  if(stream)data=data.filter(r=>String(r.stream||'')===stream);
-  if(search)data=data.filter(r=>[r.request_code,r.subject,r.topic,r.student_short_id,r.tutor_short_id,r.course,r.stream,r.issue,r.problem].some(v=>String(v||'').toLowerCase().includes(search)));
-  $('list').innerHTML=data.length?data.map(r=>{const st=String(r.status||'OPEN'),cs=connectionState(r);let cls=st==='OPEN'?'status':(st.includes('PENDING')?'status wait':'status done');return `<article class="request"><div class="head"><div><h3>${esc(r.subject||'Learning Request')}</h3><div class="id">${esc(r.request_code||('LR-'+String(r.id).replaceAll('-','').slice(0,8).toUpperCase()))} · Student ${esc(r.student_short_id||sid(r.student_id,'student'))}</div></div><span class="${cls}">${esc(st.replaceAll('_',' '))}</span></div><div class="meta"><div><b>Course</b><span>${esc(r.course||'—')}</span></div><div><b>Stream</b><span>${esc(r.stream||'—')}</span></div><div><b>Topic</b><span>${esc(r.topic||'—')}</span></div><div><b>Request Date / Time</b><span>${esc(fmt(r.created_at))}</span></div><div><b>Learning Deadline</b><span class="deadline">${esc(fmt(r.learning_deadline))}</span></div><div><b>Tutor</b><span>${esc(r.tutor_short_id||(r.tutor_id?sid(r.tutor_id,'tutor'):'Not connected'))}</span></div><div><b>Coins Held</b><span>🪙 ${Number(r.coins_held||0)} HELD WITH ADMIN</span></div><div><b>Connection</b><span>${esc(cs||'NOT SENT')}</span></div><div><b>Outcome</b><span>${esc(r.student_outcome||'Pending')}</span></div></div><div class="issue"><b>Issue / Problem:</b> ${esc(r.issue||r.problem||'—')}</div><div class="actions">${actions(r)}</div></article>`}).join(''):'<div class="card empty">No Learning Requests match your filters.</div>';
-}
-async function connect(id){
-  if(loading)return;
-  if(!meUser||role()!=='tutor')return alert('Only a registered and logged-in Tutor can send a connection request.');
-  const r=rows.find(x=>String(x.id)===String(id));if(!r)return;
-  const c=connFor(r);if(r.tutor_id||c)return alert('A Tutor connection request already exists for this Learning Request.');
-  const b=document.querySelector(`[data-action="connect"][data-id="${CSS.escape(String(id))}"]`);if(b){b.disabled=true;b.textContent='SENDING…'}
-  try{const x=await sb.rpc('gc_send_connection_request',{p_target_profile_id:String(r.student_id),p_target_role:'student',p_learning_request_id:String(id),p_message:'Tutor would like to connect regarding your Learning Request.'});if(x.error)throw x.error;alert('Connection Request sent to the Student. The Student must ACCEPT it before private chat begins.');await load()}catch(e){if(b){b.disabled=false;b.textContent='🤝 CONNECT WITH STUDENT'}alert(e.message||'Connection request could not be sent.')}
-}
-async function respond(id,decision){
-  if(!meUser||role()!=='student')return;
-  const x=await sb.rpc('gc_respond_connection_request',{p_request_id:String(id),p_decision:decision});if(x.error)return alert(x.error.message||'Could not update the connection request.');alert(decision==='ACCEPT'?'Connection accepted. You can now chat with the Tutor.':'Connection rejected.');await load();
-}
-function openChat(id){
-  const r=rows.find(x=>String(x.id)===String(id)),c=connFor(r);if(!r||!c||String(c.status).toUpperCase()!=='ACCEPTED')return alert('Chat becomes available after the Student accepts the connection request.');
-  const o=otherFor(r,c);activeChat={requestId:String(r.id),other:String(o.id),otherName:o.name||'User'};$('chatTitle').textContent='Chat with '+activeChat.otherName;$('chatMeta').innerHTML=`<span>📚 ${esc(r.subject||'Learning Request')}</span><span>🔐 ${esc(r.request_code||r.id)}</span><span>🪙 ${Number(r.coins_held||0)} Held with Admin</span>`;$('chatOverlay').classList.add('show');$('chatOverlay').setAttribute('aria-hidden','false');renderChat();clearInterval(chatPoll);chatPoll=setInterval(renderChat,2500);setTimeout(()=>$('chatInput').focus(),100)
-}
+function connectionState(r){const c=connFor(r);if(!c)return null;return String(c.status||'PENDING').toUpperCase()}
+function otherFor(r,c){if(role()==='student')return {id:String(c?.sender_profile_id||r.tutor_id||''),role:'tutor',name:r.tutor_name||r.tutorName||('Tutor '+sid(c?.sender_profile_id||r.tutor_id,'tutor'))};return {id:String(c?.recipient_profile_id||r.student_id||''),role:'student',name:r.student_name||r.studentName||('Student '+sid(c?.recipient_profile_id||r.student_id,'student'))}}
+function canChat(r){const c=connFor(r),st=String(c?.status||'').toUpperCase();if(!meUser||!c||st!=='ACCEPTED')return false;const o=otherFor(r,c);return !!o.id}
+async function load(){meUser=await getMe();await loadConnections();
+try{
+  const sess=await sb.auth.getSession(), token=sess.data?.session?.access_token||'';
+  const rr=await fetch('https://hzqqswrnawrfgufbxgay.supabase.co/functions/v1/gc-learning-requests',{method:'POST',headers:{'Content-Type':'application/json',...(token?{'Authorization':'Bearer '+token}:{})},body:'{}'});
+  const data=await rr.json().catch(()=>null);
+  if(!rr.ok)throw new Error(data?.error||('Learning Request server returned HTTP '+rr.status));
+  rows=Array.isArray(data?.requests)?data.requests:[];
+}catch(e){
+  console.warn('Learning Request board server load failed:',e);
+  const q=await sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(1000);
+  rows=q.error?[]:(q.data||[]);
+}const ss=[...new Set(rows.map(r=>r.stream).filter(Boolean))];$('stream').innerHTML='<option value="">All Streams</option>'+ss.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');render();updateNotice()}
+function updateNotice(){const n=$('noticeArea');if(!meUser)n.innerHTML='<div class="notice">👀 <b>Public view:</b> Everyone can view the Learning Request board. Login as a registered Tutor to send connection requests, or login as a Student to manage your own requests.</div>';else if(role()==='tutor')n.innerHTML='<div class="notice successNotice">👨‍🏫 <b>Tutor mode:</b> Review every Student Learning Request below. Use <b>CONNECT WITH STUDENT</b> to send a connection request. The Student must accept before private chat becomes active.</div>';else n.innerHTML='<div class="notice">🎓 <b>Student mode:</b> Your own Learning Requests are shown here. Incoming Tutor connection requests can be accepted or rejected, and private chat becomes available after acceptance.</div>'}
+function actions(r){const isTutor=role()==='tutor',isStudent=role()==='student',mineStudent=isStudent&&String(r.student_id)===pid(),c=connFor(r),cs=String(c?.status||'').toUpperCase();let h='';if(isTutor&&String(r.status||'OPEN')==='OPEN'&&!r.tutor_id&&!c)h+=`<button class="btn greenBtn" onclick="connect('${esc(r.id)}')">🤝 CONNECT WITH STUDENT</button>`;if(isTutor&&c&&cs==='PENDING')h+='<span class="pill gold">⏳ CONNECTION REQUEST SENT — WAITING FOR STUDENT</span>';if(isStudent&&mineStudent&&c&&cs==='PENDING'&&String(c.recipient_profile_id)===pid())h+=`<button class="btn greenBtn" onclick="respond('${esc(c.id)}','ACCEPT')">✓ ACCEPT CONNECTION</button><button class="btn redBtn" onclick="respond('${esc(c.id)}','REJECT')">✕ REJECT</button>`;if(isStudent&&mineStudent&&c&&cs==='ACCEPTED')h+=`<button class="btn blue" onclick="openChat('${esc(r.id)}')">💬 CHAT WITH TUTOR</button>`;if(isTutor&&c&&cs==='ACCEPTED')h+=`<button class="btn blue" onclick="openChat('${esc(r.id)}')">💬 CHAT WITH STUDENT</button>`;if(isTutor&&String(r.tutor_id)===pid()&&!c)h+='<span class="pill green">✓ CONNECTED</span>';if(isStudent&&mineStudent&&!c&&String(r.status||'OPEN')==='OPEN')h+='<span class="action-note">Waiting for Tutor connection request.</span>';if(!h)h='<span class="action-note">🔐 Connection and chat actions are shown according to your account and the request status.</span>';return h}
+function render(){const search=$('search').value.trim().toLowerCase(),stream=$('stream').value,status=$('status').value;let data=rows.filter(r=>{if(role()==='student'&&String(r.student_id)!==pid())return false;return (status==='ALL'||String(r.status||'OPEN')==='OPEN')&&(!stream||String(r.stream||'')===stream)});if(search)data=data.filter(r=>[r.request_code,r.subject,r.topic,r.student_short_id,r.tutor_short_id,r.course,r.stream,r.issue,r.problem].some(v=>String(v||'').toLowerCase().includes(search)));$('list').innerHTML=data.length?data.map(r=>{const st=String(r.status||'OPEN'),cs=connectionState(r);let cls=st==='OPEN'?'status':(st.includes('PENDING')?'status wait':'status done');return `<article class="request"><div class="head"><div><h3>${esc(r.subject||'Learning Request')}</h3><div class="id">${esc(r.request_code||('LR-'+String(r.id).replaceAll('-','').slice(0,8).toUpperCase()))} · Student ${esc(r.student_short_id||sid(r.student_id,'student'))}</div></div><span class="${cls}">${esc(st.replaceAll('_',' '))}</span></div><div class="meta"><div><b>Course</b><span>${esc(r.course||'—')}</span></div><div><b>Stream</b><span>${esc(r.stream||'—')}</span></div><div><b>Topic</b><span>${esc(r.topic||'—')}</span></div><div><b>Request Date / Time</b><span>${esc(fmt(r.created_at))}</span></div><div><b>Learning Deadline</b><span class="deadline">${esc(fmt(r.learning_deadline))}</span></div><div><b>Tutor</b><span>${esc(r.tutor_short_id||(r.tutor_id?sid(r.tutor_id,'tutor'):'Not connected'))}</span></div><div><b>Coins Held</b><span>🪙 ${Number(r.coins_held||0)} HELD WITH ADMIN</span></div><div><b>Connection</b><span>${esc(cs||'NOT SENT')}</span></div><div><b>Outcome</b><span>${esc(r.student_outcome||'Pending')}</span></div></div><div class="issue"><b>Issue / Problem:</b> ${esc(r.issue||r.problem||'—')}</div><div class="actions">${actions(r)}</div></article>`}).join(''):'<div class="card empty">No Learning Requests match your filters.</div>'}
+async function connect(id){if(!meUser||role()!=='tutor')return alert('Only a registered and logged-in Tutor can send a connection request.');const r=rows.find(x=>String(x.id)===String(id));if(!r)return;if(r.tutor_id||connFor(r))return alert('A Tutor connection request already exists for this Learning Request.');const x=await sb.rpc('gc_send_connection_request',{p_target_profile_id:String(r.student_id),p_target_role:'student',p_learning_request_id:String(id),p_message:'Tutor would like to connect regarding your Learning Request.'});if(x.error)return alert(x.error.message||'Connection request could not be sent.');alert('Connection Request sent to the Student. The Student must ACCEPT it before private chat begins.');await load()}
+async function respond(id,decision){if(!meUser||role()!=='student')return;const x=await sb.rpc('gc_respond_connection_request',{p_request_id:String(id),p_decision:decision});if(x.error)return alert(x.error.message||'Could not update the connection request.');alert(decision==='ACCEPT'?'Connection accepted. You can now chat with the Tutor.':'Connection rejected.');await load()}
+function openChat(id){const r=rows.find(x=>String(x.id)===String(id)),c=connFor(r);if(!r||!c||String(c.status).toUpperCase()!=='ACCEPTED')return alert('Chat becomes available after the Student accepts the connection request.');const o=otherFor(r,c);activeChat={requestId:String(r.id),other:String(o.id),otherName:o.name||'User',subject:r.subject||'Learning Request',code:r.request_code||r.id};$('chatTitle').textContent='Chat with '+activeChat.otherName;$('chatMeta').innerHTML=`<span>📚 ${esc(activeChat.subject)}</span><span>🔐 ${esc(activeChat.code)}</span><span>🪙 ${Number(r.coins_held||0)} Held with Admin</span>`;$('chatOverlay').classList.add('show');$('chatOverlay').setAttribute('aria-hidden','false');renderChat();clearInterval(chatPoll);chatPoll=setInterval(renderChat,2500);setTimeout(()=>$('chatInput').focus(),100)}
 async function renderChat(){if(!activeChat)return;const q=await sb.from('gc_messages').select('*').eq('subject','GCCHAT|'+activeChat.requestId).order('created_at',{ascending:true}).limit(500);if(q.error){$('messages').innerHTML='<div class="empty">Chat could not be loaded. Please refresh and try again.</div>';return}const rs=q.data||[];$('messages').innerHTML=rs.length?rs.map(m=>`<div class="bubble ${String(m.from_id)===pid()?'mine':'theirs'}">${esc(m.body)}<small>${esc(m.from_name||'User')} · ${esc(fmt(m.created_at))}</small></div>`).join(''):'<div class="empty">No messages yet. Start the conversation.</div>';$('messages').scrollTop=$('messages').scrollHeight}
-async function sendMessage(){if(!activeChat||!meUser)return;const body=$('chatInput').value.trim();if(!body)return;const x=await sb.from('gc_messages').insert({id:'chat_'+crypto.randomUUID(),from_type:'user',from_id:pid(),from_name:myName(),to_type:'user',to_id:activeChat.other,to_role:role()==='student'?'tutor':'student',to_name:activeChat.otherName,subject:'GCCHAT|'+activeChat.requestId,body,created_at:new Date().toISOString(),read:false});if(x.error)return alert('Message could not be sent: '+x.error.message);$('chatInput').value='';await renderChat()}
+async function sendMessage(){if(!activeChat||!meUser)return;const body=$('chatInput').value.trim();if(!body)return;const x=await sb.from('gc_messages').insert({id:'chat_'+crypto.randomUUID(),from_type:'user',from_id:pid(),from_name:myName(),to_type:'user',to_id:activeChat.other,to_role:role()==='student'?'tutor':'student',to_name:activeChat.otherName,subject:'GCCHAT|'+activeChat.requestId,body,created_at:new Date().toISOString(),read:false});if(x.error)return alert('Message could not be sent: '+(x.error.message||x.error));$('chatInput').value='';await renderChat()}
 function closeChat(){$('chatOverlay').classList.remove('show');$('chatOverlay').setAttribute('aria-hidden','true');clearInterval(chatPoll);chatPoll=null;activeChat=null}
-document.addEventListener('click',e=>{const b=e.target.closest?.('[data-action]');if(!b)return;const a=b.dataset.action;if(a==='connect')connect(b.dataset.id);else if(a==='respond')respond(b.dataset.id,b.dataset.decision);else if(a==='chat')openChat(b.dataset.id)});
-$('search').addEventListener('input',render);$('stream').addEventListener('change',render);$('status').addEventListener('change',render);
-let authReloadTimer=null;sb.auth.onAuthStateChange(()=>{clearTimeout(authReloadTimer);authReloadTimer=setTimeout(()=>load(),250)});
-load();
+$('search').addEventListener('input',render);$('stream').addEventListener('change',render);$('status').addEventListener('change',render);sb.auth.onAuthStateChange(()=>setTimeout(load,0));load();
 </script></body></html>
