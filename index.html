@@ -10805,9 +10805,9 @@ body {
 
     // Always use the production callback for the live GURU CONNECT website.
     // Supabase Auth must have this URL in Authentication → URL Configuration → Redirect URLs.
-    const productionCallback='https://guruconnnect.in/reset-otp.html';
+    const productionCallback='https://guruconnnect.in/reset-password.html';
     const localCallback=(window.location.protocol==='http:'||window.location.protocol==='https:')
-      ? window.location.origin+window.location.pathname+'reset-otp.html' : productionCallback;
+      ? window.location.origin+window.location.pathname+'reset-password.html' : productionCallback;
     const redirectTo=/^(www\.)?guruconnnect\.in$/i.test(window.location.hostname) ? productionCallback : localCallback;
 
     const btn=document.querySelector('button[onclick=\"gcResetPassword()\"]');
@@ -13109,6 +13109,55 @@ setInterval(installAdminUserPanel,1500);
 
 
 
+
+<style id="gc-final-single-menu-login-fix">
+  #publicNavbarLinks .gc-final-login-group{margin:8px 10px 4px;padding-top:10px;border-top:1px solid #e2e8f0;}
+  #publicNavbarLinks .gc-final-login-title{font-size:10px;font-weight:900;letter-spacing:.7px;color:#64748b;margin:0 4px 8px;text-transform:uppercase;}
+  #publicNavbarLinks .gc-final-login-btn{width:100%;border:0;border-radius:12px;padding:10px 12px;margin:4px 0;color:#fff;font-weight:900;font-size:11px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:9px;}
+  #publicNavbarLinks .gc-final-login-btn.student{background:linear-gradient(135deg,#2563eb,#0891b2);}
+  #publicNavbarLinks .gc-final-login-btn.tutor{background:linear-gradient(135deg,#7c3aed,#db2777);}
+  #publicNavbarLinks .gc-final-login-btn.staff{background:linear-gradient(135deg,#047857,#10b981);}
+  #publicNavbarLinks .gc-final-login-btn:hover{filter:brightness(.96);transform:translateY(-1px);}
+</style>
+<script id="gc-final-single-menu-login-fix-js">
+(function(){
+  function installMenuLogin(){
+    var menu=document.getElementById('publicNavbarLinks');
+    if(!menu) return;
+    // Remove legacy login groups wherever they were inserted into this actual menu.
+    menu.querySelectorAll('.gc-login-menu-group').forEach(function(x){x.remove();});
+    var old=menu.querySelector('.gc-final-login-group');
+    if(old) return;
+    var group=document.createElement('div');
+    group.className='gc-final-login-group';
+    group.innerHTML='<div class="gc-final-login-title">ACCOUNT & STAFF ACCESS</div>'+
+      '<button type="button" class="gc-final-login-btn student"><i class="fa-solid fa-graduation-cap"></i> STUDENT LOGIN</button>'+
+      '<button type="button" class="gc-final-login-btn tutor"><i class="fa-solid fa-chalkboard-user"></i> TUTOR LOGIN</button>'+
+      '<button type="button" class="gc-final-login-btn staff"><i class="fa-solid fa-user-tie"></i> STAFF / ADMIN LOGIN</button>';
+    menu.appendChild(group);
+    var bs=group.querySelector('.student'),bt=group.querySelector('.tutor'),ba=group.querySelector('.staff');
+    function openUnified(role){
+      try{closeNavMenu();}catch(e){}
+      var modal=document.getElementById('loginModal');
+      if(modal && typeof openLoginModal==='function'){
+        try{openLoginModal();}catch(e){modal.classList.remove('hidden');}
+        var r=document.getElementById('loginRoleInput');
+        if(r && role) r.value=role;
+        return;
+      }
+      if(role==='staff' && typeof openStaffLoginModal==='function'){openStaffLoginModal();return;}
+      if(role==='staff' && typeof openStaffLogin==='function'){openStaffLogin();return;}
+      alert('Login screen is temporarily unavailable. Please refresh the page and try again.');
+    }
+    bs.onclick=function(e){e.preventDefault();e.stopPropagation();openUnified('student');};
+    bt.onclick=function(e){e.preventDefault();e.stopPropagation();openUnified('tutor');};
+    ba.onclick=function(e){e.preventDefault();e.stopPropagation();openUnified('staff');};
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',installMenuLogin);
+  else installMenuLogin();
+  [300,800,1500,3000].forEach(function(ms){setTimeout(installMenuLogin,ms);});
+})();
+</script>
 </body>
 
 <style id="gc-final-load-hero-transfer-pdf-fix">
@@ -15237,7 +15286,7 @@ body:not(.gc-dashboard-page) .gc-account-logout{display:none!important;}
    if(btn){btn.disabled=true;btn.textContent='SENDING OTP…';}
    try{
      localStorage.setItem(key,String(Date.now()));
-     const redirectTo=(/^(www\.)?guruconnnect\.in$/i.test(location.hostname))?'https://guruconnnect.in/reset-otp.html':(location.origin+'/reset-otp.html');
+     const redirectTo=(/^(www\.)?guruconnnect\.in$/i.test(location.hostname))?'https://guruconnnect.in/reset-password.html':(location.origin+'/reset-password.html');
      const r=await s.auth.resetPasswordForEmail(email,{redirectTo});
      if(r.error)throw r.error;
      alert('ONE reset OTP has been sent to '+email+'.\n\nOpen the GURU CONNECT Reset Password page, enter the OTP in the OTP field, then create your NEW password.\n\nIMPORTANT: OTP is NOT your password.');
