@@ -4791,6 +4791,24 @@ footer:before{
 </table>
 </div>
 </div>
+
+<!-- ADMIN USER PASSWORD RESET -->
+<section id="gcAdminPasswordReset" class="mt-8 rounded-2xl sm:rounded-3xl border border-blue-100 bg-slate-50 overflow-hidden">
+  <div class="p-5 sm:p-6 bg-gradient-to-r from-slate-950 via-blue-950 to-blue-700 text-white">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div><h3 class="text-lg sm:text-xl font-black">🔐 USER PASSWORD RESET</h3><p class="text-xs text-blue-100 mt-1">Find a registered Student or Tutor by Email or Phone and send a secure reset link to their registered email.</p></div>
+      <span class="text-[10px] font-black px-3 py-2 rounded-xl bg-white/10 border border-white/15">NO PASSWORD IS SHOWN TO ADMIN</span>
+    </div>
+  </div>
+  <div class="p-5 sm:p-6">
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3">
+      <input id="gcAdminResetSearch" class="w-full border border-slate-300 rounded-xl p-3 text-sm font-bold bg-white" placeholder="Enter registered Email or Phone Number" autocomplete="off">
+      <button id="gcAdminResetFindBtn" type="button" class="bg-blue-600 hover:bg-blue-700 text-white font-black px-6 py-3 rounded-xl">FIND USER</button>
+    </div>
+    <div id="gcAdminResetStatus" class="mt-3 text-xs font-bold text-slate-500"></div>
+    <div id="gcAdminResetResult" class="mt-4"></div>
+  </div>
+</section>
 </div>
 <!-- WRAPPER FOR PUBLIC WEBSITE CONTENT -->
 <div class="w-full" id="publicWebsiteContent">
@@ -5582,13 +5600,14 @@ footer:before{
   <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-7 border relative">
     <div class="text-center mb-5">
       <div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center text-2xl shadow-lg"><i class="fa-solid fa-shield-halved"></i></div>
-      <h3 class="text-xl font-black text-brand-dark">Student / Tutor Login</h3>
+      <h3 class="text-xl font-black text-brand-dark" id="gcUnifiedLoginTitle">GURU CONNECT LOGIN</h3>
       <p class="text-xs text-slate-500 mt-1">Secure login using your registered email and password.</p>
     </div>
     <div class="space-y-3">
       <select class="w-full border rounded-xl p-3 text-sm font-bold bg-white" id="loginRoleInput">
         <option value="student">I am a Student</option>
         <option value="tutor">I am a Tutor</option>
+        <option value="staff">I am Staff / Admin</option>
       </select>
       <input class="w-full border rounded-xl p-3 text-sm font-bold" id="loginEmailInput" placeholder="your@email.com" type="email" autocomplete="email"/>
       <input class="w-full border rounded-xl p-3 text-sm font-bold" id="loginPasswordInput" placeholder="Password" type="password" autocomplete="current-password"/>
@@ -12778,250 +12797,6 @@ window.GC_PROFILE_COINS_REFRESH=paint;
 })();
 </script>
 
-
-<!-- GURU CONNECT FINAL UNIFIED LOGIN + PASSWORD RESET + ADMIN RESET -->
-<style id="gc-final-unified-login-reset-css">
-  /* One login screen: never show the page/dashboard behind it. */
-  #loginModal{background:#0f172a!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;z-index:999999!important}
-  #loginModal>div{position:relative;z-index:2}
-  #staffLoginModal{display:none!important}
-  #navStaffBtn{display:none!important}
-  #gcAdminPasswordReset{margin-top:22px;border:1px solid #dbeafe;border-radius:24px;background:linear-gradient(135deg,#f8fbff,#eef6ff);padding:22px;box-shadow:0 10px 30px rgba(15,23,42,.06)}
-  #gcAdminPasswordReset .gc-pr-grid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:end}
-  #gcAdminPasswordReset input{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:13px;background:#fff;padding:13px 14px;font-weight:700;outline:none}
-  #gcAdminPasswordReset input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.10)}
-  .gc-pr-btn{border:0;border-radius:13px;padding:13px 18px;font-weight:900;cursor:pointer;background:#2563eb;color:#fff;white-space:nowrap}
-  .gc-pr-btn:hover{background:#1d4ed8}.gc-pr-btn:disabled{opacity:.65;cursor:wait}
-  .gc-pr-result{margin-top:14px}.gc-pr-user{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:14px;border:1px solid #e2e8f0;border-radius:16px;background:#fff;margin-top:9px}
-  .gc-pr-user-name{font-weight:950;color:#0f172a}.gc-pr-user-meta{font-size:11px;color:#64748b;margin-top:3px;line-height:1.5}
-  .gc-pr-small{font-size:10px;color:#64748b;font-weight:700}.gc-pr-ok{padding:12px 14px;border-radius:12px;background:#ecfdf5;color:#047857;font-weight:800;font-size:12px}.gc-pr-err{padding:12px 14px;border-radius:12px;background:#fff1f2;color:#be123c;font-weight:800;font-size:12px}
-  @media(max-width:650px){#gcAdminPasswordReset .gc-pr-grid{grid-template-columns:1fr}.gc-pr-user{align-items:flex-start;flex-direction:column}.gc-pr-btn{width:100%}}
-</style>
-<script id="gc-final-unified-login-reset-js">
-(function(){
-  'use strict';
-  const STAFF_EMAIL='Swami@gmail.com';
-  const clean=v=>String(v??'').trim();
-  const emailOk=v=>/^\S+@\S+\.\S+$/.test(String(v||'').trim());
-  const digits=v=>String(v||'').replace(/\D/g,'');
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const S=()=>window.gcSupabase||null;
-
-  function setLoginRole(role){
-    const sel=document.getElementById('loginRoleInput'); if(!sel)return;
-    let opt=sel.querySelector('option[value="staff"]');
-    if(!opt){opt=document.createElement('option');opt.value='staff';opt.textContent='I am Staff / Admin';sel.appendChild(opt);}
-    if(role && ['student','tutor','staff'].includes(role))sel.value=role;
-    const title=document.querySelector('#loginModal h3');
-    if(title)title.textContent=sel.value==='staff'?'Staff / Admin Login':'Student / Tutor Login';
-  }
-
-  function patchLoginModal(){
-    const m=document.getElementById('loginModal'); if(!m)return;
-    const sel=document.getElementById('loginRoleInput'); if(sel){
-      if(!sel.querySelector('option[value="staff"]')){const o=document.createElement('option');o.value='staff';o.textContent='I am Staff / Admin';sel.appendChild(o);}
-      if(!sel.dataset.gcRoleBound){sel.dataset.gcRoleBound='1';sel.addEventListener('change',()=>setLoginRole(sel.value));}
-    }
-    const btn=m.querySelector('button[onclick="gcResetPassword()"]');
-    if(btn)btn.textContent='Forgot password? Send reset email';
-    setLoginRole(sel?.value||'student');
-  }
-
-  window.openLoginModal=function(role){
-    patchLoginModal();
-    setLoginRole(role||document.getElementById('loginRoleInput')?.value||'student');
-    const m=document.getElementById('loginModal');if(!m)return;
-    m.classList.remove('hidden');m.classList.add('flex');
-    document.body.classList.add('gc-login-open');
-    setTimeout(()=>document.getElementById('loginEmailInput')?.focus(),80);
-  };
-  window.closeLoginModal=function(){
-    const m=document.getElementById('loginModal');if(!m)return;
-    m.classList.add('hidden');m.classList.remove('flex');document.body.classList.remove('gc-login-open');
-  };
-  window.openStaffLoginModal=function(){window.openLoginModal('staff');};
-  window.closeStaffLoginModal=function(){window.closeLoginModal();};
-  window.handleStaffLogin=function(e){if(e)e.preventDefault();window.openLoginModal('staff');return false;};
-
-  /* Make every old Staff/Login menu route to the same unified screen. */
-  function unifyMenu(){
-    const m=document.getElementById('publicNavbarLinks');
-    if(!m)return;
-    m.querySelectorAll('.gc-menu-login-student,.gc-menu-login-tutor,.gc-menu-login-staff,.gc-mobile-login-item,.gc-mobile-staff-item').forEach(x=>x.remove());
-    m.querySelectorAll('a,button').forEach(x=>{
-      const t=clean(x.textContent).toLowerCase();
-      if(t.includes('student login')||t.includes('tutor login')||t.includes('staff login'))x.remove();
-    });
-    if(!m.querySelector('.gc-unified-login-menu')){
-      const d=document.createElement('div');d.className='gc-unified-login-menu';d.innerHTML='<a class="gc-menu-login gc-menu-student" href="javascript:void(0)">🔐&nbsp; LOGIN</a>';
-      d.querySelector('a').onclick=function(){try{window.closeNavMenu?.()}catch(_){};window.openLoginModal();};m.appendChild(d);
-    }
-  }
-
-  async function login(){
-    const email=clean(document.getElementById('loginEmailInput')?.value).toLowerCase();
-    const password=document.getElementById('loginPasswordInput')?.value||'';
-    const selected=clean(document.getElementById('loginRoleInput')?.value)||'student';
-    if(!emailOk(email))return alert('Enter a valid email address.');
-    if(!password)return alert('Enter your password.');
-    const s=S();if(!s)return alert('Secure login is unavailable. Please refresh the website.');
-    try{
-      const r=await s.auth.signInWithPassword({email,password});
-      if(r.error)throw r.error;
-      const u=r.data?.user;if(!u)throw new Error('Supabase did not return a logged-in user.');
-      if(selected==='staff'){
-        if(String(u.email||'').toLowerCase()!==STAFF_EMAIL.toLowerCase()){
-          try{await s.auth.signOut()}catch(_){};
-          throw new Error('This account is not the registered Staff / Admin account.');
-        }
-        localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');
-        localStorage.removeItem('active_user_role');
-        window.closeLoginModal();
-        try{window.checkStaffSessionState?.()}catch(_){}
-        try{window.renderAdminQueue?.()}catch(_){}
-        try{window.GC_ADMIN_PASSWORD_RESET?.mount?.()}catch(_){}
-        window.scrollTo({top:0,behavior:'instant'});
-        return;
-      }
-      if(!u.email_confirmed_at){try{await s.auth.signOut()}catch(_){};throw new Error('Please verify your email first. Check your verification email.');}
-      let role=selected,table=role==='tutor'?'tutor_profiles':'student_profiles';
-      let q=await s.from(table).select('*').eq('user_id',u.id).maybeSingle();
-      if(q.error)throw q.error;
-      if(!q.data){const otherRole=role==='tutor'?'student':'tutor',otherTable=otherRole==='tutor'?'tutor_profiles':'student_profiles';const oq=await s.from(otherTable).select('*').eq('user_id',u.id).maybeSingle();if(oq.error)throw oq.error;if(oq.data){role=otherRole;table=otherTable;q=oq;}}
-      if(!q.data)throw new Error('No registered '+selected+' profile is linked to this email account. Please register first.');
-      const p=q.data;
-      localStorage.setItem('active_user_name',p.name||p.full_name||email.split('@')[0]);localStorage.setItem('active_user_email',email);localStorage.setItem('active_user_phone',p.phone||p.mobile||'');localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_profile_id',String(p.id));localStorage.setItem('active_user_id',String(u.id));
-      window.__gcLoggedInProfile=p;try{window.updateAuthBadge?.()}catch(_){};window.closeLoginModal();
-      window.location.assign('dashboard.html?login=success&t='+Date.now());
-    }catch(e){console.error(e);alert('Login failed: '+(e.message||String(e)));}
-  }
-  window.gcEmailLogin=login;
-
-  async function resetPassword(){
-    const email=clean(document.getElementById('loginEmailInput')?.value).toLowerCase();
-    const role=clean(document.getElementById('loginRoleInput')?.value);
-    if(!email)return alert('Enter your registered email first.');
-    if(!emailOk(email))return alert('Enter a valid registered email address.');
-    const s=S();if(!s)return alert('Secure password reset is unavailable because Supabase is not connected.');
-    const production='https://www.guruconnnect.in/reset-password.html';
-    const local=(location.protocol==='http:'||location.protocol==='https:')?location.origin+'/reset-password.html':production;
-    const redirect=/guruconnnect\.in$/i.test(location.hostname)?production:local;
-    const btn=document.querySelector('#loginModal button[onclick="gcResetPassword()"]');
-    if(btn){btn.disabled=true;btn.textContent='SENDING RESET LINK…';}
-    try{
-      const r=await s.auth.resetPasswordForEmail(email,{redirectTo:redirect});
-      if(r.error)throw r.error;
-      alert((role==='staff'?'Staff / Admin':role==='tutor'?'Tutor':'Student / User')+' password reset link has been sent/requested for '+email+'. Check Inbox and Spam/Junk.');
-    }catch(e){
-      const msg=String(e?.message||e);
-      if(/redirect|url|allow|not allowed/i.test(msg))alert('Supabase Redirect URL is not allowed. Add this exact URL in Authentication → URL Configuration → Redirect URLs:\n\n'+production);
-      else alert('Reset link could not be sent: '+msg);
-    }finally{if(btn){btn.disabled=false;btn.textContent='Forgot password? Send reset email';}}
-  }
-  window.gcResetPassword=resetPassword;
-
-  function normalizePerson(row,role){return {key:String(row.user_id||row.id||''),user_id:row.user_id||row.id||'',role,name:row.full_name||row.name||'User',email:row.email||'',phone:row.phone||row.mobile||row.mobile_number||''};}
-  function matches(p,term){const t=clean(term).toLowerCase(),d=digits(term);return (p.email&&String(p.email).toLowerCase()===t)||(d&&digits(p.phone)===d);}
-
-  async function findUsers(term){
-    const s=S();if(!s)throw new Error('Supabase is not connected.');
-    const sess=await s.auth.getSession();const me=sess.data?.session?.user;
-    if(!me||String(me.email||'').toLowerCase()!==STAFF_EMAIL.toLowerCase())throw new Error('Staff / Admin login is required for this section.');
-    const map=new Map();
-    const add=(rows,role)=>{(rows||[]).forEach(r=>{const p=normalizePerson(r,role);if(p.email||p.phone)map.set(p.key+'|'+role,p);});};
-    const [pr,tr,sr]=await Promise.all([
-      s.from('profiles').select('id,full_name,email,phone').limit(2000),
-      s.from('tutor_profiles').select('id,user_id,name,full_name,email,phone,mobile,mobile_number').limit(2000),
-      s.from('student_profiles').select('id,user_id,name,full_name,email,phone,mobile,mobile_number').limit(2000)
-    ]);
-    if(pr.error)console.warn('profiles search:',pr.error.message);
-    if(tr.error)console.warn('tutor_profiles search:',tr.error.message);
-    if(sr.error)console.warn('student_profiles search:',sr.error.message);
-    add(pr.data,'user');add(tr.data,'tutor');add(sr.data,'student');
-    let out=[...map.values()].filter(p=>matches(p,term));
-    /* Staff itself is always searchable by email, even if no public profile row exists. */
-    if(clean(term).toLowerCase()===STAFF_EMAIL.toLowerCase()&&!out.some(x=>x.email.toLowerCase()===STAFF_EMAIL.toLowerCase()))out.unshift({key:'staff',user_id:'',role:'staff',name:'Staff / Admin',email:STAFF_EMAIL,phone:''});
-    return out;
-  }
-
-  async function sendAdminReset(person){
-    const s=S();if(!s)throw new Error('Supabase is not connected.');
-    const r=await s.auth.resetPasswordForEmail(String(person.email).toLowerCase(),{redirectTo:'https://www.guruconnnect.in/reset-password.html'});
-    if(r.error)throw r.error;
-  }
-
-  async function mountAdminPasswordReset(){
-    const dash=document.getElementById('staffAdminDashboard');if(!dash||dash.classList.contains('hidden'))return;
-    let host=document.getElementById('gcAdminPasswordReset');
-    if(!host){
-      host=document.createElement('section');host.id='gcAdminPasswordReset';
-      host.innerHTML=`<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap"><div style="width:48px;height:48px;border-radius:14px;background:#dbeafe;color:#1d4ed8;display:flex;align-items:center;justify-content:center;font-size:22px"><i class="fa-solid fa-key"></i></div><div><div style="font-size:10px;font-weight:950;letter-spacing:.12em;color:#2563eb">SECURITY</div><h3 style="margin:2px 0 0;font-size:20px;font-weight:950;color:#0f172a">USER PASSWORD RESET</h3><p style="margin:3px 0 0;font-size:11px;color:#64748b;font-weight:700">Find a Student, Tutor or Staff account by registered Email or Phone.</p></div></div><div class="gc-pr-grid" style="margin-top:16px"><div><label style="display:block;font-size:10px;font-weight:900;color:#475569;margin-bottom:6px">EMAIL OR PHONE NUMBER</label><input id="gcAdminResetSearch" placeholder="Enter registered email or phone number" autocomplete="off"></div><button class="gc-pr-btn" id="gcAdminResetFindBtn" type="button">FIND USER</button></div><div id="gcAdminResetResult" class="gc-pr-result"></div>`;
-      const bar=dash.querySelector('.flex.flex-col.sm\\:flex-row.gap-3.mb-6');
-      if(bar&&bar.parentNode)bar.parentNode.insertBefore(host,bar.nextSibling);else dash.appendChild(host);
-      host.querySelector('#gcAdminResetFindBtn').onclick=async function(){
-        const term=clean(host.querySelector('#gcAdminResetSearch').value);
-        const result=host.querySelector('#gcAdminResetResult');
-        if(!term){result.innerHTML='<div class="gc-pr-err">Enter an email address or phone number.</div>';return;}
-        const findBtn=this;
-        findBtn.disabled=true;findBtn.textContent='SEARCHING…';
-        result.innerHTML='<div class="gc-pr-small">Searching registered accounts…</div>';
-        try{
-          const rows=await findUsers(term);
-          if(!rows.length){
-            result.innerHTML='<div class="gc-pr-err">No registered user found with that Email / Phone.</div>';
-            return;
-          }
-          result.innerHTML=rows.map((p,i)=>
-            `<div class="gc-pr-user"><div><div class="gc-pr-user-name">${esc(p.name)} <span style="font-size:9px;color:#2563eb;font-weight:900">${esc(String(p.role).toUpperCase())}</span></div><div class="gc-pr-user-meta">Email: ${esc(p.email||'—')}<br>Phone: ${esc(p.phone||'—')}</div></div><button class="gc-pr-btn gc-send-reset" type="button" data-index="${i}">SEND RESET LINK</button></div>`
-          ).join('');
-          host.__rows=rows;
-          host.querySelectorAll('.gc-send-reset').forEach(function(b){
-            b.onclick=async function(){
-              const person=host.__rows[Number(this.dataset.index)];
-              if(!person?.email){alert('This user does not have a registered email address.');return;}
-              if(!confirm('Send password reset link to '+person.email+'?'))return;
-              this.disabled=true;this.textContent='SENDING…';
-              try{
-                await sendAdminReset(person);
-                alert('Password reset link sent/requested for '+person.email+'. Ask the user to check Inbox and Spam/Junk.');
-              }catch(e){
-                alert('Reset link could not be sent: '+(e.message||e));
-              }finally{
-                this.disabled=false;this.textContent='SEND RESET LINK';
-              }
-            };
-          });
-        }catch(e){
-          console.error(e);
-          result.innerHTML='<div class="gc-pr-err">Search failed: '+esc(e.message||e)+'</div>';
-        }finally{
-          findBtn.disabled=false;findBtn.textContent='FIND USER';
-        }
-      };
-      host.querySelector('#gcAdminResetSearch').addEventListener('keydown',e=>{if(e.key==='Enter')host.querySelector('#gcAdminResetFindBtn').click()});
-    }
-  }
-  window.GC_ADMIN_PASSWORD_RESET={mount:mountAdminPasswordReset,find:findUsers,send:sendAdminReset};
-
-  function refreshAdmin(){
-    patchLoginModal();unifyMenu();
-    const dash=document.getElementById('staffAdminDashboard');
-    if(dash&&!dash.classList.contains('hidden'))mountAdminPasswordReset();
-  }
-  const oldCheck=window.checkStaffSessionState;
-  if(typeof oldCheck==='function'&&!oldCheck.__gcUnified){
-    const f=function(){const r=oldCheck.apply(this,arguments);setTimeout(refreshAdmin,0);return r};f.__gcUnified=true;window.checkStaffSessionState=f;
-  }
-  document.addEventListener('DOMContentLoaded',()=>{patchLoginModal();unifyMenu();setTimeout(refreshAdmin,250);});
-  window.addEventListener('load',()=>{patchLoginModal();unifyMenu();setTimeout(refreshAdmin,400);});
-  setInterval(()=>{unifyMenu();refreshAdmin();},1500);
-
-  /* Backdrop click + Escape always close the login screen. */
-  document.addEventListener('click',function(e){const m=document.getElementById('loginModal');if(m&&e.target===m)window.closeLoginModal();},true);
-  document.addEventListener('keydown',function(e){if(e.key==='Escape'){const m=document.getElementById('loginModal');if(m&&!m.classList.contains('hidden'))window.closeLoginModal();}},true);
-})();
-</script>
-
 </body>
 
 <style id="gc-final-load-hero-transfer-pdf-fix">
@@ -14911,5 +14686,188 @@ body:not(.gc-dashboard-page) .gc-account-logout{display:none!important;}
       openRole(role);
     }
   },true);
+})();
+</script>
+
+
+<!-- GURU CONNECT FINAL UNIFIED LOGIN + STAFF AUTH + PASSWORD RESET PATCH -->
+<style id="gc-final-unified-login-reset">
+  /* One login only. The legacy Staff popup is disabled so it can never sit over the admin dashboard. */
+  #staffLoginModal{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+  #navStaffBtn{display:none!important;}
+  .gc-login-menu-group{display:none!important;}
+  body.gc-staff-login-open #publicWebsiteContent{display:none!important;}
+  body.gc-staff-login-open #staffAdminDashboard{display:none!important;}
+  #loginModal{z-index:2147483000!important;background:#020617!important;backdrop-filter:none!important;}
+  #loginModal > div{position:relative;z-index:2147483001;}
+  #loginModal .gc-staff-help{display:none;}
+</style>
+<script id="gc-final-unified-login-reset-js">
+(function(){
+'use strict';
+const STAFF_EMAIL='swami@gmail.com';
+const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
+const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+function S(){return window.gcSupabase || (window.supabase&&window.supabase.createClient?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null)}
+function el(id){return document.getElementById(id)}
+function setRole(role){const r=el('loginRoleInput');if(r)r.value=role;const t=el('gcUnifiedLoginTitle');if(t)t.textContent=role==='staff'?'Staff / Admin Login':'GURU CONNECT LOGIN';const e=el('loginEmailInput');if(e){e.placeholder=role==='staff'?'Staff/Admin email':'your@email.com';}const f=el('gcStaffHint');if(f)f.style.display=role==='staff'?'block':'none';}
+window.openLoginModal=function(role){
+  role=String(role||'student').toLowerCase(); if(!['student','tutor','staff'].includes(role))role='student';
+  setRole(role);
+  document.body.classList.remove('gc-staff-login-open');
+  const m=el('loginModal');if(m){m.classList.remove('hidden');m.style.display='flex';m.setAttribute('aria-hidden','false');}
+  try{window.closeNavMenu?.()}catch(_){}
+  setTimeout(()=>el('loginEmailInput')?.focus(),50);
+};
+window.closeLoginModal=function(){const m=el('loginModal');if(m){m.classList.add('hidden');m.style.display='none';m.setAttribute('aria-hidden','true');}document.body.classList.remove('gc-staff-login-open');};
+window.openStaffLoginModal=function(){window.openLoginModal('staff')};
+window.closeStaffLoginModal=function(){window.closeLoginModal()};
+window.openStudentLoginModal=function(){window.openLoginModal('student')};
+window.openTutorLoginModal=function(){window.openLoginModal('tutor')};
+
+// Replace legacy Staff login with the same login screen. No profile-table linkage is required for Staff.
+window.handleStaffLogin=async function(e){
+  if(e)e.preventDefault();
+  const email=(el('loginEmailInput')?.value||'').trim().toLowerCase();
+  const password=el('loginPasswordInput')?.value||'';
+  if(email!==STAFF_EMAIL){alert('Use the registered Staff/Admin email: '+STAFF_EMAIL);return false;}
+  if(!password){alert('Enter the Staff/Admin password.');return false;}
+  const s=S();if(!s){alert('Supabase is not connected.');return false;}
+  try{
+    const r=await s.auth.signInWithPassword({email,password});
+    if(r.error)throw r.error;
+    const u=r.data?.user,session=r.data?.session;
+    if(!u||!session)throw new Error('Supabase did not create a Staff/Admin session.');
+    if(String(u.email||'').toLowerCase()!==STAFF_EMAIL)throw new Error('This account is not the configured Staff/Admin account.');
+    localStorage.setItem('is_staff_logged','true');
+    localStorage.setItem('gc_staff_supabase_auth','true');
+    localStorage.removeItem('active_user_role');
+    window.closeLoginModal();
+    try{window.checkStaffSessionState?.()}catch(_){}
+    try{window.renderAdminQueue?.()}catch(_){}
+    try{window.GC_ADMIN_PASSWORD_RESET?.mount?.()}catch(_){}
+    return true;
+  }catch(err){
+    console.error('Staff login failed',err);
+    alert('Staff/Admin Login failed:\n\n'+(err?.message||String(err)));
+    return false;
+  }
+};
+
+// Unified login handler: Staff is authenticated directly; Student/Tutor use the existing proven flow.
+const originalLogin=window.gcEmailLogin;
+window.gcEmailLogin=async function(){
+  const role=(el('loginRoleInput')?.value||'student').toLowerCase();
+  if(role==='staff')return window.handleStaffLogin({preventDefault(){}});
+  if(typeof originalLogin==='function')return originalLogin();
+  alert('Login function is unavailable. Please refresh the page.');
+};
+
+// Password reset for Student, Tutor and Staff/Admin. Uses the same public client and a dedicated reset page.
+window.gcResetPassword=async function(){
+  const email=(el('loginEmailInput')?.value||'').trim().toLowerCase();
+  if(!email){alert('Enter your registered email first.');return;}
+  if(!/^\S+@\S+\.\S+$/.test(email)){alert('Enter a valid registered email address.');return;}
+  const s=S();
+  if(!s){alert('Supabase is not connected. Please refresh the website.');return;}
+  const btn=document.querySelector('button[onclick="gcResetPassword()"]');
+  if(btn){btn.disabled=true;btn.textContent='SENDING RESET LINK…';}
+  try{
+    const redirectTo='https://www.guruconnnect.in/reset-password.html';
+    const r=await s.auth.resetPasswordForEmail(email,{redirectTo});
+    if(r.error)throw r.error;
+    alert('Password reset link sent to '+email+'. Please check Inbox and Spam/Junk.');
+  }catch(err){
+    console.error('Password reset failed',err);
+    const msg=String(err?.message||err||'Unknown error');
+    if(/invalid api key|api key/i.test(msg)){
+      alert('Supabase rejected the website API key. Please make sure the LIVE website is using the current Supabase Publishable Key for project hzqqswrnawrfgufbxgay.');
+    }else if(/redirect|url|allow|not allowed/i.test(msg)){
+      alert('Supabase is blocking the reset redirect. Add this exact URL in Authentication → URL Configuration → Redirect URLs:\n\nhttps://www.guruconnnect.in/reset-password.html');
+    }else alert('Password reset failed:\n\n'+msg);
+  }finally{if(btn){btn.disabled=false;btn.textContent='Forgot password? Send reset email';}}
+};
+
+// Ensure the modal is opaque and clicking outside returns to the website.
+document.addEventListener('click',function(e){
+  const m=el('loginModal');
+  if(m && !m.classList.contains('hidden') && e.target===m)window.closeLoginModal();
+},true);
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){const m=el('loginModal');if(m&&!m.classList.contains('hidden'))window.closeLoginModal();}},true);
+
+// Make every existing Login/Staff menu entry open the single unified screen.
+function wireMenu(){
+  document.querySelectorAll('#publicNavbarLinks a, #publicNavbarLinks button, header a, header button').forEach(a=>{
+    const txt=(a.textContent||'').trim().toLowerCase();
+    if(txt==='login'||txt==='staff login'||txt==='student login'||txt==='tutor login'||txt==='staff'){
+      if(a.id==='navStaffBtn')return;
+      if(a.closest('.gc-login-menu-group')){a.style.display='none';return;}
+      if(txt==='login'){
+        a.onclick=function(e){e.preventDefault();e.stopPropagation();window.openLoginModal('student');};
+      }else if(txt.includes('staff')){
+        a.onclick=function(e){e.preventDefault();e.stopPropagation();window.openLoginModal('staff');};
+      }
+    }
+  });
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{wireMenu();setTimeout(wireMenu,500);setTimeout(wireMenu,1500)});else{wireMenu();setTimeout(wireMenu,500);setTimeout(wireMenu,1500)}
+
+// Dynamic title/hint based on selected role.
+document.addEventListener('change',function(e){if(e.target&&e.target.id==='loginRoleInput')setRole(e.target.value)},true);
+window.GC_UNIFIED_LOGIN_READY=true;
+})();
+</script>
+
+
+<script id="gc-admin-password-reset-js">
+(function(){
+'use strict';
+const STAFF_EMAIL='swami@gmail.com';
+const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
+const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+const S=()=>window.gcSupabase||(window.supabase&&window.supabase.createClient?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null);
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function normPhone(v){return String(v||'').replace(/\D/g,'');}
+function staff(){return localStorage.getItem('is_staff_logged')==='true';}
+async function find(){
+ if(!staff()){alert('Please login as Staff/Admin first.');return}
+ const s=S();if(!s){alert('Supabase is not connected.');return}
+ const term=String($('gcAdminResetSearch')?.value||'').trim();
+ if(!term){$('gcAdminResetStatus').textContent='Enter an Email or Phone Number.';return}
+ $('gcAdminResetStatus').textContent='Searching registered Students and Tutors…';$('gcAdminResetResult').innerHTML='';
+ try{
+   const email=term.toLowerCase(), phone=normPhone(term);
+   const [st,tr]=await Promise.all([
+     s.from('student_profiles').select('id,user_id,name,email,phone').limit(1000),
+     s.from('tutor_profiles').select('id,user_id,name,email,phone').limit(1000)
+   ]);
+   if(st.error)throw st.error;if(tr.error)throw tr.error;
+   const matches=[];
+   for(const r of (st.data||[])) if((email&&String(r.email||'').toLowerCase()===email)||(phone&&normPhone(r.phone)===phone)) matches.push({...r,role:'Student'});
+   for(const r of (tr.data||[])) if((email&&String(r.email||'').toLowerCase()===email)||(phone&&normPhone(r.phone)===phone)) matches.push({...r,role:'Tutor'});
+   $('gcAdminResetStatus').textContent=matches.length?`${matches.length} matching account(s) found.`:'No registered Student/Tutor found.';
+   $('gcAdminResetResult').innerHTML=matches.length?matches.map((r,i)=>`<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-4 rounded-2xl bg-white border border-slate-200 mb-3"><div><div class="font-black text-slate-900">${esc(r.name||'User')} <span class="ml-1 text-[10px] px-2 py-1 rounded-full bg-blue-50 text-blue-700">${esc(r.role)}</span></div><div class="text-xs text-slate-500 mt-1">Email: ${esc(r.email||'Not provided')} • Phone: ${esc(r.phone||'Not provided')}</div></div><button type="button" class="gc-admin-reset-send bg-emerald-600 hover:bg-emerald-700 text-white font-black px-4 py-3 rounded-xl text-xs" data-email="${esc(r.email||'')}">SEND RESET LINK</button></div>`).join(''):'<div class="p-4 rounded-2xl bg-white border border-slate-200 text-sm font-bold text-slate-500">No matching registered account found.</div>';
+ }catch(e){console.error(e);$('gcAdminResetStatus').textContent='Search failed: '+(e.message||e)}
+}
+async function send(email,btn){
+ if(!staff()){alert('Staff session expired. Please login again.');return}
+ if(!email){alert('This account has no registered email address.');return}
+ const s=S();if(!s)return alert('Supabase is not connected.');
+ btn.disabled=true;btn.textContent='SENDING…';
+ try{
+   const r=await s.auth.resetPasswordForEmail(String(email).trim().toLowerCase(),{redirectTo:'https://www.guruconnnect.in/reset-password.html'});
+   if(r.error)throw r.error;
+   alert('Password reset link sent to '+email+'.');
+ }catch(e){
+   const msg=String(e?.message||e||'');
+   if(/invalid api key|api key/i.test(msg))alert('Supabase rejected the current Publishable API Key. Update the live website with the current Supabase Publishable Key.');
+   else if(/redirect|url|allow/i.test(msg))alert('Add https://www.guruconnnect.in/reset-password.html to Supabase Authentication → URL Configuration → Redirect URLs.');
+   else alert('Reset link could not be sent: '+msg);
+ }finally{btn.disabled=false;btn.textContent='SEND RESET LINK'}
+}
+window.GC_ADMIN_PASSWORD_RESET={mount:function(){},find,send};
+document.addEventListener('click',e=>{if(e.target.closest('#gcAdminResetFindBtn'))find();const b=e.target.closest('.gc-admin-reset-send');if(b)send(b.dataset.email,b)});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement?.id==='gcAdminResetSearch')find()});
 })();
 </script>
