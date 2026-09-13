@@ -10779,7 +10779,7 @@ body {
 
     // Always use the production callback for the live GURU CONNECT website.
     // Supabase Auth must have this URL in Authentication → URL Configuration → Redirect URLs.
-    const productionCallback='https://www.guruconnnect.in/index.html?password_reset=1';
+    const productionCallback='https://www.guruconnnect.in/reset-password.html';
     const localCallback=(window.location.protocol==='http:'||window.location.protocol==='https:')
       ? window.location.origin+window.location.pathname+'?password_reset=1' : productionCallback;
     const redirectTo=/^(www\.)?guruconnnect\.in$/i.test(window.location.hostname) ? productionCallback : localCallback;
@@ -12775,6 +12775,124 @@ window.GC_PROFILE_COINS_REFRESH=paint;
  window.gcFinishPasswordReset=async function(){const a=document.getElementById('gcRecoveryPassword')?.value||'',b=document.getElementById('gcRecoveryPassword2')?.value||'';if(a.length<8)return alert('Password must be at least 8 characters.');if(a!==b)return alert('Passwords do not match.');const s=S();if(!s)return alert('Supabase is not connected.');const btn=document.getElementById('gcRecoverySave');if(btn){btn.disabled=true;btn.textContent='UPDATING…'}try{const r=await s.auth.updateUser({password:a});if(r.error)throw r.error;alert('Password updated successfully. Please login with your new password.');document.getElementById('gcPasswordRecoveryModal')?.classList.add('hidden');document.getElementById('gcPasswordRecoveryModal')?.classList.remove('flex');try{await s.auth.signOut()}catch(_){}history.replaceState({},document.title,location.pathname);openLoginModal?.();}catch(e){alert('Password reset failed: '+(e.message||e));}finally{if(btn){btn.disabled=false;btn.textContent='UPDATE PASSWORD'}}};
  async function boot(){const s=S();if(!s)return;try{const u=new URL(location.href);if(u.searchParams.get('password_reset')==='1')setTimeout(show,120);if(location.hash.includes('access_token=')||location.hash.includes('type=recovery'))setTimeout(show,120);}catch(_){};s.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY')show();});}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
+
+
+<!-- GURU CONNECT FINAL AUTH/STAFF/PASSWORD-RESET OVERRIDE -->
+<style id="gc-final-auth-modal-lock-20260913">
+  /* Login must cover the entire site; never show dashboard/public content through it. */
+  #loginModal,#staffLoginModal{z-index:2147483640!important;}
+  #loginModal{background:#0f172a!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+  #staffLoginModal{background:#0f172a!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}
+  body.gc-auth-modal-open{overflow:hidden!important;}
+  #staffLoginModal{display:none!important;}
+  #navStaffBtn{display:none!important;}
+  .gc-unified-login-link{cursor:pointer!important;}
+</style>
+<script id="gc-final-auth-modal-lock-20260913">
+(function(){
+  'use strict';
+  const $=id=>document.getElementById(id);
+  function lockBody(){document.body.classList.add('gc-auth-modal-open');}
+  function unlockBody(){
+    const l=$('loginModal'),s=$('staffLoginModal');
+    if((l&&!l.classList.contains('hidden'))||(s&&getComputedStyle(s).display!=='none')) return;
+    document.body.classList.remove('gc-auth-modal-open');
+  }
+  function closeStaff(){
+    const m=$('staffLoginModal'); if(m){m.classList.add('hidden');m.style.display='none';}
+    unlockBody();
+  }
+  function openUnified(role){
+    try{window.closeNavMenu?.();}catch(_){}
+    closeStaff();
+    const m=$('loginModal'); if(!m)return;
+    m.classList.remove('hidden');m.style.display='flex';lockBody();
+    const r=$('loginRoleInput');
+    if(r){r.value=String(role||'student').toLowerCase()==='staff'?'staff':(String(role||'').toLowerCase()==='tutor'?'tutor':'student');r.dispatchEvent(new Event('change',{bubbles:true}));}
+    const title=m.querySelector('h3'); if(title) title.textContent=r?.value==='staff'?'Staff / Admin Login':'Login';
+    const forgot=m.querySelector('[data-gc-forgot]')||m.querySelector('button[onclick="gcResetPassword()"]');
+    if(forgot)forgot.style.display='';
+    const e=$('loginEmailInput'); if(e){e.value='';e.type='email';e.placeholder=r?.value==='staff'?'Staff/Admin email':'your@email.com';e.focus();}
+    const pw=$('loginPasswordInput'); if(pw){pw.value='';pw.placeholder=r?.value==='staff'?'Staff password':'Password';}
+  }
+  // All old staff-login entry points now open the unified login, never the old popup.
+  window.openStaffLoginModal=function(){openUnified('staff');};
+  window.closeStaffLoginModal=closeStaff;
+  window.openStudentLoginModal=function(){openUnified('student');};
+  window.openTutorLoginModal=function(){openUnified('tutor');};
+  window.openUnifiedLogin=function(){openUnified('student');};
+
+  // Make the role selector authoritative and keep password reset available for EVERY role.
+  function apply(){
+    const m=$('loginModal'),r=$('loginRoleInput'); if(!m||!r)return;
+    const staff=String(r.value||'student').toLowerCase()==='staff';
+    m.classList.toggle('gc-staff-mode',staff);
+    const t=m.querySelector('h3'); if(t)t.textContent=staff?'Staff / Admin Login':'Login';
+    const e=$('loginEmailInput'),p=$('loginPasswordInput');
+    if(e){e.type='email';e.placeholder=staff?'Staff/Admin email':'your@email.com';e.autocomplete='email';}
+    if(p){p.placeholder=staff?'Staff password':'Password';p.autocomplete='current-password';}
+    const f=m.querySelector('[data-gc-forgot]')||m.querySelector('button[onclick="gcResetPassword()"]');
+    if(f)f.style.display='';
+  }
+  function setup(){
+    const m=$('loginModal'),r=$('loginRoleInput'); if(!m||!r)return;
+    r.innerHTML='<option value="student">Student</option><option value="tutor">Tutor</option><option value="staff">Staff / Admin</option>';
+    if(!r.dataset.gcFinalBound){r.dataset.gcFinalBound='1';r.addEventListener('change',apply);}
+    const b=m.querySelector('button[onclick="gcEmailLogin()"]');
+    if(b){b.removeAttribute('onclick');b.onclick=function(){return window.gcUnifiedLoginSubmit();};}
+    const forgot=m.querySelector('button[onclick="gcResetPassword()"]');
+    if(forgot){forgot.dataset.gcForgot='1';forgot.style.display='';}
+    apply();
+  }
+  window.gcUnifiedLoginSubmit=async function(e){
+    if(e)e.preventDefault();
+    const role=String($('loginRoleInput')?.value||'student').toLowerCase();
+    if(role==='staff'){
+      const email=($('loginEmailInput')?.value||'').trim().toLowerCase();
+      const pass=$('loginPasswordInput')?.value||'';
+      if(!/^\S+@\S+\.\S+$/.test(email))return alert('Enter a valid Staff/Admin email address.');
+      if(!pass)return alert('Enter the Staff/Admin password.');
+      const s=window.gcSupabase;
+      if(!s)return alert('Supabase is not connected.');
+      if(email!=='swami@gmail.com')return alert('This login is reserved for Staff/Admin.');
+      const btn=$('loginModal')?.querySelector('button.bg-brand-blue'); if(btn){btn.disabled=true;btn.textContent='SIGNING IN...';}
+      try{
+        const r=await s.auth.signInWithPassword({email,password:pass});
+        if(r.error)throw r.error;
+        localStorage.setItem('is_staff_logged','true');
+        localStorage.setItem('gc_staff_supabase_auth','true');
+        $('loginModal')?.classList.add('hidden');$('loginModal').style.display='';
+        document.body.classList.remove('gc-auth-modal-open');
+        try{window.checkStaffSessionState?.();}catch(_){}
+        try{window.renderAdminQueue?.();}catch(_){}
+        alert('Staff Login Successful!');
+      }catch(err){alert('Staff Login failed.\n\n'+(err?.message||String(err)));}
+      finally{if(btn){btn.disabled=false;btn.textContent='LOGIN SECURELY';}}
+      return false;
+    }
+    return window.gcEmailLogin();
+  };
+  // Backdrop click closes the login page and returns to the underlying site.
+  document.addEventListener('click',function(e){
+    const lm=$('loginModal');
+    if(lm && !lm.classList.contains('hidden') && e.target===lm){lm.classList.add('hidden');lm.style.display='';document.body.classList.remove('gc-auth-modal-open');}
+    const sm=$('staffLoginModal'); if(sm&&e.target===sm)closeStaff();
+  },true);
+  document.addEventListener('keydown',function(e){
+    if(e.key!=='Escape')return;
+    const lm=$('loginModal'); if(lm&&!lm.classList.contains('hidden')){lm.classList.add('hidden');lm.style.display='';document.body.classList.remove('gc-auth-modal-open');}
+    closeStaff();
+  });
+  // Replace any accidental old staff modal opening after other scripts run.
+  function clean(){
+    const sm=$('staffLoginModal'); if(sm){sm.classList.add('hidden');sm.style.display='none';}
+    const old=$('navStaffBtn'); if(old)old.style.display='none';
+    setup();
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',clean,{once:true});else clean();
+  setTimeout(clean,300);setTimeout(clean,1200);setTimeout(clean,2500);
 })();
 </script>
 
