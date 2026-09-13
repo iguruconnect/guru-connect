@@ -5830,7 +5830,39 @@ footer:before{
             });
         }
 
-        function getCurrentUserProfile() { const phone = localStorage.getItem('active_user_phone') || ''; const role = localStorage.getItem('active_user_role') || ''; if (!phone || !['student', 'tutor'].includes(role)) return null; if (window.__gcLoggedInProfile && window.__gcLoggedInProfile.registrationRole === role) return window.__gcLoggedInProfile; const list = role === 'student' ? studentDirectoryList : tutorDirectoryList; return list.find(x => String(x.phone || '').replace(/\D/g, '') === phone.replace(/\D/g, '') && x.isDummy === false) || null; } function verifiedTickHtml(tutor, size = 'large') {
+        function getCurrentUserProfile() {
+  const role = localStorage.getItem('active_user_role') || '';
+  const profileId = String(localStorage.getItem('active_user_profile_id') || '');
+  const userId = String(localStorage.getItem('active_user_id') || '');
+  const phone = localStorage.getItem('active_user_phone') || '';
+  if (!['student', 'tutor'].includes(role)) return null;
+
+  if (window.__gcLoggedInProfile &&
+      String(window.__gcLoggedInProfile.registrationRole || '').toLowerCase() === role) {
+    return window.__gcLoggedInProfile;
+  }
+
+  const list = role === 'student' ? studentDirectoryList : tutorDirectoryList;
+  if (!Array.isArray(list)) return null;
+
+  let found = profileId
+    ? list.find(x => String(x.id || x.profile_id || '') === profileId)
+    : null;
+
+  if (!found && userId) {
+    found = list.find(x => String(x.user_id || '') === userId);
+  }
+
+  if (!found && phone) {
+    const cleanPhone = phone.replace(/\D/g, '');
+    found = list.find(x =>
+      cleanPhone &&
+      String(x.phone || x.mobile || x.mobile_number || '').replace(/\D/g, '') === cleanPhone
+    );
+  }
+
+  return found && (isRealStudent(found) || isRealTutor(found)) ? found : null;
+} function verifiedTickHtml(tutor, size = 'large') {
             if (!tutor || !tutor.verified) return '';
             const imageBox = size === 'large'
                 ? 'w-20 h-20 sm:w-24 sm:h-24'
@@ -8440,8 +8472,20 @@ footer:before{
     const seed=Math.abs(Number(String(s?.id||s?.name||'1').replace(/\D/g,''))||1);
     return arr[seed%arr.length] + ' — Subject Requirement';
   }
-  function isRealStudent(s){ return !!s && s.isDummy === false; }
-  function isRealTutor(t){ return !!t && t.isDummy === false; }
+  function isRealStudent(s){
+    return !!s && (
+      s.isDummy === false ||
+      String(s.registrationStatus || s.registration_status || '').toLowerCase() === 'registered' ||
+      String(s.registrationRole || s.registration_role || '').toLowerCase() === 'student'
+    );
+  }
+  function isRealTutor(t){
+    return !!t && (
+      t.isDummy === false ||
+      String(t.registrationStatus || t.registration_status || '').toLowerCase() === 'registered' ||
+      String(t.registrationRole || t.registration_role || '').toLowerCase() === 'tutor'
+    );
+  }
   function ratingV4(t){
     if(t && t._manualRating) return Number(t._manualRating).toFixed(1);
     const n=Math.abs(Number(String(t?.id||t?.name||'1').replace(/\D/g,''))||1);
@@ -10363,6 +10407,9 @@ body {
       id: row.id,
       user_id: row.user_id,
       name: row.name || 'Tutor',
+      email: row.email || '',
+      phone: row.phone || row.mobile || '',
+      mobile: row.phone || row.mobile || '',
       subject: row.subject || '',
       stream: row.stream || '',
       experience: row.experience || '',
@@ -10512,6 +10559,8 @@ body {
       let result = await gcSupabase
         .from(table)
         .select(fields, { count: 'estimated' })
+        .eq('is_illustrative', false)
+        .eq('registration_status', 'registered')
         .order('created_at', { ascending: false })
         .range(from, from + chunkSize - 1);
 
