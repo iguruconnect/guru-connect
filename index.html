@@ -3299,11 +3299,6 @@ body.gc-registration-lock{overflow:hidden !important;}
   font-weight:950;cursor:pointer;box-shadow:0 10px 22px rgba(37,99,235,.22);
 }
 </style>
-<style id="gc-admin-password-reset-css">
-.gc-admin-reset-box{margin:0 0 22px;padding:20px;border:1px solid #bfdbfe;border-radius:22px;background:linear-gradient(135deg,#f8fbff,#eef6ff);box-shadow:0 10px 30px rgba(15,61,145,.08)}
-.gc-admin-reset-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:14px}.gc-admin-reset-kicker{font-size:9px;font-weight:1000;letter-spacing:.16em;color:#155eef}.gc-admin-reset-head h3{margin:3px 0 4px;font-size:20px;font-weight:1000;color:#0f172a}.gc-admin-reset-head p{margin:0;color:#64748b;font-size:11px;line-height:1.5}.gc-admin-reset-badge{flex:0 0 auto;padding:8px 11px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:9px;font-weight:1000;letter-spacing:.08em}.gc-admin-reset-search{display:grid;grid-template-columns:1fr auto;gap:9px}.gc-admin-reset-search input{width:100%;padding:13px 14px;border:1px solid #cbd5e1;border-radius:12px;background:#fff;outline:none;font-weight:750}.gc-admin-reset-search input:focus{border-color:#155eef;box-shadow:0 0 0 3px rgba(21,94,239,.10)}.gc-admin-reset-search button{border:0;border-radius:12px;padding:13px 18px;background:#155eef;color:#fff;font-weight:950;cursor:pointer}.gc-admin-reset-result{margin-top:11px;padding:12px 13px;border-radius:12px;background:#fff;border:1px solid #dbe5f0;color:#64748b;font-size:11px;font-weight:750}.gc-admin-reset-user{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.gc-admin-reset-user-main{min-width:220px}.gc-admin-reset-user-main strong{display:block;color:#0f172a;font-size:14px}.gc-admin-reset-user-main span{display:block;color:#475569;font-size:10px;margin-top:3px;word-break:break-word}.gc-admin-reset-send{border:0;border-radius:11px;padding:11px 14px;background:#059669;color:#fff;font-weight:950;cursor:pointer}.gc-admin-reset-send:disabled{opacity:.6;cursor:wait}.gc-admin-reset-role{display:inline-flex;padding:4px 8px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:8px;font-weight:950;margin-left:5px}
-@media(max-width:640px){.gc-admin-reset-head{flex-direction:column}.gc-admin-reset-search{grid-template-columns:1fr}.gc-admin-reset-search button{width:100%}.gc-admin-reset-box{padding:15px;border-radius:18px}}
-</style>
 <style id="gc-admin-ultimate-fix-css">
 #adminEditTutorModal{z-index:100500!important}
 #gcAdminTutorUltimateModalOverlay{
@@ -4766,20 +4761,19 @@ footer:before{
 </div>
 
 <!-- ADMIN PASSWORD RESET -->
-<div class="gc-admin-reset-box" id="gcAdminPasswordResetBox">
-  <div class="gc-admin-reset-head">
-    <div>
-      <div class="gc-admin-reset-kicker">SECURITY</div>
-      <h3>🔐 User Password Reset</h3>
-      <p>Find a registered Student or Tutor by Email or Phone, then send a secure password-reset link to their registered email.</p>
+<div class="mt-5 mb-6 rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50 to-white p-4 sm:p-5" id="gcAdminPasswordResetBox">
+  <div class="flex flex-col lg:flex-row lg:items-end gap-3">
+    <div class="flex-1">
+      <div class="text-[10px] font-black uppercase tracking-wider text-blue-700">🔐 USER PASSWORD RESET</div>
+      <h3 class="text-lg sm:text-xl font-black text-slate-900 mt-1">Find Student / Tutor</h3>
+      <p class="text-[11px] text-slate-500 mt-1">Enter registered Email or Phone. Admin will send a secure password-reset link to the user's registered email.</p>
     </div>
-    <div class="gc-admin-reset-badge">RESET LINK</div>
+    <div class="w-full lg:w-[420px] flex gap-2">
+      <input id="gcAdminResetSearch" class="flex-1 border border-slate-300 rounded-xl p-3 text-sm font-bold bg-white" placeholder="Email or Phone Number" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();gcAdminFindResetUser()}">
+      <button type="button" class="bg-brand-blue hover:bg-blue-700 text-white font-black px-4 py-3 rounded-xl text-xs whitespace-nowrap" onclick="gcAdminFindResetUser()">FIND USER</button>
+    </div>
   </div>
-  <div class="gc-admin-reset-search">
-    <input id="gcAdminResetSearch" type="text" placeholder="Enter Email or Phone Number" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();gcAdminFindResetUser();}">
-    <button type="button" onclick="gcAdminFindResetUser()">🔎 FIND USER</button>
-  </div>
-  <div id="gcAdminResetResult" class="gc-admin-reset-result">Enter the user's registered Email or Phone Number.</div>
+  <div id="gcAdminResetResult" class="mt-3"></div>
 </div>
 
 <!-- SECTION 1: TUTOR MANAGEMENT TABLE -->
@@ -7260,116 +7254,6 @@ footer:before{
                 if (publicMenuWrapper) publicMenuWrapper.classList.remove('hidden');
                 if (navStaffBtn) navStaffBtn.classList.remove('hidden');
                 if (stickyLogout) stickyLogout.classList.add('hidden');
-            }
-        }
-
-        // ===== ADMIN PASSWORD RESET =====
-        let gcAdminResetUser = null;
-
-        async function gcAdminFindResetUser() {
-            const box = document.getElementById('gcAdminResetResult');
-            const input = document.getElementById('gcAdminResetSearch');
-            const raw = (input?.value || '').trim();
-            if (!raw) {
-                if (box) box.innerHTML = 'Please enter the registered Email or Phone Number.';
-                return;
-            }
-            if (!window.gcSupabase) {
-                if (box) box.innerHTML = 'Supabase is not connected. Please refresh the website.';
-                return;
-            }
-            const term = raw.replace(/[\%_]/g, '').trim();
-            if (!term) {
-                if (box) box.innerHTML = 'Please enter a valid Email or Phone Number.';
-                return;
-            }
-            if (box) box.innerHTML = '<span style="color:#155eef">🔎 Searching registered Students and Tutors…</span>';
-            gcAdminResetUser = null;
-            try {
-                const s = window.gcSupabase;
-                const pattern = `%${term}%`;
-                const [te, tp, se, sp] = await Promise.all([
-                    s.from('tutor_profiles').select('id,user_id,name,full_name,email,phone,mobile,mobile_number').ilike('email', pattern).limit(10),
-                    s.from('tutor_profiles').select('id,user_id,name,full_name,email,phone,mobile,mobile_number').or(`phone.ilike.${pattern},mobile.ilike.${pattern},mobile_number.ilike.${pattern}`).limit(10),
-                    s.from('student_profiles').select('id,user_id,name,full_name,email,phone,mobile,mobile_number').ilike('email', pattern).limit(10),
-                    s.from('student_profiles').select('id,user_id,name,full_name,email,phone,mobile,mobile_number').or(`phone.ilike.${pattern},mobile.ilike.${pattern},mobile_number.ilike.${pattern}`).limit(10)
-                ]);
-                const err = [te,tp,se,sp].find(x=>x.error);
-                if (err?.error) throw err.error;
-                const rows = [];
-                const add = (arr, role) => (arr || []).forEach(x => {
-                    const key = `${role}:${x.id}`;
-                    if (!rows.some(r => r.key === key)) rows.push({...x, role, key});
-                });
-                add(te.data, 'Tutor'); add(tp.data, 'Tutor'); add(se.data, 'Student'); add(sp.data, 'Student');
-                rows.sort((a,b)=>String(a.name||a.full_name||'').localeCompare(String(b.name||b.full_name||'')));
-                if (!rows.length) {
-                    if (box) box.innerHTML = '❌ No registered Student or Tutor matched that Email/Phone number.';
-                    return;
-                }
-                if (rows.length === 1) {
-                    gcAdminShowResetUser(rows[0]);
-                    return;
-                }
-                if (box) box.innerHTML = `<div style="font-weight:950;color:#0f172a;margin-bottom:8px">${rows.length} matching accounts found. Select the correct account:</div>` + rows.map((x,i)=>{
-                    const name = gcAdminResetEsc(x.name || x.full_name || 'User');
-                    const email = gcAdminResetEsc(x.email || 'No email in profile');
-                    const phone = gcAdminResetEsc(x.phone || x.mobile || x.mobile_number || 'No phone');
-                    return `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid #e2e8f0;flex-wrap:wrap"><div><b>${name}</b> <span class="gc-admin-reset-role">${x.role}</span><div style="font-size:10px;color:#64748b;margin-top:3px">${email} · ${phone}</div></div><button type="button" class="gc-admin-reset-send" onclick="gcAdminPickResetUser(${i})">SELECT</button></div>`;
-                }).join('');
-                window.__gcAdminResetMatches = rows;
-            } catch (e) {
-                console.error('Admin password reset search failed:', e);
-                if (box) box.innerHTML = '❌ User search failed: ' + gcAdminResetEsc(e?.message || e);
-            }
-        }
-
-        function gcAdminResetEsc(v) {
-            return String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-        }
-
-        function gcAdminPickResetUser(i) {
-            const rows = window.__gcAdminResetMatches || [];
-            if (rows[i]) gcAdminShowResetUser(rows[i]);
-        }
-
-        function gcAdminShowResetUser(user) {
-            gcAdminResetUser = user;
-            const box = document.getElementById('gcAdminResetResult');
-            if (!box) return;
-            const name = gcAdminResetEsc(user.name || user.full_name || 'User');
-            const email = gcAdminResetEsc(user.email || '');
-            const phone = gcAdminResetEsc(user.phone || user.mobile || user.mobile_number || 'Not provided');
-            if (!user.email) {
-                box.innerHTML = `<div class="gc-admin-reset-user"><div class="gc-admin-reset-user-main"><strong>${name} <span class="gc-admin-reset-role">${gcAdminResetEsc(user.role)}</span></strong><span>📱 ${phone}</span><span style="color:#b91c1c">⚠️ No email address is available in this profile, so a reset email cannot be sent.</span></div></div>`;
-                return;
-            }
-            box.innerHTML = `<div class="gc-admin-reset-user"><div class="gc-admin-reset-user-main"><strong>${name} <span class="gc-admin-reset-role">${gcAdminResetEsc(user.role)}</span></strong><span>✉️ ${email}</span><span>📱 ${phone}</span></div><button type="button" class="gc-admin-reset-send" id="gcAdminResetSendBtn" onclick="gcAdminSendResetEmail()">✉ SEND RESET LINK</button></div>`;
-        }
-
-        async function gcAdminSendResetEmail() {
-            const user = gcAdminResetUser;
-            if (!user?.email) return alert('This user has no registered email address in the profile.');
-            const btn = document.getElementById('gcAdminResetSendBtn');
-            if (btn) { btn.disabled = true; btn.textContent = 'SENDING…'; }
-            const productionCallback = 'https://www.guruconnnect.in/index.html?password_reset=1';
-            const localCallback = (window.location.protocol === 'http:' || window.location.protocol === 'https:')
-                ? window.location.origin + window.location.pathname + '?password_reset=1' : productionCallback;
-            const redirectTo = /^(www\.)?guruconnnect\.in$/i.test(window.location.hostname) ? productionCallback : localCallback;
-            try {
-                const r = await window.gcSupabase.auth.resetPasswordForEmail(String(user.email).trim().toLowerCase(), {redirectTo});
-                if (r.error) throw r.error;
-                alert(`Password reset link sent to ${user.email}. The user should open that email and create a new password.`);
-            } catch (e) {
-                console.error('Admin password reset email error:', e);
-                const msg = String(e?.message || e);
-                if (/redirect|url|allow|not allowed/i.test(msg)) {
-                    alert('Reset email could not be sent because the Redirect URL is not allowed in Supabase. Add this exact URL in Authentication → URL Configuration → Redirect URLs:\n\n' + productionCallback);
-                } else {
-                    alert('Reset email could not be sent: ' + msg);
-                }
-            } finally {
-                if (btn) { btn.disabled = false; btn.textContent = '✉ SEND RESET LINK'; }
             }
         }
 
@@ -10912,9 +10796,11 @@ body {
 
     // Always use the production callback for the live GURU CONNECT website.
     // Supabase Auth must have this URL in Authentication → URL Configuration → Redirect URLs.
-    const productionCallback='https://www.guruconnnect.in/index.html?password_reset=1';
+    const productionCallback='https://www.guruconnnect.in/index.html';
     const localCallback=(window.location.protocol==='http:'||window.location.protocol==='https:')
-      ? window.location.origin+window.location.pathname+'?password_reset=1' : productionCallback;
+      ? window.location.origin+window.location.pathname : productionCallback;
+    // Use the normal site URL so the reset flow does not require a new Supabase redirect URL.
+    // The recovery session is detected from the URL hash / PASSWORD_RECOVERY event below.
     const redirectTo=/^(www\.)?guruconnnect\.in$/i.test(window.location.hostname) ? productionCallback : localCallback;
 
     const btn=document.querySelector('button[onclick=\"gcResetPassword()\"]');
@@ -12904,13 +12790,128 @@ window.GC_PROFILE_COINS_REFRESH=paint;
 <script id="gc-password-recovery-final">
 (function(){
  const S=()=>window.gcSupabase||null;
- function show(){const m=document.getElementById('gcPasswordRecoveryModal');if(m){m.classList.remove('hidden');m.classList.add('flex');}}
- window.gcFinishPasswordReset=async function(){const a=document.getElementById('gcRecoveryPassword')?.value||'',b=document.getElementById('gcRecoveryPassword2')?.value||'';if(a.length<8)return alert('Password must be at least 8 characters.');if(a!==b)return alert('Passwords do not match.');const s=S();if(!s)return alert('Supabase is not connected.');const btn=document.getElementById('gcRecoverySave');if(btn){btn.disabled=true;btn.textContent='UPDATING…'}try{const r=await s.auth.updateUser({password:a});if(r.error)throw r.error;alert('Password updated successfully. Please login with your new password.');document.getElementById('gcPasswordRecoveryModal')?.classList.add('hidden');document.getElementById('gcPasswordRecoveryModal')?.classList.remove('flex');try{await s.auth.signOut()}catch(_){}history.replaceState({},document.title,location.pathname);openLoginModal?.();}catch(e){alert('Password reset failed: '+(e.message||e));}finally{if(btn){btn.disabled=false;btn.textContent='UPDATE PASSWORD'}}};
- async function boot(){const s=S();if(!s)return;try{const u=new URL(location.href);if(u.searchParams.get('password_reset')==='1')setTimeout(show,120);if(location.hash.includes('access_token=')||location.hash.includes('type=recovery'))setTimeout(show,120);}catch(_){};s.auth.onAuthStateChange((event,session)=>{if(event==='PASSWORD_RECOVERY')show();});}
+ let recoveryShown=false;
+ function show(){
+   if(recoveryShown)return;
+   const m=document.getElementById('gcPasswordRecoveryModal');
+   if(!m)return;
+   recoveryShown=true;
+   m.classList.remove('hidden'); m.classList.add('flex');
+   document.body.style.overflow='hidden';
+ }
+ function hasRecoveryUrl(){
+   try{
+     const u=new URL(location.href);
+     const q=(u.search||'').toLowerCase(), h=(u.hash||'').toLowerCase();
+     return q.includes('password_reset') || q.includes('type=recovery') || h.includes('type=recovery') || h.includes('access_token=') || h.includes('refresh_token=') || h.includes('code=');
+   }catch(_){return false}
+ }
+ async function boot(){
+   const s=S(); if(!s)return;
+   try{
+     s.auth.onAuthStateChange((event,session)=>{
+       if(event==='PASSWORD_RECOVERY' || (session && hasRecoveryUrl())) setTimeout(show,50);
+     });
+   }catch(_){}
+   if(hasRecoveryUrl()){
+     setTimeout(show,100);
+     setTimeout(show,800);
+     setTimeout(show,1800);
+   }
+   try{
+     const q=await s.auth.getSession();
+     if(q?.data?.session && hasRecoveryUrl()) show();
+   }catch(_){}
+ }
+ window.gcFinishPasswordReset=async function(){
+   const a=document.getElementById('gcRecoveryPassword')?.value||'',b=document.getElementById('gcRecoveryPassword2')?.value||'';
+   if(a.length<8)return alert('Password must be at least 8 characters.');
+   if(a!==b)return alert('Passwords do not match.');
+   const s=S();if(!s)return alert('Supabase is not connected.');
+   const btn=document.getElementById('gcRecoverySave');
+   if(btn){btn.disabled=true;btn.textContent='UPDATING…'}
+   try{
+     const session=(await s.auth.getSession())?.data?.session;
+     if(!session)throw new Error('Reset link is missing or has expired. Please request a new password reset email.');
+     const r=await s.auth.updateUser({password:a});
+     if(r.error)throw r.error;
+     alert('Password updated successfully. Please login with your new password.');
+     try{await s.auth.signOut({scope:'global'})}catch(_){}
+     document.body.style.overflow='';
+     const m=document.getElementById('gcPasswordRecoveryModal');
+     if(m){m.classList.add('hidden');m.classList.remove('flex')}
+     recoveryShown=false;
+     history.replaceState({},document.title,location.pathname);
+     if(typeof openLoginModal==='function')openLoginModal();
+   }catch(e){alert('Password reset failed: '+(e.message||e));}
+   finally{if(btn){btn.disabled=false;btn.textContent='UPDATE PASSWORD'}}
+ };
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
 
+
+<script id="gc-admin-password-reset-final">
+(function(){
+  const esc=(v)=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const normPhone=(v)=>String(v||'').replace(/\D/g,'');
+  const normEmail=(v)=>String(v||'').trim().toLowerCase();
+  function sbc(){return window.gcSupabase||null;}
+  function isStaff(){return localStorage.getItem('is_staff_logged')==='true';}
+  async function findCloud(search){
+    const s=sbc(); if(!s) return [];
+    const out=[];
+    const email=normEmail(search), phone=normPhone(search);
+    for(const table of ['tutor_profiles','student_profiles']){
+      try{
+        let q;
+        if(email && email.includes('@')) q=await s.from(table).select('*').ilike('email',email).limit(5);
+        else if(phone) q=await s.from(table).select('*').eq('phone',search).limit(5);
+        else q={data:[],error:null};
+        if(!q.error && Array.isArray(q.data)) q.data.forEach(r=>out.push({...r,__table:table}));
+      }catch(_){}
+    }
+    return out;
+  }
+  window.gcAdminFindResetUser=async function(){
+    if(!isStaff())return alert('Please login as Staff/Admin first.');
+    const input=document.getElementById('gcAdminResetSearch');
+    const box=document.getElementById('gcAdminResetResult');
+    const search=(input?.value||'').trim();
+    if(!search)return alert('Enter the registered Email or Phone Number.');
+    if(box)box.innerHTML='<div class="p-3 rounded-xl bg-white border text-xs font-bold text-slate-500">Searching user…</div>';
+    const ep=normEmail(search), pp=normPhone(search);
+    let local=[];
+    try{
+      const lists=[...(window.tutorDirectoryList||[]),...(window.studentDirectoryList||[])];
+      local=lists.filter(x=>{const xe=normEmail(x.email),xp=normPhone(x.phone);return (ep&&xe===ep)||(pp&&xp&&xp===pp)});
+    }catch(_){}
+    const cloud=await findCloud(search);
+    const all=[...cloud,...local];
+    const unique=[]; const seen=new Set();
+    all.forEach(x=>{const k=String(x.user_id||x.id||'')+'|'+normEmail(x.email)+'|'+normPhone(x.phone);if(!seen.has(k)){seen.add(k);unique.push(x)}});
+    if(!unique.length){
+      if(box)box.innerHTML='<div class="p-3 rounded-xl bg-red-50 border border-red-200 text-xs font-bold text-red-700">No registered Student/Tutor found for this Email or Phone Number.</div>';
+      return;
+    }
+    if(box)box.innerHTML=unique.slice(0,5).map((u,i)=>{
+      const email=u.email||''; const phone=u.phone||''; const name=u.name||u.full_name||'Registered User';
+      const role=String(u.__table||u.registrationRole||u.role||'').toLowerCase().includes('student')?'Student':'Tutor';
+      return `<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 rounded-xl bg-white border border-blue-100 mb-2"><div><div class="font-black text-sm text-slate-900">${esc(name)} <span class="text-[9px] px-2 py-1 rounded-full bg-blue-100 text-blue-700">${role}</span></div><div class="text-[10px] text-slate-500 mt-1">Email: <b>${esc(email||'Not available')}</b> · Phone: <b>${esc(phone||'Not available')}</b></div></div>${email?`<button type="button" class="bg-brand-blue hover:bg-blue-700 text-white font-black px-3 py-2 rounded-lg text-[10px]" onclick="gcAdminSendReset('${esc(email)}')">SEND RESET LINK</button>`:'<span class="text-[10px] font-bold text-red-600">No email on profile</span>'}</div>`;
+    }).join('');
+  };
+  window.gcAdminSendReset=async function(email){
+    if(!isStaff())return alert('Please login as Staff/Admin first.');
+    const s=sbc(); if(!s)return alert('Supabase is not connected.');
+    const redirectTo=(/^(www\.)?guruconnnect\.in$/i.test(location.hostname))?'https://www.guruconnnect.in/index.html':(location.origin+location.pathname);
+    try{
+      const r=await s.auth.resetPasswordForEmail(normEmail(email),{redirectTo});
+      if(r.error)throw r.error;
+      alert('Password reset link sent successfully to '+email+'. The user can open the link and create a new password.');
+    }catch(e){alert('Reset email could not be sent: '+(e.message||e));}
+  };
+})();
+</script>
 </body>
 
 <style id="gc-final-load-hero-transfer-pdf-fix">
