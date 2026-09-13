@@ -12859,16 +12859,23 @@ function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&l
 async function adminFind(){
   if(localStorage.getItem('is_staff_logged')!=='true')return alert('Please login as Staff/Admin first.');
   const s=S(),term=(by('gcAdminResetSearch')?.value||'').trim();if(!s)return alert('Supabase is not connected.');if(!term)return alert('Enter Email or Phone Number.');
-  const st=by('gcAdminResetStatus'),res=by('gcAdminResetResult');if(st)st.textContent='Searching…';if(res)res.innerHTML='';
+  const st=by('gcAdminResetStatus'),res=by('gcAdminResetResult');if(st)st.textContent='Searching registered users…';if(res)res.innerHTML='';
   try{
     const email=term.toLowerCase(),phone=norm(term),out=[];
-    const [a,b]=await Promise.all([s.from('student_profiles').select('id,user_id,name,email,phone').limit(1000),s.from('tutor_profiles').select('id,user_id,name,email,phone').limit(1000)]);
-    if(a.error)throw a.error;if(b.error)throw b.error;
-    for(const r of (a.data||[]))if((r.email&&String(r.email).toLowerCase()===email)||(phone&&norm(r.phone)===phone))out.push({...r,role:'Student'});
-    for(const r of (b.data||[]))if((r.email&&String(r.email).toLowerCase()===email)||(phone&&norm(r.phone)===phone))out.push({...r,role:'Tutor'});
+    // IMPORTANT: email/phone live in the shared profiles table.
+    // tutor_profiles/student_profiles do not necessarily contain an email column.
+    const q=await s.from('profiles').select('id,full_name,email,phone,role').limit(5000);
+    if(q.error)throw q.error;
+    for(const r of (q.data||[])){
+      const rr=String(r.role||'').toLowerCase();
+      if(rr!=='student' && rr!=='tutor')continue;
+      if((email && String(r.email||'').trim().toLowerCase()===email) || (phone && norm(r.phone)===phone)){
+        out.push({id:r.id,user_id:r.id,name:r.full_name||'User',email:r.email||'',phone:r.phone||'',role:rr==='student'?'Student':'Tutor'});
+      }
+    }
     if(st)st.textContent=out.length?out.length+' matching account(s) found.':'No registered Student/Tutor found.';
     if(res)res.innerHTML=out.length?out.map(r=>`<div class="p-4 rounded-2xl bg-white border border-slate-200 mb-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"><div><div class="font-black">${esc(r.name||'User')} <span class="text-xs text-blue-700">${esc(r.role)}</span></div><div class="text-xs text-slate-500 mt-1">Email: ${esc(r.email||'Not provided')} • Phone: ${esc(r.phone||'Not provided')}</div></div><button type="button" class="gc-admin-reset-send bg-blue-600 hover:bg-blue-700 text-white font-black px-4 py-3 rounded-xl text-xs" data-email="${esc(r.email||'')}">SEND RESET LINK</button></div>`).join(''):'<div class="p-4 rounded-xl bg-white border text-sm text-slate-500">No matching account found.</div>';
-  }catch(e){if(st)st.textContent='Search failed: '+(e.message||e)}
+  }catch(e){console.error('Admin user search failed:',e);if(st)st.textContent='Search failed: '+(e.message||e)}
 }
 async function adminSend(email,btn){
   if(!email)return alert('No registered email is available for this user.');
@@ -14800,19 +14807,21 @@ async function find(){
  const s=S();if(!s){alert('Supabase is not connected.');return}
  const term=String($('gcAdminResetSearch')?.value||'').trim();
  if(!term){$('gcAdminResetStatus').textContent='Enter an Email or Phone Number.';return}
- $('gcAdminResetStatus').textContent='Searching registered Students and Tutors…';$('gcAdminResetResult').innerHTML='';
+ $('gcAdminResetStatus').textContent='Searching registered users…';$('gcAdminResetResult').innerHTML='';
  try{
    const email=term.toLowerCase(), phone=normPhone(term);
-   const [st,tr]=await Promise.all([
-     s.from('student_profiles').select('id,user_id,name,email,phone').limit(1000),
-     s.from('tutor_profiles').select('id,user_id,name,email,phone').limit(1000)
-   ]);
-   if(st.error)throw st.error;if(tr.error)throw tr.error;
+   // Email/phone are stored in the shared profiles table; do not query nonexistent tutor_profiles.email.
+   const q=await s.from('profiles').select('id,full_name,email,phone,role').limit(5000);
+   if(q.error)throw q.error;
    const matches=[];
-   for(const r of (st.data||[])) if((email&&String(r.email||'').toLowerCase()===email)||(phone&&normPhone(r.phone)===phone)) matches.push({...r,role:'Student'});
-   for(const r of (tr.data||[])) if((email&&String(r.email||'').toLowerCase()===email)||(phone&&normPhone(r.phone)===phone)) matches.push({...r,role:'Tutor'});
+   for(const r of (q.data||[])){
+     const role=String(r.role||'').toLowerCase();
+     if(role!=='student'&&role!=='tutor')continue;
+     if((email&&String(r.email||'').trim().toLowerCase()===email)||(phone&&normPhone(r.phone)===phone))
+       matches.push({id:r.id,user_id:r.id,name:r.full_name||'User',email:r.email||'',phone:r.phone||'',role:role==='student'?'Student':'Tutor'});
+   }
    $('gcAdminResetStatus').textContent=matches.length?`${matches.length} matching account(s) found.`:'No registered Student/Tutor found.';
-   $('gcAdminResetResult').innerHTML=matches.length?matches.map((r,i)=>`<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-4 rounded-2xl bg-white border border-slate-200 mb-3"><div><div class="font-black text-slate-900">${esc(r.name||'User')} <span class="ml-1 text-[10px] px-2 py-1 rounded-full bg-blue-50 text-blue-700">${esc(r.role)}</span></div><div class="text-xs text-slate-500 mt-1">Email: ${esc(r.email||'Not provided')} • Phone: ${esc(r.phone||'Not provided')}</div></div><button type="button" class="gc-admin-reset-send bg-emerald-600 hover:bg-emerald-700 text-white font-black px-4 py-3 rounded-xl text-xs" data-email="${esc(r.email||'')}">SEND RESET LINK</button></div>`).join(''):'<div class="p-4 rounded-2xl bg-white border border-slate-200 text-sm font-bold text-slate-500">No matching registered account found.</div>';
+   $('gcAdminResetResult').innerHTML=matches.length?matches.map(r=>`<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 p-4 rounded-2xl bg-white border border-slate-200 mb-3"><div><div class="font-black text-slate-900">${esc(r.name||'User')} <span class="ml-1 text-[10px] px-2 py-1 rounded-full bg-blue-50 text-blue-700">${esc(r.role)}</span></div><div class="text-xs text-slate-500 mt-1">Email: ${esc(r.email||'Not provided')} • Phone: ${esc(r.phone||'Not provided')}</div></div><button type="button" class="gc-admin-reset-send bg-emerald-600 hover:bg-emerald-700 text-white font-black px-4 py-3 rounded-xl text-xs" data-email="${esc(r.email||'')}">SEND RESET LINK</button></div>`).join(''):'<div class="p-4 rounded-2xl bg-white border border-slate-200 text-sm font-bold text-slate-500">No matching registered account found.</div>';
  }catch(e){console.error(e);$('gcAdminResetStatus').textContent='Search failed: '+(e.message||e)}
 }
 async function send(email,btn){
