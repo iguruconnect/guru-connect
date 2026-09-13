@@ -7231,7 +7231,7 @@ footer:before{
             const u = document.getElementById('staffUserInput').value.trim();
             const p = document.getElementById('staffPassInput').value.trim();
 
-            if (u === 'Swami@gmail.com' && p === 'Roller@1329007/') {
+            if (u === 'Swami@gmail.com' && p === '') {
                 localStorage.setItem('is_staff_logged', 'true');
                 closeStaffLoginModal();
                 checkStaffSessionState();
@@ -13309,7 +13309,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
   'use strict';
 
   const STAFF_EMAIL='Swami@gmail.com';
-  const STAFF_PASSWORD='Roller@1329007/';
+  const STAFF_PASSWORD='';
 
   const clean=v=>String(v==null?'':v).trim();
   const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -14690,7 +14690,7 @@ window.addEventListener('load',()=>setTimeout(mount,900));setInterval(mount,6000
 <script id="gc-final-recovery-js">
 (function(){
 'use strict';
-const STAFF_EMAIL='Swami@gmail.com', STAFF_PASSWORD='Roller@1329007/';
+const STAFF_EMAIL='Swami@gmail.com', STAFF_PASSWORD='';
 const clean=v=>String(v??'').trim();
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const S=()=>window.gcSupabase||null;
@@ -14985,3 +14985,51 @@ window.GC_UNIFIED_LOGIN_READY=true;
 })();
 </script>
 
+
+<!-- GURU CONNECT FINAL STABILITY PATCH — Learning Requests + Admin monitor + password reset session safety -->
+<style id="gc-final-stability-style">
+/* Legacy admin Learning Request panels remain in the codebase for compatibility, but only one
+   authoritative panel is visible. This prevents competing timers from fighting over the UI. */
+#gcAdminLearningMonitor,#gcAdminLearningEscrow{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+#gcStableAdminLearningRequests{margin-top:18px;border:1px solid #dbe5f2;border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 12px 35px rgba(16,35,78,.08)}
+.gc-stable-lr-head{padding:17px 18px;background:linear-gradient(135deg,#071633,#123b8f,#155eef);color:#fff;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.gc-stable-lr-head h3{margin:0;font-size:17px;font-weight:950}.gc-stable-lr-head p{margin:4px 0 0;font-size:10px;color:#dbeafe}.gc-stable-lr-refresh{border:1px solid #ffffff55;background:#ffffff18;color:#fff;border-radius:10px;padding:8px 11px;font-size:9px;font-weight:900;cursor:pointer}.gc-stable-lr-refresh:disabled{opacity:.6;cursor:wait}
+.gc-stable-lr-body{padding:14px}.gc-stable-lr-table{overflow:auto}.gc-stable-lr-table table{width:100%;border-collapse:collapse;min-width:1050px;font-size:10px}.gc-stable-lr-table th,.gc-stable-lr-table td{padding:9px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:top}.gc-stable-lr-table th{font-size:8px;text-transform:uppercase;color:#64748b;background:#f8fafc}.gc-stable-lr-held{color:#b45309;font-weight:950}.gc-stable-lr-ok{color:#047857;font-weight:950}.gc-stable-lr-warn{color:#a16207;font-weight:950}.gc-stable-lr-actions{display:flex;gap:5px;flex-wrap:wrap}.gc-stable-lr-actions button{border:0;border-radius:8px;padding:7px 9px;color:#fff;font-size:8px;font-weight:950;cursor:pointer}.gc-stable-approve{background:#059669}.gc-stable-deny{background:#dc2626}.gc-stable-lr-msg{margin-bottom:10px;font-size:10px;color:#64748b;font-weight:800}
+</style>
+<script id="gc-final-stability-js">
+(function(){
+'use strict';
+const S=()=>window.gcSupabase||null;
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const FN='https://hzqqswrnawrfgufbxgay.supabase.co/functions/v1/admin-create-user';
+const clean=v=>String(v??'').trim();
+let adminLoading=false;
+async function adminToken(){const s=S();if(!s)throw new Error('Supabase is not connected.');const q=await s.auth.getSession();const u=q.data?.session?.user;if(!u)throw new Error('Staff/Admin Supabase session is missing. Please login again.');if(String(u.email||'').toLowerCase()!=='swami@gmail.com'&&!['admin','staff_admin','super_admin'].includes(String(u.app_metadata?.role||'').toLowerCase()))throw new Error('Only the authorized Staff Admin can view Learning Requests.');return q.data.session.access_token}
+function mount(){
+ const dash=document.getElementById('staffAdminDashboard');if(!dash||dash.classList.contains('hidden'))return;
+ let host=document.getElementById('gcStableAdminLearningRequests');
+ if(!host){host=document.createElement('section');host.id='gcStableAdminLearningRequests';dash.appendChild(host);}
+ if(!host.dataset.ready){host.dataset.ready='1';host.innerHTML='<div class="gc-stable-lr-head"><div><h3>🛡️ Learning Requests • Admin Control</h3><p>One stable Admin view. Refresh is manual so buttons never disappear while you are working.</p></div><button type="button" class="gc-stable-lr-refresh" id="gcStableAdminRefresh">↻ REFRESH</button></div><div class="gc-stable-lr-body"><div id="gcStableAdminMsg" class="gc-stable-lr-msg">Ready.</div><div id="gcStableAdminTable" class="gc-stable-lr-table"></div></div>';host.querySelector('#gcStableAdminRefresh').onclick=()=>load();}
+ if(!host.dataset.loaded)load();
+}
+function render(rows){
+ const host=document.getElementById('gcStableAdminTable');if(!host)return;
+ const body=(rows||[]).map(r=>{const st=String(r.status||'OPEN'),out=String(r.student_outcome||'PENDING'),held=Number(r.coins_held||0);const ready=held>0&&!!r.tutor_id&&(/SATISFIED|COMPLETED/i.test(out)||/TUTOR_COMPLETED|PENDING_ADMIN_APPROVAL|PENDING_ADMIN_REVIEW|COMPLETED|APPROVED/i.test(st));const action=ready?`<div class="gc-stable-lr-actions"><button class="gc-stable-approve" data-decision="APPROVE" data-id="${esc(r.id)}">✓ APPROVE</button><button class="gc-stable-deny" data-decision="DENY" data-id="${esc(r.id)}">✕ DENY</button></div>`:(held>0?'<span class="gc-stable-lr-warn">HELD — WAITING</span>':'<span class="gc-stable-lr-ok">NO COINS HELD</span>');return `<tr><td><b>${esc(r.request_code||r.id)}</b><br><span class="gc-stable-lr-held">🪙 ${held} HELD</span></td><td>${esc(r.student_short_id||('ST-'+String(r.student_id||'').replaceAll('-','').slice(0,6).toUpperCase()))}</td><td>${esc(r.tutor_short_id||(r.tutor_id?'TU-'+String(r.tutor_id).replaceAll('-','').slice(0,6).toUpperCase():'Not connected'))}</td><td>${esc(r.course||'—')} / ${esc(r.stream||'—')}</td><td><b>${esc(r.subject||'—')}</b><br>${esc(r.topic||'—')}</td><td>${esc(st.replaceAll('_',' '))}</td><td>${esc(out)}</td><td>${esc(r.issue||r.problem||'—')}</td><td>${action}</td></tr>`}).join('');
+ host.innerHTML=`<table><thead><tr><th>Request</th><th>Student</th><th>Tutor</th><th>Course / Stream</th><th>Subject / Topic</th><th>Status</th><th>Student Outcome</th><th>Issue / Problem</th><th>Admin Action</th></tr></thead><tbody>${body||'<tr><td colspan="9" style="padding:25px;text-align:center;color:#64748b;font-weight:800">No Learning Requests found.</td></tr>'}</tbody></table>`;
+ host.querySelectorAll('[data-decision]').forEach(b=>b.addEventListener('click',()=>decide(b.dataset.id,b.dataset.decision)));
+}
+async function load(){
+ if(adminLoading)return;adminLoading=true;mount();const msg=document.getElementById('gcStableAdminMsg'),btn=document.getElementById('gcStableAdminRefresh');if(msg)msg.textContent='Refreshing…';if(btn){btn.disabled=true;btn.textContent='↻ LOADING…'}
+ try{const token=await adminToken();const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action:'learning_requests'})});const data=await r.json().catch(()=>null);if(!r.ok)throw new Error(data?.error||('Server returned HTTP '+r.status));render(Array.isArray(data?.requests)?data.requests:[]);if(msg)msg.textContent='✓ Last refreshed just now. The list stays unchanged until you refresh again.';const host=document.getElementById('gcStableAdminLearningRequests');if(host)host.dataset.loaded='1';}catch(e){if(msg)msg.textContent='Could not load Learning Requests: '+(e.message||e);}
+ finally{adminLoading=false;if(btn){btn.disabled=false;btn.textContent='↻ REFRESH'}}
+}
+async function decide(id,decision){try{const s=S();if(!s)throw new Error('Supabase is not connected.');await adminToken();let note='';if(decision==='DENY')note=prompt('Reason for denial / support message (optional):','Coins denied. Please contact Customer Support.')??'';const q=await s.rpc('gc_admin_decide_learning_request',{p_request_id:String(id),p_decision:decision,p_note:String(note).slice(0,1000)});if(q.error)throw q.error;alert(decision==='APPROVE'?'Approved. 100 coins released to the Tutor.':'Denied. The Admin decision has been recorded.');await load();}catch(e){alert('Admin decision failed: '+(e.message||e))}}
+window.GC_STABLE_ADMIN_LR={refresh:load};
+const observer=new MutationObserver(()=>{const d=document.getElementById('staffAdminDashboard');if(d&&!d.classList.contains('hidden'))mount()});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{mount();observer.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']})},{once:true});else{mount();observer.observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']})}
+
+/* Remove the last unsafe fallback: admin cloud helpers must use the current Staff session,
+   never a password embedded in website JavaScript. */
+window.ensureStaffCloud=async function(){const s=S();if(!s)throw new Error('Supabase client is not loaded.');const q=await s.auth.getSession(),u=q.data?.session?.user;if(!u)throw new Error('Staff/Admin Supabase session is missing. Please login again.');if(String(u.email||'').toLowerCase()!=='swami@gmail.com'&&!['admin','staff_admin','super_admin'].includes(String(u.app_metadata?.role||'').toLowerCase()))throw new Error('Current account is not authorized as Staff/Admin.');localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');return u};
+})();
+</script>
