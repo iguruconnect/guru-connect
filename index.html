@@ -4671,10 +4671,8 @@ footer:before{
       <a href="#studentsDirectory">Find Student</a>
       <a href="learning.html">Learning Request</a>
       <a href="#registrationSection">Register</a>
-      <a href="javascript:void(0)" onclick="openLoginModal()">Login</a>
     </nav>
-    <div class="gc-header-actions">
-      <button class="bg-slate-100 hover:bg-slate-200 text-brand-dark text-[11px] sm:text-xs font-bold px-2 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition shadow flex items-center gap-1" id="navLoginBtn" onclick="openLoginModal()"><i class="fa-solid fa-right-to-bracket"></i><span class="hidden sm:inline">LOGIN</span></button> <div id="currentUserBadge" aria-label="Logged in user">
+    <div class="gc-header-actions"> <div id="currentUserBadge" aria-label="Logged in user">
   <div class="px-1"><span class="gc-account-role" id="navLoggedRole">LOGGED IN</span><span class="gc-account-name" id="navLoggedName">User</span></div>
   <button type="button" class="gc-account-dashboard" onclick="openUserDashboard()" title="Open dashboard"><i class="fa-solid fa-gauge-high"></i><span> DASHBOARD</span></button>
   <button type="button" class="gc-account-logout" onclick="logoutUser()" title="Logout"><i class="fa-solid fa-right-from-bracket"></i><span> LOGOUT</span></button>
@@ -4750,6 +4748,23 @@ footer:before{
 <button class="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white text-sm font-bold px-5 py-3 rounded-xl transition shadow-lg flex items-center justify-center gap-2" onclick="logoutStaff()">
 <i class="fa-solid fa-right-from-bracket"></i> Exit Staff Mode
                 </button>
+<!-- ADMIN USER PASSWORD RESET -->
+<section id="gcAdminPasswordReset" class="mt-8 rounded-2xl sm:rounded-3xl border border-blue-100 bg-slate-50 overflow-hidden">
+  <div class="p-5 sm:p-6 bg-gradient-to-r from-slate-950 via-blue-950 to-blue-700 text-white">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div><h3 class="text-lg sm:text-xl font-black">🔐 USER PASSWORD RESET</h3><p class="text-xs text-blue-100 mt-1">Find a registered Student or Tutor by Email or Phone and send a secure reset link to their registered email.</p></div>
+      <span class="text-[10px] font-black px-3 py-2 rounded-xl bg-white/10 border border-white/15">NO PASSWORD IS SHOWN TO ADMIN</span>
+    </div>
+  </div>
+  <div class="p-5 sm:p-6">
+    <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3">
+      <input id="gcAdminResetSearch" class="w-full border border-slate-300 rounded-xl p-3 text-sm font-bold bg-white" placeholder="Enter registered Email or Phone Number" autocomplete="off">
+      <button id="gcAdminResetFindBtn" type="button" class="bg-blue-600 hover:bg-blue-700 text-white font-black px-6 py-3 rounded-xl">FIND USER</button>
+    </div>
+    <div id="gcAdminResetStatus" class="mt-3 text-xs font-bold text-slate-500"></div>
+    <div id="gcAdminResetResult" class="mt-4"></div>
+  </div>
+</section>
 </div>
 <div class="flex flex-col sm:flex-row gap-3 mb-6 w-full">
 <button class="w-full sm:w-auto justify-center bg-brand-blue text-white font-bold text-sm px-6 py-3 rounded-xl border border-blue-700 shadow flex items-center gap-2" id="adminTabTutorsBtn" onclick="switchAdminTab('tutors')">
@@ -4792,23 +4807,7 @@ footer:before{
 </div>
 </div>
 
-<!-- ADMIN USER PASSWORD RESET -->
-<section id="gcAdminPasswordReset" class="mt-8 rounded-2xl sm:rounded-3xl border border-blue-100 bg-slate-50 overflow-hidden">
-  <div class="p-5 sm:p-6 bg-gradient-to-r from-slate-950 via-blue-950 to-blue-700 text-white">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-      <div><h3 class="text-lg sm:text-xl font-black">🔐 USER PASSWORD RESET</h3><p class="text-xs text-blue-100 mt-1">Find a registered Student or Tutor by Email or Phone and send a secure reset link to their registered email.</p></div>
-      <span class="text-[10px] font-black px-3 py-2 rounded-xl bg-white/10 border border-white/15">NO PASSWORD IS SHOWN TO ADMIN</span>
-    </div>
-  </div>
-  <div class="p-5 sm:p-6">
-    <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3">
-      <input id="gcAdminResetSearch" class="w-full border border-slate-300 rounded-xl p-3 text-sm font-bold bg-white" placeholder="Enter registered Email or Phone Number" autocomplete="off">
-      <button id="gcAdminResetFindBtn" type="button" class="bg-blue-600 hover:bg-blue-700 text-white font-black px-6 py-3 rounded-xl">FIND USER</button>
-    </div>
-    <div id="gcAdminResetStatus" class="mt-3 text-xs font-bold text-slate-500"></div>
-    <div id="gcAdminResetResult" class="mt-4"></div>
-  </div>
-</section>
+
 </div>
 <!-- WRAPPER FOR PUBLIC WEBSITE CONTENT -->
 <div class="w-full" id="publicWebsiteContent">
@@ -12887,6 +12886,63 @@ window.GC_PROFILE_COINS_REFRESH=paint;
   else start();
 })();
 </script>
+
+<!-- GURU CONNECT HARD FINAL: ONE LOGIN + VISIBLE ADMIN PASSWORD RESET -->
+<style id="gc-hard-final-login-reset">
+  /* There is exactly one public Login: inside MENU. */
+  header .gc-beautiful-nav a[onclick*="openLoginModal"],
+  header #navLoginBtn,
+  header #loginBtn,
+  header #staffLoginBtn,
+  header #navStaffBtn,
+  #publicNavbarLinks .gc-menu-login-student,
+  #publicNavbarLinks .gc-menu-login-tutor,
+  #publicNavbarLinks .gc-menu-login-staff,
+  #publicNavbarLinks .gc-login-menu-group,
+  #publicNavbarLinks .gc-mobile-login-item,
+  #publicNavbarLinks .gc-mobile-staff-item { display:none!important; }
+  #gcSingleUnifiedLogin{display:flex!important;align-items:center;width:100%;box-sizing:border-box;min-height:44px;padding:12px 14px;border-radius:12px;background:#2563eb!important;color:#fff!important;font-weight:900!important;text-decoration:none!important;}
+  #gcAdminPasswordReset{display:block!important;visibility:visible!important;}
+</style>
+<script id="gc-hard-final-login-reset-js">
+(function(){
+  'use strict';
+  function oneLogin(){
+    var m=document.getElementById('publicNavbarLinks');
+    if(!m)return;
+    m.querySelectorAll('.gc-menu-login-student,.gc-menu-login-tutor,.gc-menu-login-staff,.gc-login-menu-group,.gc-mobile-login-item,.gc-mobile-staff-item').forEach(function(x){x.remove();});
+    m.querySelectorAll('a,button').forEach(function(x){
+      var t=(x.textContent||'').replace(/\\s+/g,' ').trim().toLowerCase();
+      if(t==='student login'||t==='tutor login'||t==='staff login'||t==='staff')x.remove();
+    });
+    var b=m.querySelector('#gcSingleUnifiedLogin');
+    if(!b){
+      b=document.createElement('a'); b.id='gcSingleUnifiedLogin'; b.href='javascript:void(0)'; b.className='gc-menu-login gc-single-login';
+      b.textContent='🔐  LOGIN';
+      m.appendChild(document.createElement('div')).className='gc-menu-divider';
+      m.appendChild(b);
+    }
+    b.onclick=function(e){e.preventDefault();e.stopImmediatePropagation();try{window.closeNavMenu&&window.closeNavMenu();}catch(_){} window.openLoginModal('student');return false;};
+  }
+  function resetPanel(){
+    var d=document.getElementById('staffAdminDashboard'), p=document.getElementById('gcAdminPasswordReset');
+    if(!d||!p)return;
+    if(p.parentElement!==d) d.appendChild(p);
+    p.style.display='block'; p.style.visibility='visible';
+    var inner=d.querySelector('.bg-white');
+    if(inner && p.parentElement!==inner){
+      inner.appendChild(p);
+      p.style.display='block'; p.style.visibility='visible';
+    }
+  }
+  function run(){oneLogin();resetPanel();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
+  [100,500,1200,2500,5000].forEach(function(ms){setTimeout(run,ms);});
+  var mo=new MutationObserver(function(){if(!window.__gcHardRunning){window.__gcHardRunning=true;run();window.__gcHardRunning=false;}});
+  try{mo.observe(document.body,{childList:true,subtree:true});}catch(_){}
+})();
+</script>
+
 </body>
 
 <style id="gc-final-load-hero-transfer-pdf-fix">
@@ -13120,9 +13176,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
    '<a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openAboutModal();closeNavMenu();">ℹ️&nbsp; ABOUT US</a>'+
    '<a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openContactModal();closeNavMenu();">📞&nbsp; CONTACT US</a>'+
    '<div class="gc-menu-divider"></div>'+
-   '<a class="gc-menu-login gc-menu-student" href="javascript:void(0)" onclick="openStudentLoginModal();closeNavMenu();">👨‍🎓&nbsp; STUDENT LOGIN</a>'+
-   '<a class="gc-menu-login gc-menu-tutor" href="javascript:void(0)" onclick="openTutorLoginModal();closeNavMenu();">👨‍🏫&nbsp; TUTOR LOGIN</a>'+
-   '<a class="gc-menu-login gc-menu-staff" href="javascript:void(0)" onclick="openStaffLoginModal();closeNavMenu();">🔐&nbsp; STAFF LOGIN</a>';
+   '<a id="gcSingleUnifiedLogin" class="gc-menu-login gc-single-login" href="javascript:void(0)" onclick="openLoginModal(\'student\');closeNavMenu();return false;">🔐&nbsp; LOGIN</a>';
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',updateMenu,{once:true});else updateMenu();
 })();
