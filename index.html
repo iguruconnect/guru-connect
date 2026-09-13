@@ -15326,3 +15326,80 @@ body:not(.gc-dashboard-page) .gc-account-logout{display:none!important;}
   };
 })();
 </script>
+
+<!-- GURU CONNECT — FINAL ADMIN USER TOOLS + LOGIN CLICK FIX v2 -->
+<style id="gc-admin-tools-v2-css">
+#staffAdminDashboard .gc-admin-tools-v2{margin:0 0 18px;padding:16px;border:1px solid #dbe5f0;border-radius:18px;background:linear-gradient(180deg,#ffffff,#f8fbff);box-shadow:0 8px 24px rgba(15,23,42,.06)}
+.gc-admin-tools-v2 h3{margin:0;font-size:17px;font-weight:950;color:#0f172a}.gc-admin-tools-v2 p{font-size:11px;color:#64748b;margin:4px 0 12px}.gc-admin-tools-v2 .v2-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.gc-admin-tools-v2 input,.gc-admin-tools-v2 select{width:100%;border:1px solid #cbd5e1;border-radius:11px;padding:11px 12px;font-size:12px;font-weight:700;background:#fff;outline:none}.gc-admin-tools-v2 input:focus{border-color:#2563eb;box-shadow:0 0 0 3px rgba(37,99,235,.1)}.gc-admin-tools-v2 button{border:0;border-radius:11px;padding:11px 14px;font-size:11px;font-weight:950;cursor:pointer}.gc-admin-tools-v2 .blue{background:#1264d8;color:#fff}.gc-admin-tools-v2 .orange{background:#f97316;color:#fff}.gc-admin-tools-v2 .green{background:#059669;color:#fff}.gc-admin-tools-v2 .muted{background:#eef2f7;color:#334155}.gc-admin-tools-v2 .v2-row{display:flex;gap:9px;flex-wrap:wrap;align-items:center}.gc-admin-tools-v2 .v2-result{margin-top:10px;padding:10px 12px;border-radius:11px;background:#f1f5f9;font-size:11px;font-weight:750;color:#334155;min-height:18px}.gc-admin-tools-v2 .ok{color:#166534;background:#ecfdf5;border:1px solid #bbf7d0}.gc-admin-tools-v2 .bad{color:#991b1b;background:#fef2f2;border:1px solid #fecaca}.gc-admin-tools-v2 .section-label{font-size:10px;font-weight:950;letter-spacing:.7px;color:#475569;text-transform:uppercase;margin:14px 0 7px}.gc-admin-tools-v2 .divider{height:1px;background:#e2e8f0;margin:16px 0}
+@media(max-width:760px){#staffAdminDashboard .gc-admin-tools-v2 .v2-grid{grid-template-columns:1fr}.gc-admin-tools-v2 .v2-row{display:grid;grid-template-columns:1fr}.gc-admin-tools-v2 .v2-row button{width:100%}}
+/* One visible, clickable LOGIN item inside MENU. */
+#publicNavbarLinks .gc-v2-menu-login{display:flex!important;align-items:center!important;width:100%!important;box-sizing:border-box!important;margin:6px 0!important;padding:12px 14px!important;border:0!important;border-radius:12px!important;background:linear-gradient(135deg,#123b8f,#1264d8)!important;color:#fff!important;font-weight:950!important;font-size:12px!important;cursor:pointer!important;text-decoration:none!important;pointer-events:auto!important;position:relative!important;z-index:999999!important}
+</style>
+<script id="gc-admin-tools-v2-js">
+(function(){'use strict';
+ const SB=()=>window.gcSupabase||window.GC_SUPABASE_CLIENT||null;
+ const CREATE_URL=(window.GC_ADMIN_CREATE_USER_URL||'https://hzqqswrnawrfgufbxgay.supabase.co/functions/v1/admin-create-user');
+ const STAFF='swami@gmail.com';
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function visible(){const d=document.getElementById('staffAdminDashboard');return d&& !d.classList.contains('hidden');}
+ async function staffSession(){const s=SB();if(!s)throw new Error('Supabase is not connected.');const q=await s.auth.getSession();const sess=q.data?.session,u=sess?.user;if(!u)throw new Error('Admin session not found. Please login to Staff Admin again.');if(String(u.email||'').toLowerCase()!==STAFF)throw new Error('Only the authorized Staff Admin can use this tool.');return sess;}
+ function panel(){
+  const d=document.getElementById('staffAdminDashboard');if(!d||!visible())return null;
+  let x=d.querySelector('#gcAdminToolsV2');if(x)return x;
+  x=document.createElement('section');x.id='gcAdminToolsV2';x.className='gc-admin-tools-v2';
+  x.innerHTML=`<div><h3>👤 USER ACCOUNT MANAGEMENT</h3><p>Create new Student/Tutor accounts and send a secure password-reset OTP. Admin never sees or receives an existing password.</p></div>
+  <div class="section-label">Create new user</div>
+  <div class="v2-grid"><input id="v2Name" placeholder="Full name"><input id="v2Email" type="email" placeholder="Login email"><input id="v2Phone" type="tel" placeholder="Phone / WhatsApp (optional)"><select id="v2Role"><option value="student">Student</option><option value="tutor">Tutor</option></select><input id="v2Pw" type="password" minlength="8" placeholder="Set password (8+ characters)" autocomplete="new-password"><input id="v2Pw2" type="password" minlength="8" placeholder="Confirm password" autocomplete="new-password"></div>
+  <div class="v2-row" style="margin-top:10px"><button class="blue" id="v2Create" type="button">CREATE USER</button><button class="muted" id="v2Clear" type="button">CLEAR</button></div><div id="v2CreateResult" class="v2-result">Create User is ready. If you see “Failed to fetch”, the Edge Function must be deployed in Supabase.</div>
+  <div class="divider"></div>
+  <div class="section-label">User password reset</div>
+  <div class="v2-grid"><input id="v2Find" placeholder="Search by registered email or phone"><div></div><div></div></div>
+  <div class="v2-row" style="margin-top:10px"><button class="orange" id="v2FindBtn" type="button">FIND USER</button><button class="green" id="v2ResetBtn" type="button" disabled>SEND RESET OTP</button></div><div id="v2FindResult" class="v2-result">Enter a registered email or phone, then click FIND USER.</div>`;
+  d.prepend(x);
+  x.querySelector('#v2Clear').onclick=()=>['v2Name','v2Email','v2Phone','v2Pw','v2Pw2'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  x.querySelector('#v2Create').onclick=create;
+  x.querySelector('#v2FindBtn').onclick=findUser;
+  x.querySelector('#v2ResetBtn').onclick=sendReset;
+  return x;
+ }
+ function result(id,text,good){const e=document.getElementById(id);if(!e)return;e.textContent=text;e.className='v2-result '+(good?'ok':good===false?'bad':'');}
+ async function create(){
+  const btn=document.getElementById('v2Create');const name=document.getElementById('v2Name')?.value.trim(),email=document.getElementById('v2Email')?.value.trim().toLowerCase(),phone=document.getElementById('v2Phone')?.value.trim(),role=document.getElementById('v2Role')?.value||'student',pw=document.getElementById('v2Pw')?.value||'',pw2=document.getElementById('v2Pw2')?.value||'';
+  if(!name)return result('v2CreateResult','Enter the user name.',false);if(!/^\S+@\S+\.\S+$/.test(email))return result('v2CreateResult','Enter a valid email address.',false);if(pw.length<8)return result('v2CreateResult','Password must be at least 8 characters.',false);if(pw!==pw2)return result('v2CreateResult','Passwords do not match.',false);
+  try{const sess=await staffSession();btn.disabled=true;btn.textContent='CREATING USER…';
+   let r;try{r=await fetch(CREATE_URL,{method:'POST',mode:'cors',headers:{'Content-Type':'application/json','Authorization':'Bearer '+sess.access_token,'apikey':(window.GC_SUPABASE_ANON_KEY||'')},body:JSON.stringify({email,password:pw,name,phone,role})});}catch(net){throw new Error('Failed to fetch the admin-create-user Edge Function. Deploy/enable supabase/functions/admin-create-user, then try again. URL: '+CREATE_URL);}
+   let data={};try{data=await r.json()}catch(_){} if(!r.ok||data.error)throw new Error(data.error||data.message||('Server returned HTTP '+r.status));
+   result('v2CreateResult','User created successfully: '+email+' ('+role+').',true);['v2Name','v2Email','v2Phone','v2Pw','v2Pw2'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  }catch(e){result('v2CreateResult','Could not create user: '+(e.message||e),false);}finally{btn.disabled=false;btn.textContent='CREATE USER';}
+ }
+ let foundEmail='';
+ async function findUser(){
+  const q=String(document.getElementById('v2Find')?.value||'').trim();if(!q)return result('v2FindResult','Enter an email or phone number.',false);
+  const s=SB();if(!s)return result('v2FindResult','Supabase is not connected.',false);
+  const rb=q.toLowerCase(),digits=q.replace(/\D/g,'');let matches=[];
+  try{
+   const tables=['student_profiles','tutor_profiles'];
+   for(const t of tables){
+    let z=await s.from(t).select('id,user_id,name,email,phone').ilike('email',rb);if(!z.error&&z.data)matches.push(...z.data.map(x=>({...x,_role:t==='student_profiles'?'student':'tutor'})));
+    if(digits.length>=5){let z2=await s.from(t).select('id,user_id,name,email,phone').ilike('phone','%'+digits.slice(-7)+'%');if(!z2.error&&z2.data)matches.push(...z2.data.map(x=>({...x,_role:t==='student_profiles'?'student':'tutor'})));}
+   }
+   const uniq=[];const seen=new Set();matches.forEach(x=>{const k=String(x.user_id||x.id);if(!seen.has(k)){seen.add(k);uniq.push(x)}});
+   if(!uniq.length){foundEmail='';document.getElementById('v2ResetBtn').disabled=true;return result('v2FindResult','No registered Student/Tutor found for that email or phone.',false);}
+   const x=uniq[0];foundEmail=String(x.email||'').trim().toLowerCase();if(!foundEmail)return result('v2FindResult','User found, but no email is stored for this profile.',false);document.getElementById('v2ResetBtn').disabled=false;
+   result('v2FindResult','FOUND: '+(x.name||'User')+' • '+x._role.toUpperCase()+' • '+foundEmail+' — ready to send reset OTP.',true);
+  }catch(e){result('v2FindResult','User search failed: '+(e.message||e),false);}
+ }
+ async function sendReset(){
+  if(!foundEmail)return result('v2FindResult','Find a user first.',false);const s=SB();if(!s)return result('v2FindResult','Supabase is not connected.',false);const b=document.getElementById('v2ResetBtn');const key='gc_admin_reset_last_'+foundEmail;const last=Number(localStorage.getItem(key)||0);const remaining=60000-(Date.now()-last);if(remaining>0){const sec=Math.ceil(remaining/1000);return result('v2FindResult','A reset OTP was already requested for this user. Please use that newest OTP. You can request another one in '+sec+' seconds.',false);}b.disabled=true;b.textContent='SENDING…';
+  try{const redirectTo='https://guruconnnect.in/reset-password.html';const r=await s.auth.resetPasswordForEmail(foundEmail,{redirectTo});if(r.error)throw r.error;localStorage.setItem(key,String(Date.now()));result('v2FindResult','RESET OTP SENT to '+foundEmail+'. Use only this newest OTP. Do not request another OTP while waiting. Open reset-password.html, enter the OTP, then create the new password.',true);}catch(e){result('v2FindResult','Reset OTP could not be sent: '+(e.message||e),false);}finally{b.disabled=false;b.textContent='SEND RESET OTP';}
+ }
+ function install(){if(!visible())return;panel();}
+ // Re-install whenever the staff dashboard becomes visible; this avoids the old one-time wrapper problem.
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+ const mo=new MutationObserver(()=>{clearTimeout(window.__gcAdminV2Timer);window.__gcAdminV2Timer=setTimeout(install,50)});if(document.body)mo.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']});
+ setInterval(install,1000);
+ // Replace the menu contents once, with a single real button whose listener does not depend on inline JS.
+ function loginMenu(){const m=document.getElementById('publicNavbarLinks');if(!m)return;let old=m.querySelector('.gc-v2-menu-login');if(old)return;const a=document.createElement('a');a.href='#';a.className='gc-v2-menu-login';a.innerHTML='<i class="fa-solid fa-right-to-bracket"></i><span>LOGIN</span>';a.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();try{window.closeNavMenu?.()}catch(_){};const modal=document.getElementById('loginModal');if(modal){modal.classList.remove('hidden');modal.classList.add('flex');modal.style.display='flex';setTimeout(()=>document.getElementById('loginEmailInput')?.focus(),60);}} ,true);m.appendChild(a);}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',loginMenu);else loginMenu();window.addEventListener('load',loginMenu);setInterval(loginMenu,800);
+})();
+</script>
