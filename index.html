@@ -13142,6 +13142,10 @@ setInterval(installAdminUserPanel,1500);
   [300,800,1500,3000].forEach(function(ms){setTimeout(installMenuLogin,ms);});
 })();
 </script>
+<style id="gc-stable-login-final-css">
+#publicNavbarLinks .gc-single-stable-login{display:flex!important;align-items:center!important;width:100%!important;box-sizing:border-box!important;margin:6px 0!important;padding:12px 14px!important;border-radius:12px!important;background:linear-gradient(135deg,#123b8f,#1264d8)!important;color:#fff!important;font-weight:950!important;font-size:12px!important;cursor:pointer!important;text-decoration:none!important;pointer-events:auto!important;position:relative!important;z-index:999999!important;}
+#publicNavbarLinks .gc-single-stable-login:hover{filter:brightness(1.06)!important;}
+</style>
 </body>
 
 <style id="gc-final-load-hero-transfer-pdf-fix">
@@ -13375,9 +13379,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
    '<a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openAboutModal();closeNavMenu();">ℹ️&nbsp; ABOUT US</a>'+
    '<a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openContactModal();closeNavMenu();">📞&nbsp; CONTACT US</a>'+
    '<div class="gc-menu-divider"></div>'+
-   '<a class="gc-menu-login gc-menu-student" href="javascript:void(0)" onclick="openStudentLoginModal();closeNavMenu();">👨‍🎓&nbsp; STUDENT LOGIN</a>'+
-   '<a class="gc-menu-login gc-menu-tutor" href="javascript:void(0)" onclick="openTutorLoginModal();closeNavMenu();">👨‍🏫&nbsp; TUTOR LOGIN</a>'+
-   '<a class="gc-menu-login gc-menu-staff" href="javascript:void(0)" onclick="openStaffLoginModal();closeNavMenu();">🔐&nbsp; STAFF LOGIN</a>';
+   '<a class="gc-menu-login gc-single-stable-login" href="#login">🔐&nbsp; LOGIN</a>';
  }
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',updateMenu,{once:true});else updateMenu();
 })();
@@ -15398,8 +15400,23 @@ body:not(.gc-dashboard-page) .gc-account-logout{display:none!important;}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
  const mo=new MutationObserver(()=>{clearTimeout(window.__gcAdminV2Timer);window.__gcAdminV2Timer=setTimeout(install,50)});if(document.body)mo.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['class','style']});
  setInterval(install,1000);
- // Replace the menu contents once, with a single real button whose listener does not depend on inline JS.
- function loginMenu(){const m=document.getElementById('publicNavbarLinks');if(!m)return;let old=m.querySelector('.gc-v2-menu-login');if(old)return;const a=document.createElement('a');a.href='#';a.className='gc-v2-menu-login';a.innerHTML='<i class="fa-solid fa-right-to-bracket"></i><span>LOGIN</span>';a.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();try{window.closeNavMenu?.()}catch(_){};const modal=document.getElementById('loginModal');if(modal){modal.classList.remove('hidden');modal.classList.add('flex');modal.style.display='flex';setTimeout(()=>document.getElementById('loginEmailInput')?.focus(),60);}} ,true);m.appendChild(a);}
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',loginMenu);else loginMenu();window.addEventListener('load',loginMenu);setInterval(loginMenu,800);
+ // FINAL LOGIN FIX: the menu is rendered once above. Do not run a competing interval renderer.
+ const stableLoginHandler=function(e){
+   const item=e.target.closest && e.target.closest('#publicNavbarLinks .gc-single-stable-login, #publicNavbarLinks .gc-v2-menu-login, #publicNavbarLinks .gc-menu-login');
+   if(!item)return;
+   e.preventDefault(); e.stopPropagation();
+   try{ if(typeof window.closeNavMenu==='function') window.closeNavMenu(); }catch(_){}
+   const modal=document.getElementById('loginModal');
+   if(modal){ modal.classList.remove('hidden'); modal.classList.add('flex'); modal.style.display='flex'; setTimeout(()=>document.getElementById('loginEmailInput')?.focus(),80); }
+ };
+ document.addEventListener('click',stableLoginHandler,true);
+ function ensureStableLogin(){
+   const m=document.getElementById('publicNavbarLinks'); if(!m)return;
+   m.querySelectorAll('.gc-v2-menu-login,.gc-menu-student,.gc-menu-tutor,.gc-menu-staff').forEach(el=>el.remove());
+   let a=m.querySelector('.gc-single-stable-login');
+   if(!a){ a=document.createElement('a'); a.href='#login'; a.className='gc-menu-login gc-single-stable-login'; a.innerHTML='🔐&nbsp; LOGIN'; m.appendChild(a); }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureStableLogin);else ensureStableLogin();
+
 })();
 </script>
