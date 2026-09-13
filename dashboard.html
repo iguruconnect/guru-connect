@@ -20,16 +20,8 @@ async function boot(){
     }
     if(!me && sb && storedPid && (storedRole==='student'||storedRole==='tutor')){
       const table=storedRole==='student'?'student_profiles':'tutor_profiles';
-      let q=await sb.from(table).select('*').eq('id',storedPid).maybeSingle();
-      if(!q.data && storedUid){
-        q=await sb.from(table).select('*').eq('user_id',storedUid).maybeSingle();
-      }
+      const q=await sb.from(table).select('*').eq('id',storedPid).maybeSingle();
       if(q.data){me={...q.data,user_id:storedUid||q.data.user_id||''};role=storedRole;}
-    }
-    if(!me && storedUid && sb && (storedRole==='student'||storedRole==='tutor')){
-      const altTable=storedRole==='student'?'tutor_profiles':'student_profiles';
-      const alt=await sb.from(altTable).select('*').eq('user_id',storedUid).maybeSingle();
-      if(alt.data){me={...alt.data,user_id:storedUid};role=storedRole==='student'?'tutor':'student';}
     }
     if(!me){
       // If there is no login at all, return to the website. Otherwise keep the
