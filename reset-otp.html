@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GURU CONNECT — Verify Password Reset</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(135deg,#0f1f4f,#2563eb 55%,#06b6d4);display:flex;align-items:center;justify-content:center;padding:20px;color:#172033}.card{width:min(450px,100%);background:#fff;border-radius:24px;padding:30px;box-shadow:0 25px 70px rgba(0,0,0,.25)}.logo{text-align:center;color:#2563eb;font-weight:900;font-size:25px}.sub{text-align:center;color:#64748b;font-size:14px;line-height:1.5;margin:12px 0 24px}label{display:block;font-weight:800;margin:14px 0 7px}input{width:100%;padding:13px;border:1px solid #ccd4e0;border-radius:10px;font-size:16px}button{width:100%;border:0;border-radius:12px;padding:14px;background:#2563eb;color:#fff;font-weight:900;font-size:16px;cursor:pointer;margin-top:20px}button:disabled{opacity:.55}.msg{display:none;margin-top:15px;padding:12px;border-radius:10px;font-size:14px;line-height:1.45}.ok{display:block;background:#eaf7ef;color:#17663a}.err{display:block;background:#fff0f0;color:#a11b1b}.info{display:block;background:#eef5ff;color:#174b91}.small{text-align:center;color:#64748b;font-size:12px;margin-top:15px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">GURU CONNECT</div>
+  <h2 style="text-align:center">Verify password reset</h2>
+  <div class="sub">Enter the email address that received the password-reset email and the one-time code shown in that email.</div>
+
+  <label for="email">Email address</label>
+  <input id="email" type="email" autocomplete="email" required>
+
+  <label for="token">One-time reset code</label>
+  <input id="token" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Enter the code from the email" required>
+
+  <button id="verify" type="button">VERIFY &amp; CONTINUE</button>
+  <div id="msg" class="msg"></div>
+  <div class="small">The code is single-use. If it fails, request a fresh reset email.</div>
+</div>
+
+<script>
+const SUPABASE_URL="https://hzqqswrnawrfgufbxgay.supabase.co";
+const SUPABASE_KEY="sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu";
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const emailEl=document.getElementById("email"), tokenEl=document.getElementById("token"), btn=document.getElementById("verify"), msg=document.getElementById("msg");
+const params=new URLSearchParams(location.search);
+const presetEmail=params.get("email");
+if(presetEmail) emailEl.value=presetEmail;
+
+function show(text,type){msg.textContent=text;msg.className="msg "+type;}
+btn.onclick=async()=>{
+  const email=emailEl.value.trim().toLowerCase();
+  const token=tokenEl.value.trim().replace(/\s+/g,"");
+  if(!email || !email.includes("@")) return show("Enter the email address that received the reset email.","err");
+  if(!/^\d{6,8}$/.test(token)) return show("Enter the one-time code exactly as shown in the email.","err");
+
+  btn.disabled=true; btn.textContent="VERIFYING…"; show("Verifying your reset code…","info");
+  try{
+    await sb.auth.signOut({scope:"local"}).catch(()=>{});
+    const {data,error}=await sb.auth.verifyOtp({email,token,type:"recovery"});
+    if(error) throw error;
+    if(!data?.session?.user) throw new Error("Recovery session could not be established.");
+
+    show("Verified. Opening password update page…","ok");
+    setTimeout(()=>location.replace("https://www.guruconnnect.in/reset-password.html"),500);
+  }catch(e){
+    console.error(e);
+    show("This reset code is invalid, expired, or already used. Request a fresh reset email and use the newest code.","err");
+    btn.disabled=false; btn.textContent="VERIFY & CONTINUE";
+  }
+};
+</script>
+</body>
+</html>
