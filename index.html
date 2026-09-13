@@ -4656,6 +4656,17 @@ footer:before{
 #currentUserBadge.gc-auth-visible{display:none!important;}
 </style>
 
+
+<style id="gc-critical-home-auth-flash-fix">
+/* Homepage must never flash old Dashboard / Logout / Logged-in controls. */
+body:not(.gc-dashboard-page) #currentUserBadge,
+body:not(.gc-dashboard-page) #currentUserBadge.gc-auth-visible,
+body:not(.gc-dashboard-page) #currentUserBadge .gc-account-dashboard,
+body:not(.gc-dashboard-page) #currentUserBadge .gc-account-logout{
+  display:none!important;
+}
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -4674,7 +4685,7 @@ footer:before{
       <a href="javascript:void(0)" onclick="openLoginModal()">Login</a>
     </nav>
     <div class="gc-header-actions">
-      <button class="bg-slate-100 hover:bg-slate-200 text-brand-dark text-[11px] sm:text-xs font-bold px-2 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition shadow flex items-center gap-1" id="navLoginBtn" onclick="openLoginModal()"><i class="fa-solid fa-right-to-bracket"></i><span class="hidden sm:inline">LOGIN</span></button> <div id="currentUserBadge" aria-label="Logged in user">
+      <button class="bg-slate-100 hover:bg-slate-200 text-brand-dark text-[11px] sm:text-xs font-bold px-2 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition shadow flex items-center gap-1" id="navLoginBtn" onclick="openLoginModal()"><i class="fa-solid fa-right-to-bracket"></i><span class="hidden sm:inline">LOGIN</span></button> <div id="currentUserBadge" aria-label="Logged in user" style="display:none!important">
   <div class="px-1"><span class="gc-account-role" id="navLoggedRole">LOGGED IN</span><span class="gc-account-name" id="navLoggedName">User</span></div>
   <button type="button" class="gc-account-dashboard" onclick="openUserDashboard()" title="Open dashboard"><i class="fa-solid fa-gauge-high"></i><span> DASHBOARD</span></button>
   <button type="button" class="gc-account-logout" onclick="logoutUser()" title="Logout"><i class="fa-solid fa-right-from-bracket"></i><span> LOGOUT</span></button>
@@ -12990,6 +13001,107 @@ setInterval(installAdminUserPanel,1500);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init); else init();
   window.addEventListener('load',init); setTimeout(init,500); setTimeout(init,1500);
+})();
+</script>
+
+
+<!-- GURU CONNECT — FINAL STAFF LOGIN FIX -->
+<script id="gc-final-staff-login-fix-20260913">
+(function(){
+  'use strict';
+
+  const STAFF_EMAIL = 'swami@gmail.com';
+
+  function val(id){
+    const el = document.getElementById(id);
+    return el ? String(el.value || '').trim() : '';
+  }
+
+  window.handleStaffLogin = async function(e){
+    if(e) e.preventDefault();
+
+    const email = val('staffUserInput').toLowerCase();
+    const password = document.getElementById('staffPassInput')?.value || '';
+
+    // Correct single-escaped JavaScript regex.
+    if(!/^\S+@\S+\.\S+$/.test(email)){
+      alert('Enter the Staff/Admin email address.');
+      return false;
+    }
+    if(email !== STAFF_EMAIL){
+      alert('Invalid Staff/Admin credentials. Please use the authorized Staff/Admin email.');
+      return false;
+    }
+    if(!password){
+      alert('Enter the Staff/Admin password.');
+      return false;
+    }
+
+    const s = window.gcSupabase;
+    if(!s || !s.auth || typeof s.auth.signInWithPassword !== 'function'){
+      alert('Secure Staff login is unavailable because Supabase is not connected.');
+      return false;
+    }
+
+    const btn = document.querySelector('#staffLoginModal button[type="submit"]');
+    const oldText = btn ? btn.textContent : 'LOGIN';
+
+    try{
+      if(btn){
+        btn.disabled = true;
+        btn.textContent = 'SIGNING IN...';
+      }
+
+      const result = await s.auth.signInWithPassword({
+        email: STAFF_EMAIL,
+        password: password
+      });
+
+      if(result?.error) throw result.error;
+
+      const user = result?.data?.user;
+      if(!user || String(user.email || '').toLowerCase() !== STAFF_EMAIL){
+        throw new Error('Unauthorized Staff account.');
+      }
+
+      if(user.email_confirmed_at === null || user.email_confirmed_at === undefined){
+        throw new Error('Please verify the Staff/Admin email first.');
+      }
+
+      localStorage.setItem('is_staff_logged', 'true');
+      localStorage.setItem('gc_staff_supabase_auth', 'true');
+
+      if(typeof window.closeStaffLoginModal === 'function'){
+        window.closeStaffLoginModal();
+      }else{
+        document.getElementById('staffLoginModal')?.classList.add('hidden');
+      }
+
+      if(typeof window.checkStaffSessionState === 'function'){
+        window.checkStaffSessionState();
+      }
+      if(typeof window.renderAdminQueue === 'function'){
+        window.renderAdminQueue();
+      }
+
+      alert('Staff Login Successful!');
+    }catch(err){
+      // Do not turn a failed login into a fake logged-in state.
+      localStorage.removeItem('gc_staff_supabase_auth');
+      localStorage.removeItem('is_staff_logged');
+      try{ await s.auth.signOut(); }catch(_){}
+
+      const msg = err?.message || String(err);
+      alert('Staff Login failed:\n\n' + msg);
+    }finally{
+      if(btn){
+        btn.disabled = false;
+        btn.textContent = oldText;
+      }
+    }
+
+    return false;
+  };
 })();
 </script>
 
