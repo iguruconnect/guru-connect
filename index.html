@@ -5628,6 +5628,7 @@ body:not(.gc-dashboard-page) #currentUserBadge .gc-account-logout{
 <input class="w-full border rounded-xl p-3 text-sm bg-slate-50" id="staffUserInput" placeholder="Username" required="" type="text"/>
 <input class="w-full border rounded-xl p-3 text-sm bg-slate-50" id="staffPassInput" placeholder="Password" required="" type="password"/>
 <button class="w-full bg-[#CC0000] text-white font-black py-3 rounded-xl text-xs" type="submit">LOGIN</button>
+<button type="button" id="gcStaffBackWebsiteBtn" class="w-full bg-slate-100 text-slate-700 font-bold py-3 rounded-xl text-xs border border-slate-200 hover:bg-slate-200 transition">← BACK TO WEBSITE</button>
 </form>
 </div>
 </div>
@@ -13105,6 +13106,9 @@ setInterval(installAdminUserPanel,1500);
 })();
 </script>
 
+
+
+
 </body>
 
 <style id="gc-final-load-hero-transfer-pdf-fix">
@@ -14994,5 +14998,137 @@ body:not(.gc-dashboard-page) .gc-account-logout{display:none!important;}
       openRole(role);
     }
   },true);
+})();
+</script>
+
+<script id="gc-ultimate-admin-login-and-back-fix">
+(function(){
+  'use strict';
+
+  const STAFF_EMAIL = 'swami@gmail.com';
+
+  function get(id){
+    return document.getElementById(id);
+  }
+
+  function closeLogin(){
+    ['staffLoginModal','loginModal'].forEach(function(id){
+      const m=get(id);
+      if(m){
+        m.classList.add('hidden');
+        m.style.display='';
+      }
+    });
+    try{ window.closePublicMenu?.(); }catch(_){}
+    try{ window.closeNavMenu?.(); }catch(_){}
+    document.body.classList.remove('modal-open','overflow-hidden');
+  }
+
+  window.closeStaffLoginModal = closeLogin;
+
+  window.openStaffLoginModal = function(){
+    const m=get('staffLoginModal');
+    if(!m) return;
+    m.classList.remove('hidden');
+    m.style.display='flex';
+    try{ window.closePublicMenu?.(); }catch(_){}
+    try{ window.closeNavMenu?.(); }catch(_){}
+    setTimeout(function(){ get('staffUserInput')?.focus(); },50);
+  };
+
+  window.handleStaffLogin = async function(e){
+    if(e) e.preventDefault();
+
+    const email=String(get('staffUserInput')?.value || '').trim().toLowerCase();
+    const password=String(get('staffPassInput')?.value || '');
+
+    if(!/^\S+@\S+\.\S+$/.test(email)){
+      alert('Enter the Staff/Admin email address.');
+      return false;
+    }
+    if(email !== STAFF_EMAIL){
+      alert('Invalid Staff/Admin credentials.');
+      return false;
+    }
+    if(!password){
+      alert('Enter the Staff/Admin password.');
+      return false;
+    }
+
+    const s=window.gcSupabase || window.GC_SUPABASE_CLIENT;
+    if(!s || !s.auth || typeof s.auth.signInWithPassword !== 'function'){
+      alert('Secure Staff login is unavailable because Supabase is not connected.');
+      return false;
+    }
+
+    const btn=get('staffLoginModal')?.querySelector('button[type="submit"]');
+    const oldText=btn?.textContent || 'LOGIN';
+
+    try{
+      if(btn){ btn.disabled=true; btn.textContent='SIGNING IN...'; }
+
+      const result=await s.auth.signInWithPassword({
+        email:email,
+        password:password
+      });
+
+      if(result?.error) throw result.error;
+
+      const user=result?.data?.user;
+      if(!user || String(user.email || '').trim().toLowerCase() !== STAFF_EMAIL){
+        throw new Error('Unauthorized Staff/Admin account.');
+      }
+
+      localStorage.setItem('is_staff_logged','true');
+      localStorage.setItem('gc_staff_supabase_auth','true');
+
+      closeLogin();
+
+      try{ window.checkStaffSessionState?.(); }catch(_){}
+      try{ window.renderAdminQueue?.(); }catch(_){}
+      try{ window.refreshUI?.(); }catch(_){}
+    }catch(err){
+      localStorage.removeItem('is_staff_logged');
+      localStorage.removeItem('gc_staff_supabase_auth');
+      try{ await s.auth.signOut(); }catch(_){}
+      alert('Staff/Admin Login failed:\n\n' + (err?.message || String(err)));
+    }finally{
+      if(btn){ btn.disabled=false; btn.textContent=oldText; }
+    }
+    return false;
+  };
+
+  // Backdrop click = return to website.
+  function bindModalBack(){
+    const m=get('staffLoginModal');
+    if(!m || m.dataset.gcUltimateBackBound==='1') return;
+    m.dataset.gcUltimateBackBound='1';
+
+    m.addEventListener('click',function(e){
+      if(e.target===m) closeLogin();
+    },true);
+
+    get('gcStaffBackWebsiteBtn')?.addEventListener('click',function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      closeLogin();
+    },true);
+  }
+
+  // ESC also returns to the website.
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){
+      const m=get('staffLoginModal');
+      if(m && !m.classList.contains('hidden')) closeLogin();
+    }
+  },true);
+
+  // Rebind after DOM is ready and after existing dynamic menu code has run.
+  function init(){ bindModalBack(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',init);
+  else init();
+  window.addEventListener('load',init);
+  setTimeout(init,300);
+  setTimeout(init,1000);
 })();
 </script>
