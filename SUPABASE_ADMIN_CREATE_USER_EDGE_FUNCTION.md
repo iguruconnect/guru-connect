@@ -36,3 +36,38 @@ After OTP verification, the page reveals:
 The OTP is never used as the password.
 
 After uploading the package to GitHub Pages, make sure `reset-password.html`, `guru-connect-logo.png`, and `guru-connect-email-hero.jpg` are in the same root folder as `index.html`.
+
+
+## Admin CREATE USER ACCOUNT (added 13 Sep 2026)
+
+The Admin Control Dashboard now contains **CREATE USER ACCOUNT**.
+
+It creates a real Supabase Authentication account plus the matching `profiles` and `student_profiles` / `tutor_profiles` record. The initial password is chosen by Admin and the new account is email-confirmed so the user can login immediately.
+
+### Deploy the function
+
+The package now includes:
+
+`supabase/functions/admin-create-user/index.ts`
+
+Deploy it in the Supabase project with the exact function name:
+
+`admin-create-user`
+
+The function uses the Supabase `SUPABASE_SERVICE_ROLE_KEY` only inside the Edge Function. **Never paste that key into `index.html`.**
+
+By default the existing Staff Admin `swami@gmail.com` is authorized. If you use another admin email, set the Edge Function environment variable:
+
+`GC_ADMIN_EMAILS=admin1@example.com,admin2@example.com`
+
+You can also authorize an Auth user by setting their `app_metadata.role` to `admin`, `staff_admin`, or `super_admin`.
+
+### Password reset compatibility fix
+
+`reset-password.html` now supports both:
+1. the existing OTP reset flow using `{{ .Token }}` from the Supabase Reset Password email template; and
+2. the normal Supabase recovery link/session flow.
+
+This means the password reset page can work even if the Supabase email template is using a normal recovery link rather than the custom OTP presentation.
+
+For the branded OTP email, keep using `SUPABASE_RECOVERY_EMAIL_OTP_TEMPLATE.html` as the Supabase Auth **Reset Password** email template.
