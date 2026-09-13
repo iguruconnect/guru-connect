@@ -12845,6 +12845,48 @@ window.GC_PROFILE_COINS_REFRESH=paint;
 })();
 </script>
 
+
+<style id="gc-HARD-FINAL-ONE-LOGIN">
+/* HARD FINAL: exactly ONE Login entry in the MENU */
+#publicNavbarLinks .gc-menu-student,
+#publicNavbarLinks .gc-menu-tutor,
+#publicNavbarLinks .gc-menu-staff,
+#publicNavbarLinks .gc-menu-login-student,
+#publicNavbarLinks .gc-menu-login-tutor,
+#publicNavbarLinks .gc-menu-login-staff,
+#publicNavbarLinks .gc-login-menu-group { display:none!important; }
+#gcSingleUnifiedLogin { display:flex!important; align-items:center; justify-content:center; width:100%; box-sizing:border-box; }
+</style>
+<script id="gc-HARD-FINAL-ONE-LOGIN-JS">
+(function(){
+  'use strict';
+  function makeOne(){
+    const m=document.getElementById('publicNavbarLinks');
+    if(!m)return;
+    const old=m.querySelector('#gcSingleUnifiedLogin');
+    if(old && old.parentNode===m)return;
+    const b=document.createElement('a');
+    b.id='gcSingleUnifiedLogin';
+    b.href='javascript:void(0)';
+    b.className='gc-menu-login';
+    b.textContent='🔐  LOGIN';
+    b.setAttribute('onclick','openLoginModal();closeNavMenu();return false;');
+    m.appendChild(b);
+  }
+  function start(){
+    makeOne();
+    const m=document.getElementById('publicNavbarLinks');
+    if(!m)return;
+    const ob=new MutationObserver(function(){
+      if(!m.querySelector('#gcSingleUnifiedLogin'))makeOne();
+    });
+    ob.observe(m,{childList:true,subtree:true});
+    [100,500,1000,2000,4000].forEach(t=>setTimeout(makeOne,t));
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
+})();
+</script>
 </body>
 
 <style id="gc-final-load-hero-transfer-pdf-fix">
