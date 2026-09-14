@@ -16366,3 +16366,41 @@ window.addEventListener('load',()=>setTimeout(boot,900));
      tutor form statically; a few scheduled retries are sufficient. */
 })();
 </script>
+
+<!-- GURU CONNECT V14.1: LOGGED-IN USER KINGDOM BUTTON -->
+<style id="gc-v141-kingdom-button">
+#gcV141KingdomBtn{position:fixed;right:18px;bottom:18px;z-index:2147483000;display:none;border:0;border-radius:999px;padding:13px 18px;background:#123b8f;color:#fff;font:900 12px Inter,Arial,sans-serif;box-shadow:0 12px 30px rgba(15,23,42,.28);cursor:pointer}
+#gcV141KingdomBtn:hover{transform:translateY(-1px)}
+@media(max-width:600px){#gcV141KingdomBtn{right:10px;bottom:10px;padding:11px 14px;font-size:11px}}
+</style>
+<button id="gcV141KingdomBtn" type="button">👑 MY DASHBOARD / KINGDOM</button>
+<script id="gc-v141-kingdom-button-js">
+(function(){
+  'use strict';
+  const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvDqDpisv76XrdsyFhiw_IpostIDu';
+  let client=null;
+  function getClient(){try{return window.gcSupabase||window.supabase?.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}catch(_){return null}}
+  async function sync(){
+    const b=document.getElementById('gcV141KingdomBtn');if(!b)return;
+    const s=getClient();if(!s)return;
+    try{
+      const q=await s.auth.getSession(); const u=q.data?.session?.user;
+      if(!u){b.style.display='none';return}
+      const [st,tr]=await Promise.all([
+        s.from('student_profiles').select('id,name').eq('user_id',u.id).maybeSingle(),
+        s.from('tutor_profiles').select('id,name').eq('user_id',u.id).maybeSingle()
+      ]);
+      const profile=st.data||tr.data;
+      if(profile){
+        const r=st.data?'student':'tutor';
+        localStorage.setItem('active_user_role',r);localStorage.setItem('active_user_profile_id',profile.id);localStorage.setItem('active_user_id',u.id);localStorage.setItem('active_user_name',profile.name||u.email?.split('@')[0]||'User');
+        b.style.display='block';b.onclick=()=>location.href='dashboard.html';
+      }else b.style.display='none';
+    }catch(_){b.style.display='none'}
+  }
+  window.addEventListener('load',()=>{setTimeout(sync,500);setTimeout(sync,1800)});
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)sync()});
+  setInterval(sync,8000);
+})();
+</script>
+
