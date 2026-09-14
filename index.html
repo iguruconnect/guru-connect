@@ -12774,7 +12774,7 @@ async function allRows(){
 async function peopleMap(){
  const s=S(); if(!s) throw new Error('Supabase is not connected.');
  const m={};
- const [t,st]=await Promise.all([s.from('tutor_profiles').select('id,name,full_name,email,phone,mobile,mobile_number'),s.from('student_profiles').select('id,name,full_name,email,phone,mobile,mobile_number')]);
+ const [t,st]=await Promise.all([s.from('tutor_profiles').select('*'),s.from('student_profiles').select('*')]);
  if(t.error)console.warn('Tutor profile map:',t.error); if(st.error)console.warn('Student profile map:',st.error);
  ;(t.data||[]).forEach(x=>m[String(x.id)]={...x,__role:'tutor'});(st.data||[]).forEach(x=>m[String(x.id)]={...x,__role:'student'}); return m;
 }
@@ -13210,7 +13210,7 @@ async function call(action,payload={}){const t=await token();const r=await fetch
 function ensureTop(){const d=dash();if(!d||d.classList.contains('hidden'))return;const card=d.querySelector('.bg-white');if(!card)return;let bar=document.getElementById('gcAdminWorkflowBar');if(!bar){bar=document.createElement('div');bar.id='gcAdminWorkflowBar';card.insertBefore(bar,card.firstChild)}bar.classList.add('gc-admin-v3-bar');bar.innerHTML='<button class="lr" type="button">🪙 LEARNING REQUEST / COIN APPROVAL</button><button class="usr" type="button">🔎 FIND USER / RESET PASSWORD</button><button class="crt" type="button">👤 CREATE USER</button><button class="ref" type="button">↻ REFRESH</button>';bar.querySelector('.lr').onclick=()=>{ensureEscrow();document.getElementById('gcAdminLearningEscrow')?.scrollIntoView({behavior:'smooth',block:'start'});renderEscrow()};bar.querySelector('.usr').onclick=()=>document.getElementById('gcAdminPasswordReset')?.scrollIntoView({behavior:'smooth',block:'start'});bar.querySelector('.crt').onclick=()=>document.getElementById('gcAdminCreateUser')?.scrollIntoView({behavior:'smooth',block:'start'});bar.querySelector('.ref').onclick=()=>{renderEscrow();try{window.renderAdminQueue?.()}catch(_){} }}
 function ensureEscrow(){const d=dash();if(!d)return;const card=d.querySelector('.bg-white');if(!card)return;let h=document.getElementById('gcAdminLearningEscrow');if(!h){h=document.createElement('section');h.id='gcAdminLearningEscrow';card.insertBefore(h,card.firstChild)}h.classList.add('gc-admin-v3')}
 async function renderEscrow(){const h=document.getElementById('gcAdminLearningEscrow');if(!h)return;h.innerHTML='<div class="gc-esc-head"><div><h3>🛡️ LEARNING REQUEST • COIN APPROVAL</h3><p>Loading secure Admin approval queue…</p></div></div>';try{const data=await call('learning_requests');const rows=Array.isArray(data.requests)?data.requests:[];const body=rows.map(r=>{const held=Number(r.coins_held||0),st=String(r.status||'OPEN'),out=String(r.student_outcome||'PENDING');const ready=held>0&&!!r.tutor_id&&(/SATISFIED|COMPLETED/i.test(out)||/TUTOR_COMPLETED|PENDING_ADMIN_APPROVAL|PENDING_ADMIN_REVIEW|COMPLETED|APPROVED/i.test(st));return '<tr><td><b>'+esc(r.request_code||r.id)+'</b><br>🪙 '+held+' HELD</td><td>'+esc(r.student_short_id||r.student_id||'—')+'</td><td>'+esc(r.tutor_short_id||r.tutor_id||'Not connected')+'</td><td>'+esc(r.course||'—')+' / '+esc(r.stream||'—')+'</td><td><b>'+esc(r.subject||'—')+'</b><br>'+esc(r.topic||'—')+'</td><td>'+esc(st.replaceAll('_',' '))+'</td><td>'+esc(out)+'</td><td>'+esc(r.issue||r.problem||'—')+'</td><td>'+(held>0&&ready?'<button class="gc-esc-approve" data-v3-approve="'+esc(r.id)+'">✓ APPROVE &amp; TRANSFER '+held+' 🪙</button> <button class="gc-esc-deny" data-v3-deny="'+esc(r.id)+'">✕ DENY / RETURN</button>':held>0?'<span class="gc-esc-hold">HELD — WAITING FOR COMPLETION / OUTCOME</span>':'<span class="gc-esc-ok">NO COINS HELD</span>')+'</td></tr>'}).join('');h.innerHTML='<div class="gc-esc-head"><div><h3>🛡️ LEARNING REQUEST • COIN APPROVAL</h3><p>Admin approval queue — held coins stay protected until decision.</p></div><div class="gc-esc-filter"><button class="gc-esc-refresh" type="button" id="gcV3Refresh">↻ REFRESH</button></div></div><div class="gc-esc-body"><div class="gc-esc-table"><table><thead><tr><th>Request</th><th>Student</th><th>Tutor</th><th>Course / Stream</th><th>Subject / Topic</th><th>Status</th><th>Outcome</th><th>Issue</th><th>ADMIN ACTION</th></tr></thead><tbody>'+(body||'<tr><td colspan="9">No Learning Requests found.</td></tr>')+'</tbody></table></div></div>';h.querySelector('#gcV3Refresh').onclick=renderEscrow;h.querySelectorAll('[data-v3-approve]').forEach(b=>b.onclick=()=>decide(b.dataset.v3Approve,'APPROVE'));h.querySelectorAll('[data-v3-deny]').forEach(b=>b.onclick=()=>decide(b.dataset.v3Deny,'DENY'))}catch(e){h.innerHTML='<div class="gc-esc-error">Coin Approval could not load: '+esc(e.message||e)+'<br><button type="button" id="gcV3Retry" class="gc-esc-refresh">RETRY</button></div>';h.querySelector('#gcV3Retry')?.addEventListener('click',renderEscrow)}}
-async function decide(id,decision){let note='';if(decision==='DENY')note=prompt('Reason for denial / support message (optional):','Coins denied. Please contact Customer Support.')??'';try{await call('decide_learning_request',{request_id:String(id),decision,note:String(note).slice(0,1000)});alert(decision==='APPROVE'?'Approved. The held coins were released to the Tutor.':'Denied. The Admin decision was recorded.');await renderEscrow()}catch(e){alert('Admin decision failed: '+(e.message||e)+'\n\nIf this mentions gc_coin_wallets.role, run the included final SQL once in Supabase.')}}
+async function decide(id,decision){const s=S();if(!s)throw new Error('Supabase is not connected.');let note='';if(decision==='DENY')note=prompt('Reason for denial / support message (optional):','Coins denied. Please contact Customer Support.')??'';try{const q=await s.rpc('gc_admin_decide_learning_request',{p_request_id:String(id),p_decision:decision,p_note:String(note).slice(0,1000)});if(q.error)throw q.error;alert(decision==='APPROVE'?'Approved. The held coins were released to the Tutor.':'Denied. The Admin decision was recorded.');await renderEscrow()}catch(e){alert('Admin decision failed: '+(e.message||e))}}
 async function findUser(term){return (await call('find_users',{term})).users||[]}
 async function adminFind(){const input=document.getElementById('gcAdminResetSearch'),st=document.getElementById('gcAdminResetStatus'),res=document.getElementById('gcAdminResetResult');const term=clean(input?.value);if(!term){if(st)st.textContent='Enter registered email or phone number.';return}if(st)st.textContent='Searching all registered Auth + profile accounts…';if(res)res.innerHTML='<div class="p-3 text-sm text-slate-500">Searching securely…</div>';try{const users=await findUser(term);window.__gcAdminResetUsers=users;if(st)st.textContent=users.length?users.length+' registered account(s) found.':'No registered Student/Tutor account found.';if(res)res.innerHTML=users.length?users.map((r,i)=>'<div class="p-4 rounded-2xl bg-white border border-slate-200 mb-3"><div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"><div><div class="font-black">'+esc(r.name||'User')+' <span class="text-xs text-blue-700">'+esc(String(r.role||'').toUpperCase())+'</span></div><div class="text-xs text-slate-500 mt-1">Email: '+esc(r.email||'Not provided')+' • Phone: '+esc(r.phone||'Not provided')+'</div></div><button type="button" class="gc-admin-reset-open bg-blue-600 hover:bg-blue-700 text-white font-black px-4 py-3 rounded-xl text-xs" data-index="'+i+'">RESET PASSWORD</button></div><div class="gc-admin-reset-editor hidden mt-4 pt-4 border-t border-slate-200" data-editor="'+i+'"><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><input type="password" class="gc-admin-newpass border border-slate-300 rounded-xl p-3 text-sm font-bold" minlength="8" placeholder="New password (min 8 characters)" autocomplete="new-password"><input type="password" class="gc-admin-newpass2 border border-slate-300 rounded-xl p-3 text-sm font-bold" minlength="8" placeholder="Confirm new password" autocomplete="new-password"></div><button type="button" class="gc-admin-reset-confirm mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black px-5 py-3 rounded-xl text-xs" data-index="'+i+'">SET NEW PASSWORD</button><div class="gc-admin-reset-editor-msg mt-2 text-xs font-bold text-slate-500"></div></div></div>').join(''):'<div class="p-4 rounded-xl bg-white border text-sm text-slate-500">No matching registered account found.</div>'}catch(e){if(st)st.textContent='Search failed: '+(e.message||e);if(res)res.innerHTML='<div class="p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700 font-bold">'+esc(e.message||e)+'</div>'}}
 async function resetUser(index,btn){const u=window.__gcAdminResetUsers?.[Number(index)],ed=document.querySelector('.gc-admin-reset-editor[data-editor="'+index+'"]');if(!u||!ed)return;const p=ed.querySelector('.gc-admin-newpass')?.value||'',p2=ed.querySelector('.gc-admin-newpass2')?.value||'',msg=ed.querySelector('.gc-admin-reset-editor-msg');if(p.length<8){msg.textContent='Password must be at least 8 characters.';return}if(p!==p2){msg.textContent='Passwords do not match.';return}btn.disabled=true;btn.textContent='UPDATING…';try{await call('reset_password',{user_id:u.user_id,email:u.email,password:p});msg.textContent='✓ Password reset successfully. User can login now.';ed.querySelector('.gc-admin-newpass').value='';ed.querySelector('.gc-admin-newpass2').value=''}catch(e){msg.textContent='Reset failed: '+(e.message||e);alert('Password reset failed:\n\n'+(e.message||e))}finally{btn.disabled=false;btn.textContent='SET NEW PASSWORD'}}
@@ -13686,103 +13686,9 @@ function boot(){showOtp();bindPay();}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.addEventListener('load',boot);setTimeout(boot,800);setTimeout(boot,2000);
 })();
 </script>
-</body>
-<style id="gc-final-load-hero-transfer-pdf-fix">
-/* Final stable hero: one real image, exact 1640:515 ratio, no crop and no duplicate background artwork. */
-.gc-beautiful-hero{height:auto!important;min-height:0!important;padding:0!important;overflow:hidden!important;background:#fff!important}
-.gc-beautiful-hero-inner{display:block!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important}
-.gc-beautiful-hero-inner>div:first-child{display:none!important}
-.gc-hero-art-wrap{display:block!important;width:100%!important;height:auto!important;min-height:0!important;margin:0!important;padding:0!important;overflow:hidden!important;background:#fff!important}
-.gc-hero-art{display:block!important;width:100%!important;max-width:none!important;height:auto!important;min-height:0!important;aspect-ratio:1640/515!important;object-fit:contain!important;object-position:center center!important;border:0!important;border-radius:0!important;box-shadow:none!important;margin:0!important;mask:none!important;-webkit-mask:none!important}
-@media(max-width:600px){.gc-hero-art{width:100%!important;height:auto!important;aspect-ratio:1640/515!important}.gc-hero-art-wrap{height:auto!important;min-height:0!important}.gc-beautiful-hero-inner{height:auto!important}}
-/* Transfer destination/source column. */
-.gc-transfer-cell{font-weight:900;white-space:nowrap}
-</style>
-<script id="gc-final-transfer-display-fix">
-(function(){
- 'use strict';
- const S=()=>window.gcSupabase||null;
- const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
- const roleName=r=>String(r||'').toLowerCase()==='student'?'STUDENT':'TUTOR';
- async function people(){const s=S();if(!s)return{};const m={};try{const [t,st]=await Promise.all([s.from('tutor_profiles').select('id,name,full_name'),s.from('student_profiles').select('id,name,full_name')]);(t.data||[]).forEach(x=>m[String(x.id)]={...x,role:'TUTOR'});(st.data||[]).forEach(x=>m[String(x.id)]={...x,role:'STUDENT'});}catch(e){}return m}
- function transferLabel(r,p){const name=p?.name||p?.full_name||'Unknown User';const type=String(r?.transaction_type||r?.type||'').toLowerCase();const amt=Number(r?.amount||0);if(type.includes('learning')||r?.learning_request_id||r?.request_id)return amt<0?'HELD FROM: '+name:'REWARD TO: '+name;if(type.includes('staff')||type.includes('admin')||type.includes('adjust'))return amt>=0?'ADMIN TRANSFER → '+name:'ADMIN DEDUCTION ← '+name;return amt>=0?'CREDIT TO: '+name:'DEBIT FROM: '+name}
- async function patchMaster(){const host=document.getElementById('gcMasterLedgerBody');if(!host||!window.__gcMasterLedgerRows)return;const map=window.__gcMasterPeople||await people();const rows=window.__gcMasterLedgerRows;const table=host.querySelector('table');if(!table)return;const th=table.querySelector('thead tr');if(th&&!th.querySelector('.gc-transfer-th')){const x=document.createElement('th');x.className='gc-transfer-th';x.textContent='TRANSFER TO / FROM';th.insertBefore(x,th.children[7]||null);}
- const trs=table.querySelectorAll('tbody tr');trs.forEach((tr,i)=>{const r=rows[i];if(!r)return;if(!tr.querySelector('.gc-transfer-cell')){const td=document.createElement('td');td.className='gc-transfer-cell';td.textContent=transferLabel(r,map[String(r.profile_id)]);tr.insertBefore(td,tr.children[7]||null)}})}
- async function patchSelected(){const host=document.getElementById('gcAuthSelected');if(!host)return;const table=host.querySelector('.gc-auth-ledger table');if(!table||table.dataset.transferPatched)return;table.dataset.transferPatched='1';const th=table.querySelector('thead tr');if(th){const x=document.createElement('th');x.textContent='TRANSFER TO / FROM';th.insertBefore(x,th.children[4]||null)}const rows=window.__gcCurrentLedgerRows||[];const map=await people();table.querySelectorAll('tbody tr').forEach((tr,i)=>{const r=rows[i];if(!r)return;const td=document.createElement('td');td.className='gc-transfer-cell';td.textContent=transferLabel(r,map[String(r.profile_id)]);tr.insertBefore(td,tr.children[4]||null)})}
- setInterval(()=>{patchMaster();patchSelected()},1200);
-})();
-</script>
-<!-- GURU CONNECT: FINAL RECIPIENT-CONTROLLED CONNECTION WORKFLOW -->
-<script id="gc-final-connection-request-workflow">
-(function(){
-'use strict';
-function cloud(){return window.gcSupabase||null} function myRole(){return String(localStorage.getItem('active_user_role')||'').toLowerCase()} function myId(){return String(localStorage.getItem('active_user_profile_id')||'')}
-function notice(title,msg,icon){if(typeof gcV4Popup==='function'){gcV4Popup(title,msg,'success');return}if(typeof showProtectedPopup==='function'){showProtectedPopup(title,msg,icon||'fa-link');return}alert(title+'\n\n'+msg)}
-async function send(targetId,targetRole,learningRequestId){const s=cloud();if(!s)return alert('Secure connection is unavailable.');const role=myRole();if(!['student','tutor'].includes(role)||!myId())return alert('Please login as a registered Student or Tutor first.');const r=await s.rpc('gc_send_connection_request',{p_target_profile_id:String(targetId),p_target_role:targetRole,p_learning_request_id:learningRequestId?String(learningRequestId):null,p_message:learningRequestId?'Tutor would like to connect regarding your Learning Request.':'Connection request from GURU CONNECT member.'});if(r.error){notice('CONNECTION NOT SENT',r.error.message||'Please try again.','fa-circle-exclamation');return false}notice('CONNECTION REQUEST SENT',role==='tutor'?'Your request has been sent to the Student. The Student has complete freedom to ACCEPT or REJECT it.':'Your request has been sent to the Tutor. The Tutor must accept it before the private connection/chat becomes active.','fa-paper-plane');return true}
-window.GC_sendCloudConnectionRequest=send;
-window.connectWithTutor=async function(tutorId){const t=(typeof tutorDirectoryList!=='undefined')?tutorDirectoryList.find(x=>String(x.id)===String(tutorId)):null;if(!t)return;if(myRole()!=='student'){if(typeof showProtectedPopup==='function')showProtectedPopup('STUDENT ACCESS REQUIRED','Only a registered Student can send a connection request to a Tutor.','fa-user-graduate');else alert('Please login as a Student.');return}const real=typeof isRealTutor==='function'?isRealTutor(t):(t.isDummy===false);if(!real){notice('TUTOR CURRENTLY UNAVAILABLE','This profile is a pre-listed/illustrative profile and cannot receive a live connection request yet.','fa-clock');return}await send(t.id,'tutor',null)};
-window.connectWithStudent=async function(studentId){const st=(typeof studentDirectoryList!=='undefined')?studentDirectoryList.find(x=>String(x.id)===String(studentId)):null;if(!st)return;if(myRole()!=='tutor'){if(typeof showProtectedPopup==='function')showProtectedPopup('TUTOR ACCESS REQUIRED','Only a registered Tutor can send a connection request to a Student.','fa-user-tie');else alert('Please login as a Tutor.');return}const real=typeof isRealStudent==='function'?isRealStudent(st):(st.isDummy===false);if(!real){notice('STUDENT CURRENTLY UNAVAILABLE','This profile is a pre-listed/illustrative profile and cannot receive a live connection request yet.','fa-clock');return}await send(st.id,'student',null)};
-})();
-</script>
 
-<script id="gc-admin-create-user-20260913">
-(function(){
-  'use strict';
-  const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
-  const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
-  const FN_URL=SUPABASE_URL+'/functions/v1/admin-create-user';
-  const $=id=>document.getElementById(id);
-  const S=()=>window.gcSupabase||(window.supabase&&window.supabase.createClient?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null);
-  function status(t,ok){const x=$('gcCreateUserStatus');if(x){x.textContent=t;x.style.color=ok?'#047857':'#b91c1c';}}
-  function clearForm(){['gcCreateName','gcCreateEmail','gcCreatePhone','gcCreatePassword','gcCreatePassword2'].forEach(id=>{const x=$(id);if(x)x.value=''});status('',true);}
-  async function createUser(){
-    if(localStorage.getItem('is_staff_logged')!=='true')return alert('Please login as Staff/Admin first.');
-    const role=String($('gcCreateRole')?.value||'student').toLowerCase();
-    const name=String($('gcCreateName')?.value||'').trim();
-    const email=String($('gcCreateEmail')?.value||'').trim().toLowerCase();
-    const phone=String($('gcCreatePhone')?.value||'').trim();
-    const password=String($('gcCreatePassword')?.value||'');
-    const password2=String($('gcCreatePassword2')?.value||'');
-    if(!['student','tutor'].includes(role))return alert('Select Student or Tutor.');
-    if(!name)return alert('Enter the user name.');
-    if(!/^\S+@\S+\.\S+$/.test(email))return alert('Enter a valid email address.');
-    if(password.length<8)return alert('Password must be at least 8 characters.');
-    if(password!==password2)return alert('Passwords do not match.');
-    const s=S();if(!s)return alert('Supabase is not connected.');
-    const btn=$('gcCreateUserBtn');if(btn){btn.disabled=true;btn.textContent='CREATING…';}
-    status('Creating the real Supabase Auth account and profile…',true);
-    try{
-      // Ensure the real Supabase Staff session exists before calling the protected Edge Function.
-      // The old implementation only checked getSession(), which failed when the browser had
-      // the local Staff flag but no active Supabase Auth session.
-      try{ if(typeof window.ensureStaffCloud==='function') await window.ensureStaffCloud(); }catch(_){}
-      const sess=await s.auth.getSession();
-      const token=sess.data?.session?.access_token;
-      if(!token)throw new Error('Your Staff/Admin Supabase session is missing. Please login again so the secure Staff cloud session can be created.');
-      const r=await fetch(FN_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({role,name,email,phone,password})});
-      let data=null;try{data=await r.json()}catch(_){}
-      if(!r.ok)throw new Error(data?.error||data?.message||('Server returned HTTP '+r.status));
-      status('✓ User created successfully. The account can now login on GURU CONNECT.',true);
-      alert('User account created successfully.\\n\\nRole: '+(role==='tutor'?'Tutor':'Student')+'\\nEmail: '+email+'\\n\\nThe user can login immediately with the password you created.');
-      clearForm();
-      try{window.checkStaffSessionState?.();window.renderAdminQueue?.()}catch(_){}
-    }catch(e){
-      console.error('Admin create user failed:',e);
-      status('Creation failed: '+(e.message||e),false);
-      alert('User creation failed:\\n\\n'+(e.message||e)+'\\n\\nIf this says "Failed to fetch", deploy the included Supabase Edge Function: admin-create-user.');
-    }finally{if(btn){btn.disabled=false;btn.textContent='CREATE USER ACCOUNT';}}
-  }
-  function bind(){
-    $('gcCreateUserBtn')?.addEventListener('click',createUser);
-    $('gcCreateUserClearBtn')?.addEventListener('click',clearForm);
-    ['gcCreatePassword','gcCreatePassword2'].forEach(id=>$(id)?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();createUser()}}));
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});else bind();
-  window.GC_ADMIN_CREATE_USER={create:createUser,clear:clearForm};
-})();
-</script>
+<!-- V16.2 relocated final patches -->
 
-</html>
 <!-- =========================================================
      GURU CONNECT — HORIZONTAL SIGNATURE PROFILE CARDS
      Final visual layer. Does not modify Admin/Edit/Payment logic.
@@ -14984,7 +14890,7 @@ function post3(){if(role3()!=='student')return '';return `<div class="gc-lr3-car
 async function syncRole3(){const s=S();if(!s)return role3();try{const sess=await s.auth.getSession();const u=sess?.data?.session?.user;if(!u)return role3();const email=String(u.email||'').toLowerCase();let role=role3();let pid=profileId3();if(!pid||!['student','tutor'].includes(role)){const [st,tr]=await Promise.all([s.from('student_profiles').select('id,name,email').eq('user_id',u.id).limit(1).maybeSingle(),s.from('tutor_profiles').select('id,name,email').eq('user_id',u.id).limit(1).maybeSingle()]);if(st.data){role='student';pid=st.data.id}else if(tr.data){role='tutor';pid=tr.data.id}if(role&&pid){localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_profile_id',pid);localStorage.setItem('active_user_id',u.id);localStorage.setItem('active_user_email',email);localStorage.setItem('active_user_name',(st.data?.name||tr.data?.name||email.split('@')[0]));}}return role3()}catch(e){console.warn('Learning Request auth sync failed',e);return role3()}}
 async function render3(){const host=document.getElementById('gcCLV2Content');if(!host)return;await syncRole3();host.innerHTML=page3();document.getElementById('gcLR3Post').innerHTML=post3();const rows=await load3();document.getElementById('gcLR3List').innerHTML=rows.length?rows.map(card3).filter(Boolean).join(''):'<div class="gc-lr3-card">No Learning Requests found.</div>'}
 function open3(){const m=document.getElementById('gcCLV2');if(!m)return; m.classList.add('gc-show');m.setAttribute('aria-hidden','false');render3()}
-async function postReq(){const s=S();if(!s)return alert('Secure connection is unavailable.');await syncRole3();if(role3()!=='student'){return alert('Please login as a registered Student using Email + Password first.');}const sess=await s.auth.getSession();if(!sess?.data?.session?.user)return alert('Your login session has expired. Please login again.');const subject=clean3(document.getElementById('gc3subject')?.value),issue=clean3(document.getElementById('gc3issue')?.value);if(!subject||!issue)return alert('Subject and Issue / Problem are required.');const deadline=clean3(document.getElementById('gc3deadline')?.value);if(!deadline)return alert('Please select a Learning Deadline.');if(new Date(deadline)<=new Date())return alert('Learning Deadline must be in the future.');const r=await s.rpc('gc_post_learning_request',{p_subject:subject,p_mode:'Online',p_topic:clean3(document.getElementById('gc3topic')?.value),p_stream:clean3(document.getElementById('gc3stream')?.value),p_course:clean3(document.getElementById('gc3course')?.value),p_problem:issue});if(r.error)return alert('Learning Request could not be posted: '+r.error.message);const id=r.data?.id||r.data?.request_id||r.data?.requestId;if(id){const d=await s.rpc('gc_set_learning_request_deadline',{p_request_id:id,p_deadline:new Date(deadline).toISOString()});if(d.error)await s.from('gc_learning_requests_v2').update({learning_deadline:new Date(deadline).toISOString()}).eq('id',id).eq('student_id',profileId3())}alert('Learning Request '+(r.data?.request_code||'created')+'. 100 coins are debited and HELD WITH ADMIN.');await render3()}
+async function postReq(){const s=S();if(!s)return alert('Secure connection is unavailable.');await syncRole3();if(role3()!=='student'){return alert('Please login as a registered Student using Email + Password first.');}const sess=await s.auth.getSession();if(!sess?.data?.session?.user)return alert('Your login session has expired. Please login again.');const subject=clean3(document.getElementById('gc3subject')?.value),issue=clean3(document.getElementById('gc3issue')?.value);if(!subject||!issue)return alert('Subject and Issue / Problem are required.');const deadline=clean3(document.getElementById('gc3deadline')?.value);if(!deadline)return alert('Please select a Learning Deadline.');if(new Date(deadline)<=new Date())return alert('Learning Deadline must be in the future.');const r=await s.rpc('gc_post_learning_request',{p_course:clean3(document.getElementById('gc3course')?.value),p_problem:issue,p_stream:clean3(document.getElementById('gc3stream')?.value),p_student_id:profileId3(),p_subject:subject,p_topic:clean3(document.getElementById('gc3topic')?.value)});if(r.error)return alert('Learning Request could not be posted: '+r.error.message);const id=r.data?.id||r.data?.request_id||r.data?.requestId;if(id){const d=await s.rpc('gc_set_learning_request_deadline',{p_request_id:id,p_deadline:new Date(deadline).toISOString()});if(d.error)await s.from('gc_learning_requests_v2').update({learning_deadline:new Date(deadline).toISOString()}).eq('id',id).eq('student_id',profileId3())}alert('Learning Request '+(r.data?.request_code||'created')+'. 100 coins are debited and HELD WITH ADMIN.');await render3()}
 async function accept3(id){const s=S();if(!s)return;const r=await s.rpc('gc_accept_learning_request',{p_request_id:id});if(r.error)return alert(r.error.message);alert('Connected to the Student. Coins remain on hold until completion and Student confirmation.');render3()}
 async function complete3(id){const s=S();if(!s)return;const r=await s.rpc('gc_tutor_complete_learning_request',{p_request_id:id});if(r.error)return alert(r.error.message);alert('Marked completed. Student must now confirm the outcome.');render3()}
 async function outcome3(id,outcome){const s=S();if(!s)return;const r=await s.rpc('gc_student_learning_request_outcome',{p_request_id:id,p_outcome:outcome});if(r.error)return alert(r.error.message);alert('Outcome submitted to Admin for review.');render3()}
@@ -16724,5 +16630,37 @@ function clean(){const nav=document.getElementById('publicNavbarLinks');if(!nav)
  items.forEach(([id,text,href])=>{const a=document.createElement('a');a.id=id;a.href=href;a.textContent=text;a.style.cssText='display:flex;align-items:center;width:100%;box-sizing:border-box;padding:11px 12px;margin:3px 0;border-radius:11px;font-weight:900;text-decoration:none;color:#334155;background:#fff;';nav.appendChild(a)});
 } function boot(){clean()} if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();setTimeout(clean,300);setTimeout(clean,1200);setTimeout(clean,2500);
  const obs=new MutationObserver(()=>{if(!document.getElementById('gcFinalStaff'))clean()});obs.observe(document.documentElement,{subtree:true,childList:true});
+})();
+</script>
+
+<script id="gc-v162-recovery-router">(function(){try{var path=location.pathname||'';var h=new URLSearchParams((location.hash||'').replace(/^#/,''));var q=new URLSearchParams(location.search||'');var isRecovery=h.get('type')==='recovery'||q.get('type')==='recovery'||!!h.get('access_token')||!!q.get('code');if(isRecovery&&!/reset-password\.html$/i.test(path)){var t=new URL('reset-password.html',location.href);t.search=location.search;t.hash=location.hash;location.replace(t.href)}}catch(e){}})();</script>
+<style id="gc-v162-menu-style">#publicNavbarLinks .gc-v162-auth-item{display:flex!important;align-items:center!important;width:100%!important;box-sizing:border-box!important;padding:13px 14px!important;border-radius:12px!important;margin:3px 0!important;text-decoration:none!important;font-size:12px!important;font-weight:950!important}.gc-v162-student{color:#155eef!important;background:#eff6ff!important}.gc-v162-tutor{color:#6d28d9!important;background:#f5f3ff!important}.gc-v162-staff{color:#065f46!important;background:#ecfdf5!important}.gc-v162-reset{color:#92400e!important;background:#fffbeb!important}.gc-v162-menu-label{display:block!important;margin:8px 0 4px!important;padding:0 4px!important;font-size:9px!important;font-weight:1000!important;letter-spacing:.12em!important;color:#64748b!important;text-transform:uppercase!important}</style><script id="gc-v162-menu-js">(function(){'use strict';function run(){var m=document.getElementById('publicNavbarLinks');if(!m)return;m.querySelectorAll('.gc-v162-auth-item,.gc-v162-menu-label,#gcFinalMenuLogin,#gcPublicPasswordReset,.gc-final-single-login,.gc-mobile-login-item,.gc-mobile-staff-item,.gc-menu-login-student,.gc-menu-login-tutor,.gc-menu-login-staff').forEach(function(x){x.remove()});m.querySelectorAll('a,button').forEach(function(a){var t=(a.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();if(t==='login'||t==='staff'||t==='staff login'||t==='staff/admin login'||t==='student login'||t==='tutor login'||t==='password reset'||t.indexOf('staff/admin login')>=0)a.remove()});var sep=document.createElement('div');sep.style.cssText='height:1px;background:#e2e8f0;margin:10px 0 7px';m.appendChild(sep);var lab=document.createElement('div');lab.className='gc-v162-menu-label';lab.textContent='MEMBER & STAFF ACCESS';m.appendChild(lab);[['gc-v162-student','🎓 STUDENT LOGIN','login-student.html'],['gc-v162-tutor','🎓 TUTOR LOGIN','login-tutor.html'],['gc-v162-staff','🛡️ STAFF / ADMIN LOGIN','login-staff.html'],['gc-v162-reset','🔑 PASSWORD RESET','forgot-password.html']].forEach(function(x){var a=document.createElement('a');a.className='gc-v162-auth-item '+x[0];a.href=x[2];a.textContent=x[1];m.appendChild(a)})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run()})();</script>
+</body></html>
+
+<script id="gc-v16-3-final-menu-cleanup">
+(function(){
+ 'use strict';
+ function clean(){
+  const root=document.querySelector('#publicMenuWrapper')||document.querySelector('.menu-panel')||document.body;
+  const bad=/^(LEARNING REQUESTS|STAFF\s*\/\s*ADMIN LOGIN|STAFF LOGIN)$/i;
+  const nodes=[...root.querySelectorAll('a,button')];
+  const seen={};
+  nodes.forEach(el=>{const t=(el.textContent||'').replace(/[🛡️📚🔐🔒🎓]/g,'').trim().replace(/\s+/g,' ');if(!bad.test(t))return;const k=t.toUpperCase();seen[k]=(seen[k]||0)+1;if(seen[k]>1)el.remove();});
+  let menu=root;
+  if(!document.querySelector('[data-gc-v163-login-student]')){
+    const a=document.createElement('a');a.href='login-student.html';a.textContent='🎓 STUDENT LOGIN';a.dataset.gcV163LoginStudent='1';a.style.cssText='display:block;padding:12px 10px;font-weight:900;text-decoration:none;color:#365579';menu.appendChild(a);
+  }
+  if(!document.querySelector('[data-gc-v163-login-tutor]')){
+    const a=document.createElement('a');a.href='login-tutor.html';a.textContent='🎓 TUTOR LOGIN';a.dataset.gcV163LoginTutor='1';a.style.cssText='display:block;padding:12px 10px;font-weight:900;text-decoration:none;color:#365579';menu.appendChild(a);
+  }
+  if(!document.querySelector('[data-gc-v163-login-staff]')){
+    const a=document.createElement('a');a.href='login-staff.html';a.textContent='🛡️ STAFF / ADMIN LOGIN';a.dataset.gcV163LoginStaff='1';a.style.cssText='display:block;padding:12px 10px;font-weight:900;text-decoration:none;color:#365579';menu.appendChild(a);
+  }
+  if(!document.querySelector('[data-gc-v163-reset]')){
+    const a=document.createElement('a');a.href='forgot-password.html';a.textContent='🔑 PASSWORD RESET';a.dataset.gcV163Reset='1';a.style.cssText='display:block;padding:12px 10px;font-weight:900;text-decoration:none;color:#365579';menu.appendChild(a);
+  }
+ }
+ const mo=new MutationObserver(()=>{clearTimeout(window.__gcMenuTimer);window.__gcMenuTimer=setTimeout(clean,30)});
+ document.addEventListener('DOMContentLoaded',()=>{clean();mo.observe(document.body,{childList:true,subtree:true});});
 })();
 </script>
