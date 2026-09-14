@@ -4630,7 +4630,23 @@ footer:before{
 /* FINAL GURU CONNECT LOGIN UI: one login entry only */
 #navLoginBtn,#navStaffBtn,.gc-login-menu-group,.gc-mobile-login-item,.gc-mobile-staff-item,.gc-menu-student,.gc-menu-tutor,.gc-menu-staff,.gc-menu-login-student,.gc-menu-login-tutor,.gc-menu-login-staff{display:none!important;}
 #publicNavbarLinks .gc-final-single-login{display:flex!important;align-items:center!important;justify-content:flex-start!important;width:100%;box-sizing:border-box;}
-</style></head>
+</style>
+<style id="gc-v126-email-qr-final-css">
+.gc-email-required-badge{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 10px;border-radius:12px;background:#eff6ff;color:#1d4ed8;border:2px solid #93c5fd;font-size:10px;font-weight:950;line-height:1.15;text-align:center;white-space:nowrap;}
+.gc-email-required-orange{background:#fff7ed;color:#c2410c;border-color:#fdba74;}
+.gc-email-verification-required-box{display:flex;align-items:flex-start;gap:12px;margin-top:4px;padding:13px 14px;border-radius:16px;background:#eff6ff;border:2px solid #93c5fd;color:#1e3a8a;}
+.gc-email-verification-required-orange{background:#fff7ed;border-color:#fdba74;color:#9a3412;}
+.gc-email-verification-required-box .gc-email-verification-icon{width:30px;height:30px;min-width:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#2563eb;color:#fff;font-weight:1000;}
+.gc-email-verification-required-orange .gc-email-verification-icon{background:#ea580c;}
+.gc-email-verification-required-box strong{display:block;font-size:12px;font-weight:1000;letter-spacing:.02em;}
+.gc-email-verification-required-box span{display:block;margin-top:3px;font-size:11px;line-height:1.45;font-weight:650;}
+#upiQrModal{display:none;}
+#upiQrModal.gc-qr-open{display:flex!important;visibility:visible!important;opacity:1!important;}
+#dynamicQrImg{display:block!important;width:280px!important;height:280px!important;max-width:82vw!important;max-height:55vh!important;object-fit:contain!important;background:#fff!important;border:10px solid #fff!important;}
+#stuOtpBox,#tutorOtpBox{display:none!important;}
+#gcTutorQrNote{display:block!important;font-size:12px;line-height:1.45;color:#475569;margin:0 auto 14px;word-break:break-word;}
+</style>
+</head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
 <!-- Header / Navbar -->
@@ -5008,9 +5024,9 @@ footer:before{
 <div class="text-center mb-6 sm:mb-8">
 <span class="bg-blue-100 text-brand-blue text-[10px] sm:text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider">Junior College Section</span>
 <h2 class="text-2xl sm:text-3xl font-black text-brand-dark mt-3 tracking-tight">Student Registration</h2>
-<p class="text-slate-600 text-xs sm:text-sm mt-1">Register to verify your identity with Email OTP via <strong class="text-brand-blue">support@guruconnnect.in</strong>.</p>
+<p class="text-slate-600 text-xs sm:text-sm mt-1">Email verification is <strong class="text-brand-blue">MANDATORY</strong>. After you submit, Supabase will send a verification link to your email. Your registration is completed only after you click that link.</p>
 </div>
-<form class="space-y-4 sm:space-y-5" onsubmit="handleStudentFormSubmit(event)">
+<form id="studentRegForm" class="space-y-4 sm:space-y-5" onsubmit="handleStudentFormSubmit(event)">
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Student Full Name *</label>
 <input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_name" placeholder="Enter your full name" required="" type="text"/>
@@ -5020,7 +5036,8 @@ footer:before{
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address *</label>
 <div class="flex gap-2">
 <input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_email" placeholder="student@gmail.com" required="" type="email"/>
-<button class="bg-brand-blue hover:bg-blue-700 text-white font-bold px-3 py-2 rounded-xl text-[10px] sm:text-xs shrink-0 shadow" onclick="sendEmailOtp('student')" type="button">Send OTP</button>
+<button class="bg-brand-blue hover:bg-blue-700 text-white font-black px-3 py-2 rounded-xl text-[10px] sm:text-xs shrink-0 shadow" onclick="sendEmailOtp('student'); return false;" type="button">SEND OTP</button>
+<span class="gc-email-required-badge">EMAIL VERIFICATION REQUIRED</span>
 </div>
 </div>
 <div>
@@ -5028,9 +5045,12 @@ footer:before{
 <input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_phone" placeholder="9876543210" required="" type="tel"/>
 </div>
 </div>
-<!-- Email OTP Verification Box for Student -->
-<div class="hidden bg-blue-50 border border-blue-200 p-3.5 rounded-xl space-y-2" id="stuOtpBox">
-<p class="text-[11px] font-bold text-brand-blue">Enter the 4-digit code sent from support@guruconnnect.in:</p>
+
+
+<div class="gc-email-verification-required-box"><div class="gc-email-verification-icon">✓</div><div><strong>EMAIL VERIFICATION IS COMPULSORY</strong><span>STEP 1: Verify this email with the EmailJS OTP below. STEP 2: After registration, check Inbox/Spam and click the official Supabase <b>Verify your email</b> link. Both checks are required.</span></div></div>
+<!-- EmailJS OTP verification: first gate before Supabase email verification -->
+<div class="bg-blue-50 border border-blue-200 p-3.5 rounded-xl space-y-2" id="stuOtpBox">
+<p class="text-[11px] font-black text-brand-blue">EMAILJS VERIFICATION — Click <b>SEND OTP</b>, then enter the 4-digit code sent to your email.</p>
 <div class="flex gap-2">
 <input class="w-32 border border-blue-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="stuEnteredOtp" maxlength="4" placeholder="1234" type="text"/>
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('student')" type="button">Verify OTP</button>
@@ -5323,7 +5343,7 @@ footer:before{
 <div class="text-center mb-6 sm:mb-8">
 <span class="bg-orange-100 text-brand-nagpurOrange text-[10px] sm:text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider">Tutor Pass</span>
 <h2 class="text-2xl sm:text-3xl font-black text-brand-dark mt-3 tracking-tight">Tutor Registration &amp; Payment</h2>
-<p class="text-slate-600 text-xs sm:text-sm mt-1">Review plan details, complete payment via UPI app, verify email via support@guruconnnect.in, and submit UTR.</p>
+<p class="text-slate-600 text-xs sm:text-sm mt-1">Review your plan, complete payment via UPI, then submit your details. <strong>Email verification is MANDATORY</strong> and your profile is completed only after you click the Supabase verification link.</p>
 </div>
 <!-- Side-by-side Structured Plan Cards with verizon@upi -->
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
@@ -5377,7 +5397,8 @@ footer:before{
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address *</label>
 <div class="flex gap-2">
 <input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_email" name="email" placeholder="tutor@gmail.com" required="" type="email"/>
-<button class="bg-brand-nagpurOrange hover:bg-orange-600 text-white font-bold px-3 py-2 rounded-xl text-[10px] sm:text-xs shrink-0 shadow" onclick="sendEmailOtp('tutor')" type="button">Send OTP</button>
+<button class="bg-brand-nagpurOrange hover:bg-orange-600 text-white font-black px-3 py-2 rounded-xl text-[10px] sm:text-xs shrink-0 shadow" onclick="sendEmailOtp('tutor'); return false;" type="button">SEND OTP</button>
+<span class="gc-email-required-badge gc-email-required-orange">EMAIL VERIFICATION REQUIRED</span>
 </div>
 </div>
 <div>
@@ -5385,9 +5406,10 @@ footer:before{
 <input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_phone" name="phone" placeholder="9876543210" required="" type="tel"/>
 </div>
 </div>
-<!-- Email OTP Verification Box for Tutor -->
-<div class="hidden bg-orange-50 border border-orange-200 p-3.5 rounded-xl space-y-2" id="tutorOtpBox">
-<p class="text-[11px] font-bold text-brand-nagpurOrange">Enter the 4-digit code sent from support@guruconnnect.in:</p>
+<div class="gc-email-verification-required-box gc-email-verification-required-orange"><div class="gc-email-verification-icon">✓</div><div><strong>EMAIL VERIFICATION IS COMPULSORY</strong><span>STEP 1: Verify this email with the EmailJS OTP below. STEP 2: After registration, check Inbox/Spam and click the official Supabase <b>Verify your email</b> link. Both checks are required.</span></div></div>
+<!-- EmailJS OTP verification: first gate before Supabase email verification -->
+<div class="bg-orange-50 border border-orange-200 p-3.5 rounded-xl space-y-2" id="tutorOtpBox">
+<p class="text-[11px] font-black text-brand-nagpurOrange">EMAILJS VERIFICATION — Click <b>SEND OTP</b>, then enter the 4-digit code sent to your email.</p>
 <div class="flex gap-2">
 <input class="w-32 border border-orange-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="tutorEnteredOtp" maxlength="4" placeholder="1234" type="text"/>
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('tutor')" type="button">Verify OTP</button>
@@ -5702,9 +5724,7 @@ footer:before{
 <div class="fixed inset-0 bg-slate-900/70 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 z-[100]" id="upiQrModal">
 <div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full p-6 border text-center relative">
 <h3 class="text-xl font-black text-brand-dark mb-2">Scan &amp; Pay <span id="modalPayAmountText">₹200</span></h3>
-<img alt="UPI QR Code" class="w-40 h-40 mx-auto rounded-lg mb-4" id="dynamicQrImg" src="">
-<button class="w-full bg-slate-100 text-slate-700 font-bold py-3 rounded-xl text-xs" onclick="closeUpiQrModal()" type="button">CLOSE</button>
-</img></div>
+<img alt="UPI QR Code" class="w-40 h-40 mx-auto rounded-lg mb-4" id="dynamicQrImg" src="" decoding="sync" loading="eager"><div id="gcTutorQrNote" class="text-xs text-slate-600 font-bold mb-4"></div><button class="w-full bg-slate-100 text-slate-700 font-bold py-3 rounded-xl text-xs" onclick="closeUpiQrModal()" type="button">CLOSE</button></div>
 </div>
 <!-- Staff Login Modal -->
 <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 z-[100]" id="staffLoginModal">
@@ -13428,6 +13448,149 @@ window.addEventListener('load',boot);
 })();
 </script>
 
+
+<script id="gc-v126-verified-qr-data">window.__GC_QR100_B64='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';window.__GC_QR200_B64='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';</script>
+<script id="gc-v126-final-registration-qr-hardening">
+(function(){
+  'use strict';
+  function byId(id){return document.getElementById(id)}
+  function paymentUri(amount){return 'upi://pay?pa=verizon@upi&pn=GuruConnect&am='+encodeURIComponent(String(amount))+'&cu=INR'}
+  function phone(){return /Android|iPhone|iPad|iPod|webOS|IEMobile|Opera Mini/i.test(navigator.userAgent)}
+  function openQr(amount){
+    var modal=byId('upiQrModal'),img=byId('dynamicQrImg'),amt=byId('modalPayAmountText'),note=byId('gcTutorQrNote');
+    if(!modal||!img){alert('Payment QR window is unavailable. Please refresh the page.');return false}
+    var n=Number(amount)||0;
+    if(amt)amt.textContent='₹'+n.toLocaleString('en-IN');
+    var cfg=window.GC_TUTOR_PAYMENT_CONFIG||{};
+    var qr=cfg.__verifiedQrFinal && cfg.__verifiedQrFinal[n] ? cfg.__verifiedQrFinal[n] : null;
+    if(!qr){
+      if(typeof window.GC_TUTOR_QR_DATA==='object') qr=window.GC_TUTOR_QR_DATA[n];
+    }
+    if(!qr && n===100) qr='data:image/png;base64,'+window.__GC_QR100_B64;
+    if(!qr && n===200) qr='data:image/png;base64,'+window.__GC_QR200_B64;
+    if(qr){ img.src=''; void img.offsetWidth; img.src=qr; }
+    else { img.src='https://api.qrserver.com/v1/create-qr-code/?size=280x280&format=png&data='+encodeURIComponent(paymentUri(n)); }
+    img.alt='UPI QR Code for ₹'+n;
+    if(note)note.textContent=(n===100?'✓ Verified Badge • 30 DAYS • ':'')+'Scan with any UPI app • UPI ID: verizon@upi • Amount: ₹'+n;
+    modal.classList.remove('hidden');modal.classList.add('gc-qr-open');modal.setAttribute('aria-hidden','false');modal.style.display='flex';
+    if(phone() && n>0){ setTimeout(function(){ try{ window.location.href=paymentUri(n); }catch(e){} },700); }
+    return false;
+  }
+  window.openUpiQrModal=openQr;
+  window.closeUpiQrModal=function(){var m=byId('upiQrModal');if(m){m.classList.add('hidden');m.classList.remove('gc-qr-open');m.setAttribute('aria-hidden','true');m.style.display='none';}};
+  function normalizeForms(){
+    var sf=byId('studentRegForm'),tf=byId('tutorRegForm');
+    if(sf)sf.querySelectorAll('#stuOtpBox,button[onclick*="sendEmailOtp"],button[onclick*="verifyEmailOtp"]').forEach(function(x){x.style.display='none'});
+    if(tf)tf.querySelectorAll('#tutorOtpBox,button[onclick*="sendEmailOtp"],button[onclick*="verifyEmailOtp"]').forEach(function(x){x.style.display='none'});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',normalizeForms,{once:true});else normalizeForms();
+})();
+</script>
+<script id="gc-v127-emailjs-registration-gate">
+(function(){
+  'use strict';
+  const STATE={
+    student:{verified:false,email:'',otp:'',sentAt:0,attempts:0},
+    tutor:{verified:false,email:'',otp:'',sentAt:0,attempts:0}
+  };
+  const OTP_TTL=10*60*1000;
+  const MAX_ATTEMPTS=5;
+  function popup(title,msg,type){try{if(typeof gcV4Popup==='function') gcV4Popup(title,msg,type||'info'); else alert(title+'\\n\\n'+msg);}catch(e){alert(title+'\\n\\n'+msg)}}
+  function els(type){
+    const student=type==='student';
+    return {
+      email:document.getElementById(student?'stu_email':'t_email'),
+      name:document.getElementById(student?'stu_name':'t_name'),
+      box:document.getElementById(student?'stuOtpBox':'tutorOtpBox'),
+      input:document.getElementById(student?'stuEnteredOtp':'tutorEnteredOtp'),
+      submit:document.getElementById(student?'stuSubmitBtn':'tutorSubmitBtn'),
+      send:[...document.querySelectorAll('button[onclick^=\"sendEmailOtp(\"]')].find(b=>(b.getAttribute('onclick')||'').includes("'"+type+"'"))
+    };
+  }
+  function setSubmit(type,enabled){
+    const b=els(type).submit; if(!b)return;
+    b.disabled=!enabled;
+    b.classList.toggle('cursor-not-allowed',!enabled);
+    b.classList.toggle('bg-slate-300',!enabled);
+    b.classList.toggle('text-slate-600',!enabled);
+    b.classList.toggle('bg-brand-blue',enabled && type==='student');
+    b.classList.toggle('bg-brand-nagpurOrange',enabled && type==='tutor');
+    b.classList.toggle('text-white',enabled);
+    b.textContent=enabled ? (type==='student'?'REGISTER STUDENT PROFILE':'SUBMIT TUTOR APPLICATION') : 'PLEASE VERIFY EMAIL FIRST';
+  }
+  function reset(type){
+    const st=STATE[type]; st.verified=false; st.email=''; st.otp=''; st.sentAt=0; st.attempts=0;
+    const e=els(type); if(e.input)e.input.value='';
+    setSubmit(type,false);
+  }
+  window.__gcEmailJsOtpState=STATE;
+  window.sendEmailOtp=async function(type){
+    const st=STATE[type], e=els(type); const name=(e.name?.value||'').trim(), email=(e.email?.value||'').trim().toLowerCase();
+    if(!name){popup('NAME REQUIRED','Please enter your name first.','gold');return false;}
+    if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){popup('VALID EMAIL REQUIRED','Please enter a valid email address.','gold');return false;}
+    if(!window.emailjs){popup('EMAIL SERVICE UNAVAILABLE','EmailJS could not be loaded. Please refresh and try again.','gold');return false;}
+    const otp=String(Math.floor(100000+Math.random()*900000));
+    st.verified=false; st.email=email; st.otp=otp; st.sentAt=Date.now(); st.attempts=0; setSubmit(type,false);
+    const btn=e.send; if(btn){btn.disabled=true;btn.textContent='SENDING...';}
+    try{
+      const response=await emailjs.send('service_vsaryin','template_614awwn',{name,email,to_email:email,recipient_email:email,reply_to:email,otp_code:otp});
+      if(!response || response.status!==200) throw new Error((response&&response.text)||'EmailJS delivery failed');
+      e.box?.classList.remove('hidden');
+      popup('OTP SENT','A 6-digit verification code has been sent by EmailJS to '+email+'. Check Inbox and Spam/Junk.','info');
+      e.input?.focus();
+      return true;
+    }catch(err){
+      console.error('EmailJS OTP error',err); st.otp=''; st.verified=false;
+      popup('OTP COULD NOT BE SENT','EmailJS could not send the verification code. Please check your EmailJS service/template and try again.\n\n'+(err?.text||err?.message||''),'gold');
+      return false;
+    }finally{if(btn){btn.disabled=false;btn.textContent='SEND OTP';}}
+  };
+  window.verifyEmailOtp=function(type){
+    const st=STATE[type], e=els(type), entered=(e.input?.value||'').trim();
+    const currentEmail=(e.email?.value||'').trim().toLowerCase();
+    if(!st.otp || st.email!==currentEmail){popup('SEND OTP FIRST','Please send a fresh OTP for this email address.','gold');return false;}
+    if(Date.now()-st.sentAt>OTP_TTL){st.otp='';st.verified=false;setSubmit(type,false);popup('OTP EXPIRED','This OTP expired after 10 minutes. Please click SEND OTP again.','gold');return false;}
+    if(st.attempts>=MAX_ATTEMPTS){st.otp='';st.verified=false;setSubmit(type,false);popup('TOO MANY ATTEMPTS','Please request a new OTP.','gold');return false;}
+    st.attempts++;
+    if(entered!==st.otp){popup('INVALID OTP','The verification code is incorrect. Attempts remaining: '+Math.max(0,MAX_ATTEMPTS-st.attempts)+'.','gold');return false;}
+    st.verified=true; st.otp='';
+    setSubmit(type,true);
+    popup('EMAILJS OTP VERIFIED','Your email passed the EmailJS OTP check. Registration will still require the official Supabase verification link sent after submission.','success');
+    return true;
+  };
+  function bind(type){
+    const e=els(type); if(!e.email)return;
+    e.email.addEventListener('input',function(){
+      const v=e.email.value.trim().toLowerCase();
+      if(STATE[type].verified && STATE[type].email!==v) reset(type);
+    });
+    setSubmit(type,STATE[type].verified);
+  }
+  function wrapSubmit(type,originalName){
+    const original=window[originalName]; if(typeof original!=='function')return;
+    window[originalName]=async function(ev){
+      const e=els(type), st=STATE[type], email=(e.email?.value||'').trim().toLowerCase();
+      if(!st.verified || st.email!==email){
+        ev?.preventDefault?.();
+        popup('EMAIL VERIFICATION REQUIRED','First click SEND OTP, enter the EmailJS code, and click VERIFY OTP. Then submit the registration form.','gold');
+        return false;
+      }
+      return original.call(this,ev);
+    };
+  }
+  function init(){
+    bind('student'); bind('tutor');
+    wrapSubmit('student','handleStudentFormSubmit');
+    wrapSubmit('tutor','handleTutorFormSubmit');
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(init,0));else setTimeout(init,0);
+})();
+</script>
+<style id="gc-v127-emailjs-otp-visible">
+#stuOtpBox,#tutorOtpBox{display:block!important;visibility:visible!important;opacity:1!important;}
+#stuOtpBox.hidden,#tutorOtpBox.hidden{display:block!important;}
+#stu_email,#t_email{min-width:0;}
+</style>
 </body>
 <style id="gc-final-load-hero-transfer-pdf-fix">
 /* Final stable hero: one real image, exact 1640:515 ratio, no crop and no duplicate background artwork. */
@@ -15978,12 +16141,12 @@ window.addEventListener('load',()=>setTimeout(boot,900));
   };
   /* Local QR images are intentionally embedded: PC QR works without any QR API. */
   const QR={
-    200:"data:image/png;base64,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",
-    100:"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUgAAAFICAIAAAC9dvBkAAAFlklEQVR42u3dQY7bQAxFwSjw/a/sbLLVAD0g8Umpah3YGtkPbYDp1vX9fv8Az/LXLQBhA8IGhA0IGxA2CBsQNiBsQNiAsEHYgLABYQPCBoQNCBuEDQgbEDYgbEDYIGxA2ICwAWEDwgaEDcIGhA0IG+jz6X6D67pW3Ii754RXXX/V63e/zrTvw+l1bv++WbEBYYOwAWEDwgaEDQgb6J9j33nqHLXqfU9f53S+3T3vvbue1Oe+5ftmxQaEDcIGhA0IGxA2IGwgN8e+073/edr1d+83Pp1vT5vbd3++279vVmzwUxwQNiBsQNiAsAFhwwN93IKfTTunuvv886r7UzU/33JOuBUbEDYgbEDYIGxA2ICwgTLm2L+UmtOentedup5T5tVWbEDYIGxA2ICwAWEDwgb+GzfHnnY+853TuWv3PLnqnPDUc7bf9txsKzYgbEDYIGxA2ICwAWEDt2Jz7O37b7v3P7/t359+T7qfK27FBoQNCBsQNiBsEDYgbCCmfY791P2uW3TPk7v/fdV+cis2IGxA2ICwAWEDwgZhA2u0z7Gr5pNVrz9tX273ud/dc+DUueKpz7HqOrvn7VZs8FMcEDYgbEDYgLBB2MBi1/b9q6fzzO75+anu+191f1L/H6HqfqbOJ0/1ZcUGP8UBYQPCBoQNCBuEDSwW2499Z8v+4VOp/eGp/cNbnkfdPee3YgPCBoQNwgaEDQgbEDZw7JN646p5YGr/7bTrT+1nTn1Ptryvc8UBYQPCBmEDwgaEDQgbONY+x562D3nLudBVup+bvf1cdys2IGxA2ICwAWGDsAFhA+PEno/tfO/a903Nh5/6fOzUPmorNiBsEDYgbEDYgLABYQO5OfbtBYXO074zbf685dz17vu55f9fpK7Tig1+igPCBoQNCBsQNggbWKx9jp2al95JzWnbP8gl+7q3PN+7+znqVmxA2ICwQdiAsAFhA8IGbo17PnbVc5vvTJv3npq2X/309afNq7d8z63YgLBB2ICwAWEDwgaEDS9ybXneb/uNaJ43dj+fuXvf+1Ofv73977Jig5/igLABYQPCBoQNCBseqH0/dmp+m/q77qTmpdPO0676HKvet5tzxQFhA8IGYQPCBoQNCBs4Nm4/dtXcddrzmbvvT+p89W6p/eSp/fBWbEDYIGxA2ICwAWEDwgb659ipuWtqXj1t/3lqflt1P7u/b9PupxUbEDYIGxA2IGxA2ICwgT1z7NgNCu0Pf9v1b///BVZsQNiAsAFhg7ABYQPCBsq0Px87tc+2+3WqbDnPfMv57d3Xk3ouuhUbEDYIGxA2IGxA2ICw4UU+T/3DqubV057PfOp0frvl+dvd/x9h+/PGrdjgpzggbEDYgLABYYOwgcXa59ipeezp9aSeI101V99+Dva071v399PzsQFhA8IGYQPCBoQNCBu4db1tznl8g0L7k6ftB97yHO/U52vFBoQNCBsQNggbEDYgbKDMmv3Y3aad+51632nngU/bb9/9+VqxAWGDsAFhA8IGhA0IG8g9Hzs136va99v9Oqn7U3Wdqb9r2us7VxwQNiBsQNiBsQNiAsAFhA8IGhA0IG4QNCBsQNiBsQNggbEDYgbEDYgLABYYOwAWEDwgaEDQgbhA0IGxA2IGxA2ICwQdiAsAFhA8IGDvwDyV/SvGfcuDsAAAAASUVORK5CYII="
+    200:"data:image/png;base64,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",
+    100:"data:image/png;base64,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"
   };
   window.GC_TUTOR_PAYMENT_CONFIG=CFG;
   const id=x=>document.getElementById(x);
-  const uri=amount=>'upi://pay?pa='+encodeURIComponent(CFG.upi)+'&pn='+encodeURIComponent(CFG.payee)+'&am='+encodeURIComponent(String(amount))+'&cu=INR';
+  const uri=amount=>'upi://pay?pa='+CFG.upi+'&pn='+encodeURIComponent(CFG.payee)+'&am='+encodeURIComponent(String(amount))+'&cu=INR';
   const isPhone=()=>/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)||(('ontouchstart' in window)&&Math.min(screen.width,screen.height)<900);
 
   function showQr(amount){
@@ -15992,12 +16155,11 @@ window.addEventListener('load',()=>setTimeout(boot,900));
     const n=Number(amount)||0;
     if(amt)amt.textContent='₹'+n.toLocaleString('en-IN');
     img.onerror=null;
-    if(QR[n]) img.src=QR[n];
-    else img.src='https://api.qrserver.com/v1/create-qr-code/?size=280x280&format=png&data='+encodeURIComponent(uri(n));
+    if(QR[n]) { img.removeAttribute('src'); img.src=QR[n]; } else img.src='https://api.qrserver.com/v1/create-qr-code/?size=280x280&format=png&data='+encodeURIComponent(uri(n));
     img.alt='UPI QR Code for ₹'+n;
     let note=id('gcTutorQrNote');
     if(!note){note=document.createElement('div');note.id='gcTutorQrNote';img.insertAdjacentElement('afterend',note)}
-    note.textContent='Scan with any UPI app • UPI ID: '+CFG.upi+' • Amount: ₹'+n;
+    note.textContent=(n===100?'Verified Badge • 30 DAYS • ':'')+'Scan with any UPI app • UPI ID: '+CFG.upi+' • Amount: ₹'+n;
     modal.classList.remove('hidden');modal.setAttribute('aria-hidden','false');
     return true;
   }
