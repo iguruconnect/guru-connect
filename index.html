@@ -15565,3 +15565,346 @@ window.addEventListener('load',()=>setTimeout(boot,900));
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureReset,{once:true});else ensureReset();
 })();
 </script>
+
+
+<!-- GURU CONNECT V11 — REGISTRATION + PAYMENT QR STABILITY PATCH -->
+<style id="gc-v11-registration-payment-fix">
+/* Registration must never be blocked behind the old EmailJS OTP gate. */
+#stuSubmitBtn,#tutorSubmitBtn{
+  opacity:1!important;cursor:pointer!important;pointer-events:auto!important;
+  background:linear-gradient(90deg,#155eef,#06b6d4,#155eef)!important;color:#fff!important;
+  box-shadow:0 10px 24px rgba(21,94,239,.18)!important;
+}
+#stuSubmitBtn:disabled,#tutorSubmitBtn:disabled{opacity:1!important;cursor:pointer!important;}
+/* The old 4-digit EmailJS OTP is no longer a registration gate; Supabase sends the
+   actual account verification email during sign-up. */
+#stuOtpBox,#tutorOtpBox{display:none!important;}
+</style>
+<script id="gc-v11-registration-payment-fix-js">
+(function(){
+  'use strict';
+
+  function $id(id){return document.getElementById(id)}
+
+  function enableRegistrationButtons(){
+    const s=$id('stuSubmitBtn'),t=$id('tutorSubmitBtn');
+    if(s){s.disabled=false;s.removeAttribute('disabled');s.classList.remove('cursor-not-allowed','bg-slate-300','text-slate-600');s.textContent='REGISTER STUDENT PROFILE';}
+    if(t){t.disabled=false;t.removeAttribute('disabled');t.classList.remove('cursor-not-allowed','bg-slate-300','text-slate-600');t.textContent='SUBMIT TUTOR APPLICATION';}
+    const sOtp=$id('stuOtpBox'),tOtp=$id('tutorOtpBox');
+    if(sOtp)sOtp.classList.add('hidden');
+    if(tOtp)tOtp.classList.add('hidden');
+    // Remove the old EmailJS OTP buttons from the registration path.
+    document.querySelectorAll('#studentFormCard button[onclick*="sendEmailOtp"],#tutorFormCard button[onclick*="sendEmailOtp"]').forEach(b=>{
+      b.style.display='none';
+      b.setAttribute('aria-hidden','true');
+    });
+    document.querySelectorAll('#studentFormCard p,#tutorFormCard p').forEach(p=>{
+      const tx=(p.textContent||'').toLowerCase();
+      if(tx.includes('verify your identity with email otp')||tx.includes('verify email via support@guruconnnect.in')){
+        p.textContent='Your email is verified securely by Supabase after you submit the registration form. Check your email for the verification link.';
+      }
+    });
+  }
+
+  // Correct QR generation: the complete UPI URI must be URL-encoded as the QR
+  // provider's data parameter. The old implementation left ? and & unescaped.
+  window.gcV11SetQr=function(img,upiUri,noteEl,amount){
+    if(!img||!upiUri)return;
+    const encoded=encodeURIComponent(upiUri);
+    const providers=[
+      'https://api.qrserver.com/v1/create-qr-code/?size=260x260&format=png&data='+encoded,
+      'https://quickchart.io/qr?size=260&margin=2&text='+encoded
+    ];
+    let attempt=0;
+    const use=()=>{
+      img.onerror=function(){
+        attempt++;
+        if(attempt<providers.length){img.src=providers[attempt];return;}
+        img.removeAttribute('src');
+        if(noteEl)noteEl.textContent='QR service could not load. Use the UPI payment button below.';
+      };
+      img.src=providers[attempt];
+      if(noteEl&&amount)noteEl.textContent='Scan to pay ₹'+Number(amount).toLocaleString('en-IN')+' to Verizon@UPI.';
+    };
+    use();
+  };
+
+  window.openUpiQrModal=function(amount){
+    amount=Number(amount)||0;
+    const modal=$id('upiQrModal'),img=$id('dynamicQrImg'),amt=$id('modalPayAmountText');
+    if(!modal||!img){alert('Payment QR window is unavailable. Please refresh the page and try again.');return;}
+    if(amt)amt.textContent='₹'+amount.toLocaleString('en-IN');
+    const uri='upi://pay?pa=verizon@upi&pn=GuruConnect&am='+encodeURIComponent(String(amount))+'&cu=INR';
+    window.gcV11SetQr(img,uri,null,amount);
+    modal.classList.remove('hidden');
+    modal.setAttribute('aria-hidden','false');
+  };
+
+  window.closeUpiQrModal=function(){
+    const m=$id('upiQrModal');if(m){m.classList.add('hidden');m.setAttribute('aria-hidden','true');}
+  };
+
+  // Replace the Student Helpline QR renderer with the same reliable generator.
+  window.gcV11UpdateStudentHelplineQr=function(){
+    const plan=$id('stuHelplinePlan')?.value||'';
+    const count=parseInt($id('stuHelplineSubjectCount')?.value||'0',10);
+    const price=(typeof STUDENT_HELPLINE_PLAN_PRICES!=='undefined'?STUDENT_HELPLINE_PLAN_PRICES[plan]??0:0);
+    const total=price*count;
+    const qr=$id('studentHelplineQr'),note=$id('studentHelplineQrNote');
+    if(!qr)return;
+    if(plan&&count&&total>0){
+      const uri='upi://pay?pa=verizon@upi&pn=GuruConnect&am='+encodeURIComponent(String(total))+'&cu=INR';
+      window.gcV11SetQr(qr,uri,note,total);
+    }else{
+      qr.removeAttribute('src');
+      if(note)note.textContent=plan==='FREE'?'FREE PLAN selected — no payment is required.':'Select a paid plan and number of subjects to generate the payment QR.';
+    }
+  };
+
+  // Capture the existing pricing function without creating a repaint loop.
+  const oldPricing=window.updateStudentHelplinePricing;
+  window.updateStudentHelplinePricing=function(){
+    try{if(typeof oldPricing==='function')oldPricing();}catch(e){console.warn('Legacy helpline pricing skipped:',e)}
+    try{window.gcV11UpdateStudentHelplineQr()}catch(e){console.warn('Student QR update failed:',e)}
+  };
+
+  function boot(){
+    enableRegistrationButtons();
+    try{window.gcV11UpdateStudentHelplineQr()}catch(_){}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  window.addEventListener('load',boot,{once:false});
+})();
+</script>
+
+
+<!-- GURU CONNECT V12 — MANDATORY EMAIL VERIFICATION / CLEAN REGISTRATION FLOW -->
+<style id="gc-v12-registration-verification-style">
+#gcV12VerifyBox button{transition:transform .15s ease,box-shadow .15s ease}
+#gcV12VerifyBox button:hover{transform:translateY(-1px)}
+#gcV12VerifyStatus{min-height:22px}
+.gc-v12-spinner{width:20px;height:20px;border:3px solid #dbeafe;border-top-color:#2563eb;border-radius:50%;animation:gcV12Spin .8s linear infinite;display:inline-block;vertical-align:middle;margin-right:8px}
+@keyframes gcV12Spin{to{transform:rotate(360deg)}}
+/* Old EmailJS OTP controls are never part of the registration flow. */
+#stuOtpBox,#tutorOtpBox{display:none!important}
+</style>
+<script id="gc-v12-registration-verification-js">
+(function(){
+  'use strict';
+  const V12_VERSION='12.0';
+  function $id(id){return document.getElementById(id)}
+  function safeEmail(v){return String(v||'').trim().toLowerCase()}
+  function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
+  function supa(){return window.gcSupabase||null}
+  function verificationRedirect(){
+    return location.origin+location.pathname+'?email_verified=1';
+  }
+  function pendingKey(email){return 'gc_pending_registration_v12_'+safeEmail(email)}
+  function savePending(role,profile,email){
+    const payload={version:V12_VERSION,role,profile,email:safeEmail(email),createdAt:new Date().toISOString()};
+    /* Keep the existing keys for compatibility with the login completion code. */
+    localStorage.setItem('gc_pending_profile',JSON.stringify({role,profile}));
+    localStorage.setItem('gc_pending_email',safeEmail(email));
+    localStorage.setItem(pendingKey(email),JSON.stringify(payload));
+  }
+  function readPending(email){
+    const em=safeEmail(email);
+    try{
+      const v=localStorage.getItem(pendingKey(em));
+      if(v){const p=JSON.parse(v);if(p&&safeEmail(p.email)===em&&p.role&&p.profile)return p}
+    }catch(_){ }
+    try{
+      const raw=localStorage.getItem('gc_pending_profile');
+      const pe=safeEmail(localStorage.getItem('gc_pending_email'));
+      if(raw&&pe===em){const p=JSON.parse(raw);if(p&&p.role&&p.profile)return {version:'legacy',role:p.role,profile:p.profile,email:em}}
+    }catch(_){ }
+    return null;
+  }
+  function clearPending(email){
+    const em=safeEmail(email);
+    try{localStorage.removeItem(pendingKey(em))}catch(_){ }
+    if(safeEmail(localStorage.getItem('gc_pending_email'))===em){
+      localStorage.removeItem('gc_pending_profile');
+      localStorage.removeItem('gc_pending_email');
+    }
+  }
+  function setRegistrationButtonsBusy(role,busy,text){
+    const id=role==='tutor'?'tutorSubmitBtn':'stuSubmitBtn';
+    const b=$id(id);if(!b)return;
+    b.disabled=!!busy;b.setAttribute('aria-busy',busy?'true':'false');
+    if(busy){b.dataset.gcV12OriginalText=b.textContent||'';b.textContent=text||'CREATING ACCOUNT…';}
+    else if(b.dataset.gcV12OriginalText){b.textContent=b.dataset.gcV12OriginalText;delete b.dataset.gcV12OriginalText;}
+  }
+  function removeOldOtpGates(){
+    ['stuSubmitBtn','tutorSubmitBtn'].forEach(id=>{
+      const b=$id(id);if(b){b.disabled=false;b.removeAttribute('disabled');b.style.pointerEvents='auto';}
+    });
+    document.querySelectorAll('#studentFormCard button[onclick*="sendEmailOtp"],#tutorFormCard button[onclick*="sendEmailOtp"]').forEach(b=>{
+      b.style.display='none';b.setAttribute('aria-hidden','true');
+    });
+    document.querySelectorAll('#studentFormCard p,#tutorFormCard p').forEach(p=>{
+      const t=(p.textContent||'').toLowerCase();
+      if(t.includes('email otp')||t.includes('verify your identity with email otp')){
+        p.textContent='Email verification is mandatory. Submit this form to receive a secure Supabase verification email.';
+      }
+    });
+  }
+  function showVerifyScreen(email,role){
+    email=safeEmail(email); role=role==='tutor'?'tutor':'student';
+    let box=$id('gcV12VerifyBox');
+    if(!box){
+      box=document.createElement('div');box.id='gcV12VerifyBox';
+      box.className='fixed inset-0 z-[400] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-6';
+      document.body.appendChild(box);
+    }
+    box.dataset.email=email;box.dataset.role=role;
+    box.innerHTML=`<div class="max-w-xl w-full bg-white rounded-[2rem] shadow-2xl p-7 sm:p-11 text-center">
+      <div class="mx-auto mb-5 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-4xl sm:text-5xl"><i class="fa-solid fa-envelope-circle-check"></i></div>
+      <div class="inline-flex items-center px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-[11px] font-black uppercase tracking-wider mb-3">Step 2 of 2 • Email verification required</div>
+      <h2 class="text-2xl sm:text-4xl font-black text-slate-900">Verify Your Email</h2>
+      <p class="mt-4 text-base sm:text-lg text-slate-600 leading-relaxed">We sent a verification link to</p>
+      <p class="mt-1 text-base sm:text-xl font-black text-blue-700 break-all">${esc(email)}</p>
+      <div class="mt-5 rounded-2xl bg-slate-50 border border-slate-200 p-4 text-left text-sm text-slate-600 leading-relaxed">
+        <b class="text-slate-900">Your ${role==='tutor'?'Tutor':'Student'} profile is still pending.</b><br>
+        Open the newest email and click <b>Verify your email</b>. Your profile will be completed only after Supabase confirms the email.
+      </div>
+      <div id="gcV12VerifyStatus" class="mt-4 text-sm font-bold text-slate-500"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6">
+        <button type="button" id="gcV12ResendBtn" class="px-5 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black">RESEND VERIFICATION EMAIL</button>
+        <button type="button" id="gcV12LoginBtn" class="px-5 py-3.5 rounded-xl border-2 border-slate-200 hover:bg-slate-50 text-slate-800 font-black">GO TO LOGIN</button>
+      </div>
+      <button type="button" id="gcV12CloseBtn" class="mt-4 text-sm font-bold text-slate-500 hover:text-slate-800">Close</button>
+    </div>`;
+    $id('gcV12ResendBtn').onclick=()=>resendVerification(email);
+    $id('gcV12LoginBtn').onclick=()=>{box.remove();if(typeof openLoginModal==='function')openLoginModal()};
+    $id('gcV12CloseBtn').onclick=()=>box.remove();
+  }
+  function verifyStatus(html,kind){
+    const el=$id('gcV12VerifyStatus');if(!el)return;
+    el.className='mt-4 text-sm font-bold '+(kind==='ok'?'text-emerald-700':kind==='err'?'text-red-700':'text-slate-500');
+    el.innerHTML=html;
+  }
+  async function resendVerification(email){
+    const s=supa(),btn=$id('gcV12ResendBtn');
+    if(!s){verifyStatus('Supabase Authentication is unavailable. Please refresh the page.','err');return}
+    if(btn){btn.disabled=true;btn.textContent='SENDING…'}
+    verifyStatus('<span class="gc-v12-spinner"></span>Sending a fresh verification email…');
+    try{
+      const r=await s.auth.resend({type:'signup',email:safeEmail(email),options:{emailRedirectTo:verificationRedirect()}});
+      if(r.error)throw r.error;
+      verifyStatus('✓ Verification email sent. Check Inbox and Spam/Junk for the newest message.','ok');
+    }catch(e){
+      console.error('V12 resend verification error',e);
+      verifyStatus('Could not resend the verification email: '+esc(e.message||e),'err');
+    }finally{if(btn){btn.disabled=false;btn.textContent='RESEND VERIFICATION EMAIL'}}
+  }
+  window.gcV12ResendVerification=resendVerification;
+
+  /* Harden the existing account creator: a session is NOT enough. The email
+     must actually be confirmed before any profile is saved. */
+  const originalCreate=window.gcCreateEmailAccount;
+  if(typeof originalCreate==='function'){
+    window.gcCreateEmailAccount=async function(email,password,role,profile){
+      const s=supa();if(!s)throw new Error('Supabase Authentication is not configured.');
+      email=safeEmail(email);
+      if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw new Error('Enter a valid email address.');
+      if(!password||password.length<8)throw new Error('Password must be at least 8 characters.');
+      try{
+        const result=await s.auth.signUp({email,password,options:{emailRedirectTo:verificationRedirect()}});
+        if(result.error)throw result.error;
+        const user=result.data?.user;
+        if(!user)throw new Error('Supabase did not return a user account.');
+        const confirmed=!!user.email_confirmed_at;
+        if(!confirmed){
+          if(result.data?.session){try{await s.auth.signOut()}catch(_){} }
+          savePending(role,profile,email);
+          showVerifyScreen(email,role);
+          return {user,session:null,pending:true,emailConfirmed:false};
+        }
+        /* This branch is allowed only when Supabase itself reports confirmation. */
+        return {user,session:result.data?.session||null,pending:false,emailConfirmed:true};
+      }catch(e){
+        console.error('V12 registration account creation error',e);
+        throw e;
+      }
+    };
+  }
+
+  async function finishVerifiedRegistration(user){
+    if(!user||!user.id||!user.email||!user.email_confirmed_at)return false;
+    const email=safeEmail(user.email),pending=readPending(email);
+    if(!pending)return false;
+    const s=supa();if(!s)return false;
+    /* Do not save anything until Auth explicitly reports email_confirmed_at. */
+    try{
+      const role=pending.role==='tutor'?'tutor':'student';
+      const table=role==='tutor'?'tutor_profiles':'student_profiles';
+      let existing=await s.from(table).select('*').eq('user_id',user.id).maybeSingle();
+      if(existing.data){clearPending(email);return true;}
+      if(existing.error && !/no rows/i.test(existing.error.message||''))console.warn('V12 existing profile lookup:',existing.error);
+      const cloud=await window.gcSaveProfileToCloud(role,pending.profile,user);
+      if(!cloud?.ok)throw (cloud?.error||new Error('Profile could not be saved to the cloud database.'));
+      clearPending(email);
+      /* Update the local directory only after cloud save succeeds. */
+      try{
+        const p={...pending.profile,id:cloud.row?.id,user_id:cloud.userId||user.id,isCloud:true,registrationStatus:'registered',registrationRole:role};
+        if(role==='tutor'){
+          if(Array.isArray(window.tutorDirectoryList)){window.tutorDirectoryList.unshift(p);window.tutorDirectoryList=window.tutorDirectoryList.slice(0,500)}
+          if(typeof window.renderTutorDirectory==='function')window.renderTutorDirectory();
+        }else{
+          if(Array.isArray(window.studentDirectoryList)){window.studentDirectoryList.unshift(p);window.studentDirectoryList=window.studentDirectoryList.slice(0,500)}
+          if(typeof window.renderStudentDirectory==='function')window.renderStudentDirectory();
+        }
+        try{if(typeof saveRegisteredDirectories==='function')saveRegisteredDirectories()}catch(_){ }
+      }catch(_){ }
+      return true;
+    }catch(e){
+      console.error('V12 profile completion error',e);
+      return false;
+    }
+  }
+  window.gcV12FinishVerifiedRegistration=finishVerifiedRegistration;
+
+  async function handleVerificationLanding(){
+    const s=supa();if(!s)return;
+    let user=null;
+    try{user=(await s.auth.getUser()).data?.user||null}catch(_){ }
+    if(!user||!user.email_confirmed_at)return;
+    const url=new URL(location.href),isLanding=url.searchParams.get('email_verified')==='1';
+    if(!isLanding && !readPending(user.email))return;
+    const completed=await finishVerifiedRegistration(user);
+    if(completed){
+      try{await s.auth.signOut()}catch(_){ }
+      if(isLanding){
+        const old=$id('gcV12VerifyBox');if(old)old.remove();
+        showGcV12Completed(user.email);
+        url.searchParams.delete('email_verified');history.replaceState({},'',url.pathname+(url.search?url.search:'')+(url.hash||''));
+      }
+    }else if(isLanding){
+      showGcV12VerifiedButPending(user.email);
+    }
+  }
+  function showGcV12Completed(email){
+    let b=$id('gcV12Completed');if(!b){b=document.createElement('div');b.id='gcV12Completed';b.className='fixed inset-0 z-[410] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4';document.body.appendChild(b)}
+    b.innerHTML=`<div class="max-w-xl w-full bg-white rounded-[2rem] shadow-2xl p-8 sm:p-12 text-center"><div class="mx-auto mb-5 w-24 h-24 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-5xl"><i class="fa-solid fa-circle-check"></i></div><h2 class="text-2xl sm:text-4xl font-black text-slate-900">Email Verified Successfully</h2><p class="mt-4 text-slate-600">${esc(email)}</p><p class="mt-3 text-base sm:text-lg text-slate-700 font-bold">Your GURU CONNECT profile registration is now complete.</p><button type="button" class="mt-7 px-8 py-3.5 rounded-xl bg-blue-600 text-white font-black" onclick="this.closest('#gcV12Completed').remove();if(typeof openLoginModal==='function')openLoginModal()">LOGIN NOW</button></div>`;
+  }
+  function showGcV12VerifiedButPending(email){
+    let b=$id('gcV12VerifiedPending');if(!b){b=document.createElement('div');b.id='gcV12VerifiedPending';b.className='fixed inset-0 z-[410] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4';document.body.appendChild(b)}
+    b.innerHTML=`<div class="max-w-xl w-full bg-white rounded-[2rem] shadow-2xl p-8 sm:p-12 text-center"><div class="mx-auto mb-5 w-24 h-24 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-5xl"><i class="fa-solid fa-user-clock"></i></div><h2 class="text-2xl sm:text-4xl font-black text-slate-900">Email Verified</h2><p class="mt-4 text-slate-600">${esc(email)}</p><p class="mt-3 text-base text-slate-700">Your email is verified, but this browser does not have the pending registration details. Please login with the same email and password you used during registration.</p><button type="button" class="mt-7 px-8 py-3.5 rounded-xl bg-blue-600 text-white font-black" onclick="this.closest('#gcV12VerifiedPending').remove();if(typeof openLoginModal==='function')openLoginModal()">GO TO LOGIN</button></div>`;
+  }
+
+  /* Complete automatically when the verification link creates the Auth session. */
+  function installAuthListener(){
+    const s=supa();if(!s||!s.auth||typeof s.auth.onAuthStateChange!=='function')return;
+    s.auth.onAuthStateChange(async function(event,session){
+      if(event==='SIGNED_IN' || event==='USER_UPDATED' || event==='INITIAL_SESSION'){
+        setTimeout(()=>handleVerificationLanding(),120);
+      }
+    });
+    setTimeout(handleVerificationLanding,350);
+  }
+  function boot(){removeOldOtpGates();installAuthListener()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  window.addEventListener('load',()=>{removeOldOtpGates();setTimeout(handleVerificationLanding,250)});
+})();
+</script>
