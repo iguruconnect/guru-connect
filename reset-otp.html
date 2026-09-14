@@ -30,7 +30,7 @@
 <label class="label" for="otp" style="margin-top:15px">One-Time Password (OTP)</label>
 <div class="row"><input id="otp" class="input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="20" placeholder="Enter OTP"><button id="copy" class="btn copy" type="button">COPY OTP</button></div>
 <button id="verify" class="btn mainbtn" type="button">VERIFY OTP</button>
-<div class="note"><b>Important:</b> Use the newest OTP. Requesting another reset email can make the previous code unusable.</div>
+<div class="note"><b>Important:</b> This 6-digit code is an <b>OTP only</b> — it is not your password. Enter it above, press <b>VERIFY OTP</b>, and only then create your new password. Use the newest OTP; requesting another reset email can make the previous code unusable.</div>
 <div class="divider"></div>
 <button id="resend" class="btn secondary" type="button">RESEND OTP</button>
 </div>
@@ -101,7 +101,7 @@ $('copy').onclick=async()=>{
 async function verify(){
   const email=$('email').value.trim().toLowerCase(),token=$('otp').value.trim(),btn=$('verify');
   if(!/^\S+@\S+\.\S+$/.test(email))return show('Enter the registered email address.');
-  if(!token)return show('Enter the OTP from the newest GURU CONNECT recovery email.');
+  if(!token)return show('Enter the OTP from the newest GURU CONNECT recovery email. <b>Do NOT put this OTP in the password field.</b>');
   btn.disabled=true;btn.textContent='VERIFYING…';
   try{
     // No URL token is used here. This is the deliberate OTP path recommended

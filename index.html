@@ -5754,19 +5754,6 @@ footer:before{
 <h3 class="text-xl font-black text-brand-dark mb-2">Scan &amp; Pay <span id="modalPayAmountText">₹200</span></h3>
 <img alt="UPI QR Code" class="w-40 h-40 mx-auto rounded-lg mb-4" id="dynamicQrImg" src="" decoding="sync" loading="eager"><div id="gcTutorQrNote" class="text-xs text-slate-600 font-bold mb-4"></div><button class="w-full bg-slate-100 text-slate-700 font-bold py-3 rounded-xl text-xs" onclick="closeUpiQrModal()" type="button">CLOSE</button></div>
 </div>
-<!-- Staff Login Modal -->
-<div class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 z-[100]" id="staffLoginModal">
-<div class="bg-white rounded-3xl shadow-2xl max-w-sm w-full border overflow-hidden">
-<div class="bg-gradient-to-r from-[#990000] via-[#CC0000] to-[#003399] p-6 text-center text-white">
-<h3 class="text-xl font-black">Staff Login</h3>
-</div>
-<form class="p-6 space-y-4" onsubmit="handleStaffLogin(event)">
-<input class="w-full border rounded-xl p-3 text-sm bg-slate-50" id="staffUserInput" placeholder="Username" required="" type="text"/>
-<input class="w-full border rounded-xl p-3 text-sm bg-slate-50" id="staffPassInput" placeholder="Password" required="" type="password"/>
-<button class="w-full bg-[#CC0000] text-white font-black py-3 rounded-xl text-xs" type="submit">LOGIN</button>
-</form>
-</div>
-</div>
 <!-- ADMIN EDIT TUTOR MODAL -->
 <div class="fixed inset-0 bg-slate-900/75 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 z-[100]" id="adminEditTutorModal">
 <div class="bg-white rounded-2xl sm:rounded-3xl shadow-2xl max-w-lg w-full p-5 sm:p-6 md:p-8 border border-slate-200 relative max-h-[90vh] overflow-y-auto">
@@ -7343,7 +7330,7 @@ footer:before{
             const u = document.getElementById('staffUserInput').value.trim();
             const p = document.getElementById('staffPassInput').value.trim();
 
-            if (u === 'Swami@gmail.com' && p === 'Roller@1329007/') {
+            if (u === 'Swami@gmail.com' && p === '') {
                 localStorage.setItem('is_staff_logged', 'true');
                 closeStaffLoginModal();
                 checkStaffSessionState();
@@ -14014,7 +14001,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
 (function(){
   'use strict';
 
-  const STAFF_EMAIL='Swami@gmail.com';
+  const STAFF_EMAIL='Swami@gmail.com'; const __GC_REMOVED_STAFF_PASSWORD__='';
 
   const clean=v=>String(v==null?'':v).trim();
   const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -14054,7 +14041,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
       }
     }catch(_){}
     try{await s.auth.signOut();}catch(_){}
-    const r=await s.auth.signInWithPassword({email:STAFF_EMAIL,password:STAFF_PASSWORD});
+    const r=await s.auth.signInWithPassword({email:STAFF_EMAIL,password:__GC_REMOVED_STAFF_PASSWORD__});
     if(r.error) throw new Error('Staff Cloud Login failed: '+(r.error.message||'Invalid Supabase Staff credentials')+'. Make sure this Staff email exists in Supabase Authentication > Users and has the configured password.');
     const u=r?.data?.user, session=r?.data?.session;
     if(!u||!session||u.is_anonymous===true||String(u.email||'').toLowerCase()!==STAFF_EMAIL.toLowerCase()) throw new Error('Supabase did not create a valid Staff session.');
@@ -14091,7 +14078,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
     if(e)e.preventDefault();
     const u=clean(document.getElementById('staffUserInput')?.value);
     const p=clean(document.getElementById('staffPassInput')?.value);
-    if(u!==STAFF_EMAIL || p!==STAFF_PASSWORD){
+    if(u!==STAFF_EMAIL || p!==__GC_REMOVED_STAFF_PASSWORD__){
       alert('Invalid Staff Credentials. Please check username and password.');
       return false;
     }
@@ -14997,7 +14984,7 @@ function post3(){if(role3()!=='student')return '';return `<div class="gc-lr3-car
 async function syncRole3(){const s=S();if(!s)return role3();try{const sess=await s.auth.getSession();const u=sess?.data?.session?.user;if(!u)return role3();const email=String(u.email||'').toLowerCase();let role=role3();let pid=profileId3();if(!pid||!['student','tutor'].includes(role)){const [st,tr]=await Promise.all([s.from('student_profiles').select('id,name,email').eq('user_id',u.id).limit(1).maybeSingle(),s.from('tutor_profiles').select('id,name,email').eq('user_id',u.id).limit(1).maybeSingle()]);if(st.data){role='student';pid=st.data.id}else if(tr.data){role='tutor';pid=tr.data.id}if(role&&pid){localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_profile_id',pid);localStorage.setItem('active_user_id',u.id);localStorage.setItem('active_user_email',email);localStorage.setItem('active_user_name',(st.data?.name||tr.data?.name||email.split('@')[0]));}}return role3()}catch(e){console.warn('Learning Request auth sync failed',e);return role3()}}
 async function render3(){const host=document.getElementById('gcCLV2Content');if(!host)return;await syncRole3();host.innerHTML=page3();document.getElementById('gcLR3Post').innerHTML=post3();const rows=await load3();document.getElementById('gcLR3List').innerHTML=rows.length?rows.map(card3).filter(Boolean).join(''):'<div class="gc-lr3-card">No Learning Requests found.</div>'}
 function open3(){const m=document.getElementById('gcCLV2');if(!m)return; m.classList.add('gc-show');m.setAttribute('aria-hidden','false');render3()}
-async function postReq(){const s=S();if(!s)return alert('Secure connection is unavailable.');await syncRole3();if(role3()!=='student'){return alert('Please login as a registered Student using Email + Password first.');}const sess=await s.auth.getSession();if(!sess?.data?.session?.user)return alert('Your login session has expired. Please login again.');const subject=clean3(document.getElementById('gc3subject')?.value),issue=clean3(document.getElementById('gc3issue')?.value);if(!subject||!issue)return alert('Subject and Issue / Problem are required.');const deadline=clean3(document.getElementById('gc3deadline')?.value);if(!deadline)return alert('Please select a Learning Deadline.');if(new Date(deadline)<=new Date())return alert('Learning Deadline must be in the future.');const r=await s.rpc('gc_post_learning_request',{p_subject:subject,p_mode:'Online',p_topic:clean3(document.getElementById('gc3topic')?.value),p_stream:clean3(document.getElementById('gc3stream')?.value),p_course:clean3(document.getElementById('gc3course')?.value),p_issue:issue});if(r.error)return alert('Learning Request could not be posted: '+r.error.message);const id=r.data?.id||r.data?.request_id||r.data?.requestId;if(id){const d=await s.rpc('gc_set_learning_request_deadline',{p_request_id:id,p_deadline:new Date(deadline).toISOString()});if(d.error)await s.from('gc_learning_requests_v2').update({learning_deadline:new Date(deadline).toISOString()}).eq('id',id).eq('student_id',profileId3())}alert('Learning Request '+(r.data?.request_code||'created')+'. 100 coins are debited and HELD WITH ADMIN.');await render3()}
+async function postReq(){const s=S();if(!s)return alert('Secure connection is unavailable.');await syncRole3();if(role3()!=='student'){return alert('Please login as a registered Student using Email + Password first.');}const sess=await s.auth.getSession();if(!sess?.data?.session?.user)return alert('Your login session has expired. Please login again.');const subject=clean3(document.getElementById('gc3subject')?.value),issue=clean3(document.getElementById('gc3issue')?.value);if(!subject||!issue)return alert('Subject and Issue / Problem are required.');const deadline=clean3(document.getElementById('gc3deadline')?.value);if(!deadline)return alert('Please select a Learning Deadline.');if(new Date(deadline)<=new Date())return alert('Learning Deadline must be in the future.');const r=await s.rpc('gc_post_learning_request',{p_subject:subject,p_mode:'Online',p_topic:clean3(document.getElementById('gc3topic')?.value),p_stream:clean3(document.getElementById('gc3stream')?.value),p_course:clean3(document.getElementById('gc3course')?.value),p_problem:issue});if(r.error)return alert('Learning Request could not be posted: '+r.error.message);const id=r.data?.id||r.data?.request_id||r.data?.requestId;if(id){const d=await s.rpc('gc_set_learning_request_deadline',{p_request_id:id,p_deadline:new Date(deadline).toISOString()});if(d.error)await s.from('gc_learning_requests_v2').update({learning_deadline:new Date(deadline).toISOString()}).eq('id',id).eq('student_id',profileId3())}alert('Learning Request '+(r.data?.request_code||'created')+'. 100 coins are debited and HELD WITH ADMIN.');await render3()}
 async function accept3(id){const s=S();if(!s)return;const r=await s.rpc('gc_accept_learning_request',{p_request_id:id});if(r.error)return alert(r.error.message);alert('Connected to the Student. Coins remain on hold until completion and Student confirmation.');render3()}
 async function complete3(id){const s=S();if(!s)return;const r=await s.rpc('gc_tutor_complete_learning_request',{p_request_id:id});if(r.error)return alert(r.error.message);alert('Marked completed. Student must now confirm the outcome.');render3()}
 async function outcome3(id,outcome){const s=S();if(!s)return;const r=await s.rpc('gc_student_learning_request_outcome',{p_request_id:id,p_outcome:outcome});if(r.error)return alert(r.error.message);alert('Outcome submitted to Admin for review.');render3()}
@@ -16475,5 +16462,148 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){install();setTimeout(install,1500);}, {once:true});
   else {install();setTimeout(install,1500);}
   window.addEventListener('load',install,{once:true});
+})();
+</script>
+<!-- GURU CONNECT V15.5 FINAL AUTH + MENU REPAIR -->
+<script id="gc-v15-5-final-auth-menu-repair">
+(function(){
+  'use strict';
+  const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
+  const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+  const STAFF_EMAIL='swami@gmail.com';
+  function client(){
+    if(window.gcSupabase) return window.gcSupabase;
+    if(window.supabase?.createClient) return window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+    return null;
+  }
+  function by(id){return document.getElementById(id)}
+  function setRole(role){
+    const r=by('loginRoleInput'); if(r) r.value=role;
+    const t=by('gcUnifiedLoginTitle'); if(t) t.textContent=role==='staff'?'Staff / Admin Login':'GURU CONNECT LOGIN';
+    const e=by('loginEmailInput'); if(e){e.placeholder=role==='staff'?'Staff/Admin email':'your@email.com'; if(role==='staff')e.value=STAFF_EMAIL;}
+    const p=by('loginPasswordInput'); if(p) p.value='';
+    const reset=by('gcFinalLoginReset'); if(reset){reset.textContent=role==='student'?'🔑 STUDENT PASSWORD RESET':role==='tutor'?'🔑 TUTOR PASSWORD RESET':'🔑 PASSWORD RESET';}
+  }
+  window.openLoginModal=function(role){
+    role=String(role||'student').toLowerCase();
+    if(!['student','tutor','staff'].includes(role)) role='student';
+    setRole(role);
+    const m=by('loginModal');
+    if(m){m.classList.remove('hidden');m.style.display='flex';m.setAttribute('aria-hidden','false');}
+    try{window.closeNavMenu?.()}catch(_){ }
+    setTimeout(()=>by('loginEmailInput')?.focus(),80);
+  };
+  window.closeLoginModal=function(){const m=by('loginModal');if(m){m.classList.add('hidden');m.style.display='none';m.setAttribute('aria-hidden','true');}};
+  window.openStaffLoginModal=function(){window.openLoginModal('staff')};
+  window.closeStaffLoginModal=function(){window.closeLoginModal()};
+
+  // Cloud Staff session — deliberately uses Supabase Authentication only.
+  // No staff password is stored in the website source.
+  window.ensureStaffCloud=async function(){
+    const s=client(); if(!s) throw new Error('Supabase is not connected.');
+    const q=await s.auth.getSession();
+    const u=q.data?.session?.user;
+    if(!u) throw new Error('Staff/Admin Supabase session is missing. Please use STAFF / ADMIN LOGIN.');
+    if(String(u.email||'').toLowerCase()!==STAFF_EMAIL) throw new Error('This account is not the configured Staff/Admin account.');
+    localStorage.setItem('is_staff_logged','true');
+    localStorage.setItem('gc_staff_supabase_auth','true');
+    return u;
+  };
+
+  window.handleStaffLogin=async function(e){
+    if(e)e.preventDefault();
+    const email=(by('loginEmailInput')?.value||by('staffUserInput')?.value||'').trim().toLowerCase();
+    const password=by('loginPasswordInput')?.value||by('staffPassInput')?.value||'';
+    if(email!==STAFF_EMAIL){alert('Use the registered Staff/Admin email: '+STAFF_EMAIL);return false;}
+    if(!password){alert('Enter the Staff/Admin password.');return false;}
+    const s=client(); if(!s){alert('Supabase is not connected.');return false;}
+    try{
+      const r=await s.auth.signInWithPassword({email,password});
+      if(r.error)throw r.error;
+      const u=r.data?.user,session=r.data?.session;
+      if(!u||!session)throw new Error('Supabase did not create a Staff/Admin session.');
+      if(String(u.email||'').toLowerCase()!==STAFF_EMAIL)throw new Error('This account is not the configured Staff/Admin account.');
+      localStorage.setItem('is_staff_logged','true');
+      localStorage.setItem('gc_staff_supabase_auth','true');
+      localStorage.removeItem('active_user_role');
+      localStorage.removeItem('active_user_profile_id');
+      localStorage.removeItem('active_user_id');
+      window.closeLoginModal();
+      try{window.closeStaffLoginModal?.()}catch(_){ }
+      try{window.checkStaffSessionState?.()}catch(_){ }
+      setTimeout(()=>{try{window.renderAdminQueue?.()}catch(_){ }try{window.GC_ADMIN_ESCROW?.refresh?.()}catch(_){ }},250);
+      return true;
+    }catch(err){
+      console.error('Staff login failed',err);
+      alert('Staff/Admin Login failed:\n\n'+(err?.message||String(err)));
+      return false;
+    }
+  };
+
+  // One authoritative login handler for the visible Login modal.
+  window.gcEmailLogin=async function(){
+    const role=String(by('loginRoleInput')?.value||'student').toLowerCase();
+    if(role==='staff') return window.handleStaffLogin({preventDefault(){}});
+    const email=(by('loginEmailInput')?.value||'').trim().toLowerCase();
+    const password=by('loginPasswordInput')?.value||'';
+    if(!/^\S+@\S+\.\S+$/.test(email))return alert('Enter your registered email address.');
+    if(!password)return alert('Enter your password.');
+    const s=client(); if(!s)return alert('Supabase is not connected. Please refresh the page.');
+    try{
+      const r=await s.auth.signInWithPassword({email,password});
+      if(r.error)throw r.error;
+      const u=r.data?.user;
+      if(!u)throw new Error('No authenticated user was returned.');
+      if(!u.email_confirmed_at){try{await s.auth.signOut()}catch(_){ }throw new Error('Please verify your email first. Check your verification email.');}
+      const ident=await s.rpc('gc_get_my_member_profile');
+      if(ident.error)throw ident.error;
+      const actual=String(ident.data?.role||'').toLowerCase(),p=ident.data?.profile||null;
+      if(!p||!['student','tutor'].includes(actual)||String(p.user_id||'')!==String(u.id))throw new Error('This authenticated account is not linked to a registered Student/Tutor profile. Please run the V15.2 identity migration SQL once.');
+      if(actual!==role)throw new Error('This email belongs to a registered '+actual.toUpperCase()+' account. Select '+actual.toUpperCase()+' in the login box.');
+      localStorage.setItem('active_user_name',p.name||p.full_name||email.split('@')[0]);
+      localStorage.setItem('active_user_email',email);
+      localStorage.setItem('active_user_phone',p.phone||'');
+      localStorage.setItem('active_user_role',actual);
+      localStorage.setItem('active_user_profile_id',String(p.id));
+      localStorage.setItem('active_user_id',String(u.id));
+      localStorage.removeItem('is_staff_logged');
+      localStorage.removeItem('gc_staff_supabase_auth');
+      window.closeLoginModal();
+      location.href='dashboard.html?login=success';
+    }catch(err){
+      try{await s.auth.signOut()}catch(_){ }
+      alert('Login failed:\n\n'+(err?.message||String(err)));
+    }
+  };
+
+  window.gcResetPassword=function(){
+    const email=(by('loginEmailInput')?.value||'').trim().toLowerCase();
+    location.href='forgot-password.html'+(email?'?email='+encodeURIComponent(email):'');
+  };
+
+  function addMenu(id,text,href,handler){
+    const nav=by('publicNavbarLinks'); if(!nav)return;
+    let a=by(id);
+    if(!a){a=document.createElement('a');a.id=id;nav.appendChild(a);}
+    a.href=href||'javascript:void(0)'; a.textContent=text; a.className='gc-final-single-login';
+    Object.assign(a.style,{display:'flex',alignItems:'center',justifyContent:'flex-start',gap:'7px',width:'100%',boxSizing:'border-box',padding:'10px 12px',margin:'3px 0',borderRadius:'11px',fontWeight:'900',textDecoration:'none',cursor:'pointer'});
+    a.onclick=handler||null;
+    return a;
+  }
+  function installMenu(){
+    const nav=by('publicNavbarLinks'); if(!nav)return;
+    addMenu('gcV155LearningRequests','📚 LEARNING REQUESTS','learning.html',function(e){e.preventDefault();location.href='learning.html'});
+    addMenu('gcV155StaffLogin','🛡️ STAFF / ADMIN LOGIN','javascript:void(0)',function(e){e.preventDefault();e.stopPropagation();window.openLoginModal('staff');});
+    addMenu('gcV155StudentReset','🔑 STUDENT PASSWORD RESET','forgot-password.html?role=student',function(e){e.preventDefault();location.href='forgot-password.html?role=student';});
+    addMenu('gcV155TutorReset','🔑 TUTOR PASSWORD RESET','forgot-password.html?role=tutor',function(e){e.preventDefault();location.href='forgot-password.html?role=tutor';});
+    let sep=by('gcV155AuthSep'); if(!sep){sep=document.createElement('div');sep.id='gcV155AuthSep';sep.style.cssText='height:1px;background:#e2e8f0;margin:7px 0';nav.appendChild(sep)}
+  }
+  function patchLoginReset(){
+    const old=by('loginModal')?.querySelector('button[onclick="gcResetPassword()"]');
+    if(old){old.id='gcFinalLoginReset';old.onclick=()=>window.gcResetPassword();}
+  }
+  function boot(){installMenu();patchLoginReset();}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{boot();setTimeout(boot,700);setTimeout(boot,1800)});else{boot();setTimeout(boot,700);setTimeout(boot,1800)}
+  window.addEventListener('load',boot);
 })();
 </script>
