@@ -4643,7 +4643,6 @@ footer:before{
 <a href="#studentsDirectory">Find Student</a>
 <a href="learning.html">Learning Request</a>
 <a href="#registrationSection">Register</a>
-<a href="javascript:void(0)" onclick="openLoginModal()">Login</a>
 </nav>
 <div class="gc-header-actions">
 <button class="bg-slate-100 hover:bg-slate-200 text-brand-dark text-[11px] sm:text-xs font-bold px-2 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition shadow flex items-center gap-1" id="navLoginBtn" onclick="openLoginModal()" style="display:none!important"><i class="fa-solid fa-right-to-bracket"></i><span class="hidden sm:inline">LOGIN</span></button> <div aria-label="Logged in user" id="currentUserBadge">
@@ -12801,39 +12800,7 @@ window.GC_PROFILE_COINS_REFRESH=paint;
   .gc-menu-tutor,
   .gc-menu-staff { display:none!important; }
 </style>
-<script id="gc-final-one-login-only-js">
-(function(){
-  'use strict';
-  function cleanLoginUI(){
-    const menu=document.getElementById('publicNavbarLinks');
-    if(menu){
-      menu.querySelectorAll('.gc-login-menu-group,.gc-menu-login-student,.gc-menu-login-tutor,.gc-menu-login-staff,.gc-menu-student,.gc-menu-tutor,.gc-menu-staff').forEach(x=>x.remove());
-      [...menu.querySelectorAll('a,button')].forEach(x=>{
-        const t=(x.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
-        if(t==='student login'||t==='tutor login'||t==='staff login'||t==='staff') x.remove();
-      });
-      let login=menu.querySelector('[data-gc-single-login]');
-      if(!login){
-        login=document.createElement('a');
-        login.setAttribute('data-gc-single-login','1');
-        login.href='javascript:void(0)';
-        login.textContent='🔐  LOGIN';
-        login.className='gc-menu-login gc-single-login';
-        login.style.cssText='display:flex!important;align-items:center;min-height:44px;margin:2px 0;padding:10px 13px;border-radius:11px;font-size:12px;font-weight:900;letter-spacing:.15px;text-decoration:none;background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;color:#fff!important;';
-        menu.appendChild(document.createElement('div')).className='gc-menu-divider';
-        menu.appendChild(login);
-      }
-      login.onclick=function(e){e.preventDefault();e.stopImmediatePropagation();try{window.closeNavMenu?.()}catch(_){};window.openLoginModal('student');return false;};
-    }
-    const oldStaff=document.getElementById('staffLoginModal'); if(oldStaff) oldStaff.remove();
-    const oldNav=document.getElementById('navStaffBtn'); if(oldNav) oldNav.style.display='none';
-  }
-  function start(){cleanLoginUI();setTimeout(cleanLoginUI,100);setTimeout(cleanLoginUI,700);setTimeout(cleanLoginUI,1500);setTimeout(cleanLoginUI,3000);}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-  const obs=new MutationObserver(()=>cleanLoginUI());
-  try{obs.observe(document.body,{childList:true,subtree:true});}catch(_){ }
-})();
-</script>
+
 <script>(function(){
 'use strict';
 const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
@@ -15024,3 +14991,27 @@ window.GC_UNIFIED_LOGIN_READY=true;
 })();
 </script>
 
+\n<!-- GURU CONNECT FINAL: AUTHORITATIVE SINGLE MENU LOGIN -->
+<script id="gc-final-authoritative-single-menu-login">
+(function(){
+  'use strict';
+  function run(){
+    document.querySelectorAll('header .gc-beautiful-nav a').forEach(a=>{const t=(a.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();if(/^(login|student login|tutor login|staff login|staff)$/.test(t))a.remove();});
+    const n=document.getElementById('navLoginBtn');if(n)n.style.display='none';
+    const menu=document.getElementById('publicNavbarLinks');if(!menu)return;
+    let login=null;
+    [...menu.querySelectorAll('a,button')].forEach(el=>{
+      const t=(el.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+      if(!/^(?:🔐\s*)?login$/.test(t)&&!/^(student|tutor|staff)\s+login$/.test(t)&&t!=='staff')return;
+      if(!login)login=el;else el.remove();
+    });
+    if(!login){login=document.createElement('a');login.href='javascript:void(0)';login.textContent='🔐 LOGIN';login.className='gc-final-single-login';menu.appendChild(document.createElement('div')).className='gc-menu-divider';menu.appendChild(login);}
+    login.id='gcFinalMenuLogin';
+    login.className='gc-final-single-login bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 text-[11px] sm:text-sm font-black rounded-xl transition';
+    login.onclick=e=>{e.preventDefault();e.stopImmediatePropagation();try{window.closeNavMenu?.()}catch(_){};window.openLoginModal('student');return false;};
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
+  window.addEventListener('load',run);[100,500,1500,3000,6000].forEach(t=>setTimeout(run,t));
+  try{new MutationObserver(()=>run()).observe(document.body,{childList:true,subtree:true});}catch(_){ }
+})();
+</script>
