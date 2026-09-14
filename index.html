@@ -15080,17 +15080,18 @@ setInterval(()=>{if(isStaff()&&dash()&&!dash().classList.contains('hidden')){ens
 'use strict';
 function cleanMenu(){
  const menu=document.getElementById('publicNavbarLinks');if(!menu)return;
- // Remove every legacy public LOGIN entry except the authoritative one.
- const loginItems=[...menu.querySelectorAll('a,button')].filter(x=>/^\s*(🔐\s*)?(login|student login|tutor login|staff login)\s*$/i.test((x.textContent||'').trim()));
+ // Keep exactly ONE Login entry inside the public mobile/menu navigation.
+ const items=[...menu.querySelectorAll('a,button')];
  let keep=document.getElementById('gcFinalMenuLogin');
  if(!keep){keep=document.createElement('a');keep.id='gcFinalMenuLogin';keep.href='javascript:void(0)';keep.className='gc-final-single-login bg-blue-600 text-white px-5 py-3 text-[11px] sm:text-sm font-black rounded-xl transition';keep.textContent='🔐 LOGIN';menu.appendChild(keep)}
- loginItems.forEach(x=>{if(x!==keep)x.remove()});
+ items.forEach(x=>{if(x===keep)return;const id=(x.id||'').toLowerCase();const txt=(x.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();const isLogin=id.includes('navlogin')||id.includes('loginbtn')||/^(🔐\s*)?(login|student login|tutor login|staff login)$/.test(txt);if(isLogin)x.remove()});
  keep.onclick=function(e){e.preventDefault();e.stopImmediatePropagation();try{window.closeNavMenu?.()}catch(_){};window.openLoginModal?.('student');return false};
  let reset=document.getElementById('gcPublicPasswordReset');
- if(!reset){reset=document.createElement('a');reset.id='gcPublicPasswordReset';reset.href='forgot-password.html';reset.textContent='🔑 PASSWORD RESET';const divider=document.createElement('div');divider.className='gc-menu-divider';const loginDivider=keep.previousElementSibling;if(loginDivider&&loginDivider.classList.contains('gc-menu-divider')){menu.insertBefore(reset,loginDivider)}else{menu.insertBefore(divider,keep);menu.insertBefore(reset,divider)}}
+ if(!reset){reset=document.createElement('a');reset.id='gcPublicPasswordReset';reset.href='forgot-password.html';reset.textContent='🔑 PASSWORD RESET';const divider=document.createElement('div');divider.className='gc-menu-divider';const before=keep.previousElementSibling;if(before&&before.classList.contains('gc-menu-divider'))menu.insertBefore(reset,before);else{menu.insertBefore(divider,keep);menu.insertBefore(reset,divider)}}
  reset.onclick=function(){try{window.closeNavMenu?.()}catch(_){};return true};
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',cleanMenu);else cleanMenu();
-window.addEventListener('load',()=>{cleanMenu();setTimeout(cleanMenu,500);setTimeout(cleanMenu,1500)});
+window.addEventListener('load',()=>{cleanMenu();setTimeout(cleanMenu,300);setTimeout(cleanMenu,1000);setTimeout(cleanMenu,2000)});
+try{new MutationObserver(()=>cleanMenu()).observe(document.getElementById('publicNavbarLinks')||document.body,{childList:true,subtree:true});}catch(_){}
 })();
 </script>
