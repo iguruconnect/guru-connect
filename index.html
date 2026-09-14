@@ -16710,3 +16710,19 @@ button,.gc-v16-btn{transition:transform .15s ease,box-shadow .15s ease,filter .1
 button:hover:not(:disabled),.gc-v16-btn:hover:not(:disabled){transform:translateY(-1px)!important}
 @media(max-width:700px){#studentFormCard,#tutorFormCard{border-radius:20px!important;padding:18px!important}#studentRegForm .flex.gap-2,#tutorRegForm .flex.gap-2{align-items:stretch!important}#studentRegForm .flex.gap-2 input,#tutorRegForm .flex.gap-2 input{min-width:0!important;flex:1 1 auto!important}#studentRegForm .flex.gap-2 button,#tutorRegForm .flex.gap-2 button{flex:0 0 auto!important}}
 </style>
+
+<script id="gc-v16-final-menu-cleanup">
+(function(){
+'use strict';
+function clean(){const nav=document.getElementById('publicNavbarLinks');if(!nav)return;
+ const nodes=[...nav.querySelectorAll('a,button')];
+ nodes.forEach(el=>{const t=(el.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();if(!t)return;
+   if(/learning requests/.test(t)||/student login/.test(t)||/tutor login/.test(t)||/staff\s*\/\s*admin\s*login/.test(t)||/^.*staff login.*$/.test(t)||/student password reset/.test(t)||/tutor password reset/.test(t)||/^password reset$/.test(t)||t.includes('gcfinalmenulogin') ) el.remove();
+ });
+ document.getElementById('gcFinalMenuDivider')?.remove();document.getElementById('gcV155AuthSep')?.remove();const divider=document.createElement('div');divider.id='gcFinalMenuDivider';divider.style.cssText='height:1px;background:#e2e8f0;margin:8px 0';nav.appendChild(divider);
+ const items=[['gcFinalLR','📚 LEARNING REQUESTS','learning.html'],['gcFinalStudent','🎓 STUDENT LOGIN','login-student.html'],['gcFinalTutor','🎓 TUTOR LOGIN','login-tutor.html'],['gcFinalStaff','🛡️ STAFF / ADMIN LOGIN','login-staff.html'],['gcFinalReset','🔑 PASSWORD RESET','forgot-password.html']];
+ items.forEach(([id,text,href])=>{const a=document.createElement('a');a.id=id;a.href=href;a.textContent=text;a.style.cssText='display:flex;align-items:center;width:100%;box-sizing:border-box;padding:11px 12px;margin:3px 0;border-radius:11px;font-weight:900;text-decoration:none;color:#334155;background:#fff;';nav.appendChild(a)});
+} function boot(){clean()} if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();setTimeout(clean,300);setTimeout(clean,1200);setTimeout(clean,2500);
+ const obs=new MutationObserver(()=>{if(!document.getElementById('gcFinalStaff'))clean()});obs.observe(document.documentElement,{subtree:true,childList:true});
+})();
+</script>
