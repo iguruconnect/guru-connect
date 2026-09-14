@@ -10376,7 +10376,7 @@ body {
    * Never put the service_role/secret key in this HTML.
    */
   const GC_SUPABASE_URL = 'https://hzqqswrnawrfgufbxgay.supabase.co';
-  const GC_SUPABASE_ANON_KEY = 'sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+  const GC_SUPABASE_ANON_KEY = 'sb_publishable_Oc5HvDqDpisv76XrdsyFhiw_IpostIDu';
 
   let gcSupabase = null;
   let gcCloudEnabled = false;
@@ -11622,7 +11622,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
     if(window.supabase && !window.gcSupabase){
       try{
         const url='https://hzqqswrnawrfgufbxgay.supabase.co';
-        const key='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+        const key='sb_publishable_Oc5HvDqDpisv76XrdsyFhiw_IpostIDu';
         window.gcSupabase=window.supabase.createClient(url,key,{
           auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}
         });
@@ -12980,7 +12980,7 @@ window.GC_PROFILE_COINS_REFRESH=paint;
 <script>(function(){
 'use strict';
 const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
-const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+const SUPABASE_KEY='sb_publishable_Oc5HvDqDpisv76XrdsyFhiw_IpostIDu';
 function S(){return window.gcSupabase||(window.supabase&&window.supabase.createClient?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null)}
 function by(id){return document.getElementById(id)}
 function roleSet(role){
@@ -13742,7 +13742,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
 (function(){
   'use strict';
   const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
-  const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+  const SUPABASE_KEY='sb_publishable_Oc5HvDqDpisv76XrdsyFhiw_IpostIDu';
   const FN_URL=SUPABASE_URL+'/functions/v1/admin-create-user';
   const $=id=>document.getElementById(id);
   const S=()=>window.gcSupabase||(window.supabase&&window.supabase.createClient?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null);
@@ -15322,7 +15322,7 @@ setInterval(()=>{if(document.getElementById('gcMyChatPanel')&&role()!=='admin')r
 <script id="gc-kingdom-profile-connect">
 (function(){
   const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
-  const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+  const KEY='sb_publishable_Oc5HvDqDpisv76XrdsyFhiw_IpostIDu';
   function client(){return window.gcSupabase||window.supabase?.createClient(URL,KEY)||null}
   async function session(){const s=client();if(!s)return null;const q=await s.auth.getSession();return q.data?.session?.user||null}
   async function findProfile(uid,kind){const s=client();if(!s)return null;const table=kind==='student'?'student_profiles':'tutor_profiles';const q=await s.from(table).select('*').eq('user_id',uid).maybeSingle();return q.data||null}
@@ -15578,7 +15578,7 @@ body:not(.gc-dashboard-page) .gc-account-logout{display:none!important;}
 'use strict';
 const STAFF_EMAIL='swami@gmail.com';
 const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
-const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+const SUPABASE_KEY='sb_publishable_Oc5HvDqDpisv76XrdsyFhiw_IpostIDu';
 function S(){return window.gcSupabase || (window.supabase&&window.supabase.createClient?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null)}
 function el(id){return document.getElementById(id)}
 function setRole(role){const r=el('loginRoleInput');if(r)r.value=role;const t=el('gcUnifiedLoginTitle');if(t)t.textContent=role==='staff'?'Staff / Admin Login':'GURU CONNECT LOGIN';const e=el('loginEmailInput');if(e){e.placeholder=role==='staff'?'Staff/Admin email':'your@email.com';}const f=el('gcStaffHint');if(f)f.style.display=role==='staff'?'block':'none';}
