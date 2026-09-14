@@ -1,1 +1,33 @@
-<!doctype html><meta http-equiv="refresh" content="0;url=reset-password.html"><script>location.replace('reset-password.html');</script><p>Redirecting to the secure GURU CONNECT password reset page…</p>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GURU CONNECT — Verify Reset OTP</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;font-family:Inter,Arial,sans-serif;background:linear-gradient(135deg,#06142f,#123b8f 55%,#06b6d4);display:grid;place-items:center;padding:18px;color:#10234e}.card{width:min(560px,100%);background:#fff;border-radius:28px;overflow:hidden;box-shadow:0 30px 100px #0006}.head{text-align:center;padding:25px 22px 18px;background:#eff6ff;border-bottom:1px solid #dbeafe}.logo{width:min(240px,72%);max-height:74px;object-fit:contain}.head h1{margin:12px 0 6px;font-size:27px}.head p{margin:0;color:#64748b;font-size:12px;line-height:1.55}.body{padding:24px}.label{display:block;font-size:10px;font-weight:950;text-transform:uppercase;letter-spacing:.7px;margin:0 0 7px;color:#475569}.input{width:100%;padding:14px;border:1px solid #cbd5e1;border-radius:13px;font-size:16px;font-weight:700;outline:none}.input:focus{border-color:#155eef;box-shadow:0 0 0 4px #dbeafe}.row{display:flex;gap:9px}.row .input{flex:1}.btn{border:0;border-radius:13px;padding:14px 16px;background:#155eef;color:#fff;font-weight:950;cursor:pointer;white-space:nowrap}.mainbtn{width:100%;margin-top:14px}.btn:disabled{opacity:.6;cursor:not-allowed}.copy{background:#0f766e}.msg{display:none;margin-top:14px;padding:12px 14px;border-radius:12px;font-size:12px;line-height:1.5;font-weight:750}.msg.show{display:block}.ok{background:#ecfdf5;border:1px solid #bbf7d0;color:#166534}.err{background:#fff1f2;border:1px solid #fecdd3;color:#991b1b}.linkbox{margin-top:17px;padding:15px;border-radius:15px;background:#eff6ff;border:1px solid #bfdbfe;text-align:center}.linkbox a{color:#155eef;font-weight:950;text-decoration:none}.note{margin-top:14px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:13px;padding:12px;font-size:11px;line-height:1.5}.back{display:block;text-align:center;margin-top:17px;color:#155eef;font-size:11px;font-weight:900;text-decoration:none}
+</style>
+</head>
+<body><main class="card">
+<section class="head"><img class="logo" src="guru-connect-logo.png" alt="GURU CONNECT"><h1>Verify Your Reset OTP</h1><p>Enter the registered email and the newest OTP received from GURU CONNECT.</p></section>
+<section class="body">
+<label class="label" for="email">Registered Email</label><input id="email" class="input" type="email" autocomplete="email" placeholder="you@example.com">
+<label class="label" for="otp" style="margin-top:15px">One-Time Password (OTP)</label>
+<div class="row"><input id="otp" class="input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="20" placeholder="Enter OTP"><button id="copy" class="btn copy" type="button">COPY OTP</button></div>
+<button id="verify" class="btn mainbtn" type="button">VERIFY OTP & CONTINUE</button>
+<div id="msg" class="msg"></div>
+<div class="linkbox"><div style="font-size:11px;color:#475569;margin-bottom:7px">After OTP verification, set your new password here:</div><a href="reset-password.html">🔐 OPEN GURU CONNECT PASSWORD RESET PAGE →</a></div>
+<div class="note"><b>Tip:</b> You can paste the OTP directly into the box. Use the newest OTP email; an older code may be expired or already used.</div>
+<a class="back" href="forgot-password.html">← Back to Password Reset Request</a>
+</section></main>
+<script>
+'use strict';
+const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
+const SUPABASE_KEY='sb_publishable_Oc5HvDqDpisv76XrdsyFhiw_IpostIDu';
+// Keep the exact same recovery storage key as reset-password.html so the verified session survives the redirect.
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'guru-connect-password-recovery-v2'}});
+const $=id=>document.getElementById(id),msg=$('msg');
+function show(t,ok=false){msg.textContent=t;msg.className='msg show '+(ok?'ok':'err')}
+$('copy').onclick=async()=>{const v=$('otp').value.trim();if(!v)return show('Enter the OTP first, then tap COPY OTP.');try{await navigator.clipboard.writeText(v);show('OTP copied. You can paste it anywhere you need.',true)}catch(_){$('otp').select();document.execCommand('copy');show('OTP copied to clipboard.',true)}};
+$('verify').onclick=async()=>{const email=$('email').value.trim().toLowerCase(),token=$('otp').value.trim(),btn=$('verify');if(!/^\S+@\S+\.\S+$/.test(email))return show('Enter the registered email address.');if(!token)return show('Enter the OTP from the newest reset email.');btn.disabled=true;btn.textContent='VERIFYING…';try{const {data,error}=await sb.auth.verifyOtp({email,token,type:'recovery'});if(error)throw error;if(!data?.session?.user||data.session.user.is_anonymous===true)throw new Error('A secure recovery session was not created. Please use the newest OTP.');show('OTP verified successfully. Opening the password page…',true);setTimeout(()=>location.href='reset-password.html',500)}catch(e){show('OTP verification failed: '+(e?.message||e))}finally{btn.disabled=false;btn.textContent='VERIFY OTP & CONTINUE'}};
+</script></body></html>
