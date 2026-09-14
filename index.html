@@ -4730,6 +4730,40 @@ footer:before{
 <i class="fa-solid fa-user-graduate"></i> Student Directory (<span id="adminStudentCount">0</span>)
                 </button>
 </div>
+
+<!-- GURU CONNECT V9 — TAB-WISE ADMIN WORKSPACE -->
+<nav id="gcV9AdminTabs" class="gc-v9-tabs" aria-label="Admin sections">
+  <button type="button" data-tab="coin-history">🪙 COIN HISTORY</button>
+  <button type="button" data-tab="user-edit">✏️ USER EDIT</button>
+  <button type="button" data-tab="learning-request">📚 LEARNING REQUEST</button>
+  <button type="button" data-tab="find-user">🔎 FIND USER</button>
+  <button type="button" data-tab="password-reset">🔐 PASSWORD RESET</button>
+  <button type="button" data-tab="coin-approval">🛡️ ADMIN COIN APPROVAL</button>
+</nav>
+
+<div id="gcV9TabStatus" class="gc-v9-tab-status" aria-live="polite"></div>
+
+<section id="gcV9TabCoinHistory" class="gc-v9-tab-panel"></section>
+<section id="gcV9TabUserEdit" class="gc-v9-tab-panel"></section>
+<section id="gcV9TabLearningRequest" class="gc-v9-tab-panel">
+  <div id="gcV9LearningContent" class="gc-v9-empty-card">
+    <h3>📚 Learning Request Records</h3>
+    <p>Open this tab to load the latest Student → Tutor Learning Requests.</p>
+    <button type="button" id="gcV9LoadLearning" class="gc-v9-green-btn">LOAD LEARNING REQUESTS</button>
+  </div>
+</section>
+<section id="gcV9TabFindUser" class="gc-v9-tab-panel"></section>
+<section id="gcV9TabPasswordReset" class="gc-v9-tab-panel">
+  <div class="gc-v9-empty-card">
+    <h3>🔐 Password Reset</h3>
+    <p>Find the user in the <b>FIND USER</b> tab. The matching user and secure password-reset editor will appear here.</p>
+  </div>
+  <div id="gcV9PasswordResults"></div>
+</section>
+<section id="gcV9TabCoinApproval" class="gc-v9-tab-panel">
+  <div id="gcV9ApprovalHost"></div>
+</section>
+
 <!-- ALWAYS-VISIBLE ADMIN LEARNING REQUEST / COIN APPROVAL HOST -->
 <section id="gcAdminLearningEscrow" class="gc-admin-v3" style="display:block!important;width:100%;margin:0 0 18px;order:-999">
   <div class="gc-esc-head"><div><h3>🛡️ LEARNING REQUEST • COIN APPROVAL</h3><p>Admin approval queue — click REFRESH to load held coins and pending decisions.</p></div><div class="gc-esc-filter"><button class="gc-esc-refresh" type="button" id="gcV3StaticRefresh">↻ REFRESH</button></div></div>
@@ -12919,13 +12953,10 @@ window.gcEmailLogin=async function(){
   if(typeof oldLogin==='function')return oldLogin();
   alert('Login function is unavailable. Please refresh the page.');
 };
-window.gcResetPassword=async function(){
-  const email=(by('loginEmailInput')?.value||'').trim().toLowerCase();if(!email)return alert('Enter your registered email first.');
-  const s=S();if(!s)return alert('Supabase is not connected.');
-  const btn=document.querySelector('#loginModal button[onclick="gcResetPassword()"]');if(btn){btn.disabled=true;btn.textContent='SENDING…';}
-  try{const r=await s.auth.resetPasswordForEmail(email,{redirectTo:'https://www.guruconnnect.in/reset-password.html'});if(r.error)throw r.error;alert('Password reset link sent to '+email+'. Check Inbox and Spam/Junk.');}
-  catch(err){alert('Password reset failed:\n\n'+(err.message||err));}
-  finally{if(btn){btn.disabled=false;btn.textContent='Forgot password? Send reset email';}}
+window.gcResetPassword=function(){
+  const email=(by('loginEmailInput')?.value||'').trim().toLowerCase();
+  const target='forgot-password.html'+(email?'?email='+encodeURIComponent(email):'');
+  window.location.href=target;
 };
 // ADMIN USER PASSWORD RESET — authoritative server-side implementation.
 // Search and password updates both go through the protected Edge Function.
@@ -13189,6 +13220,170 @@ if(typeof window.renderAdminQueue==='function'){
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{setTimeout(install,250);setTimeout(install,1000)});
 else{setTimeout(install,250);setTimeout(install,1000)}
+})();
+</script>
+
+
+<style id="gc-v9-admin-tabs-style">
+#gcV9AdminTabs{
+ display:grid!important;grid-template-columns:repeat(6,minmax(145px,1fr));gap:8px!important;
+ padding:10px!important;margin:0 0 18px!important;background:#f8fbff!important;
+ border:2px solid #bfdbfe!important;border-radius:18px!important;
+}
+#gcV9AdminTabs button{
+ min-height:50px!important;border:2px solid #dbeafe!important;border-radius:13px!important;
+ background:#fff!important;color:#24508a!important;font-size:12px!important;font-weight:950!important;
+ cursor:pointer!important;transition:transform .12s ease,background .12s ease!important;
+}
+#gcV9AdminTabs button:hover{background:#eff6ff!important;transform:translateY(-1px)}
+#gcV9AdminTabs button.active{background:#2563eb!important;color:#fff!important;border-color:#1d4ed8!important}
+#gcV9AdminTabs button[data-tab="coin-approval"].active{background:#16a34a!important;border-color:#15803d!important}
+.gc-v9-tab-status{min-height:0;margin:0 0 10px;color:#2563eb;font-size:12px;font-weight:850}
+.gc-v9-tab-panel{display:none!important;width:100%!important}
+.gc-v9-tab-panel.active{display:block!important}
+.gc-v9-empty-card{
+ padding:22px!important;border:2px solid #bfdbfe!important;border-radius:18px!important;
+ background:#f8fbff!important;color:#24456f!important
+}
+.gc-v9-empty-card h3{margin:0 0 6px!important;color:#123b8f!important;font-size:20px!important;font-weight:950!important}
+.gc-v9-empty-card p{margin:0 0 14px!important;color:#54709a!important;font-size:13px!important}
+.gc-v9-green-btn{border:0!important;border-radius:12px!important;padding:12px 16px!important;background:#16a34a!important;color:#fff!important;font-weight:950!important;cursor:pointer!important}
+#gcV9TabUserEdit #gcAdminCreateUser{margin-top:0!important}
+#gcV9TabUserEdit #adminTutorSection,#gcV9TabUserEdit #adminStudentSection{margin-top:16px!important}
+#gcV9TabUserEdit #adminTutorSection,#gcV9TabUserEdit #adminStudentSection{display:block!important}
+#gcV9TabCoinHistory #gcAuthAdminCoins{margin:0!important}
+#gcV9TabCoinHistory #gcAuthAdminPasswordReset{display:none!important}
+#gcV9TabFindUser .gc-v9-find-card{
+ padding:20px!important;border:2px solid #bfdbfe!important;border-radius:18px!important;background:#fff!important;
+}
+.gc-v9-find-card h3{margin:0 0 5px!important;color:#123b8f!important;font-size:21px!important;font-weight:950!important}
+.gc-v9-find-card p{margin:0 0 14px!important;color:#64748b!important;font-size:12px!important}
+.gc-v9-find-row{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:10px!important}
+#gcV9TabFindUser #gcAdminResetSearch{width:100%!important;box-sizing:border-box!important;border:2px solid #bfdbfe!important;border-radius:13px!important;padding:13px!important;font-size:14px!important;font-weight:800!important}
+#gcV9TabFindUser #gcAdminResetFindBtn{
+ background:#2563eb!important;color:#fff!important;border:0!important;border-radius:13px!important;padding:13px 20px!important;font-weight:950!important;cursor:pointer!important
+}
+#gcV9TabFindUser #gcAdminResetStatus{margin-top:10px!important;font-size:12px!important;font-weight:850!important;color:#2563eb!important}
+#gcV9TabPasswordReset #gcAdminResetResult{margin-top:0!important}
+#gcV9TabPasswordReset .gc-admin-reset-editor{display:none}
+#gcV9TabPasswordReset .gc-admin-reset-editor:not(.hidden){display:block!important}
+#gcV9TabPasswordReset .gc-admin-reset-confirm{background:#16a34a!important}
+#gcV9TabCoinApproval #gcAdminLearningEscrow{display:block!important;margin:0!important}
+#gcV9TabLearningRequest .gc-v9-lr-table{overflow:auto!important;border:2px solid #bfdbfe!important;border-radius:16px!important;background:#fff!important}
+#gcV9TabLearningRequest table{width:100%!important;border-collapse:collapse!important;min-width:900px!important}
+#gcV9TabLearningRequest th{background:#e0f2fe!important;color:#17356f!important;padding:11px!important;text-align:left!important;font-size:11px!important}
+#gcV9TabLearningRequest td{padding:10px!important;border-top:1px solid #e5edf7!important;color:#365579!important;font-size:12px!important}
+#gcV9TabLearningRequest .lr-held{font-weight:950!important;color:#b45309!important}
+#gcV9TabLearningRequest .lr-connected{font-weight:950!important;color:#047857!important}
+@media(max-width:1050px){#gcV9AdminTabs{grid-template-columns:repeat(3,1fr)!important}}
+@media(max-width:620px){
+ #gcV9AdminTabs{grid-template-columns:repeat(2,1fr)!important}
+ .gc-v9-find-row{grid-template-columns:1fr!important}
+}
+</style>
+
+<script id="gc-v9-admin-tabs-final">
+(function(){
+'use strict';
+const q=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let active='coin-history';
+
+function dash(){return q('staffAdminDashboard')}
+function panel(id){return q(id)}
+function setStatus(t){const x=q('gcV9TabStatus');if(x)x.textContent=t||''}
+
+function move(id,target){
+ const a=q(id),b=q(target);if(a&&b&&a.parentElement!==b)b.appendChild(a);
+}
+function prepareFindAndReset(){
+ const old=q('gcAdminPasswordReset'),find=q('gcV9TabFindUser'),reset=q('gcV9TabPasswordReset');
+ if(!old||!find||!reset)return;
+ let card=q('gcV9FindCard');
+ if(!card){
+  card=document.createElement('div');card.id='gcV9FindCard';card.className='gc-v9-find-card';
+  card.innerHTML='<h3>🔎 FIND REGISTERED USER</h3><p>Search a registered Student or Tutor by email or phone. Search results are handled by the protected Admin function.</p><div class="gc-v9-find-row" id="gcV9FindRow"></div>';
+  find.innerHTML='';find.appendChild(card);
+ }
+ const row=q('gcV9FindRow'),inp=q('gcAdminResetSearch'),btn=q('gcAdminResetFindBtn'),st=q('gcAdminResetStatus');
+ if(row&&inp&&btn){row.appendChild(inp);row.appendChild(btn)}
+ if(find&&st) find.appendChild(st);
+ const result=q('gcAdminResetResult');
+ if(result){reset.appendChild(result)}
+ old.style.display='none';
+}
+
+function prepareUserEdit(){
+ const host=q('gcV9TabUserEdit');
+ if(!host)return;
+ const create=q('gcAdminCreateUser'),t=q('adminTutorSection'),st=q('adminStudentSection');
+ if(create&&create.parentElement!==host)host.appendChild(create);
+ if(t&&t.parentElement!==host)host.appendChild(t);
+ if(st&&st.parentElement!==host)host.appendChild(st);
+}
+function prepareApproval(){
+ const host=q('gcV9ApprovalHost'),escrow=q('gcAdminLearningEscrow');
+ if(host&&escrow&&escrow.parentElement!==host)host.appendChild(escrow);
+}
+function prepareCoinHistory(){
+ const host=q('gcV9TabCoinHistory'),coins=q('gcAuthAdminCoins');
+ if(host&&coins&&coins.parentElement!==host)host.appendChild(coins);
+}
+
+function setActive(name){
+ active=name;
+ document.querySelectorAll('#gcV9AdminTabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===name));
+ document.querySelectorAll('#staffAdminDashboard > .bg-white > .gc-v9-tab-panel').forEach(p=>p.classList.remove('active'));
+ const p={
+  'coin-history':'gcV9TabCoinHistory','user-edit':'gcV9TabUserEdit','learning-request':'gcV9TabLearningRequest',
+  'find-user':'gcV9TabFindUser','password-reset':'gcV9TabPasswordReset','coin-approval':'gcV9TabCoinApproval'
+ }[name];
+ if(q(p))q(p).classList.add('active');
+ if(name==='coin-history'){prepareCoinHistory();setStatus('Coin History — complete account ledger and transaction history.')}
+ if(name==='user-edit'){prepareUserEdit();setStatus('User Edit — Tutor and Student admin records.')}
+ if(name==='learning-request'){loadLearning();setStatus('Learning Request — latest requests and connection status.')}
+ if(name==='find-user'){prepareFindAndReset();setStatus('Find User — search registered accounts.')}
+ if(name==='password-reset'){prepareFindAndReset();setStatus('Password Reset — select a user from Find User results and set a new password.')}
+ if(name==='coin-approval'){prepareApproval();setStatus('Admin Coin Approval — approve or deny held GURU COINS.');window.GC_ADMIN_ESCROW?.refresh?.()}
+}
+
+async function loadLearning(){
+ const host=q('gcV9LearningContent');if(!host)return;
+ host.innerHTML='<div class="gc-v9-empty-card"><h3>📚 Learning Request Records</h3><p>Loading latest requests…</p></div>';
+ const s=window.gcSupabase;if(!s){host.innerHTML='<div class="gc-v9-empty-card"><h3>📚 Learning Request Records</h3><p>Supabase is not connected.</p></div>';return}
+ try{
+  const r=await s.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(500);
+  if(r.error)throw r.error;
+  const rows=r.data||[];
+  host.innerHTML='<div class="gc-v9-lr-table"><table><thead><tr><th>Request</th><th>Student</th><th>Tutor</th><th>Subject</th><th>Status</th><th>Coins Held</th><th>Created</th></tr></thead><tbody>'+
+   (rows.length?rows.map(x=>'<tr><td><b>'+esc(x.request_code||x.id)+'</b></td><td>'+esc(x.student_short_id||x.student_id||'—')+'</td><td class="'+(x.tutor_id?'lr-connected':'')+'">'+esc(x.tutor_short_id||x.tutor_id||'Not connected')+'</td><td>'+esc(x.subject||'—')+'</td><td>'+esc(String(x.status||'').replaceAll('_',' '))+'</td><td class="lr-held">🪙 '+Number(x.coins_held||0)+'</td><td>'+esc(x.created_at||'')+'</td></tr>').join(''):'<tr><td colspan="7">No Learning Requests found.</td></tr>')+
+   '</tbody></table></div>';
+ }catch(e){host.innerHTML='<div class="gc-v9-empty-card"><h3>📚 Learning Request Records</h3><p>Could not load Learning Requests: '+esc(e.message||e)+'</p></div>'}
+}
+
+function prepare(){
+ const d=dash();if(!d||d.classList.contains('hidden'))return;
+ prepareFindAndReset();prepareUserEdit();prepareApproval();prepareCoinHistory();
+ const oldBar=q('gcAdminWorkflowBar');if(oldBar)oldBar.style.display='none';
+ const oldTutorBtn=q('adminTabTutorsBtn'),oldStudentBtn=q('adminTabStudentsBtn');
+ if(oldTutorBtn)oldTutorBtn.style.display='none';if(oldStudentBtn)oldStudentBtn.style.display='none';
+ // Move tab nav into the dashboard card if not already there.
+ const tabs=q('gcV9AdminTabs'),card=d.querySelector('.bg-white');
+ if(tabs&&card&&tabs.parentElement!==card)card.insertBefore(tabs,card.children[1]||null);
+ if(tabs&&!tabs.dataset.bound){
+  tabs.dataset.bound='1';
+  tabs.querySelectorAll('button[data-tab]').forEach(b=>b.addEventListener('click',()=>setActive(b.dataset.tab)));
+  q('gcV9LoadLearning')?.addEventListener('click',loadLearning);
+  document.addEventListener('click',function(e){
+    const open=e.target.closest?.('.gc-admin-reset-open');
+    if(open)setTimeout(()=>setActive('password-reset'),0);
+  });
+ }
+ setActive(active);
+}
+function boot(){setTimeout(prepare,250);setTimeout(prepare,900)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+window.addEventListener('load',boot);
 })();
 </script>
 
@@ -15214,7 +15409,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeEleme
 function boot(){if(!dash()||dash().classList.contains('hidden'))return;ensureBar();ensureEscrow();renderEscrow()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,500));else setTimeout(boot,500);
 window.addEventListener('load',()=>setTimeout(boot,900));
-setInterval(()=>{if(isStaff()&&dash()&&!dash().classList.contains('hidden')){ensureBar();ensureEscrow()}},2500);
+/* V9: disabled legacy admin polling; tab controller owns admin layout. */
 })();
 </script>
 
