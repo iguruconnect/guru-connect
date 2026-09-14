@@ -14964,28 +14964,12 @@ window.gcEmailLogin=async function(){
 };
 
 // Password reset for Student, Tutor and Staff/Admin. Uses the same public client and a dedicated reset page.
-window.gcResetPassword=async function(){
+window.gcResetPassword=function(){
+  // Use the single dedicated OTP recovery flow. This avoids creating
+  // competing recovery sessions from the login modal.
   const email=(el('loginEmailInput')?.value||'').trim().toLowerCase();
-  if(!email){alert('Enter your registered email first.');return;}
-  if(!/^\S+@\S+\.\S+$/.test(email)){alert('Enter a valid registered email address.');return;}
-  const s=S();
-  if(!s){alert('Supabase is not connected. Please refresh the website.');return;}
-  const btn=document.querySelector('button[onclick="gcResetPassword()"]');
-  if(btn){btn.disabled=true;btn.textContent='SENDING RESET LINK…';}
-  try{
-    const redirectTo='https://www.guruconnnect.in/reset-password.html';
-    const r=await s.auth.resetPasswordForEmail(email,{redirectTo});
-    if(r.error)throw r.error;
-    alert('Password reset link sent to '+email+'. Please check Inbox and Spam/Junk.');
-  }catch(err){
-    console.error('Password reset failed',err);
-    const msg=String(err?.message||err||'Unknown error');
-    if(/invalid api key|api key/i.test(msg)){
-      alert('Supabase rejected the website API key. Please make sure the LIVE website is using the current Supabase Publishable Key for project hzqqswrnawrfgufbxgay.');
-    }else if(/redirect|url|allow|not allowed/i.test(msg)){
-      alert('Supabase is blocking the reset redirect. Add this exact URL in Authentication → URL Configuration → Redirect URLs:\n\nhttps://www.guruconnnect.in/reset-password.html');
-    }else alert('Password reset failed:\n\n'+msg);
-  }finally{if(btn){btn.disabled=false;btn.textContent='Forgot password? Send reset email';}}
+  const target='forgot-password.html'+(email?'?email='+encodeURIComponent(email):'');
+  window.location.href=target;
 };
 
 // Ensure the modal is opaque and clicking outside returns to the website.
