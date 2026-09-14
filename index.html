@@ -12594,14 +12594,39 @@ async function paintDashboard(p){
 }
 function hookDashboard(){const old=window.renderUserDashboard;if(typeof old!=='function'||old.__gcAuthHook)return;const f=function(p){const r=old.apply(this,arguments);window.__gcAuthProfile=p;setTimeout(()=>paintDashboard(p),50);return r};f.__gcAuthHook=true;window.renderUserDashboard=f}
 async function loadPeople(q,kind){
- const s=S();if(!s||!q)return[];let out=[];
- async function one(table,role){if(kind!=='all'&&kind!==role)return;let r=await s.from(table).select('*').limit(3000);if(r.error){console.warn(table,r.error);return}for(const x of (r.data||[])){
-   if(x.is_illustrative===true)continue;
-   const id=String(x.id||'');if(!id)continue;const sid=publicId(id,role);
-   const vals=Object.entries(x).map(([k,v])=>String(v??'')).join(' ')+' '+sid;
-   if(vals.toLowerCase().includes(q))out.push({...x,__role:role,__id:id,__sid:sid});
- }}
- await Promise.all([one('tutor_profiles','tutor'),one('student_profiles','student')]);return out.slice(0,50);
+ const s=S();if(!s||!q)return[];const term=clean(q).toLowerCase(),phone=term.replace(/\D/g,'');const out=new Map();
+ const FN='https://hzqqswrnawrfgufbxgay.supabase.co/functions/v1/admin-create-user';
+ // Authoritative Admin lookup first so Auth email/phone can be matched even when
+ // role tables do not carry contact fields.
+ try{
+   const sess=await s.auth.getSession(),token=sess.data?.session?.access_token;
+   if(token){
+     const rr=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action:'find_users',term:q})});
+     const dd=await rr.json().catch(()=>null);
+     if(rr.ok&&Array.isArray(dd?.users))for(const r of dd.users){
+       const role=clean(r.role).toLowerCase();if(kind!=='all'&&kind!==role)continue;
+       const table=role==='student'?'student_profiles':'tutor_profiles';let pr=null;
+       if(r.user_id){const x=await s.from(table).select('*').eq('user_id',String(r.user_id)).maybeSingle();if(!x.error)pr=x.data||null}
+       if(!pr&&r.id){const x=await s.from(table).select('*').eq('id',String(r.id)).maybeSingle();if(!x.error)pr=x.data||null}
+       const id=String(pr?.id||r.profile_id||r.id||'');if(!id)continue;
+       out.set(id,{...(pr||{}),__role:role,__id:id,__sid:publicId(id,role),name:r.name||r.full_name||pr?.name||'User',email:r.email||pr?.email||'',phone:r.phone||pr?.phone||'',user_id:String(r.user_id||pr?.user_id||'')});
+     }
+   }
+ }catch(e){console.warn('Admin coin protected lookup unavailable:',e)}
+ async function tableSearch(table,role){if(kind!=='all'&&kind!==role)return;let q1=null;
+   if(term.includes('@'))q1=await s.from(table).select('*').ilike('email','%'+term+'%').limit(100);
+   else if(phone)q1=await s.from(table).select('*').ilike('phone','%'+phone+'%').limit(100);
+   else q1=await s.from(table).select('*').ilike('name','%'+term+'%').limit(100);
+   if(q1?.error)return;for(const x of q1.data||[]){if(x.is_illustrative===true)continue;const id=String(x.id||'');if(!id)continue;out.set(id,{...x,__role:role,__id:id,__sid:publicId(id,role)})}
+ }
+ await Promise.all([tableSearch('tutor_profiles','tutor'),tableSearch('student_profiles','student')]);
+ // Last fallback through canonical profiles, then resolve the actual role-table id
+ // used by gc_coin_wallets.
+ try{
+   let p=null;if(term.includes('@'))p=await s.from('profiles').select('*').ilike('email','%'+term+'%').limit(100);else if(phone)p=await s.from('profiles').select('*').ilike('phone','%'+phone+'%').limit(100);else p=await s.from('profiles').select('*').ilike('full_name','%'+term+'%').limit(100);
+   if(!p?.error)for(const r of p.data||[]){const role=clean(r.role).toLowerCase();if(!['student','tutor'].includes(role)||(kind!=='all'&&kind!==role))continue;const table=role==='student'?'student_profiles':'tutor_profiles';const x=await s.from(table).select('*').eq('user_id',String(r.id)).maybeSingle();if(x.data?.id){const id=String(x.data.id);out.set(id,{...x.data,__role:role,__id:id,__sid:publicId(id,role),name:r.full_name||x.data.name||'User',email:r.email||x.data.email||'',phone:r.phone||x.data.phone||'',user_id:String(r.id)})}}
+ }catch(e){console.warn('Admin coin canonical fallback failed:',e)}
+ return [...out.values()].slice(0,50);
 }
 async function ledger(id){const s=S();if(!s)return[];try{const q=await s.from('gc_coin_ledger').select('*').eq('profile_id',String(id)).order('created_at',{ascending:false}).limit(30);return q.data||[]}catch(e){return[]}}
 function adminPanel(){
@@ -13253,6 +13278,16 @@ else{setTimeout(install,250);setTimeout(install,1000)}
 #gcV9TabUserEdit #adminTutorSection,#gcV9TabUserEdit #adminStudentSection{display:block!important}
 #gcV9TabCoinHistory #gcAuthAdminCoins{margin:0!important}
 #gcV9TabCoinHistory #gcAuthAdminPasswordReset{display:none!important}
+#gcV9FindResults{margin-top:14px!important;display:grid!important;gap:10px!important}
+.gc-v10-user-card{padding:16px!important;border:2px solid #dbeafe!important;border-radius:16px!important;background:#fff!important;box-shadow:0 5px 16px rgba(37,99,235,.07)!important}
+.gc-v10-user-main{display:flex!important;justify-content:space-between!important;align-items:center!important;gap:14px!important;flex-wrap:wrap!important}
+.gc-v10-user-name{font-size:16px!important;font-weight:950!important;color:#123b8f!important}.gc-v10-role{display:inline-block!important;margin-left:7px!important;padding:4px 7px!important;border-radius:8px!important;background:#e0f2fe!important;color:#0369a1!important;font-size:9px!important;font-weight:950!important}
+.gc-v10-user-meta{margin-top:6px!important;font-size:12px!important;font-weight:700!important;color:#64748b!important;line-height:1.55!important}
+.gc-v10-user-actions{display:flex!important;gap:8px!important;flex-wrap:wrap!important}
+.gc-v10-reset-link{border:0!important;border-radius:11px!important;padding:11px 14px!important;background:#16a34a!important;color:#fff!important;font-weight:950!important;cursor:pointer!important}
+.gc-v10-direct-reset{border:2px solid #2563eb!important;border-radius:11px!important;padding:9px 13px!important;background:#fff!important;color:#2563eb!important;font-weight:950!important;cursor:pointer!important}
+.gc-v10-reset-link:disabled,.gc-v10-direct-reset:disabled{opacity:.6!important;cursor:wait!important}
+.gc-v10-action-msg{margin-top:9px!important;font-size:12px!important;font-weight:800!important;color:#166534!important}
 #gcV9TabFindUser .gc-v9-find-card{
  padding:20px!important;border:2px solid #bfdbfe!important;border-radius:18px!important;background:#fff!important;
 }
@@ -13302,14 +13337,20 @@ function prepareFindAndReset(){
  let card=q('gcV9FindCard');
  if(!card){
   card=document.createElement('div');card.id='gcV9FindCard';card.className='gc-v9-find-card';
-  card.innerHTML='<h3>🔎 FIND REGISTERED USER</h3><p>Search a registered Student or Tutor by email or phone. Search results are handled by the protected Admin function.</p><div class="gc-v9-find-row" id="gcV9FindRow"></div>';
+  card.innerHTML='<h3>🔎 FIND REGISTERED USER</h3><p>Search a registered Student or Tutor by email or phone. Search results and actions stay here so you do not have to switch tabs.</p><div class="gc-v9-find-row" id="gcV9FindRow"></div><div id="gcV9FindResults" class="gc-v9-find-results"></div>';
   find.innerHTML='';find.appendChild(card);
  }
  const row=q('gcV9FindRow'),inp=q('gcAdminResetSearch'),btn=q('gcAdminResetFindBtn'),st=q('gcAdminResetStatus');
  if(row&&inp&&btn){row.appendChild(inp);row.appendChild(btn)}
  if(find&&st) find.appendChild(st);
  const result=q('gcAdminResetResult');
- if(result){reset.appendChild(result)}
+ if(result && row){
+   // IMPORTANT: search results belong under FIND USER. Previously this node was
+   // moved into the hidden PASSWORD RESET tab, so the count appeared but the
+   // actual users/actions were invisible.
+   const resultHost=q('gcV9FindResults');
+   if(resultHost && result.parentElement!==resultHost) resultHost.appendChild(result);
+ }
  old.style.display='none';
 }
 
@@ -13343,7 +13384,7 @@ function setActive(name){
  if(name==='user-edit'){prepareUserEdit();setStatus('User Edit — Tutor and Student admin records.')}
  if(name==='learning-request'){loadLearning();setStatus('Learning Request — latest requests and connection status.')}
  if(name==='find-user'){prepareFindAndReset();setStatus('Find User — search registered accounts.')}
- if(name==='password-reset'){prepareFindAndReset();setStatus('Password Reset — select a user from Find User results and set a new password.')}
+ if(name==='password-reset'){prepareFindAndReset();setStatus('Password Reset — use FIND USER to send the secure reset email or set a password directly.')}
  if(name==='coin-approval'){prepareApproval();setStatus('Admin Coin Approval — approve or deny held GURU COINS.');window.GC_ADMIN_ESCROW?.refresh?.()}
 }
 
@@ -13703,7 +13744,6 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
   'use strict';
 
   const STAFF_EMAIL='Swami@gmail.com';
-  const STAFF_PASSWORD='Roller@1329007/';
 
   const clean=v=>String(v==null?'':v).trim();
   const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -15084,7 +15124,7 @@ window.addEventListener('load',()=>setTimeout(mount,900));
 <script id="gc-final-recovery-js">
 (function(){
 'use strict';
-const STAFF_EMAIL='Swami@gmail.com', STAFF_PASSWORD='Roller@1329007/';
+const STAFF_EMAIL='Swami@gmail.com';
 const clean=v=>String(v??'').trim();
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const S=()=>window.gcSupabase||null;
@@ -15115,8 +15155,7 @@ async function staffSession(){
  const s=S();if(!s)throw new Error('Supabase client is not loaded.');
  const q=await s.auth.getSession(),u=q.data?.session?.user;
  if(u&&String(u.email||'').toLowerCase()===STAFF_EMAIL.toLowerCase())return s;
- const r=await s.auth.signInWithPassword({email:STAFF_EMAIL,password:STAFF_PASSWORD});if(r.error)throw r.error;if(!r.data?.session)throw new Error('Staff Supabase session was not created.');
- localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');return s;
+ throw new Error('Staff/Admin Supabase session is missing. Please use STAFF LOGIN and login again.');
 }
 async function adminEscrowFinal(){
  const dash=document.getElementById('staffAdminDashboard');if(!dash||dash.classList.contains('hidden'))return;
@@ -15394,17 +15433,108 @@ h.querySelector('#gcEscRefreshNow').onclick=renderEscrow;
 h.querySelectorAll('[data-approve]').forEach(b=>b.onclick=()=>decide(b.dataset.approve,'APPROVE'));
 h.querySelectorAll('[data-deny]').forEach(b=>b.onclick=()=>decide(b.dataset.deny,'DENY'));
 }catch(e){h.innerHTML='<div class="gc-esc-error">Coin Approval could not load: '+esc(e.message||e)+'<br><button type="button" id="gcEscRetry" class="gc-esc-refresh" style="margin-top:8px">RETRY</button></div>';h.querySelector('#gcEscRetry')?.addEventListener('click',renderEscrow)}}
-async function staffSession(){const s=S();if(!s)throw new Error('Supabase is not connected.');const q=await s.auth.getSession();let u=q.data?.session?.user;if(!u||clean(u.email).toLowerCase()!==STAFF)return s;return s}
+async function staffSession(){const s=S();if(!s)throw new Error('Supabase is not connected.');const q=await s.auth.getSession();const u=q.data?.session?.user;if(!u)throw new Error('Staff/Admin Supabase session is missing. Please use STAFF LOGIN and login again.');return s}
 async function decide(id,decision){const s=S();if(!s)return;let note='';if(decision==='DENY')note=prompt('Reason for denial / support message (optional):','Coins denied. Please contact Customer Support.')??'';try{const q=await s.rpc('gc_admin_decide_learning_request',{p_request_id:String(id),p_decision:decision,p_note:String(note).slice(0,1000)});if(q.error)throw q.error;alert(decision==='APPROVE'?'Approved. The held coins were released to the Tutor.':'Denied. The Admin decision was recorded.');await renderEscrow()}catch(e){alert('Admin decision failed: '+(e.message||e)+'\n\nIf the error mentions gc_coin_wallets.role, run the latest SUPABASE_COIN_APPROVAL_ROLE_FINAL.sql once in Supabase SQL Editor.')}}
 window.GC_ADMIN_ESCROW={refresh:renderEscrow,decide};
-async function directFind(term){const s=S();if(!s)throw new Error('Supabase is not connected.');const e=term.includes('@')?term.toLowerCase():'';const pn=normPhone(term);const out=new Map();
-async function qProfiles(){let q;if(e)q=await s.from('profiles').select('id,role,full_name,email,phone').ilike('email','%'+e+'%').limit(50);else q=await s.from('profiles').select('id,role,full_name,email,phone').ilike('phone','%'+(pn||term)+'%').limit(50);if(q.error)throw q.error;for(const r of q.data||[]){const role=clean(r.role).toLowerCase();if(['student','tutor'].includes(role))out.set(String(r.id),{user_id:String(r.id),name:r.full_name||'User',role,email:r.email||'',phone:r.phone||''})}}
-await qProfiles();
-if(!out.size&&pn){for(const [table,role] of [['tutor_profiles','tutor'],['student_profiles','student']]){const q=await s.from(table).select('user_id,name,phone').ilike('phone','%'+pn+'%').limit(50);if(q.error)continue;for(const r of q.data||[]){const id=String(r.user_id||'');if(!id)continue;const p=await s.from('profiles').select('id,role,full_name,email,phone').eq('id',id).maybeSingle();const x=p.data||{};out.set(id,{user_id:id,name:x.full_name||r.name||'User',role:clean(x.role).toLowerCase()||role,email:x.email||'',phone:x.phone||r.phone||''})}}}
-return [...out.values()].filter(x=>['student','tutor'].includes(x.role)).filter(x=>e?x.email.toLowerCase().includes(e):normPhone(x.phone).includes(pn)).slice(0,50)}
-async function adminFindV2(){const input=document.getElementById('gcAdminResetSearch'),st=document.getElementById('gcAdminResetStatus'),res=document.getElementById('gcAdminResetResult');const term=clean(input?.value);if(!term){if(st)st.textContent='Enter a registered email or phone number.';return}if(st)st.textContent='Searching registered Student/Tutor accounts…';if(res)res.innerHTML='<div class="p-3 text-sm text-slate-500">Searching…</div>';try{let data=null;try{if(window.GC_ADMIN_PASSWORD_RESET_OLD_FIND){} }catch(_){}const users=await directFind(term);window.__gcAdminResetUsers=users;if(st)st.textContent=users.length?users.length+' matching registered account(s) found.':'No registered Student/Tutor found.';if(res)res.innerHTML=users.length?users.map((r,i)=>'<div class="p-4 rounded-2xl bg-white border border-slate-200 mb-3"><div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"><div><div class="font-black">'+esc(r.name)+' <span class="text-xs text-blue-700">'+esc(r.role.toUpperCase())+'</span></div><div class="text-xs text-slate-500 mt-1">Email: '+esc(r.email||'Not provided')+' • Phone: '+esc(r.phone||'Not provided')+'</div></div><button type="button" class="gc-admin-reset-open bg-blue-600 hover:bg-blue-700 text-white font-black px-4 py-3 rounded-xl text-xs" data-index="'+i+'">RESET PASSWORD</button></div><div class="gc-admin-reset-editor hidden mt-4 pt-4 border-t border-slate-200" data-editor="'+i+'"><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><input type="password" class="gc-admin-newpass border border-slate-300 rounded-xl p-3 text-sm font-bold" minlength="8" placeholder="New password (min 8 characters)" autocomplete="new-password"><input type="password" class="gc-admin-newpass2 border border-slate-300 rounded-xl p-3 text-sm font-bold" minlength="8" placeholder="Confirm new password" autocomplete="new-password"></div><button type="button" class="gc-admin-reset-confirm mt-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black px-5 py-3 rounded-xl text-xs" data-index="'+i+'">SET NEW PASSWORD</button><div class="gc-admin-reset-editor-msg mt-2 text-xs font-bold text-slate-500"></div></div></div>').join(''):'<div class="p-4 rounded-xl bg-white border text-sm text-slate-500">No matching account found.</div>'}catch(e){if(st)st.textContent='Search failed: '+(e.message||e);if(res)res.innerHTML='<div class="p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700 font-bold">'+esc(e.message||e)+'</div>'}}
-window.GC_ADMIN_PASSWORD_RESET={mount(){},find:adminFindV2,reset:async function(index,btn){const u=window.__gcAdminResetUsers?.[Number(index)],ed=document.querySelector('.gc-admin-reset-editor[data-editor="'+index+'"]');if(!u||!ed)return;const p=ed.querySelector('.gc-admin-newpass')?.value||'',p2=ed.querySelector('.gc-admin-newpass2')?.value||'',msg=ed.querySelector('.gc-admin-reset-editor-msg');if(p.length<8){msg.textContent='Password must be at least 8 characters.';return}if(p!==p2){msg.textContent='Passwords do not match.';return}btn.disabled=true;btn.textContent='UPDATING…';try{const t=(await S().auth.getSession()).data?.session?.access_token;if(!t)throw new Error('Staff/Admin Supabase session is missing. Please login again.');const r=await fetch('https://hzqqswrnawrfgufbxgay.supabase.co/functions/v1/admin-create-user',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({action:'reset_password',user_id:u.user_id,email:u.email,password:p})});const data=await r.json().catch(()=>null);if(!r.ok)throw new Error(data?.error||data?.message||('Server returned HTTP '+r.status));msg.textContent='✓ Password reset successfully. User can login now.';ed.querySelector('.gc-admin-newpass').value='';ed.querySelector('.gc-admin-newpass2').value='';}catch(e){msg.textContent='Reset failed: '+(e.message||e);alert('Password reset failed:\n\n'+(e.message||e)+'\n\nDeploy the included admin-create-user Edge Function if this is a server error.')}finally{btn.disabled=false;btn.textContent='SET NEW PASSWORD'}}};
-document.addEventListener('click',e=>{const f=e.target.closest?.('#gcAdminResetFindBtn');if(f){e.preventDefault();e.stopImmediatePropagation();adminFindV2();return}const o=e.target.closest?.('.gc-admin-reset-open');if(o){e.preventDefault();e.stopImmediatePropagation();document.querySelector('.gc-admin-reset-editor[data-editor="'+o.dataset.index+'"]')?.classList.toggle('hidden');return}const c=e.target.closest?.('.gc-admin-reset-confirm');if(c){e.preventDefault();e.stopImmediatePropagation();window.GC_ADMIN_PASSWORD_RESET.reset(c.dataset.index,c);return}},true);
+async function directFind(term){
+ const s=S();if(!s)throw new Error('Supabase is not connected.');
+ const cleanTerm=clean(term), emailTerm=cleanTerm.includes('@')?cleanTerm.toLowerCase():'';
+ const phoneTerm=normPhone(cleanTerm);
+ const out=new Map();
+ const FN='https://hzqqswrnawrfgufbxgay.supabase.co/functions/v1/admin-create-user';
+ // First use the protected Admin function. This is the authoritative source for
+ // Auth email/phone + registered Student/Tutor mapping.
+ try{
+   const sess=await s.auth.getSession();const token=sess.data?.session?.access_token;
+   if(token){
+     const rr=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action:'find_users',term:cleanTerm})});
+     const dd=await rr.json().catch(()=>null);
+     if(rr.ok && Array.isArray(dd?.users)){
+       for(const r of dd.users){
+         const role=clean(r.role).toLowerCase();if(!['student','tutor'].includes(role))continue;
+         let profile=null;
+         const table=role==='student'?'student_profiles':'tutor_profiles';
+         if(r.user_id){const pr=await s.from(table).select('*').eq('user_id',String(r.user_id)).maybeSingle();if(!pr.error)profile=pr.data||null;}
+         if(!profile && r.id){const pr=await s.from(table).select('*').eq('id',String(r.id)).maybeSingle();if(!pr.error)profile=pr.data||null;}
+         const pid=String(profile?.id||r.profile_id||r.id||'');
+         if(!pid)continue;
+         out.set(pid,{...(profile||{}),__role:role,__id:pid,__sid:publicId(pid,role),user_id:String(r.user_id||profile?.user_id||''),name:r.name||r.full_name||profile?.name||'User',email:r.email||profile?.email||'',phone:r.phone||profile?.phone||''});
+       }
+     }
+   }
+ }catch(e){console.warn('Protected Admin user lookup unavailable; using profile fallback.',e)}
+ // Fallback: search canonical profiles and role tables. This also handles legacy
+ // rows where email/phone exists only in one of the profile tables.
+ async function add(table,role,filterField,value){
+   if(!value)return;let q;
+   if(filterField==='email')q=await s.from(table).select('*').ilike('email','%'+value+'%').limit(100);
+   else if(filterField==='phone')q=await s.from(table).select('*').ilike('phone','%'+value+'%').limit(100);
+   else q=await s.from(table).select('*').ilike('name','%'+value+'%').limit(100);
+   if(q.error)return;
+   for(const r of q.data||[]){if(r.is_illustrative===true)continue;const id=String(r.id||'');if(!id)continue;out.set(id,{...r,__role:role,__id:id,__sid:publicId(id,role),user_id:String(r.user_id||''),name:r.name||'User',email:r.email||'',phone:r.phone||''})}
+ }
+ if(emailTerm){await add('tutor_profiles','tutor','email',emailTerm);await add('student_profiles','student','email',emailTerm);}
+ if(phoneTerm){await add('tutor_profiles','tutor','phone',phoneTerm);await add('student_profiles','student','phone',phoneTerm);}
+ // Canonical profiles can contain the contact information even when role tables do not.
+ try{
+   let q;
+   if(emailTerm)q=await s.from('profiles').select('*').ilike('email','%'+emailTerm+'%').limit(100);
+   else if(phoneTerm)q=await s.from('profiles').select('*').ilike('phone','%'+phoneTerm+'%').limit(100);
+   if(!q?.error)for(const r of q.data||[]){
+     const role=clean(r.role).toLowerCase();if(!['student','tutor'].includes(role))continue;
+     const table=role==='student'?'student_profiles':'tutor_profiles';
+     const pr=await s.from(table).select('*').eq('user_id',String(r.id)).maybeSingle();
+     const x=pr.data;if(!x?.id)continue;
+     out.set(String(x.id),{...x,__role:role,__id:String(x.id),__sid:publicId(x.id,role),user_id:String(r.id),name:r.full_name||x.name||'User',email:r.email||x.email||'',phone:r.phone||x.phone||''});
+   }
+ }catch(e){console.warn('Canonical profile fallback failed:',e)}
+ return [...out.values()].filter(x=>{
+   if(emailTerm)return String(x.email||'').toLowerCase().includes(emailTerm);
+   return phoneTerm?normPhone(x.phone).includes(phoneTerm):true;
+ }).slice(0,50);
+}
+async function adminFindV2(){
+ const input=document.getElementById('gcAdminResetSearch'),st=document.getElementById('gcAdminResetStatus'),res=document.getElementById('gcAdminResetResult');
+ const term=clean(input?.value);if(!term){if(st)st.textContent='Enter a registered email or phone number.';if(res)res.innerHTML='';return}
+ if(st)st.textContent='Searching registered Student/Tutor accounts…';if(res)res.innerHTML='<div class="p-3 text-sm text-slate-500">Searching…</div>';
+ try{
+  const users=await directFind(term);window.__gcAdminResetUsers=users;
+  if(st)st.textContent=users.length?users.length+' matching registered account(s) found.':'No registered Student/Tutor found.';
+  if(!res)return;
+  res.innerHTML=users.length?users.map((r,i)=>'<div class="gc-v10-user-card"><div class="gc-v10-user-main"><div><div class="gc-v10-user-name">'+esc(r.name||'User')+' <span class="gc-v10-role">'+esc(String(r.__role||r.role||'').toUpperCase())+'</span></div><div class="gc-v10-user-meta">Email: '+esc(r.email||'Not provided')+' • Phone: '+esc(r.phone||'Not provided')+' • ID: '+esc(r.__sid||r.id||'—')+'</div></div><div class="gc-v10-user-actions"><button type="button" class="gc-v10-reset-link" data-reset-link="'+i+'">✉ SEND PASSWORD RESET LINK</button><button type="button" class="gc-v10-direct-reset" data-direct-reset="'+i+'">SET PASSWORD</button></div></div><div class="gc-v10-action-msg" data-action-msg="'+i+'"></div></div>').join(''):'<div class="p-4 rounded-xl bg-white border text-sm text-slate-500">No matching registered account found.</div>';
+ }catch(e){if(st)st.textContent='Search failed: '+(e.message||e);if(res)res.innerHTML='<div class="p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700 font-bold">'+esc(e.message||e)+'</div>'}
+}
+async function sendAdminResetLink(index,btn){
+ const u=window.__gcAdminResetUsers?.[Number(index)],msg=document.querySelector('[data-action-msg="'+index+'"]');
+ if(!u)return;
+ const email=clean(u.email).toLowerCase();
+ if(!/^\S+@\S+\.\S+$/.test(email)){if(msg)msg.textContent='This registered account has no valid email address. Update the user email first.';return}
+ btn.disabled=true;btn.textContent='SENDING…';if(msg)msg.textContent='Sending secure password reset link to '+email+'…';
+ try{
+   const s=S();if(!s)throw new Error('Supabase is not connected.');
+   const redirectTo=new URL('reset-password.html',location.href).href;
+   const r=await s.auth.resetPasswordForEmail(email,{redirectTo});
+   if(r.error)throw r.error;
+   if(msg)msg.textContent='✓ Password reset link sent to '+email+'. Ask the user to open the newest email and click the link.';
+ }catch(e){if(msg)msg.textContent='Reset link failed: '+(e.message||e);alert('SEND PASSWORD RESET LINK failed:\n\n'+(e.message||e))}
+ finally{btn.disabled=false;btn.textContent='✉ SEND PASSWORD RESET LINK'}
+}
+async function directAdminPassword(index,btn){
+ const u=window.__gcAdminResetUsers?.[Number(index)];if(!u)return;
+ const box=document.querySelector('[data-action-msg="'+index+'"]');
+ const password=prompt('Enter the new password for '+(u.name||u.email||'this user')+' (minimum 8 characters):','');
+ if(password===null)return;if(password.length<8){if(box)box.textContent='Password must be at least 8 characters.';return}
+ const confirm=prompt('Confirm the new password:','');if(confirm!==password){if(box)box.textContent='Passwords do not match.';return}
+ btn.disabled=true;btn.textContent='UPDATING…';if(box)box.textContent='Updating password securely…';
+ try{
+   const t=(await S().auth.getSession()).data?.session?.access_token;if(!t)throw new Error('Staff/Admin Supabase session is missing. Please login again.');
+   const r=await fetch('https://hzqqswrnawrfgufbxgay.supabase.co/functions/v1/admin-create-user',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({action:'reset_password',user_id:u.user_id,email:u.email,password})});
+   const data=await r.json().catch(()=>null);if(!r.ok)throw new Error(data?.error||data?.message||('Server returned HTTP '+r.status));
+   if(box)box.textContent='✓ Password updated successfully. User can login immediately.';
+ }catch(e){if(box)box.textContent='Password update failed: '+(e.message||e);alert('SET PASSWORD failed:\n\n'+(e.message||e))}
+ finally{btn.disabled=false;btn.textContent='SET PASSWORD'}
+}
+document.addEventListener('click',e=>{const f=e.target.closest?.('#gcAdminResetFindBtn');if(f){e.preventDefault();e.stopImmediatePropagation();adminFindV2();return}const l=e.target.closest?.('[data-reset-link]');if(l){e.preventDefault();e.stopImmediatePropagation();sendAdminResetLink(l.dataset.resetLink,l);return}const d=e.target.closest?.('[data-direct-reset]');if(d){e.preventDefault();e.stopImmediatePropagation();directAdminPassword(d.dataset.directReset,d);return}},true);
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.activeElement?.id==='gcAdminResetSearch'){e.preventDefault();adminFindV2()}},true);
 function boot(){if(!dash()||dash().classList.contains('hidden'))return;ensureBar();ensureEscrow();renderEscrow()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,500));else setTimeout(boot,500);
