@@ -16021,6 +16021,7 @@ window.addEventListener('load',()=>setTimeout(boot,900));
 
   function updateCards(){
     const root=id('tutorFormCard');if(!root)return;
+    if(root.dataset.gcV123CardsReady==='1') return;
     const cards=[...root.querySelectorAll('a[href*="upi://pay"],a[onclick*="openUpiQrModal"]')];
     let c1=cards.find(a=>/am=200/.test(a.getAttribute('href')||'')||/openUpiQrModal\(200\)/.test(a.getAttribute('onclick')||''));
     let c2=cards.find(a=>a!==c1&&(/am=300/.test(a.getAttribute('href')||'')||/openUpiQrModal\(300\)/.test(a.getAttribute('onclick')||'')));
@@ -16032,6 +16033,7 @@ window.addEventListener('load',()=>setTimeout(boot,900));
     if(p)p.textContent='Choose your offer, pay securely with UPI, then enter the UTR below. Email verification remains mandatory for registration.';
     const first= c1?.closest('.bg-white');
     if(first && !first.querySelector('.gc-v123-cloud')){const d=document.createElement('div');d.className='gc-v123-cloud';d.textContent='☁ Registration details are saved to Supabase cloud after email verification.';first.appendChild(d)}
+    root.dataset.gcV123CardsReady='1';
   }
 
   /* ---------- SUPABASE CLOUD: complete registration audit row ---------- */
@@ -16086,7 +16088,9 @@ window.addEventListener('load',()=>setTimeout(boot,900));
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   window.addEventListener('load',()=>setTimeout(()=>{updateCards();wrapCloudSaver()},150));
   setTimeout(()=>{updateCards();wrapCloudSaver()},900);
-  const mo=new MutationObserver(()=>{updateCards()});
-  if(document.body)mo.observe(document.body,{childList:true,subtree:true});
+  /* IMPORTANT: do NOT observe every DOM mutation here. updateCards() itself changes
+     card href/text/classes, so a direct MutationObserver would observe its own
+     changes forever and freeze the page. The existing site already renders the
+     tutor form statically; a few scheduled retries are sufficient. */
 })();
 </script>
