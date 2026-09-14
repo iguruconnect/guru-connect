@@ -4626,14 +4626,9 @@ footer:before{
 #currentUserBadge{display:none!important;}
 #currentUserBadge.gc-auth-visible{display:none!important;}
 </style>
-<style id="gc-independent-password-nav-2026">
-.gc-password-request-link{display:inline-flex;align-items:center;gap:6px;text-decoration:none!important;font-weight:900!important;color:#123b8f!important;border-radius:10px;padding:8px 10px;background:#eff6ff;border:1px solid #bfdbfe;white-space:nowrap;}
-.gc-password-request-link:hover{background:#dbeafe;transform:translateY(-1px);}
-@media(max-width:760px){.gc-password-request-link{font-size:10px;padding:7px 8px;}}
-</style>
 <style>
 /* FINAL GURU CONNECT LOGIN UI: one login entry only */
-#navStaffBtn,.gc-login-menu-group,.gc-mobile-login-item,.gc-mobile-staff-item,.gc-menu-student,.gc-menu-tutor,.gc-menu-staff,.gc-menu-login-student,.gc-menu-login-tutor,.gc-menu-login-staff{display:none!important;}
+#navLoginBtn,#navStaffBtn,.gc-login-menu-group,.gc-mobile-login-item,.gc-mobile-staff-item,.gc-menu-student,.gc-menu-tutor,.gc-menu-staff,.gc-menu-login-student,.gc-menu-login-tutor,.gc-menu-login-staff{display:none!important;}
 #publicNavbarLinks .gc-final-single-login{display:flex!important;align-items:center!important;justify-content:flex-start!important;width:100%;box-sizing:border-box;}
 </style></head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
@@ -4648,10 +4643,9 @@ footer:before{
 <a href="#studentsDirectory">Find Student</a>
 <a href="learning.html">Learning Request</a>
 <a href="#registrationSection">Register</a>
-<a href="forgot-password.html" class="gc-password-request-link"><i class="fa-solid fa-key"></i> Password Reset</a>
 </nav>
 <div class="gc-header-actions">
-<button class="bg-slate-100 hover:bg-slate-200 text-brand-dark text-[11px] sm:text-xs font-bold px-2 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition shadow flex items-center gap-1" id="navLoginBtn" onclick="openLoginModal()"><i class="fa-solid fa-right-to-bracket"></i><span class="hidden sm:inline">LOGIN</span></button> <div aria-label="Logged in user" id="currentUserBadge">
+<button class="bg-slate-100 hover:bg-slate-200 text-brand-dark text-[11px] sm:text-xs font-bold px-2 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition shadow flex items-center gap-1" id="navLoginBtn" onclick="openLoginModal()" style="display:none!important"><i class="fa-solid fa-right-to-bracket"></i><span class="hidden sm:inline">LOGIN</span></button> <div aria-label="Logged in user" id="currentUserBadge">
 <div class="px-1"><span class="gc-account-role" id="navLoggedRole">LOGGED IN</span><span class="gc-account-name" id="navLoggedName">User</span></div>
 <button class="gc-account-dashboard" onclick="openUserDashboard()" title="Open dashboard" type="button"><i class="fa-solid fa-gauge-high"></i><span> DASHBOARD</span></button>
 <button class="gc-account-logout" onclick="logoutUser()" title="Logout" type="button"><i class="fa-solid fa-right-from-bracket"></i><span> LOGOUT</span></button>
@@ -4668,7 +4662,7 @@ footer:before{
 <a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition" href="javascript:void(0)" onclick="openHelplineModal(); closeNavMenu();">HELPLINE PLANS</a>
 <a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openAboutModal(); closeNavMenu();">ABOUT US</a>
 <a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openContactModal(); closeNavMenu();">CONTACT US</a>
-<div class="gc-menu-divider"></div><a class="gc-final-single-login bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 text-[11px] sm:text-sm font-black rounded-xl transition" href="javascript:void(0)" id="gcFinalMenuLogin">🔐 LOGIN</a></nav>
+<div class="gc-menu-divider"></div><a class="block px-5 py-3 text-[11px] sm:text-sm font-black text-blue-700 hover:bg-blue-50 transition" href="forgot-password.html" onclick="closeNavMenu()">🔐 PASSWORD RESET</a><div class="gc-menu-divider"></div><a class="gc-final-single-login bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 text-[11px] sm:text-sm font-black rounded-xl transition" href="javascript:void(0)" id="gcFinalMenuLogin">🔐 LOGIN</a></nav>
 </div>
 </div>
 </div>
@@ -4814,7 +4808,7 @@ footer:before{
 </section>
 
 <!-- ADMIN USER PASSWORD RESET -->
-<section class="mt-8 rounded-2xl sm:rounded-3xl border border-blue-100 bg-slate-50 overflow-hidden" id="gcAdminPasswordResetLegacy">
+<section class="mt-8 rounded-2xl sm:rounded-3xl border border-blue-100 bg-slate-50 overflow-hidden" id="gcAdminPasswordReset">
 <div class="p-5 sm:p-6 bg-gradient-to-r from-slate-950 via-blue-950 to-blue-700 text-white">
 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
 <div><h3 class="text-lg sm:text-xl font-black">🔐 USER PASSWORD RESET</h3><p class="text-xs text-blue-100 mt-1">Find a registered Student or Tutor by Email or Phone and send a secure reset link to their registered email.</p></div>
@@ -4823,11 +4817,11 @@ footer:before{
 </div>
 <div class="p-5 sm:p-6">
 <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3">
-<input autocomplete="off" class="w-full border border-slate-300 rounded-xl p-3 text-sm font-bold bg-white" id="gcAdminResetSearchLegacy" placeholder="Enter registered Email or Phone Number"/>
-<button class="bg-blue-600 hover:bg-blue-700 text-white font-black px-6 py-3 rounded-xl" id="gcAdminResetFindBtnLegacy" type="button">FIND USER</button>
+<input autocomplete="off" class="w-full border border-slate-300 rounded-xl p-3 text-sm font-bold bg-white" id="gcAdminResetSearch" placeholder="Enter registered Email or Phone Number"/>
+<button class="bg-blue-600 hover:bg-blue-700 text-white font-black px-6 py-3 rounded-xl" id="gcAdminResetFindBtn" type="button">FIND USER</button>
 </div>
-<div class="mt-3 text-xs font-bold text-slate-500" id="gcAdminResetStatusLegacy"></div>
-<div class="mt-4" id="gcAdminResetResultLegacy"></div>
+<div class="mt-3 text-xs font-bold text-slate-500" id="gcAdminResetStatus"></div>
+<div class="mt-4" id="gcAdminResetResult"></div>
 </div>
 </section>
 </div>
@@ -5633,7 +5627,7 @@ footer:before{
 <input autocomplete="email" class="w-full border rounded-xl p-3 text-sm font-bold" id="loginEmailInput" placeholder="your@email.com" type="email"/>
 <input autocomplete="current-password" class="w-full border rounded-xl p-3 text-sm font-bold" id="loginPasswordInput" placeholder="Password" type="password"/>
 <button class="w-full bg-brand-blue text-white font-black py-3.5 rounded-xl text-sm" onclick="gcEmailLogin()" type="button">LOGIN SECURELY</button>
-<button class="w-full text-blue-700 font-bold text-xs py-2" onclick="location.href='forgot-password.html'" type="button">Forgot password? Open Password Reset</button>
+<button class="w-full text-blue-700 font-bold text-xs py-2" onclick="gcResetPassword()" type="button">Forgot password? Send reset email</button>
 <div class="text-[11px] text-slate-400 text-center">Your password is handled by Supabase Authentication and is never stored in the website.</div>
 </div>
 <button class="w-full mt-4 text-slate-400 text-xs font-bold" onclick="closeLoginModal()" type="button">CANCEL</button>
@@ -12562,7 +12556,7 @@ async function selectPerson(i){const p=window.__gcAuthRows?.[i];if(!p)return;con
 }
 function hookStatus(name,amount,type,reason){const old=window[name];if(typeof old!=='function'||old.__gcCoinHook)return;const f=async function(id){try{const r=await S()?.rpc('gc_staff_charge_tutor_service',{p_tutor_id:String(id),p_amount:amount,p_transaction_type:type,p_reason:reason});if(r?.error)throw r.error;return await old.apply(this,arguments)}catch(e){alert('Action not completed: '+(e.message||e));return null}};f.__gcCoinHook=true;window[name]=f}
 function boot(){adminPanel();hookDashboard();paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile);hookStatus('adminVerifyTutorPaid',100,'SPEND_TUTOR_LISTING','Tutor Monthly Listing');hookStatus('adminGrantVerifiedTick',200,'SPEND_VERIFIED_TICK','Verified Tick service')}
-document.addEventListener('DOMContentLoaded',boot);window.addEventListener('load',boot);setInterval(()=>{adminPanel();hookDashboard();paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile)},3500);
+document.addEventListener('DOMContentLoaded',boot);window.addEventListener('load',boot);
 new MutationObserver(()=>{clearTimeout(window.__gcAuthPaint);window.__gcAuthPaint=setTimeout(()=>{paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile)},450)}).observe(document.body,{subtree:true,childList:true});
 window.GC_COIN_PDF={account:buildAccountPdf,master:buildMasterPdf}; window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
 })();
@@ -12899,7 +12893,7 @@ window.gcResetPassword=async function(){
   const email=(by('loginEmailInput')?.value||'').trim().toLowerCase();if(!email)return alert('Enter your registered email first.');
   const s=S();if(!s)return alert('Supabase is not connected.');
   const btn=document.querySelector('#loginModal button[onclick="gcResetPassword()"]');if(btn){btn.disabled=true;btn.textContent='SENDING…';}
-  try{const r=await s.auth.resetPasswordForEmail(email,{redirectTo:new URL('reset-password.html', location.href).href});if(r.error)throw r.error;alert('Password reset link sent to '+email+'. Check Inbox and Spam/Junk.');}
+  try{const r=await s.auth.resetPasswordForEmail(email,{redirectTo:'https://www.guruconnnect.in/reset-password.html'});if(r.error)throw r.error;alert('Password reset link sent to '+email+'. Check Inbox and Spam/Junk.');}
   catch(err){alert('Password reset failed:\n\n'+(err.message||err));}
   finally{if(btn){btn.disabled=false;btn.textContent='Forgot password? Send reset email';}}
 };
@@ -12998,8 +12992,7 @@ document.addEventListener('change',e=>{if(e.target?.id==='loginRoleInput')roleSe
 document.addEventListener('click',e=>{const m=by('loginModal');if(m&&!m.classList.contains('hidden')&&e.target===m)closeLoginModal()},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!by('loginModal')?.classList.contains('hidden'))closeLoginModal()});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{cleanMenu();setTimeout(cleanMenu,300);setTimeout(cleanMenu,1000);setTimeout(cleanMenu,2000)});else{cleanMenu();setTimeout(cleanMenu,300);setTimeout(cleanMenu,1000);setTimeout(cleanMenu,2000)}
-})();</script><style id="gc-hide-legacy-admin-reset">#gcAdminPasswordResetLegacy{display:none!important}</style>
-</body>
+})();</script></body>
 <style id="gc-final-load-hero-transfer-pdf-fix">
 /* Final stable hero: one real image, exact 1640:515 ratio, no crop and no duplicate background artwork. */
 .gc-beautiful-hero{height:auto!important;min-height:0!important;padding:0!important;overflow:hidden!important;background:#fff!important}
@@ -14573,7 +14566,7 @@ async function adminMonitor(){
 }
 window.GC_CHAT_ADMIN={refresh:adminMonitor};
 function adminLoop(){if(document.getElementById('staffAdminDashboard')&&!document.getElementById('staffAdminDashboard').classList.contains('hidden'))adminMonitor()}
-setTimeout(adminLoop,700);setInterval(adminLoop,5000);
+setTimeout(adminLoop,700);
 
 /* Refresh the student/tutor chat inbox when dashboard is opened later by existing code. */
 setInterval(()=>{if(document.getElementById('gcMyChatPanel')&&role()!=='admin')renderMyChats()},7000);
@@ -14668,7 +14661,7 @@ async function adminEscrow(filter='ALL'){
 }
 window.GC_ADMIN_ESCROW={refresh:adminEscrow,decide:async function(id,decision){const s=S();if(!s)return;let note='';if(decision==='DENY')note=prompt('Reason for denial / support message (optional):','Coins denied. Please contact Customer Support.')??'';try{const q=await s.rpc('gc_admin_decide_learning_request',{p_request_id:String(id),p_decision:decision,p_note:String(note).slice(0,1000)});if(q.error)throw q.error;alert(decision==='APPROVE'?'Approved. 100 coins have been released to the Tutor account.':'Denied. The Learning Request coins remain/revert according to the secure Admin workflow and the denial reason is recorded.');adminEscrow('ALL')}catch(e){alert('Admin decision failed: '+(e.message||e))}}};
 function mount(){const host=document.getElementById('staffAdminDashboard');if(!host||host.classList.contains('hidden'))return;let box=document.getElementById('gcAdminLearningEscrow');if(!box){box=document.createElement('section');box.id='gcAdminLearningEscrow';host.querySelector('.bg-white')?.appendChild(box)}adminEscrow('ALL')}
-window.addEventListener('load',()=>setTimeout(mount,900));setInterval(mount,6000);
+window.addEventListener('load',()=>setTimeout(mount,900));
 })();
 </script>
 <script id="gc-admin-cloud-profile-sync">
@@ -14946,7 +14939,7 @@ window.gcResetPassword=async function(){
   const btn=document.querySelector('button[onclick="gcResetPassword()"]');
   if(btn){btn.disabled=true;btn.textContent='SENDING RESET LINK…';}
   try{
-    const redirectTo=new URL('reset-password.html',location.href).href;
+    const redirectTo='https://www.guruconnnect.in/reset-password.html';
     const r=await s.auth.resetPasswordForEmail(email,{redirectTo});
     if(r.error)throw r.error;
     alert('Password reset link sent to '+email+'. Please check Inbox and Spam/Junk.');
