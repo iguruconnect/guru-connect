@@ -4643,7 +4643,6 @@ footer:before{
 <a href="#studentsDirectory">Find Student</a>
 <a href="learning.html">Learning Request</a>
 <a href="#registrationSection">Register</a>
-<a href="javascript:void(0)" onclick="openLoginModal()">Login</a>
 </nav>
 <div class="gc-header-actions">
 <button class="bg-slate-100 hover:bg-slate-200 text-brand-dark text-[11px] sm:text-xs font-bold px-2 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition shadow flex items-center gap-1" id="navLoginBtn" onclick="openLoginModal()"><i class="fa-solid fa-right-to-bracket"></i><span class="hidden sm:inline">LOGIN</span></button> <div aria-label="Logged in user" id="currentUserBadge">
@@ -12793,50 +12792,49 @@ window.GC_PROFILE_COINS_REFRESH=paint;
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
 </script>
-<!-- GURU CONNECT FINAL ONE-LOGIN CLEANUP PATCH -->
+<!-- GURU CONNECT FINAL ONE-LOGIN CLEANUP PATCH: NO OBSERVER / NO REPAINT LOOP -->
 <style id="gc-final-one-login-only">
-  /* Permanently hide every legacy/duplicate login entry. */
-  #staffLoginModal,
-  #navStaffBtn,
-  .gc-login-menu-group,
-  .gc-menu-login-student,
-  .gc-menu-login-tutor,
-  .gc-menu-login-staff,
-  .gc-menu-student,
-  .gc-menu-tutor,
-  .gc-menu-staff { display:none!important; }
+  #staffLoginModal,#navStaffBtn,.gc-login-menu-group,.gc-menu-login-student,.gc-menu-login-tutor,.gc-menu-login-staff,.gc-menu-student,.gc-menu-tutor,.gc-menu-staff{display:none!important;}
 </style>
 <script id="gc-final-one-login-only-js">
 (function(){
   'use strict';
-  function cleanLoginUI(){
+  function installMenu(){
     const menu=document.getElementById('publicNavbarLinks');
-    if(menu){
-      menu.querySelectorAll('.gc-login-menu-group,.gc-menu-login-student,.gc-menu-login-tutor,.gc-menu-login-staff,.gc-menu-student,.gc-menu-tutor,.gc-menu-staff').forEach(x=>x.remove());
-      [...menu.querySelectorAll('a,button')].forEach(x=>{
-        const t=(x.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
-        if(t==='student login'||t==='tutor login'||t==='staff login'||t==='staff') x.remove();
-      });
-      let login=menu.querySelector('[data-gc-single-login]');
-      if(!login){
-        login=document.createElement('a');
-        login.setAttribute('data-gc-single-login','1');
-        login.href='javascript:void(0)';
-        login.textContent='🔐  LOGIN';
-        login.className='gc-menu-login gc-single-login';
-        login.style.cssText='display:flex!important;align-items:center;min-height:44px;margin:2px 0;padding:10px 13px;border-radius:11px;font-size:12px;font-weight:900;letter-spacing:.15px;text-decoration:none;background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;color:#fff!important;';
-        menu.appendChild(document.createElement('div')).className='gc-menu-divider';
-        menu.appendChild(login);
-      }
-      login.onclick=function(e){e.preventDefault();e.stopImmediatePropagation();try{window.closeNavMenu?.()}catch(_){};window.openLoginModal('student');return false;};
+    if(!menu)return;
+    // Remove only legacy login variants. Do NOT use a MutationObserver here: older
+    // versions created an infinite remove/recreate loop and froze the page.
+    menu.querySelectorAll('.gc-login-menu-group,.gc-menu-login-student,.gc-menu-login-tutor,.gc-menu-login-staff,.gc-menu-student,.gc-menu-tutor,.gc-menu-staff').forEach(x=>x.remove());
+    [...menu.querySelectorAll('a,button')].forEach(x=>{
+      if(x.id==='gcFinalMenuLogin'||x.id==='gcPublicPasswordReset')return;
+      const t=(x.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+      const id=(x.id||'').toLowerCase();
+      if(t==='student login'||t==='tutor login'||t==='staff login'||t==='staff'||id==='navloginbtn'||id==='navstaffbtn')x.remove();
+    });
+    let login=document.getElementById('gcFinalMenuLogin');
+    if(!login){
+      login=document.createElement('a');
+      login.id='gcFinalMenuLogin';
+      login.href='javascript:void(0)';
+      login.className='gc-final-single-login';
+      login.textContent='🔐 LOGIN';
+      menu.appendChild(login);
     }
-    const oldStaff=document.getElementById('staffLoginModal'); if(oldStaff) oldStaff.remove();
-    const oldNav=document.getElementById('navStaffBtn'); if(oldNav) oldNav.style.display='none';
+    login.onclick=function(e){e.preventDefault();e.stopPropagation();try{window.closeNavMenu?.()}catch(_){};window.openLoginModal?.('student');return false;};
+    let reset=document.getElementById('gcPublicPasswordReset');
+    if(!reset){
+      reset=document.createElement('a');
+      reset.id='gcPublicPasswordReset';
+      reset.href='forgot-password.html';
+      reset.textContent='🔑 PASSWORD RESET';
+      reset.className='gc-public-password-reset';
+      menu.appendChild(reset);
+    }
+    reset.onclick=function(){try{window.closeNavMenu?.()}catch(_){};};
   }
-  function start(){cleanLoginUI();setTimeout(cleanLoginUI,100);setTimeout(cleanLoginUI,700);setTimeout(cleanLoginUI,1500);setTimeout(cleanLoginUI,3000);}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-  const obs=new MutationObserver(()=>cleanLoginUI());
-  try{obs.observe(document.body,{childList:true,subtree:true});}catch(_){ }
+  function boot(){installMenu();setTimeout(installMenu,400);setTimeout(installMenu,1200);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  window.addEventListener('load',installMenu,{once:true});
 })();
 </script>
 <script>(function(){
@@ -15070,28 +15068,25 @@ setInterval(()=>{if(isStaff()&&dash()&&!dash().classList.contains('hidden')){ens
 })();
 </script>
 
-<!-- FINAL PUBLIC PASSWORD RESET ENTRY + FINAL SINGLE LOGIN GUARANTEE -->
+<!-- FINAL PUBLIC PASSWORD RESET ENTRY -->
 <style id="gc-final-password-reset-menu-style">
-#publicNavbarLinks #gcPublicPasswordReset{display:flex!important;align-items:center!important;width:100%!important;box-sizing:border-box!important;color:#172554!important;background:#eef6ff!important;font-weight:950!important}
-#publicNavbarLinks #gcPublicPasswordReset:hover{color:#fff!important;background:#2563eb!important}
+#publicNavbarLinks #gcPublicPasswordReset{display:flex!important;align-items:center!important;width:100%!important;box-sizing:border-box!important;color:#172554!important;background:#eef6ff!important;font-weight:950!important;}
+#publicNavbarLinks #gcPublicPasswordReset:hover{color:#fff!important;background:#2563eb!important;}
 </style>
 <script id="gc-final-password-reset-menu-js">
 (function(){
-'use strict';
-function cleanMenu(){
- const menu=document.getElementById('publicNavbarLinks');if(!menu)return;
- // Keep exactly ONE Login entry inside the public mobile/menu navigation.
- const items=[...menu.querySelectorAll('a,button')];
- let keep=document.getElementById('gcFinalMenuLogin');
- if(!keep){keep=document.createElement('a');keep.id='gcFinalMenuLogin';keep.href='javascript:void(0)';keep.className='gc-final-single-login bg-blue-600 text-white px-5 py-3 text-[11px] sm:text-sm font-black rounded-xl transition';keep.textContent='🔐 LOGIN';menu.appendChild(keep)}
- items.forEach(x=>{if(x===keep)return;const id=(x.id||'').toLowerCase();const txt=(x.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();const isLogin=id.includes('navlogin')||id.includes('loginbtn')||/^(🔐\s*)?(login|student login|tutor login|staff login)$/.test(txt);if(isLogin)x.remove()});
- keep.onclick=function(e){e.preventDefault();e.stopImmediatePropagation();try{window.closeNavMenu?.()}catch(_){};window.openLoginModal?.('student');return false};
- let reset=document.getElementById('gcPublicPasswordReset');
- if(!reset){reset=document.createElement('a');reset.id='gcPublicPasswordReset';reset.href='forgot-password.html';reset.textContent='🔑 PASSWORD RESET';const divider=document.createElement('div');divider.className='gc-menu-divider';const before=keep.previousElementSibling;if(before&&before.classList.contains('gc-menu-divider'))menu.insertBefore(reset,before);else{menu.insertBefore(divider,keep);menu.insertBefore(reset,divider)}}
- reset.onclick=function(){try{window.closeNavMenu?.()}catch(_){};return true};
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',cleanMenu);else cleanMenu();
-window.addEventListener('load',()=>{cleanMenu();setTimeout(cleanMenu,300);setTimeout(cleanMenu,1000);setTimeout(cleanMenu,2000)});
-try{new MutationObserver(()=>cleanMenu()).observe(document.getElementById('publicNavbarLinks')||document.body,{childList:true,subtree:true});}catch(_){}
+  'use strict';
+  // The single-login installer above owns this menu. This script only guarantees
+  // the reset item exists; no observer and no DOM churn.
+  function ensureReset(){
+    const menu=document.getElementById('publicNavbarLinks');if(!menu)return;
+    let reset=document.getElementById('gcPublicPasswordReset');
+    if(!reset){
+      reset=document.createElement('a');reset.id='gcPublicPasswordReset';reset.href='forgot-password.html';reset.textContent='🔑 PASSWORD RESET';
+      const login=document.getElementById('gcFinalMenuLogin');
+      if(login&&login.parentNode===menu)menu.insertBefore(reset,login);else menu.appendChild(reset);
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureReset,{once:true});else ensureReset();
 })();
 </script>
