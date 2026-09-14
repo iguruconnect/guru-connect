@@ -35,8 +35,17 @@ async function init(){
   sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   const s=await safe(sb.auth.getSession()); me=s.data.session?.user;
   if(!me){$('who').textContent='Not logged in'; msg('Your login session is missing. Please login again from the website.'); setTimeout(()=>location.href='index.html',1800);return;}
-  const [st,tr]=await Promise.all([safe(sb.from('student_profiles').select('*').eq('user_id',me.id).maybeSingle()),safe(sb.from('tutor_profiles').select('*').eq('user_id',me.id).maybeSingle())]);
-  if(st.data){role='student';profile=st.data}else if(tr.data){role='tutor';profile=tr.data}else throw new Error('Your Student/Tutor profile was not found for this login.');
+  // Identify the member by Auth user_id first. Older Tutor rows do NOT have
+  // an email column, so never query tutor_profiles.email. The canonical
+  // V15.2: one common member identity only — Supabase Auth user_id/auth.uid().
+  // No email/phone profile matching is used at runtime. Legacy rows must be
+  // repaired once by the V15.2 SQL migration, then every future lookup is by user_id.
+  const ident=await safe(sb.rpc('gc_get_my_member_profile'));
+  if(ident.error) throw ident.error;
+  role=String(ident.data?.role||'').toLowerCase();
+  profile=ident.data?.profile||null;
+  if(!profile || !['student','tutor'].includes(role)) throw new Error('Your Student/Tutor profile is not linked to this Supabase Auth account. Please run the V15.2 identity migration SQL once in Supabase.');
+  if(String(profile.user_id||'')!==String(me.id)) throw new Error('Member identity mismatch. Please contact Admin.');
   localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_profile_id',profile.id);localStorage.setItem('active_user_id',me.id);localStorage.setItem('active_user_name',profile.name||profile.full_name||me.email?.split('@')[0]||'User');
   $('who').textContent=(role==='student'?'STUDENT':'TUTOR')+' • '+(profile.name||profile.full_name||me.email||'');
   bind(); render();

@@ -10881,6 +10881,13 @@ body {
 
     let table=role==='tutor'?'tutor_profiles':'student_profiles';
     let q=await gcSupabase.from(table).select('*').eq('user_id',user.id).limit(1).maybeSingle();
+    // Compatibility for members registered before the Auth user_id link was saved.
+    if(!q.data && user.email){
+      q=await gcSupabase.from(table).select('*').ilike('email',user.email.trim().toLowerCase()).limit(1).maybeSingle();
+      if(q.data && String(q.data.user_id||'')!==String(user.id)){
+        try{await gcSupabase.from(table).update({user_id:user.id}).eq('id',q.data.id);}catch(_){ }
+      }
+    }
     if(q.error){alert('Could not load your profile: '+q.error.message);return;}
 
     // Finish a registration that was waiting for email verification.
@@ -15404,16 +15411,16 @@ window.gcEmailLogin=async function(){
   if(r.error)throw r.error;
   const u=r.data?.user;if(!u)throw new Error('Supabase did not return a logged-in user.');
   if(!u.email_confirmed_at){try{await s.auth.signOut()}catch(_){};throw new Error('Please verify your email first. Check your verification email.');}
-  let role=selected, table=role==='tutor'?'tutor_profiles':'student_profiles';
-  let q=await s.from(table).select('*').eq('user_id',u.id).maybeSingle();
-  if(q.error)throw q.error;
-  if(!q.data){const otherRole=role==='tutor'?'student':'tutor',otherTable=otherRole==='tutor'?'tutor_profiles':'student_profiles';const oq=await s.from(otherTable).select('*').eq('user_id',u.id).maybeSingle();if(oq.error)throw oq.error;if(oq.data){role=otherRole;table=otherTable;q=oq;}}
-  if(!q.data)throw new Error('No registered '+selected+' profile is linked to this email account. Please register first.');
-  const p=q.data;
-  localStorage.setItem('active_user_name',p.name||email.split('@')[0]);localStorage.setItem('active_user_email',email);localStorage.setItem('active_user_phone',p.phone||'');localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_profile_id',String(p.id));localStorage.setItem('active_user_id',String(u.id));
-  window.__gcLoggedInProfile=p;try{updateAuthBadge?.()}catch(_){};try{closeLoginModal?.()}catch(_){}
+  const ident=await s.rpc('gc_get_my_member_profile');
+  if(ident.error)throw ident.error;
+  const role=String(ident.data?.role||'').toLowerCase();
+  const p=ident.data?.profile||null;
+  if(!p || !['student','tutor'].includes(role) || String(p.user_id||'')!==String(u.id)) throw new Error('This authenticated account is not linked to a registered Student/Tutor profile. Please run the V15.2 identity migration SQL once.');
+  if(role!==selected){throw new Error('This email belongs to a registered '+role.toUpperCase()+' account. Select '+role.toUpperCase()+' Member Login.');}
+  localStorage.setItem('active_user_name',p.name||p.full_name||email.split('@')[0]);localStorage.setItem('active_user_email',email);localStorage.setItem('active_user_phone',p.phone||'');localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_profile_id',String(p.id));localStorage.setItem('active_user_id',String(u.id));
+  window.__gcLoggedInProfile=p;try{updateAuthBadge?.()}catch(_){ }try{closeLoginModal?.()}catch(_){ }
   window.location.assign('dashboard.html?login=success&t='+Date.now());
- }catch(e){console.error(e);alert('Login failed: '+(e.message||String(e)));}
+ }catch(e){try{await s.auth.signOut()}catch(_){};console.error(e);alert('Login failed: '+(e.message||String(e)));}
 };
 async function staffSession(){
  const s=S();if(!s)throw new Error('Supabase client is not loaded.');
@@ -16386,13 +16393,14 @@ window.addEventListener('load',()=>setTimeout(boot,900));
     try{
       const q=await s.auth.getSession(); const u=q.data?.session?.user;
       if(!u){b.style.display='none';return}
-      const [st,tr]=await Promise.all([
-        s.from('student_profiles').select('id,name').eq('user_id',u.id).maybeSingle(),
-        s.from('tutor_profiles').select('id,name').eq('user_id',u.id).maybeSingle()
-      ]);
-      const profile=st.data||tr.data;
+      // V15.2: runtime identity is ONLY Supabase Auth user_id/auth.uid().
+      // Email/phone are never used as permanent identity keys.
+      const ident=await s.rpc('gc_get_my_member_profile');
+      if(ident.error) throw ident.error;
+      const profile=ident.data?.profile||null;
+      const r=String(ident.data?.role||'').toLowerCase();
+      if(!profile || !['student','tutor'].includes(r) || String(profile.user_id||'')!==String(u.id)){b.style.display='none';return}
       if(profile){
-        const r=st.data?'student':'tutor';
         localStorage.setItem('active_user_role',r);localStorage.setItem('active_user_profile_id',profile.id);localStorage.setItem('active_user_id',u.id);localStorage.setItem('active_user_name',profile.name||u.email?.split('@')[0]||'User');
         b.style.display='block';b.onclick=()=>location.href='dashboard.html';
       }else b.style.display='none';
@@ -16426,25 +16434,15 @@ window.gcMemberLogin=async function(role){
  const s=S();if(!s)return msg(pre+'LoginMsg','Secure login is unavailable. Please refresh the page.');
  const b=document.getElementById(pre+'LoginBtn');if(b){b.disabled=true;b.textContent='SIGNING IN…'}
  try{
-  const r=await s.auth.signInWithPassword({email,password}); if(r.error)throw r.error; const u=r.data?.user; if(!u)throw new Error('No authenticated user was returned.');
+  const r=await s.auth.signInWithPassword({email,password});if(r.error)throw r.error;const u=r.data?.user;if(!u)throw new Error('No authenticated user was returned.');
   if(!u.email_confirmed_at){try{await s.auth.signOut()}catch(_){};throw new Error('Please verify your email first. Check your verification email.')}
-  let p=null,actual='';
-  // Preferred: secure SECURITY DEFINER self-identification RPC (works even when
-  // profile tables are protected by RLS). Direct own-row lookup is the fallback.
-  const ident=await s.rpc('gc_get_my_member_profile');
-  if(!ident.error && ident.data?.profile){p=ident.data.profile;actual=String(ident.data.role||'').toLowerCase()}
-  else{
-    const [st,tr]=await Promise.all([s.from('student_profiles').select('*').eq('user_id',u.id).maybeSingle(),s.from('tutor_profiles').select('*').eq('user_id',u.id).maybeSingle()]);
-    if(st.error)throw st.error; if(tr.error)throw tr.error;
-    if(st.data){p=st.data;actual='student'} else if(tr.data){p=tr.data;actual='tutor'}
-  }
-  if(!p)throw new Error('This email is authenticated but no registered Student/Tutor profile is linked to it. Please complete registration with this same email.');
-  if(actual!==role){throw new Error('This email belongs to a registered '+actual.toUpperCase()+' account. Use the '+actual.toUpperCase()+' Member Sign In box.')}
-  localStorage.setItem('active_user_name',p.name||p.full_name||email.split('@')[0]); localStorage.setItem('active_user_email',email); localStorage.setItem('active_user_phone',p.phone||''); localStorage.setItem('active_user_role',actual); localStorage.setItem('active_user_profile_id',String(p.id)); localStorage.setItem('active_user_id',String(u.id)); window.__gcLoggedInProfile=p;
-  msg(pre+'LoginMsg','✓ Login successful. Opening your GURU CONNECT Kingdom…',true);
-  setTimeout(()=>{location.href=actual==='student'?'index.html#studentsDirectory':'dashboard.html#learning-requests'},250);
- }catch(e){try{await s.auth.signOut()}catch(_){};console.error(e);msg(pre+'LoginMsg','Login failed: '+(e.message||e))}
- finally{if(b){b.disabled=false;b.textContent='SIGN IN'}}
+  const ident=await s.rpc('gc_get_my_member_profile');if(ident.error)throw ident.error;
+  const p=ident.data?.profile||null,actual=String(ident.data?.role||'').toLowerCase();
+  if(!p || !['student','tutor'].includes(actual) || String(p.user_id||'')!==String(u.id))throw new Error('This authenticated account is not linked to a registered Student/Tutor profile. Please run the V15.2 identity migration SQL once.');
+  if(actual!==role)throw new Error('This email belongs to a registered '+actual.toUpperCase()+' account. Use the '+actual.toUpperCase()+' Member Sign In box.');
+  localStorage.setItem('active_user_name',p.name||p.full_name||email.split('@')[0]);localStorage.setItem('active_user_email',email);localStorage.setItem('active_user_phone',p.phone||'');localStorage.setItem('active_user_role',actual);localStorage.setItem('active_user_profile_id',String(p.id));localStorage.setItem('active_user_id',String(u.id));window.__gcLoggedInProfile=p;
+  msg(pre+'LoginMsg','✓ Login successful. Opening your GURU CONNECT Kingdom…',true);setTimeout(()=>{location.href='dashboard.html?login=success'},250);
+ }catch(e){try{await s.auth.signOut()}catch(_){};console.error(e);msg(pre+'LoginMsg','Login failed: '+(e.message||String(e)))}finally{if(b){b.disabled=false;b.textContent='SIGN IN'}}
 };
 function addMemberBox(formId,role){
  const form=document.getElementById(formId);if(!form||form.querySelector('.gc-v15-member-login'))return; const pre=role==='tutor'?'gcTutor':'gcStudent';
