@@ -134,7 +134,7 @@ $('resend').onclick=async()=>{
   try{
     // Clear any local recovery session before starting a fresh recovery request.
     try{await sb.auth.signOut({scope:'local'})}catch(_){}
-    const redirectTo=new URL('reset-otp.html',location.href).href;
+    const redirectTo=new URL('reset-password.html',location.href).href;
     const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo});
     if(error)throw error;
     show('✓ A new OTP has been sent. Use ONLY this newest code.',true);

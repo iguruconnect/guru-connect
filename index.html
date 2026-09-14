@@ -16404,3 +16404,55 @@ window.addEventListener('load',()=>setTimeout(boot,900));
 })();
 </script>
 
+
+<!-- GURU CONNECT V15 MEMBER LOGIN ARCHITECTURE -->
+<style id="gc-v15-member-login-style">
+#loginModal,#gcFinalMenuLogin,#gcPublicPasswordReset,#navLoginBtn{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+.gc-v15-member-login{margin:18px 0 0;padding:16px;border:2px solid #dbeafe;border-radius:18px;background:linear-gradient(135deg,#f8fbff,#eef6ff);}
+.gc-v15-member-login h4{margin:0 0 4px;font-size:15px;font-weight:950;color:#123b8f}.gc-v15-member-login p{margin:0 0 12px;font-size:11px;color:#64748b;font-weight:700}.gc-v15-member-login .grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.gc-v15-member-login input{width:100%;border:1px solid #cbd5e1;border-radius:11px;padding:11px;font-size:13px;font-weight:700;background:#fff}.gc-v15-member-login button{border:0;border-radius:11px;padding:11px 14px;background:#155eef;color:#fff;font-weight:950;cursor:pointer}.gc-v15-member-login a{font-size:11px;font-weight:900;color:#155eef;text-decoration:none}.gc-v15-login-msg{margin-top:9px;font-size:11px;font-weight:850}.gc-v15-staff-menu{display:flex!important;align-items:center!important;width:100%!important;box-sizing:border-box!important;}
+@media(max-width:640px){.gc-v15-member-login .grid{grid-template-columns:1fr}.gc-v15-member-login button{width:100%}}
+</style>
+<script id="gc-v15-member-login-js">
+(function(){
+'use strict';
+const URL='https://hzqqswrnawrfgufbxgay.supabase.co',KEY='sb_publishable_Oc5HvDqDpisv76XrdsyFhiw_IpostIDu';
+const S=()=>window.gcSupabase||(window.supabase?.createClient?window.supabase.createClient(URL,KEY):null);
+const clean=v=>String(v??'').trim();
+function msg(id,t,ok=false){const x=document.getElementById(id);if(x){x.textContent=t;x.style.color=ok?'#166534':'#b91c1c'}}
+window.gcMemberLogin=async function(role){
+ const pre=role==='tutor'?'gcTutor':'gcStudent'; const email=clean(document.getElementById(pre+'LoginEmail')?.value).toLowerCase(); const password=document.getElementById(pre+'LoginPassword')?.value||'';
+ if(!/^\S+@\S+\.\S+$/.test(email))return msg(pre+'LoginMsg','Enter your registered email address.');
+ if(!password)return msg(pre+'LoginMsg','Enter your password.');
+ const s=S();if(!s)return msg(pre+'LoginMsg','Secure login is unavailable. Please refresh the page.');
+ const b=document.getElementById(pre+'LoginBtn');if(b){b.disabled=true;b.textContent='SIGNING IN…'}
+ try{
+  const r=await s.auth.signInWithPassword({email,password}); if(r.error)throw r.error; const u=r.data?.user; if(!u)throw new Error('No authenticated user was returned.');
+  if(!u.email_confirmed_at){try{await s.auth.signOut()}catch(_){};throw new Error('Please verify your email first. Check your verification email.')}
+  let p=null,actual='';
+  // Preferred: secure SECURITY DEFINER self-identification RPC (works even when
+  // profile tables are protected by RLS). Direct own-row lookup is the fallback.
+  const ident=await s.rpc('gc_get_my_member_profile');
+  if(!ident.error && ident.data?.profile){p=ident.data.profile;actual=String(ident.data.role||'').toLowerCase()}
+  else{
+    const [st,tr]=await Promise.all([s.from('student_profiles').select('*').eq('user_id',u.id).maybeSingle(),s.from('tutor_profiles').select('*').eq('user_id',u.id).maybeSingle()]);
+    if(st.error)throw st.error; if(tr.error)throw tr.error;
+    if(st.data){p=st.data;actual='student'} else if(tr.data){p=tr.data;actual='tutor'}
+  }
+  if(!p)throw new Error('This email is authenticated but no registered Student/Tutor profile is linked to it. Please complete registration with this same email.');
+  if(actual!==role){throw new Error('This email belongs to a registered '+actual.toUpperCase()+' account. Use the '+actual.toUpperCase()+' Member Sign In box.')}
+  localStorage.setItem('active_user_name',p.name||p.full_name||email.split('@')[0]); localStorage.setItem('active_user_email',email); localStorage.setItem('active_user_phone',p.phone||''); localStorage.setItem('active_user_role',actual); localStorage.setItem('active_user_profile_id',String(p.id)); localStorage.setItem('active_user_id',String(u.id)); window.__gcLoggedInProfile=p;
+  msg(pre+'LoginMsg','✓ Login successful. Opening your GURU CONNECT Kingdom…',true);
+  setTimeout(()=>{location.href=actual==='student'?'index.html#studentsDirectory':'dashboard.html#learning-requests'},250);
+ }catch(e){try{await s.auth.signOut()}catch(_){};console.error(e);msg(pre+'LoginMsg','Login failed: '+(e.message||e))}
+ finally{if(b){b.disabled=false;b.textContent='SIGN IN'}}
+};
+function addMemberBox(formId,role){
+ const form=document.getElementById(formId);if(!form||form.querySelector('.gc-v15-member-login'))return; const pre=role==='tutor'?'gcTutor':'gcStudent';
+ const box=document.createElement('div');box.className='gc-v15-member-login';box.innerHTML='<h4>Already a Member? — SIGN IN</h4><p>Use the same registered email and password. Your Student/Tutor profile will be identified automatically.</p><div class="grid"><input id="'+pre+'LoginEmail" type="email" autocomplete="email" placeholder="Registered email"><input id="'+pre+'LoginPassword" type="password" autocomplete="current-password" placeholder="Password"><button id="'+pre+'LoginBtn" type="button">SIGN IN</button></div><div style="display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:9px;flex-wrap:wrap"><a href="forgot-password.html">🔑 Forgot password? Reset with OTP / secure link</a><span id="'+pre+'LoginMsg" class="gc-v15-login-msg"></span></div>';
+ form.insertBefore(box,form.firstElementChild); box.querySelector('button').addEventListener('click',()=>window.gcMemberLogin(role)); box.querySelectorAll('input').forEach(i=>i.addEventListener('keydown',e=>{if(e.key==='Enter')window.gcMemberLogin(role)}));
+}
+function cleanPublicMenu(){const nav=document.getElementById('publicNavbarLinks');if(!nav)return;nav.querySelectorAll('a,button').forEach(x=>{const t=clean(x.textContent).toLowerCase();if(t.includes('student login')||t.includes('tutor login')||t==='login'||t.includes('password reset'))x.remove()});let staff=nav.querySelector('#gcV15StaffMenu');if(!staff){staff=document.createElement('a');staff.id='gcV15StaffMenu';staff.href='javascript:void(0)';staff.className='gc-v15-staff-menu bg-red-600 hover:bg-red-700 text-white px-5 py-3 text-[11px] sm:text-sm font-black rounded-xl transition';staff.textContent='🔐 STAFF LOGIN';staff.onclick=e=>{e.preventDefault();e.stopPropagation();window.openStaffLoginModal?.()};nav.appendChild(staff)}}
+function boot(){addMemberBox('studentRegForm','student');addMemberBox('tutorRegForm','tutor');cleanPublicMenu();document.getElementById('gcFinalMenuLogin')?.remove();document.getElementById('gcPublicPasswordReset')?.remove();}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,300));else setTimeout(boot,300);setTimeout(boot,1200);setTimeout(boot,2500);
+})();
+</script>
