@@ -16454,3 +16454,26 @@ function boot(){addMemberBox('studentRegForm','student');addMemberBox('tutorRegF
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(boot,300));else setTimeout(boot,300);setTimeout(boot,1200);setTimeout(boot,2500);
 })();
 </script>
+\n<!-- GURU CONNECT FINAL MENU: LEARNING REQUESTS + STAFF LOGIN -->
+<script id="gc-final-learning-staff-menu">
+(function(){
+  'use strict';
+  function install(){
+    var nav=document.getElementById('publicNavbarLinks');
+    if(!nav) return;
+    function add(id,text,href,onclick){
+      var el=document.getElementById(id);
+      if(!el){ el=document.createElement('a'); el.id=id; el.href=href; el.textContent=text; el.className='gc-final-single-login'; nav.appendChild(el); }
+      el.style.display='inline-flex'; el.style.alignItems='center'; el.style.justifyContent='center';
+      el.style.gap='6px'; el.style.margin='4px 0'; el.style.padding='10px 12px'; el.style.borderRadius='11px';
+      el.style.fontWeight='900'; el.style.textDecoration='none'; el.style.cursor='pointer';
+      if(onclick) el.onclick=onclick;
+    }
+    add('gcFinalLearningRequests','📚 LEARNING REQUESTS','learning.html',function(e){e.preventDefault();location.href='learning.html';});
+    add('gcFinalStaffLogin','🛡️ STAFF / ADMIN LOGIN','javascript:void(0)',function(e){e.preventDefault();e.stopPropagation();if(typeof window.openLoginModal==='function')window.openLoginModal('staff');else if(typeof window.openStaffLoginModal==='function')window.openStaffLoginModal();});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){install();setTimeout(install,1500);}, {once:true});
+  else {install();setTimeout(install,1500);}
+  window.addEventListener('load',install,{once:true});
+})();
+</script>
