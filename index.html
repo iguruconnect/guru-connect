@@ -15943,3 +15943,94 @@ window.addEventListener('load',()=>setTimeout(boot,900));
   window.closeUpiQrModal=function(){ const m=id('upiQrModal'); if(m){m.classList.add('hidden');m.setAttribute('aria-hidden','true')} };
 })();
 </script>
+
+<!-- GURU CONNECT V12.2 — TUTOR REGISTRATION PAYMENT FINAL -->
+<style id="gc-v12-2-tutor-payment-final">
+.gc-v122-price-old{text-decoration:line-through;opacity:.55;margin-right:6px}
+.gc-v122-price-now{font-weight:950}
+.gc-v122-offer{font-size:10px;font-weight:900;color:#047857;margin-top:2px}
+.gc-v122-pay{display:flex!important;flex-direction:column!important;gap:3px!important;line-height:1.15!important}
+.gc-v122-pay small{font-size:9px;font-weight:800;opacity:.92}
+</style>
+<script id="gc-v12-2-tutor-payment-final-js">
+(function(){
+  'use strict';
+  const CFG={
+    upi:'verizon@upi',
+    payee:'GuruConnect',
+    regularListing:500,
+    offerListing:200,
+    regularVerified:200,
+    offerVerified:100
+  };
+  const QR={
+    200:'data:image/png;base64,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',
+    100:'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUgAAAFICAIAAAC9dvBkAAAFlklEQVR42u3dQY7bQAxFwSjw/a/sbLLVAD0g8Umpah3YGtkPbYDp1vX9fv8Az/LXLQBhA8IGhA0IGxA2CBsQNiBsQNiAsEHYgLABYQPCBoQNCBuEDQgbEDYgbEDYIGxA2ICwAWEDwgaEDcIGhA0IG+jz6X6D67pW3Ii754RXXX/V63e/zrTvw+l1bv++WbEBYYOwAWEDwgaEDQgb6J9j33nqHLXqfU9f53S+3T3vvbue1Oe+5ftmxQaEDcIGhA0IGxA2IGwgN8e+073/edr1d+83Pp1vT5vbd3++279vVmzwUxwQNiBsQNiAsAFhwwN93IKfTTunuvv886r7UzU/33JOuBUbEDYgbEDYIGxA2ICwgTLm2L+UmtOentedup5T5tVWbEDYIGxA2ICwAWEDwgb+GzfHnnY+853TuWv3PLnqnPDUc7bf9txsKzYgbEDYIGxA2ICwAWEDt2Jz7O37b7v3P7/t359+T7qfK27FBoQNCBsQNiBsEDYgbCCmfY791P2uW3TPk7v/fdV+cis2IGxA2ICwAWEDwgZhA2u0z7Gr5pNVrz9tX273ud/dc+DUueKpz7HqOrvn7VZs8FMcEDYgbEDYgLBB2MBi1/b9q6fzzO75+anu+191f1L/H6HqfqbOJ0/1ZcUGP8UBYQPCBoQNCBuEDSwW2499Z8v+4VOp/eGp/cNbnkfdPee3YgPCBoQNwgaEDQgbEDZw7JN646p5YGr/7bTrT+1nTn1Ptryvc8UBYQPCBmEDwgaEDQgbONY+x562D3nLudBVup+bvf1cdys2IGxA2ICwAWGDsAFhA+PEno/tfO/a903Nh5/6fOzUPmorNiBsEDYgbEDYgLABYQO5OfbtBYXO074zbf685dz17vu55f9fpK7Tig1+igPCBoQNCBsQNggbWKx9jp2al95JzWnbP8gl+7q3PN+7+znqVmxA2ICwQdiAsAFhA8IGbo17PnbVc5vvTJv3npq2X/309afNq7d8z63YgLBB2ICwAWEDwgaEDS9ybXneb/uNaJ43dj+fuXvf+1Ofv73977Jig5/igLABYQPCBoQNCBseqH0/dmp+m/q77qTmpdPO0676HKvet5tzxQFhA8IGYQPCBoQNCBs4Nm4/dtXcddrzmbvvT+p89W6p/eSp/fBWbEDYIGxA2ICwAWEDwgb659ipuWtqXj1t/3lqflt1P7u/b9PupxUbEDYIGxA2IGxA2ICwgT1z7NgNCu0Pf9v1b///BVZsQNiAsAFhg7ABYQPCBsq0Px87tc+2+3WqbDnPfMv57d3Xk3ouuhUbEDYIGxA2IGxA2ICw4UU+T/3DqubV057PfOp0frvl+dvd/x9h+/PGrdjgpzggbEDYgLABYYOwgcXa59ipeezp9aSeI101V99+Dva071v399PzsQFhA8IGYQPCBoQNCBu4db1tznl8g0L7k6ftB97yHO/U52vFBoQNCBsQNggbEDYgbKDMmv3Y3aad+51632nngU/bb9/9+VqxAWGDsAFhA8IGhA0IG8g9Hzs136va99v9Oqn7U3Wdqb9r2us7VxwQNiBsEDYgbEDYgLCBY59pFzRtH+z286633M/t56hPO3fAig1+igPCBoQNCBsQNggbWOzjFvxs+zyze/9w1d/b/b6nr3N6PdOep23FBj/FAWEDwgaEDQgbhA0sZo79S93nRaeeC52SmpNP+9yt2ICwQdiAsAFhA8IGhA3Mm2NvmbumVM23U/e/e381VmwQNiBsQNiAsAFhg7CB9WJz7Gnnb59e55bnb08797v7c3/q88Ct2ICwQdiAsAFhA8IGhA0vctnXClZsQNiAsAFhA8IGYQPCBoQNCBsQNggbEDYgbEDYgLABYYOwAWEDwgaEDQgbhA0IGxA2IGxA2ICwQdiAsAFhA8IGDvwDyV/SvGfcuDsAAAAASUVORK5CYII='
+  };
+  window.GC_TUTOR_PAYMENT_CONFIG=CFG;
+  function id(x){return document.getElementById(x)}
+  function esc(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]))}
+  function isPhone(){return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)||(('ontouchstart' in window)&&Math.min(screen.width,screen.height)<900)}
+  function uri(amount){return 'upi://pay?pa='+encodeURIComponent(CFG.upi)+'&pn='+encodeURIComponent(CFG.payee)+'&am='+encodeURIComponent(String(amount))+'&cu=INR'}
+  function openDesktopQr(amount){
+    const modal=id('upiQrModal'),img=id('dynamicQrImg'),amt=id('modalPayAmountText');
+    if(!modal||!img){alert('Payment QR window is unavailable. Please refresh the page and try again.');return}
+    const n=Number(amount)||0;
+    if(amt)amt.textContent='₹'+n.toLocaleString('en-IN');
+    img.onerror=null;
+    if(QR[n]) img.src=QR[n];
+    else {
+      const u=uri(n);
+      img.src='https://api.qrserver.com/v1/create-qr-code/?size=280x280&format=png&data='+encodeURIComponent(u);
+    }
+    img.alt='UPI QR Code for ₹'+n;
+    let note=id('gcTutorQrNote');
+    if(!note){note=document.createElement('div');note.id='gcTutorQrNote';img.insertAdjacentElement('afterend',note)}
+    note.textContent='Scan with any UPI app • UPI ID: '+CFG.upi+' • Amount: ₹'+n;
+    modal.classList.remove('hidden'); modal.setAttribute('aria-hidden','false');
+  }
+  window.openUpiQrModal=function(amount){
+    const n=Number(amount)||0;
+    if(isPhone()){
+      const u=uri(n);
+      // On phones, invoke the installed UPI app directly. If the browser/app does not
+      // handle the UPI scheme, fall back to the QR modal after a short delay.
+      let left=true;
+      const onHide=()=>{left=false;document.removeEventListener('visibilitychange',onHide)};
+      document.addEventListener('visibilitychange',onHide);
+      window.location.href=u;
+      setTimeout(()=>{document.removeEventListener('visibilitychange',onHide);if(left)openDesktopQr(n)},900);
+      return;
+    }
+    openDesktopQr(n);
+  };
+  window.closeUpiQrModal=function(){const m=id('upiQrModal');if(m){m.classList.add('hidden');m.setAttribute('aria-hidden','true')}};
+  function updateCards(){
+    const card1=document.querySelector('#tutorFormCard a[onclick*="openUpiQrModal(200)"]');
+    const card2=document.querySelector('#tutorFormCard a[onclick*="openUpiQrModal(300)"]');
+    if(card1){
+      card1.href=uri(CFG.offerListing);
+      card1.setAttribute('onclick','openUpiQrModal('+CFG.offerListing+'); return false;');
+      card1.classList.add('gc-v122-pay');
+      card1.innerHTML='<i class="fa-solid fa-mobile-screen-button"></i><span>PAY ₹'+CFG.offerListing+' NOW</span><small>Phone: Open UPI App • PC: Show QR</small>';
+      const box=card1.closest('.bg-white');
+      if(box){const price=box.querySelector('.text-xl');if(price)price.innerHTML='<span class="gc-v122-price-old">Regular ₹'+CFG.regularListing+'</span><span class="gc-v122-price-now">Now ₹'+CFG.offerListing+'</span>'; const sub=box.querySelector('.text-\[9px\]');if(sub)sub.textContent='JUST FOR YOU';}
+    }
+    if(card2){
+      card2.href=uri(CFG.offerVerified);
+      card2.setAttribute('onclick','openUpiQrModal('+CFG.offerVerified+'); return false;');
+      card2.classList.add('gc-v122-pay');
+      card2.innerHTML='<i class="fa-solid fa-mobile-screen-button"></i><span>PAY ₹'+CFG.offerVerified+' NOW</span><small>Phone: Open UPI App • PC: Show QR</small>';
+      const box=card2.closest('.bg-white');
+      if(box){const price=box.querySelector('.text-xl');if(price)price.innerHTML='<span class="gc-v122-price-old">Regular ₹'+CFG.regularVerified+'</span><span class="gc-v122-price-now">Now ₹'+CFG.offerVerified+'</span>'; const sub=box.querySelector('.text-\[9px\]');if(sub)sub.textContent='JUST FOR YOU';}
+    }
+    // Update heading/subtext left by legacy V12 copy.
+    const p=document.querySelector('#tutorFormCard .text-center.mb-6 p');
+    if(p)p.textContent='Choose your offer, pay securely with UPI, then enter the UTR below. Email verification remains mandatory for registration.';
+  }
+  function boot(){updateCards()}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+  window.addEventListener('load',()=>setTimeout(updateCards,100));
+  setTimeout(updateCards,800);
+})();
+</script>
