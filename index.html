@@ -16607,3 +16607,106 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   window.addEventListener('load',boot);
 })();
 </script>
+<style id="gc-v16-modern-ui">
+/* GURU CONNECT V16 — modern visual layer */
+:root{--gc-blue:#155eef;--gc-ink:#0f172a;--gc-muted:#64748b;--gc-line:#e2e8f0;--gc-surface:#ffffff;--gc-soft:#f8fafc}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif!important}
+/* Registration cards */
+#studentFormCard,#tutorFormCard{background:linear-gradient(180deg,#fff 0%,#f8fbff 100%)!important;border:1px solid #dbeafe!important;border-radius:28px!important;box-shadow:0 18px 50px rgba(15,23,42,.09)!important;padding:clamp(18px,3vw,36px)!important}
+#studentFormCard>div:first-child,#tutorFormCard>div:first-child{padding-bottom:18px!important;border-bottom:1px solid #e2e8f0!important}
+#studentRegForm label,#tutorRegForm label{color:#334155!important;font-weight:900!important;letter-spacing:.55px!important}
+#studentRegForm input,#studentRegForm select,#studentRegForm textarea,#tutorRegForm input,#tutorRegForm select,#tutorRegForm textarea{border:1px solid #cbd5e1!important;border-radius:14px!important;background:#fff!important;min-height:48px!important;box-shadow:0 3px 10px rgba(15,23,42,.025)!important;transition:border-color .15s,box-shadow .15s,transform .15s!important}
+#studentRegForm input:focus,#studentRegForm select:focus,#studentRegForm textarea:focus,#tutorRegForm input:focus,#tutorRegForm select:focus,#tutorRegForm textarea:focus{border-color:#60a5fa!important;box-shadow:0 0 0 4px #dbeafe!important;outline:none!important}
+#studentRegForm button,#tutorRegForm button{border-radius:13px!important;font-weight:900!important}
+/* Remove the empty/awkward oval badge seen beside SEND OTP. */
+.gc-email-required-badge{display:none!important}
+.gc-email-verification-required-box{border-radius:16px!important;background:linear-gradient(90deg,#fff7ed,#fffbeb)!important;border:1px solid #fed7aa!important;box-shadow:none!important;padding:13px 15px!important}
+.gc-email-verification-required-box .gc-email-verification-icon{width:34px!important;height:34px!important;border-radius:10px!important;display:grid!important;place-items:center!important;flex:0 0 34px!important}
+#stuOtpBox,#tutorOtpBox{border-radius:16px!important;background:#eff6ff!important;border:1px solid #bfdbfe!important;box-shadow:none!important}
+/* Modern navigation/menu */
+#publicNavbarLinks{border:1px solid #dbe3ef!important;border-radius:22px!important;box-shadow:0 24px 65px rgba(15,23,42,.18)!important;background:rgba(255,255,255,.97)!important;backdrop-filter:blur(18px)!important}
+#publicNavbarLinks a{transition:background .15s,color .15s,transform .15s!important;border-radius:11px!important}
+#publicNavbarLinks .gc-v16-menu-login{background:#155eef!important;color:#fff!important}
+#publicNavbarLinks .gc-v16-menu-tutor{background:#7c3aed!important;color:#fff!important}
+#publicNavbarLinks .gc-v16-menu-staff{background:#0f766e!important;color:#fff!important}
+#publicNavbarLinks .gc-v16-menu-reset{background:#f1f5f9!important;color:#334155!important}
+/* Modern admin workspace */
+#staffAdminDashboard{background:linear-gradient(180deg,#f8fbff,#f8fafc)!important;color:#0f172a!important}
+#staffAdminDashboard>.bg-white{border:1px solid #dbe3ef!important;border-radius:28px!important;box-shadow:0 24px 70px rgba(15,23,42,.10)!important}
+#staffAdminDashboard h2{letter-spacing:-.04em!important}
+#gcAdminCreateUser,#gcAdminPasswordReset{border:1px solid #dbe3ef!important;border-radius:24px!important;box-shadow:0 16px 45px rgba(15,23,42,.07)!important;background:#fff!important}
+#gcAdminCreateUser .p-5,#gcAdminCreateUser .sm\:p-6,#gcAdminPasswordReset .p-5,#gcAdminPasswordReset .sm\:p-6{background:transparent!important}
+#gcV9AdminTabs{display:flex!important;gap:8px!important;flex-wrap:wrap!important;padding:10px!important;background:#f1f5f9!important;border:1px solid #e2e8f0!important;border-radius:18px!important}
+#gcV9AdminTabs button{border-radius:11px!important;border:1px solid #dbe3ef!important;background:#fff!important;padding:10px 13px!important;font-weight:900!important;color:#334155!important;box-shadow:0 4px 10px rgba(15,23,42,.04)!important}
+#gcV9AdminTabs button:hover{transform:translateY(-1px)!important;background:#eff6ff!important;color:#155eef!important}
+/* Hide legacy duplicated create/reset blocks; V16 user-management workspace replaces them. */
+#gcAdminCreateUser,#gcAdminPasswordReset{display:none!important}
+/* User management workspace */
+#gcV16UserManagement{margin-top:22px;border:1px solid #dbe3ef;border-radius:24px;background:#fff;box-shadow:0 18px 50px rgba(15,23,42,.08);overflow:hidden}
+.gc-v16-um-head{padding:22px;background:linear-gradient(135deg,#0b2b66,#155eef 60%,#0891b2);color:#fff}
+.gc-v16-um-head h3{margin:0;font-size:clamp(20px,2.4vw,30px);font-weight:950;letter-spacing:-.03em}
+.gc-v16-um-head p{margin:6px 0 0;color:#dbeafe;font-size:12px;line-height:1.6}
+.gc-v16-um-body{padding:20px}
+.gc-v16-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.gc-v16-field label{display:block;font-size:10px;font-weight:950;color:#475569;text-transform:uppercase;letter-spacing:.7px;margin-bottom:6px}
+.gc-v16-field input,.gc-v16-field select{width:100%;min-height:48px;border:1px solid #cbd5e1;border-radius:13px;padding:12px 13px;font-size:14px;font-weight:750;background:#f8fafc;outline:0}
+.gc-v16-field input:focus,.gc-v16-field select:focus{border-color:#60a5fa;box-shadow:0 0 0 4px #dbeafe;background:#fff}
+.gc-v16-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+.gc-v16-btn{border:0;border-radius:12px;padding:12px 16px;font-weight:950;cursor:pointer}
+.gc-v16-primary{background:#155eef;color:#fff}.gc-v16-green{background:#059669;color:#fff}.gc-v16-purple{background:#7c3aed;color:#fff}.gc-v16-light{background:#f1f5f9;color:#334155}
+.gc-v16-status{min-height:20px;margin-top:10px;font-size:12px;font-weight:800;color:#64748b}
+.gc-v16-divider{height:1px;background:#e2e8f0;margin:24px 0}
+.gc-v16-results{display:grid;gap:10px;margin-top:14px}
+.gc-v16-user{border:1px solid #e2e8f0;border-radius:16px;padding:14px;background:#fbfdff}
+.gc-v16-user-top{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
+.gc-v16-user-name{font-weight:950;color:#0f172a}.gc-v16-user-meta{font-size:11px;color:#64748b;margin-top:4px;line-height:1.6}.gc-v16-role{display:inline-block;margin-left:6px;padding:4px 7px;border-radius:8px;background:#eff6ff;color:#155eef;font-size:9px;font-weight:950}
+.gc-v16-user-tools{display:flex;gap:7px;flex-wrap:wrap}.gc-v16-mini{border:0;border-radius:10px;padding:9px 11px;font-size:10px;font-weight:950;cursor:pointer}.gc-v16-passbox{display:none;margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0}.gc-v16-passbox.open{display:block}
+@media(max-width:700px){.gc-v16-grid{grid-template-columns:1fr}.gc-v16-user-top{flex-direction:column}.gc-v16-user-tools,.gc-v16-mini{width:100%}.gc-v16-actions>*{width:100%}}
+</style>
+<script id="gc-v16-modern-menu-and-admin">
+(function(){
+'use strict';
+const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',FN=U+'/functions/v1/admin-create-user';
+const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function menu(){const m=$('publicNavbarLinks');if(!m)return;const seen=new Set();m.querySelectorAll('a,button').forEach(x=>{const t=(x.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();if(!t)return;if(/^(student login|tutor login|staff login|staff \/ admin login|login|password reset)$/.test(t)||t.includes('staff login')){x.remove();return}if(t==='learning requests'){if(seen.has(t))x.remove();else seen.add(t)}});const add=(id,text,href,cls,click)=>{let a=$(id);if(!a){a=document.createElement('a');a.id=id;a.href=href;a.className=cls;m.appendChild(a)}a.textContent=text;a.onclick=click||null};
+ add('gcV16StudentLogin','🎓 STUDENT LOGIN','login-student.html','gc-v16-menu-login',null);
+ add('gcV16TutorLogin','🎓 TUTOR LOGIN','login-tutor.html','gc-v16-menu-tutor',null);
+ add('gcV16StaffLogin','🛡️ STAFF / ADMIN LOGIN','javascript:void(0)','gc-v16-menu-staff',e=>{e.preventDefault();try{window.closeNavMenu?.()}catch(_){};window.openLoginModal?.('staff');return false});
+ add('gcV16Reset','🔑 PASSWORD RESET','forgot-password.html','gc-v16-menu-reset',null);
+}
+function staffToken(){const s=window.gcSupabase;if(!s)throw new Error('Supabase is not connected.');return s.auth.getSession().then(r=>{const t=r.data?.session?.access_token;if(!t)throw new Error('Staff/Admin Supabase session is missing. Please login again.');return t})}
+async function api(action,payload){const t=await staffToken();const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({action,...payload})});const d=await r.json().catch(()=>null);if(!r.ok)throw new Error(d?.error||d?.message||('Server returned HTTP '+r.status));return d}
+function ensureUM(){const dash=$('staffAdminDashboard');if(!dash||dash.classList.contains('hidden'))return;let host=$('gcV16UserManagement');if(host)return;host=document.createElement('section');host.id='gcV16UserManagement';host.innerHTML=`<div class="gc-v16-um-head"><h3>USER MANAGEMENT CENTER</h3><p>Create Student/Tutor accounts, choose their initial password, search registered members and set a new password when required. Password operations run through the secure Supabase Admin Edge Function.</p></div><div class="gc-v16-um-body"><div class="gc-v16-grid"><div class="gc-v16-field"><label>Account Type</label><select id="v16Role"><option value="student">Student</option><option value="tutor">Tutor</option></select></div><div class="gc-v16-field"><label>Full Name</label><input id="v16Name" placeholder="Full name"></div><div class="gc-v16-field"><label>Email Address</label><input id="v16Email" type="email" placeholder="user@example.com"></div><div class="gc-v16-field"><label>Phone Number</label><input id="v16Phone" type="tel" placeholder="9876543210"></div><div class="gc-v16-field"><label>Initial Password</label><input id="v16Pass" type="password" minlength="8" autocomplete="new-password" placeholder="Minimum 8 characters"></div><div class="gc-v16-field"><label>Confirm Password</label><input id="v16Pass2" type="password" minlength="8" autocomplete="new-password" placeholder="Repeat password"></div></div><div class="gc-v16-actions"><button class="gc-v16-btn gc-v16-green" id="v16Create">CREATE USER ACCOUNT</button><button class="gc-v16-btn gc-v16-light" id="v16Clear">CLEAR</button></div><div class="gc-v16-status" id="v16CreateStatus"></div><div class="gc-v16-divider"></div><div class="gc-v16-grid"><div class="gc-v16-field"><label>Find Student / Tutor</label><input id="v16Find" placeholder="Registered email or phone"></div><div class="gc-v16-actions" style="align-items:end;margin-top:20px"><button class="gc-v16-btn gc-v16-primary" id="v16FindBtn">FIND USER</button></div></div><div class="gc-v16-status" id="v16FindStatus"></div><div class="gc-v16-results" id="v16Results"></div></div>`;dash.querySelector('.bg-white')?.prepend(host);
+ $('v16Clear').onclick=()=>{['v16Name','v16Email','v16Phone','v16Pass','v16Pass2'].forEach(id=>$(id).value='');$('v16CreateStatus').textContent=''};
+ $('v16Create').onclick=async()=>{const role=$('v16Role').value,name=$('v16Name').value.trim(),email=$('v16Email').value.trim().toLowerCase(),phone=$('v16Phone').value.trim(),password=$('v16Pass').value,password2=$('v16Pass2').value;if(!name)return alert('Enter full name.');if(!/^\S+@\S+\.\S+$/.test(email))return alert('Enter a valid email.');if(password.length<8)return alert('Password must be at least 8 characters.');if(password!==password2)return alert('Passwords do not match.');const b=$('v16Create');b.disabled=true;b.textContent='CREATING…';$('v16CreateStatus').textContent='Creating secure account…';try{await api('create_user',{role,name,email,phone,password});$('v16CreateStatus').textContent='✓ Account created. The user can login with the email and password you set.';alert('User account created successfully.\n\n'+(role==='tutor'?'Tutor':'Student')+'\n'+email);$('v16Clear').click()}catch(e){$('v16CreateStatus').textContent='Creation failed: '+e.message;alert('User creation failed:\n\n'+e.message)}finally{b.disabled=false;b.textContent='CREATE USER ACCOUNT'}};
+ $('v16FindBtn').onclick=async()=>{const term=$('v16Find').value.trim();if(!term)return alert('Enter registered email or phone.');const b=$('v16FindBtn');b.disabled=true;b.textContent='SEARCHING…';$('v16FindStatus').textContent='Searching securely…';try{const d=await api('find_users',{term});const users=d.users||[];$('v16FindStatus').textContent=users.length?users.length+' account(s) found.':'No matching Student/Tutor account found.';$('v16Results').innerHTML=users.map((u,i)=>`<div class="gc-v16-user"><div class="gc-v16-user-top"><div><div class="gc-v16-user-name">${esc(u.name||'User')}<span class="gc-v16-role">${esc(String(u.role||'').toUpperCase())}</span></div><div class="gc-v16-user-meta">Email: ${esc(u.email||'—')}<br>Phone: ${esc(u.phone||'—')}<br>Email verified: ${u.email_confirmed?'YES':'NO'}</div></div><div class="gc-v16-user-tools"><button class="gc-v16-mini gc-v16-primary" data-reset-link="${i}">SEND RESET LINK</button><button class="gc-v16-mini gc-v16-purple" data-set-pass="${i}">SET PASSWORD</button></div></div><div class="gc-v16-passbox" data-passbox="${i}"><div class="gc-v16-grid"><div class="gc-v16-field"><label>New Password</label><input type="password" data-pass="${i}" minlength="8" autocomplete="new-password" placeholder="Minimum 8 characters"></div><div class="gc-v16-field"><label>Confirm Password</label><input type="password" data-pass2="${i}" minlength="8" autocomplete="new-password" placeholder="Repeat password"></div></div><button class="gc-v16-btn gc-v16-green" data-save-pass="${i}" style="margin-top:10px">UPDATE PASSWORD</button><div class="gc-v16-status" data-pass-status="${i}"></div></div></div>`).join('');window.__gcV16Users=users}catch(e){$('v16FindStatus').textContent='Search failed: '+e.message;$('v16Results').innerHTML=''}finally{b.disabled=false;b.textContent='FIND USER'}};
+ $('v16Results').addEventListener('click',async e=>{const link=e.target.closest('[data-reset-link]'),set=e.target.closest('[data-set-pass]'),save=e.target.closest('[data-save-pass]');const i=Number((link||set||save)?.dataset.resetLink??(link||set||save)?.dataset.setPass??(link||set||save)?.dataset.savePass);if(!Number.isFinite(i))return;const u=window.__gcV16Users?.[i];if(!u)return;if(link){link.disabled=true;link.textContent='SENDING…';try{const s=window.gcSupabase;const r=await s.auth.resetPasswordForEmail(String(u.email).toLowerCase(),{redirectTo:new URL('reset-password.html',location.href).href});if(r.error)throw r.error;alert('Password reset link sent to '+u.email+'.')}catch(x){alert('Reset link failed: '+x.message)}finally{link.disabled=false;link.textContent='SEND RESET LINK'}}else if(set){document.querySelector('[data-passbox="'+i+'"]').classList.toggle('open')}else if(save){const box=document.querySelector('[data-passbox="'+i+'"]'),p=box.querySelector('[data-pass="'+i+'"]').value,p2=box.querySelector('[data-pass2="'+i+'"]').value,st=box.querySelector('[data-pass-status="'+i+'"]');if(p.length<8){st.textContent='Password must be at least 8 characters.';return}if(p!==p2){st.textContent='Passwords do not match.';return}save.disabled=true;save.textContent='UPDATING…';try{await api('reset_password',{user_id:u.user_id,email:u.email,password:p});st.textContent='✓ Password updated. User can login immediately.';box.querySelector('[data-pass="'+i+'"]').value='';const p2el=box.querySelector('[data-pass2="'+i+'"]');if(p2el)p2el.value='';}catch(x){st.textContent='Update failed: '+x.message}finally{save.disabled=false;save.textContent='UPDATE PASSWORD'}}});
+}
+function boot(){menu();ensureUM();setTimeout(menu,250);setTimeout(menu,900);setTimeout(ensureUM,500);setTimeout(ensureUM,1500)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();setInterval(menu,900);setInterval(ensureUM,1400);
+})();
+</script>
+<style id="gc-v16-registration-login-links">
+.gc-v16-reg-login{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:10px}.gc-v16-reg-login a{display:inline-flex;align-items:center;justify-content:center;padding:9px 13px;border-radius:11px;text-decoration:none;font-size:10px;font-weight:950;border:1px solid #dbe3ef;background:#fff;color:#334155;transition:.15s}.gc-v16-reg-login a:hover{transform:translateY(-1px);border-color:#93c5fd;color:#155eef;background:#eff6ff}
+</style>
+<script id="gc-v16-registration-login-links-js">
+(function(){
+ function add(card,id,text,href){const h=card?.querySelector('h2');if(!h||document.getElementById(id))return;const box=document.createElement('div');box.className='gc-v16-reg-login';box.innerHTML='<a id="'+id+'" href="'+href+'">'+text+'</a>';h.insertAdjacentElement('afterend',box)}
+ function boot(){add(document.getElementById('studentFormCard'),'gcV16StudentLoginLink','🎓 ALREADY REGISTERED? STUDENT LOGIN','login-student.html');add(document.getElementById('tutorFormCard'),'gcV16TutorLoginLink','🎓 ALREADY REGISTERED? TUTOR LOGIN','login-tutor.html')}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.addEventListener('load',boot,{once:true});setTimeout(boot,700)
+})();
+</script>
+<style id="gc-v16-public-modern-polish">
+/* Public website modern polish — final visual authority */
+header{box-shadow:0 8px 28px rgba(15,23,42,.08)!important;background:rgba(255,255,255,.96)!important;backdrop-filter:blur(14px)!important}
+header nav a,header nav button{font-weight:850!important;letter-spacing:-.01em!important}
+#tutorFormCard,#studentFormCard{position:relative!important;overflow:hidden!important}
+#tutorFormCard:before,#studentFormCard:before{content:"";position:absolute;inset:0 0 auto 0;height:4px;background:linear-gradient(90deg,#155eef,#7c3aed,#06b6d4);opacity:.9}
+#tutorFormCard .bg-orange-100,#studentFormCard .bg-blue-100{border-radius:10px!important}
+#studentFormCard .shadow-lg,#tutorFormCard .shadow-lg{box-shadow:0 10px 28px rgba(15,23,42,.06)!important}
+#publicTutorProfileModal>div,#prelistedTutorBusyModal>div{border-radius:24px!important}
+.gc-target-card,.gc-profile-card{border:1px solid #dbe3ef!important;box-shadow:0 14px 35px rgba(15,23,42,.07)!important;border-radius:20px!important}
+button,.gc-v16-btn{transition:transform .15s ease,box-shadow .15s ease,filter .15s ease!important}
+button:hover:not(:disabled),.gc-v16-btn:hover:not(:disabled){transform:translateY(-1px)!important}
+@media(max-width:700px){#studentFormCard,#tutorFormCard{border-radius:20px!important;padding:18px!important}#studentRegForm .flex.gap-2,#tutorRegForm .flex.gap-2{align-items:stretch!important}#studentRegForm .flex.gap-2 input,#tutorRegForm .flex.gap-2 input{min-width:0!important;flex:1 1 auto!important}#studentRegForm .flex.gap-2 button,#tutorRegForm .flex.gap-2 button{flex:0 0 auto!important}}
+</style>
