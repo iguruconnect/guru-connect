@@ -4643,6 +4643,7 @@ footer:before{
 <a href="#studentsDirectory">Find Student</a>
 <a href="learning.html">Learning Request</a>
 <a href="#registrationSection">Register</a>
+<a href="javascript:void(0)" onclick="openLoginModal()">Login</a>
 </nav>
 <div class="gc-header-actions">
 <button class="bg-slate-100 hover:bg-slate-200 text-brand-dark text-[11px] sm:text-xs font-bold px-2 py-1.5 sm:px-4 sm:py-2.5 rounded-lg sm:rounded-xl transition shadow flex items-center gap-1" id="navLoginBtn" onclick="openLoginModal()" style="display:none!important"><i class="fa-solid fa-right-to-bracket"></i><span class="hidden sm:inline">LOGIN</span></button> <div aria-label="Logged in user" id="currentUserBadge">
@@ -4662,7 +4663,7 @@ footer:before{
 <a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition" href="javascript:void(0)" onclick="openHelplineModal(); closeNavMenu();">HELPLINE PLANS</a>
 <a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openAboutModal(); closeNavMenu();">ABOUT US</a>
 <a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openContactModal(); closeNavMenu();">CONTACT US</a>
-<div class="gc-menu-divider"></div><a class="block px-5 py-3 text-[11px] sm:text-sm font-black text-blue-700 hover:bg-blue-50 transition" href="forgot-password.html" onclick="closeNavMenu()">🔐 PASSWORD RESET</a><div class="gc-menu-divider"></div><a class="gc-final-single-login bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 text-[11px] sm:text-sm font-black rounded-xl transition" href="javascript:void(0)" id="gcFinalMenuLogin">🔐 LOGIN</a></nav>
+<div class="gc-menu-divider"></div><a class="gc-final-single-login bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 text-[11px] sm:text-sm font-black rounded-xl transition" href="javascript:void(0)" id="gcFinalMenuLogin">🔐 LOGIN</a></nav>
 </div>
 </div>
 </div>
@@ -12992,7 +12993,54 @@ document.addEventListener('change',e=>{if(e.target?.id==='loginRoleInput')roleSe
 document.addEventListener('click',e=>{const m=by('loginModal');if(m&&!m.classList.contains('hidden')&&e.target===m)closeLoginModal()},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!by('loginModal')?.classList.contains('hidden'))closeLoginModal()});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{cleanMenu();setTimeout(cleanMenu,300);setTimeout(cleanMenu,1000);setTimeout(cleanMenu,2000)});else{cleanMenu();setTimeout(cleanMenu,300);setTimeout(cleanMenu,1000);setTimeout(cleanMenu,2000)}
-})();</script></body>
+})();</script>
+<!-- GURU CONNECT FINAL STABILITY PATCH 2026-09-14 -->
+<style id="gc-final-admin-stability">
+  /* One stable Admin approval panel. Never animate/reflow the panel while refreshing. */
+  #gcAdminLearningEscrow { min-height: 120px; }
+  #gcAdminLearningEscrow.gc-loading { opacity:.72; }
+  #gcAdminLearningEscrow table { width:100%; }
+</style>
+<script id="gc-final-admin-stability-js">
+(function(){
+  'use strict';
+  let refreshing=false;
+  const originalRefresh=window.GC_ADMIN_ESCROW?.refresh;
+  if(originalRefresh){
+    window.GC_ADMIN_ESCROW.refresh=async function(){
+      if(refreshing)return;
+      refreshing=true;
+      const host=document.getElementById('gcAdminLearningEscrow');
+      try{
+        if(host)host.classList.add('gc-loading');
+        await originalRefresh.apply(this,arguments);
+      }finally{
+        if(host)host.classList.remove('gc-loading');
+        refreshing=false;
+      }
+    };
+  }
+  function cleanDuplicateLogin(){
+    const nav=document.getElementById('publicNavbarLinks');
+    if(!nav)return;
+    const seen=[];
+    nav.querySelectorAll('a,button').forEach(el=>{
+      const t=(el.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
+      if(/^(student login|tutor login|staff login|staff)$/.test(t)) { el.remove(); return; }
+      if(t==='login'||t==='🔐 login'||t==='🔐  login') seen.push(el);
+    });
+    // Keep the final generated menu login only.
+    let keeper=nav.querySelector('#gcFinalMenuLogin,[data-gc-single-login],.gc-final-single-login');
+    seen.forEach(el=>{ if(el!==keeper) el.remove(); });
+    if(!keeper && seen.length) keeper=seen[seen.length-1];
+    // Remove legacy header login buttons outside the public menu.
+    document.querySelectorAll('#navLoginBtn,#navStaffBtn,.gc-header-login,.gc-inline-login').forEach(el=>el.remove());
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',cleanDuplicateLogin);else cleanDuplicateLogin();
+  window.addEventListener('load',cleanDuplicateLogin);
+})();
+</script>
+</body>
 <style id="gc-final-load-hero-transfer-pdf-fix">
 /* Final stable hero: one real image, exact 1640:515 ratio, no crop and no duplicate background artwork. */
 .gc-beautiful-hero{height:auto!important;min-height:0!important;padding:0!important;overflow:hidden!important;background:#fff!important}
@@ -14652,15 +14700,7 @@ function forceDashboard(){const r=localStorage.getItem('active_user_role');if(r=
 const oldOpen=window.openUserDashboard;window.openUserDashboard=function(){if(forceDashboard())return;if(typeof oldOpen==='function')return oldOpen.apply(this,arguments)};
 function hideLegacy(){try{document.getElementById('gcCLV2')?.classList.remove('gc-show')}catch(_){};try{const x=document.getElementById('gcCLV2');if(x)x.style.display='none'}catch(_){} }
 window.addEventListener('load',()=>{hideLegacy();setTimeout(hideLegacy,700);setTimeout(hideLegacy,1600);});
-async function adminEscrow(filter='ALL'){
- const host=document.getElementById('gcAdminLearningEscrow');if(!host)return;const s=S();if(!s)return;
- const q=await s.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(1000);if(q.error){host.innerHTML='<div class="gc-esc-head"><div><h3>Learning Request Escrow</h3><p>'+esc(q.error.message)+'</p></div></div>';return}
- let rows=q.data||[];if(filter==='HOLD')rows=rows.filter(r=>Number(r.coins_held||0)>0);if(filter==='ACTION')rows=rows.filter(r=>['PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','TUTOR_COMPLETED'].includes(String(r.status||''))||!!r.student_outcome);
- const body=rows.map(r=>{const st=String(r.status||'OPEN'),out=String(r.student_outcome||'PENDING');const actionable=['PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','TUTOR_COMPLETED'].includes(st)&&Number(r.coins_held||0)>0;return `<tr><td><b>${esc(r.request_code||r.id)}</b><br><span class="gc-esc-hold">🪙 ${Number(r.coins_held||0)} HELD</span></td><td>${esc(r.student_short_id||('ST-'+String(r.student_id||'').replaceAll('-','').slice(0,6).toUpperCase()))}</td><td>${esc(r.tutor_short_id||(r.tutor_id?'TU-'+String(r.tutor_id).replaceAll('-','').slice(0,6).toUpperCase():'Not connected'))}</td><td>${esc(r.course||'—')}<br>${esc(r.stream||'—')}</td><td><b>${esc(r.subject||'—')}</b><br>${esc(r.topic||'—')}</td><td>${esc(r.learning_deadline?new Date(r.learning_deadline).toLocaleString('en-IN'):'—')}</td><td>${esc(new Date(r.created_at).toLocaleString('en-IN'))}</td><td>${esc(st.replaceAll('_',' '))}</td><td>${esc(out)}${r.admin_decision_note?'<br><small>'+esc(r.admin_decision_note)+'</small>':''}</td><td>${esc(r.issue||r.problem||'—')}</td><td class="gc-esc-actions">${actionable?`<button class="gc-esc-approve" onclick="GC_ADMIN_ESCROW.decide('${esc(r.id)}','APPROVE')">✓ APPROVE &amp; TRANSFER 100 🪙</button><button class="gc-esc-deny" onclick="GC_ADMIN_ESCROW.decide('${esc(r.id)}','DENY')">✕ DENY / RETURN</button>`:'<span class="gc-esc-ok">MONITORED</span>'}</td></tr>`}).join('');
- host.innerHTML=`<div class="gc-esc-head"><div><h3>🛡️ Learning Request • Coins Held • Admin Approval</h3><p>Student outcome/remark is visible here. 100 coins stay under Admin control until approval.</p></div><div class="gc-esc-filter"><button onclick="GC_ADMIN_ESCROW.refresh('ALL')">ALL</button><button onclick="GC_ADMIN_ESCROW.refresh('HOLD')">🪙 HOLD</button><button onclick="GC_ADMIN_ESCROW.refresh('ACTION')">⚡ NEEDS ACTION</button></div></div><div class="gc-esc-body"><div class="gc-esc-table"><table><thead><tr><th>Request</th><th>Student ID</th><th>Tutor ID</th><th>Course / Stream</th><th>Subject / Topic</th><th>Deadline</th><th>Requested</th><th>Status</th><th>Student Remark / Outcome</th><th>Issue / Problem</th><th>Admin Action</th></tr></thead><tbody>${body||'<tr><td colspan="11">No Learning Requests found.</td></tr>'}</tbody></table></div></div>`;
-}
-window.GC_ADMIN_ESCROW={refresh:adminEscrow,decide:async function(id,decision){const s=S();if(!s)return;let note='';if(decision==='DENY')note=prompt('Reason for denial / support message (optional):','Coins denied. Please contact Customer Support.')??'';try{const q=await s.rpc('gc_admin_decide_learning_request',{p_request_id:String(id),p_decision:decision,p_note:String(note).slice(0,1000)});if(q.error)throw q.error;alert(decision==='APPROVE'?'Approved. 100 coins have been released to the Tutor account.':'Denied. The Learning Request coins remain/revert according to the secure Admin workflow and the denial reason is recorded.');adminEscrow('ALL')}catch(e){alert('Admin decision failed: '+(e.message||e))}}};
-function mount(){const host=document.getElementById('staffAdminDashboard');if(!host||host.classList.contains('hidden'))return;let box=document.getElementById('gcAdminLearningEscrow');if(!box){box=document.createElement('section');box.id='gcAdminLearningEscrow';host.querySelector('.bg-white')?.appendChild(box)}adminEscrow('ALL')}
+// Duplicate legacy Admin escrow renderer removed: one stable renderer is used below.
 window.addEventListener('load',()=>setTimeout(mount,900));
 })();
 </script>
@@ -14734,7 +14774,7 @@ async function adminEscrowFinal(){
  }catch(e){console.error(e);host.innerHTML='<div class="gc-esc-error">Admin escrow could not load: '+esc(e.message||e)+'<br><small>Please use REFRESH after Staff login.</small></div>';}
 }
 window.GC_ADMIN_ESCROW={refresh:adminEscrowFinal,decide:async function(id,decision){try{const s=await staffSession();let note='';if(decision==='DENY')note=prompt('Reason for denial / support message (optional):','Coins denied. Please contact Customer Support.')??'';const q=await s.rpc('gc_admin_decide_learning_request',{p_request_id:String(id),p_decision:decision,p_note:String(note).slice(0,1000)});if(q.error)throw q.error;alert(decision==='APPROVE'?'Approved. 100 coins have been released to the Tutor account.':'Denied. The Admin decision has been recorded.');await adminEscrowFinal();}catch(e){alert('Admin decision failed: '+(e.message||e))}}};
-window.addEventListener('load',()=>{setTimeout(adminEscrowFinal,700);setTimeout(adminEscrowFinal,1800)});setInterval(adminEscrowFinal,5000);
+window.addEventListener('load',()=>setTimeout(adminEscrowFinal,1000));
 })();
 </script>
 <!-- GURU CONNECT UI CLEANUP / LEARNING REQUEST ROUTE / FOOTER HEIGHT FIX -->
