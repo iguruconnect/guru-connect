@@ -17134,6 +17134,148 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 })();
 </script>
 
+
+<!-- GURU CONNECT FINAL UNIVERSAL ADMIN LOGIN: device-independent Supabase Auth -->
+<script id="gc-universal-admin-login">
+(function(){
+ 'use strict';
+ const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
+ const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+ const ADMIN_UID='1df7606a-3a96-4116-b022-804b37a3c3dd';
+ function by(id){return document.getElementById(id)}
+ function client(){return window.supabase?.createClient?.(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}})}
+ window.handleStaffLogin=async function(e){
+   if(e)e.preventDefault();
+   const email=String(by('loginEmailInput')?.value||'').trim().toLowerCase();
+   const password=by('loginPasswordInput')?.value||'';
+   if(!email||!password){alert('Enter the Admin email and password.');return false}
+   const btn=document.querySelector('#loginModal button[type="submit"],#loginModal button[onclick*="gcEmailLogin"]');
+   if(btn){btn.disabled=true;btn.dataset.old=btn.textContent;btn.textContent='SIGNING IN…'}
+   try{
+     const s=client();if(!s)throw new Error('Supabase is not connected.');
+     const r=await s.auth.signInWithPassword({email,password});if(r.error)throw r.error;
+     const u=r.data?.user,session=r.data?.session;
+     if(!u||!session)throw new Error('Supabase did not create an Admin session.');
+     if(String(u.id)!==ADMIN_UID)throw new Error('This account is not the configured GURU CONNECT Admin account.');
+     window.gcSupabase=s;
+     localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');
+     localStorage.setItem('active_user_role','staff');localStorage.setItem('active_user_id',u.id);localStorage.setItem('active_user_email',u.email||email);
+     try{window.closeLoginModal?.()}catch(_){}
+     try{window.GC_FINAL_ADMIN?.setVisible?.(true)}catch(_){}
+     try{window.checkStaffSessionState?.()}catch(_){}
+     try{window.renderAdminQueue?.()}catch(_){}
+     return true;
+   }catch(err){console.error('Universal Admin Login:',err);alert('Admin Login failed:\n\n'+(err?.message||String(err)));return false}
+   finally{if(btn){btn.disabled=false;btn.textContent=btn.dataset.old||'LOGIN'}}
+ };
+ // Keep the visible Admin email field editable. The email is controlled by Supabase Auth, not this HTML file.
+ window.GC_ADMIN_UID=ADMIN_UID;
+})();
+</script>
+
+<!-- GURU CONNECT AUTH FIX 2026-09-15
+     This final block intentionally overrides the older duplicated auth handlers.
+     It uses one normal Supabase client/session for every device and the fixed Admin UID.
+-->
+<script id="gc-auth-fix-20260915">
+(function(){
+'use strict';
+const GC_AUTH_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
+const GC_AUTH_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+const GC_ADMIN_UID='1df7606a-3a96-4116-b022-804b37a3c3dd';
+
+function gcAuthClient(){
+  if(!window.supabase?.createClient) throw new Error('Supabase library is not loaded.');
+  if(window.__GC_AUTH_FIX_CLIENT__) return window.__GC_AUTH_FIX_CLIENT__;
+  window.__GC_AUTH_FIX_CLIENT__=window.supabase.createClient(GC_AUTH_URL,GC_AUTH_KEY,{
+    auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
+  });
+  return window.__GC_AUTH_FIX_CLIENT__;
+}
+function gcBy(id){return document.getElementById(id)}
+
+window.GC_ADMIN_UID=GC_ADMIN_UID;
+window.handleStaffLogin=async function(e){
+  e?.preventDefault?.();
+  const email=String(gcBy('loginEmailInput')?.value||gcBy('staffUserInput')?.value||'').trim().toLowerCase();
+  const password=String(gcBy('loginPasswordInput')?.value||gcBy('staffPassInput')?.value||'');
+  if(!email)return alert('Enter the registered Admin email address.');
+  if(!password)return alert('Enter the Admin password.');
+  const btn=document.querySelector('#loginModal button[type="submit"],#loginModal button[onclick*="gcEmailLogin"],#staffLoginModal button[type="submit"]');
+  if(btn){btn.disabled=true;btn.dataset.gcOld=btn.textContent;btn.textContent='SIGNING IN…'}
+  try{
+    const s=gcAuthClient();
+    // Do not use a custom storageKey. PC and mobile must use the same Supabase Auth mechanism.
+    const r=await s.auth.signInWithPassword({email,password});
+    if(r.error)throw r.error;
+    const u=r.data?.user,session=r.data?.session;
+    if(!u||!session)throw new Error('Supabase did not create an Admin session.');
+    if(String(u.id)!==GC_ADMIN_UID)throw new Error('This account is not the authorized GURU CONNECT Admin account.');
+    window.gcSupabase=s;
+    localStorage.setItem('is_staff_logged','true');
+    localStorage.setItem('gc_staff_supabase_auth','true');
+    localStorage.setItem('active_user_role','staff');
+    localStorage.setItem('active_user_id',String(u.id));
+    localStorage.setItem('active_user_email',String(u.email||email));
+    try{window.closeLoginModal?.()}catch(_){}
+    try{window.closeStaffLoginModal?.()}catch(_){}
+    try{window.checkStaffSessionState?.()}catch(_){}
+    try{window.GC_FINAL_ADMIN?.setVisible?.(true)}catch(_){}
+    try{window.renderAdminQueue?.()}catch(_){}
+    try{window.GC_ADMIN_ESCROW?.refresh?.()}catch(_){}
+    if(location.hash!=='#staff-admin') history.replaceState(null,'',location.pathname+'#staff-admin');
+    return true;
+  }catch(err){
+    console.error('GURU CONNECT authoritative Admin login:',err);
+    alert('Admin Login failed:\n\n'+(err?.message||String(err))+'\n\nIf this password was recently changed, use the password reset page and then retry.');
+    return false;
+  }finally{
+    if(btn){btn.disabled=false;btn.textContent=btn.dataset.gcOld||'LOGIN'}
+  }
+};
+
+window.gcEmailLogin=async function(){
+  const role=String(gcBy('loginRoleInput')?.value||'student').toLowerCase();
+  if(role==='staff') return window.handleStaffLogin({preventDefault(){}});
+  // Preserve the existing Student/Tutor flow.
+  if(typeof window.gcMemberEmailLogin==='function') return window.gcMemberEmailLogin();
+  alert('Member login handler is unavailable. Please refresh the website.');
+  return false;
+};
+
+// Always route password reset through the new single reset flow.
+window.gcResetPassword=function(){
+  const email=String(gcBy('loginEmailInput')?.value||'').trim().toLowerCase();
+  location.href='forgot-password.html'+(email?'?email='+encodeURIComponent(email):'');
+};
+
+// If the user opens index.html#staff-admin after login-staff.html, restore the admin UI
+// from the actual Supabase session instead of trusting localStorage alone.
+async function gcRestoreStaff(){
+  if(location.hash!=='#staff-admin')return;
+  try{
+    const s=gcAuthClient(),q=await s.auth.getSession(),u=q.data?.session?.user;
+    if(!u||String(u.id)!==GC_ADMIN_UID)throw new Error('Admin session missing.');
+    window.gcSupabase=s;
+    localStorage.setItem('is_staff_logged','true');
+    localStorage.setItem('gc_staff_supabase_auth','true');
+    localStorage.setItem('active_user_role','staff');
+    localStorage.setItem('active_user_id',String(u.id));
+    localStorage.setItem('active_user_email',String(u.email||''));
+    try{window.GC_FINAL_ADMIN?.setVisible?.(true)}catch(_){}
+    try{window.checkStaffSessionState?.()}catch(_){}
+    try{window.renderAdminQueue?.()}catch(_){}
+    try{window.GC_ADMIN_ESCROW?.refresh?.()}catch(_){}
+  }catch(err){
+    console.warn('Admin session restore:',err);
+  }
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(gcRestoreStaff,250));
+else setTimeout(gcRestoreStaff,250);
+window.addEventListener('load',()=>setTimeout(gcRestoreStaff,450));
+})();
+</script>
+
 </body></html>
 
 <script id="gc-v16-3-final-menu-cleanup">
@@ -17210,8 +17352,8 @@ try{window.addEventListener('hashchange',()=>{if(location.hash==='#staff-admin')
 const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
 const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
 const STAFF_EMAIL='guruconnect.in@gmail.com';
-const LEGACY_STAFF_EMAIL='swami@gmail.com';
-const STAFF_UID='41f35422-e2c7-40d4-a46e-64035e014c70';
+const LEGACY_STAFF_EMAIL='';
+const STAFF_UID='1df7606a-3a96-4116-b022-804b37a3c3dd';
 function client(){
   if(!window.supabase?.createClient)return null;
   // IMPORTANT: do not reuse legacy clients with a custom storageKey. Mobile and desktop
