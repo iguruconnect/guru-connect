@@ -52,7 +52,7 @@
 'use strict';
 const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
 const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,flowType:'implicit',storageKey:'guru-connect-password-recovery-v2'}});
 const $=id=>document.getElementById(id),msg=$('msg');
 function show(t,ok=false){msg.textContent=t;msg.className='msg show '+(ok?'ok':'err')}
 function emailFromUrl(){try{return new URLSearchParams(location.search).get('email')||''}catch(_){return ''}}
@@ -79,11 +79,18 @@ async function verify(){
   if(!/^\d{8}$/.test(token))return show('Enter the 8-digit OTP from the newest GURU CONNECT recovery email. <b>Do NOT put this OTP in the password field.</b>');
   btn.disabled=true;btn.textContent='VERIFYING…';
   try{
+    // Keep password-recovery auth isolated from the normal GURU CONNECT login session.
+    try{await sb.auth.signOut({scope:'local'})}catch(_){}
     const {data,error}=await sb.auth.verifyOtp({email,token,type:'recovery'});
     if(error)throw error;
-    const session=data?.session;
-    const user=session?.user;
-    if(!session||!user||user.is_anonymous===true)throw new Error('The OTP was accepted but a secure recovery session was not created.');
+    let session=data?.session||null;
+    if(!session){
+      await new Promise(r=>setTimeout(r,250));
+      const g=await sb.auth.getSession();
+      if(!g.error)session=g.data?.session||null;
+    }
+    const user=session?.user||data?.user||null;
+    if(!session||!user||user.is_anonymous===true)throw new Error('Supabase accepted this OTP but did not return a recovery session. Request one new OTP and verify it from this same page.');
     $('otpStage').classList.add('hidden');
     $('passwordStage').classList.remove('hidden');
     $('pw1').focus();
