@@ -59,11 +59,16 @@ const S=()=>window.gcSupabase||window.supabase.createClient('https://hzqqswrnawr
 window.gc168SyncPostForm=async function(){
  const s=S(),form=document.getElementById('gc168LRForm'),note=document.getElementById('gc168LoginNote'),bal=document.getElementById('gc168CoinBalance');if(!form)return;
  try{const q=await s.auth.getSession(),u=q.data?.session?.user;if(!u){form.hidden=true;note.textContent='Please login as a registered Student to post a Learning Requirement.';return}
- const id=await s.rpc('gc_get_my_member_profile');const role=String(id.data?.role||'').toLowerCase(),p=id.data?.profile||{};
- if(role!=='student'||!p.id){form.hidden=true;note.textContent='This account is not a registered Student account. Login with your Student account.';return}
- form.hidden=false;note.textContent='Posting as '+(p.name||p.full_name||u.email||'Student')+'.';
- const w=await s.from('gc_coin_wallets').select('balance').eq('profile_id',p.id).maybeSingle();
- if(!w.error&&w.data)bal.textContent='🪙 '+Number(w.data.balance||0)+' coins';
+ form.hidden=false;note.textContent='Signed in as '+(u.email||'Student')+'. Your registered Student profile and 100-coin requirement will be checked securely when you post.';
+ try{
+   const id=await s.rpc('gc_get_my_member_profile');
+   if(!id.error){const role=String(id.data?.role||'').toLowerCase(),p=id.data?.profile||{};
+     if(role!=='student'||!p.id){form.hidden=true;note.textContent='This account is not a registered Student account. Login with your Student account.';return}
+     note.textContent='Posting as '+(p.name||p.full_name||u.email||'Student')+'.';
+     const w=await s.from('gc_coin_wallets').select('balance').eq('profile_id',p.id).maybeSingle();
+     if(!w.error&&w.data)bal.textContent='🪙 '+Number(w.data.balance||0)+' coins';
+   }
+ }catch(_){/* secure post RPC remains authoritative */}
  }catch(e){console.warn('Post form sync failed',e)}
 };
 document.addEventListener('submit',async e=>{

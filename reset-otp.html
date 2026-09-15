@@ -91,7 +91,7 @@ async function verify(){
   }catch(e){
     const m=String(e?.message||e||'');
     if(/expired|invalid|otp|token/i.test(m)){
-      show('OTP verification failed. This code is invalid, expired, or already used. Please request a NEW OTP and use that newest code.');
+      show('OTP verification failed: '+(e.code?e.code+' — ':'')+(m||'Unknown Supabase error')+' '+(e.status?'(HTTP '+e.status+')':'')+'. Please use the newest OTP.');
     }else show('OTP verification failed: '+m);
   }finally{btn.disabled=false;btn.textContent='VERIFY OTP'}
 }
@@ -107,8 +107,7 @@ $('resend').onclick=async()=>{
   try{
     // Clear any local recovery session before starting a fresh recovery request.
     try{await sb.auth.signOut({scope:'local'})}catch(_){}
-    const redirectTo=new URL('reset-otp.html',location.href).href;
-    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo});
+    const {error}=await sb.auth.resetPasswordForEmail(email);
     if(error)throw error;
     show('✓ A new 8-digit OTP has been sent. Use ONLY this newest code.',true);
     resendTimer=60;
@@ -117,7 +116,7 @@ $('resend').onclick=async()=>{
       btn.textContent=resendTimer>0?'RESEND OTP ('+resendTimer+'s)':'RESEND OTP';
       if(resendTimer<=0){clearInterval(timer);btn.disabled=false}
     },1000);
-  }catch(e){show('Could not resend OTP: '+(e.message||e));btn.disabled=false;btn.textContent='RESEND OTP'}
+  }catch(e){show('Could not send OTP: '+(e.code?e.code+' — ':'')+(e.message||e)+' '+(e.status?'(HTTP '+e.status+')':''));btn.disabled=false;btn.textContent='RESEND OTP'}
 };
 
 $('save').onclick=async()=>{
