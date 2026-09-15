@@ -4701,6 +4701,19 @@ footer:before{
   #gc165Header .gc165-brand img{height:58px!important;}
 }
 </style>
+
+<style id="gc168-critical-first-paint">
+/* Prevent the 6MB homepage from briefly showing raw/unstyled text during parse. */
+html.gc168-booting body{visibility:hidden!important}
+html.gc168-booting:before{
+  content:"";position:fixed;inset:0;z-index:2147483647;display:block;
+  background:#fff url("guru-connect-brand.png") center center/min(520px,78vw) auto no-repeat;
+}
+</style>
+<script id="gc168-critical-first-paint-js">
+document.documentElement.classList.add('gc168-booting');
+window.addEventListener('DOMContentLoaded',function(){document.documentElement.classList.remove('gc168-booting');},{once:true});
+</script>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -5070,10 +5083,10 @@ footer:before{
 </div>
 
 
-<div class="gc-email-verification-required-box"><div class="gc-email-verification-icon">✓</div><div><strong>EMAIL VERIFICATION IS COMPULSORY</strong><span>STEP 1: Verify this email with the EmailJS OTP below. STEP 2: After registration, check Inbox/Spam and click the official Supabase <b>Verify your email</b> link. Both checks are required.</span></div></div>
+<div class="gc-email-verification-required-box"><div class="gc-email-verification-icon">✓</div><div><strong>EMAIL VERIFICATION IS COMPULSORY</strong><span>After registration, Supabase will send a 6-digit verification OTP to this email. Enter that OTP to activate your account.</span></div></div>
 <!-- EmailJS OTP verification: first gate before Supabase email verification -->
 <div class="bg-blue-50 border border-blue-200 p-3.5 rounded-xl space-y-2" id="stuOtpBox">
-<p class="text-[11px] font-black text-brand-blue">EMAILJS VERIFICATION — Click <b>SEND OTP</b>, then enter the 4-digit code sent to your email.</p>
+<p class="text-[11px] font-black text-brand-blue">SUPABASE EMAIL VERIFICATION — A 6-digit OTP will be sent after registration.</p>
 <div class="flex gap-2">
 <input class="w-32 border border-blue-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="stuEnteredOtp" maxlength="4" placeholder="1234" type="text"/>
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('student')" type="button">Verify OTP</button>
@@ -5429,10 +5442,10 @@ footer:before{
 <input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_phone" name="phone" placeholder="9876543210" required="" type="tel"/>
 </div>
 </div>
-<div class="gc-email-verification-required-box gc-email-verification-required-orange"><div class="gc-email-verification-icon">✓</div><div><strong>EMAIL VERIFICATION IS COMPULSORY</strong><span>STEP 1: Verify this email with the EmailJS OTP below. STEP 2: After registration, check Inbox/Spam and click the official Supabase <b>Verify your email</b> link. Both checks are required.</span></div></div>
+<div class="gc-email-verification-required-box gc-email-verification-required-orange"><div class="gc-email-verification-icon">✓</div><div><strong>EMAIL VERIFICATION IS COMPULSORY</strong><span>After registration, Supabase will send a 6-digit verification OTP to this email. Enter that OTP to activate your account.</span></div></div>
 <!-- EmailJS OTP verification: first gate before Supabase email verification -->
 <div class="bg-orange-50 border border-orange-200 p-3.5 rounded-xl space-y-2" id="tutorOtpBox">
-<p class="text-[11px] font-black text-brand-nagpurOrange">EMAILJS VERIFICATION — Click <b>SEND OTP</b>, then enter the 4-digit code sent to your email.</p>
+<p class="text-[11px] font-black text-brand-nagpurOrange">SUPABASE EMAIL VERIFICATION — A 6-digit OTP will be sent after registration.</p>
 <div class="flex gap-2">
 <input class="w-32 border border-orange-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="tutorEnteredOtp" maxlength="4" placeholder="1234" type="text"/>
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('tutor')" type="button">Verify OTP</button>
@@ -5532,6 +5545,10 @@ footer:before{
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase mb-1">Subject / Skill Needed *</label>
 <input class="w-full border rounded-xl p-3 text-xs sm:text-sm bg-white" id="req_subject" placeholder="e.g. Physics / Python Coding" required="" type="text"/>
+</div>
+<div>
+<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase mb-1">Topic *</label>
+<input class="w-full border rounded-xl p-3 text-xs sm:text-sm bg-white" id="req_topic" placeholder="e.g. Integration by Parts / Organic Chemistry" required type="text"/>
 </div>
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase mb-1">Mode of Learning *</label>
@@ -7915,10 +7932,52 @@ footer:before{
             openUserDashboard();
         }
 
-        function handleRequirementSubmit(e) {
+        async function handleRequirementSubmit(e) {
             e.preventDefault();
-            alert('Learning request posted successfully!');
-            e.target.reset();
+            const form=e.currentTarget;
+            const btn=form.querySelector('button[type="submit"]');
+            const subject=(document.getElementById('req_subject')?.value||'').trim();
+            const topic=(document.getElementById('req_topic')?.value||'').trim();
+            const mode=(document.getElementById('req_mode')?.value||'').trim();
+            const reason=(document.getElementById('req_desc')?.value||'').trim();
+            const activeRole=(localStorage.getItem('active_user_role')||'').toLowerCase();
+            if(activeRole!=='student') return alert('Please login as a registered Student before posting a Learning Request.');
+            if(!subject) return alert('Please mention the Subject / Skill Needed.');
+            if(!topic) return alert('Please mention the Topic.');
+            if(!reason) return alert('Please mention the Reason / Issue.');
+            const s=window.gcSupabase||null;
+            if(!s) return alert('Secure connection is unavailable. Please refresh the page and login again.');
+            const old=btn?.textContent;
+            if(btn){btn.disabled=true;btn.textContent='POSTING SECURELY…';}
+            try{
+                const sess=await s.auth.getSession();
+                const u=sess.data?.session?.user;
+                if(!u) throw new Error('Your login session has expired. Please login again.');
+                if(!u.email_confirmed_at) throw new Error('Please verify your email before posting a Learning Request.');
+                const ident=await s.rpc('gc_get_my_member_profile');
+                if(ident.error) throw ident.error;
+                const role=String(ident.data?.role||'').toLowerCase();
+                const p=ident.data?.profile||{};
+                if(role!=='student'||String(p.user_id||'')!==String(u.id)) throw new Error('This account is not linked to a registered Student profile.');
+                const r=await s.rpc('gc_post_learning_request',{
+                    p_course:mode,
+                    p_problem:reason,
+                    p_stream:'',
+                    p_student_id:p.id,
+                    p_subject:subject,
+                    p_topic:topic
+                });
+                if(r.error) throw r.error;
+                form.reset();
+                alert('Learning Request posted successfully. 100 GURU COINS have been held with Admin.');
+                // Refresh the independent Learning Request board so the new record is visible immediately.
+                try{window.location.href='learning.html?refresh='+Date.now();}catch(_){}
+            }catch(err){
+                console.error('Learning Request post failed:',err);
+                alert('Learning Request could not be posted:\n\n'+(err.message||String(err)));
+            }finally{
+                if(btn){btn.disabled=false;btn.textContent=old||'POST VERIFIED LEARNING REQUEST';}
+            }
         }
 
         window.addEventListener('load', function() {
@@ -10822,7 +10881,7 @@ body {
       <div class="mx-auto mb-6 w-24 h-24 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-5xl"><i class="fa-solid fa-envelope-circle-check"></i></div>
       <h2 class="text-2xl sm:text-4xl font-black text-slate-900 mb-4">Check Your Email</h2>
       <p class="text-base sm:text-lg text-slate-600 leading-relaxed">A verification email has been sent to <strong>${String(email).replace(/</g,'&lt;')}</strong>.</p>
-      <p class="mt-3 text-sm text-slate-500">Open the email and click the verification link. After verification, return to GURU CONNECT and login with your email and password.</p>
+      <p class="mt-3 text-sm text-slate-500">Enter the 6-digit OTP from the email on this screen. After successful verification, your GURU CONNECT profile will be activated.</p>
       <button class="mt-7 px-7 py-3 rounded-xl bg-blue-600 text-white font-black" onclick="this.closest('#gcEmailVerificationScreen').remove();openLoginModal()">GO TO LOGIN</button>
     </div>`;
   }
@@ -13572,7 +13631,7 @@ window.addEventListener('load',boot);
     if(entered!==st.otp){popup('INVALID OTP','The verification code is incorrect. Attempts remaining: '+Math.max(0,MAX_ATTEMPTS-st.attempts)+'.','gold');return false;}
     st.verified=true; st.otp='';
     setSubmit(type,true);
-    popup('EMAILJS OTP VERIFIED','Your email passed the EmailJS OTP check. Registration will still require the official Supabase verification link sent after submission.','success');
+    popup('EMAILJS OTP VERIFIED','Your email is verified through Supabase OTP. Your registration can now continue.','success');
     return true;
   };
   function bind(type){
@@ -16628,7 +16687,7 @@ function clean(){const nav=document.getElementById('publicNavbarLinks');if(!nav)
 })();
 </script>
 
-<script id="gc-v162-recovery-router">(function(){try{var path=location.pathname||'';var h=new URLSearchParams((location.hash||'').replace(/^#/,''));var q=new URLSearchParams(location.search||'');var isRecovery=h.get('type')==='recovery'||q.get('type')==='recovery'||!!h.get('access_token')||!!q.get('code');if(isRecovery&&!/reset-password\.html$/i.test(path)){var t=new URL('reset-password.html',location.href);t.search=location.search;t.hash=location.hash;location.replace(t.href)}}catch(e){}})();</script>
+<script id="gc-v162-recovery-router">(function(){try{var path=location.pathname||'';var h=new URLSearchParams((location.hash||'').replace(/^#/,''));var q=new URLSearchParams(location.search||'');var isRecovery=h.get('type')==='recovery'||q.get('type')==='recovery'||!!h.get('access_token')||!!h.get('refresh_token')||!!q.get('code')||(!!q.get('token_hash')&&q.get('type')==='recovery');if(isRecovery&&!/reset-password\.html$/i.test(path)){var t=new URL('reset-password.html',location.href);t.search=location.search;t.hash=location.hash;location.replace(t.href)}}catch(e){}})();</script>
 <style id="gc-v162-menu-style">#publicNavbarLinks .gc-v162-auth-item{display:flex!important;align-items:center!important;width:100%!important;box-sizing:border-box!important;padding:13px 14px!important;border-radius:12px!important;margin:3px 0!important;text-decoration:none!important;font-size:12px!important;font-weight:950!important}.gc-v162-student{color:#155eef!important;background:#eff6ff!important}.gc-v162-tutor{color:#6d28d9!important;background:#f5f3ff!important}.gc-v162-staff{color:#065f46!important;background:#ecfdf5!important}.gc-v162-reset{color:#92400e!important;background:#fffbeb!important}.gc-v162-menu-label{display:block!important;margin:8px 0 4px!important;padding:0 4px!important;font-size:9px!important;font-weight:1000!important;letter-spacing:.12em!important;color:#64748b!important;text-transform:uppercase!important}</style><script id="gc-v162-menu-js">(function(){'use strict';function run(){var m=document.getElementById('publicNavbarLinks');if(!m)return;m.querySelectorAll('.gc-v162-auth-item,.gc-v162-menu-label,#gcFinalMenuLogin,#gcPublicPasswordReset,.gc-final-single-login,.gc-mobile-login-item,.gc-mobile-staff-item,.gc-menu-login-student,.gc-menu-login-tutor,.gc-menu-login-staff').forEach(function(x){x.remove()});m.querySelectorAll('a,button').forEach(function(a){var t=(a.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();if(t==='login'||t==='staff'||t==='staff login'||t==='staff/admin login'||t==='student login'||t==='tutor login'||t==='password reset'||t.indexOf('staff/admin login')>=0)a.remove()});var sep=document.createElement('div');sep.style.cssText='height:1px;background:#e2e8f0;margin:10px 0 7px';m.appendChild(sep);var lab=document.createElement('div');lab.className='gc-v162-menu-label';lab.textContent='MEMBER & STAFF ACCESS';m.appendChild(lab);[['gc-v162-student','🎓 STUDENT LOGIN','login-student.html'],['gc-v162-tutor','🎓 TUTOR LOGIN','login-tutor.html'],['gc-v162-staff','🛡️ STAFF / ADMIN LOGIN','login-staff.html'],['gc-v162-reset','🔑 PASSWORD RESET','forgot-password.html']].forEach(function(x){var a=document.createElement('a');a.className='gc-v162-auth-item '+x[0];a.href=x[2];a.textContent=x[1];m.appendChild(a)})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run()})();</script>
 
 <style id="gc-v16-4-final-beautiful-header">
@@ -16727,6 +16786,166 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 </script>
 <style id="gc165-css">#gc165Header{position:relative!important;z-index:100000!important;width:100%;background:rgba(255,255,255,.98);border-bottom:1px solid #e7edf5;box-shadow:0 8px 26px rgba(15,23,42,.08);backdrop-filter:blur(14px)}#gc165Header *{box-sizing:border-box}.gc165-inner{width:100%;max-width:1440px;min-height:100px;margin:auto;padding:10px 28px;display:flex;align-items:center;gap:24px}.gc165-brand{height:82px;width:min(560px,62vw);max-width:560px;display:flex;align-items:center;text-decoration:none;overflow:visible;flex:0 0 auto}.gc165-brand img{display:block;width:auto;height:80px;max-width:100%;object-fit:contain;object-position:left center}.gc165-spacer{flex:1}.gc165-menu-wrap{position:relative}.gc165-spacer{flex:1}.gc165-menu-wrap{position:relative}.gc165-menu-button{height:46px;min-width:116px;padding:0 16px;border:0;border-radius:14px;background:linear-gradient(135deg,#123b8f,#2563eb);color:#fff;display:inline-flex;align-items:center;justify-content:center;gap:9px;font:900 12px/1 Inter,system-ui,sans-serif;letter-spacing:.08em;cursor:pointer;box-shadow:0 9px 22px rgba(18,59,143,.22)}.gc165-menu-icon{font-size:18px}.gc165-menu{position:absolute;right:0;top:calc(100% + 10px);width:330px;max-width:calc(100vw - 24px);padding:10px;background:#fff;border:1px solid #dbe4ef;border-radius:20px;box-shadow:0 26px 70px rgba(15,23,42,.20);display:none;flex-direction:column;z-index:100001}.gc165-menu.open{display:flex}.gc165-menu a{display:flex;align-items:center;gap:10px;min-height:44px;padding:11px 13px;margin:2px 0;border-radius:12px;color:#334155;text-decoration:none;font:800 12px/1.2 Inter,system-ui,sans-serif}.gc165-menu a:hover{background:#eff6ff;color:#155eef}.gc165-menu a.student{background:#eff6ff;color:#155eef}.gc165-menu a.tutor{background:#f5f3ff;color:#6d28d9}.gc165-menu a.staff{background:#ecfdf5;color:#047857}.gc165-menu a.reset{background:#fffbeb;color:#92400e}.gc165-menu-title{padding:6px 10px;color:#123b8f;font:950 10px/1 Inter,system-ui,sans-serif;letter-spacing:.13em}.gc165-menu-title.small{color:#64748b;font-size:9px}.gc165-divider{height:1px;background:#e5eaf1;margin:8px 3px}.gc-beautiful-nav,.gc-header-actions,.gc-top-nav-wrap,.gc-top-tabs,#publicMenuWrapper{display:none!important}@media(max-width:760px){.gc165-inner{min-height:82px;padding:8px 12px;gap:12px}.gc165-brand{height:66px;width:min(390px,calc(100% - 104px));max-width:none}.gc165-brand img{height:64px}.gc165-menu-button{min-width:92px;height:42px}.gc165-menu{width:300px}}@media(max-width:430px){.gc165-inner{min-height:74px;padding:7px 9px}.gc165-brand{height:58px;width:calc(100% - 82px)}.gc165-brand img{height:56px}.gc165-menu-button{min-width:72px;height:39px;padding:0 10px}.gc165-chevron{display:none}.gc165-menu{width:292px}}</style>
 <script id="gc165-js">(()=>{function b(){let x=document.getElementById('gc165MenuButton'),m=document.getElementById('gc165Menu'),w=document.querySelector('.gc165-menu-wrap');if(!x||!m)return;let c=()=>{m.classList.remove('open');x.setAttribute('aria-expanded','false')};x.onclick=e=>{e.stopPropagation();let o=!m.classList.contains('open');m.classList.toggle('open',o);x.setAttribute('aria-expanded',o?'true':'false')};m.onclick=e=>{if(e.target.closest('a'))c()};document.addEventListener('click',e=>{if(m.classList.contains('open')&&!w.contains(e.target))c()});document.addEventListener('keydown',e=>{if(e.key==='Escape')c()})}document.readyState==='loading'?document.addEventListener('DOMContentLoaded',b,{once:true}):b()})();</script>
+
+<!-- GURU CONNECT V16.8 FINAL FIX PACK -->
+<style id="gc168-final-fixes">
+/* Menu: larger readable text + strict chronological order. */
+#gc165Menu a{font-size:15px!important;line-height:1.25!important;min-height:46px!important;padding:11px 14px!important}
+#gc165Menu .gc165-menu-title{font-size:12px!important}
+#gc165Menu .gc165-menu-title.small{font-size:11px!important}
+#gc165Menu{width:min(360px,calc(100vw - 24px))!important}
+#protectedReqForm input,#protectedReqForm select,#protectedReqForm textarea{font-size:15px!important;min-height:48px}
+#protectedReqForm label{font-size:12px!important}
+#protectedReqForm button[type=submit]{font-size:15px!important;min-height:52px}
+/* Hide the old duplicate/legacy menu entries; the V16.8 menu is recreated once below. */
+#publicNavbarLinks a[href="learning.html"]{display:none!important}
+</style>
+<script id="gc168-menu-final">
+(function(){
+  'use strict';
+  function cleanMenu(){
+    const nav=document.getElementById('gc165Menu'); if(!nav)return;
+    nav.innerHTML=
+      '<div class="gc165-menu-title">GURU CONNECT</div>'+
+      '<a href="#home">🏠 <span>Home</span></a>'+
+      '<a href="explore-tutors.html">🔎 <span>Find Tutor</span></a>'+
+      '<a href="students-directory.html">👥 <span>Find Student</span></a>'+
+      '<a href="learning.html">📚 <span>Learning Request</span></a>'+
+      '<a href="#registrationSection">📝 <span>Register</span></a>'+
+      '<div class="gc165-divider"></div>'+
+      '<div class="gc165-menu-title small">MEMBER &amp; STAFF ACCESS</div>'+
+      '<a class="student" href="login-student.html">🎓 <span>Student Login</span></a>'+
+      '<a class="tutor" href="login-tutor.html">🎓 <span>Tutor Login</span></a>'+
+      '<a class="staff" href="login-staff.html">🛡️ <span>Staff / Admin Login</span></a>'+
+      '<a class="reset" href="forgot-password.html">🔑 <span>Password Reset</span></a>'+
+      '<div class="gc165-divider"></div>'+
+      '<a href="about.html">ℹ️ <span>About Us</span></a>'+
+      '<a href="contact.html">☎️ <span>Contact Us</span></a>'+
+      '<a href="helpline.html">💬 <span>Helpline Plans</span></a>';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',cleanMenu,{once:true});else cleanMenu();
+})();
+</script>
+<script id="gc168-requirement-login-sync">
+(function(){
+  'use strict';
+  async function sync(){
+    const s=window.gcSupabase;if(!s)return;
+    try{
+      const q=await s.auth.getSession(),u=q.data?.session?.user;
+      const ident=u?await s.rpc('gc_get_my_member_profile'):null;
+      const role=String(ident?.data?.role||'').toLowerCase();
+      const p=ident?.data?.profile||{};
+      if(u&&role==='student'&&p.id){
+        localStorage.setItem('active_user_name',p.name||p.full_name||u.email?.split('@')[0]||'Student');
+        localStorage.setItem('active_user_email',u.email||'');
+        localStorage.setItem('active_user_role','student');
+        const alertBox=document.getElementById('notLoggedInAlert'),form=document.getElementById('protectedReqForm');
+        if(alertBox)alertBox.classList.add('hidden'); if(form)form.classList.remove('hidden');
+        const n=document.getElementById('activeStudentNameDisplay');if(n)n.textContent=p.name||p.full_name||'Student';
+      }
+    }catch(e){console.warn('LRR login sync:',e)}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(sync,250));else setTimeout(sync,250);
+})();
+</script>
+<script id="gc168-no-preload-text">
+(function(){
+  'use strict';
+  // Keep the browser from painting raw HTML/unstyled text while the large homepage
+  // document is still being parsed. The logo is shown by the critical head CSS below.
+})();
+</script>
+
+<script id="gc-v16-otp-final">
+(function(){
+  'use strict';
+  const S=window.gcSupabase || (window.supabase && window.supabase.createClient ? window.supabase.createClient('https://hzqqswrnawrfgufbxgay.supabase.co','sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}) : null);
+  if(!S) return;
+  window.gcSupabase=S;
+  const esc2=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  let pending={email:'',role:'',profile:null};
+  window.gcOtpPendingRegistration=pending;
+
+  function otpModal(email,role){
+    let old=document.getElementById('gcSupabaseOtpRegistration'); if(old) old.remove();
+    const box=document.createElement('div'); box.id='gcSupabaseOtpRegistration';
+    box.className='fixed inset-0 z-[500] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-6';
+    box.innerHTML=`<div class="max-w-xl w-full bg-white rounded-[2rem] shadow-2xl p-7 sm:p-11 text-center">
+      <div class="mx-auto mb-5 w-20 h-20 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-4xl">✉️</div>
+      <div class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-black uppercase tracking-wider mb-3">Email verification • 6-digit OTP</div>
+      <h2 class="text-2xl sm:text-4xl font-black text-slate-900">Verify Your Email</h2>
+      <p class="mt-3 text-sm sm:text-base text-slate-600">We sent a 6-digit verification code to</p>
+      <p class="mt-1 text-base sm:text-xl font-black text-blue-700 break-all">${esc2(email)}</p>
+      <input id="gcRegOtpInput" class="mt-6 w-full text-center tracking-[.45em] font-black text-2xl border-2 border-blue-200 rounded-2xl px-4 py-4 outline-none focus:border-blue-500" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456">
+      <button id="gcRegOtpVerify" class="mt-4 w-full rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black py-4">VERIFY OTP</button>
+      <button id="gcRegOtpResend" class="mt-3 w-full rounded-2xl border border-slate-300 bg-white text-slate-700 font-black py-3">RESEND OTP</button>
+      <div id="gcRegOtpMsg" class="mt-4 text-sm font-bold text-slate-500"></div>
+      <p class="mt-4 text-xs text-slate-500">Use the newest code. The OTP is valid for the period configured in Supabase Auth.</p>
+    </div>`;
+    document.body.appendChild(box);
+    const input=box.querySelector('#gcRegOtpInput'), verify=box.querySelector('#gcRegOtpVerify'), resend=box.querySelector('#gcRegOtpResend'), msg=box.querySelector('#gcRegOtpMsg');
+    const say=(t,ok)=>{msg.textContent=t;msg.className='mt-4 text-sm font-bold '+(ok?'text-emerald-700':'text-red-700')};
+    const finish=async(user)=>{
+      try{
+        if(typeof window.finishVerifiedRegistration==='function'){
+          const ok=await window.finishVerifiedRegistration(user);
+          if(!ok) throw new Error('Email verified, but the pending profile could not be completed. Please log in and contact support.');
+        }
+        box.remove();
+        if(typeof window.openLoginModal==='function') window.openLoginModal();
+        else location.href='login-student.html';
+        alert('✓ Email verified successfully. Your GURU CONNECT profile is now active.');
+      }catch(e){say(e.message||String(e));}
+    };
+    verify.onclick=async()=>{
+      const token=input.value.trim().replace(/\D/g,'');
+      if(!/^\d{6}$/.test(token)) return say('Enter the 6-digit OTP from the newest GURU CONNECT email.');
+      verify.disabled=true; verify.textContent='VERIFYING…';
+      try{
+        const r=await S.auth.verifyOtp({email,token,type:'email'});
+        if(r.error) throw r.error;
+        const user=r.data?.user;
+        if(!user?.email_confirmed_at) throw new Error('OTP was accepted but Supabase did not mark the email as verified yet. Please try again.');
+        await finish(user);
+      }catch(e){say('OTP verification failed: '+(e.message||String(e)));}
+      finally{verify.disabled=false;verify.textContent='VERIFY OTP';}
+    };
+    input.addEventListener('keydown',e=>{if(e.key==='Enter')verify.click()});
+    resend.onclick=async()=>{
+      resend.disabled=true; resend.textContent='SENDING…';
+      try{
+        const r=await S.auth.resend({type:'signup',email});
+        if(r.error) throw r.error;
+        say('✓ A new 6-digit OTP has been sent. Use only the newest code.',true);
+        let n=60; const timer=setInterval(()=>{n--; resend.textContent=n>0?'RESEND OTP ('+n+'s)':'RESEND OTP'; if(n<=0){clearInterval(timer);resend.disabled=false}},1000);
+      }catch(e){say('Could not resend OTP: '+(e.message||String(e)));resend.disabled=false;resend.textContent='RESEND OTP';}
+    };
+    input.focus();
+  }
+
+  window.gcCreateEmailAccount=async function(email,password,role,profile){
+    email=String(email||'').trim().toLowerCase();
+    if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Enter a valid email address.');
+    if(!password||password.length<8) throw new Error('Password must be at least 8 characters.');
+    const r=await S.auth.signUp({email,password});
+    if(r.error) throw r.error;
+    const user=r.data?.user; if(!user) throw new Error('Supabase did not return a user account.');
+    if(user.email_confirmed_at){ return {user,session:r.data?.session||null,pending:false,emailConfirmed:true}; }
+    pending={email,role:role==='tutor'?'tutor':'student',profile}; window.gcOtpPendingRegistration=pending;
+    try{localStorage.setItem('gc_pending_profile',JSON.stringify({role:pending.role,profile}));localStorage.setItem('gc_pending_email',email);}catch(_){ }
+    otpModal(email,pending.role);
+    return {user,session:null,pending:true,emailConfirmed:false};
+  };
+
+  // Ensure old EmailJS OTP controls can never block the Supabase registration flow.
+  function hideLegacyEmailJs(){
+    document.querySelectorAll('#studentFormCard button[onclick*="sendEmailOtp"],#tutorFormCard button[onclick*="sendEmailOtp"],#studentFormCard button[onclick*="verifyEmailOtp"],#tutorFormCard button[onclick*="verifyEmailOtp"],#stuOtpBox,#tutorOtpBox').forEach(el=>{el.style.display='none';el.setAttribute('aria-hidden','true')});
+  }
+  hideLegacyEmailJs(); setTimeout(hideLegacyEmailJs,500); setTimeout(hideLegacyEmailJs,1500);
+})();
+</script>
+
 </body></html>
 
 <script id="gc-v16-3-final-menu-cleanup">
