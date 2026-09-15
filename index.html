@@ -4997,7 +4997,7 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 </article>
 <article class="gc-quick-card gc-quick-lrr">
 <div class="gc-quick-top"><div class="gc-quick-icon"><i class="fa-solid fa-bolt"></i></div><div><h3>LRR — Live Learning Requirement Requests</h3><p>See real Student learning requirements live on GURU CONNECT.</p></div></div>
-<a class="gc-quick-btn" href="#liveLRRSection">View Live LRR  ›</a>
+<button type="button" class="gc-quick-btn" onclick="gcOpenLiveLRR()">View Live LRR  ›</button>
 </article>
 </div>
 <section id="liveLRRSection" class="gc-home-lrr-section">
@@ -15360,7 +15360,7 @@ window.addEventListener('load',()=>setTimeout(mount,900));
   async function staff(){
     const s=S(); if(!s)throw new Error('Supabase is not connected.');
     const q=await s.auth.getSession(); const u=q.data?.session?.user;
-    if(u && String(u.email||'').toLowerCase()==='swami@gmail.com') return s;
+    if(u && String(u.email||'').toLowerCase()==='guruconnect.in@gmail.com') return s;
     throw new Error('Staff Supabase session is required. Please login again.');
   }
   window.GC_ADMIN_CLOUD={
@@ -15560,7 +15560,7 @@ body:not(.gc-dashboard-page) .gc-account-logout{display:none!important;}
 <script id="gc-final-unified-login-reset-js">
 (function(){
 'use strict';
-const STAFF_EMAIL='swami@gmail.com';
+const STAFF_EMAIL='guruconnect.in@gmail.com';
 const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
 const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
 function S(){return window.gcSupabase || (window.supabase&&window.supabase.createClient?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null)}
@@ -15673,7 +15673,7 @@ window.GC_UNIFIED_LOGIN_READY=true;
 (function(){
 'use strict';
 const S=()=>window.gcSupabase||null, clean=v=>String(v??'').trim(), normPhone=v=>clean(v).replace(/\D/g,''), esc=v=>clean(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const STAFF='swami@gmail.com';
+const STAFF='guruconnect.in@gmail.com';
 function dash(){return document.getElementById('staffAdminDashboard')}
 function isStaff(){return localStorage.getItem('is_staff_logged')==='true'}
 function focusEl(id){const x=document.getElementById(id);if(x){x.classList.add('gc-admin-focus');x.scrollIntoView({behavior:'smooth',block:'start'});setTimeout(()=>x.classList.remove('gc-admin-focus'),1800)}}
@@ -16467,7 +16467,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   'use strict';
   const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
   const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
-  const STAFF_EMAIL='swami@gmail.com';
+  const STAFF_EMAIL='guruconnect.in@gmail.com';
   function client(){
     if(window.gcSupabase) return window.gcSupabase;
     if(window.supabase?.createClient) return window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
@@ -16757,7 +16757,7 @@ function clean(){const nav=document.getElementById('publicNavbarLinks');if(!nav)
 <script id="gc-v16-4-final-menu-admin-authority">
 (function(){
 'use strict';
-const STAFF_EMAIL='swami@gmail.com';
+const STAFF_EMAIL='guruconnect.in@gmail.com';
 const $=id=>document.getElementById(id);
 function nav(){return $('publicNavbarLinks')}
 function closeMenu(){const n=nav();if(n)n.classList.remove('gc-menu-open');const b=document.querySelector('.gc-menu-button');if(b)b.setAttribute('aria-expanded','false')}
@@ -17060,6 +17060,12 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 })();
 </script>
 
+<style id="gc-v18-lrr-click-first">
+#liveLRRSection{display:none!important}
+.gc-quick-lrr .gc-quick-btn{border:0;cursor:pointer;font:inherit}
+.gc-v17-lrr-wrap.gc-v18-open{display:block!important}
+@media(max-width:520px){.gc-v17-lrr-wrap{padding-left:14px!important;padding-right:14px!important}.gc-v17-lrr-title h2{font-size:21px!important}.gc-v17-lrr-tabs{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.gc-v17-lrr-tab{white-space:nowrap}.gc-v17-lrr-grid{grid-template-columns:1fr!important}.gc-v17-lrr-card{width:100%!important;height:auto!important;min-height:500px!important}}
+</style>
 <!-- GURU CONNECT V17 — PUBLIC LRR FILTER + PROFILE-SIZE CARDS + MOBILE STAFF AUTH -->
 <style id="gc-v17-lrr-staff-final">
   /* LRR uses the exact 450x500 directory-card footprint used by Tutor/Student cards. */
@@ -17092,7 +17098,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 </style>
 <script id="gc-v17-lrr-staff-final-js">
 (function(){'use strict';
- const URL='https://hzqqswrnawrfgufbxgay.supabase.co', KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu', STAFF_EMAIL='swami@gmail.com';
+ const URL='https://hzqqswrnawrfgufbxgay.supabase.co', KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu', STAFF_EMAIL='guruconnect.in@gmail.com';
  const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
  const fmt=v=>{if(!v)return '—';const d=new Date(v);return isNaN(d)?String(v):d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});};
  const now=()=>Date.now();
@@ -17112,7 +17118,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
  window.gcV17SetLRRTab=function(t,b){activeTab=t;document.querySelectorAll('.gc-v17-lrr-tab').forEach(x=>x.classList.remove('active'));b?.classList.add('active');render()};
  window.gcV17FilterLRR=function(){stream=document.getElementById('gcV17LRRStream')?.value||'ALL';subject=document.getElementById('gcV17LRRSubject')?.value||'ALL';render()};
  async function load(){const g=document.getElementById('gcV17LRRGrid');if(!g)return;try{const s=publicClient();const q=await s.rpc('gc_list_learning_requests_public_v4');if(q.error)throw q.error;all=Array.isArray(q.data)?q.data:[];all=all.filter(r=>r&&typeof r==='object');rebuildSelects();render()}catch(e){g.innerHTML='<div class="gc-v17-lrr-empty">⚠️ Live LRR could not be loaded right now.<br><span style="font-size:10px">Please refresh the page. If this continues, the public LRR Supabase function needs to be deployed.</span></div>';console.warn('V17 LRR',e)}}
- function install(){const old=document.getElementById('liveLRRSection'),quick=document.querySelector('.gc-quick-grid');if(!old||!quick)return;old.classList.remove('gc-home-lrr-section');old.className='gc-v17-lrr-wrap';old.innerHTML=`<div class="gc-v17-lrr-head"><div class="gc-v17-lrr-title"><span class="icon">⚡</span><div><h2>LRR — Live Learning Requirement Requests</h2><p>Public Student requirements • Filter by status, stream and subject</p></div><span class="gc-v17-lrr-live" id="gcV17LRRLive">● LIVE</span></div><div class="gc-v17-lrr-tabs"><button type="button" class="gc-v17-lrr-tab active" onclick="gcV17SetLRRTab('OPEN',this)">🟢 LRR — OPEN</button><button type="button" class="gc-v17-lrr-tab" onclick="gcV17SetLRRTab('CLOSED',this)">🔴 LRR — CLOSED (Deadline gone)</button><button type="button" class="gc-v17-lrr-tab" onclick="gcV17SetLRRTab('ADMIN_APPROVED',this)">🛡️ LRR — ADMIN APPROVED</button><button type="button" class="gc-v17-lrr-tab" onclick="gcV17SetLRRTab('ALL',this)">🕘 ALL TIME LRR</button></div><div class="gc-v17-lrr-filters"><div><label>Stream</label><select id="gcV17LRRStream" onchange="gcV17FilterLRR()"><option value="ALL">All Streams</option></select></div><div><label>Subject</label><select id="gcV17LRRSubject" onchange="gcV17FilterLRR()"><option value="ALL">All Subjects</option></select></div><div style="display:flex;align-items:end"><button type="button" class="gc-v17-lrr-tab" style="width:100%;border-radius:9px" onclick="stream='ALL';subject='ALL';rebuildSelects();render()">↺ RESET FILTERS</button></div><div style="display:flex;align-items:end;justify-content:flex-end"><span id="gcV17LRRCount" style="font-size:9px;font-weight:950;color:#64748b;padding:9px 2px">0 shown</span></div></div></div><div id="gcV17LRRGrid" class="gc-v17-lrr-grid"><div class="gc-v17-lrr-empty">Loading live Student requirements…</div></div><div class="gc-v17-lrr-footer">🔐 Everyone can view LRR. Only a registered + verified Tutor can CONNECT.</div>`;quick.parentNode.insertBefore(old,quick);load();setInterval(load,15000)}
+ function install(){const old=document.getElementById('liveLRRSection'),quick=document.querySelector('.gc-quick-grid');if(!old||!quick)return;old.classList.remove('gc-home-lrr-section');old.className='gc-v17-lrr-wrap';old.style.display='none';old.innerHTML=`<div class="gc-v17-lrr-head"><div class="gc-v17-lrr-title"><span class="icon">⚡</span><div><h2>LRR — Live Learning Requirement Requests</h2><p>Public Student requirements • Filter by status, stream and subject</p></div><span class="gc-v17-lrr-live" id="gcV17LRRLive">● LIVE</span></div><div class="gc-v17-lrr-tabs"><button type="button" class="gc-v17-lrr-tab active" onclick="gcV17SetLRRTab('OPEN',this)">🟢 LRR — OPEN</button><button type="button" class="gc-v17-lrr-tab" onclick="gcV17SetLRRTab('CLOSED',this)">🔴 LRR — CLOSED (Deadline gone)</button><button type="button" class="gc-v17-lrr-tab" onclick="gcV17SetLRRTab('ADMIN_APPROVED',this)">🛡️ LRR — ADMIN APPROVED</button><button type="button" class="gc-v17-lrr-tab" onclick="gcV17SetLRRTab('ALL',this)">🕘 ALL TIME LRR</button></div><div class="gc-v17-lrr-filters"><div><label>Stream</label><select id="gcV17LRRStream" onchange="gcV17FilterLRR()"><option value="ALL">All Streams</option></select></div><div><label>Subject</label><select id="gcV17LRRSubject" onchange="gcV17FilterLRR()"><option value="ALL">All Subjects</option></select></div><div style="display:flex;align-items:end"><button type="button" class="gc-v17-lrr-tab" style="width:100%;border-radius:9px" onclick="stream='ALL';subject='ALL';rebuildSelects();render()">↺ RESET FILTERS</button></div><div style="display:flex;align-items:end;justify-content:flex-end"><span id="gcV17LRRCount" style="font-size:9px;font-weight:950;color:#64748b;padding:9px 2px">0 shown</span></div></div></div><div id="gcV17LRRGrid" class="gc-v17-lrr-grid"><div class="gc-v17-lrr-empty">Loading live Student requirements…</div></div><div class="gc-v17-lrr-footer">🔐 Everyone can view LRR. Only a registered + verified Tutor can CONNECT.</div>`;quick.parentNode.insertBefore(old,quick.nextSibling);window.gcOpenLiveLRR=function(){old.classList.add('gc-v18-open');old.style.display='block';load();setTimeout(()=>old.scrollIntoView({behavior:'smooth',block:'start'}),30);};load();setInterval(load,15000)}
  function removeLearningMenu(){document.querySelectorAll('a,button').forEach(el=>{const t=(el.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();if(t==='learning requests'||t==='learning request'||t.includes('view all live learning requirements')){el.remove()}})}
  function staffLoginFinal(){
    const make=()=>window.supabase?.createClient?.(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'guru-connect-staff-auth-v1'}});
@@ -17183,5 +17189,94 @@ function forceStaffLinks(){document.querySelectorAll('a,button').forEach(el=>{co
 function boot(){forceStaffLinks();if(staff()){setTimeout(refreshAdminLR,700);setTimeout(refreshAdminLR,1800)}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 try{window.addEventListener('hashchange',()=>{if(location.hash==='#staff-admin')setTimeout(refreshAdminLR,300)});}catch(_){}
+})();
+</script>
+<script id="gc-v18-capture-member-login">(function(){if(typeof window.gcEmailLogin==='function'&&!window.gcMemberEmailLogin)window.gcMemberEmailLogin=window.gcEmailLogin;})();</script>
+
+<!-- GURU CONNECT V18 — AUTHORITATIVE MOBILE-SAFE STAFF/ADMIN AUTH -->
+<style id="gc-v18-staff-mobile">
+#loginModal input,#loginModal select,#loginModal button{font-size:16px!important}
+#loginModal{padding:max(16px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))!important}
+#loginModal>div{max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+</style>
+<script id="gc-v18-staff-mobile-js">
+(function(){
+'use strict';
+const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
+const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+const STAFF_EMAIL='guruconnect.in@gmail.com';
+function client(){
+  if(!window.supabase?.createClient)return null;
+  // IMPORTANT: do not reuse legacy clients with a custom storageKey. Mobile and desktop
+  // must authenticate against the same normal Supabase Auth session storage.
+  window.gcSupabase=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+  return window.gcSupabase;
+}
+function by(id){return document.getElementById(id)}
+window.gcAdminAuthClient=client;
+window.openStaffLoginModal=function(){
+  const r=by('loginRoleInput');if(r)r.value='staff';
+  const t=by('gcUnifiedLoginTitle');if(t)t.textContent='Staff / Admin Login';
+  const e=by('loginEmailInput');if(e){e.value=STAFF_EMAIL;e.type='email';e.autocomplete='username';e.setAttribute('inputmode','email');}
+  const pw=by('loginPasswordInput');if(pw){pw.value='';pw.autocomplete='current-password';}
+  const m=by('loginModal');if(m){m.classList.remove('hidden');m.style.display='flex';m.setAttribute('aria-hidden','false');}
+  setTimeout(()=>by('loginPasswordInput')?.focus(),80);
+};
+window.handleStaffLogin=async function(e){
+  e?.preventDefault?.();
+  const email=String(by('loginEmailInput')?.value||'').trim().toLowerCase();
+  const password=String(by('loginPasswordInput')?.value||'');
+  if(email!==STAFF_EMAIL){alert('Please use the registered Staff/Admin email.');return false}
+  if(!password){alert('Enter the Staff/Admin password.');return false}
+  const s=client();if(!s){alert('Secure login is unavailable. Please refresh the page.');return false}
+  const btn=document.querySelector('#loginModal button[onclick*="gcEmailLogin"]');
+  if(btn){btn.disabled=true;btn.dataset.oldText=btn.textContent;btn.textContent='SIGNING IN…'}
+  try{
+    // Remove stale anonymous/session state from this browser, but DO NOT use a second storageKey.
+    try{const cur=await s.auth.getSession();if(cur.data?.session?.user?.is_anonymous===true)await s.auth.signOut();}catch(_){}
+    const r=await s.auth.signInWithPassword({email,password});
+    if(r.error)throw r.error;
+    const u=r.data?.user,session=r.data?.session;
+    if(!u||!session)throw new Error('Supabase did not create an Admin session.');
+    if(String(u.email||'').trim().toLowerCase()!==STAFF_EMAIL)throw new Error('This account is not the configured Staff/Admin account.');
+    window.gcSupabase=s;
+    localStorage.setItem('is_staff_logged','true');
+    localStorage.setItem('gc_staff_supabase_auth','true');
+    localStorage.setItem('active_user_role','staff');
+    localStorage.setItem('active_user_id',String(u.id));
+    localStorage.setItem('active_user_email',String(u.email||STAFF_EMAIL));
+    try{window.closeLoginModal?.()}catch(_){}
+    try{window.checkStaffSessionState?.()}catch(_){}
+    try{window.renderAdminQueue?.()}catch(_){}
+    try{window.GC_FINAL_ADMIN?.setVisible?.(true)}catch(_){}
+    try{window.GC_ADMIN_ESCROW?.refresh?.()}catch(_){}
+    return true;
+  }catch(err){
+    console.error('GURU CONNECT Staff/Admin login:',err);
+    alert('Staff/Admin Login failed: '+(err?.message||String(err)));
+    return false;
+  }finally{if(btn){btn.disabled=false;btn.textContent=btn.dataset.oldText||'LOGIN SECURELY'}}
+};
+window.gcEmailLogin=async function(){
+  const role=String(by('loginRoleInput')?.value||'student').toLowerCase();
+  if(role==='staff')return window.handleStaffLogin({preventDefault(){}});
+  // Re-enter the existing member login path without allowing legacy Staff handlers to intercept it.
+  if(typeof window.gcMemberEmailLogin==='function')return window.gcMemberEmailLogin();
+  const email=String(by('loginEmailInput')?.value||'').trim().toLowerCase(),password=String(by('loginPasswordInput')?.value||'');
+  if(!email||!password){alert('Enter your registered email and password.');return false}
+  const s=client();if(!s){alert('Secure login is unavailable.');return false}
+  try{
+    const r=await s.auth.signInWithPassword({email,password});if(r.error)throw r.error;
+    const u=r.data?.user;if(!u?.email_confirmed_at){await s.auth.signOut();throw new Error('Please verify your email first. Check your verification email.')}
+    const ident=await s.rpc('gc_get_my_member_profile');if(ident.error)throw ident.error;
+    const rr=String(ident.data?.role||'').toLowerCase(),p=ident.data?.profile||null;
+    if(!p||!['student','tutor'].includes(rr))throw new Error('This account is not linked to a registered Student/Tutor profile.');
+    if(rr!==role)throw new Error('This email belongs to a registered '+rr.toUpperCase()+' account. Select '+rr.toUpperCase()+' Member Login.');
+    localStorage.setItem('active_user_name',p.name||p.full_name||email.split('@')[0]);localStorage.setItem('active_user_email',email);localStorage.setItem('active_user_phone',p.phone||'');localStorage.setItem('active_user_role',rr);localStorage.setItem('active_user_profile_id',String(p.id));localStorage.setItem('active_user_id',String(u.id));
+    window.gcSupabase=s;try{window.closeLoginModal?.()}catch(_){};window.location.assign('dashboard.html?login=success&t='+Date.now());return true;
+  }catch(err){try{await s.auth.signOut()}catch(_){};alert('Login failed: '+(err?.message||String(err)));return false}
+};
+// Capture the already-existing proven member login function before this final override is used.
+if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==='function')window.gcMemberEmailLogin=window.gcEmailLogin;
 })();
 </script>
