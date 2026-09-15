@@ -5798,7 +5798,7 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 <input autocomplete="email" class="w-full border rounded-xl p-3 text-sm font-bold" id="loginEmailInput" placeholder="your@email.com" type="email"/>
 <input autocomplete="current-password" class="w-full border rounded-xl p-3 text-sm font-bold" id="loginPasswordInput" placeholder="Password" type="password"/>
 <button class="w-full bg-brand-blue text-white font-black py-3.5 rounded-xl text-sm" onclick="gcEmailLogin()" type="button">LOGIN SECURELY</button>
-<button class="w-full text-blue-700 font-bold text-xs py-2" onclick="gcResetPassword()" type="button">Forgot password? Send reset email</button>
+<button id="gcStaffPasswordResetBtn" class="w-full bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-800 font-black py-3 rounded-xl text-xs transition" onclick="gcResetPassword()" type="button">🔑 FORGOT STAFF / ADMIN PASSWORD? SEND RESET EMAIL</button>
 <div class="text-[11px] text-slate-400 text-center">Your password is handled by Supabase Authentication and is never stored in the website.</div>
 </div>
 <button class="w-full mt-4 text-slate-400 text-xs font-bold" onclick="closeLoginModal()" type="button">CANCEL</button>
@@ -11001,8 +11001,10 @@ body {
   }
 
   async function gcResetPassword() {
-    const email=(document.getElementById('loginEmailInput')?.value||'').trim().toLowerCase();
     const role=(document.getElementById('loginRoleInput')?.value||'').trim().toLowerCase();
+    const staffEmail='guruconnect.in@gmail.com';
+    const email=((document.getElementById('loginEmailInput')?.value||'').trim().toLowerCase()) || (role==='staff' ? staffEmail : '');
+    if(role==='staff' && document.getElementById('loginEmailInput')) document.getElementById('loginEmailInput').value=staffEmail;
     if(!email){alert('Enter your registered email first.');return;}
     if(!/^\S+@\S+\.\S+$/.test(email)){alert('Enter a valid registered email address.');return;}
     if(!gcSupabase){alert('Secure password reset is unavailable because Supabase is not connected. Please refresh the website.');return;}
@@ -11031,7 +11033,7 @@ body {
         alert('Reset link could not be sent: '+msg);
       }
     }finally{
-      if(btn){btn.disabled=false;btn.textContent='Forgot password? Send reset email';}
+      if(btn){btn.disabled=false;btn.textContent='🔑 FORGOT STAFF / ADMIN PASSWORD? SEND RESET EMAIL';}
     }
   }
 
@@ -13043,12 +13045,12 @@ window.GC_PROFILE_COINS_REFRESH=paint;
     if(!reset){
       reset=document.createElement('a');
       reset.id='gcPublicPasswordReset';
-      reset.href='forgot-password.html';
+      reset.href='#password-reset';
       reset.textContent='🔑 PASSWORD RESET';
       reset.className='gc-public-password-reset';
       menu.appendChild(reset);
     }
-    reset.onclick=function(){try{window.closeNavMenu?.()}catch(_){};};
+    reset.onclick=function(e){e.preventDefault();try{window.closeNavMenu?.()}catch(_){};window.openLoginModal?.('staff');setTimeout(function(){window.gcResetPassword?.();},120);return false;};
   }
   function boot(){installMenu();setTimeout(installMenu,400);setTimeout(installMenu,1200);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
@@ -15816,7 +15818,7 @@ window.addEventListener('load',()=>setTimeout(boot,900));
     const menu=document.getElementById('publicNavbarLinks');if(!menu)return;
     let reset=document.getElementById('gcPublicPasswordReset');
     if(!reset){
-      reset=document.createElement('a');reset.id='gcPublicPasswordReset';reset.href='forgot-password.html';reset.textContent='🔑 PASSWORD RESET';
+      reset=document.createElement('a');reset.id='gcPublicPasswordReset';reset.href='#password-reset';reset.textContent='🔑 PASSWORD RESET';
       const login=document.getElementById('gcFinalMenuLogin');
       if(login&&login.parentNode===menu)menu.insertBefore(reset,login);else menu.appendChild(reset);
     }
@@ -16784,7 +16786,7 @@ function cleanAndBuildMenu(){
  add('gcFinalStudentLogin','🎓 STUDENT LOGIN','login-student.html','gcFinalStudentLogin');
  add('gcFinalTutorLogin','🎓 TUTOR LOGIN','login-tutor.html','gcFinalTutorLogin');
  add('gcFinalStaffLogin','🛡️ STAFF / ADMIN LOGIN','login-staff.html','gcFinalStaffLogin');
- add('gcFinalReset','🔑 PASSWORD RESET','forgot-password.html','gcFinalReset');
+ add('gcFinalReset','🔑 PASSWORD RESET','#password-reset','gcFinalReset');
  n.appendChild(divider());
  add('gcFinalAbout','ℹ️ ABOUT US','about.html');
  add('gcFinalContact','☎️ CONTACT US','contact.html');
