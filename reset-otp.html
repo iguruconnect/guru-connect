@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>GURU CONNECT — Set New Password</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;display:grid;place-items:center;background:linear-gradient(135deg,#eef5ff,#f8fbff);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;color:#0f172a;padding:18px}
+.card{width:min(500px,100%);background:#fff;border:1px solid #dbe5f0;border-radius:24px;padding:28px;box-shadow:0 25px 70px rgba(15,23,42,.14)}
+.logo{width:100%;height:82px;object-fit:contain;object-position:left center}.eyebrow{font-size:11px;font-weight:900;letter-spacing:.12em;color:#155eef}.title{font-size:25px;font-weight:900;margin:6px 0}.sub{font-size:13px;line-height:1.55;color:#64748b}
+label{display:block;font-size:12px;font-weight:800;margin:16px 0 7px}input{width:100%;padding:14px;border:1px solid #cbd5e1;border-radius:12px;font-size:16px;outline:0}input:focus{border-color:#2563eb;box-shadow:0 0 0 3px #2563eb18}
+button{width:100%;margin-top:14px;padding:14px;border:0;border-radius:12px;background:#155eef;color:#fff;font-weight:900;font-size:14px;cursor:pointer}button.secondary{background:#e2e8f0;color:#0f172a}button:disabled{opacity:.6}
+.box{margin-top:14px;padding:13px;border-radius:13px;background:#f8fafc;border:1px solid #e2e8f0}.hint{font-size:11px;color:#64748b;line-height:1.5}.msg{margin-top:14px;padding:12px;border-radius:12px;font-size:12px;font-weight:700;line-height:1.5}.info{background:#eff6ff;color:#1e3a8a;border:1px solid #bfdbfe}.ok{background:#ecfdf5;color:#047857;border:1px solid #a7f3d0}.bad{background:#fef2f2;color:#991b1b;border:1px solid #fecaca}
+a{display:block;text-align:center;margin-top:16px;color:#155eef;text-decoration:none;font-size:12px;font-weight:800}
+</style>
+</head>
+<body>
+<main class="card">
+<img class="logo" src="guru-connect-brand.png" alt="GURU CONNECT">
+<div class="eyebrow">SECURE ACCOUNT RECOVERY</div>
+<div class="title">Set a new password</div>
+<div class="sub" id="statusText">Checking your secure recovery session…</div>
+
+<div id="otpBox" class="box" style="display:none">
+<label for="email">REGISTERED EMAIL</label>
+<input id="email" type="email" autocomplete="email" inputmode="email" placeholder="you@example.com">
+<label for="otp">6-DIGIT RECOVERY CODE</label>
+<input id="otp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter the newest code">
+<button id="verify">VERIFY RECOVERY CODE</button>
+<div class="hint">If your email contains a reset link instead of a code, simply use the reset button in that email. Do not combine an old code with a new email.</div>
+</div>
+
+<div id="passwordBox" class="box" style="display:none">
+<label for="password">NEW PASSWORD</label>
+<input id="password" type="password" autocomplete="new-password" minlength="8" placeholder="Minimum 8 characters">
+<label for="confirm">CONFIRM NEW PASSWORD</label>
+<input id="confirm" type="password" autocomplete="new-password" minlength="8" placeholder="Repeat the new password">
+<button id="save">SAVE NEW PASSWORD</button>
+</div>
+<div id="msg"></div>
+<a href="index.html">← Back to GURU CONNECT</a>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(async function(){
+'use strict';
+const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
+const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+const sb=supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const statusText=document.getElementById('statusText'),otpBox=document.getElementById('otpBox'),passwordBox=document.getElementById('passwordBox');
+const emailEl=document.getElementById('email'),otpEl=document.getElementById('otp'),verify=document.getElementById('verify'),save=document.getElementById('save'),msg=document.getElementById('msg');
+
+function show(kind,text){msg.className='msg '+kind;msg.textContent=text}
+function showPasswordBox(){otpBox.style.display='none';passwordBox.style.display='block';statusText.textContent='Recovery session verified. Choose a new password.'}
+async function hasRecoverySession(){
+  const r=await sb.auth.getSession();
+  const session=r.data?.session;
+  if(session?.user){
+    showPasswordBox(); return true;
+  }
+  return false;
+}
+
+// Recovery links create a session. Handle both the Supabase auth event and direct getSession().
+sb.auth.onAuthStateChange(async(event,session)=>{
+  if(event==='PASSWORD_RECOVERY' && session?.user) showPasswordBox();
+  if(event==='SIGNED_IN' && session?.user) {
+    // Do not automatically treat an ordinary login as password recovery unless this page
+    // was reached with an auth recovery token/hash.
+    if(location.hash.includes('type=recovery') || location.hash.includes('access_token=')) showPasswordBox();
+  }
+});
+
+let recoverySession=await hasRecoverySession();
+if(!recoverySession){
+  const params=new URLSearchParams(location.search);
+  const email=params.get('email')||'';
+  if(email)emailEl.value=email;
+  // If a recovery token is in the hash, give Supabase a moment to establish the session.
+  if(location.hash.includes('type=recovery') || location.hash.includes('access_token=')){
+    await new Promise(r=>setTimeout(r,900));
+    recoverySession=await hasRecoverySession();
+  }
+}
+if(!recoverySession){
+  otpBox.style.display='block';
+  statusText.textContent='Enter the newest 6-digit recovery code from your email.';
+  show('info','No recovery session is active yet. You can verify the newest recovery code below.');
+}
+
+verify.onclick=async()=>{
+  const email=emailEl.value.trim().toLowerCase(),token=otpEl.value.trim().replace(/\\D/g,'');
+  if(!/^\\S+@\\S+\\.\\S+$/.test(email)){show('bad','Enter your registered email address.');return}
+  if(!/^\\d{6}$/.test(token)){show('bad','Enter the 6-digit recovery code from the newest email.');return}
+  verify.disabled=true;verify.textContent='VERIFYING…';
+  try{
+    // CRITICAL: password-recovery codes use type='recovery', not type='email'.
+    const r=await sb.auth.verifyOtp({email,token,type:'recovery'});
+    if(r.error)throw r.error;
+    if(!r.data?.session)throw new Error('Recovery code was accepted but no secure session was created.');
+    showPasswordBox();
+    show('ok','✓ Recovery code verified. You can now set a new password.');
+  }catch(e){
+    console.error('Recovery OTP:',e);
+    show('bad','Recovery code failed: '+(e?.message||e)+' Use the newest code only. Older codes become invalid after a newer recovery request.');
+  }finally{verify.disabled=false;verify.textContent='VERIFY RECOVERY CODE'}
+};
+
+save.onclick=async()=>{
+ const p=document.getElementById('password').value,c=document.getElementById('confirm').value;
+ if(p.length<8){show('bad','Password must be at least 8 characters.');return}
+ if(p!==c){show('bad','Passwords do not match.');return}
+ save.disabled=true;save.textContent='SAVING…';
+ try{
+   const q=await sb.auth.getSession();
+   if(!q.data?.session)throw new Error('Recovery session is missing. Please request a fresh password reset email.');
+   const r=await sb.auth.updateUser({password:p});
+   if(r.error)throw r.error;
+   show('ok','✓ Password changed successfully. You can now return to GURU CONNECT and login with your new password.');
+   passwordBox.style.display='none';
+   try{await sb.auth.signOut({scope:'local'})}catch(_){}
+ }catch(e){
+   console.error('Password update:',e);show('bad','Password update failed: '+(e?.message||e));
+ }finally{save.disabled=false;save.textContent='SAVE NEW PASSWORD'}
+};
+})();
+</script>
+</body>
+</html>
