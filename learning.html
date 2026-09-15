@@ -55,7 +55,7 @@ $('search').addEventListener('input',render);$('stream').addEventListener('chang
 <script id="gc168-learning-final">
 (function(){
 'use strict';
-const S=()=>window.supabase.createClient('https://hzqqswrnawrfgufbxgay.supabase.co','sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const S=()=>window.gcSupabase||window.supabase.createClient('https://hzqqswrnawrfgufbxgay.supabase.co','sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 window.gc168SyncPostForm=async function(){
  const s=S(),form=document.getElementById('gc168LRForm'),note=document.getElementById('gc168LoginNote'),bal=document.getElementById('gc168CoinBalance');if(!form)return;
  try{const q=await s.auth.getSession(),u=q.data?.session?.user;if(!u){form.hidden=true;note.textContent='Please login as a registered Student to post a Learning Requirement.';return}

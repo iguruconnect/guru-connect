@@ -7330,26 +7330,20 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 
         // ===== STAFF ADMIN DASHBOARD =====
         function openStaffLoginModal() {
-            document.getElementById('staffLoginModal').classList.remove('hidden');
+            // All Staff/Admin authentication is handled by the dedicated secure page.
+            location.href = 'login-staff.html';
         }
 
         function closeStaffLoginModal() {
-            document.getElementById('staffLoginModal').classList.add('hidden');
+            const m=document.getElementById('staffLoginModal');
+            if(m) m.classList.add('hidden');
         }
 
         function handleStaffLogin(e) {
             e.preventDefault();
-            const u = document.getElementById('staffUserInput').value.trim();
-            const p = document.getElementById('staffPassInput').value.trim();
-
-            if (u === 'Swami@gmail.com' && p === '') {
-                localStorage.setItem('is_staff_logged', 'true');
-                closeStaffLoginModal();
-                checkStaffSessionState();
-                alert('Staff Login Successful!');
-            } else {
-                alert('Invalid Staff Credentials. Please check username and password.');
-            }
+            // Legacy inline Staff login is intentionally disabled.
+            // Never grant admin mode from client-side credentials/localStorage.
+            location.href = 'login-staff.html';
         }
 
         function logoutStaff() {
@@ -15729,7 +15723,7 @@ async function sendAdminResetLink(index,btn){
  btn.disabled=true;btn.textContent='SENDING…';if(msg)msg.textContent='Sending secure password reset link to '+email+'…';
  try{
    const s=S();if(!s)throw new Error('Supabase is not connected.');
-   const redirectTo=new URL('reset-password.html',location.href).href;
+   const redirectTo=new URL('reset-otp.html',location.href).href;
    const r=await s.auth.resetPasswordForEmail(email,{redirectTo});
    if(r.error)throw r.error;
    if(msg)msg.textContent='✓ Password reset link sent to '+email+'. Ask the user to open the newest email and click the link.';
@@ -16639,7 +16633,7 @@ function ensureUM(){const dash=$('staffAdminDashboard');if(!dash||dash.classList
  $('v16Clear').onclick=()=>{['v16Name','v16Email','v16Phone','v16Pass','v16Pass2'].forEach(id=>$(id).value='');$('v16CreateStatus').textContent=''};
  $('v16Create').onclick=async()=>{const role=$('v16Role').value,name=$('v16Name').value.trim(),email=$('v16Email').value.trim().toLowerCase(),phone=$('v16Phone').value.trim(),password=$('v16Pass').value,password2=$('v16Pass2').value;if(!name)return alert('Enter full name.');if(!/^\S+@\S+\.\S+$/.test(email))return alert('Enter a valid email.');if(password.length<8)return alert('Password must be at least 8 characters.');if(password!==password2)return alert('Passwords do not match.');const b=$('v16Create');b.disabled=true;b.textContent='CREATING…';$('v16CreateStatus').textContent='Creating secure account…';try{await api('create_user',{role,name,email,phone,password});$('v16CreateStatus').textContent='✓ Account created. The user can login with the email and password you set.';alert('User account created successfully.\n\n'+(role==='tutor'?'Tutor':'Student')+'\n'+email);$('v16Clear').click()}catch(e){$('v16CreateStatus').textContent='Creation failed: '+e.message;alert('User creation failed:\n\n'+e.message)}finally{b.disabled=false;b.textContent='CREATE USER ACCOUNT'}};
  $('v16FindBtn').onclick=async()=>{const term=$('v16Find').value.trim();if(!term)return alert('Enter registered email or phone.');const b=$('v16FindBtn');b.disabled=true;b.textContent='SEARCHING…';$('v16FindStatus').textContent='Searching securely…';try{const d=await api('find_users',{term});const users=d.users||[];$('v16FindStatus').textContent=users.length?users.length+' account(s) found.':'No matching Student/Tutor account found.';$('v16Results').innerHTML=users.map((u,i)=>`<div class="gc-v16-user"><div class="gc-v16-user-top"><div><div class="gc-v16-user-name">${esc(u.name||'User')}<span class="gc-v16-role">${esc(String(u.role||'').toUpperCase())}</span></div><div class="gc-v16-user-meta">Email: ${esc(u.email||'—')}<br>Phone: ${esc(u.phone||'—')}<br>Email verified: ${u.email_confirmed?'YES':'NO'}</div></div><div class="gc-v16-user-tools"><button class="gc-v16-mini gc-v16-primary" data-reset-link="${i}">SEND RESET LINK</button><button class="gc-v16-mini gc-v16-purple" data-set-pass="${i}">SET PASSWORD</button></div></div><div class="gc-v16-passbox" data-passbox="${i}"><div class="gc-v16-grid"><div class="gc-v16-field"><label>New Password</label><input type="password" data-pass="${i}" minlength="8" autocomplete="new-password" placeholder="Minimum 8 characters"></div><div class="gc-v16-field"><label>Confirm Password</label><input type="password" data-pass2="${i}" minlength="8" autocomplete="new-password" placeholder="Repeat password"></div></div><button class="gc-v16-btn gc-v16-green" data-save-pass="${i}" style="margin-top:10px">UPDATE PASSWORD</button><div class="gc-v16-status" data-pass-status="${i}"></div></div></div>`).join('');window.__gcV16Users=users}catch(e){$('v16FindStatus').textContent='Search failed: '+e.message;$('v16Results').innerHTML=''}finally{b.disabled=false;b.textContent='FIND USER'}};
- $('v16Results').addEventListener('click',async e=>{const link=e.target.closest('[data-reset-link]'),set=e.target.closest('[data-set-pass]'),save=e.target.closest('[data-save-pass]');const i=Number((link||set||save)?.dataset.resetLink??(link||set||save)?.dataset.setPass??(link||set||save)?.dataset.savePass);if(!Number.isFinite(i))return;const u=window.__gcV16Users?.[i];if(!u)return;if(link){link.disabled=true;link.textContent='SENDING…';try{const s=window.gcSupabase;const r=await s.auth.resetPasswordForEmail(String(u.email).toLowerCase(),{redirectTo:new URL('reset-password.html',location.href).href});if(r.error)throw r.error;alert('Password reset link sent to '+u.email+'.')}catch(x){alert('Reset link failed: '+x.message)}finally{link.disabled=false;link.textContent='SEND RESET LINK'}}else if(set){document.querySelector('[data-passbox="'+i+'"]').classList.toggle('open')}else if(save){const box=document.querySelector('[data-passbox="'+i+'"]'),p=box.querySelector('[data-pass="'+i+'"]').value,p2=box.querySelector('[data-pass2="'+i+'"]').value,st=box.querySelector('[data-pass-status="'+i+'"]');if(p.length<8){st.textContent='Password must be at least 8 characters.';return}if(p!==p2){st.textContent='Passwords do not match.';return}save.disabled=true;save.textContent='UPDATING…';try{await api('reset_password',{user_id:u.user_id,email:u.email,password:p});st.textContent='✓ Password updated. User can login immediately.';box.querySelector('[data-pass="'+i+'"]').value='';const p2el=box.querySelector('[data-pass2="'+i+'"]');if(p2el)p2el.value='';}catch(x){st.textContent='Update failed: '+x.message}finally{save.disabled=false;save.textContent='UPDATE PASSWORD'}}});
+ $('v16Results').addEventListener('click',async e=>{const link=e.target.closest('[data-reset-link]'),set=e.target.closest('[data-set-pass]'),save=e.target.closest('[data-save-pass]');const i=Number((link||set||save)?.dataset.resetLink??(link||set||save)?.dataset.setPass??(link||set||save)?.dataset.savePass);if(!Number.isFinite(i))return;const u=window.__gcV16Users?.[i];if(!u)return;if(link){link.disabled=true;link.textContent='SENDING…';try{const s=window.gcSupabase;const r=await s.auth.resetPasswordForEmail(String(u.email).toLowerCase(),{redirectTo:new URL('reset-otp.html',location.href).href});if(r.error)throw r.error;alert('Password reset link sent to '+u.email+'.')}catch(x){alert('Reset link failed: '+x.message)}finally{link.disabled=false;link.textContent='SEND RESET LINK'}}else if(set){document.querySelector('[data-passbox="'+i+'"]').classList.toggle('open')}else if(save){const box=document.querySelector('[data-passbox="'+i+'"]'),p=box.querySelector('[data-pass="'+i+'"]').value,p2=box.querySelector('[data-pass2="'+i+'"]').value,st=box.querySelector('[data-pass-status="'+i+'"]');if(p.length<8){st.textContent='Password must be at least 8 characters.';return}if(p!==p2){st.textContent='Passwords do not match.';return}save.disabled=true;save.textContent='UPDATING…';try{await api('reset_password',{user_id:u.user_id,email:u.email,password:p});st.textContent='✓ Password updated. User can login immediately.';box.querySelector('[data-pass="'+i+'"]').value='';const p2el=box.querySelector('[data-pass2="'+i+'"]');if(p2el)p2el.value='';}catch(x){st.textContent='Update failed: '+x.message}finally{save.disabled=false;save.textContent='UPDATE PASSWORD'}}});
 }
 function boot(){menu();ensureUM();setTimeout(menu,250);setTimeout(menu,900);setTimeout(ensureUM,500);setTimeout(ensureUM,1500)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();setInterval(menu,900);setInterval(ensureUM,1400);
@@ -16686,7 +16680,7 @@ function clean(){const nav=document.getElementById('publicNavbarLinks');if(!nav)
 })();
 </script>
 
-<script id="gc-v162-recovery-router">(function(){try{var path=location.pathname||'';var h=new URLSearchParams((location.hash||'').replace(/^#/,''));var q=new URLSearchParams(location.search||'');var isRecovery=h.get('type')==='recovery'||q.get('type')==='recovery'||!!h.get('access_token')||!!h.get('refresh_token')||!!q.get('code')||(!!q.get('token_hash')&&q.get('type')==='recovery');if(isRecovery&&!/reset-password\.html$/i.test(path)){var t=new URL('reset-password.html',location.href);t.search=location.search;t.hash=location.hash;location.replace(t.href)}}catch(e){}})();</script>
+
 <style id="gc-v162-menu-style">#publicNavbarLinks .gc-v162-auth-item{display:flex!important;align-items:center!important;width:100%!important;box-sizing:border-box!important;padding:13px 14px!important;border-radius:12px!important;margin:3px 0!important;text-decoration:none!important;font-size:12px!important;font-weight:950!important}.gc-v162-student{color:#155eef!important;background:#eff6ff!important}.gc-v162-tutor{color:#6d28d9!important;background:#f5f3ff!important}.gc-v162-staff{color:#065f46!important;background:#ecfdf5!important}.gc-v162-reset{color:#92400e!important;background:#fffbeb!important}.gc-v162-menu-label{display:block!important;margin:8px 0 4px!important;padding:0 4px!important;font-size:9px!important;font-weight:1000!important;letter-spacing:.12em!important;color:#64748b!important;text-transform:uppercase!important}</style><script id="gc-v162-menu-js">(function(){'use strict';function run(){var m=document.getElementById('publicNavbarLinks');if(!m)return;m.querySelectorAll('.gc-v162-auth-item,.gc-v162-menu-label,#gcFinalMenuLogin,#gcPublicPasswordReset,.gc-final-single-login,.gc-mobile-login-item,.gc-mobile-staff-item,.gc-menu-login-student,.gc-menu-login-tutor,.gc-menu-login-staff').forEach(function(x){x.remove()});m.querySelectorAll('a,button').forEach(function(a){var t=(a.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();if(t==='login'||t==='staff'||t==='staff login'||t==='staff/admin login'||t==='student login'||t==='tutor login'||t==='password reset'||t.indexOf('staff/admin login')>=0)a.remove()});var sep=document.createElement('div');sep.style.cssText='height:1px;background:#e2e8f0;margin:10px 0 7px';m.appendChild(sep);var lab=document.createElement('div');lab.className='gc-v162-menu-label';lab.textContent='MEMBER & STAFF ACCESS';m.appendChild(lab);[['gc-v162-student','🎓 STUDENT LOGIN','login-student.html'],['gc-v162-tutor','🎓 TUTOR LOGIN','login-tutor.html'],['gc-v162-staff','🛡️ STAFF / ADMIN LOGIN','login-staff.html'],['gc-v162-reset','🔑 PASSWORD RESET','forgot-password.html']].forEach(function(x){var a=document.createElement('a');a.className='gc-v162-auth-item '+x[0];a.href=x[2];a.textContent=x[1];m.appendChild(a)})}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run()})();</script>
 
 <style id="gc-v16-4-final-beautiful-header">
@@ -16765,9 +16759,51 @@ window.logoutStaff=async function(){
  setAdminVisible(false);location.hash='home';
 };
 function syncStaffSession(){
- try{if(window.gcSupabase?.auth){window.gcSupabase.auth.getSession().then(r=>{const u=r.data?.session?.user;if(u&&String(u.email||'').toLowerCase()===STAFF_EMAIL){localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');setAdminVisible(true)}else if(localStorage.getItem('is_staff_logged')==='true'&&!u){localStorage.removeItem('is_staff_logged');setAdminVisible(false)}});window.gcSupabase.auth.onAuthStateChange((_e,session)=>{const u=session?.user;if(u&&String(u.email||'').toLowerCase()===STAFF_EMAIL){localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');setAdminVisible(true)}else if(!session){localStorage.removeItem('is_staff_logged');setAdminVisible(false)}})}}catch(_){}
+ try{
+  if(window.gcSupabase?.auth){
+   window.gcSupabase.auth.getSession().then(r=>{
+    const u=r.data?.session?.user;
+    if(u&&String(u.email||'').toLowerCase()===STAFF_EMAIL){
+      localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');
+      localStorage.setItem('active_user_role','staff');localStorage.setItem('active_user_id',u.id);localStorage.setItem('active_user_email',u.email||STAFF_EMAIL);
+      localStorage.removeItem('gc_staff_login_return');setAdminVisible(true);
+    }else if(!u){
+      // Give Supabase's storage listener a moment to restore the session.
+      setTimeout(()=>{
+       window.gcSupabase.auth.getSession().then(rr=>{
+        const uu=rr.data?.session?.user;
+        if(uu&&String(uu.email||'').toLowerCase()===STAFF_EMAIL){
+          localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');
+          localStorage.setItem('active_user_role','staff');localStorage.setItem('active_user_id',uu.id);localStorage.setItem('active_user_email',uu.email||STAFF_EMAIL);
+          setAdminVisible(true);
+        }else if(localStorage.getItem('is_staff_logged')==='true'){
+          localStorage.removeItem('is_staff_logged');localStorage.removeItem('gc_staff_supabase_auth');setAdminVisible(false);
+        }
+       });
+      },350);
+    }
+   });
+   window.gcSupabase.auth.onAuthStateChange((_e,session)=>{
+    const u=session?.user;
+    if(u&&String(u.email||'').toLowerCase()===STAFF_EMAIL){
+      localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');
+      localStorage.setItem('active_user_role','staff');localStorage.setItem('active_user_id',u.id);localStorage.setItem('active_user_email',u.email||STAFF_EMAIL);
+      setAdminVisible(true);
+    }else if(!session){
+      localStorage.removeItem('is_staff_logged');localStorage.removeItem('gc_staff_supabase_auth');setAdminVisible(false);
+    }
+   });
+  }
+ }catch(_){}
+}
 }
 function boot(){
+ // If the dedicated Staff/Admin page sent us here, keep the admin intent visible
+ // while the shared Supabase session is restored. Authentication is still checked
+ // against the real Supabase session by syncStaffSession().
+ if(new URLSearchParams(location.search).get('staff')==='1'){
+   localStorage.setItem('gc_staff_login_return','1');
+ }
  const b=document.querySelector('.gc-menu-button');if(b){b.setAttribute('aria-expanded','false');b.type='button';}
  cleanAndBuildMenu();
  setAdminVisible(localStorage.getItem('is_staff_logged')==='true');
@@ -16859,7 +16895,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 <script id="gc-v16-otp-final">
 (function(){
   'use strict';
-  const S=window.supabase && window.supabase.createClient ? window.supabase.createClient('https://hzqqswrnawrfgufbxgay.supabase.co','sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'guru-connect-registration-otp-v12'}}) : null;
+  const S=window.supabase && window.supabase.createClient ? window.supabase.createClient('https://hzqqswrnawrfgufbxgay.supabase.co','sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}) : null;
   if(!S) return;
   window.gcSupabase=S;
   const esc2=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
