@@ -4983,6 +4983,10 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 </div>
 </section>
 <div class="gc-quick-grid">
+<article class="gc-quick-card gc-quick-lrr">
+<div class="gc-quick-top"><div class="gc-quick-icon"><i class="fa-solid fa-bolt"></i></div><div><h3>LRR — Live Learning Requirement Requests</h3><p>See real Student learning requirements live on GURU CONNECT.</p></div></div>
+<button type="button" class="gc-quick-btn" onclick="gcOpenLiveLRR()">View Live LRR  ›</button>
+</article>
 <article class="gc-quick-card gc-quick-orange">
 <div class="gc-quick-top"><div class="gc-quick-icon"><i class="fa-solid fa-graduation-cap"></i></div><div><h3>Tutor Registration</h3><p>Share your knowledge and help students grow.</p></div></div>
 <a class="gc-quick-btn" href="#registrationSection" onclick="setTimeout(()=&gt;switchTab('tutor'),0)">Register as Tutor  ›</a>
@@ -4994,10 +4998,6 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 <article class="gc-quick-card gc-quick-blue">
 <div class="gc-quick-top"><div class="gc-quick-icon"><i class="fa-solid fa-users"></i></div><div><h3>Browse Tutors</h3><p>Explore verified tutor profiles and connect easily.</p></div></div>
 <a class="gc-quick-btn" href="#tutors">Browse Tutors  ›</a>
-</article>
-<article class="gc-quick-card gc-quick-lrr">
-<div class="gc-quick-top"><div class="gc-quick-icon"><i class="fa-solid fa-bolt"></i></div><div><h3>LRR — Live Learning Requirement Requests</h3><p>See real Student learning requirements live on GURU CONNECT.</p></div></div>
-<button type="button" class="gc-quick-btn" onclick="gcOpenLiveLRR()">View Live LRR  ›</button>
 </article>
 </div>
 <section id="liveLRRSection" class="gc-home-lrr-section">
@@ -15589,7 +15589,11 @@ window.handleStaffLogin=async function(e){
   if(!password){alert('Enter the Staff/Admin password.');return false;}
   const s=S();if(!s){alert('Supabase is not connected.');return false;}
   try{
-    const r=await s.auth.signInWithPassword({email,password});
+    let r=await s.auth.signInWithPassword({email:STAFF_EMAIL,password});
+    if(r.error && email===STAFF_EMAIL){
+      const legacy=await s.auth.signInWithPassword({email:LEGACY_STAFF_EMAIL,password});
+      if(!legacy.error) r=legacy;
+    }
     if(r.error)throw r.error;
     const u=r.data?.user,session=r.data?.session;
     if(!u||!session)throw new Error('Supabase did not create a Staff/Admin session.');
@@ -17104,7 +17108,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
  const fmt=v=>{if(!v)return '—';const d=new Date(v);return isNaN(d)?String(v):d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});};
  const now=()=>Date.now();
  let all=[], activeTab='OPEN'; let stream='ALL', subject='ALL';
- function publicClient(){return window.gcSupabase||window.supabase?.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}
+ function publicClient(){return window.supabase?.createClient(URL,KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}})}
  function deadline(r){const v=r.learning_deadline||r.deadline||r.expires_at||r.expiry_date; return v?new Date(v):null}
  function isClosed(r){const d=deadline(r);return !!(d&&!isNaN(d)&&d.getTime()<now())}
  function isApproved(r){const s=String(r.status||'').toUpperCase().replace(/\s+/g,'_');return s.includes('ADMIN_APPROV')||s==='APPROVED'||s==='PENDING_ADMIN_APPROVAL'||s==='PENDING_ADMIN_REVIEW'||r.admin_approved===true||r.adminApproved===true}
@@ -17112,10 +17116,10 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
  function tabMatch(r){if(isDeleted(r))return false; if(activeTab==='ALL')return true; if(activeTab==='CLOSED')return isClosed(r); if(activeTab==='ADMIN_APPROVED')return isApproved(r); return !isClosed(r)&&!isApproved(r)&&String(r.status||'OPEN').toUpperCase()!=='CLOSED'}
  function rebuildSelects(){const ss=document.getElementById('gcV17LRRStream'), su=document.getElementById('gcV17LRRSubject');if(!ss||!su)return;const streams=[...new Set(all.map(r=>String(r.stream||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));const subs=[...new Set(all.map(r=>String(r.subject||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));ss.innerHTML='<option value="ALL">All Streams</option>'+streams.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');su.innerHTML='<option value="ALL">All Subjects</option>'+subs.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('');ss.value=stream;su.value=subject;}
  function filtered(){return all.filter(r=>tabMatch(r)&&(stream==='ALL'||String(r.stream||'')===stream)&&(subject==='ALL'||String(r.subject||'')===subject))}
- function render(){const g=document.getElementById('gcV17LRRGrid'),live=document.getElementById('gcV17LRRLive'),count=document.getElementById('gcV17LRRCount');if(!g)return;const rows=filtered();if(live)live.textContent='● LIVE • '+all.filter(r=>!isDeleted(r)).length+' REQUESTS';if(count)count.textContent=rows.length+' shown';g.innerHTML=rows.length?rows.map(card).join(''):'<div class="gc-v17-lrr-empty">🔎 No Learning Requirement matches these filters.<br><span style="font-size:10px;font-weight:700">Try another Stream, Subject or LRR status.</span></div>';}
- function card(r){const student=r.student_name||r.student_full_name||r.full_name||r.name||'GURU CONNECT Student';const closed=isClosed(r), approved=isApproved(r);const status=closed?'LRR CLOSED':approved?'LRR ADMIN APPROVED':'LRR OPEN';const cls=closed?'closed':approved?'approved':'';const issue=r.issue||r.problem||'Student has not added a detailed issue.';return `<article class="gc-v17-lrr-card"><div class="gc-v17-lrr-top"><span class="gc-v17-lrr-role">⚡ LRR • LIVE</span><span class="gc-v17-lrr-status ${cls}">${status}</span></div><div class="gc-v17-lrr-identity"><div class="gc-v17-lrr-avatar">👩🏻‍🎓</div><div class="gc-v17-lrr-copy"><h3 class="gc-v17-lrr-name">${esc(student)}</h3><div class="gc-v17-lrr-sub">📚 ${esc(r.subject||'Subject not specified')}</div></div></div><div class="gc-v17-lrr-info"><div class="gc-v17-lrr-info-box"><span class="gc-v17-lrr-ico">📖</span><div><b>COURSE</b><span>${esc(r.course||'—')}</span></div></div><div class="gc-v17-lrr-info-box"><span class="gc-v17-lrr-ico">🌐</span><div><b>STREAM</b><span>${esc(r.stream||'—')}</span></div></div><div class="gc-v17-lrr-info-box"><span class="gc-v17-lrr-ico">🎯</span><div><b>TOPIC</b><span>${esc(r.topic||'—')}</span></div></div><div class="gc-v17-lrr-info-box"><span class="gc-v17-lrr-ico">⏳</span><div><b>DEADLINE</b><span>${esc(fmt(r.learning_deadline||r.deadline))}</span></div></div><div class="gc-v17-lrr-info-box"><span class="gc-v17-lrr-ico">🪙</span><div><b>REWARD</b><span>${Number(r.coins_held||100)} GURU COINS</span></div></div><div class="gc-v17-lrr-info-box"><span class="gc-v17-lrr-ico">🕒</span><div><b>POSTED</b><span>${esc(fmt(r.created_at))}</span></div></div></div><div class="gc-v17-lrr-need"><b>📝 LEARNING REQUIREMENT</b><span>${esc(issue)}</span></div><div class="gc-v17-lrr-actions"><button class="gc-v17-lrr-btn more" type="button" onclick="gcV17LRRDetails(${JSON.stringify(String(r.id||''))})">VIEW DETAILS</button><button class="gc-v17-lrr-btn connect" type="button" onclick="gcV17LRRConnect()">🤝 CONNECT</button></div></article>`}
+ function render(){const g=document.getElementById('gcV17LRRGrid'),live=document.getElementById('gcV17LRRLive'),count=document.getElementById('gcV17LRRCount');if(!g)return;const rows=filtered();if(live)live.textContent='● LIVE • '+all.filter(r=>!isDeleted(r)).length+' REQUESTS';if(count)count.textContent=rows.length+' shown';g.innerHTML=rows.length?rows.map(card).join(''):'<div class="gc-v17-lrr-empty">🔎 No Learning Requirement matches these filters.<br><span style="font-size:10px;font-weight:700">Try another Stream, Subject or LRR status.</span></div>';bindMoreButtons();}
+ function card(r){const student=r.student_name||r.student_full_name||r.full_name||r.name||'GURU CONNECT Student';const closed=isClosed(r), approved=isApproved(r);const status=closed?'LRR CLOSED':approved?'LRR ADMIN APPROVED':'LRR OPEN';const cls=closed?'closed':approved?'approved':'';const issue=r.issue||r.problem||'Student has not added a detailed issue.';return `<article class="gc-v17-lrr-card"><div class="gc-v17-lrr-top"><span class="gc-v17-lrr-role">⚡ LRR • LIVE</span><span class="gc-v17-lrr-status ${cls}">${status}</span></div><div class="gc-v17-lrr-identity"><div class="gc-v17-lrr-avatar">👩🏻‍🎓</div><div class="gc-v17-lrr-copy"><h3 class="gc-v17-lrr-name">${esc(student)}</h3><div class="gc-v17-lrr-sub">📚 ${esc(r.subject||'Subject not specified')}</div></div></div><div class="gc-v17-lrr-info"><div class="gc-v17-lrr-info-box"><span class="gc-v17-lrr-ico">📖</span><div><b>COURSE</b><span>${esc(r.course||'—')}</span></div></div><div class="gc-v17-lrr-info-box"><span class="gc-v17-lrr-ico">🌐</span><div><b>STREAM</b><span>${esc(r.stream||'—')}</span></div></div><div class="gc-v17-lrr-info-box"><span class="gc-v17-lrr-ico">🎯</span><div><b>TOPIC</b><span>${esc(r.topic||'—')}</span></div></div><div class="gc-v17-lrr-info-box"><span class="gc-v17-lrr-ico">⏳</span><div><b>DEADLINE</b><span>${esc(fmt(r.learning_deadline||r.deadline))}</span></div></div><div class="gc-v17-lrr-info-box"><span class="gc-v17-lrr-ico">🪙</span><div><b>REWARD</b><span>${Number(r.coins_held||100)} GURU COINS</span></div></div><div class="gc-v17-lrr-info-box"><span class="gc-v17-lrr-ico">🕒</span><div><b>POSTED</b><span>${esc(fmt(r.created_at))}</span></div></div></div><div class="gc-v17-lrr-need"><b>📝 LEARNING REQUIREMENT</b><span>${esc(issue)}</span></div><div class="gc-v17-lrr-actions"><button class="gc-v17-lrr-btn more" type="button" data-lrr-more="${esc(String(r.id||''))}">VIEW DETAILS</button><button class="gc-v17-lrr-btn connect" type="button" onclick="gcV17LRRConnect()">🤝 CONNECT</button></div></article>`}
  window.gcV17LRRConnect=function(){location.href='login-tutor.html?return=index.html#liveLRRSection'};
- window.gcV17LRRDetails=function(id){const r=all.find(x=>String(x.id||'')===String(id));if(!r)return;alert((r.subject||'Learning Requirement')+'\n\n'+(r.issue||r.problem||'No additional details.')+'\n\nDeadline: '+fmt(r.learning_deadline||r.deadline)+'\nStatus: '+(isClosed(r)?'LRR CLOSED':isApproved(r)?'LRR ADMIN APPROVED':'LRR OPEN'));};
+ window.gcV17LRRDetails=function(id){const r=all.find(x=>String(x.id||'')===String(id));if(!r)return;let m=document.getElementById('gcLRRDetailModal');if(!m){m=document.createElement('div');m.id='gcLRRDetailModal';m.style.cssText='position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(15,23,42,.58)';m.innerHTML='<div id=gcLRRDetailBox style="width:min(560px,94vw);max-height:88vh;overflow:auto;background:#fff;border-radius:18px;padding:22px;box-shadow:0 25px 80px rgba(0,0,0,.3)"></div>';document.body.appendChild(m);m.addEventListener('click',e=>{if(e.target===m)m.remove()})}const status=isClosed(r)?'LRR CLOSED':isApproved(r)?'LRR ADMIN APPROVED':'LRR OPEN';document.getElementById('gcLRRDetailBox').innerHTML='<div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><h2 style="margin:0;color:#13246b">'+esc(r.subject||'Learning Requirement')+'</h2><button type="button" onclick="document.getElementById(\'gcLRRDetailModal\').remove()" style="border:0;background:#eef2ff;border-radius:10px;padding:8px 11px;font-weight:900;cursor:pointer">✕</button></div><p style="font-weight:800;color:#475569">'+esc(r.student_name||r.student_full_name||r.full_name||r.name||'GURU CONNECT Student')+'</p><div style="display:grid;gap:9px"><div><b>Course:</b> '+esc(r.course||'—')+'</div><div><b>Stream:</b> '+esc(r.stream||'—')+'</div><div><b>Topic:</b> '+esc(r.topic||'—')+'</div><div><b>Deadline:</b> '+esc(fmt(r.learning_deadline||r.deadline))+'</div><div><b>Status:</b> '+esc(status)+'</div><div style="padding:12px;background:#f8fafc;border-radius:12px"><b>Learning Requirement</b><br>'+esc(r.issue||r.problem||'No additional details.')+'</div></div>'};function bindMoreButtons(){document.querySelectorAll('[data-lrr-more]').forEach(b=>{if(b.dataset.bound)return;b.dataset.bound='1';b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();window.gcV17LRRDetails(b.getAttribute('data-lrr-more'))})})}
  window.gcV17SetLRRTab=function(t,b){activeTab=t;document.querySelectorAll('.gc-v17-lrr-tab').forEach(x=>x.classList.remove('active'));b?.classList.add('active');render()};
  window.gcV17FilterLRR=function(){stream=document.getElementById('gcV17LRRStream')?.value||'ALL';subject=document.getElementById('gcV17LRRSubject')?.value||'ALL';render()};
  async function load(){const g=document.getElementById('gcV17LRRGrid');if(!g)return;try{const s=publicClient();const q=await s.rpc('gc_list_learning_requests_public_v4');if(q.error)throw q.error;all=Array.isArray(q.data)?q.data:[];all=all.filter(r=>r&&typeof r==='object');rebuildSelects();render()}catch(e){g.innerHTML='<div class="gc-v17-lrr-empty">⚠️ Live LRR could not be loaded right now.<br><span style="font-size:10px">Please refresh the page. If this continues, the public LRR Supabase function needs to be deployed.</span></div>';console.warn('V17 LRR',e)}}
@@ -17206,6 +17210,8 @@ try{window.addEventListener('hashchange',()=>{if(location.hash==='#staff-admin')
 const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
 const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
 const STAFF_EMAIL='guruconnect.in@gmail.com';
+const LEGACY_STAFF_EMAIL='swami@gmail.com';
+const STAFF_UID='41f35422-e2c7-40d4-a46e-64035e014c70';
 function client(){
   if(!window.supabase?.createClient)return null;
   // IMPORTANT: do not reuse legacy clients with a custom storageKey. Mobile and desktop
@@ -17239,7 +17245,7 @@ window.handleStaffLogin=async function(e){
     if(r.error)throw r.error;
     const u=r.data?.user,session=r.data?.session;
     if(!u||!session)throw new Error('Supabase did not create an Admin session.');
-    if(String(u.email||'').trim().toLowerCase()!==STAFF_EMAIL)throw new Error('This account is not the configured Staff/Admin account.');
+    if(String(u.id||'')!==STAFF_UID)throw new Error('This account is not the configured Staff/Admin account.');
     window.gcSupabase=s;
     localStorage.setItem('is_staff_logged','true');
     localStorage.setItem('gc_staff_supabase_auth','true');
