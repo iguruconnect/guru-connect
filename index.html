@@ -4714,6 +4714,38 @@ html.gc168-booting:before{
 document.documentElement.classList.add('gc168-booting');
 window.addEventListener('DOMContentLoaded',function(){document.documentElement.classList.remove('gc168-booting');},{once:true});
 </script>
+
+<style id="gc-home-live-lrr-style">
+.gc-quick-grid{grid-template-columns:repeat(4,1fr)!important}
+.gc-quick-lrr{background:linear-gradient(135deg,#6d28d9,#2563eb)!important}
+.gc-home-lrr-section{max-width:1400px;margin:0 auto;padding:8px 24px 44px}
+.gc-home-lrr-head{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:0 0 18px;padding:20px 22px;border:1px solid #dbeafe;border-radius:24px;background:linear-gradient(135deg,#f8fbff,#eef6ff);box-shadow:0 12px 28px rgba(20,56,100,.08)}
+.gc-home-lrr-kicker{display:inline-block;font-size:10px;font-weight:950;letter-spacing:.12em;color:#2563eb;text-transform:uppercase}
+.gc-home-lrr-head h2{margin:5px 0 5px;font-size:clamp(22px,3vw,32px);font-weight:950;color:#092a66}
+.gc-home-lrr-head p{margin:0;color:#64748b;font-size:12px;font-weight:700;line-height:1.5;max-width:760px}
+.gc-home-lrr-live{white-space:nowrap;border:1px solid #bbf7d0;background:#f0fdf4;color:#15803d;border-radius:999px;padding:9px 13px;font-size:10px;font-weight:950}
+.gc-home-lrr-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.gc-home-lrr-card{border:1px solid #dbe4f0;border-radius:19px;background:#fff;box-shadow:0 9px 22px rgba(15,23,42,.07);padding:16px;display:flex;flex-direction:column;min-height:230px}
+.gc-home-lrr-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.gc-home-lrr-card h3{margin:0;color:#123b8f;font-size:15px;font-weight:950;line-height:1.3}
+.gc-home-lrr-id{font-size:8px;font-weight:900;color:#94a3b8;margin-top:4px;display:block}
+.gc-home-lrr-status{font-size:8px;font-weight:950;text-transform:uppercase;border-radius:999px;padding:5px 8px;background:#dcfce7;color:#166534;white-space:nowrap}
+.gc-home-lrr-student{margin:10px 0 8px;font-size:11px;font-weight:950;color:#334155}
+.gc-home-lrr-meta{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:10px}
+.gc-home-lrr-meta div{background:#f8fafc;border:1px solid #edf2f7;border-radius:10px;padding:7px}
+.gc-home-lrr-meta b{display:block;color:#94a3b8;font-size:7px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+.gc-home-lrr-meta span{font-size:9px;font-weight:850;color:#334155;word-break:break-word}
+.gc-home-lrr-need{font-size:10px;color:#475569;line-height:1.45;margin-top:auto;padding-top:8px;border-top:1px dashed #e2e8f0}
+.gc-home-lrr-need b{color:#123b8f}
+.gc-home-lrr-connect{margin-top:10px;border:0;border-radius:10px;background:linear-gradient(90deg,#123b8f,#2563eb);color:#fff;padding:9px 12px;font-size:9px;font-weight:950;cursor:pointer;width:100%}
+.gc-home-lrr-connect:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.gc-home-lrr-loading,.gc-home-lrr-empty{grid-column:1/-1;border:1px dashed #cbd5e1;border-radius:16px;padding:25px;text-align:center;color:#64748b;font-size:11px;font-weight:800;background:#fff}
+.gc-home-lrr-footer{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:15px;padding:12px 15px;border-radius:14px;background:#092a66;color:#fff;font-size:9px;font-weight:900}
+.gc-home-lrr-footer a{color:#fff;text-decoration:none}
+.gc-home-lrr-footer a:hover{text-decoration:underline}
+@media(max-width:1100px){.gc-quick-grid{grid-template-columns:repeat(2,1fr)!important}.gc-home-lrr-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.gc-home-lrr-section{padding:4px 14px 30px}.gc-home-lrr-head{display:block;padding:16px}.gc-home-lrr-live{display:inline-block;margin-top:12px}.gc-home-lrr-grid{grid-template-columns:1fr}.gc-quick-grid{grid-template-columns:1fr!important}}
+</style>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -4960,10 +4992,22 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 <a class="gc-quick-btn" href="#registrationSection" onclick="setTimeout(()=&gt;switchTab('student'),0)">Register as Student  ›</a>
 </article>
 <article class="gc-quick-card gc-quick-blue">
-<div class="gc-quick-top"><div class="gc-quick-icon"><i class="fa-solid fa-users"></i></div><div><h3>Browse Tutors &amp; Students</h3><p>Explore verified profiles and connect easily.</p></div></div>
-<a class="gc-quick-btn" href="#tutors">View Profiles  ›</a>
+<div class="gc-quick-top"><div class="gc-quick-icon"><i class="fa-solid fa-users"></i></div><div><h3>Browse Tutors</h3><p>Explore verified tutor profiles and connect easily.</p></div></div>
+<a class="gc-quick-btn" href="#tutors">Browse Tutors  ›</a>
+</article>
+<article class="gc-quick-card gc-quick-lrr">
+<div class="gc-quick-top"><div class="gc-quick-icon"><i class="fa-solid fa-bolt"></i></div><div><h3>LRR — Live Learning Requirement Requests</h3><p>See real Student learning requirements live on GURU CONNECT.</p></div></div>
+<a class="gc-quick-btn" href="#liveLRRSection">View Live LRR  ›</a>
 </article>
 </div>
+<section id="liveLRRSection" class="gc-home-lrr-section">
+  <div class="gc-home-lrr-head">
+    <div><span class="gc-home-lrr-kicker">GURU CONNECT • LIVE MARKETPLACE</span><h2>⚡ LRR — Live Learning Requirement Requests</h2><p>Real Student requirements are visible to everyone. Visitors can explore opportunities before joining GURU CONNECT.</p></div>
+    <div class="gc-home-lrr-live" id="gcHomeLRRLive">● LIVE • Loading…</div>
+  </div>
+  <div id="gcHomeLRRGrid" class="gc-home-lrr-grid"><div class="gc-home-lrr-loading">Loading live Student requirements…</div></div>
+  <div class="gc-home-lrr-footer"><a href="learning.html">VIEW ALL LIVE LEARNING REQUIREMENTS →</a><span>🔐 Only registered + verified Tutors can CONNECT.</span></div>
+</section>
 <!-- Tutors Listing Showcase Section -->
 <section class="max-w-7xl mx-auto px-4 py-12 sm:py-16 w-full" id="tutors">
 <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4 border-b border-slate-200 pb-4">
@@ -16981,6 +17025,41 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 })();
 </script>
 
+
+<script id="gc-home-live-lrr-script">
+(function(){
+  const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const fmt=v=>{if(!v)return '—';const d=new Date(v);return isNaN(d)?String(v):d.toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});};
+  function connectLRR(){location.href='login-tutor.html?return=learning.html';}
+  window.gcHomeLRRConnect=connectLRR;
+  async function loadHomeLRR(){
+    const grid=document.getElementById('gcHomeLRRGrid'), live=document.getElementById('gcHomeLRRLive');
+    if(!grid)return;
+    try{
+      const sb=window.gcSupabase||window.supabaseClient||window.sb||window.supabase?.createClient?.('https://hzqqswrnawrfgufbxgay.supabase.co','sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu');
+      if(!sb)throw new Error('Supabase client is not available.');
+      const q=await sb.rpc('gc_list_learning_requests_public_v4');
+      if(q.error)throw q.error;
+      let rows=Array.isArray(q.data)?q.data:[];
+      if(rows.length && Array.isArray(rows[0]))rows=rows[0];
+      rows=rows.filter(r=>!['DELETED','DELETED_BY_ADMIN'].includes(String(r.status||'').toUpperCase())).slice(0,6);
+      if(live)live.textContent='● LIVE • '+rows.length+' REQUESTS';
+      if(!rows.length){grid.innerHTML='<div class="gc-home-lrr-empty">No active Learning Requirements are available right now. New Student requests will appear here automatically.</div>';return;}
+      grid.innerHTML=rows.map(r=>{
+        const student=r.student_name||r.student_full_name||r.full_name||r.name||'GURU CONNECT Student';
+        const st=String(r.status||'OPEN').replaceAll('_',' ');
+        return `<article class="gc-home-lrr-card"><div class="gc-home-lrr-top"><div><h3>${esc(r.subject||'Learning Requirement')}</h3><span class="gc-home-lrr-id">${esc(r.request_code||('LR-'+String(r.id||'').replaceAll('-','').slice(0,8).toUpperCase()))}</span></div><span class="gc-home-lrr-status">${esc(st)}</span></div><div class="gc-home-lrr-student">👤 ${esc(student)}</div><div class="gc-home-lrr-meta"><div><b>Course</b><span>${esc(r.course||'—')}</span></div><div><b>Stream</b><span>${esc(r.stream||'—')}</span></div><div><b>Topic</b><span>${esc(r.topic||'—')}</span></div><div><b>Deadline</b><span>${esc(fmt(r.learning_deadline))}</span></div><div><b>Reward</b><span>🪙 ${Number(r.coins_held||100)} held</span></div><div><b>Posted</b><span>${esc(fmt(r.created_at))}</span></div></div><div class="gc-home-lrr-need"><b>Need:</b> ${esc(r.issue||r.problem||'Student has not added a detailed issue.')}</div><button class="gc-home-lrr-connect" type="button" onclick="gcHomeLRRConnect()">🤝 CONNECT WITH STUDENT</button></article>`;
+      }).join('');
+    }catch(e){
+      if(live)live.textContent='● LIVE';
+      grid.innerHTML='<div class="gc-home-lrr-empty">Live Learning Requirements are temporarily unavailable. Please open the full LRR directory.</div>';
+      console.warn('GURU CONNECT home LRR:',e);
+    }
+  }
+  function boot(){loadHomeLRR();setInterval(loadHomeLRR,15000);}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+})();
+</script>
 </body></html>
 
 <script id="gc-v16-3-final-menu-cleanup">
