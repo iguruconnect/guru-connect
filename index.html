@@ -5798,7 +5798,7 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 <input autocomplete="email" class="w-full border rounded-xl p-3 text-sm font-bold" id="loginEmailInput" placeholder="your@email.com" type="email"/>
 <input autocomplete="current-password" class="w-full border rounded-xl p-3 text-sm font-bold" id="loginPasswordInput" placeholder="Password" type="password"/>
 <button class="w-full bg-brand-blue text-white font-black py-3.5 rounded-xl text-sm" onclick="gcEmailLogin()" type="button">LOGIN SECURELY</button>
-<button id="gcStaffPasswordResetBtn" class="w-full bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-800 font-black py-3 rounded-xl text-xs transition" onclick="gcResetPassword()" type="button">🔑 FORGOT STAFF / ADMIN PASSWORD? SEND RESET EMAIL</button>
+<button class="w-full text-blue-700 font-bold text-xs py-2" onclick="gcResetPassword()" type="button">Forgot password? Send reset email</button>
 <div class="text-[11px] text-slate-400 text-center">Your password is handled by Supabase Authentication and is never stored in the website.</div>
 </div>
 <button class="w-full mt-4 text-slate-400 text-xs font-bold" onclick="closeLoginModal()" type="button">CANCEL</button>
@@ -11001,10 +11001,8 @@ body {
   }
 
   async function gcResetPassword() {
+    const email=(document.getElementById('loginEmailInput')?.value||'').trim().toLowerCase();
     const role=(document.getElementById('loginRoleInput')?.value||'').trim().toLowerCase();
-    const staffEmail='guruconnect.in@gmail.com';
-    const email=((document.getElementById('loginEmailInput')?.value||'').trim().toLowerCase()) || (role==='staff' ? staffEmail : '');
-    if(role==='staff' && document.getElementById('loginEmailInput')) document.getElementById('loginEmailInput').value=staffEmail;
     if(!email){alert('Enter your registered email first.');return;}
     if(!/^\S+@\S+\.\S+$/.test(email)){alert('Enter a valid registered email address.');return;}
     if(!gcSupabase){alert('Secure password reset is unavailable because Supabase is not connected. Please refresh the website.');return;}
@@ -11033,7 +11031,7 @@ body {
         alert('Reset link could not be sent: '+msg);
       }
     }finally{
-      if(btn){btn.disabled=false;btn.textContent='🔑 FORGOT STAFF / ADMIN PASSWORD? SEND RESET EMAIL';}
+      if(btn){btn.disabled=false;btn.textContent='Forgot password? Send reset email';}
     }
   }
 
@@ -13045,12 +13043,12 @@ window.GC_PROFILE_COINS_REFRESH=paint;
     if(!reset){
       reset=document.createElement('a');
       reset.id='gcPublicPasswordReset';
-      reset.href='#password-reset';
+      reset.href='forgot-password.html';
       reset.textContent='🔑 PASSWORD RESET';
       reset.className='gc-public-password-reset';
       menu.appendChild(reset);
     }
-    reset.onclick=function(e){e.preventDefault();try{window.closeNavMenu?.()}catch(_){};window.openLoginModal?.('staff');setTimeout(function(){window.gcResetPassword?.();},120);return false;};
+    reset.onclick=function(){try{window.closeNavMenu?.()}catch(_){};};
   }
   function boot(){installMenu();setTimeout(installMenu,400);setTimeout(installMenu,1200);}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
@@ -15818,7 +15816,7 @@ window.addEventListener('load',()=>setTimeout(boot,900));
     const menu=document.getElementById('publicNavbarLinks');if(!menu)return;
     let reset=document.getElementById('gcPublicPasswordReset');
     if(!reset){
-      reset=document.createElement('a');reset.id='gcPublicPasswordReset';reset.href='#password-reset';reset.textContent='🔑 PASSWORD RESET';
+      reset=document.createElement('a');reset.id='gcPublicPasswordReset';reset.href='forgot-password.html';reset.textContent='🔑 PASSWORD RESET';
       const login=document.getElementById('gcFinalMenuLogin');
       if(login&&login.parentNode===menu)menu.insertBefore(reset,login);else menu.appendChild(reset);
     }
@@ -16786,7 +16784,7 @@ function cleanAndBuildMenu(){
  add('gcFinalStudentLogin','🎓 STUDENT LOGIN','login-student.html','gcFinalStudentLogin');
  add('gcFinalTutorLogin','🎓 TUTOR LOGIN','login-tutor.html','gcFinalTutorLogin');
  add('gcFinalStaffLogin','🛡️ STAFF / ADMIN LOGIN','login-staff.html','gcFinalStaffLogin');
- add('gcFinalReset','🔑 PASSWORD RESET','#password-reset','gcFinalReset');
+ add('gcFinalReset','🔑 PASSWORD RESET','forgot-password.html','gcFinalReset');
  n.appendChild(divider());
  add('gcFinalAbout','ℹ️ ABOUT US','about.html');
  add('gcFinalContact','☎️ CONTACT US','contact.html');
@@ -17347,6 +17345,56 @@ window.gcAdminAuth={email:GC_ADMIN_EMAIL,uid:GC_ADMIN_UID,get:gcGetAdmin};
 })();
 </script>
 
+
+<!-- GURU CONNECT STAFF/ADMIN PASSWORD RESET VISIBILITY FIX -->
+<style id="gc-staff-reset-visible-fix">
+#gcStaffPasswordResetBtn,
+#gcStaffPasswordResetBtn.gc-staff-reset-visible,
+.gc-staff-reset-floating{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;position:relative!important;z-index:2147483647!important}
+.gc-staff-reset-floating{width:100%!important;margin-top:10px!important;border:2px solid #f59e0b!important;background:#fffbeb!important;color:#92400e!important;border-radius:12px!important;padding:13px 12px!important;font-weight:900!important;font-size:12px!important;cursor:pointer!important}
+</style>
+<script id="gc-staff-reset-visible-fix-js">
+(function(){
+ 'use strict';
+ function ensureStaffReset(){
+   var modal=document.getElementById('loginModal');
+   if(!modal) return;
+   var role=document.getElementById('loginRoleInput');
+   var submit=modal.querySelector('button[onclick*="gcEmailLogin"],button[type="submit"]');
+   if(!submit) return;
+   var old=document.getElementById('gcStaffPasswordResetBtn');
+   if(old){ old.classList.add('gc-staff-reset-visible'); old.style.setProperty('display','block','important'); old.style.setProperty('visibility','visible','important'); old.style.setProperty('opacity','1','important'); old.style.setProperty('pointer-events','auto','important'); }
+   if(!old){
+     old=document.createElement('button');
+     old.id='gcStaffPasswordResetBtn';
+     old.type='button';
+     old.className='gc-staff-reset-floating';
+     old.textContent='🔑 FORGOT STAFF / ADMIN PASSWORD? SEND RESET EMAIL';
+     old.onclick=function(){
+       var r=document.getElementById('loginRoleInput');
+       if(r) r.value='staff';
+       var e=document.getElementById('loginEmailInput');
+       if(e) e.value='guruconnect.in@gmail.com';
+       if(typeof window.gcResetPassword==='function') window.gcResetPassword();
+       else alert('Password reset is not available yet. Please refresh the page and try again.');
+     };
+     submit.parentNode.insertBefore(old,submit.nextSibling);
+   }
+   function toggle(){
+     var isStaff=!role || String(role.value||'').toLowerCase()==='staff';
+     old.style.setProperty('display',isStaff?'block':'none','important');
+     old.style.setProperty('visibility',isStaff?'visible':'hidden','important');
+     old.style.setProperty('opacity',isStaff?'1':'0','important');
+     old.style.setProperty('pointer-events',isStaff?'auto':'none','important');
+   }
+   if(role && !role.dataset.gcResetBound){role.addEventListener('change',toggle);role.dataset.gcResetBound='1';}
+   toggle();
+ }
+ if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',ensureStaffReset); else ensureStaffReset();
+ setTimeout(ensureStaffReset,300);setTimeout(ensureStaffReset,1000);setTimeout(ensureStaffReset,2500);
+ window.addEventListener('load',ensureStaffReset);
+})();
+</script>
 </body></html>
 
 <script id="gc-v16-3-final-menu-cleanup">
