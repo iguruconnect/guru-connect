@@ -16873,11 +16873,11 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
     box.className='fixed inset-0 z-[500] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-6';
     box.innerHTML=`<div class="max-w-xl w-full bg-white rounded-[2rem] shadow-2xl p-7 sm:p-11 text-center">
       <div class="mx-auto mb-5 w-20 h-20 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-4xl">✉️</div>
-      <div class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-black uppercase tracking-wider mb-3">Email verification • 6-digit OTP</div>
+      <div class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-black uppercase tracking-wider mb-3">Email verification • 8-digit OTP</div>
       <h2 class="text-2xl sm:text-4xl font-black text-slate-900">Verify Your Email</h2>
-      <p class="mt-3 text-sm sm:text-base text-slate-600">We sent a 6-digit verification code to</p>
+      <p class="mt-3 text-sm sm:text-base text-slate-600">We sent an 8-digit verification code to</p>
       <p class="mt-1 text-base sm:text-xl font-black text-blue-700 break-all">${esc2(email)}</p>
-      <input id="gcRegOtpInput" class="mt-6 w-full text-center tracking-[.45em] font-black text-2xl border-2 border-blue-200 rounded-2xl px-4 py-4 outline-none focus:border-blue-500" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456">
+      <input id="gcRegOtpInput" class="mt-6 w-full text-center tracking-[.45em] font-black text-2xl border-2 border-blue-200 rounded-2xl px-4 py-4 outline-none focus:border-blue-500" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="12345678">
       <button id="gcRegOtpVerify" class="mt-4 w-full rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black py-4">VERIFY OTP</button>
       <button id="gcRegOtpResend" class="mt-3 w-full rounded-2xl border border-slate-300 bg-white text-slate-700 font-black py-3">RESEND OTP</button>
       <div id="gcRegOtpMsg" class="mt-4 text-sm font-bold text-slate-500"></div>
@@ -16900,7 +16900,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
     };
     verify.onclick=async()=>{
       const token=input.value.trim().replace(/\D/g,'');
-      if(!/^\d{6}$/.test(token)) return say('Enter the 6-digit OTP from the newest GURU CONNECT email.');
+      if(!/^\d{8}$/.test(token)) return say('Enter the 8-digit OTP from the newest GURU CONNECT email.');
       verify.disabled=true; verify.textContent='VERIFYING…';
       try{
         const r=await S.auth.verifyOtp({email,token,type:'email'});
@@ -16917,7 +16917,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
       try{
         const r=await S.auth.resend({type:'signup',email});
         if(r.error) throw r.error;
-        say('✓ A new 6-digit OTP has been sent. Use only the newest code.',true);
+        say('✓ A new 8-digit OTP has been sent. Use only the newest code.',true);
         let n=60; const timer=setInterval(()=>{n--; resend.textContent=n>0?'RESEND OTP ('+n+'s)':'RESEND OTP'; if(n<=0){clearInterval(timer);resend.disabled=false}},1000);
       }catch(e){say('Could not resend OTP: '+(e.message||String(e)));resend.disabled=false;resend.textContent='RESEND OTP';}
     };
@@ -16973,5 +16973,38 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
  }
  const mo=new MutationObserver(()=>{clearTimeout(window.__gcMenuTimer);window.__gcMenuTimer=setTimeout(clean,30)});
  document.addEventListener('DOMContentLoaded',()=>{clean();mo.observe(document.body,{childList:true,subtree:true});});
+})();
+</script>
+<!-- V16.11 COMPLETE WORKFLOW OVERRIDES -->
+<style id="gc-v16-11-workflow-css">
+.gc-v1611-adminbox{margin:0 0 18px;padding:18px;border:1px solid #bfdbfe;border-radius:18px;background:#fff;box-shadow:0 12px 30px rgba(15,23,42,.08)}
+.gc-v1611-adminbox h3{margin:0;color:#0f2f68;font-size:18px}.gc-v1611-adminbox p{margin:5px 0 14px;color:#64748b;font-size:12px;font-weight:700}
+.gc-v1611-table{overflow:auto;border:1px solid #e2e8f0;border-radius:14px}.gc-v1611-table table{width:100%;border-collapse:collapse;min-width:1050px}.gc-v1611-table th,.gc-v1611-table td{padding:10px;border-bottom:1px solid #e2e8f0;text-align:left;font-size:11px;vertical-align:top}.gc-v1611-table th{background:#f8fafc;color:#475569;font-size:9px;text-transform:uppercase;letter-spacing:.05em}.gc-v1611-approve,.gc-v1611-deny,.gc-v1611-refresh{border:0;border-radius:10px;padding:9px 11px;font-weight:900;cursor:pointer;margin:2px}.gc-v1611-approve{background:#059669;color:#fff}.gc-v1611-deny{background:#dc2626;color:#fff}.gc-v1611-refresh{background:#0f172a;color:#fff}.gc-v1611-held{color:#b45309;font-weight:900}.gc-v1611-ok{color:#64748b;font-weight:800}.gc-v1611-status{padding:3px 7px;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:900;display:inline-block}
+</style>
+<script id="gc-v16-11-workflow-js">
+(function(){'use strict';
+const URL='https://hzqqswrnawrfgufbxgay.supabase.co',KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function S(){return window.gcSupabase||(window.supabase?.createClient?window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}):null)}
+function staff(){return localStorage.getItem('is_staff_logged')==='true' && localStorage.getItem('active_user_role')==='staff'}
+function dashboard(){return document.getElementById('staffAdminDashboard')}
+async function refreshAdminLR(){
+ if(!staff())return; const s=S(); if(!s)return; const d=dashboard(); if(!d)return;
+ let host=document.getElementById('gcV1611AdminLR');
+ if(!host){host=document.createElement('section');host.id='gcV1611AdminLR';host.className='gc-v1611-adminbox'; const card=d.querySelector('.bg-white')||d; card.insertBefore(host,card.firstChild);}
+ host.innerHTML='<h3>🛡️ Learning Request + Coin Approval</h3><p>All Learning Requests are shown here. Approve only after Tutor completion and Student outcome. Approval transfers held coins to the connected Tutor; Deny returns held coins to the Student.</p><button class="gc-v1611-refresh" id="gcV1611Refresh">↻ REFRESH ALL REQUESTS</button><div style="height:10px"></div><div class="gc-v1611-table">Loading…</div>';
+ const q=await s.rpc('gc_admin_list_learning_requests'); if(q.error){host.querySelector('.gc-v1611-table').innerHTML='<div style="padding:15px;color:#991b1b;font-weight:800">'+esc(q.error.message||q.error)+'</div>';return;}
+ const rows=Array.isArray(q.data)?q.data:[];
+ const body=rows.map(r=>{const held=Number(r.coins_held||0),st=String(r.status||'OPEN'),out=String(r.student_outcome||'PENDING');const ready=held>0&&r.tutor_id&&(/SATISFIED/i.test(out)||/PENDING_ADMIN_APPROVAL|PENDING_ADMIN_REVIEW/i.test(st));let action=held>0&&ready?'<button class="gc-v1611-approve" data-approve="'+esc(r.id)+'">✓ APPROVE +'+held+' 🪙 TO TUTOR</button><button class="gc-v1611-deny" data-deny="'+esc(r.id)+'">✕ DENY / RETURN</button>':held>0?'<span class="gc-v1611-held">🪙 '+held+' HELD — WAITING FOR WORKFLOW</span>':'<span class="gc-v1611-ok">No coins held</span>';return '<tr><td><b>'+esc(r.request_code||r.id)+'</b><br>'+esc(r.created_at?new Date(r.created_at).toLocaleString('en-IN'): '—')+'</td><td>'+esc(r.student_short_id||('ST-'+String(r.student_id||'').replaceAll('-','').slice(0,8).toUpperCase()))+'</td><td>'+esc(r.tutor_short_id||(r.tutor_id?'TU-'+String(r.tutor_id).replaceAll('-','').slice(0,8).toUpperCase():'Not connected'))+'</td><td>'+esc(r.course||'—')+' / '+esc(r.stream||'—')+'</td><td><b>'+esc(r.subject||'—')+'</b><br>'+esc(r.topic||'—')+'</td><td><span class="gc-v1611-status">'+esc(st.replaceAll('_',' '))+'</span><br>Outcome: '+esc(out)+'</td><td>'+esc(r.issue||r.problem||'—')+'</td><td>'+action+'</td></tr>'}).join('');
+ host.querySelector('.gc-v1611-table').innerHTML='<table><thead><tr><th>Request</th><th>Student</th><th>Tutor</th><th>Course / Stream</th><th>Subject / Topic</th><th>Status / Outcome</th><th>Issue</th><th>ADMIN ACTION</th></tr></thead><tbody>'+(body||'<tr><td colspan="8">No Learning Requests found.</td></tr>')+'</tbody></table>';
+ host.querySelector('#gcV1611Refresh').onclick=refreshAdminLR;
+ host.querySelectorAll('[data-approve]').forEach(b=>b.onclick=()=>decide(b.dataset.approve,'APPROVE'));host.querySelectorAll('[data-deny]').forEach(b=>b.onclick=()=>decide(b.dataset.deny,'DENY'));
+}
+async function decide(id,decision){const s=S();if(!s)return;let note='';if(decision==='DENY')note=prompt('Reason for denial / return to Student:','Admin denied the Learning Request after review.')??'';try{const q=await s.rpc('gc_admin_decide_learning_request',{p_request_id:id,p_decision:decision,p_note:note});if(q.error)throw q.error;const recipient=q.data?.recipient_name||'the account';alert(decision==='APPROVE'?'Approved. '+(q.data?.transferred_coins||100)+' coins transferred to '+recipient+'.':'Denied. Held coins returned to '+recipient+'.');await refreshAdminLR();}catch(e){alert('Admin coin approval failed:\n\n'+(e.message||e))}}
+window.GC_ADMIN_ESCROW=window.GC_ADMIN_ESCROW||{};window.GC_ADMIN_ESCROW.refresh=refreshAdminLR;window.GC_ADMIN_ESCROW.decide=decide;window.GC_V1611_REFRESH_ADMIN_LR=refreshAdminLR;
+function forceStaffLinks(){document.querySelectorAll('a,button').forEach(el=>{const t=(el.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();if(t.includes('staff / admin login')||t==='staff login'||t==='staff/admin'||t==='staff'){if(el.tagName==='A'){el.href='login-staff.html';el.target='_self';}el.addEventListener('click',function(e){e.preventDefault();e.stopImmediatePropagation();location.href='login-staff.html';},true);}})}
+function boot(){forceStaffLinks();if(staff()){setTimeout(refreshAdminLR,700);setTimeout(refreshAdminLR,1800)}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+try{window.addEventListener('hashchange',()=>{if(location.hash==='#staff-admin')setTimeout(refreshAdminLR,300)});}catch(_){}
 })();
 </script>

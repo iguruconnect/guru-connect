@@ -22,15 +22,15 @@
 </head>
 <body>
 <main class="card">
-<section class="head"><img class="logo" src="guru-connect-logo.png" alt="GURU CONNECT"><h1>Verify OTP & Set New Password</h1><p>Enter the newest 6-digit recovery OTP sent by GURU CONNECT. After verification, create your new password on this same page.</p></section>
+<section class="head"><img class="logo" src="guru-connect-logo.png" alt="GURU CONNECT"><h1>Verify OTP & Set New Password</h1><p>Enter the newest 8-digit recovery OTP sent by GURU CONNECT. After verification, create your new password on this same page.</p></section>
 <section class="body">
 <div id="otpStage">
 <label class="label" for="email">Registered Email</label>
 <input id="email" class="input" type="email" autocomplete="email" placeholder="you@example.com">
 <label class="label" for="otp" style="margin-top:15px">One-Time Password (OTP)</label>
-<div class="row"><input id="otp" class="input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="Enter OTP"><button id="copy" class="btn copy" type="button">COPY OTP</button></div>
+<div class="row"><input id="otp" class="input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="Enter 8-digit OTP"><button id="copy" class="btn copy" type="button">COPY OTP</button></div>
 <button id="verify" class="btn mainbtn" type="button">VERIFY OTP</button>
-<div class="note"><b>Important:</b> This 6-digit code is an <b>OTP only</b> — it is not your password. Enter it above, press <b>VERIFY OTP</b>, and only then create your new password. Use the newest OTP; requesting another reset email can make the previous code unusable.</div>
+<div class="note"><b>Important:</b> This 8-digit code is an <b>OTP only</b> — it is not your password. Enter it above, press <b>VERIFY OTP</b>, and only then create your new password. Use the newest OTP; requesting another reset email can make the previous code unusable.</div>
 <div class="divider"></div>
 <button id="resend" class="btn secondary" type="button">RESEND OTP</button>
 </div>
@@ -87,7 +87,7 @@ consumeRecoveryUrl();
 
 $('copy').onclick=async()=>{
   const v=$('otp').value.trim();
-  if(!v)return show('Enter the OTP first, then press COPY OTP.');
+  if(!/^\d{8}$/.test(v))return show('Enter the OTP first, then press COPY OTP.');
   try{
     await navigator.clipboard.writeText(v);
     show('✓ OTP copied to clipboard.',true);
@@ -101,7 +101,7 @@ $('copy').onclick=async()=>{
 async function verify(){
   const email=$('email').value.trim().toLowerCase(),token=$('otp').value.trim(),btn=$('verify');
   if(!/^\S+@\S+\.\S+$/.test(email))return show('Enter the registered email address.');
-  if(!token)return show('Enter the OTP from the newest GURU CONNECT recovery email. <b>Do NOT put this OTP in the password field.</b>');
+  if(!/^\d{8}$/.test(token))return show('Enter the 8-digit OTP from the newest GURU CONNECT recovery email. <b>Do NOT put this OTP in the password field.</b>');
   btn.disabled=true;btn.textContent='VERIFYING…';
   try{
     // No URL token is used here. This is the deliberate OTP path recommended
@@ -134,10 +134,10 @@ $('resend').onclick=async()=>{
   try{
     // Clear any local recovery session before starting a fresh recovery request.
     try{await sb.auth.signOut({scope:'local'})}catch(_){}
-    const redirectTo=new URL('reset-password.html',location.href).href;
+    const redirectTo=new URL('reset-otp.html',location.href).href;
     const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo});
     if(error)throw error;
-    show('✓ A new OTP has been sent. Use ONLY this newest code.',true);
+    show('✓ A new 8-digit OTP has been sent. Use ONLY this newest code.',true);
     resendTimer=60;
     const timer=setInterval(()=>{
       resendTimer--;
