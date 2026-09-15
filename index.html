@@ -4930,57 +4930,6 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
   </div>
 </section>
 
-
-<!-- GURU CONNECT — ADMIN PASSWORD CHANGE (SUPABASE CLOUD) -->
-<section class="mt-8 rounded-2xl sm:rounded-3xl border border-violet-200 bg-slate-50 overflow-hidden" id="gcAdminChangePassword">
-  <div class="p-5 sm:p-6 bg-gradient-to-r from-violet-950 via-indigo-900 to-blue-800 text-white">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-      <div>
-        <h3 class="text-lg sm:text-xl font-black">🔐 CHANGE ADMIN PASSWORD</h3>
-        <p class="text-xs text-violet-100 mt-1">Change the Staff/Admin password directly from this dashboard. The new password is saved in Supabase Authentication (cloud).</p>
-      </div>
-      <span class="text-[10px] font-black px-3 py-2 rounded-xl bg-white/10 border border-white/15">SUPABASE AUTH • CLOUD</span>
-    </div>
-  </div>
-  <div class="p-5 sm:p-6">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div>
-        <label class="block text-xs font-black text-slate-600 mb-1">CURRENT ADMIN PASSWORD *</label>
-        <input id="gcAdminCurrentPassword" type="password" autocomplete="current-password"
-          class="w-full border border-slate-300 rounded-xl p-3 text-sm font-bold bg-white"
-          placeholder="Enter current password">
-      </div>
-      <div>
-        <label class="block text-xs font-black text-slate-600 mb-1">NEW ADMIN PASSWORD *</label>
-        <input id="gcAdminNewPassword" type="password" minlength="8" autocomplete="new-password"
-          class="w-full border border-slate-300 rounded-xl p-3 text-sm font-bold bg-white"
-          placeholder="Minimum 8 characters">
-      </div>
-      <div>
-        <label class="block text-xs font-black text-slate-600 mb-1">CONFIRM NEW PASSWORD *</label>
-        <input id="gcAdminNewPassword2" type="password" minlength="8" autocomplete="new-password"
-          class="w-full border border-slate-300 rounded-xl p-3 text-sm font-bold bg-white"
-          placeholder="Re-enter new password">
-      </div>
-    </div>
-    <div class="mt-4 rounded-2xl bg-violet-50 border border-violet-200 p-4 text-xs text-violet-950 leading-5">
-      <b>Important:</b> Your password is handled by Supabase Authentication. GURU CONNECT does not store or display the password in its database.
-      After a successful change, use the new password for <b>STAFF LOGIN</b>.
-    </div>
-    <div class="mt-4 flex flex-col sm:flex-row gap-3">
-      <button type="button" id="gcAdminChangePasswordBtn"
-        class="w-full sm:w-auto bg-violet-700 hover:bg-violet-800 text-white font-black px-7 py-3 rounded-xl shadow-lg">
-        CHANGE ADMIN PASSWORD
-      </button>
-      <button type="button" id="gcAdminChangePasswordClearBtn"
-        class="w-full sm:w-auto bg-slate-200 hover:bg-slate-300 text-slate-700 font-black px-7 py-3 rounded-xl">
-        CLEAR
-      </button>
-    </div>
-    <div id="gcAdminChangePasswordStatus" class="mt-4 text-xs font-bold text-slate-600" aria-live="polite"></div>
-  </div>
-</section>
-
 <!-- ADMIN USER PASSWORD RESET -->
 <section class="mt-8 rounded-2xl sm:rounded-3xl border border-blue-100 bg-slate-50 overflow-hidden" id="gcAdminPasswordReset">
 <div class="p-5 sm:p-6 bg-gradient-to-r from-slate-950 via-blue-950 to-blue-700 text-white">
@@ -14049,9 +13998,7 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 (function(){
   'use strict';
 
-  // STAFF authentication is handled exclusively by Supabase Auth.
-  // No Staff/Admin password is stored in this HTML file.
-  const STAFF_EMAIL='guruconnect.in@gmail.com';
+  const STAFF_EMAIL='guruconnect.in@gmail.com'; const __GC_REMOVED_STAFF_PASSWORD__='';
 
   const clean=v=>String(v==null?'':v).trim();
   const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -14083,14 +14030,19 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   async function ensureStaffCloud(){
     const s=sb();
     if(!s) throw new Error('Supabase client is not loaded.');
-    const sess=await s.auth.getSession();
-    const session=sess?.data?.session;
-    const su=session?.user;
-    if(!su || su.is_anonymous===true) throw new Error('Admin session is missing. Please login again with the registered Staff/Admin account.');
-    if(String(su.email||'').toLowerCase()!==STAFF_EMAIL.toLowerCase()) throw new Error('This account is not the configured Staff/Admin account.');
-    localStorage.setItem('is_staff_logged','true');
-    localStorage.setItem('gc_staff_supabase_auth','true');
-    return su;
+    try{
+      const sess=await s.auth.getSession();
+      const su=sess?.data?.session?.user;
+      if(su && su.is_anonymous!==true && String(su.email||'').toLowerCase()===STAFF_EMAIL.toLowerCase()){
+        localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');return su;
+      }
+    }catch(_){}
+    try{await s.auth.signOut();}catch(_){}
+    const r=await s.auth.signInWithPassword({email:STAFF_EMAIL,password:__GC_REMOVED_STAFF_PASSWORD__});
+    if(r.error) throw new Error('Staff Cloud Login failed: '+(r.error.message||'Invalid Supabase Staff credentials')+'. Make sure this Staff email exists in Supabase Authentication > Users and has the configured password.');
+    const u=r?.data?.user, session=r?.data?.session;
+    if(!u||!session||u.is_anonymous===true||String(u.email||'').toLowerCase()!==STAFF_EMAIL.toLowerCase()) throw new Error('Supabase did not create a valid Staff session.');
+    localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');return u;
   }
 
   window.ensureStaffCloud = ensureStaffCloud;
@@ -14119,12 +14071,30 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   }
 
   // ---------- STAFF LOGIN ----------
-  // Legacy Staff modal handler retained only as a safe compatibility wrapper.
-  // The final authoritative Staff handler at the end of this file performs the actual
-  // Supabase signInWithPassword call using the password entered by the user.
-  window.handleStaffLogin=window.handleStaffLogin||async function(e){
+  window.handleStaffLogin=async function(e){
     if(e)e.preventDefault();
-    alert('Please use the current Staff / Admin login screen.');
+    const u=clean(document.getElementById('staffUserInput')?.value);
+    const p=clean(document.getElementById('staffPassInput')?.value);
+    if(u!==STAFF_EMAIL || p!==__GC_REMOVED_STAFF_PASSWORD__){
+      alert('Invalid Staff Credentials. Please check username and password.');
+      return false;
+    }
+
+    const btn=document.querySelector('#staffLoginModal button[type="submit"]');
+    if(btn){btn.disabled=true;btn.textContent='SIGNING IN...';}
+    try{
+      await ensureStaffCloud();
+      try{window.closeStaffLoginModal?.();}catch(_){}
+      try{window.checkStaffSessionState?.();}catch(_){}
+      try{window.renderAdminQueue?.();}catch(_){}
+      try{window.showSuccessPopup?.('Staff Login Successful — Cloud Staff Session Active.');}
+      catch(_){alert('Staff Login Successful — Cloud Staff Session Active.');}
+    }catch(err){
+      localStorage.removeItem('gc_staff_supabase_auth');
+      alert('Staff Login failed.\n\n'+(err?.message||String(err)));
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent='LOGIN';}
+    }
     return false;
   };
 
@@ -17171,7 +17141,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
  'use strict';
  const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
  const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
- const ADMIN_UID='1df7606a-3a96-4116-b022-804b37a3c3dd';
+ const ADMIN_UID='41f35422-e2c7-40d4-a46e-64035e014c70';
  function by(id){return document.getElementById(id)}
  function client(){return window.supabase?.createClient?.(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}})}
  window.handleStaffLogin=async function(e){
@@ -17212,7 +17182,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 'use strict';
 const GC_AUTH_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
 const GC_AUTH_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
-const GC_ADMIN_UID='1df7606a-3a96-4116-b022-804b37a3c3dd';
+const GC_ADMIN_UID='41f35422-e2c7-40d4-a46e-64035e014c70';
 
 function gcAuthClient(){
   if(!window.supabase?.createClient) throw new Error('Supabase library is not loaded.');
@@ -17306,195 +17276,6 @@ window.addEventListener('load',()=>setTimeout(gcRestoreStaff,450));
 })();
 </script>
 
-
-<!-- GURU CONNECT FINAL ADMIN AUTH PATCH — 2026-09-15 -->
-<script id="gc-final-admin-auth-patch-20260915">
-(function(){
-'use strict';
-const GC_ADMIN_EMAIL='guruconnect.in@gmail.com';
-const GC_ADMIN_UID='1df7606a-3a96-4116-b022-804b37a3c3dd';
-const GC_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
-const GC_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
-function gcAdminClient(){
-  if(!window.supabase?.createClient) throw new Error('Supabase library is not loaded. Please refresh the page.');
-  if(window.gcSupabase && window.gcSupabase.auth) return window.gcSupabase;
-  window.gcSupabase=window.supabase.createClient(GC_URL,GC_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-  return window.gcSupabase;
-}
-async function gcGetAdmin(){
-  const s=gcAdminClient();
-  const q=await s.auth.getSession();
-  const session=q.data?.session, u=session?.user;
-  if(!session||!u||String(u.id)!==GC_ADMIN_UID||String(u.email||'').toLowerCase()!==GC_ADMIN_EMAIL) return null;
-  return {s,session,u};
-}
-window.ensureStaffCloud=async function(){
-  const a=await gcGetAdmin();
-  if(!a) throw new Error('Admin session is missing. Please login again with '+GC_ADMIN_EMAIL+'.');
-  localStorage.setItem('is_staff_logged','true');
-  localStorage.setItem('gc_staff_supabase_auth','true');
-  localStorage.setItem('active_user_role','staff');
-  localStorage.setItem('active_user_id',a.u.id);
-  localStorage.setItem('active_user_email',a.u.email||GC_ADMIN_EMAIL);
-  return a.s;
-};
-window.handleStaffLogin=async function(e){
-  e?.preventDefault?.();
-  const email=String(document.getElementById('loginEmailInput')?.value||GC_ADMIN_EMAIL).trim().toLowerCase();
-  const password=String(document.getElementById('loginPasswordInput')?.value||'');
-  if(email!==GC_ADMIN_EMAIL){alert('Please use the registered Admin email: '+GC_ADMIN_EMAIL);return false;}
-  if(!password){alert('Enter the Admin password.');return false;}
-  const btn=document.querySelector('#loginModal button[onclick*="gcEmailLogin"],#loginModal button[type="submit"]');
-  const old=btn?.textContent;
-  if(btn){btn.disabled=true;btn.textContent='SIGNING IN…';}
-  try{
-    const s=gcAdminClient();
-    try{await s.auth.signOut({scope:'local'});}catch(_){ }
-    const r=await s.auth.signInWithPassword({email:GC_ADMIN_EMAIL,password});
-    if(r.error) throw r.error;
-    const u=r.data?.user, session=r.data?.session;
-    if(!u||!session) throw new Error('Supabase did not create an Admin session.');
-    if(String(u.id)!==GC_ADMIN_UID) throw new Error('This account is not the authorized GURU CONNECT Admin account.');
-    localStorage.setItem('is_staff_logged','true');
-    localStorage.setItem('gc_staff_supabase_auth','true');
-    localStorage.setItem('active_user_role','staff');
-    localStorage.setItem('active_user_id',u.id);
-    localStorage.setItem('active_user_email',u.email||GC_ADMIN_EMAIL);
-    try{window.closeLoginModal?.();}catch(_){ }
-    try{window.checkStaffSessionState?.();}catch(_){ }
-    try{window.GC_FINAL_ADMIN?.setVisible?.(true);}catch(_){ }
-    try{window.GC_ADMIN_ESCROW?.refresh?.();}catch(_){ }
-    return true;
-  }catch(err){
-    console.error('GURU CONNECT Admin login:',err);
-    alert('Admin Login failed:\n\n'+(err?.message||String(err)));
-    return false;
-  }finally{if(btn){btn.disabled=false;btn.textContent=old||'LOGIN SECURELY';}}
-};
-window.gcAdminAuth={email:GC_ADMIN_EMAIL,uid:GC_ADMIN_UID,get:gcGetAdmin};
-})();
-</script>
-
-
-<script id="gc-admin-password-change">
-(function(){
-  'use strict';
-  const ADMIN_EMAIL='guruconnect.in@gmail.com';
-  const ADMIN_UID='1df7606a-3a96-4116-b022-804b37a3c3dd';
-
-  function el(id){ return document.getElementById(id); }
-  function setStatus(text, ok){
-    const s=el('gcAdminChangePasswordStatus');
-    if(!s) return;
-    s.textContent=text||'';
-    s.className='mt-4 text-xs font-bold '+(ok?'text-emerald-700':'text-red-700');
-  }
-  function client(){
-    if(window.gcSupabase && window.gcSupabase.auth) return window.gcSupabase;
-    if(window.supabase && window.supabase.createClient){
-      try{
-        const c=window.supabase.createClient(
-          'https://hzqqswrnawrfgufbxgay.supabase.co',
-          'sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',
-          {auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}
-        );
-        window.gcSupabase=c;
-        return c;
-      }catch(e){}
-    }
-    return null;
-  }
-
-  async function changeAdminPassword(){
-    const current=el('gcAdminCurrentPassword')?.value||'';
-    const next=el('gcAdminNewPassword')?.value||'';
-    const confirm=el('gcAdminNewPassword2')?.value||'';
-    const btn=el('gcAdminChangePasswordBtn');
-
-    if(!current) return setStatus('Please enter the current Admin password.',false);
-    if(next.length<8) return setStatus('New password must be at least 8 characters.',false);
-    if(next!==confirm) return setStatus('The new passwords do not match.',false);
-    if(next===current) return setStatus('New password must be different from the current password.',false);
-
-    const s=client();
-    if(!s) return setStatus('Supabase cloud connection is unavailable. Please refresh the page and try again.',false);
-
-    if(btn) btn.disabled=true;
-    setStatus('Verifying current Admin password securely…',true);
-
-    try{
-      const sess=await s.auth.getSession();
-      const sessionUser=sess.data?.session?.user;
-      if(!sessionUser) throw new Error('Admin session is not active. Please log in again.');
-      if(String(sessionUser.id)!==ADMIN_UID ||
-         String(sessionUser.email||'').toLowerCase()!==ADMIN_EMAIL){
-        throw new Error('This is not the authorized GURU CONNECT Staff/Admin account.');
-      }
-
-      // Re-authenticate with the current password before allowing the change.
-      const reauth=await s.auth.signInWithPassword({
-        email:ADMIN_EMAIL,
-        password:current
-      });
-      if(reauth.error) throw new Error('Current Admin password is incorrect.');
-
-      const reauthUser=reauth.data?.user;
-      if(!reauthUser || String(reauthUser.id)!==ADMIN_UID){
-        throw new Error('Admin account verification failed.');
-      }
-
-      setStatus('Updating password in Supabase cloud…',true);
-      const updated=await s.auth.updateUser({password:next});
-      if(updated.error) throw updated.error;
-
-      // Keep the authenticated session; only clear password fields.
-      ['gcAdminCurrentPassword','gcAdminNewPassword','gcAdminNewPassword2'].forEach(function(id){
-        const x=el(id); if(x) x.value='';
-      });
-      setStatus('✓ Admin password changed successfully in Supabase cloud. Your new password is now active for STAFF LOGIN.',true);
-    }catch(err){
-      console.error('GURU CONNECT Admin password change failed:',err);
-      setStatus('Admin password change failed: '+(err?.message||err),false);
-    }finally{
-      if(btn) btn.disabled=false;
-    }
-  }
-
-  function bind(){
-    const btn=el('gcAdminChangePasswordBtn');
-    const clear=el('gcAdminChangePasswordClearBtn');
-    if(btn && !btn.dataset.bound){
-      btn.dataset.bound='1';
-      btn.addEventListener('click',changeAdminPassword);
-    }
-    if(clear && !clear.dataset.bound){
-      clear.dataset.bound='1';
-      clear.addEventListener('click',function(){
-        ['gcAdminCurrentPassword','gcAdminNewPassword','gcAdminNewPassword2'].forEach(function(id){
-          const x=el(id); if(x) x.value='';
-        });
-        setStatus('',true);
-      });
-    }
-    ['gcAdminCurrentPassword','gcAdminNewPassword','gcAdminNewPassword2'].forEach(function(id){
-      const x=el(id);
-      if(x && !x.dataset.boundEnter){
-        x.dataset.boundEnter='1';
-        x.addEventListener('keydown',function(e){
-          if(e.key==='Enter'){ e.preventDefault(); changeAdminPassword(); }
-        });
-      }
-    });
-  }
-
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bind,{once:true});
-  else bind();
-  window.addEventListener('load',bind,{once:true});
-  setTimeout(bind,1000);
-  setTimeout(bind,3000);
-})();
-</script>
-
 </body></html>
 
 <script id="gc-v16-3-final-menu-cleanup">
@@ -17571,8 +17352,8 @@ try{window.addEventListener('hashchange',()=>{if(location.hash==='#staff-admin')
 const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
 const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
 const STAFF_EMAIL='guruconnect.in@gmail.com';
-const LEGACY_STAFF_EMAIL='';
-const STAFF_UID='1df7606a-3a96-4116-b022-804b37a3c3dd';
+const LEGACY_STAFF_EMAIL='swami@gmail.com';
+const STAFF_UID='41f35422-e2c7-40d4-a46e-64035e014c70';
 function client(){
   if(!window.supabase?.createClient)return null;
   // IMPORTANT: do not reuse legacy clients with a custom storageKey. Mobile and desktop
