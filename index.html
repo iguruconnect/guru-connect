@@ -7959,11 +7959,10 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
                 const role=String(ident.data?.role||'').toLowerCase();
                 const p=ident.data?.profile||{};
                 if(role!=='student'||String(p.user_id||'')!==String(u.id)) throw new Error('This account is not linked to a registered Student profile.');
-                const r=await s.rpc('gc_post_learning_request',{
+                const r=await s.rpc('gc_post_my_learning_request',{
                     p_course:mode,
                     p_problem:reason,
                     p_stream:'',
-                    p_student_id:p.id,
                     p_subject:subject,
                     p_topic:topic
                 });
@@ -16860,7 +16859,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
 <script id="gc-v16-otp-final">
 (function(){
   'use strict';
-  const S=window.gcSupabase || (window.supabase && window.supabase.createClient ? window.supabase.createClient('https://hzqqswrnawrfgufbxgay.supabase.co','sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}) : null);
+  const S=window.supabase && window.supabase.createClient ? window.supabase.createClient('https://hzqqswrnawrfgufbxgay.supabase.co','sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'guru-connect-registration-otp-v12'}}) : null;
   if(!S) return;
   window.gcSupabase=S;
   const esc2=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));

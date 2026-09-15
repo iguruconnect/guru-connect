@@ -72,7 +72,7 @@ document.addEventListener('submit',async e=>{
  try{
   const s=S(),q=await s.auth.getSession(),u=q.data?.session?.user;if(!u)throw new Error('Please login as a Student first.');
   const id=await s.rpc('gc_get_my_member_profile');if(id.error)throw id.error;const p=id.data?.profile||{};if(String(id.data?.role||'').toLowerCase()!=='student'||!p.id)throw new Error('Registered Student login required.');
-  const r=await s.rpc('gc_post_learning_request',{p_course:document.getElementById('gc168Course').value.trim(),p_problem:document.getElementById('gc168Reason').value.trim(),p_stream:document.getElementById('gc168Stream').value.trim(),p_student_id:p.id,p_subject:document.getElementById('gc168Subject').value.trim(),p_topic:document.getElementById('gc168Topic').value.trim()});
+  const r=await s.rpc('gc_post_my_learning_request',{p_course:document.getElementById('gc168Course').value.trim(),p_problem:document.getElementById('gc168Reason').value.trim(),p_stream:document.getElementById('gc168Stream').value.trim(),p_subject:document.getElementById('gc168Subject').value.trim(),p_topic:document.getElementById('gc168Topic').value.trim()});
   if(r.error)throw r.error;form.reset();st.textContent='✓ Posted successfully. 100 GURU COINS are now held with Admin.';alert('Learning Requirement posted successfully. It is now visible on the Learning Request board.');
   setTimeout(()=>location.reload(),250);
  }catch(e){console.error(e);st.textContent='Posting failed: '+(e.message||e);alert('Learning Requirement could not be posted:\n\n'+(e.message||e))}finally{btn.disabled=false;btn.textContent='POST LEARNING REQUIREMENT — 100 COINS'}
