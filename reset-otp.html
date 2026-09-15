@@ -52,38 +52,13 @@
 'use strict';
 const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
 const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
-const STORAGE_KEY='guru-connect-password-recovery-v8';
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:STORAGE_KEY}});
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const $=id=>document.getElementById(id),msg=$('msg');
 function show(t,ok=false){msg.textContent=t;msg.className='msg show '+(ok?'ok':'err')}
 function emailFromUrl(){try{return new URLSearchParams(location.search).get('email')||''}catch(_){return ''}}
 $('email').value=emailFromUrl().trim().toLowerCase();
 
-// If the email template uses the standard Supabase recovery link, accept that link too.
-// The preferred path remains the OTP shown with {{ .Token }} in the recovery email.
-async function consumeRecoveryUrl(){
-  try{
-    const p=new URLSearchParams(location.search);
-    const tokenHash=p.get('token_hash');
-    if(tokenHash){
-      const email=$('email').value.trim().toLowerCase();
-      const r=await sb.auth.verifyOtp({token_hash:tokenHash,type:'recovery'});
-      if(r.error)throw r.error;
-      if(r.data?.session){ $('otpStage').classList.add('hidden'); $('passwordStage').classList.remove('hidden'); show('✓ Secure recovery link verified. Create your new password below.',true); return true; }
-    }
-    const hash=location.hash.startsWith('#')?location.hash.slice(1):'';
-    if(hash){
-      const hp=new URLSearchParams(hash);
-      if(hp.get('type')==='recovery' && hp.get('access_token')){
-        // detectSessionInUrl:true lets Supabase establish the recovery session.
-        const q=await sb.auth.getSession();
-        if(q.data?.session){ $('otpStage').classList.add('hidden'); $('passwordStage').classList.remove('hidden'); show('✓ Secure recovery link verified. Create your new password below.',true); return true; }
-      }
-    }
-  }catch(e){ show('Recovery link could not be verified: '+(e.message||e)+'. You can still enter the newest OTP below.',false); }
-  return false;
-}
-consumeRecoveryUrl();
+
 
 $('copy').onclick=async()=>{
   const v=$('otp').value.trim();
@@ -104,8 +79,6 @@ async function verify(){
   if(!/^\d{8}$/.test(token))return show('Enter the 8-digit OTP from the newest GURU CONNECT recovery email. <b>Do NOT put this OTP in the password field.</b>');
   btn.disabled=true;btn.textContent='VERIFYING…';
   try{
-    // No URL token is used here. This is the deliberate OTP path recommended
-    // by Supabase when email link prefetching can consume single-use links.
     const {data,error}=await sb.auth.verifyOtp({email,token,type:'recovery'});
     if(error)throw error;
     const session=data?.session;
