@@ -6029,7 +6029,7 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
         // Put the supplied blue verified-tick image in the same GitHub
         // folder as index.html using this filename, or replace this
         // value with its raw GitHub URL.
-        const VERIFIED_TICK_LOGO_URL = "assets/gc-inline-027f94a42b18.png";
+        const VERIFIED_TICK_LOGO_URL = "assets/green-verified-tick.png";
 
         function escapeHtml(value) {
             return String(value ?? "")
@@ -13904,8 +13904,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
      const subject=val(t.subject,t.subjects,'Not specified'),rate=val(t.price,t.rate,t.hourlyRate,'—'),exp=val(t.experience,t.experienceYears,'—');
      const rating=val(t.rating,'4.5'),reviews=val(t.reviewCount,t.reviewsCount,'0'),students=val(t.students,t.studentsTaught,'—'),mode=val(t.mode,t.teachingMode,'Online / Offline'),loc=val(t.location,'—'),langs=val(t.languages,'Hindi, English'),avail=val(t.availability,'Mon - Sun');
      const card=document.createElement('article');card.className='gc-target-card gc-target-tutor';card.dataset.tutorId=id;
-     card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✓ VERIFIED TUTOR':'TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
-       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified&&tick()?'<span class="gc-target-verified"><img src="'+esc(tick())+'" alt="Verified"></span>':'')+'</h3><div class="gc-target-subtitle">'+esc(q)+' · '+esc(subject)+'</div></div></div>'+
+     card.innerHTML='<div class="gc-target-top"><span class="gc-target-role '+(verified?'gc-verified-role':'gc-unverified-role')+'">'+(verified?'✓ VERIFIED TUTOR':'TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
+       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified?'<span class="gc-target-verified" aria-label="Verified Tutor" title="Verified Tutor"><i class="fa-solid fa-check"></i></span>':'')+'</h3><div class="gc-target-subtitle">'+esc(q)+' · '+esc(subject)+'</div></div></div>'+
        '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🪙','Coins','0')+box('◷','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
        '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-tutor-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
      c.appendChild(card);
@@ -13959,6 +13959,59 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 .gc-target-card .gc-target-wifi svg circle{fill:#fff!important;}
 /* Keep role text clear of the top-right icon cluster. */
 .gc-target-card .gc-target-role{max-width:62%!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+</style>
+<style id="gc-verified-tutor-green-final-2026">
+/* FINAL VERIFIED TUTOR FIX — green role + clean green tick beside the name.
+   No external tick image is used, so the badge cannot show a broken image/icon. */
+.gc-target-card.gc-target-tutor .gc-target-role.gc-verified-role{
+  background:#16a34a!important;
+  color:#fff!important;
+  border-color:#16a34a!important;
+  box-shadow:0 4px 10px rgba(22,163,74,.20)!important;
+}
+.gc-target-card.gc-target-tutor .gc-target-role.gc-unverified-role{
+  background:#1d4ed8!important;
+  color:#fff!important;
+  border-color:#1d4ed8!important;
+}
+.gc-target-card.gc-target-tutor .gc-target-name{
+  display:block!important;
+}
+.gc-target-card.gc-target-tutor .gc-target-name-text{
+  display:inline!important;
+}
+.gc-target-card.gc-target-tutor .gc-target-verified{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  width:22px!important;
+  height:22px!important;
+  min-width:22px!important;
+  margin-left:4px!important;
+  vertical-align:middle!important;
+  position:relative!important;
+  top:-1px!important;
+  border-radius:50%!important;
+  background:#16a34a!important;
+  border:2px solid #fff!important;
+  color:#fff!important;
+  box-shadow:0 2px 6px rgba(22,163,74,.28)!important;
+  line-height:1!important;
+  font-size:12px!important;
+}
+.gc-target-card.gc-target-tutor .gc-target-verified i{
+  display:block!important;
+  color:#fff!important;
+  font-size:11px!important;
+  line-height:1!important;
+}
+@media(max-width:700px){
+  .gc-target-card.gc-target-tutor .gc-target-verified{
+    width:20px!important;height:20px!important;min-width:20px!important;
+    margin-left:3px!important;font-size:10px!important;
+  }
+  .gc-target-card.gc-target-tutor .gc-target-verified i{font-size:9px!important}
+}
 </style>
 <style id="gc-final-wifi-blue-menu-update-2026">
 /* Final requested Wi-Fi: blue, 5-beam, right aligned */
@@ -18125,3 +18178,78 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
 </script>
 </body>
 </html>
+
+<style id="gc-verified-tutor-green-absolute-final-2026">
+/* Absolute final override: verified tutor badge + name tick are GREEN. */
+.gc-target-card.gc-target-tutor .gc-target-role.gc-verified-role{
+  background:#16a34a!important;color:#fff!important;border-color:#16a34a!important;
+}
+.gc-target-card.gc-target-tutor .gc-target-role.gc-unverified-role{
+  background:#1d4ed8!important;color:#fff!important;border-color:#1d4ed8!important;
+}
+.gc-target-card.gc-target-tutor .gc-target-verified{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  width:22px!important;height:22px!important;min-width:22px!important;
+  margin-left:4px!important;vertical-align:middle!important;position:relative!important;top:-1px!important;
+  border-radius:50%!important;background:#16a34a!important;border:2px solid #fff!important;
+  color:#fff!important;box-shadow:0 2px 6px rgba(22,163,74,.28)!important;
+  font-size:11px!important;line-height:1!important;
+}
+.gc-target-card.gc-target-tutor .gc-target-verified i{display:block!important;color:#fff!important;font-size:10px!important;line-height:1!important}
+@media(max-width:700px){
+ .gc-target-card.gc-target-tutor .gc-target-verified{width:20px!important;height:20px!important;min-width:20px!important;margin-left:3px!important}
+ .gc-target-card.gc-target-tutor .gc-target-verified i{font-size:9px!important}
+}
+</style>
+
+
+<style id="gc-green-verified-tick-final">
+/* FINAL: exact user-supplied green verification seal + larger eye-catching size. */
+.gc-profile-card.gc-tutor-card .gc-name-patch{
+  gap:2px!important;
+}
+.gc-profile-card.gc-tutor-card .gc-blue-tick{
+  width:38px!important;
+  height:38px!important;
+  min-width:38px!important;
+  min-height:38px!important;
+  max-width:38px!important;
+  max-height:38px!important;
+  flex:0 0 38px!important;
+  object-fit:contain!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  vertical-align:middle!important;
+  filter:drop-shadow(0 2px 3px rgba(0,120,45,.22))!important;
+}
+/* Verified tutor label itself is green, while ordinary TUTOR stays blue. */
+.gc-profile-card.gc-tutor-card.gc-verified-card .gc-role-pill{
+  background:#16a34a!important;
+  color:#fff!important;
+  border:1px solid #0b8f3d!important;
+  box-shadow:0 3px 9px rgba(22,163,74,.28)!important;
+}
+.gc-profile-card.gc-tutor-card.gc-verified-card .gc-role-pill::after{
+  content:"✓  VERIFIED TUTOR"!important;
+  color:#fff!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  letter-spacing:.02em!important;
+  text-transform:uppercase!important;
+}
+@media(max-width:900px){
+  .gc-profile-card.gc-tutor-card .gc-blue-tick{
+    width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;
+    max-width:36px!important;max-height:36px!important;flex-basis:36px!important;
+  }
+}
+@media(max-width:640px){
+  .gc-profile-card.gc-tutor-card .gc-name-patch{gap:2px!important;}
+  .gc-profile-card.gc-tutor-card .gc-blue-tick{
+    width:33px!important;height:33px!important;min-width:33px!important;min-height:33px!important;
+    max-width:33px!important;max-height:33px!important;flex-basis:33px!important;
+  }
+  .gc-profile-card.gc-tutor-card.gc-verified-card .gc-role-pill::after{font-size:9px!important;}
+}
+</style>
+
