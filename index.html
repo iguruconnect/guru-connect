@@ -17900,7 +17900,7 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
     if(!uid)return alert(label+' cannot be deleted because its Supabase Auth user ID is missing. Refresh Admin data and try again.');
     if(!confirm('DELETE this '+label+' account permanently?\n\nThis removes the Supabase Auth account and its linked profile data. The user will no longer be able to login.\n\nContinue?'))return;
     try{
-      const s=S(); if(!s)throw new Error('Supabase is not connected.');
+      const {s}=await staffSession();
       const sess=await s.auth.getSession();
       const token=sess.data?.session?.access_token;
       if(!token)throw new Error('Staff/Admin Supabase session is missing. Please login again.');
