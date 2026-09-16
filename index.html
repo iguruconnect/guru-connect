@@ -17911,11 +17911,11 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
       // current auth/apikey headers, avoiding browser CORS/base-URL failures.
       let result;
       try{
-        result=await s.functions.invoke('admin-delete-user',{
+        result=await s.functions.invoke('ADMIN-DELETE-USER',{
           body:{user_id:uid,role}
         });
       }catch(invokeErr){
-        throw new Error('The admin-delete-user Edge Function could not be reached. Make sure the function is DEPLOYED in this same Supabase project. Details: '+(invokeErr?.message||invokeErr));
+        throw new Error('The ADMIN-DELETE-USER Edge Function could not be reached. Make sure the function is DEPLOYED in this same Supabase project. Details: '+(invokeErr?.message||invokeErr));
       }
       const data=result?.data;
       const fnError=result?.error;
@@ -17934,7 +17934,7 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
       alert(label+' account deleted successfully.');
     }catch(e){
       console.error('Admin account deletion failed:',e);
-      alert(label+' deletion failed:\n\n'+(e.message||e)+'\n\nIf this says the Edge Function could not be reached, deploy admin-delete-user/index.ts in Supabase Edge Functions and try again.');
+      alert(label+' deletion failed:\n\n'+(e.message||e)+'\n\nIf this says the Edge Function could not be reached, deploy ADMIN-DELETE-USER/index.ts in Supabase Edge Functions and try again.');
     }
   }
 
