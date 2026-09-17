@@ -14325,7 +14325,31 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       paidStatus:row.paid_status||'PENDING',isCloud:true
     });
 
-    // Contact/profile/Auth synchronization is performed inside the SECURITY DEFINER RPC.
+    if(t.user_id){
+      try{
+        const p=await sb().from('profiles').update({
+          full_name:clean(t.name),email:clean(t.email)||null,
+          phone:clean(t.phone)||null,photo_url:clean(t.photoData||t.photo||'')||null
+        }).eq('id',t.user_id);
+        if(p.error) console.warn('Tutor profiles contact sync:',p.error);
+      }catch(e){console.warn('Tutor profiles contact sync:',e);}
+
+      // CRITICAL: keep Supabase Auth's login email synchronized with the
+      // email edited by Staff. Forgot Password sends to auth.users.email,
+      // not merely to public.profiles.email.
+      const newEmail=clean(t.email).toLowerCase();
+      if(newEmail && /^\S+@\S+\.\S+$/.test(newEmail)){
+        try{
+          const ar=await sb().rpc('gc_admin_update_auth_email',{
+            p_user_id:String(t.user_id),
+            p_email:newEmail
+          });
+          if(ar.error) throw ar.error;
+        }catch(e){
+          throw new Error('Tutor profile was saved, but the Supabase Auth email could not be synchronized. Run the latest supplied SQL migration, then save this tutor again. Details: '+(e?.message||e));
+        }
+      }
+    }
     clearCaches();
     return {ok:true,row};
   };
@@ -15424,7 +15448,7 @@ window.addEventListener('load',()=>setTimeout(mount,900));
     throw new Error('Staff Supabase session is required. Please login again.');
   }
   window.GC_ADMIN_CLOUD={
-    updateTutor:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_staff_save_tutor_profile',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;},
+    updateTutor:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_admin_update_tutor_profile',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;},
     updateStudent:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_admin_update_student_profile',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;}
   };
 })();
@@ -17850,23 +17874,20 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
 
   async function updateTutorCloud(t,patch){
     if(!t?.user_id) throw new Error('Tutor is missing its Supabase user ID.');
-    const {s}=await staffSession();
-    // Use the dedicated SECURITY DEFINER admin RPC. The normal table UPDATE
-    // path is protected by member RLS and can reject a valid Staff session
-    // with "Staff Admin authorization required".
-    const r=await s.rpc('gc_staff_save_tutor_profile',{
-      p_user_id:String(t.user_id),
-      p_data:patch
-    });
-    if(r.error){
-      const msg=String(r.error.message||r.error);
-      if(/authorization|required|not authorized|permission|row-level security/i.test(msg)){
-        throw new Error('Staff/Admin profile-save authorization failed. Please log in again with the registered Staff/Admin account.');
+    if(window.GC_ADMIN_CLOUD?.updateTutor){
+      const r=await window.GC_ADMIN_CLOUD.updateTutor(t.user_id,patch);
+      if(clean(patch.email).toLowerCase() && /^\S+@\S+\.\S+$/.test(clean(patch.email))){
+        try{
+          const {s}=await staffSession();
+          const ar=await s.rpc('gc_admin_update_auth_email',{p_user_id:String(t.user_id),p_email:clean(patch.email).toLowerCase()});
+          if(ar.error) throw ar.error;
+        }catch(e){
+          throw new Error('Tutor profile was updated, but Auth email synchronization failed: '+(e.message||e));
+        }
       }
-      throw r.error;
+      return r;
     }
-    if(!r.data) throw new Error('Supabase did not return the saved Tutor profile.');
-    return r.data;
+    throw new Error('Admin cloud profile editor is not available.');
   }
 
   async function updateStudentCloud(s,patch){
@@ -17991,12 +18012,12 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
   window.gcSupabaseAdminUpdateTutor=async function(t){
     if(!t?.isCloud)throw new Error('This is not a registered cloud Tutor.');
     const patch={
-      name:clean(t.name),email:clean(t.email),phone:clean(t.phone),subject:clean(t.subject),stream:clean(t.stream),
+      name:clean(t.name),subject:clean(t.subject),stream:clean(t.stream),
       experience:clean(t.experience),qualification:clean(t.qualification),
       college:clean(t.college||t.teachingCollege),
       teaching_college:clean(t.teachingCollege||t.college),
       address:clean(t.address),price:clean(t.price),about_me:clean(t.aboutMe),
-      photo_url:clean(t.photoData||t.photo||''),achievement_photos:Array.isArray(t.achievements)?t.achievements.slice(0,3):[],rating:t._manualRating!=null?Number(t._manualRating):(t.rating!=null?Number(t.rating):null),
+      photo_url:clean(t.photoData||t.photo||''),rating:t._manualRating!=null?Number(t._manualRating):(t.rating!=null?Number(t.rating):null),
       review_count:Number(t.reviewCount||t.reviewsCount||0)||0,
       students_taught:clean(t.students||t.studentsTaught),teaching_mode:clean(t.mode||t.teachingMode),
       location:clean(t.location),languages:clean(t.languages),availability:clean(t.availability),
