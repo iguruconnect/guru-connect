@@ -5301,7 +5301,7 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 <h2 class="text-2xl sm:text-3xl font-black text-brand-dark mt-3 tracking-tight">Student Registration</h2>
 <p class="text-slate-600 text-xs sm:text-sm mt-1">Email verification is <strong class="text-brand-blue">MANDATORY</strong>. After you submit, Supabase will send a verification link to your email. Your registration is completed only after you click that link.</p>
 </div>
-<form class="space-y-4 sm:space-y-5" id="studentRegForm" onsubmit="handleStudentFormSubmit(event)">
+<form class="space-y-4 sm:space-y-5" id="studentRegForm" novalidate onsubmit="handleStudentFormSubmit(event)">
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Student Full Name *</label>
 <input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_name" placeholder="Enter your full name" required="" type="text">
@@ -5318,6 +5318,14 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">WhatsApp Number (Login ID) *</label>
 <input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_phone" placeholder="9876543210" required="" type="tel">
+</input></div>
+<div>
+<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Create Password *</label>
+<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_password" name="password" placeholder="Minimum 8 characters" minlength="8" autocomplete="new-password" required type="password">
+</input></div>
+<div>
+<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Confirm Password *</label>
+<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_password_confirm" name="password_confirm" placeholder="Re-enter password" minlength="8" autocomplete="new-password" required type="password">
 </input></div>
 </div>
 <div class="gc-email-verification-required-box"><div class="gc-email-verification-icon">✓</div><div><strong>EMAIL VERIFICATION IS COMPULSORY</strong><span>After registration, Supabase will send a 6-digit verification OTP to this email. Enter that OTP to activate your account.</span></div></div>
@@ -5551,11 +5559,11 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Division *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_division" placeholder="e.g. A" type="text"/>
+<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_division" placeholder="e.g. A" required="" type="text"/>
 </div>
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Roll Number *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_roll" placeholder="Enter roll number" type="text"/>
+<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_roll" placeholder="Enter roll number" required="" type="text"/>
 </div>
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Registration Date</label>
@@ -5606,8 +5614,8 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 <input accept="image/*,application/pdf" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100" id="stu_aadhaar" type="file"/>
 </div>
 </div>
-<button class="w-full bg-slate-300 text-slate-600 font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2 cursor-not-allowed" id="stuSubmitBtn" type="submit">
-                            CREATE STUDENT ACCOUNT & VERIFY EMAIL
+<button class="w-full bg-slate-300 text-slate-600 font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2 cursor-not-allowed" disabled="" id="stuSubmitBtn" type="submit">
+                            PLEASE VERIFY EMAIL FIRST
                         </button>
 </form>
 </div>
@@ -5654,7 +5662,7 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 </div>
 </div>
 <iframe id="hidden_iframe" name="hidden_iframe" style="display:none;"></iframe>
-<form action="https://script.google.com/macros/s/AKfycbzFDeqKdg8FYoiClmXLWSNCvQIoVxWvq_0HZcCLCzYLrhuxpwyo76WkAVUY8D6vF-iA/exec" class="space-y-4" id="tutorRegForm" method="POST" onsubmit="handleTutorFormSubmit(event)" target="hidden_iframe">
+<form action="https://script.google.com/macros/s/AKfycbzFDeqKdg8FYoiClmXLWSNCvQIoVxWvq_0HZcCLCzYLrhuxpwyo76WkAVUY8D6vF-iA/exec" class="space-y-4" id="tutorRegForm" method="POST" novalidate onsubmit="handleTutorFormSubmit(event)" target="hidden_iframe">
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Full Name *</label>
@@ -5677,6 +5685,14 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">WhatsApp Number (Login ID) *</label>
 <input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_phone" name="phone" placeholder="9876543210" required="" type="tel"/>
+</div>
+<div>
+<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Create Password *</label>
+<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_password" name="password" placeholder="Minimum 8 characters" minlength="8" autocomplete="new-password" required type="password"/>
+</div>
+<div>
+<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Confirm Password *</label>
+<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_password_confirm" name="password_confirm" placeholder="Re-enter password" minlength="8" autocomplete="new-password" required type="password"/>
 </div>
 </div>
 <div class="gc-email-verification-required-box gc-email-verification-required-orange"><div class="gc-email-verification-icon">✓</div><div><strong>EMAIL VERIFICATION IS COMPULSORY</strong><span>After registration, Supabase will send a 6-digit verification OTP to this email. Enter that OTP to activate your account.</span></div></div>
@@ -5754,10 +5770,10 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 </div>
 <div class="border border-brand-nagpurOrange bg-orange-50/50 p-3 sm:p-4 rounded-2xl">
 <label class="block text-[10px] sm:text-xs font-bold text-brand-nagpurOrange uppercase tracking-wider mb-1.5">Enter UTR / Transaction Reference Number *</label>
-<input class="w-full border border-brand-nagpurOrange rounded-xl p-3 text-xs sm:text-sm font-mono font-bold bg-white" id="txnIdInput" name="utr" placeholder="Enter valid UTR / Transaction Reference" required="" type="text"/>
+<input class="w-full border border-brand-nagpurOrange rounded-xl p-3 text-xs sm:text-sm font-mono font-bold bg-white" id="txnIdInput" name="utr" placeholder="Enter valid UTR / Transaction Reference" type="text"/>
 </div>
-<button class="w-full bg-slate-300 text-slate-600 font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2 cursor-not-allowed" id="tutorSubmitBtn" type="submit">
-                            CREATE TUTOR ACCOUNT & VERIFY EMAIL
+<button class="w-full bg-slate-300 text-slate-600 font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2 cursor-not-allowed" disabled="" id="tutorSubmitBtn" type="submit">
+                            PLEASE VERIFY EMAIL FIRST
                         </button>
 </form>
 </div>
@@ -11244,9 +11260,8 @@ body {
     const subject = typeof validSubjectForStream === 'function'
       ? validSubjectForStream(stream, requestedSubject, Date.now())
       : requestedSubject;
-    let password = document.getElementById('stu_password')?.value || '';
+    const password = document.getElementById('stu_password')?.value || '';
     if (!email || !/^\S+@\S+\.\S+$/.test(email)) { alert('Enter a valid email address.'); return; }
-    if (!password) password = 'GC-' + crypto.getRandomValues(new Uint32Array(4)).join('-') + '!a';
     if (password.length < 8) { alert('Password must be at least 8 characters.'); return; }
 
     const photoFile = document.getElementById('stu_photo')?.files?.[0];
@@ -11335,9 +11350,8 @@ body {
       ? inferTutorStream(requestedSubject, Date.now()) : '';
     const subject = typeof validSubjectForStream === 'function'
       ? validSubjectForStream(tutorStream, requestedSubject, Date.now()) : requestedSubject;
-    let password = document.getElementById('t_password')?.value || '';
+    const password = document.getElementById('t_password')?.value || '';
     if (!email || !/^\S+@\S+\.\S+$/.test(email)) { alert('Enter a valid email address.'); return; }
-    if (!password) password = 'GC-' + crypto.getRandomValues(new Uint32Array(4)).join('-') + '!a';
     if (password.length < 8) { alert('Password must be at least 8 characters.'); return; }
     const price = document.getElementById('t_price').value.trim();
     const exp = document.getElementById('t_exp').value.trim();
@@ -17178,8 +17192,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
   window.gcCreateEmailAccount=async function(email,password,role,profile){
     email=String(email||'').trim().toLowerCase();
     if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Enter a valid email address.');
-    if(!password) password='GC-' + crypto.getRandomValues(new Uint32Array(4)).join('-') + '!a';
-    if(password.length<8) throw new Error('Password must be at least 8 characters.');
+    if(!password||password.length<8) throw new Error('Password must be at least 8 characters.');
     const r=await S.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname+'?email_verified=1'}});
     if(r.error) throw r.error;
     const user=r.data?.user; if(!user) throw new Error('Supabase did not return a user account.');
@@ -17196,8 +17209,6 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
     document.querySelectorAll('#studentFormCard button[onclick*="sendEmailOtp"],#tutorFormCard button[onclick*="sendEmailOtp"],#studentFormCard button[onclick*="verifyEmailOtp"],#tutorFormCard button[onclick*="verifyEmailOtp"],#stuOtpBox,#tutorOtpBox').forEach(el=>{el.style.display='none';el.setAttribute('aria-hidden','true')});
   }
   hideLegacyEmailJs(); setTimeout(hideLegacyEmailJs,500); setTimeout(hideLegacyEmailJs,1500);
-  // Final registration-flow guard: the form submits directly to Supabase Auth; legacy OTP UI is display-only and must never disable submit.
-  ['stuSubmitBtn','tutorSubmitBtn'].forEach(id=>{const b=document.getElementById(id);if(b){b.disabled=false;b.removeAttribute('disabled');}});
 })();
 </script>
 <script id="gc-home-live-lrr-script">
@@ -18300,6 +18311,66 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});
   else boot();
   window.addEventListener('load',()=>setTimeout(boot,300));
+})();
+</script>
+<script id="gc-final-registration-submit-fix">
+(function(){
+  'use strict';
+  const clean=v=>String(v??'').trim();
+  const emailOk=v=>/^\S+@\S+\.\S+$/.test(clean(v));
+  function field(id){return document.getElementById(id)}
+  function fail(el,msg){alert(msg); if(el){el.focus(); el.scrollIntoView({behavior:'smooth',block:'center'});} return false;}
+  function validate(role){
+    const ids=role==='tutor'
+      ? ['t_name','t_subject','t_email','t_phone','t_price','t_exp','t_qualification','t_address','txnIdInput']
+      : ['stu_name','stu_email','stu_phone','stu_std','stu_stream','stu_subject'];
+    for(const id of ids){const el=field(id); if(el && !clean(el.value)) return fail(el,'Please complete the required field: '+(el.previousElementSibling?.textContent||id).replace('*','').trim());}
+    const email=field(role==='tutor'?'t_email':'stu_email');
+    if(!emailOk(email?.value)) return fail(email,'Please enter a valid email address.');
+    const pass=field(role==='tutor'?'t_password':'stu_password');
+    const confirm=field(role==='tutor'?'t_password_confirm':'stu_password_confirm');
+    if(!pass || !confirm) return fail(null,'Registration security fields are missing. Please refresh the page and try again.');
+    if(clean(pass.value).length<8) return fail(pass,'Password must be at least 8 characters.');
+    if(pass.value!==confirm.value) return fail(confirm,'Passwords do not match.');
+    if(role==='tutor'){
+      const utr=field('txnIdInput');
+      if(!clean(utr?.value)) return fail(utr,'Please enter your UTR / Transaction Reference Number.');
+    }
+    return true;
+  }
+  function supabaseReady(){
+    const s=window.gcSupabase||window.supabaseClient||window.GC_SUPABASE;
+    if(!s || !s.auth || typeof s.auth.signUp!=='function'){
+      alert('GURU CONNECT secure registration could not start. Supabase public/publishable key or the Supabase client is not loading. Please refresh the page.');
+      return false;
+    }
+    return true;
+  }
+  const oldT=window.handleTutorFormSubmit;
+  if(typeof oldT==='function' && !oldT.__finalWrapped){
+    const wrappedT=async function(e){
+      e.preventDefault();
+      if(!validate('tutor')||!supabaseReady()) return false;
+      const btn=field('tutorSubmitBtn'); if(btn){btn.disabled=true;btn.dataset.gcBusy='1';btn.textContent='SUBMITTING APPLICATION…';}
+      try{return await oldT(e);}catch(err){console.error('Tutor registration error:',err);alert('Tutor registration failed: '+(err?.message||String(err)));}finally{if(btn&&btn.dataset.gcBusy==='1'){btn.disabled=false;btn.removeAttribute('aria-busy');btn.textContent='SUBMIT TUTOR APPLICATION';delete btn.dataset.gcBusy;}}
+    }; wrappedT.__finalWrapped=true; window.handleTutorFormSubmit=wrappedT;
+  }
+  const oldS=window.handleStudentFormSubmit;
+  if(typeof oldS==='function' && !oldS.__finalWrapped){
+    const wrappedS=async function(e){
+      e.preventDefault();
+      if(!validate('student')||!supabaseReady()) return false;
+      const btn=field('stuSubmitBtn'); if(btn){btn.disabled=true;btn.dataset.gcBusy='1';btn.textContent='REGISTERING…';}
+      try{return await oldS(e);}catch(err){console.error('Student registration error:',err);alert('Student registration failed: '+(err?.message||String(err)));}finally{if(btn&&btn.dataset.gcBusy==='1'){btn.disabled=false;btn.removeAttribute('aria-busy');btn.textContent='REGISTER STUDENT PROFILE';delete btn.dataset.gcBusy;}}
+    }; wrappedS.__finalWrapped=true; window.handleStudentFormSubmit=wrappedS;
+  }
+  function boot(){
+    ['tutorRegForm','studentRegForm'].forEach(id=>{const f=field(id);if(f)f.noValidate=true;});
+    // Confirm the same public key is being used by the live client; never expose service_role keys.
+    const key='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+    window.GC_PUBLIC_KEY_STATUS=(window.gcSupabase && key.startsWith('sb_publishable_'))?'configured':'not-configured';
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
 })();
 </script>
 </body>
