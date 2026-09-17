@@ -115,7 +115,7 @@ async function init(){
   const ident=await safe(sb.rpc('gc_get_my_member_profile'));
   if(ident.error)throw ident.error;
   role=String(ident.data?.role||'').toLowerCase();profile=ident.data?.profile||null;
-  if(!profile||!['student','tutor'].includes(role))throw new Error('Your Student/Tutor profile is not linked to this Supabase Auth account. Please run the latest identity migration SQL once in Supabase.');
+  if(!profile||!['student','tutor'].includes(role))throw new Error('Your Student/Tutor profile is not linked to this Supabase Auth account. Please run SUPABASE_IDENTITY_MIGRATION_V15_2.sql once in Supabase SQL Editor.');
   if(String(profile.user_id||'')!==String(me.id))throw new Error('Member identity mismatch. Please contact Admin.');
   localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_profile_id',profile.id);localStorage.setItem('active_user_id',me.id);localStorage.setItem('active_user_name',profile.name||profile.full_name||me.email?.split('@')[0]||'User');
   $('who').textContent=(role==='student'?'STUDENT':'TUTOR')+' • '+(profile.name||profile.full_name||me.email||'');
