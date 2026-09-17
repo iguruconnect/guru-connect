@@ -5551,11 +5551,11 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Division *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_division" placeholder="e.g. A" required="" type="text"/>
+<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_division" placeholder="e.g. A" type="text"/>
 </div>
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Roll Number *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_roll" placeholder="Enter roll number" required="" type="text"/>
+<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_roll" placeholder="Enter roll number" type="text"/>
 </div>
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Registration Date</label>
@@ -5714,7 +5714,7 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 </div>
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">About Me / Tutor Showcase *</label>
-<textarea class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_about" name="about_me" placeholder="Tell students/coaching classes about your teaching ability, strengths, experience, methodology and what makes you a good tutor." required="" rows="4"></textarea>
+<textarea class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_about" name="about_me" placeholder="Tell students/coaching classes about your teaching ability, strengths, experience, methodology and what makes you a good tutor." rows="4"></textarea>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 <div>
@@ -18297,6 +18297,183 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
   window.addEventListener('load',()=>setTimeout(boot,300));
 })();
 </script>
+
+<script id="gc-final-registration-fix">
+(function(){
+  'use strict';
+
+  function gv(id){ return document.getElementById(id); }
+  function val(id){ const x=gv(id); return x ? String(x.value||'').trim() : ''; }
+  function validEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+
+  async function readPhoto(id){
+    const f=gv(id)?.files?.[0];
+    if(!f) return '';
+    try { return typeof readImageDataUrl==='function' ? await readImageDataUrl(f) : ''; }
+    catch(e){ console.warn('Photo read failed:',e); return ''; }
+  }
+
+  async function finalStudentSubmit(e){
+    e.preventDefault();
+    const name=val('stu_name'), email=val('stu_email'), phone=val('stu_phone');
+    const standard=val('stu_std'), stream=val('stu_stream');
+    const course=val('stu_course') || ((standard.includes('11')?'XI':'XII')+' '+stream.toUpperCase());
+    const requestedSubject=val('stu_subject');
+    const subject=typeof validSubjectForStream==='function'
+      ? validSubjectForStream(stream,requestedSubject,Date.now()) : requestedSubject;
+    const password=gv('stu_password')?.value || '';
+
+    if(!name){ alert('Please enter your full name.'); gv('stu_name')?.focus(); return false; }
+    if(!validEmail(email)){ alert('Enter a valid email address.'); gv('stu_email')?.focus(); return false; }
+    if(!phone){ alert('Please enter your phone number.'); gv('stu_phone')?.focus(); return false; }
+    if(!standard || !stream || !course){ alert('Please select Standard, Stream and Course.'); return false; }
+    if(!requestedSubject){ alert('Please enter your subject / learning requirement.'); gv('stu_subject')?.focus(); return false; }
+    if(password.length<8){ alert('Password must be at least 8 characters.'); gv('stu_password')?.focus(); return false; }
+
+    const helplineChoice=val('stuHelplineRegister') || 'no';
+    const profile={
+      name,email,phone,std:standard,standard,stream,course,
+      college:val('stu_college'), division:val('stu_division'),
+      rollNumber:val('stu_roll'), subject, learningRequirement:val('stu_learning_requirement'),
+      aboutMe:val('stu_about_me'), photoData:await readPhoto('stu_photo'),
+      achievementPhotos:[], registrationDate:new Date().toISOString(),
+      helpline:{registered:false},
+      privacy:{showContactToConnectedTutors:true,showDetailsToConnectedTutors:true},
+      isDummy:false,registrationStatus:'registered',registrationRole:'student'
+    };
+
+    for(const i of [1,2,3]){
+      const p=await readPhoto('stu_achievement_'+i);
+      if(p) profile.achievementPhotos.push(p);
+    }
+
+    if(helplineChoice==='yes'){
+      const plan=val('stuHelplinePlan'), hCourse=val('stuHelplineCourse'),
+            hSubject=val('stuHelplineSubject');
+      const count=parseInt(val('stuHelplineSubjectCount')||'0',10);
+      if(!plan || !hCourse || !hSubject || !count){
+        alert('Please complete the Helpline Plan, Course, Subject and Number of Subjects fields.');
+        return false;
+      }
+      const pp=(typeof STUDENT_HELPLINE_PLAN_PRICES!=='undefined'
+        ? (STUDENT_HELPLINE_PLAN_PRICES[plan]??0) : 0);
+      profile.helpline={registered:true,plan,course:hCourse,subject:hSubject,
+        subjectCount:count,amount:pp*count};
+    }
+
+    const btn=gv('studentRegForm')?.querySelector('button[type="submit"]');
+    if(btn){btn.disabled=true;btn.dataset.oldText=btn.textContent;btn.textContent='CREATING ACCOUNT…';}
+
+    try{
+      const authResult=await gcCreateEmailAccount(email,password,'student',profile);
+      if(authResult?.pending) return false;
+
+      const cloud=await window.gcSaveProfileToCloud('student',profile,authResult.user);
+      if(!cloud?.ok) throw (cloud.error||new Error('Student profile could not be saved to the cloud database.'));
+
+      profile.id=cloud.row.id; profile.user_id=cloud.userId; profile.isCloud=true;
+      if(Array.isArray(window.studentDirectoryList)) window.studentDirectoryList.unshift(profile);
+      try{saveRegisteredDirectories();}catch(_){}
+      if(typeof window.renderStudentDirectory==='function') window.renderStudentDirectory();
+      localStorage.setItem('active_user_name',name);
+      localStorage.setItem('active_user_phone',phone);
+      localStorage.setItem('active_user_role','student');
+      if(typeof updateAuthBadge==='function') updateAuthBadge();
+      if(typeof showRegistrationSuccessPopup==='function') showRegistrationSuccessPopup();
+      if(typeof closeUserDashboard==='function') closeUserDashboard();
+      return false;
+    }catch(err){
+      console.error('FINAL STUDENT REGISTRATION ERROR',err);
+      alert('REGISTRATION NOT COMPLETED.\n\n'+(err.message||String(err)));
+      return false;
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent=btn.dataset.oldText||'SUBMIT REGISTRATION';}
+    }
+  }
+
+  async function finalTutorSubmit(e){
+    e.preventDefault();
+    const name=val('t_name'), email=val('t_email'), phone=val('t_phone');
+    const requestedSubject=val('t_subject');
+    const tutorStream=typeof inferTutorStream==='function'
+      ? inferTutorStream(requestedSubject,Date.now()) : '';
+    const subject=typeof validSubjectForStream==='function'
+      ? validSubjectForStream(tutorStream,requestedSubject,Date.now()) : requestedSubject;
+    const password=gv('t_password')?.value || '';
+
+    if(!name){alert('Please enter your full name.');gv('t_name')?.focus();return false;}
+    if(!validEmail(email)){alert('Enter a valid email address.');gv('t_email')?.focus();return false;}
+    if(!phone){alert('Please enter your phone number.');gv('t_phone')?.focus();return false;}
+    if(!subject){alert('Please enter your subject.');gv('t_subject')?.focus();return false;}
+    if(password.length<8){alert('Password must be at least 8 characters.');gv('t_password')?.focus();return false;}
+
+    const priceRaw=val('t_price'), exp=val('t_exp');
+    if(!priceRaw){alert('Please enter your hourly rate.');gv('t_price')?.focus();return false;}
+    if(!exp){alert('Please enter your experience.');gv('t_exp')?.focus();return false;}
+
+    const profile={
+      id:Date.now(),name,email,phone,subject,stream:tutorStream,
+      price:priceRaw.includes('/')?priceRaw:priceRaw+'/hr',experience:exp,
+      college:val('t_college') || 'Junior College Faculty',
+      teachingCollege:val('t_teaching_college') || val('t_college'),
+      qualification:val('t_qualification'),
+      address:val('t_address'),aboutMe:val('t_about'),
+      photoData:await readPhoto('t_photo'),achievementPhotos:[],
+      collegeIdName:gv('t_college_id')?.files?.[0]?.name||'',
+      aadhaarName:gv('t_aadhaar')?.files?.[0]?.name||'',
+      verified:false,utr:val('txnIdInput'),paidStatus:'PENDING',paid_status:'PENDING',
+      registrationDate:new Date().toISOString(),isDummy:false,
+      registrationStatus:'registered',registrationRole:'tutor'
+    };
+
+    for(const i of [1,2,3]){
+      const p=await readPhoto('t_achievement_'+i);
+      if(p) profile.achievementPhotos.push(p);
+    }
+
+    const btn=gv('tutorRegForm')?.querySelector('button[type="submit"]');
+    if(btn){btn.disabled=true;btn.dataset.oldText=btn.textContent;btn.textContent='CREATING ACCOUNT…';}
+
+    try{
+      const authResult=await gcCreateEmailAccount(email,password,'tutor',profile);
+      if(authResult?.pending) return false;
+
+      const cloud=await window.gcSaveProfileToCloud('tutor',profile,authResult.user);
+      if(!cloud?.ok) throw (cloud.error||new Error('Tutor profile could not be saved to the cloud database.'));
+
+      profile.id=cloud.row.id;profile.user_id=cloud.userId;profile.isCloud=true;
+      if(Array.isArray(window.tutorDirectoryList)) window.tutorDirectoryList.unshift(profile);
+      try{saveRegisteredDirectories();}catch(_){}
+      if(typeof window.renderTutorDirectory==='function') window.renderTutorDirectory();
+      localStorage.setItem('active_user_name',name);
+      localStorage.setItem('active_user_phone',phone);
+      localStorage.setItem('active_user_role','tutor');
+      if(typeof updateAuthBadge==='function') updateAuthBadge();
+      const form=gv('tutorRegForm');if(form)form.classList.add('hidden');
+      if(typeof showRegistrationSuccessPopup==='function')showRegistrationSuccessPopup();
+      if(typeof openUserDashboard==='function')openUserDashboard();
+      return false;
+    }catch(err){
+      console.error('FINAL TUTOR REGISTRATION ERROR',err);
+      alert('REGISTRATION NOT COMPLETED.\n\n'+(err.message||String(err)));
+      return false;
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent=btn.dataset.oldText||'SUBMIT REGISTRATION';}
+    }
+  }
+
+  // This final layer intentionally replaces the old EmailJS OTP submit wrapper.
+  // Registration now has one verification path: Supabase email/6-digit OTP.
+  window.handleStudentFormSubmit=finalStudentSubmit;
+  window.handleTutorFormSubmit=finalTutorSubmit;
+
+  // Remove legacy browser-required flags that conflicted with the requested optional fields.
+  ['stu_division','stu_roll','t_about'].forEach(id=>gv(id)?.removeAttribute('required'));
+
+  console.log('GURU CONNECT: final registration fix loaded — Supabase OTP is the only registration verification path.');
+})();
+</script>
+
 </body>
 </html>
 
