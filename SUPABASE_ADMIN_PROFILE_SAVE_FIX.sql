@@ -1,0 +1,2 @@
+-- This file is kept for compatibility.
+-- Use SUPABASE_TUTOR_EDIT_SAVE_FINAL.sql for the definitive Tutor Edit Save fix.
