@@ -4662,7 +4662,14 @@ footer:before{
 <!-- Header / Navbar -->
 <header class="gc-beautiful-header">
 <div class="gc-header-inner">
-<a aria-label="GURU CONNECT Home" class="gc-beautiful-lockup gc-logo3-lockup" href="#home"><img alt="GURU CONNECT — Connecting Minds Creating Future" class="gc-logo3-image" src="guru-connect-round-logo.png"/></a>
+<a aria-label="GURU CONNECT Home" class="gc-beautiful-lockup gc-logo3-lockup" href="#home">
+  <span class="gc-logo-holder"><img alt="GURU CONNECT — Connecting Mind - Creating Future" class="gc-beautiful-mark gc-logo3-image" src="guru-connect-round-logo.png"/></span>
+  <span class="gc-beautiful-brand">
+    <span class="gc-beautiful-name">GURU CONNECT</span>
+    <span class="gc-beautiful-connect">CONNECTING MIND - CREATING FUTURE</span>
+    <span class="gc-beautiful-slogan">TOGETHER WE LEARN • TOGETHER WE GROW</span>
+  </span>
+</a>
 <nav aria-label="Main navigation" class="gc-beautiful-nav">
 <a class="gc-beautiful-home" href="#home">Home</a>
 <a href="#tutors">Find Tutor</a>
@@ -4749,6 +4756,15 @@ footer:before{
 <i class="fa-solid fa-right-from-bracket"></i> Exit Staff Mode
                 </button>
 </div>
+<!-- RESTORED ADMIN QUICK ACTIONS: all existing management sections remain below. -->
+<div class="gc-admin-quick-actions" aria-label="Admin quick actions">
+  <button type="button" onclick="document.getElementById('gcAdminLearningMonitor')?.scrollIntoView({behavior:'smooth',block:'start'});document.getElementById('gcAdminLearningEscrow')?.scrollIntoView({behavior:'smooth',block:'start'})"><i class="fa-solid fa-coins"></i><span>LRR / COIN APPROVAL</span></button>
+  <button type="button" onclick="document.getElementById('gcAdminResetSearch')?.focus();document.getElementById('gcAdminPasswordReset')?.scrollIntoView({behavior:'smooth',block:'start'})"><i class="fa-solid fa-magnifying-glass"></i><span>FIND USER / RESET PASSWORD</span></button>
+  <button type="button" onclick="document.getElementById('gcAdminCreateUser')?.scrollIntoView({behavior:'smooth',block:'start'})"><i class="fa-solid fa-user-plus"></i><span>CREATE USER</span></button>
+  <button type="button" onclick="document.getElementById('adminTabTutorsBtn')?.click();document.getElementById('adminTutorSection')?.scrollIntoView({behavior:'smooth',block:'start'})"><i class="fa-solid fa-user-pen"></i><span>TUTOR ACTIONS</span></button>
+  <button type="button" onclick="document.getElementById('adminTabStudentsBtn')?.click();document.getElementById('adminStudentSection')?.scrollIntoView({behavior:'smooth',block:'start'})"><i class="fa-solid fa-users-gear"></i><span>STUDENT ACTIONS</span></button>
+</div>
+<div class="gc-admin-actions-note"><strong>USER ACTIONS / APPROVAL</strong><span>Tutor + Student management, Edit, Delete, UTR/Verified approval, Create User, Find User and Password Reset are restored in this dashboard.</span></div>
 <div class="flex flex-col sm:flex-row gap-3 mb-6 w-full">
 <button class="w-full sm:w-auto justify-center bg-brand-blue text-white font-bold text-sm px-6 py-3 rounded-xl border border-blue-700 shadow flex items-center gap-2" id="adminTabTutorsBtn" onclick="switchAdminTab('tutors')">
 <i class="fa-solid fa-chalkboard-user"></i> Tutor &amp; UTR Queue (<span id="adminTutorCount">0</span>)
@@ -4860,7 +4876,12 @@ footer:before{
 <img alt="GURU CONNECT — Your Learning Partner" class="gc-image-hero-img" src="guru-connect-hero.png"/>
 </div>
 </section>
-<div class="gc-quick-grid">
+<div class="gc-quick-grid gc-quick-grid-restored">
+<article class="gc-quick-card gc-quick-lrr">
+  <div class="gc-quick-top"><div class="gc-quick-icon"><i class="fa-solid fa-clipboard-list"></i></div><div><h3>Live Learning Requirement Request</h3><p>See active learning needs and connect with the right tutor.</p></div></div>
+  <div class="gc-lrr-mini-status"><span>OPEN</span><span>CLOSED</span><span>ADMIN APPROVED</span><span>ALL TIME</span></div>
+  <a class="gc-quick-btn" href="learning.html">View LRR  ›</a>
+</article>
 <article class="gc-quick-card gc-quick-orange">
 <div class="gc-quick-top"><div class="gc-quick-icon"><i class="fa-solid fa-graduation-cap"></i></div><div><h3>Tutor Registration</h3><p>Share your knowledge and help students grow.</p></div></div>
 <a class="gc-quick-btn" href="#registrationSection" onclick="setTimeout(()=&gt;switchTab('tutor'),0)">Register as Tutor  ›</a>
@@ -13152,6 +13173,45 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
   .gc-splash-final-motto{margin-top:44px!important;font-size:17px!important;}
 }
 </style>
+
+<style id="gc-final-restored-brand-layout">
+/* FINAL RESTORE: header branding */
+.gc-beautiful-lockup{min-width:340px!important;max-width:410px!important;display:flex!important;align-items:center!important;gap:11px!important;background:transparent!important;text-decoration:none!important;overflow:visible!important}
+.gc-logo-holder{width:66px!important;height:66px!important;flex:0 0 66px!important;display:flex!important;align-items:center!important;justify-content:center!important;background:transparent!important;overflow:visible!important}
+.gc-beautiful-mark,.gc-logo3-image{width:66px!important;height:66px!important;object-fit:contain!important;background:transparent!important;border:0!important;box-shadow:none!important;display:block!important}
+.gc-beautiful-brand{display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:flex-start!important;min-width:0!important;line-height:1!important}
+.gc-beautiful-name{font-size:25px!important;line-height:1!important;font-weight:950!important;letter-spacing:-1.15px!important;white-space:nowrap!important;background:linear-gradient(90deg,#123b8f,#1264d8,#08a7df)!important;-webkit-background-clip:text!important;background-clip:text!important;color:transparent!important}
+.gc-beautiful-connect{font-size:11px!important;line-height:1!important;font-weight:700!important;letter-spacing:2.2px!important;color:#1264d8!important;margin-top:5px!important;white-space:nowrap!important}
+.gc-beautiful-slogan{font-size:7px!important;line-height:1!important;font-weight:900!important;letter-spacing:1.15px!important;color:#1453ad!important;margin-top:6px!important;white-space:nowrap!important}
+/* FINAL RESTORE: LRR is the first public tile */
+.gc-quick-grid-restored{grid-template-columns:repeat(4,minmax(0,1fr))!important;align-items:stretch!important}
+.gc-quick-lrr{background:linear-gradient(135deg,#fff0b8 0%,#ffd84d 48%,#ffad19 100%)!important;border:1px solid #ffc63a!important}
+.gc-quick-lrr .gc-quick-icon{background:#fff!important;color:#1264d8!important}
+.gc-lrr-mini-status{display:flex;flex-wrap:wrap;gap:5px;margin:12px 0 8px}
+.gc-lrr-mini-status span{font-size:8px;font-weight:950;letter-spacing:.03em;background:rgba(255,255,255,.72);color:#123b8f;border:1px solid rgba(18,59,143,.12);border-radius:999px;padding:4px 7px}
+/* FINAL RESTORE: admin quick controls */
+.gc-admin-quick-actions{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:9px;margin:0 0 12px;padding:12px;border:1px solid #dbe5f2;border-radius:18px;background:linear-gradient(135deg,#f8fbff,#ffffff);box-shadow:0 8px 22px rgba(15,61,145,.06)}
+.gc-admin-quick-actions button{border:1px solid #d8e4f4;background:#fff;color:#123b8f;border-radius:13px;padding:12px 9px;font-size:10px;font-weight:950;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;min-height:48px;transition:.18s}
+.gc-admin-quick-actions button:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(15,61,145,.12);border-color:#9fc2ef}
+.gc-admin-quick-actions button i{font-size:14px}
+.gc-admin-actions-note{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:0 0 18px;padding:11px 13px;border-radius:13px;background:#eff6ff;border:1px solid #bfdbfe;color:#334155;font-size:10px;line-height:1.5}
+.gc-admin-actions-note strong{color:#123b8f;font-size:10px;letter-spacing:.06em}
+/* FINAL RESTORE: splash = logo only, no flyer/colour strips */
+#gcBrandSplashFinal{position:fixed!important;inset:0!important;z-index:2147483647!important;display:flex!important;align-items:center!important;justify-content:center!important;background:#fff!important;opacity:1;visibility:visible;pointer-events:auto;transition:opacity .35s ease,visibility .35s ease}
+#gcBrandSplashFinal.gc-hidden{opacity:0!important;visibility:hidden!important;pointer-events:none!important}
+#gcBrandSplashFinal .gc-splash-logo-only{display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:#fff}
+#gcBrandSplashFinal .gc-splash-only-logo{width:min(205px,48vw)!important;height:auto!important;max-height:48vh!important;object-fit:contain!important;display:block!important;background:transparent!important;filter:drop-shadow(0 10px 24px rgba(15,61,145,.13))!important}
+@media(max-width:1180px){.gc-beautiful-lockup{min-width:290px!important;max-width:330px!important}.gc-logo-holder,.gc-beautiful-mark,.gc-logo3-image{width:58px!important;height:58px!important;flex-basis:58px!important}.gc-beautiful-name{font-size:22px!important}.gc-beautiful-connect{font-size:9.5px!important;letter-spacing:1.8px!important}.gc-beautiful-slogan{font-size:6.2px!important;letter-spacing:.8px!important}.gc-quick-grid-restored{grid-template-columns:repeat(2,minmax(0,1fr))!important}.gc-admin-quick-actions{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:760px){.gc-beautiful-lockup{min-width:0!important;max-width:none!important;flex:1 1 auto!important}.gc-logo-holder,.gc-beautiful-mark,.gc-logo3-image{width:52px!important;height:52px!important;flex-basis:52px!important}.gc-beautiful-name{font-size:18px!important}.gc-beautiful-connect{font-size:7.5px!important;letter-spacing:1.2px!important}.gc-beautiful-slogan{font-size:5.3px!important;letter-spacing:.55px!important}.gc-admin-quick-actions{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:520px){.gc-quick-grid-restored{grid-template-columns:1fr!important}.gc-admin-quick-actions{grid-template-columns:1fr!important}.gc-beautiful-slogan{display:block!important}.gc-splash-only-logo{width:min(180px,58vw)!important}}
+</style>
+<script id="gc-final-restored-splash-js">
+(function(){
+  function hide(){var s=document.getElementById('gcBrandSplashFinal');if(s)s.classList.add('gc-hidden');}
+  window.addEventListener('load',function(){setTimeout(hide,1100);});
+  setTimeout(hide,1800);
+})();
+</script>
 </body>
 <style id="gc-final-load-hero-transfer-pdf-fix">
 /* Final stable hero: one real image, exact 1640:515 ratio, no crop and no duplicate background artwork. */
@@ -15180,13 +15240,8 @@ window.GC_UNIFIED_LOGIN_READY=true;
 </style>
 
 <div id="gcBrandSplashFinal" aria-label="GURU CONNECT loading screen">
-  <div class="gc-splash-final-card">
-    <img class="gc-splash-final-logo" src="guru-connect-round-logo.png" alt="GURU CONNECT">
-    <h1 class="gc-splash-final-title">GURU CONNECT</h1>
-    <div class="gc-splash-final-tag">Connecting Mind - Creating Future</div>
-    <div class="gc-splash-final-line"></div>
-    <div class="gc-splash-final-loading">Loading...</div>
-    <div class="gc-splash-final-motto">Together We Learn • Together We Grow</div>
+  <div class="gc-splash-logo-only">
+    <img src="guru-connect-round-logo.png" alt="GURU CONNECT" class="gc-splash-only-logo">
   </div>
 </div>
 
