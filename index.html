@@ -17996,6 +17996,40 @@ setInterval(checkCurrentAccount,60000);
 <style id="gc-registration-v18-popup-style">
 #gcRegistrationOtpPopup{position:fixed;inset:0;z-index:999999;display:none;align-items:center;justify-content:center;padding:18px}.gc-v18-popup-backdrop{position:absolute;inset:0;background:rgba(2,6,23,.72);backdrop-filter:blur(9px)}#gcRegistrationOtpPopup.open{display:flex}.gc-v18-popup-card{position:relative;z-index:1;width:min(470px,100%);background:#fff;border-radius:27px;padding:30px 24px 24px;text-align:center;box-shadow:0 30px 100px rgba(0,0,0,.32);border:1px solid #e2e8f0}.gc-v18-popup-card #gcV18PopupClose{position:absolute;right:12px;top:12px;border:0;width:34px;height:34px;border-radius:10px;background:#f1f5f9;color:#475569;font-size:20px}.gc-v18-popup-card #gcV18PopupIcon{width:72px;height:72px;margin:0 auto 12px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#dbeafe;color:#2563eb;font-size:30px;font-weight:950}.gc-v18-popup-kicker{font-size:9px;font-weight:950;letter-spacing:.18em;color:#64748b}.gc-v18-popup-card h3{margin:7px 0 0;color:#0f172a;font-size:21px;font-weight:950}.gc-v18-popup-card p{margin:10px auto 20px;max-width:380px;color:#475569;font-size:13px;line-height:1.6;font-weight:700}.gc-v18-popup-card #gcV18PopupOk{border:0;border-radius:13px;padding:12px 24px;background:linear-gradient(135deg,#2563eb,#06b6d4);color:#fff;font-weight:950;font-size:11px}
 </style>
+
+<!-- GURU CONNECT EMERGENCY SPLASH UNLOCK -- FINAL -->
+<style id="gc-emergency-splash-unlock">
+  #gcBrandSplash, .gcBrandSplash, [id*="gcBrandSplash"] {
+    display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+  }
+  html, body { overflow:auto !important; }
+</style>
+<script id="gc-emergency-splash-unlock-js">
+(function(){
+  function unlock(){
+    try{
+      document.querySelectorAll('#gcBrandSplash,.gcBrandSplash,[id*="gcBrandSplash"]').forEach(function(el){
+        el.classList.add('gc-splash-hide');
+        el.style.setProperty('display','none','important');
+        el.style.setProperty('visibility','hidden','important');
+        el.style.setProperty('opacity','0','important');
+        el.style.setProperty('pointer-events','none','important');
+      });
+      document.documentElement.style.removeProperty('overflow');
+      document.body.style.removeProperty('overflow');
+    }catch(e){console.warn('GURU CONNECT splash unlock:',e)}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',unlock,{once:true});
+  else unlock();
+  window.addEventListener('load',unlock,{once:true});
+  setTimeout(unlock,100);
+  setTimeout(unlock,1000);
+  setTimeout(unlock,3000);
+})();
+</script>
 </body></html>
 <script id="gc-v16-3-final-menu-cleanup">
 (function(){
