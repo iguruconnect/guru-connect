@@ -4766,18 +4766,6 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 @media(max-width:900px){#gcAdminLearningEscrow .gc-esc-head{padding:15px!important}.gc-esc-table{min-width:820px!important}.gc-esc-table th,.gc-esc-table td{padding:10px 9px!important}}
 @media(max-width:640px){#gcInstantSplash img{width:min(330px,84vw)}#gcAdminLearningEscrow{border-radius:14px!important}#gcAdminLearningEscrow .gc-esc-head{padding:13px!important}#gcAdminLearningEscrow .gc-esc-head h3{font-size:1rem!important;line-height:1.25!important}#gcAdminLearningEscrow .gc-esc-head p{font-size:.75rem!important;line-height:1.35!important}.gc-esc-table{min-width:760px!important}.gc-esc-table th,.gc-esc-table td{font-size:.75rem!important}}
 </style>
-
-<style id="gc-registration-modern-fix">
-/* Modern registration presentation — fields/content remain unchanged */
-#registrationSection{background:linear-gradient(135deg,#eef7ff 0%,#f7fffb 48%,#eaf8f0 100%)!important;border-radius:28px!important;padding:28px!important;box-shadow:0 18px 55px rgba(15,46,75,.12)!important;}
-#registrationSection .gc-form-card,#registrationSection form,#studentFormCard,#tutorFormCard{border:1px solid rgba(30,91,132,.16)!important;border-radius:22px!important;box-shadow:0 12px 34px rgba(15,46,75,.10)!important;background:rgba(255,255,255,.96)!important;}
-#registrationSection input,#registrationSection select,#registrationSection textarea{border-radius:13px!important;min-height:46px!important;border:1px solid #cbd9e6!important;background:#fff!important;transition:border-color .2s,box-shadow .2s!important;}
-#registrationSection input:focus,#registrationSection select:focus,#registrationSection textarea:focus{border-color:#15966b!important;box-shadow:0 0 0 4px rgba(21,150,107,.12)!important;outline:none!important;}
-#registrationSection button[type="submit"],#registrationSection button.bg-brand-blue,#registrationSection button.bg-brand-nagpurOrange{border-radius:14px!important;min-height:48px!important;font-weight:900!important;box-shadow:0 8px 18px rgba(15,118,86,.18)!important;}
-#gcSupabaseOtpRegistration{backdrop-filter:blur(8px)!important;}
-#gcSupabaseOtpRegistration>div{border-radius:24px!important;box-shadow:0 25px 80px rgba(15,46,75,.25)!important;}
-#gcRegOtpInput{letter-spacing:.35em!important;border-radius:14px!important;}
-</style>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative"><div id="gcInstantSplash" aria-label="GURU CONNECT loading"><img src="guru-connect-round-logo.png" alt="GURU CONNECT"></div>
 <script id="gc-instant-splash-js">(function(){function hide(){var x=document.getElementById('gcInstantSplash');if(!x)return;x.classList.add('gc-hide');setTimeout(function(){x.remove()},220)}if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',function(){setTimeout(hide,1000)},{once:true})}else setTimeout(hide,1000);window.addEventListener('load',function(){setTimeout(hide,1000)},{once:true})})();</script>
@@ -5198,7 +5186,7 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 <div class="bg-blue-50 border border-blue-200 p-3.5 rounded-xl space-y-2" id="stuOtpBox">
 <p class="text-[11px] font-black text-brand-blue">SUPABASE EMAIL VERIFICATION — A 6-digit OTP will be sent after registration.</p>
 <div class="flex gap-2">
-<input class="w-32 border border-blue-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="stuEnteredOtp" maxlength="6" placeholder="123456" type="text">
+<input class="w-32 border border-blue-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="stuEnteredOtp" maxlength="4" placeholder="1234" type="text">
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('student')" type="button">Verify OTP</button>
 </input></div>
 </div>
@@ -5557,7 +5545,7 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 <div class="bg-orange-50 border border-orange-200 p-3.5 rounded-xl space-y-2" id="tutorOtpBox">
 <p class="text-[11px] font-black text-brand-nagpurOrange">SUPABASE EMAIL VERIFICATION — A 6-digit OTP will be sent after registration.</p>
 <div class="flex gap-2">
-<input class="w-32 border border-orange-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="tutorEnteredOtp" maxlength="6" placeholder="123456" type="text"/>
+<input class="w-32 border border-orange-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="tutorEnteredOtp" maxlength="4" placeholder="1234" type="text"/>
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('tutor')" type="button">Verify OTP</button>
 </div>
 </div>
@@ -6041,7 +6029,7 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
         // Put the supplied blue verified-tick image in the same GitHub
         // folder as index.html using this filename, or replace this
         // value with its raw GitHub URL.
-        const VERIFIED_TICK_LOGO_URL = "assets/green-verified-tick.png";
+        const VERIFIED_TICK_LOGO_URL = "assets/gc-inline-027f94a42b18.png";
 
         function escapeHtml(value) {
             return String(value ?? "")
@@ -13916,8 +13904,8 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
      const subject=val(t.subject,t.subjects,'Not specified'),rate=val(t.price,t.rate,t.hourlyRate,'—'),exp=val(t.experience,t.experienceYears,'—');
      const rating=val(t.rating,'4.5'),reviews=val(t.reviewCount,t.reviewsCount,'0'),students=val(t.students,t.studentsTaught,'—'),mode=val(t.mode,t.teachingMode,'Online / Offline'),loc=val(t.location,'—'),langs=val(t.languages,'Hindi, English'),avail=val(t.availability,'Mon - Sun');
      const card=document.createElement('article');card.className='gc-target-card gc-target-tutor';card.dataset.tutorId=id;
-     card.innerHTML='<div class="gc-target-top"><span class="gc-target-role '+(verified?'gc-verified-role':'gc-unverified-role')+'">'+(verified?'✓ VERIFIED TUTOR':'TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
-       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified?'<span class="gc-target-verified" aria-label="Verified Tutor" title="Verified Tutor"><i class="fa-solid fa-check"></i></span>':'')+'</h3><div class="gc-target-subtitle">'+esc(q)+' · '+esc(subject)+'</div></div></div>'+
+     card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✓ VERIFIED TUTOR':'TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
+       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified&&tick()?'<span class="gc-target-verified"><img src="'+esc(tick())+'" alt="Verified"></span>':'')+'</h3><div class="gc-target-subtitle">'+esc(q)+' · '+esc(subject)+'</div></div></div>'+
        '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🪙','Coins','0')+box('◷','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
        '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-tutor-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
      c.appendChild(card);
@@ -13971,59 +13959,6 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 .gc-target-card .gc-target-wifi svg circle{fill:#fff!important;}
 /* Keep role text clear of the top-right icon cluster. */
 .gc-target-card .gc-target-role{max-width:62%!important;overflow:hidden!important;text-overflow:ellipsis!important;}
-</style>
-<style id="gc-verified-tutor-green-final-2026">
-/* FINAL VERIFIED TUTOR FIX — green role + clean green tick beside the name.
-   No external tick image is used, so the badge cannot show a broken image/icon. */
-.gc-target-card.gc-target-tutor .gc-target-role.gc-verified-role{
-  background:#16a34a!important;
-  color:#fff!important;
-  border-color:#16a34a!important;
-  box-shadow:0 4px 10px rgba(22,163,74,.20)!important;
-}
-.gc-target-card.gc-target-tutor .gc-target-role.gc-unverified-role{
-  background:#1d4ed8!important;
-  color:#fff!important;
-  border-color:#1d4ed8!important;
-}
-.gc-target-card.gc-target-tutor .gc-target-name{
-  display:block!important;
-}
-.gc-target-card.gc-target-tutor .gc-target-name-text{
-  display:inline!important;
-}
-.gc-target-card.gc-target-tutor .gc-target-verified{
-  display:inline-flex!important;
-  align-items:center!important;
-  justify-content:center!important;
-  width:22px!important;
-  height:22px!important;
-  min-width:22px!important;
-  margin-left:4px!important;
-  vertical-align:middle!important;
-  position:relative!important;
-  top:-1px!important;
-  border-radius:50%!important;
-  background:#16a34a!important;
-  border:2px solid #fff!important;
-  color:#fff!important;
-  box-shadow:0 2px 6px rgba(22,163,74,.28)!important;
-  line-height:1!important;
-  font-size:12px!important;
-}
-.gc-target-card.gc-target-tutor .gc-target-verified i{
-  display:block!important;
-  color:#fff!important;
-  font-size:11px!important;
-  line-height:1!important;
-}
-@media(max-width:700px){
-  .gc-target-card.gc-target-tutor .gc-target-verified{
-    width:20px!important;height:20px!important;min-width:20px!important;
-    margin-left:3px!important;font-size:10px!important;
-  }
-  .gc-target-card.gc-target-tutor .gc-target-verified i{font-size:9px!important}
-}
 </style>
 <style id="gc-final-wifi-blue-menu-update-2026">
 /* Final requested Wi-Fi: blue, 5-beam, right aligned */
@@ -14325,7 +14260,31 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       paidStatus:row.paid_status||'PENDING',isCloud:true
     });
 
-    // Contact/profile/Auth synchronization is performed inside the SECURITY DEFINER RPC.
+    if(t.user_id){
+      try{
+        const p=await sb().from('profiles').update({
+          full_name:clean(t.name),email:clean(t.email)||null,
+          phone:clean(t.phone)||null,photo_url:clean(t.photoData||t.photo||'')||null
+        }).eq('id',t.user_id);
+        if(p.error) console.warn('Tutor profiles contact sync:',p.error);
+      }catch(e){console.warn('Tutor profiles contact sync:',e);}
+
+      // CRITICAL: keep Supabase Auth's login email synchronized with the
+      // email edited by Staff. Forgot Password sends to auth.users.email,
+      // not merely to public.profiles.email.
+      const newEmail=clean(t.email).toLowerCase();
+      if(newEmail && /^\S+@\S+\.\S+$/.test(newEmail)){
+        try{
+          const ar=await sb().rpc('gc_admin_update_auth_email',{
+            p_user_id:String(t.user_id),
+            p_email:newEmail
+          });
+          if(ar.error) throw ar.error;
+        }catch(e){
+          throw new Error('Tutor profile was saved, but the Supabase Auth email could not be synchronized. Run the latest supplied SQL migration, then save this tutor again. Details: '+(e?.message||e));
+        }
+      }
+    }
     clearCaches();
     return {ok:true,row};
   };
@@ -15424,7 +15383,7 @@ window.addEventListener('load',()=>setTimeout(mount,900));
     throw new Error('Staff Supabase session is required. Please login again.');
   }
   window.GC_ADMIN_CLOUD={
-    updateTutor:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_staff_save_tutor_profile',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;},
+    updateTutor:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_admin_update_tutor_profile',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;},
     updateStudent:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_admin_update_student_profile',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;}
   };
 })();
@@ -16993,11 +16952,11 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
     box.className='fixed inset-0 z-[500] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 sm:p-6';
     box.innerHTML=`<div class="max-w-xl w-full bg-white rounded-[2rem] shadow-2xl p-7 sm:p-11 text-center">
       <div class="mx-auto mb-5 w-20 h-20 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center text-4xl">✉️</div>
-      <div class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-black uppercase tracking-wider mb-3">Email verification • 6-digit OTP</div>
+      <div class="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-black uppercase tracking-wider mb-3">Email verification • 8-digit OTP</div>
       <h2 class="text-2xl sm:text-4xl font-black text-slate-900">Verify Your Email</h2>
-      <p class="mt-3 text-sm sm:text-base text-slate-600">We sent a 6-digit verification code to</p>
+      <p class="mt-3 text-sm sm:text-base text-slate-600">We sent an 8-digit verification code to</p>
       <p class="mt-1 text-base sm:text-xl font-black text-blue-700 break-all">${esc2(email)}</p>
-      <input id="gcRegOtpInput" class="mt-6 w-full text-center tracking-[.45em] font-black text-2xl border-2 border-blue-200 rounded-2xl px-4 py-4 outline-none focus:border-blue-500" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456">
+      <input id="gcRegOtpInput" class="mt-6 w-full text-center tracking-[.45em] font-black text-2xl border-2 border-blue-200 rounded-2xl px-4 py-4 outline-none focus:border-blue-500" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="12345678">
       <button id="gcRegOtpVerify" class="mt-4 w-full rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black py-4">VERIFY OTP</button>
       <button id="gcRegOtpResend" class="mt-3 w-full rounded-2xl border border-slate-300 bg-white text-slate-700 font-black py-3">RESEND OTP</button>
       <div id="gcRegOtpMsg" class="mt-4 text-sm font-bold text-slate-500"></div>
@@ -17008,8 +16967,8 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
     const say=(t,ok)=>{msg.textContent=t;msg.className='mt-4 text-sm font-bold '+(ok?'text-emerald-700':'text-red-700')};
     const finish=async(user)=>{
       try{
-        if(typeof window.gcV12FinishVerifiedRegistration==='function'){
-          const ok=await window.gcV12FinishVerifiedRegistration(user);
+        if(typeof window.finishVerifiedRegistration==='function'){
+          const ok=await window.finishVerifiedRegistration(user);
           if(!ok) throw new Error('Email verified, but the pending profile could not be completed. Please log in and contact support.');
         }
         box.remove();
@@ -17020,10 +16979,10 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
     };
     verify.onclick=async()=>{
       const token=input.value.trim().replace(/\D/g,'');
-      if(!/^\d{6}$/.test(token)) return say('Enter the 6-digit OTP from the newest GURU CONNECT email.');
+      if(!/^\d{8}$/.test(token)) return say('Enter the 8-digit OTP from the newest GURU CONNECT email.');
       verify.disabled=true; verify.textContent='VERIFYING…';
       try{
-        const r=await S.auth.verifyOtp({email,token,type:'signup'});
+        const r=await S.auth.verifyOtp({email,token,type:'email'});
         if(r.error) throw r.error;
         const user=r.data?.user;
         if(!user?.email_confirmed_at) throw new Error('OTP was accepted but Supabase did not mark the email as verified yet. Please try again.');
@@ -17037,7 +16996,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
       try{
         const r=await S.auth.resend({type:'signup',email});
         if(r.error) throw r.error;
-        say('✓ A new 6-digit OTP has been sent. Use only the newest code.',true);
+        say('✓ A new 8-digit OTP has been sent. Use only the newest code.',true);
         let n=60; const timer=setInterval(()=>{n--; resend.textContent=n>0?'RESEND OTP ('+n+'s)':'RESEND OTP'; if(n<=0){clearInterval(timer);resend.disabled=false}},1000);
       }catch(e){say('Could not resend OTP: '+(e.message||String(e)));resend.disabled=false;resend.textContent='RESEND OTP';}
     };
@@ -17048,11 +17007,10 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu()});
     email=String(email||'').trim().toLowerCase();
     if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Enter a valid email address.');
     if(!password||password.length<8) throw new Error('Password must be at least 8 characters.');
-    const r=await S.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname+'?email_verified=1'}});
+    const r=await S.auth.signUp({email,password});
     if(r.error) throw r.error;
     const user=r.data?.user; if(!user) throw new Error('Supabase did not return a user account.');
     if(user.email_confirmed_at){ return {user,session:r.data?.session||null,pending:false,emailConfirmed:true}; }
-    if(r.data?.session){try{await S.auth.signOut()}catch(_){} }
     pending={email,role:role==='tutor'?'tutor':'student',profile}; window.gcOtpPendingRegistration=pending;
     try{localStorage.setItem('gc_pending_profile',JSON.stringify({role:pending.role,profile}));localStorage.setItem('gc_pending_email',email);}catch(_){ }
     otpModal(email,pending.role);
@@ -17850,23 +17808,20 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
 
   async function updateTutorCloud(t,patch){
     if(!t?.user_id) throw new Error('Tutor is missing its Supabase user ID.');
-    const {s}=await staffSession();
-    // Use the dedicated SECURITY DEFINER admin RPC. The normal table UPDATE
-    // path is protected by member RLS and can reject a valid Staff session
-    // with "Staff Admin authorization required".
-    const r=await s.rpc('gc_staff_save_tutor_profile',{
-      p_user_id:String(t.user_id),
-      p_data:patch
-    });
-    if(r.error){
-      const msg=String(r.error.message||r.error);
-      if(/authorization|required|not authorized|permission|row-level security/i.test(msg)){
-        throw new Error('Staff/Admin profile-save authorization failed. Please log in again with the registered Staff/Admin account.');
+    if(window.GC_ADMIN_CLOUD?.updateTutor){
+      const r=await window.GC_ADMIN_CLOUD.updateTutor(t.user_id,patch);
+      if(clean(patch.email).toLowerCase() && /^\S+@\S+\.\S+$/.test(clean(patch.email))){
+        try{
+          const {s}=await staffSession();
+          const ar=await s.rpc('gc_admin_update_auth_email',{p_user_id:String(t.user_id),p_email:clean(patch.email).toLowerCase()});
+          if(ar.error) throw ar.error;
+        }catch(e){
+          throw new Error('Tutor profile was updated, but Auth email synchronization failed: '+(e.message||e));
+        }
       }
-      throw r.error;
+      return r;
     }
-    if(!r.data) throw new Error('Supabase did not return the saved Tutor profile.');
-    return r.data;
+    throw new Error('Admin cloud profile editor is not available.');
   }
 
   async function updateStudentCloud(s,patch){
@@ -17991,12 +17946,12 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
   window.gcSupabaseAdminUpdateTutor=async function(t){
     if(!t?.isCloud)throw new Error('This is not a registered cloud Tutor.');
     const patch={
-      name:clean(t.name),email:clean(t.email),phone:clean(t.phone),subject:clean(t.subject),stream:clean(t.stream),
+      name:clean(t.name),subject:clean(t.subject),stream:clean(t.stream),
       experience:clean(t.experience),qualification:clean(t.qualification),
       college:clean(t.college||t.teachingCollege),
       teaching_college:clean(t.teachingCollege||t.college),
       address:clean(t.address),price:clean(t.price),about_me:clean(t.aboutMe),
-      photo_url:clean(t.photoData||t.photo||''),achievement_photos:Array.isArray(t.achievements)?t.achievements.slice(0,3):[],rating:t._manualRating!=null?Number(t._manualRating):(t.rating!=null?Number(t.rating):null),
+      photo_url:clean(t.photoData||t.photo||''),rating:t._manualRating!=null?Number(t._manualRating):(t.rating!=null?Number(t.rating):null),
       review_count:Number(t.reviewCount||t.reviewsCount||0)||0,
       students_taught:clean(t.students||t.studentsTaught),teaching_mode:clean(t.mode||t.teachingMode),
       location:clean(t.location),languages:clean(t.languages),availability:clean(t.availability),
@@ -18170,78 +18125,3 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
 </script>
 </body>
 </html>
-
-<style id="gc-verified-tutor-green-absolute-final-2026">
-/* Absolute final override: verified tutor badge + name tick are GREEN. */
-.gc-target-card.gc-target-tutor .gc-target-role.gc-verified-role{
-  background:#16a34a!important;color:#fff!important;border-color:#16a34a!important;
-}
-.gc-target-card.gc-target-tutor .gc-target-role.gc-unverified-role{
-  background:#1d4ed8!important;color:#fff!important;border-color:#1d4ed8!important;
-}
-.gc-target-card.gc-target-tutor .gc-target-verified{
-  display:inline-flex!important;align-items:center!important;justify-content:center!important;
-  width:22px!important;height:22px!important;min-width:22px!important;
-  margin-left:4px!important;vertical-align:middle!important;position:relative!important;top:-1px!important;
-  border-radius:50%!important;background:#16a34a!important;border:2px solid #fff!important;
-  color:#fff!important;box-shadow:0 2px 6px rgba(22,163,74,.28)!important;
-  font-size:11px!important;line-height:1!important;
-}
-.gc-target-card.gc-target-tutor .gc-target-verified i{display:block!important;color:#fff!important;font-size:10px!important;line-height:1!important}
-@media(max-width:700px){
- .gc-target-card.gc-target-tutor .gc-target-verified{width:20px!important;height:20px!important;min-width:20px!important;margin-left:3px!important}
- .gc-target-card.gc-target-tutor .gc-target-verified i{font-size:9px!important}
-}
-</style>
-
-
-<style id="gc-green-verified-tick-final">
-/* FINAL: exact user-supplied green verification seal + larger eye-catching size. */
-.gc-profile-card.gc-tutor-card .gc-name-patch{
-  gap:2px!important;
-}
-.gc-profile-card.gc-tutor-card .gc-blue-tick{
-  width:38px!important;
-  height:38px!important;
-  min-width:38px!important;
-  min-height:38px!important;
-  max-width:38px!important;
-  max-height:38px!important;
-  flex:0 0 38px!important;
-  object-fit:contain!important;
-  margin-left:0!important;
-  margin-right:0!important;
-  vertical-align:middle!important;
-  filter:drop-shadow(0 2px 3px rgba(0,120,45,.22))!important;
-}
-/* Verified tutor label itself is green, while ordinary TUTOR stays blue. */
-.gc-profile-card.gc-tutor-card.gc-verified-card .gc-role-pill{
-  background:#16a34a!important;
-  color:#fff!important;
-  border:1px solid #0b8f3d!important;
-  box-shadow:0 3px 9px rgba(22,163,74,.28)!important;
-}
-.gc-profile-card.gc-tutor-card.gc-verified-card .gc-role-pill::after{
-  content:"✓  VERIFIED TUTOR"!important;
-  color:#fff!important;
-  font-size:10px!important;
-  font-weight:900!important;
-  letter-spacing:.02em!important;
-  text-transform:uppercase!important;
-}
-@media(max-width:900px){
-  .gc-profile-card.gc-tutor-card .gc-blue-tick{
-    width:36px!important;height:36px!important;min-width:36px!important;min-height:36px!important;
-    max-width:36px!important;max-height:36px!important;flex-basis:36px!important;
-  }
-}
-@media(max-width:640px){
-  .gc-profile-card.gc-tutor-card .gc-name-patch{gap:2px!important;}
-  .gc-profile-card.gc-tutor-card .gc-blue-tick{
-    width:33px!important;height:33px!important;min-width:33px!important;min-height:33px!important;
-    max-width:33px!important;max-height:33px!important;flex-basis:33px!important;
-  }
-  .gc-profile-card.gc-tutor-card.gc-verified-card .gc-role-pill::after{font-size:9px!important;}
-}
-</style>
-
