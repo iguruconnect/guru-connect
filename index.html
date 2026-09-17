@@ -5112,10 +5112,10 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 <div class="max-w-3xl mx-auto w-full">
 <!-- Tabs -->
 <div class="grid grid-cols-1 sm:grid-cols-3 bg-slate-100 p-1.5 rounded-2xl shadow-inner mb-6 sm:mb-8 border border-slate-200 gap-1 sm:gap-2">
-<button class="py-3 rounded-xl text-xs sm:text-sm font-bold transition bg-brand-blue text-white shadow text-center tracking-wide" id="tabStudentBtn" onclick="switchTab('student')">
+<button class="py-3 rounded-xl text-xs sm:text-sm font-bold transition bg-brand-blue text-white shadow text-center tracking-wide" id="tabStudentBtn" onclick="gcOpenRegistration('student')">
 <i class="fa-solid fa-user-graduate mr-1"></i>STUDENT
                     </button>
-<button class="py-3 rounded-xl text-xs sm:text-sm font-bold transition text-slate-600 hover:text-brand-dark hover:bg-slate-200 text-center tracking-wide" id="tabTutorBtn" onclick="switchTab('tutor')">
+<button class="py-3 rounded-xl text-xs sm:text-sm font-bold transition text-slate-600 hover:text-brand-dark hover:bg-slate-200 text-center tracking-wide" id="tabTutorBtn" onclick="gcOpenRegistration('tutor')">
 <i class="fa-solid fa-chalkboard-user mr-1"></i>TUTOR
                     </button>
 <button class="py-3 rounded-xl text-xs sm:text-sm font-bold transition text-slate-600 hover:text-brand-dark hover:bg-slate-200 text-center tracking-wide" id="tabRequirementBtn" onclick="switchTab('requirement')">
@@ -5123,48 +5123,31 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
                     </button>
 </div>
 <!-- Student Form Card -->
-<div class="bg-brand-lightBg rounded-2xl sm:rounded-3xl shadow-lg border border-slate-200 p-5 sm:p-8 md:p-10 w-full" id="studentFormCard">
+<div class="bg-brand-lightBg rounded-2xl sm:rounded-3xl shadow-lg border border-slate-200 p-5 sm:p-8 md:p-10 w-full gc-reg-locked" id="studentFormCard">
 <div class="text-center mb-6 sm:mb-8">
 <span class="bg-blue-100 text-brand-blue text-[10px] sm:text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider">Junior College Section</span>
 <h2 class="text-2xl sm:text-3xl font-black text-brand-dark mt-3 tracking-tight">Student Registration</h2>
 <p class="text-slate-600 text-xs sm:text-sm mt-1">Email verification is <strong class="text-brand-blue">MANDATORY</strong>. After you submit, Supabase will send a verification link to your email. Your registration is completed only after you click that link.</p>
 </div>
 <form class="space-y-4 sm:space-y-5" id="studentRegForm" onsubmit="handleStudentFormSubmit(event)">
+<section class="gc-reg-section gc-reg-identity"><div class="gc-reg-section-title"><span>01</span><div><h3>Basic Information</h3><p>Tell us how we can identify and contact you.</p></div></div><div>
+<label class="gc-new-label">Student Full Name</label>
+<input class="gc-new-control" id="stu_name" placeholder="Enter your full name" type="text"/>
+</div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Student Full Name</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_name" placeholder="Enter your full name" type="text"/>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address *</label>
+<label class="gc-new-label">Email Address *</label>
 <div class="flex gap-2">
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_email" placeholder="student@gmail.com" required="" type="email"/>
+<input aria-required="true" class="gc-new-control gc-email-required" id="stu_email" placeholder="student@gmail.com" required="" type="email"/>
 <button class="bg-brand-blue hover:bg-blue-700 text-white font-black px-3 py-2 rounded-xl text-[10px] sm:text-xs shrink-0 shadow" onclick="sendEmailOtp('student'); return false;" type="button">SEND OTP</button>
 <span class="gc-email-required-badge">EMAIL VERIFICATION REQUIRED</span>
 </div>
 </div>
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">WhatsApp Number (Login ID)</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_phone" placeholder="9876543210" type="tel"/>
+<label class="gc-new-label">WhatsApp Number (Login ID)</label>
+<input class="gc-new-control" id="stu_phone" placeholder="9876543210" type="tel"/>
 </div>
-</div>
-<div class="gc-email-verification-required-box"><div class="gc-email-verification-icon">✓</div><div><strong>EMAIL VERIFICATION IS COMPULSORY</strong><span>After registration, Supabase will send a 6-digit verification OTP to this email. Enter that OTP to activate your account.</span></div></div>
-<!-- EmailJS OTP verification: first gate before Supabase email verification -->
-<div aria-hidden="true" class="gc-reg-otp-card gc-reg-otp-student" id="stuOtpBox">
-<div class="gc-reg-otp-head"><span class="gc-reg-otp-icon">✉</span><div><strong>EMAIL OTP VERIFICATION</strong><small>Enter the latest 6-digit OTP sent to your Email Address.</small></div></div>
-<div class="gc-reg-otp-inputs" data-otp-role="student">
-<input aria-label="Student OTP digit 1" autocomplete="one-time-code" class="gc-otp-digit" inputmode="numeric" maxlength="1"/>
-<input aria-label="Student OTP digit 2" class="gc-otp-digit" inputmode="numeric" maxlength="1"/>
-<input aria-label="Student OTP digit 3" class="gc-otp-digit" inputmode="numeric" maxlength="1"/>
-<input aria-label="Student OTP digit 4" class="gc-otp-digit" inputmode="numeric" maxlength="1"/>
-<input aria-label="Student OTP digit 5" class="gc-otp-digit" inputmode="numeric" maxlength="1"/>
-<input aria-label="Student OTP digit 6" class="gc-otp-digit" inputmode="numeric" maxlength="1"/>
-</div>
-<input id="stuEnteredOtp" type="hidden" value=""/>
-<button class="gc-reg-otp-verify" onclick="verifyEmailOtp('student')" type="button">VERIFY 6-DIGIT OTP</button>
-</div>
-<!-- STUDENT HELPLINE SERVICE REGISTRATION -->
-<div class="border-2 border-blue-200 bg-blue-50/50 rounded-2xl p-4 sm:p-5 space-y-4">
+</div><div class="gc-email-verification-required-box"><div class="gc-email-verification-icon">✓</div><div><strong>EMAIL VERIFICATION IS COMPULSORY</strong><span>After registration, Supabase will send a 6-digit verification OTP to this email. Enter that OTP to activate your account.</span></div></div></section>
+<section class="gc-reg-section"><div class="gc-reg-section-title"><span>03</span><div><h3>Helpline Service</h3><p>Optional academic support service. Register only if you need it.</p></div></div><div class="border-2 border-blue-200 bg-blue-50/50 rounded-2xl p-4 sm:p-5 space-y-4">
 <div class="flex items-start gap-3">
 <div class="w-10 h-10 rounded-xl bg-blue-100 text-brand-blue flex items-center justify-center shrink-0">
 <i class="fa-solid fa-headset text-lg"></i>
@@ -5175,8 +5158,8 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 </div>
 </div>
 <div>
-<label class="block text-[13px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">REGISTER FOR HELPLINE SERVICE</label>
-<select class="w-full border border-slate-300 rounded-xl p-3.5 text-[13px] sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stuHelplineRegister" onchange="toggleStudentHelpline()">
+<label class="gc-new-label">REGISTER FOR HELPLINE SERVICE</label>
+<select class="gc-new-control" id="stuHelplineRegister" onchange="toggleStudentHelpline()">
 <option value="">Select an option</option>
 <option value="yes">YES – Register with Helpline Service</option>
 <option value="no">NO – Continue Without Helpline Service</option>
@@ -5254,8 +5237,8 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 </div>
 </div>
 <div>
-<label class="block text-[13px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">SELECT HELPLINE PLAN</label>
-<select class="w-full border border-slate-300 rounded-xl p-3.5 text-[13px] sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stuHelplinePlan" onchange="updateStudentHelplinePricing()">
+<label class="gc-new-label">SELECT HELPLINE PLAN</label>
+<select class="gc-new-control" id="stuHelplinePlan" onchange="updateStudentHelplinePricing()">
 <option value="">Select One Helpline Plan</option>
 <option value="FREE">FREE PLAN — ₹0</option>
 <option value="PRIME">PRIME PLAN — ₹5000 / subject</option>
@@ -5270,8 +5253,8 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 <div class="text-slate-700 mt-1" id="selectedHelplinePlanText"></div>
 </div>
 <div>
-<label class="block text-[13px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">SELECT COURSE</label>
-<select class="w-full border border-slate-300 rounded-xl p-3.5 text-[13px] sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stuHelplineCourse" onchange="syncStudentHelplineCourseToRegistration()">
+<label class="gc-new-label">SELECT COURSE</label>
+<select class="gc-new-control" id="stuHelplineCourse" onchange="syncStudentHelplineCourseToRegistration()">
 <option value="">Select Course</option>
 <option value="XI ARTS">XI ARTS</option>
 <option value="XI SCIENCE">XI SCIENCE</option>
@@ -5282,13 +5265,13 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 </select>
 </div>
 <div>
-<label class="block text-[13px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">NAME OF THE SUBJECT FOR WHICH HELPLINE SERVICE IS REQUIRED</label>
-<input class="w-full border border-slate-300 rounded-xl p-3.5 text-[13px] sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stuHelplineSubject" oninput="document.getElementById('stu_subject').value=this.value" placeholder="Enter subject name" type="text"/>
+<label class="gc-new-label">NAME OF THE SUBJECT FOR WHICH HELPLINE SERVICE IS REQUIRED</label>
+<input class="gc-new-control" id="stuHelplineSubject" oninput="document.getElementById('stu_subject').value=this.value" placeholder="Enter subject name" type="text"/>
 <p class="text-[12px] text-slate-500 mt-1">If more than one subject is required, enter subject names separated by commas.</p>
 </div>
 <div>
-<label class="block text-[13px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">SELECT THE NUMBER OF SUBJECTS FOR WHICH HELPLINE IS REQUIRED</label>
-<select class="w-full border border-slate-300 rounded-xl p-3.5 text-[13px] sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stuHelplineSubjectCount" onchange="updateStudentHelplinePricing()">
+<label class="gc-new-label">SELECT THE NUMBER OF SUBJECTS FOR WHICH HELPLINE IS REQUIRED</label>
+<select class="gc-new-control" id="stuHelplineSubjectCount" onchange="updateStudentHelplinePricing()">
 <option value="">Select Number of Subjects</option>
 <option value="1">1</option>
 <option value="2">2</option>
@@ -5330,44 +5313,43 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 <p class="text-[12px] text-slate-500 mb-3">Student Photo, College ID Card and Aadhaar Card can be attached for the registration/verification process.</p>
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 <div>
-<label class="block text-[13px] font-bold text-slate-700 mb-1.5">Student Photo (Optional)</label>
-<input accept="image/*" class="w-full text-[12px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-[12px] file:font-bold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100" id="stu_helpline_photo" type="file"/>
+<label class="gc-new-label">Student Photo (Optional)</label>
+<input accept="image/*" class="gc-new-file" id="stu_helpline_photo" type="file"/>
 </div>
 <div>
-<label class="block text-[13px] font-bold text-slate-700 mb-1.5">College ID Card (Optional)</label>
-<input accept="image/*,application/pdf" class="w-full text-[12px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-[12px] file:font-bold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100" id="stu_helpline_college_id" type="file"/>
+<label class="gc-new-label">College ID Card (Optional)</label>
+<input accept="image/*,application/pdf" class="gc-new-file" id="stu_helpline_college_id" type="file"/>
 </div>
 <div>
-<label class="block text-[13px] font-bold text-slate-700 mb-1.5">Aadhaar Card (Optional)</label>
-<input accept="image/*,application/pdf" class="w-full text-[12px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-[12px] file:font-bold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100" id="stu_helpline_aadhaar" type="file"/>
+<label class="gc-new-label">Aadhaar Card (Optional)</label>
+<input accept="image/*,application/pdf" class="gc-new-file" id="stu_helpline_aadhaar" type="file"/>
 </div>
 </div>
 </div>
 </div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+</div></section>
+<section class="gc-reg-section"><div class="gc-reg-section-title"><span>04</span><div><h3>Education Details</h3><p>Your current academic information.</p></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Junior College Standard</label>
-<select class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_std" onchange="syncStudentCourseFromStandardStream()">
+<label class="gc-new-label">Junior College Standard</label>
+<select class="gc-new-control" id="stu_std" onchange="syncStudentCourseFromStandardStream()">
 <option value="">Select Standard</option>
 <option value="FYJC (11th)">FYJC (11th Standard)</option>
 <option value="SYJC (12th)">SYJC (12th Standard)</option>
 </select>
 </div>
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Stream</label>
-<select class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_stream" onchange="syncStudentCourseFromStandardStream()">
+<label class="gc-new-label">Stream</label>
+<select class="gc-new-control" id="stu_stream" onchange="syncStudentCourseFromStandardStream()">
 <option value="">Select Stream</option>
 <option value="Arts">Arts</option>
 <option value="Science">Science</option>
 <option value="Commerce">Commerce</option>
 </select>
 </div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+</div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Course in Which Studying</label>
-<select class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_course" onchange="syncStudentCourseFields()">
+<label class="gc-new-label">Course in Which Studying</label>
+<select class="gc-new-control" id="stu_course" onchange="syncStudentCourseFields()">
 <option value="">Select Course</option>
 <option value="XI ARTS">XI ARTS</option>
 <option value="XI SCIENCE">XI SCIENCE</option>
@@ -5378,33 +5360,30 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 </select>
 </div>
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Name of the College (Optional)</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_college" placeholder="Enter your college name (optional)" type="text"/>
+<label class="gc-new-label">Name of the College (Optional)</label>
+<input class="gc-new-control" id="stu_college" placeholder="Enter your college name (optional)" type="text"/>
 </div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+</div><div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Division</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_division" placeholder="e.g. A" type="text"/>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Roll Number</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_roll" placeholder="Enter roll number" type="text"/>
+<label class="gc-new-label">Division</label>
+<input class="gc-new-control" id="stu_division" placeholder="e.g. A" type="text"/>
 </div>
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Registration Date</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm bg-slate-50 font-bold text-slate-600" id="stu_registration_date" readonly="" type="text"/>
-</div>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Junior College Subject(s)</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_subject" placeholder="e.g. Physics, Chemistry, Mathematics" type="text"/>
+<label class="gc-new-label">Roll Number</label>
+<input class="gc-new-control" id="stu_roll" placeholder="Enter roll number" type="text"/>
 </div>
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Learning Requirement / Educational Needs</label>
-<textarea class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_learning_requirement" placeholder="Write your educational needs, subjects/topics where you need support, goals, etc." rows="3"></textarea>
+<label class="gc-new-label">Registration Date</label>
+<input class="gc-new-control" id="stu_registration_date" readonly="" type="text"/>
 </div>
-<div class="border-2 border-blue-100 bg-blue-50/40 rounded-2xl p-4 sm:p-5">
+</div></section>
+<section class="gc-reg-section"><div class="gc-reg-section-title"><span>05</span><div><h3>Learning Profile</h3><p>Subjects, learning needs and information that helps tutors understand you.</p></div></div><div>
+<label class="gc-new-label">Junior College Subject(s)</label>
+<input class="gc-new-control" id="stu_subject" placeholder="e.g. Physics, Chemistry, Mathematics" type="text"/>
+</div><div>
+<label class="gc-new-label">Learning Requirement / Educational Needs</label>
+<textarea class="gc-new-control" id="stu_learning_requirement" placeholder="Write your educational needs, subjects/topics where you need support, goals, etc." rows="3"></textarea>
+</div><div class="border-2 border-blue-100 bg-blue-50/40 rounded-2xl p-4 sm:p-5">
 <div class="flex items-center gap-3 mb-3">
 <div class="w-10 h-10 rounded-xl bg-blue-100 text-brand-blue flex items-center justify-center shrink-0">
 <i class="fa-solid fa-id-card"></i>
@@ -5414,39 +5393,56 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 <p class="text-[11px] sm:text-xs text-slate-500">Add details that help tutors understand you better.</p>
 </div>
 </div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">About Me (Optional)</label>
-<textarea class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_about_me" placeholder="Tell tutors about yourself, your learning style, interests, goals and what kind of academic support you are looking for." rows="4"></textarea>
+<label class="gc-new-label">About Me (Optional)</label>
+<textarea class="gc-new-control" id="stu_about_me" placeholder="Tell tutors about yourself, your learning style, interests, goals and what kind of academic support you are looking for." rows="4"></textarea>
 <div class="mt-4">
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">My Achievements / Certificates (Optional — up to 3 photos)</label>
+<label class="gc-new-label">My Achievements / Certificates (Optional — up to 3 photos)</label>
 <p class="text-[11px] text-slate-500 mb-3">Upload up to 3 clear photos of awards, certificates, competitions or other achievements.</p>
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-<input accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-blue-50 file:text-brand-blue" id="stu_achievement_1" type="file"/>
-<input accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-blue-50 file:text-brand-blue" id="stu_achievement_2" type="file">
-<input accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-blue-50 file:text-brand-blue" id="stu_achievement_3" type="file"/>
+<input accept="image/*" class="gc-new-file" id="stu_achievement_1" type="file"/>
+<input accept="image/*" class="gc-new-file" id="stu_achievement_2" type="file"/>
+<input accept="image/*" class="gc-new-file" id="stu_achievement_3" type="file">
 </input></div>
 </div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-slate-200">
+</div></section>
+<section class="gc-reg-section"><div class="gc-reg-section-title"><span>06</span><div><h3>Documents & Photo</h3><p>Optional supporting documents for your profile or verification.</p></div></div><div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-slate-200">
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Student Photo (Optional)</label>
-<input accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100" id="stu_photo" type="file"/>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Testimonials / College ID Card (Optional)</label>
-<input accept="image/*,application/pdf" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100" id="stu_college_id" type="file"/>
+<label class="gc-new-label">Student Photo (Optional)</label>
+<input accept="image/*" class="gc-new-file" id="stu_photo" type="file"/>
 </div>
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Aadhaar Card (Optional)</label>
-<input accept="image/*,application/pdf" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100" id="stu_aadhaar" type="file"/>
+<label class="gc-new-label">Testimonials / College ID Card (Optional)</label>
+<input accept="image/*,application/pdf" class="gc-new-file" id="stu_college_id" type="file"/>
 </div>
+<div>
+<label class="gc-new-label">Aadhaar Card (Optional)</label>
+<input accept="image/*,application/pdf" class="gc-new-file" id="stu_aadhaar" type="file"/>
 </div>
+</div></section>
+<section class="gc-reg-section"><div class="gc-reg-section-title"><span>+</span><div><h3>Additional Information</h3></div></div><div aria-hidden="true" class="gc-reg-otp-card gc-reg-otp-student" id="stuOtpBox">
+<div class="gc-reg-otp-head"><span class="gc-reg-otp-icon">✉</span><div><strong>EMAIL OTP VERIFICATION</strong><small>Enter the latest 6-digit OTP sent to your Email Address.</small></div></div>
+<div class="gc-reg-otp-inputs" data-otp-role="student">
+<input aria-label="Student OTP digit 1" autocomplete="one-time-code" class="gc-new-control" inputmode="numeric" maxlength="1"/>
+<input aria-label="Student OTP digit 2" class="gc-new-control" inputmode="numeric" maxlength="1"/>
+<input aria-label="Student OTP digit 3" class="gc-new-control" inputmode="numeric" maxlength="1"/>
+<input aria-label="Student OTP digit 4" class="gc-new-control" inputmode="numeric" maxlength="1"/>
+<input aria-label="Student OTP digit 5" class="gc-new-control" inputmode="numeric" maxlength="1"/>
+<input aria-label="Student OTP digit 6" class="gc-new-control" inputmode="numeric" maxlength="1"/>
+</div>
+<input id="stuEnteredOtp" type="hidden" value=""/>
+<button class="gc-reg-otp-verify" onclick="verifyEmailOtp('student')" type="button">VERIFY 6-DIGIT OTP</button>
+</div></section>
+<section class="gc-reg-section"><div class="gc-reg-section-title"><span>+</span><div><h3>Additional Information</h3></div></div><button class="w-full bg-slate-300 text-slate-600 font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2 cursor-not-allowed" disabled="" id="stuSubmitBtn" type="submit">
+                            PLEASE VERIFY EMAIL FIRST
+                        </button></section>
+<div class="gc-reg-footer-note">Only Email Address is mandatory. Every other field is optional unless you choose a service that specifically requires information or documents.</div>
 <button class="w-full bg-slate-300 text-slate-600 font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2 cursor-not-allowed" disabled="" id="stuSubmitBtn" type="submit">
                             PLEASE VERIFY EMAIL FIRST
                         </button>
 </form>
 </div>
 <!-- Tutor Form Card -->
-<div class="bg-brand-lightBg rounded-2xl sm:rounded-3xl shadow-lg border border-slate-200 p-5 sm:p-8 md:p-10 w-full hidden" id="tutorFormCard">
+<div class="bg-brand-lightBg rounded-2xl sm:rounded-3xl shadow-lg border border-slate-200 p-5 sm:p-8 md:p-10 w-full gc-reg-locked" id="tutorFormCard">
 <div class="text-center mb-6 sm:mb-8">
 <span class="bg-orange-100 text-brand-nagpurOrange text-[10px] sm:text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider">Tutor Pass</span>
 <h2 class="text-2xl sm:text-3xl font-black text-brand-dark mt-3 tracking-tight">Tutor Registration &amp; Payment</h2>
@@ -5489,84 +5485,64 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 </div>
 <iframe id="hidden_iframe" name="hidden_iframe" style="display:none;"></iframe>
 <form action="https://script.google.com/macros/s/AKfycbzFDeqKdg8FYoiClmXLWSNCvQIoVxWvq_0HZcCLCzYLrhuxpwyo76WkAVUY8D6vF-iA/exec" class="space-y-4" id="tutorRegForm" method="POST" onsubmit="handleTutorFormSubmit(event)" target="hidden_iframe">
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<section class="gc-reg-section gc-reg-identity"><div class="gc-reg-section-title"><span>01</span><div><h3>Basic Information</h3><p>Introduce yourself and your teaching area.</p></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Full Name</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_name" name="name" placeholder="Enter tutor name" type="text"/>
+<label class="gc-new-label">Full Name</label>
+<input class="gc-new-control" id="t_name" name="name" placeholder="Enter tutor name" type="text"/>
 </div>
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Subject Expertise</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_subject" name="subject" placeholder="e.g. Advanced Mathematics" type="text"/>
+<label class="gc-new-label">Subject Expertise</label>
+<input class="gc-new-control" id="t_subject" name="subject" placeholder="e.g. Advanced Mathematics" type="text"/>
 </div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+</div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address *</label>
+<label class="gc-new-label">Email Address *</label>
 <div class="flex gap-2">
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_email" name="email" placeholder="tutor@gmail.com" required="" type="email"/>
+<input aria-required="true" class="gc-new-control gc-email-required" id="t_email" name="email" placeholder="tutor@gmail.com" required="" type="email"/>
 <button class="bg-brand-nagpurOrange hover:bg-orange-600 text-white font-black px-3 py-2 rounded-xl text-[10px] sm:text-xs shrink-0 shadow" onclick="sendEmailOtp('tutor'); return false;" type="button">SEND OTP</button>
 <span class="gc-email-required-badge gc-email-required-orange">EMAIL VERIFICATION REQUIRED</span>
 </div>
 </div>
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">WhatsApp Number (Login ID)</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_phone" name="phone" placeholder="9876543210" type="tel"/>
+<label class="gc-new-label">WhatsApp Number (Login ID)</label>
+<input class="gc-new-control" id="t_phone" name="phone" placeholder="9876543210" type="tel"/>
 </div>
-</div>
-<div class="gc-email-verification-required-box gc-email-verification-required-orange"><div class="gc-email-verification-icon">✓</div><div><strong>EMAIL VERIFICATION IS COMPULSORY</strong><span>After registration, Supabase will send a 6-digit verification OTP to this email. Enter that OTP to activate your account.</span></div></div>
-<!-- EmailJS OTP verification: first gate before Supabase email verification -->
-<div aria-hidden="true" class="gc-reg-otp-card gc-reg-otp-tutor" id="tutorOtpBox">
-<div class="gc-reg-otp-head"><span class="gc-reg-otp-icon">✉</span><div><strong>EMAIL OTP VERIFICATION</strong><small>Enter the latest 6-digit OTP sent to your Email Address.</small></div></div>
-<div class="gc-reg-otp-inputs" data-otp-role="tutor">
-<input aria-label="Tutor OTP digit 1" autocomplete="one-time-code" class="gc-otp-digit" inputmode="numeric" maxlength="1"/>
-<input aria-label="Tutor OTP digit 2" class="gc-otp-digit" inputmode="numeric" maxlength="1"/>
-<input aria-label="Tutor OTP digit 3" class="gc-otp-digit" inputmode="numeric" maxlength="1"/>
-<input aria-label="Tutor OTP digit 4" class="gc-otp-digit" inputmode="numeric" maxlength="1"/>
-<input aria-label="Tutor OTP digit 5" class="gc-otp-digit" inputmode="numeric" maxlength="1"/>
-<input aria-label="Tutor OTP digit 6" class="gc-otp-digit" inputmode="numeric" maxlength="1"/>
-</div>
-<input id="tutorEnteredOtp" type="hidden" value=""/>
-<button class="gc-reg-otp-verify" onclick="verifyEmailOtp('tutor')" type="button">VERIFY 6-DIGIT OTP</button>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+</div></section>
+<section class="gc-reg-section"><div class="gc-reg-section-title"><span>03</span><div><h3>Professional Details</h3><p>Share the information students may use to understand your teaching profile.</p></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Rate / Hour</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_price" name="price" placeholder="e.g. ₹700/hr" type="text"/>
+<label class="gc-new-label">Rate / Hour</label>
+<input class="gc-new-control" id="t_price" name="price" placeholder="e.g. ₹700/hr" type="text"/>
 </div>
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Experience</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_exp" name="experience" placeholder="e.g. 5 Years" type="text"/>
+<label class="gc-new-label">Experience</label>
+<input class="gc-new-control" id="t_exp" name="experience" placeholder="e.g. 5 Years" type="text"/>
 </div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+</div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Educational Qualification</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_qualification" name="qualification" placeholder="e.g. M.Sc. Physics, B.Ed." type="text"/>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">College in Which You Are Teaching</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_teaching_college" name="teaching_college" placeholder="Enter teaching college name" type="text"/>
-</div>
+<label class="gc-new-label">Educational Qualification</label>
+<input class="gc-new-control" id="t_qualification" name="qualification" placeholder="e.g. M.Sc. Physics, B.Ed." type="text"/>
 </div>
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Residential Address</label>
-<textarea class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_address" name="address" placeholder="Enter residential address" rows="2"></textarea>
+<label class="gc-new-label">College in Which You Are Teaching</label>
+<input class="gc-new-control" id="t_teaching_college" name="teaching_college" placeholder="Enter teaching college name" type="text"/>
+</div>
+</div><div>
+<label class="gc-new-label">Residential Address</label>
+<textarea class="gc-new-control" id="t_address" name="address" placeholder="Enter residential address" rows="2"></textarea>
+</div><div>
+<label class="gc-new-label">About Me / Tutor Showcase</label>
+<textarea class="gc-new-control" id="t_about" name="about_me" placeholder="Tell students/coaching classes about your teaching ability, strengths, experience, methodology and what makes you a good tutor." rows="4"></textarea>
+</div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div>
+<label class="gc-new-label">College Name (Optional)</label>
+<input class="gc-new-control" id="t_college" name="college_name" placeholder="e.g. Ruia College / Freelance" type="text"/>
 </div>
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">About Me / Tutor Showcase</label>
-<textarea class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_about" name="about_me" placeholder="Tell students/coaching classes about your teaching ability, strengths, experience, methodology and what makes you a good tutor." rows="4"></textarea>
+<label class="gc-new-label">Tutor Photo (Optional)</label>
+<input accept="image/*" class="gc-new-file" id="t_photo" type="file"/>
 </div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">College Name (Optional)</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_college" name="college_name" placeholder="e.g. Ruia College / Freelance" type="text"/>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Tutor Photo (Optional)</label>
-<input accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange" id="t_photo" type="file"/>
-</div>
-</div>
-<div class="border-2 border-orange-100 bg-orange-50/40 rounded-2xl p-4 sm:p-5">
+</div></section>
+<section class="gc-reg-section"><div class="gc-reg-section-title"><span>04</span><div><h3>Profile & Achievements</h3><p>Add an optional photo and up to three achievement/certificate images.</p></div></div><div class="border-2 border-orange-100 bg-orange-50/40 rounded-2xl p-4 sm:p-5">
 <div class="flex items-center gap-3 mb-3">
 <div class="w-10 h-10 rounded-xl bg-orange-100 text-brand-nagpurOrange flex items-center justify-center shrink-0">
 <i class="fa-solid fa-trophy"></i>
@@ -5577,25 +5553,43 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 </div>
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-<input accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange" id="t_achievement_1" type="file"/>
-<input accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange" id="t_achievement_2" type="file">
-<input accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange" id="t_achievement_3" type="file"/>
+<input accept="image/*" class="gc-new-file" id="t_achievement_1" type="file"/>
+<input accept="image/*" class="gc-new-file" id="t_achievement_2" type="file"/>
+<input accept="image/*" class="gc-new-file" id="t_achievement_3" type="file">
 </input></div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+</div></section>
+<section class="gc-reg-section"><div class="gc-reg-section-title"><span>05</span><div><h3>Verification Documents</h3><p>Documents are optional except where the selected verification/service requires them.</p></div></div><div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">College ID Card (Optional)</label>
-<input accept="image/*,application/pdf" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange" id="t_college_id" type="file"/>
+<label class="gc-new-label">College ID Card (Optional)</label>
+<input accept="image/*,application/pdf" class="gc-new-file" id="t_college_id" type="file"/>
 </div>
 <div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Aadhaar Card (Mandatory for Verified Tick)</label>
-<input accept="image/*,application/pdf" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange" id="t_aadhaar" type="file"/>
+<label class="gc-new-label">Aadhaar Card (Mandatory for Verified Tick)</label>
+<input accept="image/*,application/pdf" class="gc-new-file" id="t_aadhaar" type="file"/>
 </div>
+</div></section>
+<section class="gc-reg-section"><div class="gc-reg-section-title"><span>06</span><div><h3>Payment / Listing Reference</h3><p>Enter the UTR / transaction reference when applicable to your selected service.</p></div></div><div class="border border-brand-nagpurOrange bg-orange-50/50 p-3 sm:p-4 rounded-2xl">
+<label class="gc-new-label">Enter UTR / Transaction Reference Number</label>
+<input class="gc-new-control" id="txnIdInput" name="utr" placeholder="Enter valid UTR / Transaction Reference" type="text"/>
+</div></section>
+<section class="gc-reg-section"><div class="gc-reg-section-title"><span>+</span><div><h3>Additional Information</h3></div></div><div class="gc-email-verification-required-box gc-email-verification-required-orange"><div class="gc-email-verification-icon">✓</div><div><strong>EMAIL VERIFICATION IS COMPULSORY</strong><span>After registration, Supabase will send a 6-digit verification OTP to this email. Enter that OTP to activate your account.</span></div></div></section>
+<section class="gc-reg-section"><div class="gc-reg-section-title"><span>+</span><div><h3>Additional Information</h3></div></div><div aria-hidden="true" class="gc-reg-otp-card gc-reg-otp-tutor" id="tutorOtpBox">
+<div class="gc-reg-otp-head"><span class="gc-reg-otp-icon">✉</span><div><strong>EMAIL OTP VERIFICATION</strong><small>Enter the latest 6-digit OTP sent to your Email Address.</small></div></div>
+<div class="gc-reg-otp-inputs" data-otp-role="tutor">
+<input aria-label="Tutor OTP digit 1" autocomplete="one-time-code" class="gc-new-control" inputmode="numeric" maxlength="1"/>
+<input aria-label="Tutor OTP digit 2" class="gc-new-control" inputmode="numeric" maxlength="1"/>
+<input aria-label="Tutor OTP digit 3" class="gc-new-control" inputmode="numeric" maxlength="1"/>
+<input aria-label="Tutor OTP digit 4" class="gc-new-control" inputmode="numeric" maxlength="1"/>
+<input aria-label="Tutor OTP digit 5" class="gc-new-control" inputmode="numeric" maxlength="1"/>
+<input aria-label="Tutor OTP digit 6" class="gc-new-control" inputmode="numeric" maxlength="1"/>
 </div>
-<div class="border border-brand-nagpurOrange bg-orange-50/50 p-3 sm:p-4 rounded-2xl">
-<label class="block text-[10px] sm:text-xs font-bold text-brand-nagpurOrange uppercase tracking-wider mb-1.5">Enter UTR / Transaction Reference Number</label>
-<input class="w-full border border-brand-nagpurOrange rounded-xl p-3 text-xs sm:text-sm font-mono font-bold bg-white" id="txnIdInput" name="utr" placeholder="Enter valid UTR / Transaction Reference" type="text"/>
-</div>
+<input id="tutorEnteredOtp" type="hidden" value=""/>
+<button class="gc-reg-otp-verify" onclick="verifyEmailOtp('tutor')" type="button">VERIFY 6-DIGIT OTP</button>
+</div></section>
+<section class="gc-reg-section"><div class="gc-reg-section-title"><span>+</span><div><h3>Additional Information</h3></div></div><button class="w-full bg-slate-300 text-slate-600 font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2 cursor-not-allowed" disabled="" id="tutorSubmitBtn" type="submit">
+                            PLEASE VERIFY EMAIL FIRST
+                        </button></section>
+<div class="gc-reg-footer-note">Only Email Address is mandatory. Every other field is optional unless a selected plan/service specifically requires information.</div>
 <button class="w-full bg-slate-300 text-slate-600 font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2 cursor-not-allowed" disabled="" id="tutorSubmitBtn" type="submit">
                             PLEASE VERIFY EMAIL FIRST
                         </button>
@@ -17518,50 +17512,30 @@ window.gcAdminAuth={email:GC_ADMIN_EMAIL,uid:GC_ADMIN_UID,get:gcGetAdmin};
 .gc-disabled-box .icon{width:72px;height:72px;border-radius:50%;margin:0 auto 15px;background:#fee2e2;color:#b91c1c;display:flex;align-items:center;justify-content:center;font-size:32px}
 @media(max-width:700px){.gc-reg-terms-grid{grid-template-columns:1fr}.gc-reg-actions{flex-direction:column}.gc-reg-terms-body{padding:16px;font-size:11px}}
 </style>
+
 <div aria-hidden="true" id="gcRegTermsGate">
-<div class="gc-reg-terms-card">
-<div class="gc-reg-terms-head">
-<h2>GURU CONNECT — USER AGREEMENT &amp; REGISTRATION TERMS</h2>
-<p>Please read and accept this agreement before the Tutor / Student Registration Form is opened.</p>
-</div>
-<div class="gc-reg-terms-body">
-<div class="gc-reg-note">
-<b>IMPORTANT NOTE BEFORE REGISTRATION:</b><br/>
-        Incomplete and incorrect information, if found in the form, may result in GURU CONNECT cancelling the registration.
-        This Form &amp; Payment are only for profile listing / platform services on the GURU CONNECT website. The user will be governed,
-        controlled and bound by the rules applicable to the plan selected by the user (Tutor or Student) and by the applicable GURU CONNECT policies.
+  <div class="gc-new-terms-shell" role="dialog" aria-modal="true" aria-labelledby="gcNewTermsTitle">
+    <div class="gc-new-terms-head">
+      <div class="gc-new-terms-badge">GURU CONNECT</div>
+      <h2 id="gcNewTermsTitle">USER AGREEMENT &amp; REGISTRATION TERMS</h2>
+      <p>Read these terms before registration. The registration form will remain locked until you accept.</p>
+    </div>
+    <div class="gc-new-terms-body">
+      <div class="gc-new-terms-note"><b>IMPORTANT BEFORE REGISTRATION</b><br>Incomplete or incorrect information may result in cancellation. Registration/payment relates to profile listing or platform services and is governed by the selected plan and applicable GURU CONNECT policies.</div>
+      <div class="gc-new-terms-grid"><div class="gc-new-term-box"><strong>1. Platform Purpose</strong><p>GURU CONNECT provides an online platform intended to facilitate profile listing and interaction between Tutors and Students. Listing does not guarantee admission, tuition, employment, students, enquiries, academic results or any particular outcome.</p></div><div class="gc-new-term-box"><strong>2. Accurate Information</strong><p>You must provide truthful, current and complete information. GURU CONNECT may request clarification, verification or supporting documents and may cancel, suspend or refuse a registration where information is incomplete, incorrect, misleading or unverifiable.</p></div><div class="gc-new-term-box"><strong>3. Plan-Based Access</strong><p>Features, visibility, coins, verification, helpline services, learning requests and other facilities may be controlled according to the plan purchased/assigned and the rules applicable to that plan. Payment does not automatically mean verification or approval.</p></div><div class="gc-new-term-box"><strong>4. Other Users' Information</strong><p>You must not misuse, copy, scrape, publish, sell, harass, impersonate, spam, threaten, exploit or otherwise misuse details of another user listed on GURU CONNECT. Any misuse is the responsibility of the defaulting user. GURU CONNECT is not responsible for the consequences of such misuse.</p></div><div class="gc-new-term-box"><strong>5. Privacy & Confidentiality</strong><p>User information displayed or made available through the platform may be limited by account status, connection status and plan controls. You must use any information only for legitimate platform-related purposes and comply with applicable law.</p></div><div class="gc-new-term-box"><strong>6. Prohibited Conduct</strong><p>Fraud, false identity, abusive language, harassment, unsolicited commercial contact, phishing, scams, unlawful content, unauthorised data collection, circumvention of platform controls or interference with the website/security systems is prohibited.</p></div><div class="gc-new-term-box"><strong>7. Staff / Admin Directions</strong><p>GURU CONNECT reserves the full right to disable, hide, suspend or remove any profile, with or without prior notice, if the user is found not following instructions of GURU CONNECT staff, administrators or authorised officials, or where action is reasonably required for safety, security, compliance or platform integrity.</p></div><div class="gc-new-term-box"><strong>8. Disable / Hide</strong><p>A Disabled profile may remain visible but the account's interactive/platform activities can be blocked. A Hidden profile is removed from the public website/directory and is also disabled. Hidden status remains until revoked by authorised GURU CONNECT staff/admin.</p></div><div class="gc-new-term-box"><strong>9. Payments</strong><p>Payments, listing periods, verification charges, helpline plans, coin usage and refunds are governed by the applicable plan and GURU CONNECT payment rules displayed at the time of purchase. A payment receipt/UTR is not by itself proof of approval.</p></div><div class="gc-new-term-box"><strong>10. User Responsibility</strong><p>You are responsible for your account credentials, activity, communications, content, documents and conduct. Do not share passwords or access another person's account. Notify GURU CONNECT if you suspect unauthorised access.</p></div><div class="gc-new-term-box"><strong>11. Platform Availability</strong><p>GURU CONNECT may experience maintenance, outages, network issues or third-party service failures. Reasonable efforts may be made to restore service, but uninterrupted availability is not guaranteed.</p></div><div class="gc-new-term-box"><strong>12. Legal Compliance</strong><p>You agree to use the platform in accordance with applicable laws and regulations of India and any other law applicable to your conduct. Nothing in these terms excludes rights that cannot legally be excluded.</p></div><div class="gc-new-term-box"><strong>13. Content & Documents</strong><p>You grant GURU CONNECT permission to process information and uploaded material for registration, verification, profile listing, support and platform administration, subject to applicable law and the controls of the platform.</p></div><div class="gc-new-term-box"><strong>14. No Guarantee of User Conduct</strong><p>GURU CONNECT facilitates platform interactions but cannot guarantee the conduct, identity, capability, availability or intentions of every user. Exercise appropriate caution before sharing sensitive information or entering private arrangements.</p></div><div class="gc-new-term-box"><strong>15. Changes to Rules</strong><p>GURU CONNECT may update platform rules, security controls, plan conditions and operational procedures. Updated terms may apply to future activity and, where appropriate, to continued use of the platform.</p></div><div class="gc-new-term-box"><strong>16. Acceptance</strong><p>By selecting the acceptance checkbox and proceeding to the registration form, you confirm that you have read, understood and agreed to these terms and to the applicable GURU CONNECT plan rules.</p></div><div class="gc-new-term-box"><strong>17. Tutor Physical Form & Signature Requirement</strong><p>For Tutors, it is mandatory to keep a physical / hard copy of the completed registration form containing the submitted details and the agreed GURU CONNECT terms & conditions, duly signed by the Tutor. The signed hard copy must be couriered to GURU CONNECT or submitted to a GURU CONNECT Executive when instructed. Further details and submission instructions will be communicated to you through your registered Email Address and/or Phone Number. Please follow the instructions communicated by GURU CONNECT.</p></div></div>
+      <label class="gc-new-consent">
+        <input id="gcRegTermsAccepted" type="checkbox">
+        <span>I HAVE READ, UNDERSTOOD AND ACCEPT THE GURU CONNECT USER AGREEMENT, REGISTRATION TERMS, PRIVACY/SAFETY RULES AND THE RULES APPLICABLE TO MY SELECTED PLAN.</span>
+      </label>
+      <div class="gc-new-terms-actions">
+        <button type="button" class="gc-new-cancel" onclick="gcCloseRegistrationTerms()">CANCEL</button>
+        <button type="button" class="gc-new-accept" onclick="gcAcceptRegistrationTerms()">✓ ACCEPT &amp; OPEN REGISTRATION FORM</button>
       </div>
-<div class="gc-reg-terms-grid">
-<div class="gc-reg-term-box"><strong>1. Platform Purpose</strong>GURU CONNECT provides an online platform intended to facilitate profile listing and interaction between Tutors and Students. Listing does not guarantee admission, tuition, employment, students, enquiries, academic results or any particular outcome.</div>
-<div class="gc-reg-term-box"><strong>2. Accurate Information</strong>You must provide truthful, current and complete information. GURU CONNECT may request clarification, verification or supporting documents and may cancel, suspend or refuse a registration where information is incomplete, incorrect, misleading or unverifiable.</div>
-<div class="gc-reg-term-box"><strong>3. Plan-Based Access</strong>Features, visibility, coins, verification, helpline services, learning requests and other facilities may be controlled according to the plan purchased/assigned and the rules applicable to that plan. Payment does not automatically mean verification or approval.</div>
-<div class="gc-reg-term-box"><strong>4. Other Users' Information</strong>You must not misuse, copy, scrape, publish, sell, harass, impersonate, spam, threaten, exploit or otherwise misuse details of another user listed on GURU CONNECT. Any misuse is the responsibility of the defaulting user. GURU CONNECT is not responsible for the consequences of such misuse.</div>
-<div class="gc-reg-term-box"><strong>5. Privacy &amp; Confidentiality</strong>User information displayed or made available through the platform may be limited by account status, connection status and plan controls. You must use any information only for legitimate platform-related purposes and comply with applicable law.</div>
-<div class="gc-reg-term-box"><strong>6. Prohibited Conduct</strong>Fraud, false identity, abusive language, harassment, unsolicited commercial contact, phishing, scams, unlawful content, unauthorised data collection, circumvention of platform controls or interference with the website/security systems is prohibited.</div>
-<div class="gc-reg-term-box"><strong>7. Staff / Admin Directions</strong>GURU CONNECT reserves the full right to disable, hide, suspend or remove any profile, with or without prior notice, if the user is found not following instructions of GURU CONNECT staff, administrators or authorised officials, or where action is reasonably required for safety, security, compliance or platform integrity.</div>
-<div class="gc-reg-term-box"><strong>8. Disable / Hide</strong>A Disabled profile may remain visible but the account's interactive/platform activities can be blocked. A Hidden profile is removed from the public website/directory and is also disabled. Hidden status remains until revoked by authorised GURU CONNECT staff/admin.</div>
-<div class="gc-reg-term-box"><strong>9. Payments</strong>Payments, listing periods, verification charges, helpline plans, coin usage and refunds are governed by the applicable plan and GURU CONNECT payment rules displayed at the time of purchase. A payment receipt/UTR is not by itself proof of approval.</div>
-<div class="gc-reg-term-box"><strong>10. User Responsibility</strong>You are responsible for your account credentials, activity, communications, content, documents and conduct. Do not share passwords or access another person's account. Notify GURU CONNECT if you suspect unauthorised access.</div>
-<div class="gc-reg-term-box"><strong>11. Platform Availability</strong>GURU CONNECT may experience maintenance, outages, network issues or third-party service failures. Reasonable efforts may be made to restore service, but uninterrupted availability is not guaranteed.</div>
-<div class="gc-reg-term-box"><strong>12. Legal Compliance</strong>You agree to use the platform in accordance with applicable laws and regulations of India and any other law applicable to your conduct. Nothing in these terms excludes rights that cannot legally be excluded.</div>
-<div class="gc-reg-term-box"><strong>13. Content &amp; Documents</strong>You grant GURU CONNECT permission to process information and uploaded material for registration, verification, profile listing, support and platform administration, subject to applicable law and the controls of the platform.</div>
-<div class="gc-reg-term-box"><strong>14. No Guarantee of User Conduct</strong>GURU CONNECT facilitates platform interactions but cannot guarantee the conduct, identity, capability, availability or intentions of every user. Exercise appropriate caution before sharing sensitive information or entering private arrangements.</div>
-<div class="gc-reg-term-box"><strong>15. Changes to Rules</strong>GURU CONNECT may update platform rules, security controls, plan conditions and operational procedures. Updated terms may apply to future activity and, where appropriate, to continued use of the platform.</div>
-<div class="gc-reg-term-box"><strong>16. Acceptance</strong>By selecting the acceptance checkbox and proceeding to the registration form, you confirm that you have read, understood and agreed to these terms and to the applicable GURU CONNECT plan rules.</div>
-<div class="gc-reg-term-box gc-reg-tutor-document-term"><strong>17. Tutor Physical Form &amp; Signature Requirement</strong>For Tutors, it is mandatory to keep a physical / hard copy of the completed registration form containing the submitted details and the agreed GURU CONNECT terms &amp; conditions, duly signed by the Tutor. The signed hard copy must be couriered to GURU CONNECT or submitted to a GURU CONNECT Executive when instructed. Further details and submission instructions will be communicated to you through your registered Email Address and/or Phone Number. Please follow the instructions communicated by GURU CONNECT.</div>
+      <a class="gc-new-full-terms" href="terms-and-conditions.html" target="_blank" rel="noopener">OPEN FULL TERMS &amp; CONDITIONS PAGE ↗</a>
+    </div>
+  </div>
 </div>
-<label class="gc-reg-check">
-<input id="gcRegTermsAccepted" type="checkbox"/>
-<span>I HAVE READ, UNDERSTOOD AND ACCEPT THE GURU CONNECT USER AGREEMENT, REGISTRATION TERMS, PRIVACY/SAFETY RULES AND THE RULES APPLICABLE TO MY SELECTED PLAN.</span>
-</label>
-<div class="gc-reg-actions">
-<button class="gc-reg-cancel" onclick="gcCloseRegistrationTerms()" type="button">CANCEL</button>
-<button class="gc-reg-accept" onclick="gcAcceptRegistrationTerms()" type="button">✓ ACCEPT &amp; OPEN REGISTRATION FORM</button>
-</div>
-<div style="text-align:center;margin-top:10px"><a href="terms-and-conditions.html" rel="noopener" style="font-weight:900;color:#2563eb;font-size:11px" target="_blank">OPEN FULL TERMS &amp; CONDITIONS PAGE ↗</a></div>
-</div>
-</div>
-</div>
+
 <div aria-hidden="true" class="gc-disabled-overlay" id="gcRegistrationSuccessModal">
 <div class="gc-disabled-box" style="max-width:680px">
 <div class="icon" style="background:#dcfce7;color:#15803d"><i class="fa-solid fa-circle-check"></i></div>
@@ -18016,6 +17990,165 @@ setInterval(checkCurrentAccount,60000);
   setTimeout(unlock,3000);
 })();
 </script>
+
+<style id="gc-registration-new-ui-final">
+/* GURU CONNECT NEW REGISTRATION UI — replaces the legacy visual treatment */
+#studentFormCard.gc-reg-locked,#tutorFormCard.gc-reg-locked{display:none!important}
+#registrationSection.gc-new-registration{background:linear-gradient(180deg,#f8fafc 0%,#eef4ff 100%)!important}
+.gc-new-reg-shell{max-width:1050px!important;margin:0 auto!important}
+.gc-reg-v3-form{display:block!important;background:#fff!important;border:1px solid #dbe4f0!important;border-radius:24px!important;padding:18px!important;box-shadow:0 18px 50px rgba(15,23,42,.10)!important}
+.gc-reg-v3-form .gc-reg-section{background:#f8fbff;border:1px solid #e2e8f0;border-radius:18px;padding:18px;margin:0 0 14px}
+.gc-reg-v3-form .gc-reg-section-title{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+.gc-reg-v3-form .gc-reg-section-title>span{width:34px;height:34px;flex:0 0 34px;border-radius:11px;background:#2563eb;color:#fff;display:grid;place-items:center;font-weight:900;font-size:11px}
+.gc-reg-v3-form .gc-reg-section-title h3{margin:0;color:#0f172a;font-size:17px;font-weight:900;letter-spacing:.01em}
+.gc-reg-v3-form .gc-reg-section-title p{margin:3px 0 0;color:#64748b;font-size:11px;font-weight:700;line-height:1.45}
+.gc-reg-v3-form> .gc-reg-section>div:not(.gc-reg-section-title){margin-bottom:12px}
+.gc-reg-v3-form .gc-new-label{display:block!important;margin:0 0 6px!important;color:#334155!important;font-size:11px!important;font-weight:900!important;letter-spacing:.05em!important;text-transform:uppercase!important}
+.gc-reg-v3-form .gc-new-control{width:100%!important;min-height:46px!important;border:1px solid #cbd5e1!important;border-radius:12px!important;background:#fff!important;padding:11px 13px!important;color:#0f172a!important;font-size:13px!important;font-weight:650!important;outline:none!important;box-shadow:0 1px 2px rgba(15,23,42,.03)!important}
+.gc-reg-v3-form textarea.gc-new-control{min-height:90px!important;resize:vertical!important}
+.gc-reg-v3-form .gc-new-control:focus{border-color:#2563eb!important;box-shadow:0 0 0 4px rgba(37,99,235,.10)!important}
+.gc-reg-v3-form .gc-email-required{border-color:#2563eb!important;background:#f8fbff!important}
+.gc-reg-v3-form .gc-new-file{width:100%!important;border:1px dashed #94a3b8!important;border-radius:12px!important;background:#fff!important;padding:10px!important;font-size:11px!important}
+.gc-reg-v3-form .gc-reg-footer-note{padding:12px 14px;border-radius:12px;background:#eff6ff;color:#1e40af;font-size:11px;font-weight:800;line-height:1.5;margin:4px 0 12px}
+.gc-reg-v3-form button[type=submit]{width:100%!important;min-height:52px!important;border:0!important;border-radius:14px!important;background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;color:#fff!important;font-size:13px!important;font-weight:950!important;letter-spacing:.04em!important;box-shadow:0 10px 24px rgba(37,99,235,.22)!important}
+.gc-reg-v3-form button[type=submit]:disabled{opacity:.55!important;cursor:not-allowed!important}
+.gc-reg-v3-form .gc-otp-digit{width:44px!important;height:48px!important;border:1px solid #cbd5e1!important;border-radius:10px!important;text-align:center!important;font-size:18px!important;font-weight:900!important}
+.gc-reg-v3-form .gc-reg-otp-verify{border:0!important;border-radius:10px!important;padding:10px 14px!important;background:#0f172a!important;color:#fff!important;font-weight:900!important}
+.gc-reg-v3-form .gc-reg-identity>div:first-of-type,.gc-reg-v3-form .gc-reg-identity>div:nth-of-type(2),
+.gc-reg-v3-form .gc-reg-section>div:not(.gc-reg-section-title){box-sizing:border-box}
+.gc-reg-v3-form .gc-reg-section > div{min-width:0}
+.gc-reg-v3-form .gc-reg-section > div[class*="grid"]{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+.gc-reg-v3-form .gc-reg-section > div[class*="grid"].grid-cols-1{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.gc-reg-v3-form .gc-reg-section:has(#studentHelplineDetails){background:linear-gradient(145deg,#f0fdf4,#eff6ff)}
+.gc-reg-v3-form #studentHelplineDetails{border-radius:14px!important;border:1px solid #dbeafe!important;background:#fff!important;padding:14px!important}
+.gc-reg-v3-form #studentHelplineDetails *{max-width:100%}
+.gc-reg-v3-form .gc-reg-section:has(#txnIdInput){background:linear-gradient(145deg,#fff7ed,#fff)}
+#gcRegTermsGate{position:fixed!important;inset:0!important;z-index:1000000!important;display:none!important;align-items:center!important;justify-content:center!important;padding:18px!important;background:rgba(2,6,23,.78)!important;backdrop-filter:blur(10px)!important}
+#gcRegTermsGate.gc-open{display:flex!important}
+.gc-new-terms-shell{width:min(980px,100%);max-height:92vh;background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 30px 100px rgba(0,0,0,.35);display:flex;flex-direction:column}
+.gc-new-terms-head{padding:22px 24px 18px;background:linear-gradient(135deg,#0f172a,#1e3a8a);color:#fff}
+.gc-new-terms-badge{display:inline-flex;padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.14);font-size:10px;font-weight:950;letter-spacing:.12em}
+.gc-new-terms-head h2{margin:10px 0 5px;font-size:24px;font-weight:950}
+.gc-new-terms-head p{margin:0;color:#cbd5e1;font-size:12px;font-weight:700}
+.gc-new-terms-body{padding:18px 20px 20px;overflow:auto}
+.gc-new-terms-note{padding:12px 14px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa;color:#7c2d12;font-size:11px;line-height:1.5;font-weight:700;margin-bottom:14px}
+.gc-new-terms-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.gc-new-term-box{border:1px solid #e2e8f0;border-radius:13px;padding:12px;background:#f8fafc}
+.gc-new-term-box strong{display:block;color:#0f172a;font-size:11px;font-weight:950;margin-bottom:5px}
+.gc-new-term-box p{margin:0;color:#475569;font-size:10.5px;line-height:1.5;font-weight:650}
+.gc-new-consent{display:flex;gap:10px;align-items:flex-start;margin-top:15px;padding:13px;border-radius:13px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;font-size:11px;line-height:1.5;font-weight:900;cursor:pointer}
+.gc-new-consent input{width:18px;height:18px;flex:0 0 18px;margin-top:1px;accent-color:#2563eb}
+.gc-new-terms-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+.gc-new-terms-actions button{border:0;border-radius:12px;padding:12px 17px;font-size:11px;font-weight:950;cursor:pointer}
+.gc-new-cancel{background:#e2e8f0;color:#334155}
+.gc-new-accept{background:#2563eb;color:#fff;box-shadow:0 8px 20px rgba(37,99,235,.22)}
+.gc-new-full-terms{display:block;text-align:center;margin-top:10px;color:#2563eb;font-size:10px;font-weight:900;text-decoration:none}
+@media(max-width:700px){
+ .gc-reg-v3-form{padding:10px!important;border-radius:18px!important}
+ .gc-reg-v3-form .gc-reg-section{padding:13px;border-radius:15px}
+ .gc-reg-v3-form .gc-reg-section > div[class*="grid"],
+ .gc-reg-v3-form .gc-reg-section > div[class*="grid"].grid-cols-1{grid-template-columns:1fr!important}
+ .gc-new-terms-shell{max-height:96vh;border-radius:18px}
+ .gc-new-terms-head{padding:17px}.gc-new-terms-head h2{font-size:18px}
+ .gc-new-terms-body{padding:12px}.gc-new-terms-grid{grid-template-columns:1fr}
+ .gc-new-terms-actions{flex-direction:column}.gc-new-terms-actions button{width:100%}
+}
+</style>
+
+
+<script id="gc-registration-new-flow-final">
+(function(){
+'use strict';
+var currentRole='';
+function by(id){return document.getElementById(id)}
+function lockForms(){
+  ['studentFormCard','tutorFormCard'].forEach(function(id){var x=by(id);if(x)x.classList.add('gc-reg-locked')});
+}
+function showForm(role){
+  role=String(role||'student').toLowerCase()==='tutor'?'tutor':'student';
+  currentRole=role;
+  sessionStorage.setItem('gc_reg_flow_role',role);
+  var card=by(role==='tutor'?'tutorFormCard':'studentFormCard');
+  var other=by(role==='tutor'?'studentFormCard':'tutorFormCard');
+  if(other)other.classList.add('gc-reg-locked');
+  if(card)card.classList.remove('gc-reg-locked');
+  var form=by(role==='tutor'?'tutorRegForm':'studentRegForm');
+  if(form){
+    form.classList.add('gc-reg-v3-form');
+    form.querySelectorAll('[required]').forEach(function(e){e.removeAttribute('required')});
+    var email=by(role==='tutor'?'t_email':'stu_email');
+    if(email){email.required=true;email.setAttribute('aria-required','true')}
+    var submit=by(role==='tutor'?'tutorSubmitBtn':'stuSubmitBtn');
+    if(submit)submit.classList.add('gc-new-submit');
+  }
+  var sec=by('registrationSection');if(sec)sec.classList.add('gc-new-registration');
+  try{card?.scrollIntoView({behavior:'smooth',block:'start'})}catch(_){}
+}
+window.gcOpenRegistration=function(role){
+  currentRole=String(role||'student').toLowerCase()==='tutor'?'tutor':'student';
+  lockForms();
+  var g=by('gcRegTermsGate'), cb=by('gcRegTermsAccepted');
+  if(cb)cb.checked=false;
+  if(g){g.classList.add('gc-open');g.setAttribute('aria-hidden','false')}
+};
+window.gcCloseRegistrationTerms=function(){
+  var g=by('gcRegTermsGate');if(g){g.classList.remove('gc-open');g.setAttribute('aria-hidden','true')}
+};
+window.gcAcceptRegistrationTerms=function(){
+  var cb=by('gcRegTermsAccepted');
+  if(!cb || !cb.checked){alert('Please tick the User Agreement checkbox before opening the Registration Form.');return}
+  sessionStorage.setItem('gc_terms_accepted','1');
+  sessionStorage.setItem('gc_terms_accepted_at',new Date().toISOString());
+  window.gcCloseRegistrationTerms();
+  showForm(currentRole||'student');
+  if(typeof window.gcPrepareForm==='function')try{window.gcPrepareForm(currentRole||'student')}catch(_){}
+};
+window.gcPrepareForm=function(role){
+  role=String(role||currentRole||'student').toLowerCase()==='tutor'?'tutor':'student';
+  var f=by(role==='tutor'?'tutorRegForm':'studentRegForm');if(!f)return;
+  f.classList.add('gc-reg-v3-form');
+  f.querySelectorAll('[required]').forEach(function(e){e.removeAttribute('required')});
+  var email=by(role==='tutor'?'t_email':'stu_email');
+  if(email){email.required=true;email.setAttribute('aria-required','true')}
+};
+window.switchTab=function(tab){
+  tab=String(tab||'').toLowerCase();
+  if(tab==='student'||tab==='tutor'){window.gcOpenRegistration(tab);return}
+  var req=by('tabRequirementBtn'); if(tab==='requirement' && req){var fn=req.getAttribute('data-original-onclick'); if(fn)try{eval(fn)}catch(_){}}
+};
+function removeStarsExceptEmail(){
+  ['studentRegForm','tutorRegForm'].forEach(function(fid){
+    var f=by(fid);if(!f)return;
+    f.querySelectorAll('label').forEach(function(l){
+      var t=(l.textContent||'').replace(/\s+/g,' ').trim();
+      if(!/email address/i.test(t))l.textContent=t.replace(/\s*\*\s*$/,'');
+    });
+    f.querySelectorAll('[required]').forEach(function(e){e.removeAttribute('required')});
+    var email=by(fid==='tutorRegForm'?'t_email':'stu_email');if(email)email.required=true;
+  });
+}
+function wireLinks(){
+  document.querySelectorAll('a[href="#registrationSection"]').forEach(function(a){
+    var t=(a.textContent||'').toLowerCase();
+    if(t.indexOf('tutor')>=0)a.onclick=function(e){e.preventDefault();window.gcOpenRegistration('tutor');return false};
+    if(t.indexOf('student')>=0)a.onclick=function(e){e.preventDefault();window.gcOpenRegistration('student');return false};
+  });
+}
+function boot(){
+  lockForms();
+  removeStarsExceptEmail();
+  wireLinks();
+  // Always require a fresh acceptance when a user starts a new registration flow.
+  sessionStorage.removeItem('gc_terms_accepted');
+  sessionStorage.removeItem('gc_terms_accepted_at');
+  var st=by('tabStudentBtn'),tu=by('tabTutorBtn');
+  if(st)st.onclick=function(e){e&&e.preventDefault();window.gcOpenRegistration('student');return false};
+  if(tu)tu.onclick=function(e){e&&e.preventDefault();window.gcOpenRegistration('tutor');return false};
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
+})();
+</script>
+
 </body></html>
 <script id="gc-v16-3-final-menu-cleanup">
 (function(){
