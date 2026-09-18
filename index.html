@@ -4716,7 +4716,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <!-- Header / Navbar -->
 <header class="gc-beautiful-header">
 <div class="gc-header-inner">
-<a aria-label="GURU CONNECT Home" class="gc-beautiful-lockup gc-logo3-lockup" href="#home"><img alt="GURU CONNECT logo" class="gc-logo3-image" src="guru-connect-new-header.png"/><span class="gc-header-brand-name" aria-label="GURU CONNECT"><span class="gc-brand-guru">GURU</span><span class="gc-brand-connect">CONNECT</span></span></a>
+<a aria-label="GURU CONNECT Home" class="gc-beautiful-lockup gc-logo3-lockup" href="#home"><img alt="GURU CONNECT logo" class="gc-logo3-image" src="guru-connect-new-header.png"/><span class="gc-header-brand-stack"><span class="gc-header-brand-name" aria-label="GURU CONNECT"><span class="gc-brand-guru">GURU</span><span class="gc-brand-connect">CONNECT</span></span><span class="gc-header-slogan">Connecting Mind - Creating Future...</span></span></a>
 <nav aria-label="Main navigation" class="gc-beautiful-nav">
 <a class="gc-beautiful-home" href="#home">Home</a>
 <a href="#tutors">Find Tutor</a>
@@ -5049,7 +5049,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <h2 class="text-2xl sm:text-3xl font-black text-brand-dark mt-3 tracking-tight">Student Registration</h2>
 <p class="text-slate-600 text-xs sm:text-sm mt-1">Register to verify your identity with Email OTP via <strong class="text-brand-blue">support@guruconnnect.in</strong>.</p>
 </div>
-<form class="space-y-4 sm:space-y-5" onsubmit="handleStudentFormSubmit(event)">
+<form class="space-y-4 sm:space-y-5" id="studentRegForm" onsubmit="handleStudentFormSubmit(event)">
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Student Full Name *</label>
 <input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_name" placeholder="Enter your full name" required="" type="text"/>
@@ -5061,6 +5061,16 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_email" placeholder="student@gmail.com" required="" type="email"/>
 <button class="bg-brand-blue hover:bg-blue-700 text-white font-bold px-3 py-2 rounded-xl text-[10px] sm:text-xs shrink-0 shadow" onclick="sendEmailOtp('student')" type="button">Send OTP</button>
 </div>
+</div>
+<div>
+<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Create Password *</label>
+<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_password" minlength="8" autocomplete="new-password" placeholder="Minimum 8 characters" required="" type="password"/>
+<p class="text-[10px] text-slate-500 mt-1">This password will be used for Student Login.</p>
+</div>
+<div>
+<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Create Password *</label>
+<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-nagpurOrange focus:outline-none font-medium bg-white" id="t_password" minlength="8" autocomplete="new-password" placeholder="Minimum 8 characters" required="" type="password"/>
+<p class="text-[10px] text-slate-500 mt-1">This password will be used for Tutor Login.</p>
 </div>
 <div>
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">WhatsApp Number (Login ID) *</label>
@@ -13096,7 +13106,67 @@ document.addEventListener('change',e=>{if(e.target?.id==='loginRoleInput')roleSe
 document.addEventListener('click',e=>{const m=by('loginModal');if(m&&!m.classList.contains('hidden')&&e.target===m)closeLoginModal()},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!by('loginModal')?.classList.contains('hidden'))closeLoginModal()});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{cleanMenu();setTimeout(cleanMenu,300);setTimeout(cleanMenu,1000);setTimeout(cleanMenu,2000)});else{cleanMenu();setTimeout(cleanMenu,300);setTimeout(cleanMenu,1000);setTimeout(cleanMenu,2000)}
-})();</script></body>
+})();</script>
+<style id="gc-registration-final-fix-2026">
+/* FINAL REGISTRATION + HEADER FIX */
+.gc-logo3-lockup{align-items:center!important}
+.gc-header-brand-stack{display:flex!important;flex-direction:column!important;justify-content:center!important;min-width:0!important;line-height:1!important}
+.gc-header-slogan{display:block!important;margin-top:6px!important;font-family:Inter,Arial,sans-serif!important;font-size:12px!important;line-height:1.15!important;font-weight:600!important;letter-spacing:.15px!important;color:#64748b!important;white-space:nowrap!important}
+.gc-header-brand-name{margin:0!important}
+#studentRegForm,#tutorRegForm{position:relative!important}
+#stu_password,#t_password{font-family:Inter,Arial,sans-serif!important}
+#stuSubmitBtn:not(:disabled),#tutorSubmitBtn:not(:disabled){pointer-events:auto!important;opacity:1!important;cursor:pointer!important}
+@media(max-width:850px){.gc-header-slogan{font-size:10px!important;margin-top:4px!important}.gc-header-brand-stack{max-width:calc(100vw - 150px)!important}}
+@media(max-width:520px){.gc-header-slogan{font-size:8px!important;letter-spacing:0!important}.gc-header-brand-stack{max-width:calc(100vw - 115px)!important}.gc-brand-guru,.gc-brand-connect{font-size:20px!important}}
+</style>
+<script id="gc-registration-final-js-2026">
+(function(){
+  'use strict';
+  function val(id){var x=document.getElementById(id);return x?(x.value||'').trim().toLowerCase():''}
+  function markUnverified(role){
+    var email=val(role==='student'?'stu_email':'t_email');
+    var btn=document.getElementById(role==='student'?'stuSubmitBtn':'tutorSubmitBtn');
+    if(!btn)return;
+    var key='gc_emailjs_verified_'+role;
+    var verified=localStorage.getItem(key)||'';
+    if(!email || verified!==email){
+      localStorage.removeItem(key);
+      btn.disabled=true;
+      btn.className='w-full bg-slate-300 text-slate-600 font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2 cursor-not-allowed';
+      btn.textContent='PLEASE VERIFY EMAIL FIRST';
+    }
+  }
+  function wire(role){
+    var id=role==='student'?'stu_email':'t_email';
+    var el=document.getElementById(id); if(!el)return;
+    el.addEventListener('input',function(){markUnverified(role)});
+    el.addEventListener('change',function(){markUnverified(role)});
+  }
+  function init(){wire('student');wire('tutor')}
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+  setTimeout(init,500);setTimeout(init,1500);
+
+  /* Record the exact email that passed the site's EmailJS OTP. */
+  var oldVerify=window.verifyEmailOtp;
+  if(typeof oldVerify==='function'){
+    window.verifyEmailOtp=async function(role){
+      await oldVerify(role);
+      var email=val(role==='student'?'stu_email':'t_email');
+      var entered=document.getElementById(role==='student'?'stuEnteredOtp':'tutorEnteredOtp');
+      /* The original verifier clears/hides the OTP box only on success. */
+      var box=document.getElementById(role==='student'?'stuOtpBox':'tutorOtpBox');
+      if(email && box && box.classList.contains('hidden')){
+        localStorage.setItem('gc_emailjs_verified_'+role,email);
+      }
+    };
+  }
+
+  /* Never allow a stale verified state after the user changes the email. */
+  setInterval(function(){markUnverified('student');markUnverified('tutor')},1000);
+})();
+</script>
+
+</body>
 <style id="gc-final-load-hero-transfer-pdf-fix">
 /* Final stable hero: one real image, exact 1640:515 ratio, no crop and no duplicate background artwork. */
 .gc-beautiful-hero{height:auto!important;min-height:0!important;padding:0!important;overflow:hidden!important;background:#fff!important}
