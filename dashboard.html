@@ -108,6 +108,8 @@ function toast(title,body){$('toastTitle').textContent=title;$('toastBody').text
 function roleProfileIds(){return pid()}
 async function init(){
  try{
+  if(sessionStorage.getItem('gc_logged_out')==='1'){sessionStorage.removeItem('gc_logged_out');try{await sb?.auth?.signOut({scope:'local'})}catch(_){}window.location.replace('index.html');return}
+
   if(!window.supabase?.createClient)throw new Error('Supabase library did not load. Please check internet/CDN access.');
   sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   const s=await safe(sb.auth.getSession());me=s.data.session?.user;
@@ -225,7 +227,7 @@ function startNotificationWatch(){clearInterval(notificationTimer);notificationT
 async function enableDesktopNotifications(){if(!('Notification' in window)){toast('Desktop notifications unavailable','This browser does not support Web Notifications.');return}try{const p=await Notification.requestPermission();toast(p==='granted'?'Desktop notifications enabled':'Desktop notifications not enabled',p==='granted'?'New connection/chat alerts can appear outside the tab.':'You can still use the in-site red notification badge.')}catch(e){toast('Notification permission unavailable','Use the in-site notification bell instead.')}}
 function browserNotify(title,body){try{if('Notification' in window&&Notification.permission==='granted'&&document.hidden)new Notification(title,{body,icon:'guru-connect-brand.png'})}catch(_){}
 }
-async function logout(){try{if(realtimeChannel)sb.removeChannel(realtimeChannel);await sb?.auth.signOut()}catch(_){}clearInterval(notificationTimer);['active_user_role','active_user_profile_id','active_user_id','active_user_name'].forEach(k=>localStorage.removeItem(k));location.href='index.html'}
+async function logout(){if(window.__gcLoggingOut)return;window.__gcLoggingOut=true;const b=$('logoutBtn');if(b){b.disabled=true;b.textContent='LOGGING OUT…'}sessionStorage.setItem('gc_logged_out','1');clearInterval(notificationTimer);try{if(realtimeChannel)await sb?.removeChannel(realtimeChannel)}catch(_){}['active_user_role','active_user_profile_id','active_user_id','active_user_name','active_user_email'].forEach(k=>localStorage.removeItem(k));const target=new URL('index.html',window.location.href).href;try{await Promise.race([sb?.auth.signOut({scope:'global'}),new Promise(r=>setTimeout(r,1200))])}catch(_){}window.location.replace(target)}
 window.addEventListener('error',e=>msg('Page error: '+(e.message||'Unknown JavaScript error')));window.addEventListener('unhandledrejection',e=>msg('System error: '+(e.reason?.message||e.reason||'Unknown error')));window.addEventListener('load',init);
 })();
 </script>
