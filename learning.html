@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GURU CONNECT — Live Learning Requirement Requests</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,Arial,sans-serif;background:#f4f7ff;color:#10204f}
+.top{height:92px;background:#fff;border-top:5px solid #35205f;border-bottom:1px solid #dbe3f0;display:flex;align-items:center;justify-content:space-between;padding:10px 28px;gap:18px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}.brand img{width:62px;height:62px;object-fit:contain}.brandtext{font-weight:950;font-size:23px;white-space:nowrap;color:#092e7c}.brandtext b{color:#0867dc}.slogan{font-size:10px;color:#64748b;font-weight:800;margin-left:3px}
+.toplinks{display:flex;gap:8px}.toplinks a{padding:11px 16px;border-radius:12px;background:#edf2fb;color:#17336d;text-decoration:none;font-weight:900;font-size:12px;white-space:nowrap}
+.wrap{max-width:1150px;margin:22px auto;padding:0 14px}
+.hero{background:linear-gradient(110deg,#17439d,#1468ee);color:#fff;border-radius:20px;padding:28px 26px;box-shadow:0 15px 35px rgba(30,75,170,.18)}
+.hero h1{margin:0;font-size:34px;font-weight:950;letter-spacing:-1px}.hero p{margin:8px 0 12px;font-size:13px;font-weight:800}.live{display:inline-block;background:rgba(255,255,255,.17);border-radius:20px;padding:7px 12px;font-size:11px;font-weight:950}
+.toolbar{background:#fff;border:1px solid #d8e1ef;border-radius:16px;padding:14px;margin:14px 0;display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px}
+.toolbar label{font-size:10px;font-weight:950;color:#475569;display:block;margin-bottom:5px}.toolbar select,.toolbar button{width:100%;height:40px;border:1px solid #cbd5e1;border-radius:10px;background:#fff;font-weight:800;padding:0 10px}.toolbar button{background:#145de2;color:#fff;border:0;cursor:pointer}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.card{width:100%;min-height:500px;padding:14px;border-radius:16px;background:linear-gradient(145deg,#fff,#f4f8ff);border:1px solid #cbd9ef;box-shadow:0 10px 28px rgba(25,55,110,.08);display:flex;flex-direction:column}
+.cardtop{display:flex;justify-content:space-between;align-items:center;height:38px}.role{font-size:11px;font-weight:950;background:#e8f0ff;color:#1558c6;border-radius:9px;padding:7px 9px}.status{font-size:9px;font-weight:950;background:#dcfce7;color:#08753d;border-radius:9px;padding:7px 9px}.status.closed{background:#fee2e2;color:#b91c1c}.status.approved{background:#ede9fe;color:#6d28d9}
+.identity{display:flex;align-items:center;gap:12px;min-height:118px}.avatar{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#dbeafe,#bfdbfe);font-size:50px;border:4px solid #fff;box-shadow:0 6px 18px rgba(30,64,175,.15)}.name{font-size:21px;font-weight:950;margin:0;color:#102a72}.sub{font-size:13px;font-weight:900;color:#64748b;margin-top:5px}
+.info{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin:5px 0 8px}.box{height:54px;background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:6px 8px;display:flex;align-items:center;gap:7px}.ico{font-size:18px;width:23px}.box b{display:block;font-size:8px;color:#64748b}.box span{display:block;font-size:10px;font-weight:900;color:#172554;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+.need{margin-top:2px;min-height:72px;border:1px solid #fde68a;background:#fffdf0;border-radius:12px;padding:9px 10px;color:#9a3412;font-size:10px;font-weight:750}.need b{display:block;font-size:10px;margin-bottom:4px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto;padding-top:10px}.actions button{height:40px;border-radius:10px;font-weight:950;font-size:11px;cursor:pointer}.more{background:#fff;border:1px solid #2563eb;color:#1558c6}.connect{border:0;background:linear-gradient(90deg,#087f55,#0b9c68);color:#fff}
+.empty{background:#fff;border:2px dashed #cbd5e1;border-radius:16px;padding:45px;text-align:center;color:#64748b;font-weight:900;grid-column:1/-1}.error{color:#b91c1c}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.58);display:none;align-items:center;justify-content:center;padding:18px;z-index:1000}.modal.open{display:flex}.modalbox{width:min(600px,96vw);max-height:88vh;overflow:auto;background:#fff;border-radius:18px;padding:22px;box-shadow:0 30px 90px rgba(0,0,0,.35)}.modalhead{display:flex;justify-content:space-between;gap:10px;align-items:center}.close{border:0;background:#eef2ff;border-radius:9px;padding:8px 11px;font-weight:950;cursor:pointer}.detailgrid{display:grid;gap:10px;margin-top:15px}.detail{padding:11px;border-radius:11px;background:#f8fafc}.detail b{font-size:10px;color:#64748b}.detail div{font-weight:850;margin-top:3px}
+@media(max-width:800px){.top{padding:9px 14px}.brandtext{font-size:18px}.slogan{display:none}.toplinks a{padding:9px 10px}.grid{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr 1fr}.hero h1{font-size:26px}}
+@media(max-width:520px){.top{height:78px}.brand img{width:50px;height:50px}.brandtext{font-size:16px}.toplinks a:first-child{display:none}.hero{padding:22px 18px}.hero h1{font-size:23px}.toolbar{grid-template-columns:1fr}.card{min-height:0}.identity{min-height:105px}.avatar{width:86px;height:86px;font-size:42px}.name{font-size:18px}.info{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="index.html" aria-label="GURU CONNECT Home">
+    <img src="guru-connect-header-transparent.png" alt="GURU CONNECT logo">
+    <span class="brandtext">GURU <b>CONNECT</b><span class="slogan">Connecting Mind - Creating Future...</span></span>
+  </a>
+  <nav class="toplinks"><a href="index.html">← WEBSITE</a><a href="login-tutor.html">TUTOR LOGIN</a></nav>
+</header>
+
+<main class="wrap">
+<section class="hero">
+  <h1>👑 Live Learning Requirement Requests</h1>
+  <p>Student-posted Learning Requirements appear here automatically. Tutors can view the requirement and connect with the student.</p>
+  <span class="live" id="live">● LIVE FEED • CONNECTING...</span>
+</section>
+
+<section class="toolbar">
+  <div><label>STATUS</label><select id="status"><option value="OPEN">LRR — OPEN</option><option value="CLOSED">LRR — CLOSED</option><option value="ADMIN_APPROVED">LRR — ADMIN APPROVED</option><option value="ALL">ALL TIME LRR</option></select></div>
+  <div><label>STREAM</label><select id="stream"><option value="ALL">All Streams</option></select></div>
+  <div><label>SUBJECT</label><select id="subject"><option value="ALL">All Subjects</option></select></div>
+  <div style="display:flex;align-items:end"><button id="refresh">↻ REFRESH</button></div>
+</section>
+
+<section id="grid" class="grid"><div class="empty">Loading live Student requirements…</div></section>
+</main>
+
+<div id="modal" class="modal"><div class="modalbox"><div class="modalhead"><h2 id="mtitle" style="margin:0;color:#13246b">Learning Requirement</h2><button class="close" id="mclose">✕</button></div><div id="mdetails" class="detailgrid"></div></div></div>
+
+<script>
+(function(){
+'use strict';
+const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
+const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+const grid=document.getElementById('grid'),live=document.getElementById('live');
+let all=[];
+const esc=v=>String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+const fmt=v=>{if(!v)return '—';const d=new Date(v);return isNaN(d)?String(v):d.toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});};
+const deadline=r=>r.learning_deadline||r.deadline||r.expires_at||r.expiry_date;
+const closed=r=>{const x=deadline(r);return !!x && !isNaN(new Date(x)) && new Date(x).getTime()<Date.now()};
+const approved=r=>{const s=String(r.status||'').toUpperCase().replace(/\s+/g,'_');return s.includes('ADMIN_APPROV')||s==='APPROVED'||s==='PENDING_ADMIN_APPROVAL'||r.admin_approved===true||r.adminApproved===true};
+function normalize(x){
+  if(x==null)return [];
+  if(typeof x==='string'){try{return normalize(JSON.parse(x))}catch(e){return []}}
+  if(Array.isArray(x)){
+    const out=[];
+    for(const v of x){
+      if(typeof v==='string'){out.push(...normalize(v))}
+      else if(Array.isArray(v)){out.push(...normalize(v))}
+      else if(v&&typeof v==='object'){
+        const vals=Object.values(v);
+        if(Object.keys(v).length===1 && typeof vals[0]==='string'){out.push(...normalize(vals[0]));continue}
+        if(v.id||v.request_code||v.student_id)out.push(v);
+        else if(Array.isArray(v.rows))out.push(...normalize(v.rows));
+      }
+    }
+    return out;
+  }
+  if(typeof x==='object'){
+    if(Array.isArray(x.rows))return normalize(x.rows);
+    if(x.id||x.request_code||x.student_id)return [x];
+    const vals=Object.values(x);
+    if(vals.length===1)return normalize(vals[0]);
+  }
+  return [];
+}
+async function restRpc(name){
+  const r=await fetch(URL+'/rest/v1/rpc/'+encodeURIComponent(name),{method:'POST',headers:{apikey:KEY,Authorization:'Bearer '+KEY,'Content-Type':'application/json',Accept:'application/json'},body:'{}',cache:'no-store'});
+  const raw=await r.text();
+  if(!r.ok)throw new Error(raw||('HTTP '+r.status));
+  return normalize(raw);
+}
+async function load(){
+  live.textContent='● LIVE FEED • CONNECTING...';
+  try{
+    let rows=[];
+    try{rows=await restRpc('gc_list_learning_requests_public_v5')}catch(e){
+      console.warn('V5 failed',e);
+      try{rows=await restRpc('gc_list_learning_requests_public_v4')}catch(e2){
+        console.warn('V4 REST failed',e2);
+        if(window.supabase?.createClient){
+          const s=window.supabase.createClient(URL,KEY,{auth:{persistSession:false}});
+          const q=await s.rpc('gc_list_learning_requests_public_v4');
+          if(q.error)throw q.error;
+          rows=normalize(q.data);
+        }else throw e2;
+      }
+    }
+    all=rows.filter(r=>r&&typeof r==='object'&&!['DELETED','DELETED_BY_ADMIN'].includes(String(r.status||'').toUpperCase()));
+    all.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+    rebuild();
+    render();
+    live.textContent='● LIVE FEED • '+all.length+' REQUESTS';
+  }catch(e){
+    console.error('GURU CONNECT LRR:',e);
+    live.textContent='● LIVE FEED • ERROR';
+    grid.innerHTML='<div class="empty error">⚠️ Live LRR feed could not be read.<br><small>'+esc(e.message||String(e))+'</small></div>';
+  }
+}
+function rebuild(){
+  const fill=(id,key,label)=>{const el=document.getElementById(id);const vals=[...new Set(all.map(r=>String(r[key]||'').trim()).filter(Boolean))].sort();el.innerHTML='<option value="ALL">'+label+'</option>'+vals.map(v=>'<option value="'+esc(v)+'">'+esc(v)+'</option>').join('')};
+  fill('stream','stream','All Streams');fill('subject','subject','All Subjects');
+}
+function rows(){
+  const st=document.getElementById('status').value, s=document.getElementById('stream').value, sub=document.getElementById('subject').value;
+  return all.filter(r=>{
+    if(st==='OPEN' && (closed(r)||approved(r)||String(r.status||'OPEN').toUpperCase()==='CLOSED'))return false;
+    if(st==='CLOSED' && !closed(r))return false;
+    if(st==='ADMIN_APPROVED' && !approved(r))return false;
+    if(s!=='ALL'&&String(r.stream||'')!==s)return false;
+    if(sub!=='ALL'&&String(r.subject||'')!==sub)return false;
+    return true;
+  });
+}
+function card(r){
+  const student=r.student_name||r.student_full_name||r.full_name||r.name||'GURU CONNECT Student';
+  const status=closed(r)?'LRR CLOSED':approved(r)?'LRR ADMIN APPROVED':'LRR OPEN';
+  const cls=closed(r)?'closed':approved(r)?'approved':'';
+  return '<article class="card">'+
+  '<div class="cardtop"><span class="role">⚡ LRR • LIVE</span><span class="status '+cls+'">'+status+'</span></div>'+
+  '<div class="identity"><div class="avatar">👩🏻‍🎓</div><div><h3 class="name">'+esc(student)+'</h3><div class="sub">📚 '+esc(r.subject||'Subject not specified')+'</div></div></div>'+
+  '<div class="info">'+
+  box('📖','COURSE',r.course||'—')+box('🌐','STREAM',r.stream||'—')+
+  box('🎯','TOPIC',r.topic||'—')+box('⏳','DEADLINE',fmt(r.learning_deadline||r.deadline))+
+  box('🪙','REWARD',Number(r.coins_held||100)+' GURU COINS')+box('🕒','POSTED',fmt(r.created_at))+
+  '</div><div class="need"><b>📝 LEARNING REQUIREMENT</b>'+esc(r.issue||r.problem||'Student has not added a detailed issue.')+'</div>'+
+  '<div class="actions"><button class="more" data-id="'+esc(r.id||'')+'">VIEW DETAILS</button><button class="connect" data-connect="1">🤝 CONNECT</button></div></article>';
+}
+function box(i,b,v){return '<div class="box"><span class="ico">'+i+'</span><div><b>'+b+'</b><span title="'+esc(v)+'">'+esc(v)+'</span></div></div>'}
+function render(){
+  const rs=rows();
+  grid.innerHTML=rs.length?rs.map(card).join(''):'<div class="empty">🔎 No Learning Requirement matches these filters.</div>';
+  grid.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>details(b.dataset.id));
+  grid.querySelectorAll('[data-connect]').forEach(b=>b.onclick=()=>location.href='login-tutor.html?return=learning.html');
+}
+function details(id){
+  const r=all.find(x=>String(x.id)===String(id));if(!r)return;
+  document.getElementById('mtitle').textContent=r.subject||'Learning Requirement';
+  document.getElementById('mdetails').innerHTML=
+    '<div class="detail"><b>LRR ID</b><div>'+esc(r.request_code||r.id)+'</div></div>'+
+    '<div class="detail"><b>STUDENT</b><div>'+esc(r.student_name||r.student_full_name||r.full_name||r.name||'GURU CONNECT Student')+'</div></div>'+
+    '<div class="detail"><b>COURSE / STREAM</b><div>'+esc(r.course||'—')+' / '+esc(r.stream||'—')+'</div></div>'+
+    '<div class="detail"><b>SUBJECT / TOPIC</b><div>'+esc(r.subject||'—')+' / '+esc(r.topic||'—')+'</div></div>'+
+    '<div class="detail"><b>MODE</b><div>'+esc(r.mode||'—')+'</div></div>'+
+    '<div class="detail"><b>DEADLINE</b><div>'+esc(fmt(r.learning_deadline||r.deadline))+'</div></div>'+
+    '<div class="detail"><b>COINS HELD</b><div>🪙 '+esc(r.coins_held||100)+'</div></div>'+
+    '<div class="detail"><b>LEARNING REQUIREMENT</b><div>'+esc(r.issue||r.problem||'No additional details.')+'</div></div>';
+  document.getElementById('modal').classList.add('open');
+}
+document.getElementById('mclose').onclick=()=>document.getElementById('modal').classList.remove('open');
+document.getElementById('modal').onclick=e=>{if(e.target.id==='modal')e.currentTarget.classList.remove('open')};
+document.getElementById('status').onchange=render;
+document.getElementById('stream').onchange=render;
+document.getElementById('subject').onchange=render;
+document.getElementById('refresh').onclick=load;
+load();setInterval(load,15000);
+})();
+</script>
+</body>
+</html>
