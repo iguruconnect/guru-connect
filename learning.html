@@ -40,12 +40,29 @@ function connFor(r){return connections.find(c=>String(c.learning_request_id||'')
 function connectionState(r){const c=connFor(r);if(!c)return null;return String(c.status||'PENDING').toUpperCase()}
 function otherFor(r,c){if(role()==='student')return {id:String(c?.sender_profile_id||r.tutor_id||''),role:'tutor',name:r.tutor_name||r.tutorName||('Tutor '+sid(c?.sender_profile_id||r.tutor_id,'tutor'))};return {id:String(c?.recipient_profile_id||r.student_id||''),role:'student',name:r.student_name||r.studentName||('Student '+sid(c?.recipient_profile_id||r.student_id,'student'))}}
 function canChat(r){const c=connFor(r),st=String(c?.status||'').toUpperCase();if(!meUser||!c||st!=='ACCEPTED')return false;const o=otherFor(r,c);return !!o.id}
+function normalizeLRRPayload(payload){
+  if(typeof payload==='string'){try{payload=JSON.parse(payload)}catch(_){return []}}
+  if(payload && !Array.isArray(payload) && Array.isArray(payload.rows)) payload=payload.rows;
+  if(!Array.isArray(payload)) return payload&&typeof payload==='object'?[payload]:[];
+  const out=[];
+  for(const item of payload){
+    if(Array.isArray(item)){
+      for(const sub of item){
+        if(typeof sub==='string'){try{const o=JSON.parse(sub);if(o&&typeof o==='object')out.push(o)}catch(_){} }
+        else if(sub&&typeof sub==='object') out.push(sub);
+      }
+    }else if(typeof item==='string'){
+      try{const o=JSON.parse(item);if(o&&typeof o==='object')out.push(o)}catch(_){}
+    }else if(item&&typeof item==='object') out.push(item);
+  }
+  return out;
+}
 async function load(){
   meUser=await getMe();
   await loadConnections();
   let data=[], source='';
-  try{const q=await sb.rpc('gc_list_learning_requests_public_v5');if(!q.error){let payload=q.data;if(typeof payload==='string'){try{payload=JSON.parse(payload)}catch(_){}};data=Array.isArray(payload)?payload:(payload&&Array.isArray(payload.rows)?payload.rows:[]);data=data.flatMap(x=>Array.isArray(x)?x:[x]).filter(x=>x&&typeof x==='object');source='gc_list_learning_requests_public_v5';}else console.warn('LRR public v5 failed:',q.error)}catch(e){console.warn('LRR public v5 unavailable:',e)}
-  if(!data.length){try{const q=await sb.rpc('gc_list_learning_requests_public_v4');if(!q.error){let payload=q.data;if(typeof payload==='string'){try{payload=JSON.parse(payload)}catch(_){}};data=Array.isArray(payload)?payload:(payload&&Array.isArray(payload.rows)?payload.rows:[]);data=data.flatMap(x=>Array.isArray(x)?x:[x]).filter(x=>x&&typeof x==='object');if(data.length)source='gc_list_learning_requests_public_v4';}else console.warn('LRR public v4 failed:',q.error)}catch(e){console.warn('LRR public v4 unavailable:',e)}}
+  try{const q=await sb.rpc('gc_list_learning_requests_public_v5');if(!q.error){data=normalizeLRRPayload(q.data);if(data.length)source='gc_list_learning_requests_public_v5';}else console.warn('LRR public v5 failed:',q.error)}catch(e){console.warn('LRR public v5 unavailable:',e)}
+  if(!data.length){try{const q=await sb.rpc('gc_list_learning_requests_public_v4');if(!q.error){data=normalizeLRRPayload(q.data);if(data.length)source='gc_list_learning_requests_public_v4';}else console.warn('LRR public v4 failed:',q.error)}catch(e){console.warn('LRR public v4 unavailable:',e)}}
   if(!data.length){try{const direct=await sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(1000);if(!direct.error&&Array.isArray(direct.data)&&direct.data.length){data=direct.data;source='gc_learning_requests_v2'}else if(direct.error)console.warn('Direct v2 read unavailable:',direct.error)}catch(e){console.warn('Direct LRR v2 read unavailable:',e)}}
   if(!data.length){try{const q=await sb.rpc('gc_list_learning_requests_public_v3');if(!q.error&&Array.isArray(q.data)){data=q.data.flatMap(x=>Array.isArray(x)?x:[x]).filter(x=>x&&typeof x==='object');source='gc_list_learning_requests_public_v3'}}catch(e){console.warn('LRR public v3 unavailable:',e)}}
   if(!data.length){try{const old=await sb.from('gc_learning_requests').select('*').order('created_at',{ascending:false}).limit(1000);if(!old.error&&Array.isArray(old.data)){data=old.data;source='gc_learning_requests'}}catch(e){console.warn('Legacy LRR read unavailable:',e)}}
