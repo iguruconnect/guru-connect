@@ -18176,70 +18176,26 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
   window.addEventListener('load',()=>setTimeout(boot,300));
 })();
 </script>
-
-<script id="gc-admin-login-surgical-fix-2026-09-20">
+<script id="gc-learning-page-route-fix">
 (function(){
-  const GC_ADMIN_EMAIL='guruconnect.in@gmail.com';
-  const GC_ADMIN_UID='1df7606a-3a96-4116-b022-804b37a3c3dd';
-  const GC_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
-  const GC_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
-  function gcClient(){
-    if(window.gcSupabase) return window.gcSupabase;
-    if(window.supabase?.createClient){
-      window.gcSupabase=window.supabase.createClient(GC_URL,GC_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-      return window.gcSupabase;
-    }
-    return null;
+  function fixLearningLinks(){
+    document.querySelectorAll('a').forEach(function(a){
+      const text=(a.textContent||'').trim().toLowerCase();
+      const href=(a.getAttribute('href')||'').toLowerCase();
+      if(text.includes('learning request') || href==='learning.html' || href.endsWith('/learning.html')){
+        a.setAttribute('href','learning.html?v=20260920');
+        a.onclick=function(e){
+          e.preventDefault();
+          window.location.href='learning.html?v=20260920';
+          return false;
+        };
+      }
+    });
   }
-  window.gcEmailLogin=async function(){
-    const role=String(document.getElementById('loginRoleInput')?.value||'student').toLowerCase();
-    if(role!=='staff'){
-      if(typeof window.gcMemberEmailLogin==='function') return window.gcMemberEmailLogin();
-      return false;
-    }
-    const email=String(document.getElementById('loginEmailInput')?.value||'').trim().toLowerCase();
-    const password=String(document.getElementById('loginPasswordInput')?.value||'');
-    if(email!==GC_ADMIN_EMAIL){
-      alert('Please use the registered Staff/Admin email: '+GC_ADMIN_EMAIL);
-      return false;
-    }
-    if(!password){alert('Enter the Staff/Admin password.');return false;}
-    const s=gcClient();
-    if(!s){alert('Secure login is unavailable. Please refresh the page.');return false;}
-    try{
-      const r=await s.auth.signInWithPassword({email:GC_ADMIN_EMAIL,password});
-      if(r.error) throw r.error;
-      const u=r.data?.user, session=r.data?.session;
-      if(!u||!session) throw new Error('Supabase did not create an Admin session.');
-      if(String(u.id)!==GC_ADMIN_UID) throw new Error('This account is not the configured Staff/Admin account.');
-      window.gcSupabase=s;
-      localStorage.setItem('is_staff_logged','true');
-      localStorage.setItem('gc_staff_supabase_auth','true');
-      localStorage.setItem('active_user_role','staff');
-      localStorage.setItem('active_user_id',GC_ADMIN_UID);
-      localStorage.setItem('active_user_email',GC_ADMIN_EMAIL);
-      try{window.closeLoginModal?.();}catch(_){ }
-      try{window.checkStaffSessionState?.();}catch(_){ }
-      try{window.GC_FINAL_ADMIN?.setVisible?.(true);}catch(_){ }
-      try{window.renderAdminQueue?.();}catch(_){ }
-      return true;
-    }catch(err){
-      console.error('GURU CONNECT Admin login:',err);
-      alert('Staff/Admin Login failed:\n\n'+(err?.message||String(err)));
-      return false;
-    }
-  };
-  window.openStaffLoginModal=function(){
-    const r=document.getElementById('loginRoleInput'); if(r) r.value='staff';
-    const t=document.getElementById('gcUnifiedLoginTitle'); if(t) t.textContent='Staff / Admin Login';
-    const e=document.getElementById('loginEmailInput'); if(e) e.value=GC_ADMIN_EMAIL;
-    const p=document.getElementById('loginPasswordInput'); if(p){p.value='';setTimeout(()=>p.focus(),50);}
-    const m=document.getElementById('loginModal');
-    if(m){m.classList.remove('hidden');m.style.display='flex';m.setAttribute('aria-hidden','false');}
-  };
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fixLearningLinks,{once:true});
+  else fixLearningLinks();
 })();
-</script>
-</body>
+</script></body>
 </html>
 
 <style id="gc-verified-tutor-green-absolute-final-2026">
