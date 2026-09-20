@@ -72,53 +72,17 @@ let role='student', otpVerified=false, otpEmail='', pendingAuthUser=null;
 function show(t,ok=false){$('msg').textContent=t;$('msg').className='msg show '+(ok?'ok':'err');$('msg').scrollIntoView({behavior:'smooth',block:'center'})}
 function setOtpInputs(enabled){document.querySelectorAll('.otp').forEach(x=>{x.disabled=!enabled;x.value='';});$('verifyOtp').disabled=!enabled;if(enabled)document.querySelector('.otp').focus()}
 function syncRole(){document.querySelectorAll('.role').forEach(b=>b.classList.toggle('active',b.dataset.role===role));document.querySelectorAll('.tutorOnly').forEach(x=>x.style.display=role==='tutor'?'block':'none');document.querySelectorAll('.studentOnly').forEach(x=>x.style.display=role==='student'?'block':'none');$('submit').textContent='COMPLETE '+role.toUpperCase()+' REGISTRATION';if(role==='student')$('registration_date').value||=(new Date().toISOString().slice(0,10))}
-document.querySelectorAll('.role').forEach(b=>b.addEventListener('click',()=>{if(otpVerified)return;role=b.dataset.role;syncRole()}));syncRole();
+document.querySelectorAll('.role').forEach(b=>b.addEventListener('click',()=>{if(otpVerified)return;role=b.dataset.role;syncRole()}));
+const requestedRole=new URLSearchParams(location.search).get('role');
+if(requestedRole==='student'||requestedRole==='tutor')role=requestedRole;
+syncRole();
 document.querySelectorAll('.otp').forEach((input,i)=>{input.addEventListener('input',e=>{let v=e.target.value.replace(/\D/g,'');if(v.length>1){const c=v.slice(0,8).split('');document.querySelectorAll('.otp').forEach((x,j)=>x.value=c[j]||'');document.querySelectorAll('.otp')[Math.min(c.length,8)-1]?.focus();return}e.target.value=v;if(v&&i<7)document.querySelectorAll('.otp')[i+1].focus()});input.addEventListener('keydown',e=>{if(e.key==='Backspace'&&!input.value&&i>0)document.querySelectorAll('.otp')[i-1].focus();if(e.key==='ArrowLeft'&&i>0)document.querySelectorAll('.otp')[i-1].focus();if(e.key==='ArrowRight'&&i<7)document.querySelectorAll('.otp')[i+1].focus();if(e.key==='Enter')$('verifyOtp').click()});input.addEventListener('paste',e=>{e.preventDefault();const c=(e.clipboardData.getData('text')||'').replace(/\D/g,'').slice(0,8).split('');document.querySelectorAll('.otp').forEach((x,j)=>x.value=c[j]||'');if(c.length)document.querySelectorAll('.otp')[Math.min(c.length,8)-1].focus()})});
 async function profileMetadata(){const email=$('email').value.trim().toLowerCase();return{role,name:$('name').value.trim(),phone:$('phone').value.trim(),location:$('location').value.trim(),std:$('std').value.trim(),stream:$('stream').value.trim(),course:$('course').value.trim(),college:$('college').value.trim(),division:$('division').value.trim(),roll:$('roll').value.trim(),subject:role==='student'?$('subject').value.trim():$('t_subject').value.trim(),learning_requirement:$('learning_requirement').value.trim(),about_me:role==='student'?$('student_about').value.trim():$('t_about').value.trim(),qualification:$('t_qualification').value.trim(),experience:$('t_exp').value.trim(),teaching_college:$('t_teaching_college').value.trim(),tutor_college:$('t_college').value.trim(),address:$('t_address').value.trim(),rate_hour:$('t_price').value.trim(),payment_plan:role==='tutor'?$('payment_plan').value:'',utr:role==='tutor'?$('utr').value.trim():'',email,registration_date:$('registration_date').value}}
 function validateBeforeOtp(){const email=$('email').value.trim().toLowerCase(),p=$('password').value,p2=$('password2').value;if(!$('terms').checked)return'Please read and accept the Terms & Conditions before email verification.';if(!email||!email.includes('@'))return'Please enter a valid email address.';if(!$('name').value.trim()||!$('phone').value.trim())return'Please complete Full Name and Phone / WhatsApp.';if(p.length<8)return'Password must be at least 8 characters.';if(p!==p2)return'Passwords do not match.';if(role==='tutor'&&!$('utr').value.trim())return'Please enter the UTR / Transaction ID after completing tutor payment.';return''}
 $('sendOtp').addEventListener('click',async()=>{const problem=validateBeforeOtp();if(problem)return show(problem);const email=$('email').value.trim().toLowerCase(),password=$('password').value;$('sendOtp').disabled=true;$('sendOtp').textContent='SENDING 8-DIGIT CODE…';try{const metadata=await profileMetadata();const r=await sb.auth.signUp({email,password,options:{data:metadata,emailRedirectTo:'https://www.guruconnnect.in/index.html?email_verified=1'}});if(r.error)throw r.error;pendingAuthUser=r.data?.user||null;otpEmail=email;otpVerified=false;setOtpInputs(true);$('otpStatus').textContent='The newest 8-digit Supabase verification code was sent to '+email+'. Use only that code.';show('8-digit verification code sent. Check your inbox and Spam/Junk folder.',true)}catch(err){console.error(err);show(err?.message||'Could not send the verification code.')}finally{$('sendOtp').disabled=false;$('sendOtp').textContent='SEND OTP'}});
 $('verifyOtp').addEventListener('click',async()=>{const entered=[...document.querySelectorAll('.otp')].map(x=>x.value).join('').replace(/\D/g,'');const email=$('email').value.trim().toLowerCase();if(entered.length!==8)return show('Please enter all 8 digits from the latest GURU CONNECT verification email.');if(!otpEmail||otpEmail!==email)return show('The email address changed after the code was sent. Please send a new verification code.');$('verifyOtp').disabled=true;$('verifyOtp').textContent='VERIFYING…';try{const r=await sb.auth.verifyOtp({email,token:entered,type:'email'});if(r.error)throw r.error;const user=r.data?.user;if(!user?.email_confirmed_at)throw new Error('Supabase accepted the code but email confirmation is not complete yet. Please use the newest code.');pendingAuthUser=user;otpVerified=true;$('verified').classList.add('show');$('otpStatus').textContent='✓ Email verified. Click COMPLETE REGISTRATION to save your Student/Tutor profile.';show('Email verified successfully. Your 8-digit code has been accepted.',true)}catch(err){console.error(err);show('OTP verification failed: '+(err?.message||String(err)))}finally{$('verifyOtp').disabled=false;$('verifyOtp').textContent='VERIFY 8-DIGIT OTP'}});
 $('payment_plan').addEventListener('change',()=>{const v=$('payment_plan').value==='verified_100';$('qr').src=v?'guru-connect-upi-300-1-month-verified.png':'guru-connect-upi-200-1-month.png';$('upiLink').href='upi://pay?pa=verizon@upi&pn=GURU%20CONNECT&cu=INR&am='+(v?'100':'200')});
-async function saveVerifiedProfile(user){
-  const m=await profileMetadata();
-  // Do not use PostgREST upsert/onConflict here. Some GURU CONNECT deployments
-  // have the correct logical keys but no UNIQUE constraint on them, which
-  // causes: 'there is no unique or exclusion constraint matching ON CONFLICT'.
-  // Instead, find the existing row by its Auth user id and update it; if none
-  // exists, insert a new row. This works with both old and new schemas.
-  async function saveByUserId(table,row){
-    const q=await sb.from(table).select('id').eq('user_id',user.id).limit(1);
-    if(q.error)throw q.error;
-    if(q.data&&q.data.length){
-      const u=await sb.from(table).update(row).eq('id',q.data[0].id).select('*').single();
-      if(u.error)throw u.error;
-      return u.data;
-    }
-    const ins=await sb.from(table).insert(row).select('*').single();
-    if(ins.error)throw ins.error;
-    return ins.data;
-  }
-  // profiles may not have a UNIQUE constraint on id in older projects, so
-  // handle it with a normal lookup/update/insert as well.
-  const pq=await sb.from('profiles').select('id').eq('id',user.id).limit(1);
-  if(pq.error)throw pq.error;
-  const profileRow={id:user.id,role,full_name:m.name,email:m.email,phone:m.phone,photo_url:null};
-  if(pq.data&&pq.data.length){
-    const pu=await sb.from('profiles').update(profileRow).eq('id',user.id);
-    if(pu.error)throw pu.error;
-  }else{
-    const pi=await sb.from('profiles').insert(profileRow);
-    if(pi.error)throw pi.error;
-  }
-  if(role==='student'){
-    const row={user_id:user.id,name:m.name,course:m.course,stream:m.stream,standard:m.std,subject:m.subject,learning_requirement:m.learning_requirement,year:m.std,semester:'',college:m.college,division:m.division,roll_number:m.roll,email:m.email,phone:m.phone,location:m.location,address:'',mode:'',teaching_mode:'',languages:'',availability:'',member_since:m.registration_date,record_no:'',data_source:'registration',about_me:m.about_me,achievement_photos:[],helpline_plan:'',helpline_status:'',helpline_course:'',helpline_subject:'',helpline_subject_count:0,helpline_amount:0,privacy:{},photo_url:null};
-    await saveByUserId('student_profiles',row);
-  }else{
-    const row={user_id:user.id,name:m.name,subject:m.subject,stream:'',experience:m.experience,qualification:m.qualification,college:m.tutor_college,teaching_college:m.teaching_college,address:m.address,price:m.rate_hour,about_me:m.about_me,photo_url:null,verified:false,paid_status:'PENDING',rating:null,review_count:0,students_taught:'',teaching_mode:'',location:m.location,languages:'',availability:'',teaching_since:m.registration_date,is_illustrative:false,registration_status:'registered'};
-    await saveByUserId('tutor_profiles',row);
-  }
-  return true;
-}
+async function saveVerifiedProfile(user){const m=await profileMetadata();const p=await sb.from('profiles').upsert({id:user.id,role,full_name:m.name,email:m.email,phone:m.phone,photo_url:null},{onConflict:'id'});if(p.error)throw p.error;if(role==='student'){const row={user_id:user.id,name:m.name,course:m.course,stream:m.stream,standard:m.std,subject:m.subject,learning_requirement:m.learning_requirement,year:m.std,semester:'',college:m.college,division:m.division,roll_number:m.roll,email:m.email,phone:m.phone,location:m.location,address:'',mode:'',teaching_mode:'',languages:'',availability:'',member_since:m.registration_date,record_no:'',data_source:'registration',about_me:m.about_me,achievement_photos:[],helpline_plan:'',helpline_status:'',helpline_course:'',helpline_subject:'',helpline_subject_count:0,helpline_amount:0,privacy:{},photo_url:null};const r=await sb.from('student_profiles').upsert(row,{onConflict:'user_id'});if(r.error)throw r.error}else{const row={user_id:user.id,name:m.name,subject:m.subject,stream:'',experience:m.experience,qualification:m.qualification,college:m.tutor_college,teaching_college:m.teaching_college,address:m.address,price:m.rate_hour,about_me:m.about_me,photo_url:null,verified:false,paid_status:'PENDING',rating:null,review_count:0,students_taught:'',teaching_mode:'',location:m.location,languages:'',availability:'',teaching_since:m.registration_date,is_illustrative:false,registration_status:'registered'};const r=await sb.from('tutor_profiles').upsert(row,{onConflict:'user_id'});if(r.error)throw r.error}}
 $('form').addEventListener('submit',async e=>{e.preventDefault();$('msg').className='msg';if(!otpVerified||!pendingAuthUser)return show('Please send and verify the 8-digit email verification code first.');if(!$('terms').checked)return show('Please read and accept the Terms & Conditions.');const b=$('submit');b.disabled=true;b.textContent='SAVING PROFILE…';try{await saveVerifiedProfile(pendingAuthUser);show('✓ Registration completed successfully. Your email is verified and your '+role+' profile has been saved. You can now login.',true);setTimeout(()=>{try{sb.auth.signOut({scope:'local'})}catch(_){}location.href='login.html?role='+encodeURIComponent(role)},1200)}catch(err){console.error(err);show('Registration profile could not be saved: '+(err?.message||String(err)))}finally{b.disabled=false;if(otpVerified)$('submit').textContent='COMPLETE '+role.toUpperCase()+' REGISTRATION'}});
 </script>
 </body></html>
