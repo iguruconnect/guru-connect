@@ -41,33 +41,83 @@ function connectionState(r){const c=connFor(r);if(!c)return null;return String(c
 function otherFor(r,c){if(role()==='student')return {id:String(c?.sender_profile_id||r.tutor_id||''),role:'tutor',name:r.tutor_name||r.tutorName||('Tutor '+sid(c?.sender_profile_id||r.tutor_id,'tutor'))};return {id:String(c?.recipient_profile_id||r.student_id||''),role:'student',name:r.student_name||r.studentName||('Student '+sid(c?.recipient_profile_id||r.student_id,'student'))}}
 function canChat(r){const c=connFor(r),st=String(c?.status||'').toUpperCase();if(!meUser||!c||st!=='ACCEPTED')return false;const o=otherFor(r,c);return !!o.id}
 function normalizeLRRPayload(payload){
-  if(typeof payload==='string'){try{payload=JSON.parse(payload)}catch(_){return []}}
-  if(payload && !Array.isArray(payload) && Array.isArray(payload.rows)) payload=payload.rows;
-  if(!Array.isArray(payload)) return payload&&typeof payload==='object'?[payload]:[];
-  const out=[];
-  for(const item of payload){
-    if(Array.isArray(item)){
-      for(const sub of item){
-        if(typeof sub==='string'){try{const o=JSON.parse(sub);if(o&&typeof o==='object')out.push(o)}catch(_){} }
-        else if(sub&&typeof sub==='object') out.push(sub);
-      }
-    }else if(typeof item==='string'){
-      try{const o=JSON.parse(item);if(o&&typeof o==='object')out.push(o)}catch(_){}
-    }else if(item&&typeof item==='object') out.push(item);
+  // Supabase can return jsonb in several shapes depending on the RPC signature.
+  // Accept: JSON string, array, object wrapper, {rows:[...]}, or [{column: json-string}].
+  if(payload==null) return [];
+  if(typeof payload==='string'){
+    try{return normalizeLRRPayload(JSON.parse(payload))}catch(_){return []}
   }
-  return out;
+  if(Array.isArray(payload)){
+    const out=[];
+    for(const item of payload){
+      if(item==null) continue;
+      if(typeof item==='string'){
+        try{out.push(...normalizeLRRPayload(JSON.parse(item)))}catch(_){}
+      }else if(Array.isArray(item)) out.push(...normalizeLRRPayload(item));
+      else if(typeof item==='object'){
+        // RPC setof jsonb can arrive as {gc_list_learning_requests_public_v5: '...'}.
+        const vals=Object.values(item);
+        if(Object.keys(item).length===1 && typeof vals[0]==='string'){
+          try{const parsed=JSON.parse(vals[0]);out.push(...normalizeLRRPayload(parsed));continue}catch(_){}
+        }
+        // Normal LRR row.
+        if(item.id || item.request_code || item.student_id) out.push(item);
+        else if(Array.isArray(item.rows)) out.push(...normalizeLRRPayload(item.rows));
+      }
+    }
+    return out;
+  }
+  if(typeof payload==='object'){
+    if(Array.isArray(payload.rows)) return normalizeLRRPayload(payload.rows);
+    const keys=Object.keys(payload);
+    if(keys.length===1){
+      const v=payload[keys[0]];
+      if(typeof v==='string' || Array.isArray(v) || (v&&typeof v==='object')) return normalizeLRRPayload(v);
+    }
+    if(payload.id || payload.request_code || payload.student_id) return [payload];
+  }
+  return [];
 }
 async function load(){
-  meUser=await getMe();
-  await loadConnections();
-  let data=[], source='';
-  try{const q=await sb.rpc('gc_list_learning_requests_public_v5');if(!q.error){data=normalizeLRRPayload(q.data);if(data.length)source='gc_list_learning_requests_public_v5';}else console.warn('LRR public v5 failed:',q.error)}catch(e){console.warn('LRR public v5 unavailable:',e)}
-  if(!data.length){try{const q=await sb.rpc('gc_list_learning_requests_public_v4');if(!q.error){data=normalizeLRRPayload(q.data);if(data.length)source='gc_list_learning_requests_public_v4';}else console.warn('LRR public v4 failed:',q.error)}catch(e){console.warn('LRR public v4 unavailable:',e)}}
-  if(!data.length){try{const direct=await sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(1000);if(!direct.error&&Array.isArray(direct.data)&&direct.data.length){data=direct.data;source='gc_learning_requests_v2'}else if(direct.error)console.warn('Direct v2 read unavailable:',direct.error)}catch(e){console.warn('Direct LRR v2 read unavailable:',e)}}
-  if(!data.length){try{const q=await sb.rpc('gc_list_learning_requests_public_v3');if(!q.error&&Array.isArray(q.data)){data=q.data.flatMap(x=>Array.isArray(x)?x:[x]).filter(x=>x&&typeof x==='object');source='gc_list_learning_requests_public_v3'}}catch(e){console.warn('LRR public v3 unavailable:',e)}}
-  if(!data.length){try{const old=await sb.from('gc_learning_requests').select('*').order('created_at',{ascending:false}).limit(1000);if(!old.error&&Array.isArray(old.data)){data=old.data;source='gc_learning_requests'}}catch(e){console.warn('Legacy LRR read unavailable:',e)}}
-  rows=data.filter(r=>r&&typeof r==='object'&&!['DELETED','DELETED_BY_ADMIN'].includes(String(r.status||'').toUpperCase())).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
-  console.log('LRR board loaded',rows.length,'requests from',source||'no source');rebuildFilters();render();updateNotice();gc168SyncPostForm();
+  const list=$('list');
+  try{meUser=await getMe()}catch(e){console.warn('LRR member lookup failed:',e);meUser=null}
+  try{await loadConnections()}catch(e){console.warn('LRR connection lookup failed:',e);connections=[]}
+  let data=[], source='', lastError='';
+  const tryRpc=async(name)=>{
+    try{
+      const q=await sb.rpc(name);
+      console.log('LRR RPC',name,q);
+      if(q.error){lastError=q.error.message||String(q.error);return []}
+      return normalizeLRRPayload(q.data);
+    }catch(e){lastError=e?.message||String(e);return []}
+  };
+  data=await tryRpc('gc_list_learning_requests_public_v5');
+  if(data.length) source='gc_list_learning_requests_public_v5';
+  if(!data.length){data=await tryRpc('gc_list_learning_requests_public_v4');if(data.length)source='gc_list_learning_requests_public_v4'}
+  if(!data.length){
+    try{
+      const direct=await sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(1000);
+      console.log('LRR direct v2',direct);
+      if(!direct.error&&Array.isArray(direct.data)&&direct.data.length){data=direct.data;source='gc_learning_requests_v2'}
+      else if(direct.error)lastError=direct.error.message||String(direct.error);
+    }catch(e){lastError=e?.message||String(e)}
+  }
+  if(!data.length){data=await tryRpc('gc_list_learning_requests_public_v3');if(data.length)source='gc_list_learning_requests_public_v3'}
+  if(!data.length){
+    try{
+      const old=await sb.from('gc_learning_requests').select('*').order('created_at',{ascending:false}).limit(1000);
+      if(!old.error&&Array.isArray(old.data)){data=old.data;source='gc_learning_requests'}
+    }catch(e){lastError=e?.message||String(e)}
+  }
+  rows=(data||[]).filter(r=>r&&typeof r==='object'&&!['DELETED','DELETED_BY_ADMIN'].includes(String(r.status||'').toUpperCase())).sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+  console.log('LRR FINAL DATA',rows.length,source,rows);
+  rebuildFilters();
+  render();
+  updateNotice();
+  try{gc168SyncPostForm()}catch(e){console.warn('Post form sync:',e)}
+  if(!rows.length && list){
+    list.innerHTML='<div class="card empty" style="grid-column:1/-1"><b>No LRR cards were rendered.</b><br><small>Live feed source: '+esc(source||'none')+'<br>'+esc(lastError||'No rows returned')+'</small></div>';
+  }
 }
 function rebuildFilters(){
  const fill=(id,label,key)=>{const el=$(id);if(!el)return;const current=el.value;const vals=[...new Set(rows.map(r=>String(r[key]??'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,undefined,{numeric:true,sensitivity:'base'}));el.innerHTML='<option value="">'+label+'</option>'+vals.map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join('');if(vals.includes(current))el.value=current};
