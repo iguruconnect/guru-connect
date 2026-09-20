@@ -18176,6 +18176,69 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
   window.addEventListener('load',()=>setTimeout(boot,300));
 })();
 </script>
+
+<script id="gc-admin-login-surgical-fix-2026-09-20">
+(function(){
+  const GC_ADMIN_EMAIL='guruconnect.in@gmail.com';
+  const GC_ADMIN_UID='1df7606a-3a96-4116-b022-804b37a3c3dd';
+  const GC_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
+  const GC_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+  function gcClient(){
+    if(window.gcSupabase) return window.gcSupabase;
+    if(window.supabase?.createClient){
+      window.gcSupabase=window.supabase.createClient(GC_URL,GC_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+      return window.gcSupabase;
+    }
+    return null;
+  }
+  window.gcEmailLogin=async function(){
+    const role=String(document.getElementById('loginRoleInput')?.value||'student').toLowerCase();
+    if(role!=='staff'){
+      if(typeof window.gcMemberEmailLogin==='function') return window.gcMemberEmailLogin();
+      return false;
+    }
+    const email=String(document.getElementById('loginEmailInput')?.value||'').trim().toLowerCase();
+    const password=String(document.getElementById('loginPasswordInput')?.value||'');
+    if(email!==GC_ADMIN_EMAIL){
+      alert('Please use the registered Staff/Admin email: '+GC_ADMIN_EMAIL);
+      return false;
+    }
+    if(!password){alert('Enter the Staff/Admin password.');return false;}
+    const s=gcClient();
+    if(!s){alert('Secure login is unavailable. Please refresh the page.');return false;}
+    try{
+      const r=await s.auth.signInWithPassword({email:GC_ADMIN_EMAIL,password});
+      if(r.error) throw r.error;
+      const u=r.data?.user, session=r.data?.session;
+      if(!u||!session) throw new Error('Supabase did not create an Admin session.');
+      if(String(u.id)!==GC_ADMIN_UID) throw new Error('This account is not the configured Staff/Admin account.');
+      window.gcSupabase=s;
+      localStorage.setItem('is_staff_logged','true');
+      localStorage.setItem('gc_staff_supabase_auth','true');
+      localStorage.setItem('active_user_role','staff');
+      localStorage.setItem('active_user_id',GC_ADMIN_UID);
+      localStorage.setItem('active_user_email',GC_ADMIN_EMAIL);
+      try{window.closeLoginModal?.();}catch(_){ }
+      try{window.checkStaffSessionState?.();}catch(_){ }
+      try{window.GC_FINAL_ADMIN?.setVisible?.(true);}catch(_){ }
+      try{window.renderAdminQueue?.();}catch(_){ }
+      return true;
+    }catch(err){
+      console.error('GURU CONNECT Admin login:',err);
+      alert('Staff/Admin Login failed:\n\n'+(err?.message||String(err)));
+      return false;
+    }
+  };
+  window.openStaffLoginModal=function(){
+    const r=document.getElementById('loginRoleInput'); if(r) r.value='staff';
+    const t=document.getElementById('gcUnifiedLoginTitle'); if(t) t.textContent='Staff / Admin Login';
+    const e=document.getElementById('loginEmailInput'); if(e) e.value=GC_ADMIN_EMAIL;
+    const p=document.getElementById('loginPasswordInput'); if(p){p.value='';setTimeout(()=>p.focus(),50);}
+    const m=document.getElementById('loginModal');
+    if(m){m.classList.remove('hidden');m.style.display='flex';m.setAttribute('aria-hidden','false');}
+  };
+})();
+</script>
 </body>
 </html>
 
@@ -18201,80 +18264,3 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
  .gc-target-card.gc-target-tutor .gc-target-verified i{font-size:9px!important}
 }
 </style>
-
-<!-- GURU CONNECT FINAL ADMIN LOGIN OVERRIDE — fixes duplicate legacy handlers without changing UI -->
-<script id="gc-final-admin-login-override-20260920">
-(function(){
-  'use strict';
-  const GC_ADMIN_EMAIL='guruconnect.in@gmail.com';
-  const GC_ADMIN_UID='1df7606a-3a96-4116-b022-804b37a3c3dd';
-  const GC_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
-  const GC_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
-  function gcAdminClient(){
-    if(!window.supabase?.createClient){ alert('Supabase is not available. Please refresh the page.'); return null; }
-    window.gcSupabase=window.supabase.createClient(GC_URL,GC_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
-    return window.gcSupabase;
-  }
-  window.gcEmailLogin=async function(){
-    const role=String(document.getElementById('loginRoleInput')?.value||'student').trim().toLowerCase();
-    if(role!=='staff'){
-      if(typeof window.gcMemberEmailLogin==='function') return window.gcMemberEmailLogin();
-      alert('Please use the normal Student/Tutor login flow.');
-      return false;
-    }
-    const input=document.getElementById('loginEmailInput');
-    const pwEl=document.getElementById('loginPasswordInput');
-    const email=String(input?.value||'').replace(/\u200B/g,'').trim().toLowerCase();
-    const password=String(pwEl?.value||'');
-    if(email!==GC_ADMIN_EMAIL){
-      alert('Please use the registered Staff/Admin email: '+GC_ADMIN_EMAIL);
-      return false;
-    }
-    if(!password){ alert('Enter the Staff/Admin password.'); return false; }
-    const btn=document.querySelector('#loginModal button[onclick*="gcEmailLogin"]');
-    if(btn){btn.disabled=true;btn.dataset.gcOldText=btn.textContent;btn.textContent='SIGNING IN…';}
-    try{
-      const s=gcAdminClient();
-      if(!s) return false;
-      try{
-        const cur=await s.auth.getSession();
-        if(cur.data?.session?.user?.is_anonymous===true) await s.auth.signOut();
-      }catch(_){ }
-      const r=await s.auth.signInWithPassword({email:GC_ADMIN_EMAIL,password});
-      if(r.error) throw r.error;
-      const u=r.data?.user, session=r.data?.session;
-      if(!u || !session) throw new Error('Supabase did not create an Admin session.');
-      if(String(u.id)!==GC_ADMIN_UID || String(u.email||'').trim().toLowerCase()!==GC_ADMIN_EMAIL){
-        try{await s.auth.signOut();}catch(_){ }
-        throw new Error('This account is not the configured GURU CONNECT Staff/Admin account.');
-      }
-      window.gcSupabase=s;
-      localStorage.setItem('is_staff_logged','true');
-      localStorage.setItem('gc_staff_supabase_auth','true');
-      localStorage.setItem('active_user_role','staff');
-      localStorage.setItem('active_user_id',String(u.id));
-      localStorage.setItem('active_user_email',String(u.email||GC_ADMIN_EMAIL));
-      try{window.closeLoginModal?.();}catch(_){ }
-      try{window.GC_FINAL_ADMIN?.setVisible?.(true);}catch(_){ }
-      try{window.checkStaffSessionState?.();}catch(_){ }
-      try{window.renderAdminQueue?.();}catch(_){ }
-      try{window.GC_ADMIN_ESCROW?.refresh?.();}catch(_){ }
-      return true;
-    }catch(err){
-      console.error('Final GURU CONNECT Staff/Admin login failed:',err);
-      const msg=String(err?.message||err);
-      if(/invalid login credentials|invalid password/i.test(msg)){
-        alert('Staff/Admin password is incorrect. The Admin email is correct. Use the Forgot password option if you need to reset it.');
-      }else if(/email not confirmed/i.test(msg)){
-        alert('The Staff/Admin email is not confirmed in Supabase Authentication.');
-      }else{
-        alert('Staff/Admin Login failed: '+msg);
-      }
-      return false;
-    }finally{
-      if(btn){btn.disabled=false;btn.textContent=btn.dataset.gcOldText||'LOGIN SECURELY';}
-    }
-  };
-  window.handleStaffLogin=window.gcEmailLogin;
-})();
-</script>
