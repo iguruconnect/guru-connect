@@ -5141,56 +5141,99 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 </div>
 </section>
 <!-- Registration & Learning Requests Section -->
-<section class="py-12 sm:py-16 bg-white border-t border-slate-200 w-full px-4" id="registrationSection">
-<div class="max-w-3xl mx-auto w-full">
-<!-- Tabs -->
-<div class="grid grid-cols-1 sm:grid-cols-3 bg-slate-100 p-1.5 rounded-2xl shadow-inner mb-6 sm:mb-8 border border-slate-200 gap-1 sm:gap-2">
-<button class="py-3 rounded-xl text-xs sm:text-sm font-bold transition bg-brand-blue text-white shadow text-center tracking-wide" id="tabStudentBtn" onclick="switchTab('student')">
-<i class="fa-solid fa-user-graduate mr-1"></i>STUDENT
-                    </button>
-<button class="py-3 rounded-xl text-xs sm:text-sm font-bold transition text-slate-600 hover:text-brand-dark hover:bg-slate-200 text-center tracking-wide" id="tabTutorBtn" onclick="switchTab('tutor')">
-<i class="fa-solid fa-chalkboard-user mr-1"></i>TUTOR
-                    </button>
-<button class="py-3 rounded-xl text-xs sm:text-sm font-bold transition text-slate-600 hover:text-brand-dark hover:bg-slate-200 text-center tracking-wide" id="tabRequirementBtn" onclick="switchTab('requirement')">
-<i class="fa-solid fa-clipboard-list mr-1"></i>LEARNING REQUESTS
-                    </button>
-</div>
-<!-- Student Form Card -->
-<div class="bg-brand-lightBg rounded-2xl sm:rounded-3xl shadow-lg border border-slate-200 p-5 sm:p-8 md:p-10 w-full" id="studentFormCard">
-<div class="text-center mb-6 sm:mb-8">
-<span class="bg-blue-100 text-brand-blue text-[10px] sm:text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider">Junior College Section</span>
-<h2 class="text-2xl sm:text-3xl font-black text-brand-dark mt-3 tracking-tight">Student Registration</h2>
-<p class="text-slate-600 text-xs sm:text-sm mt-1">Email verification is <strong class="text-brand-blue">MANDATORY</strong>. After you submit, Supabase will send a verification link to your email. Your registration is completed only after you click that link.</p>
-</div>
-<form class="space-y-4 sm:space-y-5" id="studentRegForm" onsubmit="handleStudentFormSubmit(event)">
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Student Full Name *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_name" placeholder="Enter your full name" required="" type="text">
-</input></div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address *</label>
-<div class="flex gap-2">
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_email" placeholder="student@gmail.com" required="" type="email">
-<button class="bg-brand-blue hover:bg-blue-700 text-white font-black px-3 py-2 rounded-xl text-[10px] sm:text-xs shrink-0 shadow" onclick="sendEmailOtp('student'); return false;" type="button">SEND OTP</button>
-<span class="gc-email-required-badge">EMAIL VERIFICATION REQUIRED</span>
-</input></div>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">WhatsApp Number (Login ID) *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_phone" placeholder="9876543210" required="" type="tel">
-</input></div>
-</div>
-<div class="gc-email-verification-required-box"><div class="gc-email-verification-icon">✓</div><div><strong>EMAIL VERIFICATION IS COMPULSORY</strong><span>After registration, Supabase will send a 6-digit verification OTP to this email. Enter that OTP to activate your account.</span></div></div>
-<!-- EmailJS OTP verification: first gate before Supabase email verification -->
-<div class="bg-blue-50 border border-blue-200 p-3.5 rounded-xl space-y-2" id="stuOtpBox">
-<p class="text-[11px] font-black text-brand-blue">SUPABASE EMAIL VERIFICATION — A 6-digit OTP will be sent after registration.</p>
-<div class="flex gap-2">
-<input class="w-32 border border-blue-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="stuEnteredOtp" maxlength="4" placeholder="1234" type="text">
-<button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('student')" type="button">Verify OTP</button>
-</input></div>
-</div>
-<!-- STUDENT HELPLINE SERVICE REGISTRATION -->
+
+<section id="registrationSection" class="gc-reg-modern">
+  <div class="gc-reg-wrap">
+    <div class="gc-reg-topbar">
+      <a class="gc-reg-brand" href="index.html">
+        <img src="guru-connect-header-transparent.png" alt="GURU CONNECT logo">
+        <span><strong>GURU</strong> <em>CONNECT</em><small>Connecting Mind - Creating Future...</small></span>
+      </a>
+      <button type="button" class="gc-reg-home" onclick="window.scrollTo({top:0,behavior:'smooth'})">← Home</button>
+    </div>
+
+    <div class="gc-reg-hero">
+      <div>
+        <span class="gc-reg-kicker">GURU CONNECT • REGISTRATION</span>
+        <h1>Join GURU CONNECT</h1>
+        <p>Build your Student or Tutor profile with a modern, secure registration experience. <b>Email verification is mandatory</b> before registration can be completed.</p>
+        <div class="gc-reg-badges">
+          <span>✓ Email verified registration</span><span>🎓 Students</span><span>👨‍🏫 Tutors</span><span>🔒 Secure account</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="gc-reg-tabs">
+      <button type="button" id="tabStudentBtn" class="gc-reg-tab active" onclick="switchTab('student')">🎓 STUDENT</button>
+      <button type="button" id="tabTutorBtn" class="gc-reg-tab" onclick="switchTab('tutor')">👨‍🏫 TUTOR</button>
+      <button type="button" id="tabRequirementBtn" class="gc-reg-tab" onclick="switchTab('requirement')">📋 LEARNING REQUESTS</button>
+    </div>
+
+    <div id="studentFormCard" class="gc-reg-card">
+      <div class="gc-reg-title">
+        <span>🎓</span><div><h2>Student Registration</h2><p>Complete your profile, verify your email and then activate your GURU CONNECT student account.</p></div>
+      </div>
+
+      <form id="studentRegForm" onsubmit="gcModernSubmit('student',event)" novalidate>
+        <div class="gc-reg-section blue">
+          <h3>👤 Account Details</h3>
+          <div class="gc-reg-grid">
+            <div class="gc-field full"><label>Full Name *</label><input id="stu_name" required autocomplete="name" placeholder="Enter your full name"></div>
+            <div class="gc-field"><label>Phone / WhatsApp *</label><input id="stu_phone" required type="tel" autocomplete="tel" placeholder="9876543210"></div>
+            <div class="gc-field"><label>Email *</label><input id="stu_email" required type="email" autocomplete="email" placeholder="student@gmail.com"></div>
+            <div class="gc-field"><label>Password *</label><input id="stu_password" required minlength="8" type="password" autocomplete="new-password" placeholder="Minimum 8 characters"></div>
+            <div class="gc-field"><label>Confirm Password *</label><input id="stu_password2" required minlength="8" type="password" autocomplete="new-password" placeholder="Re-enter password"></div>
+          </div>
+
+          <div class="gc-otp-card" id="gcStuOtpBox">
+            <div class="gc-otp-title">✉️ <span>8-Digit Email Verification</span></div>
+            <p>Press <b>SEND OTP</b> after entering your email. Use the newest verification code from the latest GURU CONNECT email.</p>
+            <div class="gc-otp-row">
+              <input class="gc-otp" id="gcStuOtp1" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="gc-otp" id="gcStuOtp2" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="gc-otp" id="gcStuOtp3" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="gc-otp" id="gcStuOtp4" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="gc-otp" id="gcStuOtp5" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="gc-otp" id="gcStuOtp6" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="gc-otp" id="gcStuOtp7" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="gc-otp" id="gcStuOtp8" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled>
+            </div>
+            <div class="gc-otp-actions">
+              <button type="button" class="gc-btn blue" onclick="gcModernSendOtp('student')">SEND OTP</button>
+              <button type="button" class="gc-btn green" id="gcStuVerifyBtn" onclick="gcModernVerifyOtp('student')" disabled>VERIFY OTP</button>
+            </div>
+            <div id="gcStuOtpStatus" class="gc-reg-hint"></div>
+            <div id="gcStuVerified" class="gc-reg-verified">✓ Email verified successfully.</div>
+          </div>
+        </div>
+
+        <div class="gc-reg-section blue">
+          <h3>🎓 Student Academic Details</h3>
+          <div class="gc-reg-grid">
+            <div class="gc-field"><label>Standard / Class *</label>
+              <select id="stu_std" required onchange="syncStudentCourseFromStandardStream()">
+                <option value="">Select Standard</option><option value="FYJC (11th)">FYJC (11th Standard)</option><option value="SYJC (12th)">SYJC (12th Standard)</option>
+              </select>
+            </div>
+            <div class="gc-field"><label>Stream *</label>
+              <select id="stu_stream" required onchange="syncStudentCourseFromStandardStream()">
+                <option value="">Select Stream</option><option value="Arts">Arts</option><option value="Science">Science</option><option value="Commerce">Commerce</option>
+              </select>
+            </div>
+            <div class="gc-field"><label>Course *</label>
+              <select id="stu_course" required onchange="syncStudentCourseFields()">
+                <option value="">Select Course</option><option value="XI ARTS">XI ARTS</option><option value="XI SCIENCE">XI SCIENCE</option><option value="XI COMMERCE">XI COMMERCE</option><option value="XII ARTS">XII ARTS</option><option value="XII SCIENCE">XII SCIENCE</option><option value="XII COMMERCE">XII COMMERCE</option>
+              </select>
+            </div>
+            <div class="gc-field"><label>College Name</label><input id="stu_college" placeholder="College / Junior College name"></div>
+            <div class="gc-field"><label>Division *</label><input id="stu_division" required placeholder="e.g. A"></div>
+            <div class="gc-field"><label>Roll Number *</label><input id="stu_roll" required placeholder="Enter roll number"></div>
+            <div class="gc-field"><label>Subject / Skill</label><input id="stu_subject" placeholder="Subject you study / need help with"></div>
+            <div class="gc-field full"><label>Learning Requirement</label><textarea id="stu_learning_requirement" placeholder="Describe the learning help you need..."></textarea></div>
+            <div class="gc-field full"><label>About Me</label><textarea id="stu_about_me" placeholder="Tell tutors a little about yourself"></textarea></div>
+            <div class="gc-field"><label>Student Photo</label><input id="stu_photo" type="file" accept="image/*"></div>
+            <div class="gc-field"><label>College ID</label><input id="stu_college_id" type="file" accept="image/*,.pdf"></div>
+            <div class="gc-field"><label>Aadhaar</label><input id="stu_aadhaar" type="file" accept="image/*,.pdf"></div>
+          </div>
+        </div>
+
+        <div class="gc-reg-section cyan">
+          <h3>🎧 Academic Helpline Service</h3>
+          <p class="gc-section-note">Optional academic support service. Existing GURU CONNECT Helpline plans, pricing and payment controls are retained.</p>
+          <!-- STUDENT HELPLINE SERVICE REGISTRATION -->
 <div class="border-2 border-blue-200 bg-blue-50/50 rounded-2xl p-4 sm:p-5 space-y-4">
 <div class="flex items-start gap-3">
 <div class="w-10 h-10 rounded-xl bg-blue-100 text-brand-blue flex items-center justify-center shrink-0">
@@ -5351,279 +5394,148 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 </div>
 </div>
 </div>
-<!-- Optional Helpline Registration Documents -->
-<div class="border border-blue-200 bg-white rounded-2xl p-4">
-<h4 class="font-black text-brand-dark text-sm sm:text-base mb-1">Registration Documents (Optional)</h4>
-<p class="text-[12px] text-slate-500 mb-3">Student Photo, College ID Card and Aadhaar Card can be attached for the registration/verification process.</p>
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-<div>
-<label class="block text-[13px] font-bold text-slate-700 mb-1.5">Student Photo (Optional)</label>
-<input accept="image/*" class="w-full text-[12px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-[12px] file:font-bold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100" id="stu_helpline_photo" type="file">
-</input></div>
-<div>
-<label class="block text-[13px] font-bold text-slate-700 mb-1.5">College ID Card (Optional)</label>
-<input accept="image/*,application/pdf" class="w-full text-[12px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-[12px] file:font-bold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100" id="stu_helpline_college_id" type="file"/>
-</div>
-<div>
-<label class="block text-[13px] font-bold text-slate-700 mb-1.5">Aadhaar Card (Optional)</label>
-<input accept="image/*,application/pdf" class="w-full text-[12px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-[12px] file:font-bold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100" id="stu_helpline_aadhaar" type="file"/>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Junior College Standard *</label>
-<select class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_std" onchange="syncStudentCourseFromStandardStream()" required="">
-<option value="">Select Standard</option>
-<option value="FYJC (11th)">FYJC (11th Standard)</option>
-<option value="SYJC (12th)">SYJC (12th Standard)</option>
-</select>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Stream *</label>
-<select class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_stream" onchange="syncStudentCourseFromStandardStream()" required="">
-<option value="">Select Stream</option>
-<option value="Arts">Arts</option>
-<option value="Science">Science</option>
-<option value="Commerce">Commerce</option>
-</select>
-</div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Course in Which Studying *</label>
-<select class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_course" onchange="syncStudentCourseFields()" required="">
-<option value="">Select Course</option>
-<option value="XI ARTS">XI ARTS</option>
-<option value="XI SCIENCE">XI SCIENCE</option>
-<option value="XI COMMERCE">XI COMMERCE</option>
-<option value="XII ARTS">XII ARTS</option>
-<option value="XII SCIENCE">XII SCIENCE</option>
-<option value="XII COMMERCE">XII COMMERCE</option>
-</select>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Name of the College (Optional)</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_college" placeholder="Enter your college name (optional)" type="text"/>
-</div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Division *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_division" placeholder="e.g. A" required="" type="text"/>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Roll Number *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_roll" placeholder="Enter roll number" required="" type="text"/>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Registration Date</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm bg-slate-50 font-bold text-slate-600" id="stu_registration_date" readonly="" type="text"/>
-</div>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Junior College Subject(s) *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-bold bg-white" id="stu_subject" placeholder="e.g. Physics, Chemistry, Mathematics" required="" type="text"/>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Learning Requirement / Educational Needs</label>
-<textarea class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_learning_requirement" placeholder="Write your educational needs, subjects/topics where you need support, goals, etc." rows="3"></textarea>
-</div>
-<div class="border-2 border-blue-100 bg-blue-50/40 rounded-2xl p-4 sm:p-5">
-<div class="flex items-center gap-3 mb-3">
-<div class="w-10 h-10 rounded-xl bg-blue-100 text-brand-blue flex items-center justify-center shrink-0">
-<i class="fa-solid fa-id-card"></i>
-</div>
-<div>
-<h3 class="font-black text-brand-dark text-base sm:text-lg">Your Profile Details</h3>
-<p class="text-[11px] sm:text-xs text-slate-500">Add details that help tutors understand you better.</p>
-</div>
-</div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">About Me (Optional)</label>
-<textarea class="w-full border border-slate-300 rounded-xl p-3 sm:p-3.5 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_about_me" placeholder="Tell tutors about yourself, your learning style, interests, goals and what kind of academic support you are looking for." rows="4"></textarea>
-<div class="mt-4">
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">My Achievements / Certificates (Optional — up to 3 photos)</label>
-<p class="text-[11px] text-slate-500 mb-3">Upload up to 3 clear photos of awards, certificates, competitions or other achievements.</p>
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-<input accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-blue-50 file:text-brand-blue" id="stu_achievement_1" type="file"/>
-<input accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-blue-50 file:text-brand-blue" id="stu_achievement_2" type="file"/>
-<input accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-blue-50 file:text-brand-blue" id="stu_achievement_3" type="file"/>
-</div>
-</div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-slate-200">
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Student Photo (Optional)</label>
-<input accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100" id="stu_photo" type="file"/>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Testimonials / College ID Card (Optional)</label>
-<input accept="image/*,application/pdf" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100" id="stu_college_id" type="file"/>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Aadhaar Card (Optional)</label>
-<input accept="image/*,application/pdf" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-brand-blue hover:file:bg-blue-100" id="stu_aadhaar" type="file"/>
-</div>
-</div>
-<button class="w-full bg-slate-300 text-slate-600 font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2 cursor-not-allowed" disabled="" id="stuSubmitBtn" type="submit">
-                            PLEASE VERIFY EMAIL FIRST
-                        </button>
-</form>
-</div>
-<!-- Tutor Form Card -->
-<div class="bg-brand-lightBg rounded-2xl sm:rounded-3xl shadow-lg border border-slate-200 p-5 sm:p-8 md:p-10 w-full hidden" id="tutorFormCard">
-<div class="text-center mb-6 sm:mb-8">
-<span class="bg-orange-100 text-brand-nagpurOrange text-[10px] sm:text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider">Tutor Pass</span>
-<h2 class="text-2xl sm:text-3xl font-black text-brand-dark mt-3 tracking-tight">Tutor Registration &amp; Payment</h2>
-<p class="text-slate-600 text-xs sm:text-sm mt-1">Review your plan, complete payment via UPI, then submit your details. <strong>Email verification is MANDATORY</strong> and your profile is completed only after you click the Supabase verification link.</p>
-</div>
-<!-- Side-by-side Structured Plan Cards with verizon@upi -->
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-<!-- Plan 1 -->
-<div class="bg-white border-2 border-brand-nagpurOrange/30 rounded-2xl p-4 shadow-sm relative flex flex-col justify-between">
-<div class="absolute top-0 right-0 bg-brand-nagpurOrange text-white text-[8px] font-black px-2 py-0.5 rounded-bl-xl tracking-widest uppercase">RECOMMENDED</div>
-<div>
-<h4 class="font-black text-brand-dark text-sm">Elite JC Tutor Pass</h4>
-<p class="text-[10px] text-slate-500 font-medium mb-3">1 MONTH Listing &amp; Leads</p>
-<div class="mb-3">
-<span class="text-xl font-black text-brand-nagpurOrange"><span class="gc-v123-price-old">Regular ₹500</span><span class="gc-v123-price-now">Now ₹200</span></span>
-<span class="text-[9px] text-slate-400 font-bold uppercase ml-1">1 MONTH • JUST FOR YOU</span>
-</div>
-</div>
-<a class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded-xl shadow transition text-[11px] text-center flex items-center justify-center gap-1.5 cursor-pointer" href="upi://pay?pa=verizon@upi&amp;pn=GuruConnect&amp;am=200&amp;cu=INR" onclick="openUpiQrModal(200); return false;">
-<i class="fa-solid fa-qrcode"></i> PAY ₹200 UPI / QR
-                            </a>
-</div>
-<!-- Plan 2 -->
-<div class="bg-white border-2 border-brand-nagpurOrange/30 rounded-2xl p-4 shadow-sm relative flex flex-col justify-between">
-<div class="absolute top-0 right-0 bg-brand-nagpurOrange text-white text-[8px] font-black px-2 py-0.5 rounded-bl-xl tracking-widest uppercase">VERIFIED TICK</div>
-<div>
-<h4 class="font-black text-brand-dark text-sm flex items-center gap-1">
-                                    Verified Badge <span class="inline-flex items-center justify-center w-3 h-3 bg-brand-nagpurOrange text-white rounded-full text-[7px]"><i class="fa-solid fa-check"></i></span>
-</h4>
-<p class="text-[10px] text-slate-500 font-medium mb-3">Aadhaar upload mandatory.</p>
-<div class="mb-3">
-<span class="text-xl font-black text-brand-nagpurOrange"><span class="gc-v123-price-old">Regular ₹300</span><span class="gc-v123-price-now">Now ₹100</span></span>
-<span class="text-[9px] text-slate-400 font-bold uppercase ml-1">30 DAYS • JUST FOR YOU</span>
-</div>
-</div>
-<a class="w-full bg-brand-nagpurOrange hover:bg-orange-600 text-white font-bold py-2.5 px-3 rounded-xl shadow transition text-[11px] text-center flex items-center justify-center gap-1.5 cursor-pointer" href="upi://pay?pa=verizon@upi&amp;pn=GuruConnect&amp;am=100&amp;cu=INR" onclick="openUpiQrModal(100); return false;">
-<i class="fa-solid fa-mobile-screen-button"></i> PAY ₹100 NOW
-                            </a>
-</div>
-</div>
-<iframe id="hidden_iframe" name="hidden_iframe" style="display:none;"></iframe>
-<form action="https://script.google.com/macros/s/AKfycbzFDeqKdg8FYoiClmXLWSNCvQIoVxWvq_0HZcCLCzYLrhuxpwyo76WkAVUY8D6vF-iA/exec" class="space-y-4" id="tutorRegForm" method="POST" onsubmit="handleTutorFormSubmit(event)" target="hidden_iframe">
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Full Name *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_name" name="name" placeholder="Enter tutor name" required="" type="text"/>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Subject Expertise *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_subject" name="subject" placeholder="e.g. Advanced Mathematics" required="" type="text"/>
-</div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address *</label>
-<div class="flex gap-2">
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_email" name="email" placeholder="tutor@gmail.com" required="" type="email"/>
-<button class="bg-brand-nagpurOrange hover:bg-orange-600 text-white font-black px-3 py-2 rounded-xl text-[10px] sm:text-xs shrink-0 shadow" onclick="sendEmailOtp('tutor'); return false;" type="button">SEND OTP</button>
-<span class="gc-email-required-badge gc-email-required-orange">EMAIL VERIFICATION REQUIRED</span>
-</div>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">WhatsApp Number (Login ID) *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_phone" name="phone" placeholder="9876543210" required="" type="tel"/>
-</div>
-</div>
-<div class="gc-email-verification-required-box gc-email-verification-required-orange"><div class="gc-email-verification-icon">✓</div><div><strong>EMAIL VERIFICATION IS COMPULSORY</strong><span>After registration, Supabase will send a 6-digit verification OTP to this email. Enter that OTP to activate your account.</span></div></div>
-<!-- EmailJS OTP verification: first gate before Supabase email verification -->
-<div class="bg-orange-50 border border-orange-200 p-3.5 rounded-xl space-y-2" id="tutorOtpBox">
-<p class="text-[11px] font-black text-brand-nagpurOrange">SUPABASE EMAIL VERIFICATION — A 6-digit OTP will be sent after registration.</p>
-<div class="flex gap-2">
-<input class="w-32 border border-orange-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="tutorEnteredOtp" maxlength="4" placeholder="1234" type="text"/>
-<button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('tutor')" type="button">Verify OTP</button>
-</div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Rate / Hour *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_price" name="price" placeholder="e.g. ₹700/hr" required="" type="text"/>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Experience *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_exp" name="experience" placeholder="e.g. 5 Years" required="" type="text"/>
-</div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Educational Qualification *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_qualification" name="qualification" placeholder="e.g. M.Sc. Physics, B.Ed." required="" type="text"/>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">College in Which You Are Teaching *</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_teaching_college" name="teaching_college" placeholder="Enter teaching college name" type="text"/>
-</div>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Residential Address *</label>
-<textarea class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_address" name="address" placeholder="Enter residential address" required="" rows="2"></textarea>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">About Me / Tutor Showcase *</label>
-<textarea class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_about" name="about_me" placeholder="Tell students/coaching classes about your teaching ability, strengths, experience, methodology and what makes you a good tutor." required="" rows="4"></textarea>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">College Name (Optional)</label>
-<input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_college" name="college_name" placeholder="e.g. Ruia College / Freelance" type="text"/>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Tutor Photo (Optional)</label>
-<input accept="image/*" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange" id="t_photo" type="file"/>
-</div>
-</div>
-<div class="border-2 border-orange-100 bg-orange-50/40 rounded-2xl p-4 sm:p-5">
-<div class="flex items-center gap-3 mb-3">
-<div class="w-10 h-10 rounded-xl bg-orange-100 text-brand-nagpurOrange flex items-center justify-center shrink-0">
-<i class="fa-solid fa-trophy"></i>
-</div>
-<div>
-<h3 class="font-black text-brand-dark text-base sm:text-lg">Professional Achievements</h3>
-<p class="text-[11px] sm:text-xs text-slate-500">Showcase up to 3 achievement / certificate photos on your profile.</p>
-</div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-<input accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange" id="t_achievement_1" type="file"/>
-<input accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange" id="t_achievement_2" type="file"/>
-<input accept="image/*" class="w-full text-[11px] text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange" id="t_achievement_3" type="file"/>
-</div>
-</div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">College ID Card (Optional)</label>
-<input accept="image/*,application/pdf" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange" id="t_college_id" type="file"/>
-</div>
-<div>
-<label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Aadhaar Card (Mandatory for Verified Tick)</label>
-<input accept="image/*,application/pdf" class="w-full text-xs text-slate-500 file:mr-2 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-orange-50 file:text-brand-nagpurOrange" id="t_aadhaar" type="file"/>
-</div>
-</div>
-<div class="border border-brand-nagpurOrange bg-orange-50/50 p-3 sm:p-4 rounded-2xl">
-<label class="block text-[10px] sm:text-xs font-bold text-brand-nagpurOrange uppercase tracking-wider mb-1.5">Enter UTR / Transaction Reference Number *</label>
-<input class="w-full border border-brand-nagpurOrange rounded-xl p-3 text-xs sm:text-sm font-mono font-bold bg-white" id="txnIdInput" name="utr" placeholder="Enter valid UTR / Transaction Reference" required="" type="text"/>
-</div>
-<button class="w-full bg-slate-300 text-slate-600 font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2 cursor-not-allowed" disabled="" id="tutorSubmitBtn" type="submit">
-                            PLEASE VERIFY EMAIL FIRST
-                        </button>
-</form>
-</div>
-<!-- Learning Requests Form Card -->
-<div class="bg-brand-lightBg rounded-2xl sm:rounded-3xl shadow-lg border border-slate-200 p-5 sm:p-8 md:p-10 w-full hidden" id="requirementFormCard">
+
+        </div>
+
+        <div class="gc-reg-terms-card">
+          <h3>✓ Terms &amp; Conditions</h3>
+          <div class="gc-terms-shell">
+            <div class="gc-terms-brand"><img src="guru-connect-header-transparent.png" alt=""><div><b>GURU <span>CONNECT</span></b><small>Connecting Mind - Creating Future...</small></div></div>
+            <div class="gc-terms-head"><h4>GURU CONNECT User Agreement &amp; Registration Terms</h4><p>Please read the terms carefully. Registration can be completed only after you accept the agreement.</p></div>
+            <div class="gc-terms-list"><div class="term"><div class="num">1</div><div><strong>Platform</strong><p>Purpose GURU CONNECT provides an online platform intended to facilitate profile listing and interaction between Tutors and Students. Listing does not guarantee admission, tuition, employment, students, enquiries, academic results or any particular outcome.</p></div></div>
+<div class="term"><div class="num">2</div><div><strong>Accurate</strong><p>Information You must provide truthful, current and complete information. GURU CONNECT may request clarification, verification or supporting documents and may cancel, suspend or refuse a registration where information is incomplete, incorrect, misleading or unverifiable.</p></div></div>
+<div class="term"><div class="num">3</div><div><strong>Plan-Based</strong><p>Access Features, visibility, coins, verification, helpline services, learning requests and other facilities may be controlled according to the plan purchased/assigned and the rules applicable to that plan. Payment does not automatically mean verification or approval.</p></div></div>
+<div class="term"><div class="num">4</div><div><strong>Other</strong><p>Users' Information You must not misuse, copy, scrape, publish, sell, harass, impersonate, spam, threaten, exploit or otherwise misuse details of another user listed on GURU CONNECT. Any misuse is the responsibility of the defaulting user. GURU CONNECT is not responsible for the consequences of such misuse.</p></div></div>
+<div class="term"><div class="num">5</div><div><strong>Privacy</strong><p>& Confidentiality User information displayed or made available through the platform may be limited by account status, connection status and plan controls. You must use any information only for legitimate platform-related purposes and comply with applicable law.</p></div></div>
+<div class="term"><div class="num">6</div><div><strong>Prohibited</strong><p>Conduct Fraud, false identity, abusive language, harassment, unsolicited commercial contact, phishing, scams, unlawful content, unauthorised data collection, circumvention of platform controls or interference with the website/security systems is prohibited.</p></div></div>
+<div class="term"><div class="num">7</div><div><strong>Staff</strong><p>/ Admin Directions GURU CONNECT reserves the full right to disable, hide, suspend or remove any profile, with or without prior notice, if the user is found not following instructions of GURU CONNECT staff, administrators or authorised officials, or where action is reasonably required for safety, security, compliance or platform integrity.</p></div></div>
+<div class="term"><div class="num">8</div><div><strong>Disable</strong><p>/ Hide A Disabled profile may remain visible but the account's interactive/platform activities can be blocked. A Hidden profile is removed from the public website/directory and is also disabled. Hidden status remains until revoked by authorised GURU CONNECT staff/admin.</p></div></div>
+<div class="term"><div class="num">9</div><div><strong>Payments</strong><p>Payments, listing periods, verification charges, helpline plans, coin usage and refunds are governed by the applicable plan and GURU CONNECT payment rules displayed at the time of purchase. A payment receipt/UTR is not by itself proof of approval.</p></div></div>
+<div class="term"><div class="num">10</div><div><strong>User</strong><p>Responsibility You are responsible for your account credentials, activity, communications, content, documents and conduct. Do not share passwords or access another person's account. Notify GURU CONNECT if you suspect unauthorised access.</p></div></div>
+<div class="term"><div class="num">11</div><div><strong>Platform</strong><p>Availability GURU CONNECT may experience maintenance, outages, network issues or third-party service failures. Reasonable efforts may be made to restore service, but uninterrupted availability is not guaranteed.</p></div></div>
+<div class="term"><div class="num">12</div><div><strong>Legal</strong><p>Compliance You agree to use the platform in accordance with applicable laws and regulations of India and any other law applicable to your conduct. Nothing in these terms excludes rights that cannot legally be excluded.</p></div></div>
+<div class="term"><div class="num">13</div><div><strong>Content</strong><p>& Documents You grant GURU CONNECT permission to process information and uploaded material for registration, verification, profile listing, support and platform administration, subject to applicable law and the controls of the platform.</p></div></div>
+<div class="term"><div class="num">14</div><div><strong>No</strong><p>Guarantee of User Conduct GURU CONNECT facilitates platform interactions but cannot guarantee the conduct, identity, capability, availability or intentions of every user. Exercise appropriate caution before sharing sensitive information or entering private arrangements.</p></div></div>
+<div class="term"><div class="num">15</div><div><strong>Changes</strong><p>to Rules GURU CONNECT may update platform rules, security controls, plan conditions and operational procedures. Updated terms may apply to future activity and, where appropriate, to continued use of the platform.</p></div></div>
+<div class="term"><div class="num">16</div><div><strong>Acceptance</strong><p>By selecting the acceptance checkbox and proceeding to the registration form, you confirm that you have read, understood and agreed to these terms and to the applicable GURU CONNECT plan rules.</p></div></div>
+<div class="term"><div class="num">17</div><div><strong>Tutor</strong><p>Physical Form & Signature Requirement For Tutors, it is mandatory to keep a physical / hard copy of the completed registration form containing the submitted details and the agreed GURU CONNECT terms & conditions, duly signed by the Tutor. The signed hard copy must be couriered to GURU CONNECT or submitted to a GURU CONNECT Executive when instructed. Further details and submission instructions will be communicated to you through your registered Email Address and/or Phone Number. Please follow the instructions communicated by GURU CONNECT.</p></div></div></div>
+            <label class="gc-accept"><input id="gcStudentTerms" type="checkbox" required><span><b>GURU CONNECT — Agreement Confirmation</b><small>I HAVE READ, UNDERSTOOD AND ACCEPT THE GURU CONNECT USER AGREEMENT, REGISTRATION TERMS, PRIVACY/SAFETY RULES AND THE RULES APPLICABLE TO MY SELECTED PLAN.</small></span></label>
+          </div>
+        </div>
+        <button id="gcModernStudentSubmit" class="gc-submit" type="submit">COMPLETE STUDENT REGISTRATION</button>
+        <div id="gcStudentMsg" class="gc-msg"></div>
+      </form>
+    </div>
+
+    <div id="tutorFormCard" class="gc-reg-card hidden">
+      <div class="gc-reg-title">
+        <span>👨‍🏫</span><div><h2>Tutor Registration</h2><p>Create your tutor profile, complete the applicable registration payment and verify your email before activation.</p></div>
+      </div>
+
+      <form id="tutorRegForm" onsubmit="gcModernSubmit('tutor',event)" novalidate>
+        <div class="gc-reg-section green">
+          <h3>👤 Account Details</h3>
+          <div class="gc-reg-grid">
+            <div class="gc-field full"><label>Full Name *</label><input id="t_name" required autocomplete="name" placeholder="Enter tutor name"></div>
+            <div class="gc-field"><label>Phone / WhatsApp *</label><input id="t_phone" required type="tel" autocomplete="tel" placeholder="9876543210"></div>
+            <div class="gc-field"><label>Email *</label><input id="t_email" required type="email" autocomplete="email" placeholder="tutor@gmail.com"></div>
+            <div class="gc-field"><label>Password *</label><input id="t_password" required minlength="8" type="password" autocomplete="new-password" placeholder="Minimum 8 characters"></div>
+            <div class="gc-field"><label>Confirm Password *</label><input id="t_password2" required minlength="8" type="password" autocomplete="new-password" placeholder="Re-enter password"></div>
+          </div>
+
+          <div class="gc-otp-card" id="gcTutorOtpBox">
+            <div class="gc-otp-title">✉️ <span>8-Digit Email Verification</span></div>
+            <p>Press <b>SEND OTP</b> after entering your email. Use the newest verification code from the latest GURU CONNECT email.</p>
+            <div class="gc-otp-row">
+              <input class="gc-otp" id="gcTutorOtp1" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="gc-otp" id="gcTutorOtp2" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="gc-otp" id="gcTutorOtp3" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="gc-otp" id="gcTutorOtp4" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="gc-otp" id="gcTutorOtp5" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="gc-otp" id="gcTutorOtp6" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="gc-otp" id="gcTutorOtp7" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="gc-otp" id="gcTutorOtp8" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled>
+            </div>
+            <div class="gc-otp-actions">
+              <button type="button" class="gc-btn blue" onclick="gcModernSendOtp('tutor')">SEND OTP</button>
+              <button type="button" class="gc-btn green" id="gcTutorVerifyBtn" onclick="gcModernVerifyOtp('tutor')" disabled>VERIFY OTP</button>
+            </div>
+            <div id="gcTutorOtpStatus" class="gc-reg-hint"></div>
+            <div id="gcTutorVerified" class="gc-reg-verified">✓ Email verified successfully.</div>
+          </div>
+        </div>
+
+        <div class="gc-reg-section green">
+          <h3>👨‍🏫 Tutor Profile Details</h3>
+          <div class="gc-reg-grid">
+            <div class="gc-field"><label>Subject Expertise *</label><input id="t_subject" required placeholder="e.g. Economics"></div>
+            <div class="gc-field"><label>Rate / Hour</label><input id="t_price" placeholder="e.g. ₹500 / hour"></div>
+            <div class="gc-field"><label>Experience</label><input id="t_exp" placeholder="e.g. 5 years"></div>
+            <div class="gc-field"><label>Educational Qualification</label><input id="t_qualification" placeholder="M.Com / M.A / etc."></div>
+            <div class="gc-field"><label>College in Which You Are Teaching</label><input id="t_teaching_college"></div>
+            <div class="gc-field"><label>College Name</label><input id="t_college"></div>
+            <div class="gc-field full"><label>Residential Address</label><textarea id="t_address"></textarea></div>
+            <div class="gc-field full"><label>About Me / Tutor Showcase</label><textarea id="t_about" placeholder="Tell students about your teaching style and experience"></textarea></div>
+            <div class="gc-field"><label>Tutor Photo</label><input id="t_photo" type="file" accept="image/*"></div>
+            <div class="gc-field"><label>College ID</label><input id="t_college_id" type="file" accept="image/*,.pdf"></div>
+            <div class="gc-field"><label>Aadhaar — required for Verified Tick</label><input id="t_aadhaar" type="file" accept="image/*,.pdf"></div>
+            <div class="gc-field"><label>Achievement / Certificate 1</label><input id="t_achievement_1" type="file" accept="image/*,.pdf"></div>
+            <div class="gc-field"><label>Achievement / Certificate 2</label><input id="t_achievement_2" type="file" accept="image/*,.pdf"></div>
+            <div class="gc-field"><label>Achievement / Certificate 3</label><input id="t_achievement_3" type="file" accept="image/*,.pdf"></div>
+          </div>
+        </div>
+
+        <div class="gc-reg-section orange">
+          <h3>💳 Tutor Registration Payment</h3>
+          <div class="gc-payment-grid">
+            <div>
+              <div class="gc-reg-grid">
+                <div class="gc-field"><label>Registration Plan</label>
+                  <select id="gcTutorPaymentPlan">
+                    <option value="200">Regular Registration — ₹200 / 1 Month</option>
+                    <option value="100">Verified Batch — ₹100 Special Offer</option>
+                  </select>
+                </div>
+                <div class="gc-field"><label>UTR / Transaction ID *</label><input id="txnIdInput" required placeholder="Enter UTR after payment"></div>
+              </div>
+              <div class="gc-payment-actions">
+                <button type="button" id="gcTutorUpiBtn" class="gc-upi-btn" onclick="gcModernPayTutor()">📱 PAY VIA UPI / SHOW QR</button>
+                <div class="gc-reg-hint">UPI ID: <b>verizon@upi</b>. On phone the UPI app can open; on desktop the QR window is used.</div>
+              </div>
+            </div>
+            <div class="gc-payment-qr">
+              <img id="gcTutorInlineQr" src="guru-connect-upi-200-1-month.png" alt="GURU CONNECT UPI QR">
+              <small id="gcTutorQrText">₹200 • 1 Month • verizon@upi</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="gc-reg-terms-card">
+          <h3>✓ Terms &amp; Conditions</h3>
+          <div class="gc-terms-shell">
+            <div class="gc-terms-brand"><img src="guru-connect-header-transparent.png" alt=""><div><b>GURU <span>CONNECT</span></b><small>Connecting Mind - Creating Future...</small></div></div>
+            <div class="gc-terms-head"><h4>GURU CONNECT User Agreement &amp; Registration Terms</h4><p>Please read the terms carefully. Registration can be completed only after you accept the agreement.</p></div>
+            <div class="gc-terms-list"><div class="term"><div class="num">1</div><div><strong>Platform</strong><p>Purpose GURU CONNECT provides an online platform intended to facilitate profile listing and interaction between Tutors and Students. Listing does not guarantee admission, tuition, employment, students, enquiries, academic results or any particular outcome.</p></div></div>
+<div class="term"><div class="num">2</div><div><strong>Accurate</strong><p>Information You must provide truthful, current and complete information. GURU CONNECT may request clarification, verification or supporting documents and may cancel, suspend or refuse a registration where information is incomplete, incorrect, misleading or unverifiable.</p></div></div>
+<div class="term"><div class="num">3</div><div><strong>Plan-Based</strong><p>Access Features, visibility, coins, verification, helpline services, learning requests and other facilities may be controlled according to the plan purchased/assigned and the rules applicable to that plan. Payment does not automatically mean verification or approval.</p></div></div>
+<div class="term"><div class="num">4</div><div><strong>Other</strong><p>Users' Information You must not misuse, copy, scrape, publish, sell, harass, impersonate, spam, threaten, exploit or otherwise misuse details of another user listed on GURU CONNECT. Any misuse is the responsibility of the defaulting user. GURU CONNECT is not responsible for the consequences of such misuse.</p></div></div>
+<div class="term"><div class="num">5</div><div><strong>Privacy</strong><p>& Confidentiality User information displayed or made available through the platform may be limited by account status, connection status and plan controls. You must use any information only for legitimate platform-related purposes and comply with applicable law.</p></div></div>
+<div class="term"><div class="num">6</div><div><strong>Prohibited</strong><p>Conduct Fraud, false identity, abusive language, harassment, unsolicited commercial contact, phishing, scams, unlawful content, unauthorised data collection, circumvention of platform controls or interference with the website/security systems is prohibited.</p></div></div>
+<div class="term"><div class="num">7</div><div><strong>Staff</strong><p>/ Admin Directions GURU CONNECT reserves the full right to disable, hide, suspend or remove any profile, with or without prior notice, if the user is found not following instructions of GURU CONNECT staff, administrators or authorised officials, or where action is reasonably required for safety, security, compliance or platform integrity.</p></div></div>
+<div class="term"><div class="num">8</div><div><strong>Disable</strong><p>/ Hide A Disabled profile may remain visible but the account's interactive/platform activities can be blocked. A Hidden profile is removed from the public website/directory and is also disabled. Hidden status remains until revoked by authorised GURU CONNECT staff/admin.</p></div></div>
+<div class="term"><div class="num">9</div><div><strong>Payments</strong><p>Payments, listing periods, verification charges, helpline plans, coin usage and refunds are governed by the applicable plan and GURU CONNECT payment rules displayed at the time of purchase. A payment receipt/UTR is not by itself proof of approval.</p></div></div>
+<div class="term"><div class="num">10</div><div><strong>User</strong><p>Responsibility You are responsible for your account credentials, activity, communications, content, documents and conduct. Do not share passwords or access another person's account. Notify GURU CONNECT if you suspect unauthorised access.</p></div></div>
+<div class="term"><div class="num">11</div><div><strong>Platform</strong><p>Availability GURU CONNECT may experience maintenance, outages, network issues or third-party service failures. Reasonable efforts may be made to restore service, but uninterrupted availability is not guaranteed.</p></div></div>
+<div class="term"><div class="num">12</div><div><strong>Legal</strong><p>Compliance You agree to use the platform in accordance with applicable laws and regulations of India and any other law applicable to your conduct. Nothing in these terms excludes rights that cannot legally be excluded.</p></div></div>
+<div class="term"><div class="num">13</div><div><strong>Content</strong><p>& Documents You grant GURU CONNECT permission to process information and uploaded material for registration, verification, profile listing, support and platform administration, subject to applicable law and the controls of the platform.</p></div></div>
+<div class="term"><div class="num">14</div><div><strong>No</strong><p>Guarantee of User Conduct GURU CONNECT facilitates platform interactions but cannot guarantee the conduct, identity, capability, availability or intentions of every user. Exercise appropriate caution before sharing sensitive information or entering private arrangements.</p></div></div>
+<div class="term"><div class="num">15</div><div><strong>Changes</strong><p>to Rules GURU CONNECT may update platform rules, security controls, plan conditions and operational procedures. Updated terms may apply to future activity and, where appropriate, to continued use of the platform.</p></div></div>
+<div class="term"><div class="num">16</div><div><strong>Acceptance</strong><p>By selecting the acceptance checkbox and proceeding to the registration form, you confirm that you have read, understood and agreed to these terms and to the applicable GURU CONNECT plan rules.</p></div></div>
+<div class="term"><div class="num">17</div><div><strong>Tutor</strong><p>Physical Form & Signature Requirement For Tutors, it is mandatory to keep a physical / hard copy of the completed registration form containing the submitted details and the agreed GURU CONNECT terms & conditions, duly signed by the Tutor. The signed hard copy must be couriered to GURU CONNECT or submitted to a GURU CONNECT Executive when instructed. Further details and submission instructions will be communicated to you through your registered Email Address and/or Phone Number. Please follow the instructions communicated by GURU CONNECT.</p></div></div></div>
+            <label class="gc-accept"><input id="gcTutorTerms" type="checkbox" required><span><b>GURU CONNECT — Agreement Confirmation</b><small>I HAVE READ, UNDERSTOOD AND ACCEPT THE GURU CONNECT USER AGREEMENT, REGISTRATION TERMS, PRIVACY/SAFETY RULES AND THE RULES APPLICABLE TO MY SELECTED PLAN.</small></span></label>
+          </div>
+        </div>
+        <button id="gcModernTutorSubmit" class="gc-submit" type="submit">COMPLETE TUTOR REGISTRATION</button>
+        <div id="gcTutorMsg" class="gc-msg"></div>
+      </form>
+    </div>
+
+    <div id="requirementFormCard" class="hidden">
+      <!-- The existing Learning Request UI is intentionally preserved below. -->
+      <div class="bg-brand-lightBg rounded-2xl sm:rounded-3xl shadow-lg border border-slate-200 p-5 sm:p-8 md:p-10 w-full hidden" id="requirementFormCard">
 <div class="text-center mb-6 sm:mb-8">
 <span class="bg-orange-100 text-orange-800 text-[10px] sm:text-xs font-bold px-3.5 py-1.5 rounded-full uppercase tracking-wider">Verified Matchmaking</span>
 <h2 class="text-2xl sm:text-3xl font-black text-brand-dark mt-3 tracking-tight">Submit Learning Requests</h2>
@@ -5665,8 +5577,10 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
                         </button>
 </form>
 </div>
-</div>
+    </div>
+  </div>
 </section>
+
 </div>
 <!-- FLOATING WHATSAPP CHAT BUTTON -->
 <a class="fixed bottom-6 right-6 z-50 bg-emerald-500 hover:bg-emerald-600 text-white w-14 h-14 rounded-full shadow-2xl flex items-center justify-center text-3xl transition transform hover:scale-110" href="https://api.whatsapp.com/send?phone=15559565917&amp;text=Hello%20Guru%20Connect,%20I%20need%20assistance." rel="noopener noreferrer" target="_blank" title="Chat on WhatsApp">
@@ -18176,6 +18090,271 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
   window.addEventListener('load',()=>setTimeout(boot,300));
 })();
 </script>
+
+<style id="gc-modern-registration-design-20260920">
+.gc-reg-modern{--ink:#172033;--muted:#64748b;--line:#dce5f2;--blue:#2563eb;--cyan:#06b6d4;--green:#16a34a;--yellow:#f59e0b;--orange:#f97316;--red:#ef4444;--pink:#ec4899;--purple:#8b5cf6;background:radial-gradient(circle at 8% 6%,#dff7ff 0 15%,transparent 33%),radial-gradient(circle at 92% 10%,#ffe5f1 0 13%,transparent 30%),linear-gradient(135deg,#f7fbff,#fff 55%,#fff7fb);padding:30px 14px 65px;color:var(--ink);font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.gc-reg-wrap{width:min(1160px,100%);margin:auto}.gc-reg-topbar{padding:0 0 18px;display:flex;justify-content:space-between;align-items:center;gap:20px}.gc-reg-brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:inherit}.gc-reg-brand img{width:82px;height:82px;object-fit:contain}.gc-reg-brand span{display:flex;flex-direction:column}.gc-reg-brand strong{font-size:clamp(28px,4.5vw,44px);line-height:.95;font-weight:950;letter-spacing:-2px}.gc-reg-brand em{font-style:normal;font-size:clamp(28px,4.5vw,44px);line-height:.95;font-weight:500;background:linear-gradient(90deg,#2563eb,#06b6d4,#16a34a,#f59e0b,#ef4444,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:-2px}.gc-reg-brand small{margin-top:7px;font-size:12px;font-weight:800;color:#64748b}.gc-reg-home{padding:11px 16px;border-radius:13px;border:1px solid var(--line);background:#ffffffdd;color:#155eef;font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 8px 24px #0f172a12}
+.gc-reg-hero{position:relative;overflow:hidden;border-radius:30px;padding:32px;margin-bottom:18px;color:#fff;background:linear-gradient(120deg,#1d4ed8 0%,#2563eb 26%,#06b6d4 50%,#16a34a 72%,#f59e0b 100%);box-shadow:0 25px 70px #2563eb30}.gc-reg-hero:after{content:"";position:absolute;width:250px;height:250px;border-radius:50%;right:-80px;top:-110px;background:#fff2;box-shadow:-120px 180px 0 20px #fff1}.gc-reg-hero>div{position:relative;z-index:2;max-width:900px}.gc-reg-kicker{font-size:11px;font-weight:900;letter-spacing:.12em;opacity:.9}.gc-reg-hero h1{margin:7px 0 0;font-size:clamp(30px,4vw,45px);letter-spacing:-1.5px}.gc-reg-hero p{margin:10px 0 0;line-height:1.65;color:#effcff;font-size:14px}.gc-reg-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:17px}.gc-reg-badges span{padding:8px 11px;border-radius:999px;background:#ffffff20;border:1px solid #ffffff45;font-size:11px;font-weight:900}
+.gc-reg-tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:7px;border:1px solid #dce5f2;border-radius:19px;background:#eef3f9;box-shadow:inset 0 2px 7px #0f172a0b;margin-bottom:18px}.gc-reg-tab{border:0;border-radius:14px;padding:13px 9px;background:transparent;color:#526174;font:900 12px Inter;cursor:pointer;transition:.18s}.gc-reg-tab.active,.gc-reg-tab.bg-brand-blue{background:#2563eb;color:#fff;box-shadow:0 9px 22px #2563eb30}.gc-reg-card{background:#fffffff2;border:1px solid #dfe7f3;border-radius:25px;padding:22px;box-shadow:0 18px 55px #0f172a10;backdrop-filter:blur(8px)}.gc-reg-title{display:flex;gap:13px;align-items:center;margin:0 0 19px}.gc-reg-title>span{width:45px;height:45px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,#2563eb,#06b6d4);color:#fff;font-size:22px;box-shadow:0 8px 20px #2563eb25}.gc-reg-title h2{margin:0;font-size:23px;font-weight:950;letter-spacing:-.6px}.gc-reg-title p{margin:4px 0 0;color:#64748b;font-size:12px;line-height:1.55}.gc-reg-section{margin-top:18px;border-radius:22px;padding:20px;border:1px solid}.gc-reg-section.blue{background:linear-gradient(135deg,#eef5ff,#f7fbff);border-color:#bfdbfe}.gc-reg-section.green{background:linear-gradient(135deg,#edfff4,#fbfffd);border-color:#bbf7d0}.gc-reg-section.orange{background:linear-gradient(135deg,#fff6e9,#fffdf8);border-color:#fed7aa}.gc-reg-section.cyan{background:linear-gradient(135deg,#eefcff,#fbffff);border-color:#bae6fd}.gc-reg-section h3{margin:0 0 15px;font-size:17px;font-weight:950}.gc-section-note{margin:-6px 0 15px;color:#526174;font-size:12px;line-height:1.55}.gc-reg-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.gc-field.full{grid-column:1/-1}.gc-field label{display:block;margin:0 0 7px;font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:900;color:#475569}.gc-field input,.gc-field select,.gc-field textarea{width:100%;border:1px solid #cbd5e1;border-radius:13px;padding:12px 13px;background:#fff;color:var(--ink);font:600 14px Inter,system-ui;outline:none;transition:.18s}.gc-field textarea{min-height:95px;resize:vertical}.gc-field input:focus,.gc-field select:focus,.gc-field textarea:focus{border-color:#60a5fa;box-shadow:0 0 0 4px #dbeafe}.gc-field input[type=file]{padding:9px;font-size:12px}.gc-reg-hint{font-size:11px;color:#64748b;line-height:1.5;margin-top:6px}
+.gc-otp-card{margin-top:17px;padding:19px;border-radius:20px;background:linear-gradient(135deg,#edf7ff,#f8f4ff 50%,#edfff7);border:2px solid transparent;background-clip:padding-box;position:relative}.gc-otp-card:before{content:"";position:absolute;inset:-2px;z-index:-1;border-radius:22px;background:linear-gradient(90deg,#2563eb,#06b6d4,#16a34a,#f59e0b,#ec4899)}.gc-otp-title{display:flex;align-items:center;gap:9px;font-weight:950}.gc-otp-card p{margin:6px 0 0;color:#64748b;font-size:11px;line-height:1.5}.gc-otp-row{display:flex;gap:7px;flex-wrap:wrap;margin:14px 0}.gc-otp{width:44px;height:51px;border:2px solid #cbd5e1;border-radius:12px;background:#fff;text-align:center;font:900 21px Inter;outline:none;cursor:text;caret-color:#2563eb}.gc-otp:focus{border-color:#2563eb;box-shadow:0 0 0 4px #dbeafe}.gc-otp:disabled{background:#f1f5f9;cursor:not-allowed}.gc-otp-actions{display:flex;gap:9px;flex-wrap:wrap}.gc-btn{border:0;border-radius:12px;padding:11px 16px;font:900 12px Inter;cursor:pointer}.gc-btn.blue{background:#2563eb;color:#fff}.gc-btn.green{background:#16a34a;color:#fff}.gc-btn:disabled{opacity:.55;cursor:not-allowed}.gc-reg-verified{display:none;margin-top:9px;color:#15803d;font-size:12px;font-weight:950}.gc-reg-verified.show{display:block}
+.gc-payment-grid{display:grid;grid-template-columns:1fr 250px;gap:22px;align-items:center}.gc-payment-qr{text-align:center}.gc-payment-qr img{width:215px;height:215px;max-width:100%;display:block;margin:auto;border-radius:17px;border:8px solid #fff;box-shadow:0 12px 30px #0f172a20;object-fit:contain;background:#fff}.gc-payment-qr small{display:block;margin-top:8px;color:#64748b;font-weight:800;font-size:11px}.gc-payment-actions{margin-top:12px}.gc-upi-btn{border:0;border-radius:12px;padding:12px 15px;background:#111827;color:#fff;font:900 12px Inter;cursor:pointer}
+.gc-reg-terms-card{margin-top:18px}.gc-reg-terms-card>h3{font-size:18px;margin:0 0 14px;font-weight:950}.gc-terms-shell{border-radius:22px;overflow:hidden;border:1px solid #d9e2ee;background:#fff;box-shadow:0 10px 30px #0f172a08}.gc-terms-brand{display:flex;align-items:center;gap:13px;padding:17px 19px;background:linear-gradient(100deg,#eff6ff,#f4f0ff,#effff7,#fff7e8);border-bottom:1px solid #dbe4f0}.gc-terms-brand img{width:58px;height:58px;object-fit:contain}.gc-terms-brand b{font-size:20px;font-weight:950}.gc-terms-brand b span{font-weight:500;background:linear-gradient(90deg,#2563eb,#06b6d4,#16a34a,#f59e0b,#ef4444);-webkit-background-clip:text;background-clip:text;color:transparent}.gc-terms-brand small{display:block;margin-top:4px;font-size:11px;font-weight:700;color:#64748b}.gc-terms-head{padding:17px 19px;background:#fafcff}.gc-terms-head h4{margin:0;font-size:18px}.gc-terms-head p{margin:5px 0 0;color:#64748b;font-size:12px;line-height:1.55}.gc-terms-list{padding:14px;display:grid;gap:10px;max-height:470px;overflow:auto;background:#fff}.gc-terms-list .term{display:grid;grid-template-columns:39px 1fr;gap:12px;padding:14px;border:1px solid #e3e8f0;border-radius:14px;background:linear-gradient(135deg,#fff,#fbfdff);font-family:Roboto,Calibri,Arial,sans-serif}.gc-terms-list .term:nth-child(3n+1){border-left:4px solid #2563eb}.gc-terms-list .term:nth-child(3n+2){border-left:4px solid #16a34a}.gc-terms-list .term:nth-child(3n){border-left:4px solid #f59e0b}.gc-terms-list .term strong{display:block;font-size:14px;margin-bottom:5px;color:#1f2937}.gc-terms-list .term p{margin:0;color:#526174;font-size:12.5px;line-height:1.65}.gc-terms-list .num{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:linear-gradient(135deg,#2563eb,#06b6d4);color:#fff;font:bold 12px Roboto,Calibri,Arial}.gc-terms-list .term:nth-child(3n+2) .num{background:linear-gradient(135deg,#16a34a,#06b6d4)}.gc-terms-list .term:nth-child(3n) .num{background:linear-gradient(135deg,#f59e0b,#ef4444)}.gc-accept{display:flex;align-items:flex-start;gap:12px;padding:17px;background:linear-gradient(90deg,#eff6ff,#f5f0ff,#edfff6);border-top:1px solid #dbe4f0;font-family:Roboto,Calibri,Arial,sans-serif;font-size:12.5px;line-height:1.6;font-weight:700;cursor:pointer}.gc-accept input{appearance:none;flex:0 0 21px;width:21px;height:21px;margin:1px 0 0;border:2px solid #94a3b8;border-radius:6px;background:#fff;cursor:pointer;position:relative}.gc-accept input:checked{border-color:#16a34a;background:#16a34a}.gc-accept input:checked:after{content:"✓";position:absolute;left:3px;top:-2px;color:#fff;font:900 16px Inter}.gc-accept span{display:flex;flex-direction:column;gap:4px}.gc-accept b{font-size:12px;color:#172033}.gc-accept small{color:#475569;font-size:12px}.gc-submit{width:100%;border:0;border-radius:16px;padding:16px;margin-top:18px;color:#fff;background:linear-gradient(100deg,#2563eb,#06b6d4,#16a34a,#f59e0b);font:950 14px Inter;cursor:pointer;box-shadow:0 15px 32px #2563eb30}.gc-submit:disabled{opacity:.6;cursor:wait}.gc-msg{display:none;margin-top:14px;padding:14px;border-radius:13px;font-size:13px;font-weight:800;line-height:1.55}.gc-msg.show{display:block}.gc-msg.ok{background:#ecfdf5;color:#166534;border:1px solid #bbf7d0}.gc-msg.err{background:#fff1f2;color:#991b1b;border:1px solid #fecdd3}
+.gc-reg-modern #studentHelplineDetails{margin-top:12px}.gc-reg-modern .border-2.border-blue-200{border-radius:18px}.gc-reg-modern .max-h-\[360px\]{scrollbar-width:thin}
+@media(max-width:760px){.gc-reg-modern{padding:20px 10px 50px}.gc-reg-topbar{align-items:flex-start}.gc-reg-brand img{width:66px;height:66px}.gc-reg-brand strong,.gc-reg-brand em{font-size:27px;letter-spacing:-1.2px}.gc-reg-brand small{font-size:10px}.gc-reg-home{padding:9px 11px}.gc-reg-hero{padding:24px;border-radius:24px}.gc-reg-tabs{grid-template-columns:1fr}.gc-reg-card{padding:15px;border-radius:21px}.gc-reg-grid,.gc-payment-grid{grid-template-columns:1fr}.gc-field.full{grid-column:auto}.gc-otp{width:38px;height:47px}.gc-terms-list{max-height:540px}.gc-payment-qr img{width:190px;height:190px}}
+</style>
+
+<script id="gc-modern-registration-system-20260920">
+(function(){
+  'use strict';
+  const REDIRECT='https://www.guruconnnect.in/index.html?email_verified=1';
+  const state={
+    student:{verified:false,email:'',user:null},
+    tutor:{verified:false,email:'',user:null}
+  };
+  const $=id=>document.getElementById(id);
+  const supa=()=>window.gcSupabase||null;
+  const emailOk=e=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(e||'').trim());
+  const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  function msg(role,text,ok){
+    const el=$(role==='student'?'gcStudentMsg':'gcTutorMsg'); if(!el)return;
+    el.textContent=text; el.className='gc-msg show '+(ok?'ok':'err');
+    el.scrollIntoView({behavior:'smooth',block:'center'});
+  }
+  function otpInputs(role){return Array.from(document.querySelectorAll('.gc-otp')).filter(x=>x.id.startsWith(role==='student'?'gcStuOtp':'gcTutorOtp'))}
+  function setOtp(role,on){
+    otpInputs(role).forEach(x=>{x.disabled=!on;x.value=''});
+    const b=$(role==='student'?'gcStuVerifyBtn':'gcTutorVerifyBtn'); if(b)b.disabled=!on;
+    if(on)otpInputs(role)[0]?.focus();
+  }
+  function otpValue(role){return otpInputs(role).map(x=>x.value).join('').replace(/\D/g,'')}
+  function setOtpStatus(role,text,ok){
+    const el=$(role==='student'?'gcStuOtpStatus':'gcTutorOtpStatus'); if(el){el.textContent=text;el.style.color=ok?'#15803d':'#64748b'}
+  }
+  function validCommon(role){
+    const pre=role==='student'?'stu_':'t_';
+    const name=$(pre+'name')?.value.trim(),email=$(pre+'email')?.value.trim().toLowerCase(),p=$(pre+'password')?.value||'',p2=$(pre+'password2')?.value||'',phone=$(pre+'phone')?.value.trim();
+    if(!name)return 'Please enter your full name.';
+    if(!emailOk(email))return 'Please enter a valid email address.';
+    if(!phone)return 'Please enter your Phone / WhatsApp number.';
+    if(p.length<8)return 'Password must be at least 8 characters.';
+    if(p!==p2)return 'Passwords do not match.';
+    if(role==='student'){
+      if(!$( 'stu_std')?.value)return 'Please select Standard / Class.';
+      if(!$( 'stu_stream')?.value)return 'Please select Stream.';
+      if(!$( 'stu_course')?.value)return 'Please select Course.';
+      if(!$( 'stu_division')?.value.trim()||!$( 'stu_roll')?.value.trim())return 'Please complete Division and Roll Number.';
+      if(!$( 'gcStudentTerms')?.checked)return 'Please read and accept the Terms & Conditions.';
+    }else{
+      if(!$( 't_subject')?.value.trim())return 'Please enter Subject Expertise.';
+      if(!$( 'txnIdInput')?.value.trim())return 'Please enter the UTR / Transaction ID after tutor payment.';
+      if(!$( 'gcTutorTerms')?.checked)return 'Please read and accept the Terms & Conditions.';
+    }
+    return '';
+  }
+
+  window.gcModernSendOtp=async function(role){
+    const problem=validCommon(role); if(problem){msg(role,problem,false);return}
+    const s=supa(); if(!s){msg(role,'Secure Supabase Authentication is unavailable. Please refresh the page.',false);return}
+    const email=$(role==='student'?'stu_email':'t_email').value.trim().toLowerCase();
+    const password=$(role==='student'?'stu_password':'t_password').value;
+    const btn=document.querySelector(`#${role==='student'?'gcStuOtpBox':'gcTutorOtpBox'} .gc-btn.blue`);
+    if(btn){btn.disabled=true;btn.textContent='SENDING OTP…'}
+    try{
+      const profile=await buildProfile(role,true);
+      localStorage.setItem('gc_modern_pending_registration',JSON.stringify({role,email,profile,createdAt:Date.now()}));
+      let r=await s.auth.signUp({email,password,options:{emailRedirectTo:REDIRECT,data:{role,name:profile.name,phone:profile.phone}}});
+      if(r.error){
+        const text=String(r.error.message||r.error);
+        if(/already registered|already exists|user already/i.test(text)){
+          const rr=await s.auth.resend({type:'signup',email,options:{emailRedirectTo:REDIRECT}});
+          if(rr.error)throw rr.error;
+          r={data:{user:null},error:null,resend:true};
+        }else throw r.error;
+      }
+      const user=r.data?.user||null;
+      if(user?.email_confirmed_at){
+        // If Auth reports an already-confirmed account, do not silently bypass
+        // the verification gate for a new registration.
+        throw new Error('This email is already verified in Supabase. Please use the existing account login or reset the password.');
+      }
+      state[role].email=email;state[role].verified=false;state[role].user=user||null;
+      setOtp(role,true);
+      setOtpStatus(role,'A fresh verification code was sent to '+email+'. Enter the newest code only.');
+      msg(role,'Verification code sent. Check Inbox and Spam/Junk for the newest GURU CONNECT email.',true);
+    }catch(e){
+      console.error('GURU CONNECT OTP send:',e);
+      msg(role,'Could not send the verification code: '+(e.message||String(e)),false);
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent='SEND OTP'}
+    }
+  };
+
+  window.gcModernVerifyOtp=async function(role){
+    const email=$(role==='student'?'stu_email':'t_email').value.trim().toLowerCase();
+    const entered=otpValue(role);
+    if(!emailOk(email))return msg(role,'Enter the same registered email address used when SEND OTP was pressed.',false);
+    if(state[role].email!==email)return msg(role,'The email address changed after the code was sent. Please send a new OTP.',false);
+    if(entered.length<6 || entered.length>8)return msg(role,'Please enter the complete verification code from the latest GURU CONNECT email (6–8 digits, depending on your Supabase Auth setting).',false);
+    const s=supa();if(!s)return msg(role,'Supabase Authentication is unavailable. Please refresh the page.',false);
+    const btn=$(role==='student'?'gcStuVerifyBtn':'gcTutorVerifyBtn');if(btn){btn.disabled=true;btn.textContent='VERIFYING…'}
+    try{
+      const r=await s.auth.verifyOtp({email,token:entered,type:'email'});
+      if(r.error)throw r.error;
+      const user=r.data?.user;
+      if(!user?.email_confirmed_at)throw new Error('Supabase accepted the code but the email is not confirmed yet. Please use the newest code.');
+      state[role].verified=true;state[role].user=user;
+      $('gc'+(role==='student'?'Stu':'Tutor')+'Verified')?.classList.add('show');
+      setOtpStatus(role,'✓ Email verified. You can now complete your registration.',true);
+      msg(role,'Email verified successfully. Click COMPLETE REGISTRATION to save your profile.',true);
+    }catch(e){
+      console.error('GURU CONNECT OTP verify:',e);
+      msg(role,'OTP verification failed: '+(e.message||String(e)),false);
+    }finally{
+      if(btn){btn.disabled=false;btn.textContent='VERIFY OTP'}
+    }
+  };
+
+  async function buildProfile(role,forOtp){
+    if(role==='student'){
+      const standard=$('stu_std')?.value||'',stream=$('stu_stream')?.value||'',course=$('stu_course')?.value||'';
+      const requestedSubject=$('stu_subject')?.value.trim()||'';
+      const subject=typeof validSubjectForStream==='function'?validSubjectForStream(stream,requestedSubject,Date.now()):requestedSubject;
+      const photoFile=$('stu_photo')?.files?.[0];
+      const photoData=typeof readImageDataUrl==='function'&&photoFile?await readImageDataUrl(photoFile):'';
+      const helplineChoice=$('stuHelplineRegister')?.value||'no';
+      const profile={name:$('stu_name').value.trim(),email:$('stu_email').value.trim().toLowerCase(),phone:$('stu_phone').value.trim(),std:standard,stream,course,college:$('stu_college')?.value.trim()||'',division:$('stu_division')?.value.trim()||'',rollNumber:$('stu_roll')?.value.trim()||'',subject,photoData,aboutMe:$('stu_about_me')?.value.trim()||'',learningRequirement:$('stu_learning_requirement')?.value.trim()||'',registrationDate:new Date().toISOString(),helpline:{registered:false},privacy:{showContactToConnectedTutors:true,showDetailsToConnectedTutors:true},isDummy:false,registrationStatus:'registered',registrationRole:'student'};
+      if(helplineChoice==='yes'){
+        const plan=$('stuHelplinePlan')?.value||'',hc=$('stuHelplineCourse')?.value||'',hs=$('stuHelplineSubject')?.value.trim()||'',count=parseInt($('stuHelplineSubjectCount')?.value||'0',10);
+        if(!plan||!hc||!hs||!count)throw new Error('Please complete the Helpline Plan, Course, Subject and Number of Subjects fields.');
+        const pp=(typeof STUDENT_HELPLINE_PLAN_PRICES!=='undefined'?(STUDENT_HELPLINE_PLAN_PRICES[plan]??0):0);
+        profile.helpline={registered:true,plan,course:hc,subject:hs,subjectCount:count,amount:pp*count};
+      }
+      return profile;
+    }
+    const requestedSubject=$('t_subject').value.trim();
+    const tutorStream=typeof inferTutorStream==='function'?inferTutorStream(requestedSubject,Date.now()):'';
+    const subject=typeof validSubjectForStream==='function'?validSubjectForStream(tutorStream,requestedSubject,Date.now()):requestedSubject;
+    const photoFile=$('t_photo')?.files?.[0];
+    const photoData=typeof readImageDataUrl==='function'&&photoFile?await readImageDataUrl(photoFile):'';
+    const achievementPhotos=[];
+    for(const i of [1,2,3]){const f=$('t_achievement_'+i)?.files?.[0];if(f&&typeof readImageDataUrl==='function'){try{achievementPhotos.push(await readImageDataUrl(f))}catch(_){}}}
+    return {name:$('t_name').value.trim(),email:$('t_email').value.trim().toLowerCase(),phone:$('t_phone').value.trim(),subject,stream:tutorStream,price:$('t_price')?.value.trim()||'',experience:$('t_exp')?.value.trim()||'',college:$('t_college')?.value.trim()||'Junior College Faculty',teachingCollege:$('t_teaching_college')?.value.trim()||$('t_college')?.value.trim()||'',qualification:$('t_qualification')?.value.trim()||'',address:$('t_address')?.value.trim()||'',aboutMe:$('t_about')?.value.trim()||'',photoData,achievementPhotos,collegeIdName:$('t_college_id')?.files?.[0]?.name||'',aadhaarName:$('t_aadhaar')?.files?.[0]?.name||'',verified:false,utr:$('txnIdInput')?.value.trim()||'',paidStatus:'PENDING',paid_status:'PENDING',registrationDate:new Date().toISOString(),isDummy:false,registrationStatus:'registered',registrationRole:'tutor'};
+  }
+
+  async function saveCloud(role,profile,user){
+    const s=supa();if(!s)throw new Error('Supabase Authentication is unavailable.');
+    const uid=user.id;
+    const clean=v=>v==null?'':String(v).trim();
+    const prow={id:uid,role,full_name:clean(profile.name),email:clean(profile.email)||null,phone:clean(profile.phone)||null,photo_url:clean(profile.photoData||'')};
+    let pr=await s.from('profiles').upsert(prow,{onConflict:'id'});
+    if(pr.error){
+      const q=await s.from('profiles').select('id').eq('id',uid).limit(1);
+      if(q.error)throw pr.error;
+      if(q.data?.length)pr=await s.from('profiles').update(prow).eq('id',uid);
+      else pr=await s.from('profiles').insert(prow);
+      if(pr.error)throw pr.error;
+    }
+    const table=role==='tutor'?'tutor_profiles':'student_profiles';
+    const row=role==='tutor'
+      ? (typeof gcTutorCloudRow==='function'?gcTutorCloudRow(profile,uid):{user_id:uid,name:clean(profile.name),subject:clean(profile.subject),stream:clean(profile.stream),experience:clean(profile.experience),qualification:clean(profile.qualification),college:clean(profile.college),teaching_college:clean(profile.teachingCollege),address:clean(profile.address),price:clean(profile.price),about_me:clean(profile.aboutMe),photo_url:clean(profile.photoData),verified:false,paid_status:'PENDING',rating:null,review_count:0,students_taught:'',teaching_mode:'',location:'',languages:'',availability:'',teaching_since:clean(profile.registrationDate),is_illustrative:false,registration_status:'registered'})
+      : (typeof gcStudentCloudRow==='function'?gcStudentCloudRow(profile,uid):{user_id:uid,name:clean(profile.name),course:clean(profile.course),stream:clean(profile.stream),standard:clean(profile.std),subject:clean(profile.subject),learning_requirement:clean(profile.learningRequirement),year:clean(profile.std),semester:'',college:clean(profile.college),division:clean(profile.division),roll_number:clean(profile.rollNumber),email:clean(profile.email)||null,phone:clean(profile.phone)||null,about_me:clean(profile.aboutMe),photo_url:clean(profile.photoData)});
+    const q=await s.from(table).select('id').eq('user_id',uid).limit(1);
+    if(q.error)throw q.error;
+    let r;
+    if(q.data?.length)r=await s.from(table).update(row).eq('id',q.data[0].id).select('*').single();
+    else r=await s.from(table).insert(row).select('*').single();
+    if(r.error)throw r.error;
+    return {ok:true,row:r.data,userId:uid};
+  }
+
+  async function finish(role){
+    const st=state[role];if(!st.verified||!st.user)throw new Error('Please verify your email first.');
+    const profile=await buildProfile(role,false);
+    const saved=await saveCloud(role,profile,st.user);
+    if(!saved.ok)throw new Error('Profile could not be saved.');
+    profile.id=saved.row?.id||st.user.id;profile.user_id=st.user.id;profile.isCloud=true;
+    try{
+      const list=role==='tutor'?window.tutorDirectoryList:window.studentDirectoryList;
+      if(Array.isArray(list)){list.unshift(profile);window[role==='tutor'?'tutorDirectoryList':'studentDirectoryList']=list.slice(0,500)}
+      if(typeof saveRegisteredDirectories==='function')saveRegisteredDirectories();
+      if(typeof window.renderTutorDirectory==='function'&&role==='tutor')window.renderTutorDirectory();
+      if(typeof window.renderStudentDirectory==='function'&&role==='student')window.renderStudentDirectory();
+      if(typeof window.gcLoadCloudDirectories==='function')setTimeout(()=>window.gcLoadCloudDirectories(1,1).catch(()=>{}),250);
+    }catch(_){}
+    localStorage.removeItem('gc_modern_pending_registration');
+    try{await supa().auth.signOut({scope:'local'})}catch(_){}
+    msg(role,'✓ Registration completed successfully. Your email is verified and your profile has been saved. You can now login.',true);
+    setTimeout(()=>{try{if(typeof openLoginModal==='function')openLoginModal();else location.href='login.html?role='+encodeURIComponent(role)}catch(_){location.href='login.html?role='+encodeURIComponent(role)}},900);
+  }
+
+  window.gcModernSubmit=async function(role,e){
+    e.preventDefault();
+    const problem=validCommon(role);if(problem)return msg(role,problem,false);
+    if(!state[role].verified)return msg(role,'Please SEND OTP and VERIFY the 8-digit email code before completing registration.',false);
+    const b=$(role==='student'?'gcModernStudentSubmit':'gcModernTutorSubmit');if(b){b.disabled=true;b.textContent='SAVING PROFILE…'}
+    try{await finish(role)}catch(err){console.error('GURU CONNECT registration save:',err);msg(role,'Registration could not be completed: '+(err.message||String(err)),false)}
+    finally{if(b){b.disabled=false;b.textContent=role==='student'?'COMPLETE STUDENT REGISTRATION':'COMPLETE TUTOR REGISTRATION'}}
+  };
+
+  window.gcModernPayTutor=function(){
+    const amount=Number($('gcTutorPaymentPlan')?.value||200);
+    const uri='upi://pay?pa=verizon@upi&pn=GuruConnect&am='+amount+'&cu=INR';
+    const mobile=/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if(mobile){window.location.href=uri;return}
+    if(typeof window.openUpiQrModal==='function'){window.openUpiQrModal(amount);return}
+    window.open(uri,'_self');
+  };
+  function syncTutorQr(){
+    const amount=Number($('gcTutorPaymentPlan')?.value||200);
+    const img=$('gcTutorInlineQr'),note=$('gcTutorQrText');
+    if(img)img.src=amount===100?'guru-connect-upi-300-1-month-verified.png':'guru-connect-upi-200-1-month.png';
+    if(note)note.textContent='₹'+amount+' • 1 Month • verizon@upi';
+  }
+  $('gcTutorPaymentPlan')?.addEventListener('change',syncTutorQr);
+  syncTutorQr();
+
+  function wireOtp(role){
+    const inputs=otpInputs(role);
+    inputs.forEach((input,i)=>{
+      input.addEventListener('input',e=>{
+        const v=e.target.value.replace(/\D/g,'');
+        if(v.length>1){
+          const chars=v.slice(0,8).split('');inputs.forEach((x,j)=>x.value=chars[j]||'');inputs[Math.min(chars.length,8)-1]?.focus();return;
+        }
+        e.target.value=v;if(v&&i<7)inputs[i+1].focus();
+      });
+      input.addEventListener('keydown',e=>{
+        if(e.key==='Backspace'&&!input.value&&i>0)inputs[i-1].focus();
+        if(e.key==='ArrowLeft'&&i>0)inputs[i-1].focus();
+        if(e.key==='ArrowRight'&&i<7)inputs[i+1].focus();
+        if(e.key==='Enter')$(role==='student'?'gcStuVerifyBtn':'gcTutorVerifyBtn')?.click();
+      });
+      input.addEventListener('paste',e=>{
+        e.preventDefault();const chars=(e.clipboardData.getData('text')||'').replace(/\D/g,'').slice(0,8).split('');
+        inputs.forEach((x,j)=>x.value=chars[j]||'');if(chars.length)inputs[Math.min(chars.length,8)-1]?.focus();
+      });
+    });
+    $(role==='student'?'stu_email':'t_email')?.addEventListener('input',()=>{
+      const email=$(role==='student'?'stu_email':'t_email').value.trim().toLowerCase();
+      if(state[role].email&&state[role].email!==email){state[role].verified=false;state[role].email='';state[role].user=null;setOtp(role,false);$(role==='student'?'gcStuVerified':'gcTutorVerified')?.classList.remove('show');setOtpStatus(role,'Email changed. Send a new verification code.')}
+    });
+  }
+  function init(){
+    wireOtp('student');wireOtp('tutor');syncTutorQr();
+    const oldSwitch=window.switchTab;
+    if(typeof oldSwitch==='function' && !oldSwitch.__gcModernWrapped){
+      const wrapped=function(tab){
+        oldSwitch(tab);
+        document.querySelectorAll('.gc-reg-tab').forEach(b=>b.classList.toggle('active',b.id===(tab==='student'?'tabStudentBtn':tab==='tutor'?'tabTutorBtn':'tabRequirementBtn')));
+      };
+      wrapped.__gcModernWrapped=true;window.switchTab=wrapped;
+      document.querySelectorAll('.gc-reg-tab').forEach(b=>b.classList.remove('active'));
+      $('tabStudentBtn')?.classList.add('active');
+    }
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+})();
+</script>
 </body>
 </html>
 
@@ -18201,160 +18380,3 @@ if(typeof window.gcMemberEmailLogin!=='function' && typeof window.gcEmailLogin==
  .gc-target-card.gc-target-tutor .gc-target-verified i{font-size:9px!important}
 }
 </style>
-
-
-<!-- GURU CONNECT FINAL REGISTRATION OTP DELIVERY FIX 2026-09-20
-     Surgical patch: preserves the existing registration UI and fields.
-     SEND OTP now uses Supabase Auth email verification as the authoritative
-     OTP delivery path, with the existing 8-digit OTP style. No homepage,
-     registration styling, or profile fields are rewritten. -->
-<script id="gc-final-registration-otp-delivery-fix">
-(function(){
-  'use strict';
-  const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
-  const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
-  const REDIRECT='https://www.guruconnnect.in/index.html?email_verified=1';
-  const S=(window.supabase&&window.supabase.createClient)
-    ? window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}})
-    : null;
-  if(!S)return;
-
-  const state={student:{email:'',password:'',user:null,verified:false},tutor:{email:'',password:'',user:null,verified:false}};
-  window.__GC_FINAL_REG_OTP_STATE=state;
-
-  const $=id=>document.getElementById(id);
-  const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  function popup(title,msg,type){try{if(typeof gcV4Popup==='function')gcV4Popup(title,msg,type||'info');else alert(title+'\n\n'+msg)}catch(_){alert(title+'\n\n'+msg)}}
-  function legacyVerified(type,on,email){
-    try{
-      const st=window.__gcEmailJsOtpState?.[type];
-      if(st){st.verified=!!on;st.email=on?email:'';st.otp='';st.sentAt=on?Date.now():0;st.attempts=0;}
-    }catch(_){ }
-  }
-  function enableSubmit(type,on){
-    const b=$(type==='student'?'stuSubmitBtn':'tutorSubmitBtn');
-    if(!b)return;
-    b.disabled=!on;
-    b.removeAttribute('disabled');
-    b.classList.toggle('cursor-not-allowed',!on);
-    b.textContent=on?(type==='student'?'REGISTER STUDENT PROFILE':'SUBMIT TUTOR APPLICATION'):'PLEASE VERIFY EMAIL FIRST';
-  }
-
-  function closeBox(){
-    const x=$('gcFinalSupabaseOtp');if(x)x.remove();
-  }
-
-  function openOtp(email,type){
-    closeBox();
-    const box=document.createElement('div');
-    box.id='gcFinalSupabaseOtp';
-    box.className='fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-4';
-    box.innerHTML='<div style="width:min(520px,100%);background:#fff;border-radius:28px;padding:28px;box-shadow:0 25px 70px rgba(0,0,0,.35);text-align:center">'
-      +'<div style="font-size:42px;margin-bottom:8px">✉️</div>'
-      +'<div style="display:inline-block;padding:7px 12px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:900;letter-spacing:.06em">EMAIL VERIFICATION • 8-DIGIT OTP</div>'
-      +'<h2 style="margin:14px 0 6px;font-size:28px;font-weight:950;color:#0f172a">Verify Your Email</h2>'
-      +'<p style="margin:0;color:#64748b">We sent the verification code to</p>'
-      +'<p style="margin:6px 0 0;color:#1d4ed8;font-weight:900;word-break:break-all">'+esc(email)+'</p>'
-      +'<input id="gcFinalOtpInput" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="12345678" style="width:100%;margin-top:20px;padding:15px;border:2px solid #bfdbfe;border-radius:16px;text-align:center;font-size:24px;font-weight:900;letter-spacing:.32em;box-sizing:border-box;outline:none">'
-      +'<button id="gcFinalOtpVerify" type="button" style="width:100%;margin-top:12px;padding:14px;border:0;border-radius:16px;background:#2563eb;color:#fff;font-weight:900;cursor:pointer">VERIFY OTP</button>'
-      +'<button id="gcFinalOtpResend" type="button" style="width:100%;margin-top:9px;padding:12px;border:1px solid #cbd5e1;border-radius:16px;background:#fff;color:#334155;font-weight:900;cursor:pointer">RESEND OTP</button>'
-      +'<div id="gcFinalOtpMsg" style="margin-top:12px;min-height:22px;font-size:13px;font-weight:800;color:#64748b"></div>'
-      +'<div style="margin-top:10px;font-size:11px;color:#94a3b8">Use only the newest code. Check Spam/Junk if needed.</div>'
-      +'</div>';
-    document.body.appendChild(box);
-    const input=$('gcFinalOtpInput'),verify=$('gcFinalOtpVerify'),resend=$('gcFinalOtpResend'),msg=$('gcFinalOtpMsg');
-    const say=(t,ok)=>{msg.textContent=t;msg.style.color=ok?'#047857':'#dc2626'};
-    async function doVerify(){
-      const token=(input.value||'').replace(/\D/g,'');
-      if(!/^\d{8}$/.test(token)){say('Enter the 8-digit OTP from the newest email.');return}
-      verify.disabled=true;verify.textContent='VERIFYING…';
-      try{
-        const r=await S.auth.verifyOtp({email,token,type:'email'});
-        if(r.error)throw r.error;
-        const user=r.data?.user;
-        if(!user?.email_confirmed_at)throw new Error('OTP accepted, but Supabase has not marked this email as verified yet.');
-        state[type].user=user;state[type].verified=true;
-        legacyVerified(type,true,email);enableSubmit(type,true);
-        closeBox();
-        popup('EMAIL VERIFIED','Your email has been verified successfully. You can now submit your GURU CONNECT registration.','success');
-      }catch(e){say('OTP verification failed: '+(e?.message||String(e)))}
-      finally{verify.disabled=false;verify.textContent='VERIFY OTP'}
-    }
-    verify.onclick=doVerify;
-    input.onkeydown=e=>{if(e.key==='Enter')doVerify()};
-    resend.onclick=async()=>{
-      resend.disabled=true;resend.textContent='SENDING…';
-      try{
-        const r=await S.auth.resend({type:'signup',email,options:{emailRedirectTo:REDIRECT}});
-        if(r.error)throw r.error;
-        say('✓ A fresh 8-digit OTP has been sent. Use only the newest code.',true);
-        let n=60;const timer=setInterval(()=>{n--;resend.textContent=n>0?'RESEND OTP ('+n+'s)':'RESEND OTP';if(n<=0){clearInterval(timer);resend.disabled=false}},1000);
-      }catch(e){say('Could not resend OTP: '+(e?.message||String(e)));resend.disabled=false;resend.textContent='RESEND OTP'}
-    };
-    input.focus();
-  }
-
-  window.sendEmailOtp=async function(type){
-    const name=$(type==='student'?'stu_name':'t_name')?.value.trim()||'';
-    const email=$(type==='student'?'stu_email':'t_email')?.value.trim().toLowerCase()||'';
-    const password=$(type==='student'?'stu_password':'t_password')?.value||'';
-    if(!name){popup('NAME REQUIRED','Please enter your name first.','gold');return false}
-    if(!/^\S+@\S+\.\S+$/.test(email)){popup('VALID EMAIL REQUIRED','Please enter a valid email address.','gold');return false}
-    if(password.length<8){popup('PASSWORD REQUIRED','Please enter your registration password (minimum 8 characters) before sending the verification OTP.','gold');return false}
-    const btn=document.querySelector('button[onclick="sendEmailOtp(\''+type+'\')"]');
-    if(btn){btn.disabled=true;btn.textContent='SENDING…'}
-    state[type]={email,password,user:null,verified:false};
-    legacyVerified(type,false,'');enableSubmit(type,false);
-    try{
-      let r=await S.auth.signUp({email,password,options:{emailRedirectTo:REDIRECT}});
-      if(r.error){
-        const m=String(r.error.message||r.error);
-        if(/already registered|already exists|user already/i.test(m)){
-          const rr=await S.auth.resend({type:'signup',email,options:{emailRedirectTo:REDIRECT}});
-          if(rr.error)throw rr.error;
-          popup('VERIFICATION OTP SENT','This email already has an unconfirmed GURU CONNECT account. A fresh 8-digit OTP has been sent.','info');
-          openOtp(email,type);return true;
-        }
-        throw r.error;
-      }
-      const user=r.data?.user;
-      if(!user)throw new Error('Supabase did not return a user account.');
-      state[type].user=user;
-      if(user.email_confirmed_at){
-        state[type].verified=true;legacyVerified(type,true,email);enableSubmit(type,true);
-        popup('EMAIL ALREADY VERIFIED','This email is already verified. You can continue with registration.','success');
-        return true;
-      }
-      popup('OTP SENT','A fresh 8-digit verification OTP has been sent to '+email+'. Please check Inbox and Spam/Junk.','info');
-      openOtp(email,type);
-      return true;
-    }catch(e){
-      console.error('GURU CONNECT registration OTP delivery error',e);
-      const m=String(e?.message||e||'');
-      popup('OTP COULD NOT BE SENT','Supabase could not send the verification email.\n\n'+m+'\n\nPlease check the email address and try again.','gold');
-      return false;
-    }finally{if(btn){btn.disabled=false;btn.textContent='SEND OTP'}}
-  };
-
-  const previousCreate=window.gcCreateEmailAccount;
-  window.gcCreateEmailAccount=async function(email,password,role,profile){
-    email=String(email||'').trim().toLowerCase();
-    const type=role==='tutor'?'tutor':'student';
-    const st=state[type];
-    if(st.verified && st.email===email && st.password===password && st.user?.email_confirmed_at){
-      return {user:st.user,session:null,pending:false,emailConfirmed:true};
-    }
-    if(typeof previousCreate==='function')return previousCreate(email,password,role,profile);
-    throw new Error('Please verify your email before submitting the registration.');
-  };
-
-  // If the user edits the email after verification, require a fresh OTP.
-  ['student','tutor'].forEach(type=>{
-    const id=type==='student'?'stu_email':'t_email';
-    $(id)?.addEventListener('input',()=>{
-      const v=$(id).value.trim().toLowerCase();
-      if(state[type].verified && v!==state[type].email){state[type]={email:'',password:'',user:null,verified:false};legacyVerified(type,false,'');enableSubmit(type,false)}
-    });
-  });
-})();
-</script>
