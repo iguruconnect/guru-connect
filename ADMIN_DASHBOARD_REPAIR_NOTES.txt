@@ -1,0 +1,21 @@
+GURU CONNECT ADMIN DASHBOARD REPAIR
+===================================
+
+This build restores the full Staff/Admin dashboard from the project's previous
+full dashboard implementation into admin.html.
+
+Restored areas include:
+- Tutor and Student admin tabs/directories
+- Admin Tutor Profile Editor
+- Admin Student Profile Editor
+- Supabase-backed profile save RPC integration
+- Tutor payment / verified controls
+- Learning Request + Coins Admin escrow area
+- Admin coin controls and related dashboard panels
+- Other existing Staff/Admin dashboard controls present in the previous full build
+
+IMPORTANT:
+- admin.html now verifies the active Supabase session for guruconnect.in@gmail.com
+  before exposing the dashboard.
+- The Supabase publishable key is used; no service-role key is placed in HTML.
+- Existing SQL files in the project are preserved unchanged.
