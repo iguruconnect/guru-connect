@@ -231,14 +231,5 @@ document.getElementById('refresh').onclick=load;
 load();setInterval(load,15000);
 })();
 </script>
-<script id="gc-lrr-ad-system">
-(function(){'use strict';
-const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const grid=document.getElementById('grid');if(!grid)return;
-const style=document.createElement('style');style.textContent='.gc-lrr-ad{position:relative;min-height:520px;overflow:hidden;border-radius:20px;background:#0f172a;box-shadow:0 10px 28px rgba(25,55,110,.14);border:1px solid rgba(37,99,235,.22)}.gc-lrr-ad a{display:block;position:relative;min-height:520px;height:100%;color:#fff;text-decoration:none}.gc-lrr-ad img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.gc-lrr-ad .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,23,.04) 35%,rgba(2,6,23,.18) 55%,rgba(2,6,23,.9) 100%)}.gc-lrr-ad .tag{position:absolute;top:12px;left:12px;padding:7px 9px;border-radius:999px;background:rgba(15,23,42,.78);font-size:9px;font-weight:950;letter-spacing:.06em}.gc-lrr-ad .copy{position:absolute;left:14px;right:14px;bottom:14px}.gc-lrr-ad .copy b{display:block;font-size:16px;font-weight:950}.gc-lrr-ad .copy span{display:block;margin-top:4px;font-size:9px;font-weight:850;opacity:.9}';document.head.appendChild(style);
-async function render(){try{const r=await fetch(U+'/rest/v1/gc_advertisements?select=id,title,advertiser_name,image_url,click_url,whatsapp_url,placement,start_at,end_at,priority&active=eq.true&order=priority.desc,created_at.desc',{headers:{apikey:K,Authorization:'Bearer '+K,Accept:'application/json'},cache:'no-store'});if(!r.ok)return;const rows=(await r.json()||[]).filter(a=>{const n=new Date(),s=a.start_at?new Date(a.start_at):null,e=a.end_at?new Date(a.end_at):null;return(a.placement==='lrr'||a.placement==='all')&&(!s||s<=n)&&(!e||e>=n)});grid.querySelectorAll('.gc-lrr-ad').forEach(x=>x.remove());rows.slice(0,2).forEach((a,i)=>{const href=String(a.click_url||a.whatsapp_url||'').trim();const body='<img src="'+esc(a.image_url)+'" alt="'+esc(a.advertiser_name||a.title||'Advertisement')+' advertisement" loading="lazy"><div class="shade"></div><div class="tag">📢 ADVERTISEMENT</div><div class="copy"><b>'+esc(a.advertiser_name||a.title||'Advertisement')+'</b><span>LEARNING REQUIREMENT • CLICK TO LEARN MORE</span></div>';const h=href?'<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer sponsored">'+body+'</a>':body;const f=document.createRange().createContextualFragment('<article class="gc-lrr-ad">'+h+'</article>');const target=grid.children[Math.min((i+1)*2,grid.children.length)];if(target)grid.insertBefore(f,target);else grid.appendChild(f)})}catch(e){console.warn('LRR advertisement feed unavailable',e)}}
-render();setInterval(render,60000);let t;new MutationObserver(()=>{clearTimeout(t);t=setTimeout(render,180)}).observe(grid,{childList:true});
-})();
-</script></body>
+</body>
 </html>

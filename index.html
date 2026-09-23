@@ -4319,21 +4319,8 @@ footer:before{
 .gc-admin-coin-editor{margin:10px 0 6px;padding:22px;border:1px solid #cbd5e1;border-radius:22px;background:linear-gradient(135deg,#f8fafc,#eef6ff);box-shadow:0 12px 30px rgba(15,23,42,.08)}
 .gc-admin-coin-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}.gc-admin-coin-kicker{font-size:10px;font-weight:950;letter-spacing:.14em;color:var(--gc-accent)}.gc-admin-coin-head h4{margin:3px 0 0;font-size:20px;font-weight:950;color:#0f172a}.gc-admin-coin-balance{font-size:24px;font-weight:950;padding:10px 16px;border-radius:14px;background:#fff;border:1px solid #dbeafe;white-space:nowrap}.gc-admin-coin-grid{display:grid;grid-template-columns:minmax(220px,.75fr) minmax(320px,1.25fr);gap:16px}.gc-admin-coin-grid label{display:block;font-size:10px;font-weight:950;letter-spacing:.08em;color:#475569;margin:0 0 7px}.gc-admin-coin-grid input,.gc-admin-coin-grid textarea{width:100%;box-sizing:border-box;border:1px solid #cbd5e1;border-radius:14px;background:#fff;padding:13px 14px;font-weight:750;outline:none}.gc-admin-coin-grid textarea{min-height:125px;resize:vertical;line-height:1.5}.gc-admin-coin-grid input:focus,.gc-admin-coin-grid textarea:focus{border-color:var(--gc-accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--gc-accent) 12%,transparent)}.gc-admin-coin-actions{display:flex;align-items:center;gap:14px;margin-top:15px;flex-wrap:wrap}.gc-admin-coin-btn{border:0;border-radius:14px;padding:13px 18px;background:var(--gc-accent);color:#fff;font-weight:950;cursor:pointer;box-shadow:0 8px 20px rgba(15,23,42,.14)}.gc-admin-coin-btn:disabled{opacity:.65;cursor:wait}.gc-admin-coin-actions span{font-size:11px;font-weight:800;color:#64748b}@media(max-width:700px){#adminEditTutorModal>div,#adminEditStudentModal>div{padding:18px!important;width:98vw!important}.gc-admin-coin-grid{grid-template-columns:1fr}.gc-admin-coin-head{align-items:flex-start;flex-direction:column}.gc-admin-coin-balance{font-size:20px}}
 </style>
-<style id="gc-user-requested-fixes">
-.gc-logo3-lockup,.gc-logo3-image{background:transparent!important}.gc-logo3-lockup{overflow:visible!important}.gc-logo3-image{border:0!important;box-shadow:none!important}
-.gc-profile-card .gc-name-patch,.gc-profile-card .gc-name-patch h3,.gc-profile-card .gc-target-name,.gc-profile-card .gc-clean-name,.gc-profile-card .gc-beautiful-name,.gc-profile-card .gc-new-name{max-width:100%!important;width:auto!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important;word-break:normal!important}.gc-profile-card .gc-name-patch h3{font-size:clamp(22px,2.2vw,31px)!important;line-height:1.08!important}
-.gc-download-btn{border:0;border-radius:11px;padding:10px 14px;background:linear-gradient(135deg,#0f3d91,#2563eb);color:#fff;font-weight:950;font-size:11px;cursor:pointer;box-shadow:0 7px 18px rgba(15,61,145,.16)}.gc-download-btn:hover{filter:brightness(1.06)}
-#gcBrandSplash{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#fff,#f8fbff 55%,#fffaf2);opacity:1;visibility:visible;transition:opacity .38s ease,visibility .38s ease}#gcBrandSplash.gc-splash-hide{opacity:0;visibility:hidden;pointer-events:none}#gcBrandSplash img{width:min(520px,76vw);height:auto;display:block;background:transparent!important;object-fit:contain;filter:drop-shadow(0 18px 34px rgba(15,61,145,.10))}
-/* FINAL SPLASH FIX: never show a broken-image icon or image alt text before the logo is ready. */
-#gcBrandSplash .gc-splash-fallback{font-size:clamp(34px,7vw,72px);line-height:1;font-weight:1000;letter-spacing:-.045em;color:#0f3d91;white-space:nowrap;text-align:center;display:block}
-#gcBrandSplash #gcSplashLogo{visibility:hidden;opacity:0;transition:opacity .18s ease;max-width:76vw;max-height:150px}
-@media(max-width:520px){#gcBrandSplash .gc-splash-card{padding:24px 18px}#gcBrandSplash .gc-splash-fallback{font-size:clamp(30px,11vw,52px)}#gcBrandSplash #gcSplashLogo{max-width:88vw}}
-.gc-auth-master-statement{margin-top:16px;padding:16px;border:1px solid #dbeafe;border-radius:16px;background:#fff;box-shadow:0 8px 22px rgba(15,61,145,.06)}
-@media(max-width:560px){.gc-download-btn{width:100%}}
-</style>
-<script id="gc-final-splash-timing">
-/* Splash timing is handled by gc-startup-no-flash-js above. */
-</script>
+
+
 <style id="gc-tutor-name-id-final">
 /* FINAL TUTOR IDENTITY FIX
    - Keep normal words intact.
@@ -4485,7 +4472,7 @@ footer:before{
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fixTutorNames);else fixTutorNames();window.addEventListener('load',function(){setTimeout(fixTutorNames,100);setTimeout(fixTutorNames,1000)});new MutationObserver(function(){clearTimeout(window.__gcTutorNameFix);window.__gcTutorNameFix=setTimeout(fixTutorNames,40)}).observe(document.body,{subtree:true,childList:true});setInterval(fixTutorNames,1200);
 })();
 </script>
-<style id="gc-no-splash-final">#gcBrandSplash{display:none!important}</style>
+
 <style id="gc-coins-card-style-final">
 /* Coins card: same footprint as the other profile info fields, with a clean green treatment. */
 .gc-auth-coin-field{
@@ -4699,18 +4686,8 @@ footer:before{
   #gc165Header .gc165-brand img{height:58px!important;}
 }
 </style>
-<style id="gc168-critical-first-paint">
-/* Prevent the 6MB homepage from briefly showing raw/unstyled text during parse. */
-html.gc168-booting body{visibility:hidden!important}
-html.gc168-booting:before{
-  content:"";position:fixed;inset:0;z-index:2147483647;display:block;
-  background:#fff url("guru-connect-brand.png") center center/min(520px,78vw) auto no-repeat;
-}
-</style>
-<script id="gc168-critical-first-paint-js">
-document.documentElement.classList.add('gc168-booting');
-window.addEventListener('DOMContentLoaded',function(){document.documentElement.classList.remove('gc168-booting');},{once:true});
-</script>
+
+
 <style id="gc-home-live-lrr-style">
 .gc-quick-grid{grid-template-columns:repeat(4,1fr)!important}
 .gc-quick-lrr{background:linear-gradient(135deg,#6d28d9,#2563eb)!important}
@@ -4741,6 +4718,11 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 .gc-home-lrr-footer a:hover{text-decoration:underline}
 @media(max-width:1100px){.gc-quick-grid{grid-template-columns:repeat(2,1fr)!important}.gc-home-lrr-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){.gc-home-lrr-section{padding:4px 14px 30px}.gc-home-lrr-head{display:block;padding:16px}.gc-home-lrr-live{display:inline-block;margin-top:12px}.gc-home-lrr-grid{grid-template-columns:1fr}.gc-quick-grid{grid-template-columns:1fr!important}}
+</style>
+<style id="gc-stable-no-splash">
+/* Stable build: no startup overlay. The homepage renders immediately. */
+#gcBrandSplash,.gcBrandSplash,[id*="gcBrandSplash"]{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
+html,body{overflow-x:hidden!important;overflow-y:auto!important}
 </style>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
@@ -5996,7 +5978,7 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 <footer class="w-full" id="gcStandardFooter">
 <div class="gc-footer-inner">
 <div class="gc-footer-brand">
-<div class="gc-footer-logo-wrap"><img alt="GURU CONNECT — Connecting Minds Creating Future" id="gcFooterLogo" src="guru-connect-round-logo.png"/></div>
+<div class="gc-footer-logo-wrap"><img alt="GURU CONNECT — Connecting Minds Creating Future" id="gcFooterLogo" src="guru-connect-logo-clean.png"/></div>
 </div>
 <div class="gc-footer-links">
 <a href="javascript:void(0)" onclick="openAboutModal()">About Us</a>
@@ -6031,7 +6013,7 @@ window.addEventListener('DOMContentLoaded',function(){document.documentElement.c
 @media(max-width:640px){.gc-footer-inner{padding:24px 15px 15px}.gc-footer-title{font-size:17px}.gc-footer-links{gap:9px 15px}.gc-footer-bottom{display:block}.gc-footer-bottom span{display:block;margin-top:5px}.gc-footer-policy{font-size:9px}}
 </style>
 <script id="gc-footer-logo-sync">
-(function(){function sync(){var img=document.getElementById('gcFooterLogo');if(img)img.src='guru-connect-round-logo.png';}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();window.addEventListener('load',sync);})();
+(function(){function sync(){var img=document.getElementById('gcFooterLogo');if(img)img.src='guru-connect-logo-clean.png';}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();window.addEventListener('load',sync);})();
 </script>
 <!-- JavaScript Application Logic -->
 <script>
@@ -18041,38 +18023,8 @@ setInterval(checkCurrentAccount,60000);
 </style>
 
 <!-- GURU CONNECT EMERGENCY SPLASH UNLOCK -- FINAL -->
-<style id="gc-emergency-splash-unlock">
-  #gcBrandSplash, .gcBrandSplash, [id*="gcBrandSplash"] {
-    display:none !important;
-    visibility:hidden !important;
-    opacity:0 !important;
-    pointer-events:none !important;
-  }
-  html, body { overflow:auto !important; }
-</style>
-<script id="gc-emergency-splash-unlock-js">
-(function(){
-  function unlock(){
-    try{
-      document.querySelectorAll('#gcBrandSplash,.gcBrandSplash,[id*="gcBrandSplash"]').forEach(function(el){
-        el.classList.add('gc-splash-hide');
-        el.style.setProperty('display','none','important');
-        el.style.setProperty('visibility','hidden','important');
-        el.style.setProperty('opacity','0','important');
-        el.style.setProperty('pointer-events','none','important');
-      });
-      document.documentElement.style.removeProperty('overflow');
-      document.body.style.removeProperty('overflow');
-    }catch(e){console.warn('GURU CONNECT splash unlock:',e)}
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',unlock,{once:true});
-  else unlock();
-  window.addEventListener('load',unlock,{once:true});
-  setTimeout(unlock,100);
-  setTimeout(unlock,1000);
-  setTimeout(unlock,3000);
-})();
-</script>
+
+
 <style id="gc-integrated-advertisement-css">
 .gc-ad-admin-panel{margin:0 0 20px;border:1px solid #dbe3ef;border-radius:24px;background:#fff;box-shadow:0 18px 50px rgba(15,23,42,.08);overflow:hidden}
 .gc-ad-admin-head{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:22px;background:linear-gradient(135deg,#0b2b66,#155eef 60%,#0891b2);color:#fff}.gc-ad-admin-kicker{font-size:10px;font-weight:950;letter-spacing:.14em;opacity:.85}.gc-ad-admin-head h3{margin:3px 0 0;font-size:clamp(20px,2.4vw,30px);font-weight:950}.gc-ad-admin-head p{margin:6px 0 0;color:#dbeafe;font-size:12px;line-height:1.6}.gc-ad-admin-body{padding:20px}.gc-ad-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.gc-ad-form-grid label{display:block;font-size:10px;font-weight:950;color:#475569;text-transform:uppercase;letter-spacing:.6px}.gc-ad-form-grid label.wide{grid-column:1/-1}.gc-ad-form-grid input,.gc-ad-form-grid select{display:block;width:100%;min-height:46px;margin-top:6px;border:1px solid #cbd5e1;border-radius:12px;padding:10px 12px;background:#f8fafc;font-size:13px;font-weight:750;outline:0}.gc-ad-form-grid input:focus,.gc-ad-form-grid select:focus{border-color:#60a5fa;box-shadow:0 0 0 4px #dbeafe;background:#fff}.gc-ad-spec{margin-top:14px;padding:13px 15px;border-radius:13px;background:#eff6ff;color:#334155;font-size:11px;line-height:1.65}.gc-ad-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}.gc-ad-btn{border:0;border-radius:12px;padding:12px 16px;font-weight:950;cursor:pointer}.gc-ad-btn-primary{background:#155eef;color:#fff}.gc-ad-btn-light{background:#f1f5f9;color:#334155}.gc-ad-btn:disabled{opacity:.6;cursor:not-allowed}.gc-ad-status{min-height:22px;margin-top:10px;font-size:12px;font-weight:850;color:#0f766e}.gc-ad-list-head{display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-top:1px solid #e2e8f0;background:#f8fafc}.gc-ad-list-head h4{margin:0;font-size:13px;font-weight:950;color:#172554}.gc-ad-list-head span{font-size:11px;font-weight:850;color:#64748b}.gc-ad-list{padding:0 20px 20px;display:grid;gap:10px}.gc-ad-admin-row{display:grid;grid-template-columns:110px 1fr auto;gap:14px;align-items:center;border:1px solid #e2e8f0;border-radius:16px;padding:10px;background:#fff}.gc-ad-admin-row img{width:110px;height:82px;object-fit:cover;border-radius:10px;background:#f1f5f9}.gc-ad-admin-main b{font-size:13px;color:#0f172a}.gc-ad-admin-main small{display:block;color:#64748b;font-size:10px;margin-top:5px}.gc-ad-pill,.gc-ad-live,.gc-ad-off{display:inline-block;margin-left:6px;padding:3px 6px;border-radius:6px;font-size:8px;font-weight:950}.gc-ad-pill{background:#eff6ff;color:#155eef}.gc-ad-live{background:#dcfce7;color:#166534}.gc-ad-off{background:#fee2e2;color:#991b1b}.gc-ad-admin-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.gc-ad-mini{border:0;border-radius:9px;padding:8px 10px;font-size:9px;font-weight:950;cursor:pointer;background:#eff6ff;color:#155eef}.gc-ad-mini.danger{background:#fee2e2;color:#991b1b}.gc-ad-empty,.gc-ad-error{padding:25px;text-align:center;border:1px dashed #cbd5e1;border-radius:14px;color:#64748b;font-size:12px;font-weight:850}.gc-ad-error{color:#991b1b;background:#fff7f7}
