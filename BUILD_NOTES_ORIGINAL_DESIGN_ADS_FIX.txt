@@ -1,0 +1,24 @@
+GURU CONNECT — ORIGINAL DESIGN + ADVERTISEMENT INTEGRATION
+Base: the user-uploaded guru-connect-main(1).zip.
+
+The original homepage design and existing logo assets were preserved. No logo was replaced.
+
+Homepage hang repair:
+- The original homepage had a MutationObserver in the final login-menu cleanup that observed the
+  whole document while its callback removed/created menu nodes. That can self-trigger repeatedly.
+- That observer was removed and replaced with a finite, idempotent cleanup sequence.
+- No splash/logo redesign was introduced.
+
+Advertisement system:
+- Staff/Admin dashboard now has an ADVERTISEMENTS button and management panel.
+- Placement options: LRR, Student Profile, Tutor Profile, All Sections.
+- Upload flyer: JPG/JPEG/PNG/WEBP, max 3 MB.
+- Start/end time, priority, click URL, WhatsApp URL.
+- Admin can create, activate/pause and delete ads.
+- Ads are read from Supabase table gc_advertisements and bucket gc-advertisements.
+- Tutor and Student profile grids on the homepage receive matching ad cards.
+- Learning Request page receives an LRR-sized ad card.
+- advertisements.html is included as an auxiliary manager page.
+- SUPABASE_ADVERTISEMENTS_SETUP.sql and README are included for reference.
+
+If the advertisement SQL has already succeeded in Supabase, do not rerun it.

@@ -73,6 +73,10 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
   .need{font-size:14px}
 }
 </style>
+<style id="gc-learning-ad-css">
+.gc-learning-ad{position:relative;overflow:hidden;min-height:520px;border-radius:20px;background:#0f172a;box-shadow:0 10px 28px rgba(25,55,110,.12);border:1px solid #cbd9ef;color:#fff}
+.gc-learning-ad a{display:block;position:relative;min-height:520px;color:#fff;text-decoration:none}.gc-learning-ad img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.gc-learning-ad .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,23,.04) 35%,rgba(2,6,23,.9) 100%)}.gc-learning-ad .label{position:absolute;left:14px;top:14px;background:rgba(15,23,42,.78);border-radius:999px;padding:7px 10px;font-size:10px;font-weight:950}.gc-learning-ad .copy{position:absolute;left:16px;right:16px;bottom:16px}.gc-learning-ad .copy b{display:block;font-size:18px;font-weight:950}.gc-learning-ad .copy span{display:block;margin-top:5px;font-size:10px;font-weight:800}
+</style>
 </head>
 <body>
 <header class="top">
@@ -229,6 +233,17 @@ document.getElementById('stream').onchange=render;
 document.getElementById('subject').onchange=render;
 document.getElementById('refresh').onclick=load;
 load();setInterval(load,15000);
+})();
+</script>
+<script id="gc-learning-ad-runtime">
+(function(){
+'use strict';
+const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clean=v=>String(v||'').trim();
+function href(a){for(const v of [a.click_url,a.whatsapp_url]){if(!clean(v))continue;try{const u=new URL(v);if(/^https?:$/.test(u.protocol))return u.href}catch(_){}}return ''}
+async function run(){const g=document.querySelector('.grid');if(!g)return;try{const r=await fetch(U+'/rest/v1/gc_advertisements?select=id,title,advertiser_name,image_url,click_url,whatsapp_url,placement,start_at,end_at,priority,created_at&active=eq.true&order=priority.desc,created_at.desc',{headers:{apikey:K,Authorization:'Bearer '+K,Accept:'application/json'},cache:'no-store'});if(!r.ok)return;const now=new Date(),rows=(await r.json()).filter(a=>{const s=a.start_at?new Date(a.start_at):null,e=a.end_at?new Date(a.end_at):null;return a.active&&(!s||s<=now)&&(!e||e>=now)&&(a.placement==='all'||a.placement==='lrr')});g.querySelectorAll('.gc-learning-ad').forEach(x=>x.remove());if(!rows.length)return;const a=rows[0],h=href(a),label=a.advertiser_name||a.title||'Advertisement';const inner='<img src="'+esc(a.image_url)+'" alt="'+esc(label)+' advertisement" loading="lazy"><div class="shade"></div><div class="label">📢 ADVERTISEMENT</div><div class="copy"><b>'+esc(label)+'</b><span>LEARNING REQUEST AD • CLICK TO LEARN MORE</span></div>';const html='<article class="gc-learning-ad">'+(h?'<a href="'+esc(h)+'" target="_blank" rel="noopener noreferrer sponsored">'+inner+'</a>':'<div style="position:relative;min-height:520px">'+inner+'</div>')+'</article>';g.insertAdjacentHTML('afterbegin',html)}catch(e){console.warn('Learning Request advertisement unavailable',e)}}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();setTimeout(run,2500);setInterval(run,60000);
 })();
 </script>
 </body>
