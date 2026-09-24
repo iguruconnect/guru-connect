@@ -3,7 +3,7 @@ GURU CONNECT — ADVERTISEMENT SYSTEM
 1) Run SUPABASE_ADVERTISEMENTS_SETUP.sql once in Supabase SQL Editor.
 2) Log in as Staff/Admin.
 3) Open Admin Dashboard > ADVERTISEMENTS.
-4) Upload JPG/PNG/WEBP flyer (maximum 3 MB).
+4) Upload JPG/PNG/WEBP flyer (maximum 5 MB).
 5) Choose placement:
    - Post Ad in LRR
    - Post Ad in Student Profile Section

@@ -30,7 +30,7 @@ FLYER SIZES:
 - Student/Tutor profile cards: 1000 × 1500 px portrait (2:3)
 - LRR cards: 1000 × 1200 px portrait (5:6)
 - JPG, JPEG, PNG, WEBP
-- Maximum 3 MB
+- Maximum 5 MB
 
 SUPABASE SQL:
 1. If the advertisement setup has NOT already been run, run SUPABASE_ADVERTISEMENTS_SETUP.sql once.
