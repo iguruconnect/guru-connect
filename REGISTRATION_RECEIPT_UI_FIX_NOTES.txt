@@ -1,0 +1,20 @@
+GURU CONNECT registration/receipt UI fix — 2026-09-25
+
+Changed:
+- registration.html
+  * Uses the newly supplied GURU CONNECT circular logo.
+  * Refreshed registration UI with responsive step bar and polished cards/fields.
+  * Kept mandatory email verification.
+  * Hardened post-verification profile saving for Student/Tutor.
+  * Saves verified registration audit/payment information when the audit table exists.
+  * Avoids relying solely on a user_id UNIQUE constraint when updating/creating profiles.
+  * Provides clearer save errors instead of claiming success when Supabase rejects the write.
+- dashboard.html
+  * Uses the newly supplied logo on the payment receipt.
+  * Receipt tab is explicitly labelled RECEIPT.
+  * Receipt includes plan/fee when registration audit data is available.
+  * Refreshed receipt layout and mobile/print styling.
+- guru-connect-registration-receipt-logo.png
+  * Supplied logo prepared with transparent outside background for clean display.
+
+The Supabase project URL/key and existing website functionality were left unchanged.
