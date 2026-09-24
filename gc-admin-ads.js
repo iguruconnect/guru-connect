@@ -28,7 +28,7 @@ function ui(){
  <label class="wide">Advertisement Flyer<input id="gcAdFile" type="file" accept="image/jpeg,image/png,image/webp"></label>
  <label class="wide">Click-through Website URL (optional)<input id="gcAdClick" placeholder="https://advertiser.com"></label>
  <label class="wide">WhatsApp URL (optional)<input id="gcAdWhatsapp" placeholder="https://wa.me/919876543210"></label>
- </div><div class="gc-ads-help">Recommended creatives: <b>1200×800 px landscape</b> for Student/Tutor Profile cards; <b>1000×1200 px portrait</b> for LRR. JPG, PNG or WEBP; keep file under 3 MB. The website automatically fits the creative into the card footprint.</div>
+ </div><div class="gc-ads-help">Standard Advertisement Format: <b>1200×675 px (16:9)</b> for ALL placements — Learning Requests, Student Profiles and Tutor Profiles. JPG, PNG or WEBP; keep file under 3 MB. Keep important text/logos inside a safe 5% margin.</div>
  <div class="gc-ads-actions"><button id="gcAdSave" class="gc-ads-btn primary">➕ CREATE ADVERTISEMENT</button><button id="gcAdClear" class="gc-ads-btn light">CLEAR</button></div><div id="gcAdStatus" class="gc-ads-status"></div></div>
  <div class="gc-ads-list-head"><h4>ACTIVE / SCHEDULED ADVERTISEMENTS</h4><span id="gcAdCount"></span></div><div id="gcAdsList" class="gc-ads-list"></div>`;
  card.appendChild(s);
