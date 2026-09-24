@@ -72,10 +72,8 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
   .sub{font-size:13px}
   .need{font-size:14px}
 }
-</style>
-<style id="gc-learning-ad-css">
-.gc-learning-ad{position:relative;overflow:hidden;min-height:520px;border-radius:20px;background:#0f172a;box-shadow:0 10px 28px rgba(25,55,110,.12);border:1px solid #cbd9ef;color:#fff}
-.gc-learning-ad a{display:block;position:relative;min-height:520px;color:#fff;text-decoration:none}.gc-learning-ad img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.gc-learning-ad .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,23,.04) 35%,rgba(2,6,23,.9) 100%)}.gc-learning-ad .label{position:absolute;left:14px;top:14px;background:rgba(15,23,42,.78);border-radius:999px;padding:7px 10px;font-size:10px;font-weight:950}.gc-learning-ad .copy{position:absolute;left:16px;right:16px;bottom:16px}.gc-learning-ad .copy b{display:block;font-size:18px;font-weight:950}.gc-learning-ad .copy span{display:block;margin-top:5px;font-size:10px;font-weight:800}
+
+.gc-lrr-ad-host{margin:14px 0 18px}.gc-lrr-ad-card{position:relative;overflow:hidden;min-height:520px;border-radius:20px;box-shadow:0 16px 35px rgba(20,50,110,.18);background:#0f172a;color:#fff}.gc-lrr-ad-card a{display:block;position:relative;min-height:520px;color:#fff;text-decoration:none}.gc-lrr-ad-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}.gc-lrr-ad-card .shade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(2,6,23,.02),rgba(2,6,23,.9))}.gc-lrr-ad-card .label{position:absolute;top:14px;left:14px;background:rgba(15,23,42,.8);padding:7px 10px;border-radius:999px;font-size:10px;font-weight:950}.gc-lrr-ad-card .copy{position:absolute;left:16px;right:16px;bottom:16px}.gc-lrr-ad-card .copy b{display:block;font-size:20px}.gc-lrr-ad-card .copy span{font-size:10px;font-weight:900}@media(max-width:650px){.gc-lrr-ad-card,.gc-lrr-ad-card a{min-height:460px}}
 </style>
 </head>
 <body>
@@ -101,7 +99,7 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
   <div style="display:flex;align-items:end"><button id="refresh">↻ REFRESH</button></div>
 </section>
 
-<section id="grid" class="grid"><div class="empty">Loading live Student requirements…</div></section>
+<div id="gcLrrAdHost" class="gc-lrr-ad-host"></div><section id="grid" class="grid"><div class="empty">Loading live Student requirements…</div></section>
 </main>
 
 <div id="modal" class="modal"><div class="modalbox"><div class="modalhead"><h2 id="mtitle" style="margin:0;color:#13246b">Learning Requirement</h2><button class="close" id="mclose">✕</button></div><div id="mdetails" class="detailgrid"></div></div></div>
@@ -235,16 +233,8 @@ document.getElementById('refresh').onclick=load;
 load();setInterval(load,15000);
 })();
 </script>
-<script id="gc-learning-ad-runtime">
-(function(){
-'use strict';
-const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
-const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const clean=v=>String(v||'').trim();
-function href(a){for(const v of [a.click_url,a.whatsapp_url]){if(!clean(v))continue;try{const u=new URL(v);if(/^https?:$/.test(u.protocol))return u.href}catch(_){}}return ''}
-async function run(){const g=document.querySelector('.grid');if(!g)return;try{const r=await fetch(U+'/rest/v1/gc_advertisements?select=id,title,advertiser_name,image_url,click_url,whatsapp_url,placement,start_at,end_at,priority,created_at&active=eq.true&order=priority.desc,created_at.desc',{headers:{apikey:K,Authorization:'Bearer '+K,Accept:'application/json'},cache:'no-store'});if(!r.ok)return;const now=new Date(),rows=(await r.json()).filter(a=>{const s=a.start_at?new Date(a.start_at):null,e=a.end_at?new Date(a.end_at):null;return a.active&&(!s||s<=now)&&(!e||e>=now)&&(a.placement==='all'||a.placement==='lrr')});g.querySelectorAll('.gc-learning-ad').forEach(x=>x.remove());if(!rows.length)return;const a=rows[0],h=href(a),label=a.advertiser_name||a.title||'Advertisement';const inner='<img src="'+esc(a.image_url)+'" alt="'+esc(label)+' advertisement" loading="lazy"><div class="shade"></div><div class="label">📢 ADVERTISEMENT</div><div class="copy"><b>'+esc(label)+'</b><span>LEARNING REQUEST AD • CLICK TO LEARN MORE</span></div>';const html='<article class="gc-learning-ad">'+(h?'<a href="'+esc(h)+'" target="_blank" rel="noopener noreferrer sponsored">'+inner+'</a>':'<div style="position:relative;min-height:520px">'+inner+'</div>')+'</article>';g.insertAdjacentHTML('afterbegin',html)}catch(e){console.warn('Learning Request advertisement unavailable',e)}}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();setTimeout(run,2500);setInterval(run,60000);
-})();
+<script id="gc-lrr-ad-visible-js">
+(function(){'use strict';const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));function ok(a){const n=new Date(),s=a.start_at?new Date(a.start_at):null,e=a.end_at?new Date(a.end_at):null;return a.active===true&&(!s||s<=n)&&(!e||e>=n)}async function draw(){try{const r=await fetch(U+'/rest/v1/gc_advertisements?select=id,title,advertiser_name,placement,image_url,click_url,whatsapp_url,start_at,end_at,priority,created_at,active&active=eq.true&order=priority.desc,created_at.desc',{headers:{apikey:K,Authorization:'Bearer '+K,Accept:'application/json'},cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);const rows=(await r.json()).filter(ok).filter(a=>a.placement==='all'||a.placement==='lrr');const host=document.getElementById('gcLrrAdHost');if(!host)return;if(!rows.length){host.innerHTML='';return}const a=rows[0],h=a.click_url||a.whatsapp_url||'',label=a.advertiser_name||a.title||'Advertisement',body='<img src="'+esc(a.image_url)+'" alt="'+esc(label)+' advertisement"><div class="shade"></div><div class="label">📢 ADVERTISEMENT</div><div class="copy"><b>'+esc(label)+'</b><span>LEARNING REQUEST AD • CLICK TO LEARN MORE</span></div>';host.innerHTML='<article class="gc-lrr-ad-card">'+(h?'<a href="'+esc(h)+'" target="_blank" rel="noopener noreferrer sponsored">'+body+'</a>':body)+'</article>'}catch(e){console.warn('LRR advertisement unavailable',e)}}draw();setInterval(draw,15000)})();
 </script>
 </body>
 </html>
