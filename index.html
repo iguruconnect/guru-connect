@@ -5111,9 +5111,9 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 </div>
 <!-- Email OTP Verification Box for Student -->
 <div class="hidden bg-blue-50 border border-blue-200 p-3.5 rounded-xl space-y-2" id="stuOtpBox">
-<p class="text-[11px] font-bold text-brand-blue">Enter the 4-digit code sent from support@guruconnnect.in:</p>
+<p class="text-[11px] font-bold text-brand-blue">Enter the 6-digit code sent from support@guruconnnect.in:</p>
 <div class="flex gap-2">
-<input class="w-32 border border-blue-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="stuEnteredOtp" maxlength="4" placeholder="1234" type="text"/>
+<input class="w-32 border border-blue-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="stuEnteredOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" type="text"/>
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('student')" type="button">Verify OTP</button>
 </div>
 </div>
@@ -5419,7 +5419,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <span class="text-[9px] text-slate-400 font-bold uppercase ml-1">One-time</span>
 </div>
 </div>
-<a class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded-xl shadow transition text-[11px] text-center flex items-center justify-center gap-1.5 cursor-pointer" href="upi://pay?pa=verizon@upi&amp;pn=GuruConnect&amp;am=200&amp;cu=INR" onclick="openUpiQrModal(200); return false;">
+<a class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded-xl shadow transition text-[11px] text-center flex items-center justify-center gap-1.5 cursor-pointer" href="upi://pay?pa=verizon@upi&amp;pn=GuruConnect&amp;am=200&amp;cu=INR" onclick="selectTutorPayment(200); openUpiQrModal(200); return false;">
 <i class="fa-solid fa-qrcode"></i> PAY ₹200 UPI / QR
                             </a>
 </div>
@@ -5436,7 +5436,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <span class="text-[9px] text-slate-400 font-bold uppercase ml-1">For 30 Days</span>
 </div>
 </div>
-<a class="w-full bg-brand-nagpurOrange hover:bg-orange-600 text-white font-bold py-2.5 px-3 rounded-xl shadow transition text-[11px] text-center flex items-center justify-center gap-1.5 cursor-pointer" href="upi://pay?pa=verizon@upi&amp;pn=GuruConnect&amp;am=300&amp;cu=INR" onclick="openUpiQrModal(300); return false;">
+<a class="w-full bg-brand-nagpurOrange hover:bg-orange-600 text-white font-bold py-2.5 px-3 rounded-xl shadow transition text-[11px] text-center flex items-center justify-center gap-1.5 cursor-pointer" href="upi://pay?pa=verizon@upi&amp;pn=GuruConnect&amp;am=300&amp;cu=INR" onclick="selectTutorPayment(300); openUpiQrModal(300); return false;">
 <i class="fa-solid fa-qrcode"></i> PAY ₹300 UPI / QR
                             </a>
 </div>
@@ -5468,9 +5468,9 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 </div>
 <!-- Email OTP Verification Box for Tutor -->
 <div class="hidden bg-orange-50 border border-orange-200 p-3.5 rounded-xl space-y-2" id="tutorOtpBox">
-<p class="text-[11px] font-bold text-brand-nagpurOrange">Enter the 4-digit code sent from support@guruconnnect.in:</p>
+<p class="text-[11px] font-bold text-brand-nagpurOrange">Enter the 6-digit code sent from support@guruconnnect.in:</p>
 <div class="flex gap-2">
-<input class="w-32 border border-orange-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="tutorEnteredOtp" maxlength="4" placeholder="1234" type="text"/>
+<input class="w-32 border border-orange-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="tutorEnteredOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" type="text"/>
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('tutor')" type="button">Verify OTP</button>
 </div>
 </div>
@@ -5541,6 +5541,11 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <div class="border border-brand-nagpurOrange bg-orange-50/50 p-3 sm:p-4 rounded-2xl">
 <label class="block text-[10px] sm:text-xs font-bold text-brand-nagpurOrange uppercase tracking-wider mb-1.5">Enter UTR / Transaction Reference Number *</label>
 <input class="w-full border border-brand-nagpurOrange rounded-xl p-3 text-xs sm:text-sm font-mono font-bold bg-white" id="txnIdInput" name="utr" placeholder="Enter valid UTR / Transaction Reference" required="" type="text"/>
+<input id="tutorPaymentAmount" type="hidden" value="200"/>
+<div class="flex flex-col sm:flex-row gap-2 mt-3">
+<button type="button" id="tutorReceiptBtn" onclick="generateTutorPaymentReceipt()" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-black px-4 py-3 rounded-xl text-[11px] shadow">🧾 GENERATE / PRINT RECEIPT</button>
+<span class="text-[10px] sm:text-xs text-slate-500 self-center">Enter your UTR first, then use this button to print/save the payment receipt as PDF.</span>
+</div>
 </div>
 <button class="w-full bg-slate-300 text-slate-600 font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2 cursor-not-allowed" disabled="" id="tutorSubmitBtn" type="submit">
                             PLEASE VERIFY EMAIL FIRST
@@ -6698,6 +6703,35 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
             document.getElementById('upiQrModal').classList.add('hidden');
         }
 
+        function selectTutorPayment(amount) {
+            const el=document.getElementById('tutorPaymentAmount');
+            if(el) el.value=String(amount);
+        }
+
+        function generateTutorPaymentReceipt() {
+            const name=(document.getElementById('t_name')?.value||'').trim();
+            const email=(document.getElementById('t_email')?.value||'').trim();
+            const utr=(document.getElementById('txnIdInput')?.value||'').trim();
+            const amount=Number(document.getElementById('tutorPaymentAmount')?.value||0);
+            if(!name){alert('Please enter the Tutor Full Name first.');return;}
+            if(!email || !/^\S+@\S+\.\S+$/.test(email)){alert('Please enter a valid Tutor email address first.');return;}
+            if(!utr){alert('Please enter the UTR / Transaction Reference Number first.');document.getElementById('txnIdInput')?.focus();return;}
+            const logo=new URL('guru-connect-new-header.png', location.href).href;
+            const now=new Date();
+            const date=now.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+            const time=now.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+            const receiptNo='GC-'+now.getTime().toString().slice(-10);
+            const win=window.open('','_blank','width=850,height=900');
+            if(!win){alert('Receipt window was blocked by the browser. Please allow pop-ups for GURU CONNECT and try again.');return;}
+            win.document.write(`<!doctype html><html><head><meta charset="utf-8"><title>GURU CONNECT Payment Receipt</title><style>body{font-family:Arial,sans-serif;background:#f4f7fb;margin:0;padding:30px;color:#172033}.receipt{max-width:760px;margin:auto;background:#fff;border:1px solid #dbe4f0;border-radius:24px;box-shadow:0 18px 50px rgba(15,23,42,.12);overflow:hidden}.head{padding:24px 28px;border-bottom:1px solid #e2e8f0;display:flex;align-items:center;gap:18px}.head img{width:92px;height:58px;object-fit:contain}.brand{font-size:28px;font-weight:900;letter-spacing:-1px}.brand span{font-weight:500;color:#2563eb}.tag{color:#64748b;font-size:12px;font-weight:700;margin-top:5px}.title{padding:24px 28px 10px}.title h1{margin:0;font-size:25px}.title p{color:#64748b;font-size:12px}.table{margin:10px 28px 28px;border:1px solid #e2e8f0;border-radius:16px;overflow:hidden}.row{display:flex;justify-content:space-between;gap:20px;padding:15px 17px;border-bottom:1px solid #e2e8f0;font-size:13px}.row:last-child{border-bottom:0}.label{font-weight:800;color:#64748b}.value{font-weight:900;text-align:right;word-break:break-word}.total{background:#eff6ff}.total .value{color:#123b8f;font-size:18px}.note{margin:0 28px 28px;padding:14px;border-radius:14px;background:#f8fafc;color:#64748b;font-size:11px;line-height:1.6}.actions{text-align:center;padding:0 28px 28px}.print{background:#123b8f;color:#fff;border:0;border-radius:12px;padding:12px 20px;font-weight:900;cursor:pointer}@media print{body{background:#fff;padding:0}.receipt{box-shadow:none;border:0}.actions{display:none}}</style></head><body><div class="receipt"><div class="head"><img src="${logo}" alt="GURU CONNECT logo"><div><div class="brand"><span style="color:#172033">GURU</span> <span>CONNECT</span></div><div class="tag">Connecting Mind - Creating Future...</div></div></div><div class="title"><h1>Tutor Registration Payment Receipt</h1><p>Official payment acknowledgement generated from GURU CONNECT.</p></div><div class="table"><div class="row"><div class="label">Receipt No.</div><div class="value">${receiptNo}</div></div><div class="row"><div class="label">Tutor Name</div><div class="value">${escapeReceipt(name)}</div></div><div class="row"><div class="label">Email</div><div class="value">${escapeReceipt(email)}</div></div><div class="row"><div class="label">Payment Amount</div><div class="value">₹${amount.toLocaleString('en-IN')}</div></div><div class="row"><div class="label">UTR / Transaction Reference</div><div class="value">${escapeReceipt(utr)}</div></div><div class="row"><div class="label">Date / Time</div><div class="value">${date} • ${time}</div></div><div class="row total"><div class="label">Status</div><div class="value">PAYMENT DETAILS RECORDED</div></div></div><div class="note"><b>Important:</b> This receipt acknowledges the payment details entered by the tutor. Payment receipt/UTR is not by itself proof of approval or verification. Final tutor approval remains subject to GURU CONNECT review.</div><div class="actions"><button class="print" onclick="window.print()">PRINT / SAVE AS PDF</button></div></div></body></html>`);
+            win.document.close();
+            setTimeout(()=>win.focus(),150);
+        }
+
+        function escapeReceipt(value){
+            return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        }
+
         async function sendEmailOtp(type) {
             const nameInput = document.getElementById(type === 'student' ? 'stu_name' : 't_name');
             const emailInput = document.getElementById(type === 'student' ? 'stu_email' : 't_email');
@@ -6709,7 +6743,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
                 alert('Please enter a valid email address.'); return;
             }
 
-            const otp = Math.floor(1000 + Math.random() * 9000).toString();
+            const otp = Math.floor(100000 + Math.random() * 900000).toString();
             pendingEmailOtps[type] = otp;
             const button = document.querySelector(`button[onclick="sendEmailOtp('\${type}\')"]`);
             if (button) { button.disabled = true; button.textContent = 'Sending...'; }
@@ -6745,7 +6779,8 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
         async function verifyEmailOtp(type) {
             const nameInput = document.getElementById(type === 'student' ? 'stu_name' : 't_name');
             const emailInput = document.getElementById(type === 'student' ? 'stu_email' : 't_email');
-            const entered = document.getElementById(type === 'student' ? 'stuEnteredOtp' : 'tutorEnteredOtp').value.trim();
+            const entered = (document.getElementById(type === 'student' ? 'stuEnteredOtp' : 'tutorEnteredOtp').value || '').replace(/\D/g,'').trim();
+            if (entered.length !== 6) { alert('Please enter the complete 6-digit OTP.'); return; }
             
             if (entered === pendingEmailOtps[type] && entered !== "") {
                 alert('Email verified successfully.');
@@ -7530,74 +7565,20 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
             saveDirs(); renderStudentDirectory(); renderAdminQueue(); closeAdminEditStudentModal(); showSuccessPopup('Student profile updated and synced to Supabase successfully.');
         }
 
-        function gcAdminReceipt(profile, role) {
-            if (!profile) return;
-            const modal = document.getElementById('gcReceiptModal');
-            if (!modal) return;
-            const name = profile.name || 'GURU CONNECT Member';
-            const id = profile.id || profile.user_id || '—';
-            const phone = profile.phone || '—';
-            const email = profile.email || '—';
-            const roleLabel = role === 'tutor' ? 'Tutor' : 'Student';
-            const purpose = role === 'tutor'
-              ? (profile.verified ? 'Tutor Listing + Verified Tick' : 'Tutor Listing')
-              : (profile.helpline_plan || profile.helplinePlan ? `Helpline Service Plan — ${profile.helpline_plan || profile.helplinePlan}` : 'Helpline Service / Registration');
-            const amount = profile.amount || profile.paidAmount || profile.planAmount || profile.pricePaid || '—';
-            const receiptNo = 'GC-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-8);
-            const date = new Date().toLocaleString('en-IN', {dateStyle:'medium', timeStyle:'short'});
-            modal.innerHTML = `<div class="gc-receipt-backdrop" onclick="if(event.target===this)gcCloseReceipt()"><section class="gc-receipt-sheet" role="dialog" aria-modal="true" aria-label="GURU CONNECT Receipt">
-              <div class="gc-receipt-head"><img class="gc-receipt-logo" src="guru-connect-logo-clean.png" alt="GURU CONNECT"><div class="gc-receipt-title"><h2>OFFICIAL RECEIPT</h2><p>Connecting Minds • Creating Future</p></div></div>
-              <div class="gc-receipt-body"><div class="gc-receipt-meta">
-                <div class="gc-receipt-box"><small>Receipt Number</small><strong>${esc(receiptNo)}</strong></div>
-                <div class="gc-receipt-box"><small>Date & Time</small><strong>${esc(date)}</strong></div>
-                <div class="gc-receipt-box"><small>Member</small><strong>${esc(name)}</strong></div>
-                <div class="gc-receipt-box"><small>Member Type / ID</small><strong>${esc(roleLabel)} • ${esc(id)}</strong></div>
-                <div class="gc-receipt-box"><small>Email</small><strong>${esc(email)}</strong></div>
-                <div class="gc-receipt-box"><small>Mobile</small><strong>${esc(phone)}</strong></div>
-              </div>
-              <div class="gc-receipt-purpose">${esc(purpose)}</div>
-              <div class="gc-receipt-amount"><span>AMOUNT RECEIVED</span><b>${esc(amount === '—' ? 'As recorded in Admin' : '₹ ' + amount)}</b></div>
-              <div class="gc-receipt-footer"><div class="gc-receipt-seal">GURU<br>CONNECT<br>OFFICIAL<br>RECEIPT</div><div class="gc-receipt-note"><b>✓ AUTO-GENERATED RECEIPT</b><br>Signature not required.<br>Issued by GURU CONNECT Admin.<br>Support: support@guruconnnect.in</div></div></div>
-              <div class="gc-receipt-actions"><button class="gc-receipt-btn gc-receipt-close" onclick="gcCloseReceipt()">CLOSE</button><button class="gc-receipt-btn gc-receipt-print" onclick="window.print()">PRINT / SAVE PDF</button></div>
-            </section></div>`;
-            modal.classList.remove('hidden'); modal.setAttribute('aria-hidden','false');
-        }
-        function gcCloseReceipt(){const m=document.getElementById('gcReceiptModal');if(m){m.classList.add('hidden');m.setAttribute('aria-hidden','true');m.innerHTML='';}}
-        window.gcAdminReceipt=gcAdminReceipt; window.gcCloseReceipt=gcCloseReceipt;
-        window.gcAdminReceiptById=function(role,id){ const list=role==='tutor'?tutorDirectoryList:studentDirectoryList; const item=list.find(x=>String(x.id)===String(id)); if(item) gcAdminReceipt(item,role); };
-
-        async function gcAdminDeleteAccount(profile, role) {
-            if (!profile) return;
-            const label = role === 'tutor' ? 'Tutor' : 'Student';
-            if (!confirm(`Delete this ${label} account permanently? This removes the Supabase Auth account and linked profile data.`)) return;
-            try {
-                if (profile.user_id && window.gcSupabase) {
-                    const q = await window.gcSupabase.rpc('gc_admin_delete_user', { p_user_id: String(profile.user_id) });
-                    if (q.error) throw q.error;
-                    if (!q.data?.ok) throw new Error('Supabase did not confirm the deletion.');
-                }
-                if (role === 'tutor') {
-                    tutorDirectoryList = tutorDirectoryList.filter(t => String(t.id) !== String(profile.id));
-                    renderTutorDirectory();
-                } else {
-                    studentDirectoryList = studentDirectoryList.filter(st => String(st.id) !== String(profile.id));
-                    renderStudentDirectory();
-                }
-                saveDirs();
-                renderAdminQueue();
-                showSuccessPopup(`${label} account deleted successfully.`);
-            } catch (e) {
-                console.error('Admin delete failed:', e);
-                alert(`${label} deletion failed: ${e?.message || e}`);
-            }
-        }
         function adminDeleteTutor(tutorId) {
-            const t = tutorDirectoryList.find(item => String(item.id) === String(tutorId));
-            return gcAdminDeleteAccount(t, 'tutor');
+            if (!confirm('Are you sure you want to delete this tutor?')) return;
+            tutorDirectoryList = tutorDirectoryList.filter(t => t.id !== tutorId);
+            renderTutorDirectory();
+            renderAdminQueue();
+            alert('Tutor deleted successfully.');
         }
+
         function adminDeleteStudent(studentId) {
-            const st = studentDirectoryList.find(item => String(item.id) === String(studentId));
-            return gcAdminDeleteAccount(st, 'student');
+            if (!confirm('Are you sure you want to delete this student profile?')) return;
+            studentDirectoryList = studentDirectoryList.filter(s => s.id !== studentId);
+            renderStudentDirectory();
+            renderAdminQueue();
+            alert('Student profile deleted successfully.');
         }
 
         function adminVerifyTutorPaid(tutorId) {
@@ -7667,7 +7648,6 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
                                 ${t.paidStatus !== 'PAID' ? `<button onclick="adminVerifyTutorPaid('${t.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm">Mark PAID</button>` : `<button onclick="adminRevokeTutorPaid('${t.id}')" class="bg-slate-600 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-[10px] font-bold shadow-sm">Revoke Paid</button>`}
                                 ${!t.verified ? `<button onclick="adminGrantVerifiedTick('${t.id}')" class="bg-brand-blue hover:bg-blue-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm">Grant Tick</button>` : `<button onclick="adminRevokeVerifiedTick('${t.id}')" class="bg-slate-600 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-[10px] font-bold shadow-sm">Revoke Tick</button>`}
                                 <button onclick="adminEditTutor('${t.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-pen-to-square"></i></button>
-                                <button onclick="gcAdminReceiptById('tutor','${t.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm"><i class="fa-solid fa-receipt"></i> Receipt</button>
                                 <button onclick="adminDeleteTutor('${t.id}')" class="bg-red-600 hover:bg-red-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-trash"></i></button>
                             </td>
                         </tr>`;
@@ -7685,7 +7665,6 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
                             <td class="p-3 sm:p-4 text-slate-600">${s.subject}</td>
                             <td class="p-3 sm:p-4 text-right space-x-1 sm:space-x-2">
                                 <button onclick="adminEditStudent('${s.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 sm:px-3 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
-                                <button onclick="gcAdminReceiptById('student','${s.id}')" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 sm:px-3 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm"><i class="fa-solid fa-receipt"></i> Receipt</button>
                                 <button onclick="adminDeleteStudent('${s.id}')" class="bg-red-600 hover:bg-red-700 text-white px-2.5 sm:px-3 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-trash"></i> Delete</button>
                             </td>
                         </tr>`;
@@ -8856,7 +8835,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
     const name=nameInput?.value.trim()||'', email=emailInput?.value.trim()||'';
     if(!name){gcV4Popup('NAME REQUIRED','Please enter your name first.','gold');return;}
     if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){gcV4Popup('VALID EMAIL REQUIRED','Please enter a valid email address so we can send your OTP.','gold');return;}
-    const otp=Math.floor(1000+Math.random()*9000).toString();
+    const otp=Math.floor(100000+Math.random()*900000).toString();
     try{pendingEmailOtps[type]=otp;}catch(e){window.pendingEmailOtps=window.pendingEmailOtps||{};window.pendingEmailOtps[type]=otp;}
     const button=document.querySelector(`button[onclick="sendEmailOtp('${type}')"]`); if(button){button.disabled=true;button.textContent='Sending...';}
     const params={name,email,to_email:email,recipient_email:email,reply_to:email,otp_code:otp};
@@ -8869,7 +8848,8 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
   };
   window.verifyEmailOtp=async function(type){
     const nameInput=document.getElementById(type==='student'?'stu_name':'t_name'), emailInput=document.getElementById(type==='student'?'stu_email':'t_email');
-    const entered=document.getElementById(type==='student'?'stuEnteredOtp':'tutorEnteredOtp')?.value.trim()||'';
+    const entered=(document.getElementById(type==='student'?'stuEnteredOtp':'tutorEnteredOtp')?.value||'').replace(/\D/g,'').trim();
+    if(entered.length!==6){gcV4Popup('INVALID OTP','Please enter the complete 6-digit OTP sent to your email.','gold');return;}
     let expected='';try{expected=pendingEmailOtps[type]}catch(e){expected=window.pendingEmailOtps?.[type]||'';}
     if(entered!==expected||!entered){gcV4Popup('INVALID OTP','The OTP does not match. Please check your email and enter the latest code.','gold');return;}
     gcV4Popup('EMAIL VERIFIED','Your email has been verified successfully.','success');
@@ -15033,18 +15013,6 @@ window.addEventListener('load',()=>setTimeout(mount,900));setInterval(mount,6000
 })();
 </script>
 <!-- GURU CONNECT FINAL RECOVERY: LOGIN SESSION + ADMIN ESCROW -->
-<style id="gc-admin-receipt-delete-ui">
-#gcReceiptModal{z-index:300000!important}
-.gc-receipt-backdrop{position:fixed;inset:0;background:rgba(2,6,23,.78);backdrop-filter:blur(8px);display:flex;align-items:center;justify-content:center;padding:18px;overflow:auto}
-.gc-receipt-sheet{width:min(860px,96vw);background:#fff;border-radius:28px;box-shadow:0 30px 100px rgba(0,0,0,.35);overflow:hidden;border:1px solid #dbeafe}
-.gc-receipt-head{padding:28px 30px 20px;background:linear-gradient(135deg,#0b1f44,#1264d8);color:#fff;display:flex;justify-content:space-between;gap:20px;align-items:center}
-.gc-receipt-logo{height:72px;max-width:290px;object-fit:contain;object-position:left center;background:#fff;border-radius:14px;padding:8px}
-.gc-receipt-title{text-align:right}.gc-receipt-title h2{margin:0;font-size:28px;font-weight:950;letter-spacing:.06em}.gc-receipt-title p{margin:5px 0 0;font-size:11px;letter-spacing:.18em;text-transform:uppercase;opacity:.85}
-.gc-receipt-body{padding:28px}.gc-receipt-meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}.gc-receipt-box{border:1px solid #dbe4f0;border-radius:16px;padding:14px 16px;background:#f8fafc}.gc-receipt-box small{display:block;color:#64748b;font-weight:800;font-size:10px;text-transform:uppercase;letter-spacing:.1em}.gc-receipt-box strong{display:block;margin-top:5px;color:#0f172a;font-size:15px;word-break:break-word}.gc-receipt-amount{margin:18px 0;padding:20px;border-radius:20px;background:linear-gradient(135deg,#eff6ff,#fff7ed);border:1px solid #bfdbfe;display:flex;justify-content:space-between;align-items:center;gap:20px}.gc-receipt-amount span{font-weight:900;color:#475569}.gc-receipt-amount b{font-size:30px;color:#0b1f44}.gc-receipt-purpose{font-size:18px;font-weight:950;color:#0b1f44;margin:8px 0 18px}.gc-receipt-footer{border-top:1px solid #e2e8f0;padding-top:18px;display:flex;justify-content:space-between;gap:15px;align-items:center}.gc-receipt-seal{width:92px;height:92px;border:4px double #b8860b;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px;font-weight:950;color:#8a6500;transform:rotate(-8deg);line-height:1.15}.gc-receipt-note{font-size:11px;color:#64748b;line-height:1.6}.gc-receipt-actions{display:flex;gap:10px;justify-content:flex-end;padding:0 28px 26px}.gc-receipt-btn{border:0;border-radius:13px;padding:11px 16px;font-weight:900;cursor:pointer}.gc-receipt-print{background:#1264d8;color:#fff}.gc-receipt-close{background:#e2e8f0;color:#0f172a}
-@media(max-width:640px){.gc-receipt-head{padding:20px;align-items:flex-start}.gc-receipt-logo{height:54px;max-width:180px}.gc-receipt-title h2{font-size:19px}.gc-receipt-body{padding:18px}.gc-receipt-meta{grid-template-columns:1fr}.gc-receipt-amount{align-items:flex-start;flex-direction:column}.gc-receipt-amount b{font-size:25px}.gc-receipt-actions{padding:0 18px 18px}.gc-receipt-footer{align-items:flex-start}.gc-receipt-seal{flex:0 0 78px;width:78px;height:78px}}
-@media print{body>*:not(#gcReceiptModal){display:none!important}#gcReceiptModal{position:static!important;display:block!important;background:#fff!important}.gc-receipt-backdrop{position:static!important;padding:0!important;background:#fff!important;display:block!important}.gc-receipt-sheet{width:100%!important;box-shadow:none!important;border:0!important;border-radius:0!important}.gc-receipt-actions{display:none!important}.gc-receipt-head{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
-</style>
-<div id="gcReceiptModal" class="hidden" aria-hidden="true"></div>
 <style id="gc-final-recovery-ui">
 #gcAdminLearningEscrow{display:block!important;clear:both;margin:20px 0!important}
 #gcAdminLearningEscrow .gc-esc-empty{padding:22px;font-weight:800;color:#64748b}
