@@ -13217,7 +13217,21 @@ function url(v){const x=String(v||'').trim();if(!x)return '';try{const u=new URL
 function active(a){const n=new Date(),s=a.start_at?new Date(a.start_at):null,e=a.end_at?new Date(a.end_at):null;return a.active===true&&(!s||s<=n)&&(!e||e>=n)}
 async function getAds(){const s=client();if(!s)throw Error('Supabase is not available');const q=await s.from('gc_advertisements').select('id,title,advertiser_name,placement,image_url,click_url,whatsapp_url,start_at,end_at,priority,created_at,active').eq('active',true).order('priority',{ascending:false}).order('created_at',{ascending:false});if(q.error)throw q.error;return(q.data||[]).filter(active)}
 function card(a){const href=url(a.click_url)||url(a.whatsapp_url),label=a.advertiser_name||a.title||'GURU CONNECT';const body='<div class="gc-site-ad-media"><img src="'+esc(a.image_url)+'" alt="'+esc(label)+' flyer" loading="lazy"></div><div class="gc-site-ad-copy"><b>'+esc(label)+'</b><span>CONNECT</span></div>';return '<article class="gc-site-ad-card">'+(href?'<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer sponsored" aria-label="Connect with '+esc(label)+'">'+body+'</a>':body)+'</article>'}
-function injectGrid(id,ads,kind){const g=$(id);if(!g)return;if(g.querySelector('.gc-site-ad-card'))return;const list=ads.filter(a=>a.placement==='all'||a.placement===kind);if(!list.length)return;const el=document.createRange().createContextualFragment(card(list[0],kind)).firstElementChild;if(el)g.insertBefore(el,g.children[Math.min(2,g.children.length)]||null)}
+function injectGrid(id,ads,kind){
+  const g=$(id);if(!g)return;
+  /* Remove previously rendered ads so the current complete active list is shown. */
+  g.querySelectorAll('.gc-site-ad-card').forEach(x=>x.remove());
+  const list=ads.filter(a=>a.placement==='all'||a.placement===kind);
+  if(!list.length)return;
+  /* Render EVERY matching advertisement, in priority DESC / newest-first order. */
+  const frag=document.createDocumentFragment();
+  list.forEach(a=>{
+    const el=document.createRange().createContextualFragment(card(a,kind)).firstElementChild;
+    if(el)frag.appendChild(el);
+  });
+  const target=g.children[Math.min(2,g.children.length)]||null;
+  g.insertBefore(frag,target);
+}
 async function renderIndexAds(){try{const ads=await getAds();injectGrid('tutorGrid',ads,'tutor');injectGrid('studentGridContainer',ads,'student');window.__gcActiveAds=ads}catch(e){console.warn('GURU CONNECT ads:',e.message||e)}}
 function fmtDate(v){if(!v)return '';try{const d=new Date(v);if(Number.isNaN(d.getTime()))return '';const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())}catch(_){return ''}}
 let editingId=null;
