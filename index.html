@@ -5111,9 +5111,9 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 </div>
 <!-- Email OTP Verification Box for Student -->
 <div class="hidden bg-blue-50 border border-blue-200 p-3.5 rounded-xl space-y-2" id="stuOtpBox">
-<p class="text-[11px] font-bold text-brand-blue">Enter the 6-digit code sent from support@guruconnnect.in:</p>
+<p class="text-[11px] font-bold text-brand-blue">Enter the 4-digit code sent from support@guruconnnect.in:</p>
 <div class="flex gap-2">
-<input class="w-32 border border-blue-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="stuEnteredOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" type="text"/>
+<input class="w-32 border border-blue-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="stuEnteredOtp" maxlength="4" placeholder="1234" type="text"/>
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('student')" type="button">Verify OTP</button>
 </div>
 </div>
@@ -5419,7 +5419,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <span class="text-[9px] text-slate-400 font-bold uppercase ml-1">One-time</span>
 </div>
 </div>
-<a class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded-xl shadow transition text-[11px] text-center flex items-center justify-center gap-1.5 cursor-pointer" href="upi://pay?pa=verizon@upi&amp;pn=GuruConnect&amp;am=200&amp;cu=INR" onclick="selectTutorPayment(200); openUpiQrModal(200); return false;">
+<a class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-3 rounded-xl shadow transition text-[11px] text-center flex items-center justify-center gap-1.5 cursor-pointer" href="upi://pay?pa=verizon@upi&amp;pn=GuruConnect&amp;am=200&amp;cu=INR" onclick="openUpiQrModal(200); return false;">
 <i class="fa-solid fa-qrcode"></i> PAY ₹200 UPI / QR
                             </a>
 </div>
@@ -5436,7 +5436,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <span class="text-[9px] text-slate-400 font-bold uppercase ml-1">For 30 Days</span>
 </div>
 </div>
-<a class="w-full bg-brand-nagpurOrange hover:bg-orange-600 text-white font-bold py-2.5 px-3 rounded-xl shadow transition text-[11px] text-center flex items-center justify-center gap-1.5 cursor-pointer" href="upi://pay?pa=verizon@upi&amp;pn=GuruConnect&amp;am=300&amp;cu=INR" onclick="selectTutorPayment(300); openUpiQrModal(300); return false;">
+<a class="w-full bg-brand-nagpurOrange hover:bg-orange-600 text-white font-bold py-2.5 px-3 rounded-xl shadow transition text-[11px] text-center flex items-center justify-center gap-1.5 cursor-pointer" href="upi://pay?pa=verizon@upi&amp;pn=GuruConnect&amp;am=300&amp;cu=INR" onclick="openUpiQrModal(300); return false;">
 <i class="fa-solid fa-qrcode"></i> PAY ₹300 UPI / QR
                             </a>
 </div>
@@ -5468,9 +5468,9 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 </div>
 <!-- Email OTP Verification Box for Tutor -->
 <div class="hidden bg-orange-50 border border-orange-200 p-3.5 rounded-xl space-y-2" id="tutorOtpBox">
-<p class="text-[11px] font-bold text-brand-nagpurOrange">Enter the 6-digit code sent from support@guruconnnect.in:</p>
+<p class="text-[11px] font-bold text-brand-nagpurOrange">Enter the 4-digit code sent from support@guruconnnect.in:</p>
 <div class="flex gap-2">
-<input class="w-32 border border-orange-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="tutorEnteredOtp" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="123456" type="text"/>
+<input class="w-32 border border-orange-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="tutorEnteredOtp" maxlength="4" placeholder="1234" type="text"/>
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('tutor')" type="button">Verify OTP</button>
 </div>
 </div>
@@ -5541,11 +5541,6 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <div class="border border-brand-nagpurOrange bg-orange-50/50 p-3 sm:p-4 rounded-2xl">
 <label class="block text-[10px] sm:text-xs font-bold text-brand-nagpurOrange uppercase tracking-wider mb-1.5">Enter UTR / Transaction Reference Number *</label>
 <input class="w-full border border-brand-nagpurOrange rounded-xl p-3 text-xs sm:text-sm font-mono font-bold bg-white" id="txnIdInput" name="utr" placeholder="Enter valid UTR / Transaction Reference" required="" type="text"/>
-<input id="tutorPaymentAmount" type="hidden" value="200"/>
-<div class="flex flex-col sm:flex-row gap-2 mt-3">
-<button type="button" id="tutorReceiptBtn" onclick="generateTutorPaymentReceipt()" class="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-black px-4 py-3 rounded-xl text-[11px] shadow">🧾 GENERATE / PRINT RECEIPT</button>
-<span class="text-[10px] sm:text-xs text-slate-500 self-center">Enter your UTR first, then use this button to print/save the payment receipt as PDF.</span>
-</div>
 </div>
 <button class="w-full bg-slate-300 text-slate-600 font-bold py-3.5 sm:py-4 rounded-xl transition shadow-md text-sm sm:text-base tracking-wider mt-2 cursor-not-allowed" disabled="" id="tutorSubmitBtn" type="submit">
                             PLEASE VERIFY EMAIL FIRST
@@ -6703,38 +6698,6 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
             document.getElementById('upiQrModal').classList.add('hidden');
         }
 
-        function selectTutorPayment(amount) {
-            const el=document.getElementById('tutorPaymentAmount');
-            if(el) el.value=String(amount);
-        }
-
-        function buildReceiptHtml(data){
- const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
- return `<!doctype html><html><head><meta charset="utf-8"><title>GURU CONNECT Payment Receipt</title><style>
- body{font-family:Arial,sans-serif;background:#f4f7fb;margin:0;padding:24px;color:#172033}.receipt{max-width:760px;margin:auto;background:#fff;border:1px solid #dbe4f0;border-radius:22px;overflow:hidden}.head{display:flex;align-items:center;gap:16px;padding:24px;border-bottom:1px solid #e2e8f0}.head img{width:100px;height:64px;object-fit:contain}.brand{font-size:28px;font-weight:900}.connect{color:#2563eb;font-weight:500}.tag{color:#64748b;font-size:12px;font-weight:700;margin-top:5px}.title{padding:22px 26px 8px}.title h1{margin:0;font-size:24px}.table{margin:10px 26px 24px;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden}.row{display:flex;justify-content:space-between;gap:20px;padding:14px 16px;border-bottom:1px solid #e2e8f0;font-size:13px}.row:last-child{border-bottom:0}.label{font-weight:800;color:#64748b}.value{font-weight:900;text-align:right;word-break:break-word}.total{background:#eff6ff}.total .value{color:#123b8f}.note{margin:0 26px 24px;padding:13px;background:#f8fafc;border-radius:12px;color:#64748b;font-size:11px;line-height:1.6}.actions{text-align:center;padding:0 26px 26px}button{border:0;border-radius:11px;padding:12px 20px;background:#123b8f;color:#fff;font-weight:900;cursor:pointer;margin:4px}@media print{body{background:#fff;padding:0}.receipt{border:0}.actions{display:none}}</style></head><body><div class="receipt"><div class="head"><img src="${esc(data.logo)}" alt="GURU CONNECT"><div><div class="brand">GURU <span class="connect">CONNECT</span></div><div class="tag">Connecting Mind - Creating Future...</div></div></div><div class="title"><h1>Tutor Registration Payment Receipt</h1></div><div class="table"><div class="row"><span class="label">Receipt No.</span><span class="value">${esc(data.receiptNo)}</span></div><div class="row"><span class="label">Tutor Name</span><span class="value">${esc(data.name)}</span></div><div class="row"><span class="label">Email</span><span class="value">${esc(data.email)}</span></div><div class="row"><span class="label">Payment Amount</span><span class="value">₹${esc(data.amount)}</span></div><div class="row"><span class="label">UTR / Transaction Reference</span><span class="value">${esc(data.utr)}</span></div><div class="row"><span class="label">Date / Time</span><span class="value">${esc(data.date)}</span></div><div class="row total"><span class="label">Status</span><span class="value">PAYMENT DETAILS RECORDED</span></div></div><div class="note"><b>Important:</b> This receipt acknowledges the payment details entered by the tutor. Payment receipt/UTR is not by itself proof of approval or verification.</div><div class="actions"><button onclick="window.print()">PRINT / SAVE AS PDF</button></div></div></body></html>`;
-}
-function showReceiptOnPage(data){
- const existing=document.getElementById('gcReceiptOverlay'); if(existing) existing.remove();
- const overlay=document.createElement('div'); overlay.id='gcReceiptOverlay'; overlay.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,.72);z-index:999999;padding:20px;overflow:auto;display:flex;align-items:center;justify-content:center';
- const box=document.createElement('div'); box.style.cssText='width:min(900px,100%);height:min(900px,96vh);background:#fff;border-radius:18px;overflow:hidden;box-shadow:0 25px 80px rgba(0,0,0,.35);position:relative';
- const close=document.createElement('button'); close.textContent='✕ CLOSE'; close.style.cssText='position:absolute;right:12px;top:12px;z-index:2;border:0;border-radius:9px;background:#172033;color:#fff;padding:9px 13px;font-weight:800;cursor:pointer'; close.onclick=()=>overlay.remove();
- const iframe=document.createElement('iframe'); iframe.style.cssText='width:100%;height:100%;border:0'; box.append(close,iframe); overlay.append(box); document.body.append(overlay);
- iframe.srcdoc=buildReceiptHtml(data);
-}
-function generateTutorPaymentReceipt(){
- const name=(document.getElementById('t_name')?.value||'').trim(),email=(document.getElementById('t_email')?.value||'').trim(),utr=(document.getElementById('txnIdInput')?.value||'').trim();
- const amount=Number(document.getElementById('tutorPaymentAmount')?.value||0);
- if(!name){alert('Please enter the Tutor Full Name first.');return;}
- if(!email || !/^\S+@\S+\.\S+$/.test(email)){alert('Please enter a valid Tutor email address first.');return;}
- if(!utr){alert('Please enter the UTR / Transaction Reference Number first.');document.getElementById('txnIdInput')?.focus();return;}
- const now=new Date();
- showReceiptOnPage({name,email,utr,amount:amount||0,receiptNo:'GC-'+now.getTime().toString().slice(-10),date:now.toLocaleString('en-IN'),logo:new URL('guru-connect-new-header.png',location.href).href});
-}
-
-        function escapeReceipt(value){
-            return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-        }
-
         async function sendEmailOtp(type) {
             const nameInput = document.getElementById(type === 'student' ? 'stu_name' : 't_name');
             const emailInput = document.getElementById(type === 'student' ? 'stu_email' : 't_email');
@@ -6746,7 +6709,7 @@ function generateTutorPaymentReceipt(){
                 alert('Please enter a valid email address.'); return;
             }
 
-            const otp = Math.floor(100000 + Math.random() * 900000).toString();
+            const otp = Math.floor(1000 + Math.random() * 9000).toString();
             pendingEmailOtps[type] = otp;
             const button = document.querySelector(`button[onclick="sendEmailOtp('\${type}\')"]`);
             if (button) { button.disabled = true; button.textContent = 'Sending...'; }
@@ -6782,8 +6745,7 @@ function generateTutorPaymentReceipt(){
         async function verifyEmailOtp(type) {
             const nameInput = document.getElementById(type === 'student' ? 'stu_name' : 't_name');
             const emailInput = document.getElementById(type === 'student' ? 'stu_email' : 't_email');
-            const entered = (document.getElementById(type === 'student' ? 'stuEnteredOtp' : 'tutorEnteredOtp').value || '').replace(/\D/g,'').trim();
-            if (entered.length !== 6) { alert('Please enter the complete 6-digit OTP.'); return; }
+            const entered = document.getElementById(type === 'student' ? 'stuEnteredOtp' : 'tutorEnteredOtp').value.trim();
             
             if (entered === pendingEmailOtps[type] && entered !== "") {
                 alert('Email verified successfully.');
@@ -8838,7 +8800,7 @@ function generateTutorPaymentReceipt(){
     const name=nameInput?.value.trim()||'', email=emailInput?.value.trim()||'';
     if(!name){gcV4Popup('NAME REQUIRED','Please enter your name first.','gold');return;}
     if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){gcV4Popup('VALID EMAIL REQUIRED','Please enter a valid email address so we can send your OTP.','gold');return;}
-    const otp=Math.floor(100000+Math.random()*900000).toString();
+    const otp=Math.floor(1000+Math.random()*9000).toString();
     try{pendingEmailOtps[type]=otp;}catch(e){window.pendingEmailOtps=window.pendingEmailOtps||{};window.pendingEmailOtps[type]=otp;}
     const button=document.querySelector(`button[onclick="sendEmailOtp('${type}')"]`); if(button){button.disabled=true;button.textContent='Sending...';}
     const params={name,email,to_email:email,recipient_email:email,reply_to:email,otp_code:otp};
@@ -8851,8 +8813,7 @@ function generateTutorPaymentReceipt(){
   };
   window.verifyEmailOtp=async function(type){
     const nameInput=document.getElementById(type==='student'?'stu_name':'t_name'), emailInput=document.getElementById(type==='student'?'stu_email':'t_email');
-    const entered=(document.getElementById(type==='student'?'stuEnteredOtp':'tutorEnteredOtp')?.value||'').replace(/\D/g,'').trim();
-    if(entered.length!==6){gcV4Popup('INVALID OTP','Please enter the complete 6-digit OTP sent to your email.','gold');return;}
+    const entered=document.getElementById(type==='student'?'stuEnteredOtp':'tutorEnteredOtp')?.value.trim()||'';
     let expected='';try{expected=pendingEmailOtps[type]}catch(e){expected=window.pendingEmailOtps?.[type]||'';}
     if(entered!==expected||!entered){gcV4Popup('INVALID OTP','The OTP does not match. Please check your email and enter the latest code.','gold');return;}
     gcV4Popup('EMAIL VERIFIED','Your email has been verified successfully.','success');
@@ -10513,6 +10474,7 @@ body {
       photo_url: gcCleanText(t.photoData || t.photo || ''),
       verified: false,
       paid_status: 'PENDING',
+      utr: gcCleanText(t.utr || ''),
       rating: t.rating != null ? Number(t.rating) : null,
       review_count: Number(t.reviewCount || t.reviewsCount || 0) || 0,
       students_taught: gcCleanText(t.students || t.studentsTaught || ''),
@@ -10627,6 +10589,7 @@ body {
       photoData: row.photo_url || '',
       verified: row.verified === true,
       paidStatus: row.paid_status || 'PENDING',
+      utr: row.utr || '',
       rating: row.rating != null ? String(row.rating) : '',
       _manualRating: row.rating != null ? Number(row.rating) : null,
       reviewCount: row.review_count != null ? Number(row.review_count) : 0,
@@ -10709,7 +10672,7 @@ body {
     if (cached) return cached;
 
     const fields = table === 'tutor_profiles'
-      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at'
+      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,utr,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at'
       : 'id,user_id,name,course,stream,learning_requirement,subject,year,semester,standard,college,division,roll_number,cgpa,email,phone,location,address,mode,teaching_mode,languages,availability,member_since,record_no,data_source,about_me,achievement_photos,helpline_plan,helpline_status,helpline_course,helpline_subject,helpline_subject_count,helpline_amount,privacy,photo_url,created_at';
 
     const result = await gcSupabase.from(table)
@@ -10747,7 +10710,7 @@ body {
     if (!gcCloudEnabled) return { rows: [], total: 0 };
 
     const fields = table === 'tutor_profiles'
-      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at'
+      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,utr,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at'
       : 'id,user_id,name,course,stream,learning_requirement,subject,year,semester,standard,college,division,roll_number,cgpa,email,phone,location,address,mode,teaching_mode,languages,availability,member_since,record_no,data_source,about_me,achievement_photos,helpline_plan,helpline_status,helpline_course,helpline_subject,helpline_subject_count,helpline_amount,privacy,photo_url,created_at';
 
     const cacheKey = 'ALL:' + table;
@@ -13869,7 +13832,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
     };
 
     const row=await updateAndVerify('tutor_profiles',t.id,patch,
-      'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at');
+      'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,utr,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at');
 
     Object.assign(t,{
       id:row.id,user_id:row.user_id||t.user_id,name:row.name||'',
