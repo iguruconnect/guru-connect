@@ -4930,7 +4930,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
    <label class="wide">Advertisement Flyer<input id="gcAdFile" type="file" accept="image/jpeg,image/png,image/webp"></label>
   </div>
   <div style="margin-top:12px;padding:12px 14px;border-radius:13px;background:#eff6ff;color:#334155;font-size:11px;line-height:1.6"><b>Standard Advertisement Format:</b> 1200×675 px (16:9) for <strong>ALL placements</strong> — Learning Requests, Student Profiles and Tutor Profiles. JPG/PNG/WEBP, maximum 3 MB. Keep important text/logos inside a safe 5% margin.</div>
-  <div class="gc-ad-actions"><button type="button" class="gc-ad-btn gc-ad-btn-primary" id="gcAdSaveBtn">➕ CREATE ADVERTISEMENT</button><button type="button" class="gc-ad-btn gc-ad-btn-light" id="gcAdClearBtn">CLEAR</button><button type="button" class="gc-ad-btn gc-ad-btn-light" id="gcAdCancelEditBtn" style="display:none">CANCEL EDIT</button><button type="button" class="gc-ad-btn gc-ad-btn-light" id="gcAdRefreshBtn">↻ REFRESH</button></div>
+  <div class="gc-ad-actions"><button type="button" class="gc-ad-btn gc-ad-btn-primary" id="gcAdSaveBtn">➕ CREATE ADVERTISEMENT</button><button type="button" class="gc-ad-btn gc-ad-btn-light" id="gcAdClearBtn">CLEAR</button><button type="button" class="gc-ad-btn gc-ad-btn-light" id="gcAdRefreshBtn">↻ REFRESH</button></div>
   <div class="gc-ad-status" id="gcAdStatus" aria-live="polite"></div>
  </div>
  <div class="gc-ad-list-head"><b>ACTIVE / SCHEDULED ADVERTISEMENTS</b><span id="gcAdCount">0</span></div>
@@ -13202,78 +13202,21 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 <script id="gc-advertisement-system-visible-js">
 (function(){
 'use strict';
-const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',B='gc-advertisements';
+const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',B='gc-advertisements',ADMIN='1df7606a-3a96-4116-b022-804b37a3c3dd';
 const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function client(){return window.gcSupabase||window.supabase?.createClient?.(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}
-function staffMode(){return localStorage.getItem('is_staff_logged')==='true'}
-async function staffReady(){
-  if(!staffMode()) throw new Error('Please login through Staff/Admin first.');
-  const s=client(); if(!s) throw new Error('Supabase is not available.');
-  const q=await s.auth.getSession();
-  if(!q.data?.session?.user) throw new Error('Staff/Admin Supabase session is missing. Please login again.');
-  return {s,user:q.data.session.user};
-}
-function url(v){const x=String(v||'').trim();if(!x)return '';try{const u=new URL(x);return /^https?:$/.test(u.protocol)?u.href:''}catch(_){return ''}}
+function client(){return window.gcSupabase||window.supabase?.createClient?.(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}})}
+function url(v){const s=String(v||'').trim();if(!s)return '';try{const u=new URL(s);return /^https?:$/.test(u.protocol)?u.href:''}catch(_){return ''}}
 function active(a){const n=new Date(),s=a.start_at?new Date(a.start_at):null,e=a.end_at?new Date(a.end_at):null;return a.active===true&&(!s||s<=n)&&(!e||e>=n)}
 async function getAds(){const s=client();if(!s)throw Error('Supabase is not available');const q=await s.from('gc_advertisements').select('id,title,advertiser_name,placement,image_url,click_url,whatsapp_url,start_at,end_at,priority,created_at,active').eq('active',true).order('priority',{ascending:false}).order('created_at',{ascending:false});if(q.error)throw q.error;return(q.data||[]).filter(active)}
-function card(a){const href=url(a.click_url)||url(a.whatsapp_url),label=a.advertiser_name||a.title||'GURU CONNECT';const body='<div class="gc-site-ad-media"><img src="'+esc(a.image_url)+'" alt="'+esc(label)+' flyer" loading="lazy"></div><div class="gc-site-ad-copy"><b>'+esc(label)+'</b><span>CONNECT</span></div>';return '<article class="gc-site-ad-card">'+(href?'<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer sponsored" aria-label="Connect with '+esc(label)+'">'+body+'</a>':body)+'</article>'}
+function card(a,kind){const href=url(a.click_url)||url(a.whatsapp_url),label=a.advertiser_name||a.title||'GURU CONNECT';const body='<div class="gc-site-ad-media"><img src="'+esc(a.image_url)+'" alt="'+esc(label)+' flyer" loading="lazy"></div><div class="gc-site-ad-copy"><b>'+esc(label)+'</b><span>CONNECT</span></div>';return '<article class="gc-site-ad-card">'+(href?'<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer sponsored" aria-label="Connect with '+esc(label)+'">'+body+'</a>':body)+'</article>'}
 function injectGrid(id,ads,kind){const g=$(id);if(!g)return;if(g.querySelector('.gc-site-ad-card'))return;const list=ads.filter(a=>a.placement==='all'||a.placement===kind);if(!list.length)return;const el=document.createRange().createContextualFragment(card(list[0],kind)).firstElementChild;if(el)g.insertBefore(el,g.children[Math.min(2,g.children.length)]||null)}
 async function renderIndexAds(){try{const ads=await getAds();injectGrid('tutorGrid',ads,'tutor');injectGrid('studentGridContainer',ads,'student');window.__gcActiveAds=ads}catch(e){console.warn('GURU CONNECT ads:',e.message||e)}}
-function fmtDate(v){if(!v)return '';try{const d=new Date(v);if(Number.isNaN(d.getTime()))return '';const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())}catch(_){return ''}}
-let editingId=null;
-function setEditMode(a){
- editingId=a?.id||null;
- const fields={gcAdTitle:a?.title||'',gcAdAdvertiser:a?.advertiser_name||'',gcAdClick:a?.click_url||'',gcAdWhatsapp:a?.whatsapp_url||'',gcAdStart:fmtDate(a?.start_at),gcAdEnd:fmtDate(a?.end_at),gcAdPriority:String(a?.priority??0)};
- Object.entries(fields).forEach(([id,v])=>{const e=$(id);if(e)e.value=v});
- if($('gcAdPlacement'))$('gcAdPlacement').value=a?.placement||'lrr';
- if($('gcAdFile'))$('gcAdFile').value='';
- if($('gcAdSaveBtn'))$('gcAdSaveBtn').textContent='✏️ UPDATE ADVERTISEMENT';
- if($('gcAdCancelEditBtn'))$('gcAdCancelEditBtn').style.display='inline-flex';
- if($('gcAdStatus'))$('gcAdStatus').textContent='Editing: '+(a?.title||'Advertisement')+'. Flyer upload is optional when editing.';
- $('gcAdTitle')?.focus();
-}
-function clearForm(){
- editingId=null;
- ['gcAdTitle','gcAdAdvertiser','gcAdClick','gcAdWhatsapp','gcAdStart','gcAdEnd'].forEach(id=>{const e=$(id);if(e)e.value=''});
- if($('gcAdPlacement'))$('gcAdPlacement').value='lrr';if($('gcAdPriority'))$('gcAdPriority').value='0';if($('gcAdFile'))$('gcAdFile').value='';
- if($('gcAdSaveBtn'))$('gcAdSaveBtn').textContent='➕ CREATE ADVERTISEMENT';if($('gcAdCancelEditBtn'))$('gcAdCancelEditBtn').style.display='none';if($('gcAdStatus'))$('gcAdStatus').textContent='';
-}
-async function adminLoad(){
- const list=$('gcAdList');if(!list)return;
- if(!staffMode()){list.innerHTML='<div class="gc-ad-empty">Please login through Staff/Admin first.</div>';return}
- const s=client();if(!s){list.innerHTML='<div class="gc-ad-empty">Supabase is not available.</div>';return}
- list.innerHTML='<div class="gc-ad-empty">Loading advertisements…</div>';
- const q=await s.from('gc_advertisements').select('*').order('priority',{ascending:false}).order('created_at',{ascending:false});
- if(q.error){list.innerHTML='<div class="gc-ad-empty">'+esc(q.error.message)+'</div>';return}
- const rows=q.data||[];$('gcAdCount').textContent=rows.length+' advertisement(s)';
- list.innerHTML=rows.length?rows.map((a,i)=>'<article class="gc-ad-admin-row"><img src="'+esc(a.image_url)+'" alt=""><div><b>'+esc(a.title)+'</b><div style="font-size:10px;color:#64748b;margin-top:5px">'+esc(a.advertiser_name||'')+' • '+esc(String(a.placement||'all').toUpperCase())+' • '+(a.active?'ACTIVE':'PAUSED')+'</div><div style="font-size:10px;color:#94a3b8;margin-top:3px">'+(a.start_at?'Starts: '+esc(new Date(a.start_at).toLocaleString('en-IN')):'Starts now')+(a.end_at?' • Ends: '+esc(new Date(a.end_at).toLocaleString('en-IN')):'')+'</div></div><div class="gc-ad-admin-actions"><button type="button" class="gc-ad-mini" data-ad-edit="'+i+'">EDIT</button><button type="button" class="gc-ad-mini" data-ad-toggle="'+i+'">'+(a.active?'PAUSE':'ACTIVATE')+'</button><button type="button" class="gc-ad-mini danger" data-ad-delete="'+i+'">DELETE</button></div></article>').join(''):'<div class="gc-ad-empty">No advertisements have been created yet.</div>';
- list.querySelectorAll('[data-ad-edit]').forEach(b=>b.onclick=()=>setEditMode(rows[+b.dataset.adEdit]));
- list.querySelectorAll('[data-ad-toggle]').forEach(b=>b.onclick=async()=>{try{const {s}=await staffReady(),a=rows[+b.dataset.adToggle];b.disabled=true;const r=await s.from('gc_advertisements').update({active:!a.active,updated_at:new Date().toISOString()}).eq('id',a.id);if(r.error)throw r.error;await adminLoad();await renderIndexAds()}catch(e){alert('Advertisement status update failed:\n\n'+(e.message||e))}finally{b.disabled=false}});
- list.querySelectorAll('[data-ad-delete]').forEach(b=>b.onclick=async()=>{const a=rows[+b.dataset.adDelete];if(!confirm('Delete this advertisement permanently?'))return;try{const {s}=await staffReady();b.disabled=true;if(a.storage_path){const rm=await s.storage.from(B).remove([a.storage_path]);if(rm.error)console.warn('Old flyer delete:',rm.error.message)}const r=await s.from('gc_advertisements').delete().eq('id',a.id);if(r.error)throw r.error;if(editingId===a.id)clearForm();await adminLoad();await renderIndexAds()}catch(e){alert('Advertisement deletion failed:\n\n'+(e.message||e))}finally{b.disabled=false}})
-}
-async function save(){
- let ready;try{ready=await staffReady()}catch(e){alert(e.message||e);return}
- const {s,user}=ready,title=$('gcAdTitle')?.value.trim(),file=$('gcAdFile')?.files?.[0];if(!title)return alert('Enter Advertisement Title.');
- if(file){if(!/^image\/(jpeg|png|webp)$/.test(file.type))return alert('Only JPG, PNG or WEBP images are supported.');if(file.size>3*1024*1024)return alert('Maximum flyer size is 3 MB.');}
- if(!editingId&&!file)return alert('Please upload the advertisement flyer.');
- const dims=async f=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>{URL.revokeObjectURL(im.src);resolve({w:im.naturalWidth,h:im.naturalHeight})};im.onerror=()=>reject(new Error('The flyer image could not be read.'));im.src=URL.createObjectURL(f)});
- if(file){const d=await dims(file);if(d.w!==1200||d.h!==675)return alert('Please upload the flyer in the standard 1200 × 675 px (16:9) format.');}
- const st=$('gcAdStatus'),btn=$('gcAdSaveBtn');btn.disabled=true;st.textContent=editingId?'Updating advertisement…':'Uploading flyer…';
- try{
-  let old=null,newPath=null,newUrl=null;
-  if(editingId){const oldQ=await s.from('gc_advertisements').select('*').eq('id',editingId).single();if(oldQ.error)throw oldQ.error;old=oldQ.data}
-  if(file){const ext=(file.name.split('.').pop()||'jpg').toLowerCase();newPath='ads/'+Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;const up=await s.storage.from(B).upload(newPath,file,{contentType:file.type,upsert:false,cacheControl:'3600'});if(up.error)throw up.error;newUrl=s.storage.from(B).getPublicUrl(newPath).data.publicUrl}
-  const row={title,advertiser_name:$('gcAdAdvertiser').value.trim(),placement:$('gcAdPlacement').value,image_url:newUrl||old?.image_url,storage_path:newPath||old?.storage_path,click_url:url($('gcAdClick').value),whatsapp_url:url($('gcAdWhatsapp').value),start_at:$('gcAdStart').value?new Date($('gcAdStart').value).toISOString():new Date().toISOString(),end_at:$('gcAdEnd').value?new Date($('gcAdEnd').value).toISOString():null,active:true,priority:Math.max(0,Number($('gcAdPriority').value)||0),updated_at:new Date().toISOString()};
-  if(editingId){const q=await s.from('gc_advertisements').update(row).eq('id',editingId);if(q.error)throw q.error;if(newPath&&old?.storage_path){const rm=await s.storage.from(B).remove([old.storage_path]);if(rm.error)console.warn('Old flyer cleanup:',rm.error.message)}}else{row.created_by=user.id;const q=await s.from('gc_advertisements').insert(row);if(q.error)throw q.error}
-  st.textContent=editingId?'✓ Advertisement updated successfully.':'✓ Advertisement created successfully.';clearForm();await adminLoad();await renderIndexAds();
- }catch(e){console.error(e);st.textContent='Operation failed: '+(e.message||e);alert('Advertisement operation failed:\n\n'+(e.message||e))}finally{btn.disabled=false}
-}
-function show(){const p=$('gcAdminAdvertisementsPanel');if(!p)return;if(!staffMode()){alert('Please login through Staff/Admin first.');return}const hidden=getComputedStyle(p).display==='none'||p.style.display==='none';p.style.display=hidden?'block':'none';if(hidden){p.scrollIntoView({behavior:'smooth',block:'start'});adminLoad()}}
-function boot(){if(window.__gcAdsBoot)return;window.__gcAdsBoot=true;
- $('gcAdSaveBtn')?.addEventListener('click',e=>{e.preventDefault();save()});$('gcAdClearBtn')?.addEventListener('click',e=>{e.preventDefault();clearForm()});$('gcAdRefreshBtn')?.addEventListener('click',e=>{e.preventDefault();adminLoad()});$('gcAdCancelEditBtn')?.addEventListener('click',e=>{e.preventDefault();clearForm()});
- const btn=$('gcAdminAdsButton');if(btn){btn.onclick=e=>{e.preventDefault();e.stopPropagation();show()};btn.style.pointerEvents='auto';btn.style.position='relative';btn.style.zIndex='20'}
- renderIndexAds();['tutorGrid','studentGridContainer'].forEach(id=>{const g=$(id);if(g){const obs=new MutationObserver(()=>{if(!g.querySelector('.gc-site-ad-card'))renderIndexAds()});obs.observe(g,{childList:true})}});setInterval(renderIndexAds,15000)}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.GC_ADS={refresh:renderIndexAds,showAdmin:show,loadAdmin:adminLoad,edit:setEditMode};
+async function adminLoad(){const list=$('gcAdList');if(!list)return;const s=client();if(!s)return;list.innerHTML='<div class="gc-ad-empty">Loading…</div>';const q=await s.from('gc_advertisements').select('*').order('priority',{ascending:false}).order('created_at',{ascending:false});if(q.error){list.innerHTML='<div class="gc-ad-empty">'+esc(q.error.message)+'</div>';return}const rows=q.data||[];$('gcAdCount').textContent=rows.length+' advertisement(s)';list.innerHTML=rows.length?rows.map((a,i)=>'<article class="gc-ad-admin-row"><img src="'+esc(a.image_url)+'"><div><b>'+esc(a.title)+'</b><div style="font-size:10px;color:#64748b;margin-top:5px">'+esc(a.advertiser_name||'')+' • '+esc(String(a.placement||'all').toUpperCase())+' • '+(a.active?'ACTIVE':'PAUSED')+'</div></div><div class="gc-ad-admin-actions"><button type="button" class="gc-ad-mini" data-ad-toggle="'+i+'">'+(a.active?'PAUSE':'ACTIVATE')+'</button><button type="button" class="gc-ad-mini danger" data-ad-delete="'+i+'">DELETE</button></div></article>').join(''):'<div class="gc-ad-empty">No advertisements have been created yet.</div>';list.querySelectorAll('[data-ad-toggle]').forEach(b=>b.onclick=async()=>{const a=rows[+b.dataset.adToggle],r=await s.from('gc_advertisements').update({active:!a.active,updated_at:new Date().toISOString()}).eq('id',a.id);if(r.error)alert(r.error.message);else{await adminLoad();renderIndexAds()}});list.querySelectorAll('[data-ad-delete]').forEach(b=>b.onclick=async()=>{const a=rows[+b.dataset.adDelete];if(!confirm('Delete this advertisement permanently?'))return;if(a.storage_path)try{await s.storage.from(B).remove([a.storage_path])}catch(_){}const r=await s.from('gc_advertisements').delete().eq('id',a.id);if(r.error)alert(r.error.message);else{await adminLoad();renderIndexAds()}})}
+function clearForm(){['gcAdTitle','gcAdAdvertiser','gcAdClick','gcAdWhatsapp','gcAdStart','gcAdEnd'].forEach(id=>{const e=$(id);if(e)e.value=''});if($('gcAdPlacement'))$('gcAdPlacement').value='lrr';if($('gcAdPriority'))$('gcAdPriority').value='0';if($('gcAdFile'))$('gcAdFile').value='';if($('gcAdStatus'))$('gcAdStatus').textContent=''}
+async function save(){const s=client();if(!s)return alert('Supabase is not available.');const sess=await s.auth.getSession();if(String(sess.data?.session?.user?.id||'')!==ADMIN)return alert('Please login through Staff/Admin first.');const title=$('gcAdTitle')?.value.trim(),file=$('gcAdFile')?.files?.[0];if(!title)return alert('Enter Advertisement Title.');if(!file)return alert('Please upload the advertisement flyer.');if(!/^image\/(jpeg|png|webp)$/.test(file.type))return alert('Only JPG, PNG or WEBP images are supported.');if(file.size>3*1024*1024)return alert('Maximum flyer size is 3 MB.');const dims=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve({w:im.naturalWidth,h:im.naturalHeight});im.onerror=()=>reject(new Error('The flyer image could not be read.'));im.src=URL.createObjectURL(file)});URL.revokeObjectURL(file);if(dims.w!==1200||dims.h!==675)return alert('Please upload the flyer in the standard 1200 × 675 px (16:9) format.');const st=$('gcAdStatus'),btn=$('gcAdSaveBtn');btn.disabled=true;st.textContent='Uploading flyer…';try{const ext=(file.name.split('.').pop()||'jpg').toLowerCase(),path='ads/'+Date.now()+'-'+Math.random().toString(36).slice(2,9)+'.'+ext;const up=await s.storage.from(B).upload(path,file,{contentType:file.type,upsert:false,cacheControl:'3600'});if(up.error)throw up.error;const pub=s.storage.from(B).getPublicUrl(path).data.publicUrl;const row={title,advertiser_name:$('gcAdAdvertiser').value.trim(),placement:$('gcAdPlacement').value,image_url:pub,storage_path:path,click_url:url($('gcAdClick').value),whatsapp_url:url($('gcAdWhatsapp').value),start_at:$('gcAdStart').value?new Date($('gcAdStart').value).toISOString():new Date().toISOString(),end_at:$('gcAdEnd').value?new Date($('gcAdEnd').value).toISOString():null,active:true,priority:Math.max(0,Number($('gcAdPriority').value)||0),created_by:ADMIN,updated_at:new Date().toISOString()};const ins=await s.from('gc_advertisements').insert(row);if(ins.error)throw ins.error;st.textContent='✓ Advertisement created successfully.';clearForm();await adminLoad();await renderIndexAds()}catch(e){st.textContent='Creation failed: '+(e.message||e);alert('Advertisement creation failed:\n\n'+(e.message||e))}finally{btn.disabled=false}}
+function show(){const p=$('gcAdminAdvertisementsPanel');if(!p)return;p.style.display=p.style.display==='none'?'block':'none';if(p.style.display==='block')adminLoad()}
+function boot(){if(window.__gcAdsBoot)return;window.__gcAdsBoot=true;$('gcAdSaveBtn')?.addEventListener('click',save);$('gcAdClearBtn')?.addEventListener('click',clearForm);$('gcAdRefreshBtn')?.addEventListener('click',adminLoad);$('gcAdminAdsButton')?.addEventListener('click',e=>{e.preventDefault();show()});renderIndexAds();['tutorGrid','studentGridContainer'].forEach(id=>{const g=$(id);if(g){const obs=new MutationObserver(()=>{if(!g.querySelector('.gc-site-ad-card'))renderIndexAds()});obs.observe(g,{childList:true})}});setInterval(renderIndexAds,15000)}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.GC_ADS={refresh:renderIndexAds,showAdmin:show};
 })();
 </script>
 

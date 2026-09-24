@@ -39,8 +39,8 @@ using (
 drop policy if exists "gc_ads_admin_all" on public.gc_advertisements;
 create policy "gc_ads_admin_all"
 on public.gc_advertisements for all
-using (auth.uid() = '1df7606a-3a96-4116-b022-804b37a3c3dd'::uuid)
-with check (auth.uid() = '1df7606a-3a96-4116-b022-804b37a3c3dd'::uuid);
+using (lower(coalesce(auth.jwt() ->> 'email','')) = 'guruconnect.in@gmail.com')
+with check (lower(coalesce(auth.jwt() ->> 'email','')) = 'guruconnect.in@gmail.com');
 
 -- Storage bucket for advertiser flyers.
 insert into storage.buckets (id,name,public)
@@ -55,15 +55,15 @@ using (bucket_id = 'gc-advertisements');
 drop policy if exists "gc_ads_storage_admin_insert" on storage.objects;
 create policy "gc_ads_storage_admin_insert"
 on storage.objects for insert
-with check (bucket_id = 'gc-advertisements' and auth.uid() = '1df7606a-3a96-4116-b022-804b37a3c3dd'::uuid);
+with check (bucket_id = 'gc-advertisements' and lower(coalesce(auth.jwt() ->> 'email','')) = 'guruconnect.in@gmail.com');
 
 drop policy if exists "gc_ads_storage_admin_update" on storage.objects;
 create policy "gc_ads_storage_admin_update"
 on storage.objects for update
-using (bucket_id = 'gc-advertisements' and auth.uid() = '1df7606a-3a96-4116-b022-804b37a3c3dd'::uuid)
-with check (bucket_id = 'gc-advertisements' and auth.uid() = '1df7606a-3a96-4116-b022-804b37a3c3dd'::uuid);
+using (bucket_id = 'gc-advertisements' and lower(coalesce(auth.jwt() ->> 'email','')) = 'guruconnect.in@gmail.com')
+with check (bucket_id = 'gc-advertisements' and lower(coalesce(auth.jwt() ->> 'email','')) = 'guruconnect.in@gmail.com');
 
 drop policy if exists "gc_ads_storage_admin_delete" on storage.objects;
 create policy "gc_ads_storage_admin_delete"
 on storage.objects for delete
-using (bucket_id = 'gc-advertisements' and auth.uid() = '1df7606a-3a96-4116-b022-804b37a3c3dd'::uuid);
+using (bucket_id = 'gc-advertisements' and lower(coalesce(auth.jwt() ->> 'email','')) = 'guruconnect.in@gmail.com');
