@@ -13832,8 +13832,18 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
       paid_status:t.paidStatus==='PAID'?'PAID':'PENDING'
     };
 
-    const row=await updateAndVerify('tutor_profiles',t.id,patch,
-      'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at');
+    await ensureStaffCloud();
+
+    // Use the Staff/Admin security-definer RPC instead of a browser-side
+    // UPDATE. This prevents tutor edits (especially rating) from being
+    // silently filtered by tutor_profiles RLS.
+    const rpc=await sb().rpc('gc_admin_update_tutor_profile',{
+      p_user_id:String(t.user_id||t.id),
+      p_data:patch
+    });
+    if(rpc.error) throw rpc.error;
+    const row=rpc.data;
+    if(!row || !row.id) throw new Error('Supabase did not return the updated tutor profile. Check the Staff/Admin RPC and RLS policy.');
 
     Object.assign(t,{
       id:row.id,user_id:row.user_id||t.user_id,name:row.name||'',
