@@ -38,3 +38,6 @@ The preferred profile-save RPC is:
 Run:
   SUPABASE_REGISTRATION_PROFILE_FIX_2026-09-24.sql
 once in Supabase SQL Editor if that function is not already installed.
+
+
+2026-09-26 V4: Removed registration fallback ON CONFLICT(user_id) dependency. Older databases without a UNIQUE constraint on user_id now use SELECT -> UPDATE by primary-key id, or INSERT.

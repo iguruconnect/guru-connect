@@ -10601,16 +10601,42 @@ body {
         p_data: payload
       });
 
-      if (legacy.error) {
-        throw new Error(
-          'Registration profile save failed. Preferred RPC: ' +
-          (preferred.error?.message || preferred.error) +
-          ' | Legacy RPC: ' +
-          (legacy.error?.message || legacy.error)
-        );
+      if (!legacy.error) {
+        const saved = legacy.data?.profile || legacy.data;
+        gcPageCache.clear();
+        return { ok: true, row: saved, userId: user.id };
       }
 
-      const saved = legacy.data?.profile || legacy.data;
+      // Final compatibility fallback for older databases where the legacy RPC
+      // uses ON CONFLICT(user_id) but user_id is not UNIQUE. We deliberately
+      // select by user_id first, then UPDATE by the actual primary-key id or
+      // INSERT when no role row exists. This removes the constraint dependency.
+      console.warn('Legacy registration RPC failed; using constraint-independent direct save.', legacy.error);
+      const pRes = await gcSupabase.from('profiles').upsert({
+        id: user.id, role, full_name: verifiedData.name, email: verifiedData.email,
+        phone: verifiedData.phone, photo_url: verifiedData.photo_url || null
+      }, { onConflict: 'id' });
+      if (pRes.error) {
+        throw new Error('Registration profile save failed. Preferred RPC: ' +
+          (preferred.error?.message || preferred.error) + ' | Legacy RPC: ' +
+          (legacy.error?.message || legacy.error) + ' | Profiles: ' +
+          (pRes.error?.message || pRes.error));
+      }
+
+      async function saveRoleRow(table, roleRow) {
+        const existing = await gcSupabase.from(table).select('id').eq('user_id', user.id).limit(1).maybeSingle();
+        if (existing.error) throw existing.error;
+        if (existing.data?.id) {
+          const updated = await gcSupabase.from(table).update(roleRow).eq('id', existing.data.id).select().maybeSingle();
+          if (updated.error) throw updated.error;
+          return updated.data;
+        }
+        const inserted = await gcSupabase.from(table).insert(roleRow).select().maybeSingle();
+        if (inserted.error) throw inserted.error;
+        return inserted.data;
+      }
+
+      const saved = await saveRoleRow(role === 'tutor' ? 'tutor_profiles' : 'student_profiles', row);
       gcPageCache.clear();
       return { ok: true, row: saved, userId: user.id };
     } catch (err) {

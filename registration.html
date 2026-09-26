@@ -173,10 +173,24 @@ async function saveVerifiedProfile(user){
   });
   if(!rpc.error)return rpc.data;
   console.warn('gc_register_verified_profile unavailable/failed; trying the legacy direct save for backward compatibility.',rpc.error);
+  // Compatibility fallback: do not use ON CONFLICT on user_id because older
+  // GURU CONNECT databases may not have a UNIQUE constraint on that column.
   const p=await sb.from('profiles').upsert({
     id:user.id,role,full_name:m.name,email:m.email,phone:m.phone,photo_url:null
   },{onConflict:'id'});
   if(p.error)throw rpc.error||p.error;
+  async function gcSaveRoleRow(table,row){
+    const existing=await sb.from(table).select('id').eq('user_id',user.id).limit(1).maybeSingle();
+    if(existing.error)throw existing.error;
+    if(existing.data?.id){
+      const updated=await sb.from(table).update(row).eq('id',existing.data.id).select().maybeSingle();
+      if(updated.error)throw updated.error;
+      return updated.data;
+    }
+    const inserted=await sb.from(table).insert(row).select().maybeSingle();
+    if(inserted.error)throw inserted.error;
+    return inserted.data;
+  }
   if(role==='student'){
     const row={
       user_id:user.id,name:m.name,course:m.course,stream:m.stream,standard:m.std,
@@ -189,9 +203,7 @@ async function saveVerifiedProfile(user){
       helpline_course:'',helpline_subject:'',helpline_subject_count:0,
       helpline_amount:0,privacy:{},photo_url:null
     };
-    const r=await sb.from('student_profiles').upsert(row,{onConflict:'user_id'});
-    if(r.error)throw r.error;
-    return r.data;
+    return await gcSaveRoleRow('student_profiles',row);
   }
   const row={
     user_id:user.id,name:m.name,subject:m.subject,stream:'',experience:m.experience,
@@ -203,9 +215,7 @@ async function saveVerifiedProfile(user){
     teaching_since:m.registration_date,is_illustrative:false,
     registration_status:'registered'
   };
-  const r=await sb.from('tutor_profiles').upsert(row,{onConflict:'user_id'});
-  if(r.error)throw r.error;
-  return r.data;
+  return await gcSaveRoleRow('tutor_profiles',row);
 }
 $('form').addEventListener('submit',async e=>{e.preventDefault();$('msg').className='msg';if(!otpVerified||!pendingAuthUser)return show('Please send and verify the 8-digit email verification code first.');if(!$('terms').checked)return show('Please read and accept the Terms & Conditions.');const b=$('submit');b.disabled=true;b.textContent='SAVING PROFILE…';try{await saveVerifiedProfile(pendingAuthUser);show('✓ Registration completed successfully. Your email is verified and your '+role+' profile has been saved. You can now login.',true);setTimeout(()=>{try{sb.auth.signOut({scope:'local'})}catch(_){}location.href='login.html?role='+encodeURIComponent(role)},1200)}catch(err){console.error(err);show('Registration profile could not be saved: '+(err?.message||String(err)))}finally{b.disabled=false;if(otpVerified)$('submit').textContent='COMPLETE '+role.toUpperCase()+' REGISTRATION'}});
 </script>
