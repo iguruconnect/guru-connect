@@ -9,13 +9,13 @@ WHAT THIS PACKAGE FIXES
    - a separate 4-digit EmailJS OTP
    This was causing the registration/verification experience to be inconsistent.
 
-2. The homepage registration OTP is now a 6-digit OTP and is verified with:
+2. The homepage registration OTP is now a 8-digit OTP and is verified with:
       supabase.auth.verifyOtp({ email, token, type: 'email' })
 
 3. A large GURU CONNECT branded popup appears immediately after an OTP is sent.
    It tells the user:
       "OTP Sent Successfully"
-      "Your 6-digit verification OTP has been sent to: [email]"
+      "Your 8-digit verification OTP has been sent to: [email]"
       "Please check your Inbox. If you do not see it, check your Junk / Spam folder."
 
 4. The standalone registration.html OTP was also corrected from 8 digits to 6
@@ -57,7 +57,7 @@ The template uses:
       {{ .SiteURL }}
 
 Supabase's current email-template documentation supports {{ .Token }} for the
-OTP. The GURU CONNECT website now expects the current 6-digit email OTP.
+OTP. The GURU CONNECT website now expects the current 8-digit email OTP.
 
 IMAGE HOSTING
 -------------
@@ -86,7 +86,7 @@ RECOMMENDED TEST
 4. Click SEND EMAIL OTP.
 5. Confirm the large GURU CONNECT popup appears.
 6. Check Inbox and Junk/Spam.
-7. Enter the 6-digit OTP in the popup.
+7. Enter the 8-digit OTP in the popup.
 8. Complete the rest of the registration fields.
 9. Submit the registration.
 10. Confirm the Student profile appears in Supabase.

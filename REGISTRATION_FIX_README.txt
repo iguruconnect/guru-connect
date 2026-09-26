@@ -19,11 +19,11 @@ Do not delete existing users or profiles to apply this fix.
 UPDATED OTP FLOW (2026-09-26)
 -----------------------------
 The homepage Student/Tutor registration now uses Supabase's real email OTP
-verification and expects the current 6-digit token. The old registration-time
+verification and expects the current 8-digit token. The old registration-time
 4-digit EmailJS OTP is no longer used by the homepage registration submit flow.
 
 A large branded "OTP Sent Successfully" popup tells the user to check Inbox and
-Junk/Spam. The standalone registration.html has the same 6-digit behavior.
+Junk/Spam. The standalone registration.html has the same 8-digit behavior.
 
 For the live branded email itself, paste:
   SUPABASE_GURU_CONNECT_OTP_EMAIL_TEMPLATE.html
