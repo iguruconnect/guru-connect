@@ -43,7 +43,7 @@ begin
          full_name = nullif(trim(coalesce(p_data->>'name','')),''),
          email = lower(trim(coalesce(p_data->>'email',''))),
          phone = nullif(trim(coalesce(p_data->>'phone','')),''),
-         photo_url = null
+         photo_url = nullif(trim(coalesce(p_data->>'photo_url','')),'')
    where id = p_user_id;
 
   get diagnostics v_count = row_count;
@@ -56,7 +56,7 @@ begin
       nullif(trim(coalesce(p_data->>'name','')),''),
       lower(trim(coalesce(p_data->>'email',''))),
       nullif(trim(coalesce(p_data->>'phone','')),''),
-      null
+      nullif(trim(coalesce(p_data->>'photo_url','')),'')
     );
   end if;
 
@@ -86,14 +86,15 @@ begin
            record_no = '',
            data_source = 'registration',
            about_me = p_data->>'about_me',
-           achievement_photos = '[]'::jsonb,
-           helpline_plan = '',
-           helpline_status = '',
-           helpline_course = '',
-           helpline_subject = '',
-           helpline_subject_count = 0,
-           helpline_amount = 0,
-           privacy = '{}'::jsonb
+           achievement_photos = coalesce((p_data->'achievement_photos'), '[]'::jsonb),
+           helpline_plan = coalesce(p_data->>'helpline_plan',''),
+           helpline_status = coalesce(p_data->>'helpline_status',''),
+           helpline_course = coalesce(p_data->>'helpline_course',''),
+           helpline_subject = coalesce(p_data->>'helpline_subject',''),
+           helpline_subject_count = coalesce((nullif(p_data->>'helpline_subject_count',''))::integer,0),
+           helpline_amount = coalesce((nullif(p_data->>'helpline_amount',''))::numeric,0),
+           privacy = coalesce((p_data->'privacy'), '{}'::jsonb),
+           photo_url = nullif(trim(coalesce(p_data->>'photo_url','')),'')
      where user_id = p_user_id;
 
     get diagnostics v_count = row_count;
@@ -110,8 +111,8 @@ begin
         p_data->>'subject',p_data->>'learning_requirement',p_data->>'std','',
         p_data->>'college',p_data->>'division',p_data->>'roll',
         lower(trim(coalesce(p_data->>'email',''))),p_data->>'phone',p_data->>'location','',
-        '','','','',p_data->>'registration_date','registration',p_data->>'about_me','[]'::jsonb,
-        '','','','',0,0,'{}'::jsonb,null
+        '','','','',p_data->>'registration_date','registration',p_data->>'about_me',coalesce((p_data->'achievement_photos'),'[]'::jsonb),
+        coalesce(p_data->>'helpline_plan',''),coalesce(p_data->>'helpline_status',''),coalesce(p_data->>'helpline_course',''),coalesce(p_data->>'helpline_subject',''),coalesce((nullif(p_data->>'helpline_subject_count',''))::integer,0),coalesce((nullif(p_data->>'helpline_amount',''))::numeric,0),coalesce((p_data->'privacy'),'{}'::jsonb),nullif(trim(coalesce(p_data->>'photo_url','')),'')
       );
     end if;
 
@@ -130,7 +131,7 @@ begin
            address = p_data->>'address',
            price = p_data->>'rate_hour',
            about_me = p_data->>'about_me',
-           photo_url = null,
+           photo_url = nullif(trim(coalesce(p_data->>'photo_url','')),''),
            verified = false,
            paid_status = 'PENDING',
            rating = null,
@@ -155,7 +156,7 @@ begin
       ) values (
         p_user_id,p_data->>'name',p_data->>'subject','',p_data->>'experience',p_data->>'qualification',
         p_data->>'tutor_college',p_data->>'teaching_college',p_data->>'address',p_data->>'rate_hour',
-        p_data->>'about_me',null,false,'PENDING',null,0,'','','',p_data->>'location','',
+        p_data->>'about_me',nullif(trim(coalesce(p_data->>'photo_url','')),''),false,'PENDING',null,0,'','','',p_data->>'location','',
         '',p_data->>'registration_date',false,'registered'
       );
     end if;
