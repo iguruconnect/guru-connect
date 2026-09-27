@@ -1,0 +1,48 @@
+GURU CONNECT — REGISTRATION / OTP / ADMIN REPAIR — 2026-09-27
+
+Changes applied to the uploaded ZIP:
+
+1. HOMEPAGE REGISTRATION OTP
+- Fixed the homepage OTP sanitizer that was incorrectly truncating verification codes to 6 digits.
+- Homepage OTP input/verification now accepts the 8-digit registration OTP already used by the current UI/email flow.
+- Resend uses the same Supabase signup flow.
+- Before starting email/password registration, the site detects an existing Supabase anonymous session and signs that temporary session out locally.
+  This prevents the public-directory anonymous account from being mistaken for the real Student/Tutor registration account.
+- Anonymous Auth users are NOT converted, deleted, or given fake emails.
+
+2. STANDALONE registration.html
+- Added the same defensive anonymous-session cleanup before signup.
+- Existing 8-digit OTP registration flow is retained.
+- Existing constraint-independent profile-save fallback is retained.
+
+3. PROFILE SAVE
+- Existing gc_register_verified_profile() RPC path is retained.
+- Existing fallback paths remain in place for older databases.
+- No changes were made to the existing Student/Tutor profile schema or learning-request/coin/profile-card functionality.
+
+4. STAFF / ADMIN PASSWORD RESET
+- forgot-password.html now detects guruconnect.in@gmail.com and provides a dedicated OTP reset flow.
+- Staff/Admin can request an OTP, enter the OTP, set a new password, and then return to Staff/Admin Login.
+- Normal Student/Tutor password reset continues to use the secure Supabase recovery-link flow.
+- The admin dashboard and its existing Edge Function actions are preserved.
+
+5. ADMIN DASHBOARD
+The uploaded admin.html already contains and remains unchanged in its core action wiring:
+- create_user
+- find_users
+- edit_user
+- set_status
+- reset_password
+- delete_user
+- profile save/update
+- receipt generation
+- print/save PDF
+
+IMPORTANT SUPABASE NOTE
+- The ZIP cannot modify hosted Supabase Auth settings, email templates, or deployed Edge Functions.
+- Do not disable RLS or alter auth.users manually to apply this ZIP.
+- The supplied SUPABASE_REGISTRATION_PROFILE_FIX_2026-09-24.sql remains the intended profile-save SQL fix.
+- The existing anonymous Auth rows with NULL email are consistent with Supabase anonymous users and should not be assigned fake emails.
+
+TESTING
+- JavaScript syntax checks passed for the modified index.html, registration.html, forgot-password.html and the existing admin/reset pages.
