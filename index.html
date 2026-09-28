@@ -7530,20 +7530,56 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
             saveDirs(); renderStudentDirectory(); renderAdminQueue(); closeAdminEditStudentModal(); showSuccessPopup('Student profile updated and synced to Supabase successfully.');
         }
 
-        function adminDeleteTutor(tutorId) {
-            if (!confirm('Are you sure you want to delete this tutor?')) return;
-            tutorDirectoryList = tutorDirectoryList.filter(t => t.id !== tutorId);
-            renderTutorDirectory();
-            renderAdminQueue();
-            alert('Tutor deleted successfully.');
+        async function gcAdminPermanentDelete(record, label) {
+            const uid = String(record?.user_id || record?.userId || record?.auth_user_id || '').trim();
+            if (!uid) throw new Error('This profile is not linked to a Supabase Auth user ID, so permanent deletion was blocked.');
+            if (!window.GC_ADMIN_CLOUD?.deleteUser) throw new Error('Permanent delete service is not installed. Run the supplied GURU_CONNECT_PERMANENT_FIX.sql in Supabase first.');
+            await window.GC_ADMIN_CLOUD.deleteUser(uid);
+            return uid;
         }
 
-        function adminDeleteStudent(studentId) {
-            if (!confirm('Are you sure you want to delete this student profile?')) return;
-            studentDirectoryList = studentDirectoryList.filter(s => s.id !== studentId);
-            renderStudentDirectory();
-            renderAdminQueue();
-            alert('Student profile deleted successfully.');
+        async function adminDeleteTutor(tutorId) {
+            const tutor = tutorDirectoryList.find(t => String(t.id) === String(tutorId));
+            if (!tutor) return;
+            if (!confirm(`PERMANENTLY delete tutor "${tutor.name || 'this tutor'}"?
+
+This removes the Auth account and linked tutor/profile records from Supabase. This cannot be undone.`)) return;
+            try {
+                await gcAdminPermanentDelete(tutor, 'tutor');
+                tutorDirectoryList = tutorDirectoryList.filter(t => String(t.id) !== String(tutorId));
+                studentDirectoryList = studentDirectoryList.filter(s => String(s.user_id || '') !== String(tutor.user_id || ''));
+                gcPageCache?.clear?.();
+                saveRegisteredDirectories();
+                renderTutorDirectory();
+                renderAdminQueue();
+                alert('Tutor permanently deleted from Supabase.');
+                try { await gcLoadCloudDirectories(currentTutorPage || 1, currentStudentPage || 1); } catch (_) {}
+            } catch (err) {
+                console.error('Permanent tutor deletion failed:', err);
+                alert('DELETE FAILED — tutor was NOT removed.\n\n' + (err?.message || String(err)));
+            }
+        }
+
+        async function adminDeleteStudent(studentId) {
+            const student = studentDirectoryList.find(s => String(s.id) === String(studentId));
+            if (!student) return;
+            if (!confirm(`PERMANENTLY delete student "${student.name || 'this student'}"?
+
+This removes the Auth account and linked student/profile records from Supabase. This cannot be undone.`)) return;
+            try {
+                await gcAdminPermanentDelete(student, 'student');
+                studentDirectoryList = studentDirectoryList.filter(s => String(s.id) !== String(studentId));
+                tutorDirectoryList = tutorDirectoryList.filter(t => String(t.user_id || '') !== String(student.user_id || ''));
+                gcPageCache?.clear?.();
+                saveRegisteredDirectories();
+                renderStudentDirectory();
+                renderAdminQueue();
+                alert('Student permanently deleted from Supabase.');
+                try { await gcLoadCloudDirectories(currentTutorPage || 1, currentStudentPage || 1); } catch (_) {}
+            } catch (err) {
+                console.error('Permanent student deletion failed:', err);
+                alert('DELETE FAILED — student was NOT removed.\n\n' + (err?.message || String(err)));
+            }
         }
 
         function adminVerifyTutorPaid(tutorId) {
@@ -10919,7 +10955,7 @@ body {
    *
    * Supabase's current email OTP template uses {{ .Token }}. The live
    * Supabase email template should therefore display that token and the UI
-   * below expects 8 digits.
+   * below uses the configured Supabase OTP length (6 digits by default).
    */
   window.gcVerifiedRegistration = window.gcVerifiedRegistration || {
     student: null,
@@ -10963,7 +10999,7 @@ body {
             <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 text-3xl shadow-inner">✉️</div>
             <h3 class="mt-4 text-xl sm:text-2xl font-black text-slate-900">Please check your email</h3>
             <p class="mt-2 text-sm sm:text-base leading-6 text-slate-600">
-              Your 8-digit verification OTP has been sent to
+              Your verification OTP has been sent to
               <strong class="text-blue-700 break-all">${safeEmail}</strong>.
             </p>
             <p class="mt-2 text-xs sm:text-sm font-semibold text-slate-500">
@@ -10972,11 +11008,11 @@ body {
             </p>
 
             <div class="mt-6 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 sm:p-5">
-              <div class="text-[11px] font-black uppercase tracking-[.18em] text-blue-700">Enter 8-digit verification OTP</div>
+              <div class="text-[11px] font-black uppercase tracking-[.18em] text-blue-700">Enter 6-digit verification OTP</div>
               <input id="gcRegistrationOtpInput"
                      class="mt-3 w-full rounded-2xl border-2 border-blue-200 bg-white px-4 py-4 text-center text-2xl sm:text-3xl font-black tracking-[.42em] text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-                     inputmode="numeric" autocomplete="one-time-code" maxlength="8"
-                     placeholder="••••••••" aria-label="8-digit email verification OTP">
+                     inputmode="numeric" autocomplete="one-time-code" maxlength="6"
+                     placeholder="••••••••" aria-label="6-digit email verification OTP">
               <div id="gcRegistrationOtpStatus" class="mt-2 min-h-[20px] text-xs font-semibold text-slate-500"></div>
             </div>
 
@@ -11021,8 +11057,8 @@ body {
 
       verifyButton.addEventListener('click', async () => {
         const token = gcOtpDigits(input.value);
-        if (token.length !== 8) {
-          status.textContent = 'Please enter all 8 digits from the latest email.';
+        if (token.length !== 6) {
+          status.textContent = 'Please enter all 6 digits from the latest email.';
           status.className = 'mt-2 min-h-[20px] text-xs font-bold text-rose-600';
           input.focus();
           return;
@@ -15313,7 +15349,8 @@ window.addEventListener('load',()=>setTimeout(mount,900));setInterval(mount,6000
   }
   window.GC_ADMIN_CLOUD={
     updateTutor:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_admin_update_tutor_profile',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;},
-    updateStudent:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_admin_update_student_profile',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;}
+    updateStudent:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_admin_update_student_profile',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;},
+    deleteUser:async(uid)=>{const s=await staff();const q=await s.rpc('gc_admin_delete_user',{p_user_id:String(uid)});if(q.error)throw q.error;if(q.data && q.data.deleted===false)throw new Error(q.data.error||'Supabase did not confirm permanent deletion.');return q.data;}
   };
 })();
 </script>
