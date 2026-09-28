@@ -291,8 +291,27 @@ window.resetUser=async i=>{
  try{await api('reset_password',{user_id:u.user_id,password:p});alert('✓ Password updated.')}catch(e){alert('Reset failed: '+e.message)}
 };
 window.deleteUser=async i=>{
- const u=window.users[i];if(!confirm('Delete this Auth account? This may cascade/delete linked data depending on database constraints. Continue?'))return;
- try{await api('delete_user',{user_id:u.user_id});alert('Account deleted.');$('search').click()}catch(e){alert('Delete failed: '+e.message)}
+ const u=window.users[i];
+ if(!u?.user_id)return alert('User ID is missing. Please search again.');
+ if(!confirm('Permanently delete this Student/Tutor account and its linked profile? This cannot be undone.'))return;
+ const s=$('search');
+ try{
+  // Preferred path: protected SQL RPC deletes the Auth user and linked profiles atomically.
+  const rpc=await sb.rpc('gc_admin_delete_user',{p_user_id:u.user_id});
+  if(rpc.error) throw rpc.error;
+  // Verify that the account no longer appears before reporting success.
+  const verify=await sb.rpc('gc_admin_find_user',{p_user_id:u.user_id}).catch(()=>null);
+  if(verify?.data) throw new Error('The delete operation returned success, but the user still exists. Check the Supabase delete RPC/SQL deployment.');
+  alert('✓ Account permanently deleted.');
+  s.click();
+ }catch(e){
+  console.warn('RPC delete failed; trying the existing admin Edge Function.',e);
+  try{
+   await api('delete_user',{user_id:u.user_id});
+   alert('✓ Delete request completed. Refreshing the directory to verify…');
+   s.click();
+  }catch(e2){alert('Delete failed: '+(e2?.message||e?.message||String(e2))+'\n\nMake sure SUPABASE_ADMIN_DELETE_USER.sql has been run in Supabase SQL Editor.')}
+ }
 };
 
 $('loadAds').onclick=()=>{

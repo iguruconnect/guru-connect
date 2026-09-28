@@ -201,7 +201,8 @@ async function saveVerifiedProfile(user){
       record_no:'',data_source:'registration',about_me:m.about_me,
       achievement_photos:[],helpline_plan:'',helpline_status:'',
       helpline_course:'',helpline_subject:'',helpline_subject_count:0,
-      helpline_amount:0,privacy:{},photo_url:null
+      helpline_amount:0,privacy:{},photo_url:null,
+      is_illustrative:false,registration_status:'registered'
     };
     return await gcSaveRoleRow('student_profiles',row);
   }
