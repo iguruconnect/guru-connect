@@ -10927,7 +10927,7 @@ body {
   };
 
   function gcOtpDigits(value) {
-    return String(value || '').replace(/\D/g,'').slice(0,8);
+    return String(value || '').replace(/\D/g,'').slice(0,6);
   }
 
   function gcOtpPopup(email, role, verifyFn, resendFn) {
@@ -11121,25 +11121,6 @@ body {
       if (!result.data?.user) throw new Error('Supabase did not return a user account.');
       return result;
     };
-
-    /*
-     * The homepage also uses Supabase anonymous sign-in for public directory
-     * access. An anonymous user is a real authenticated Auth user, but it is
-     * not the Student/Tutor account being registered. Do not leave that
-     * anonymous session active while starting email/password registration.
-     * Supabase documents that anonymous users are separate users and are
-     * converted to permanent accounts by linking an identity.
-     */
-    try {
-      const current = await gcSupabase.auth.getUser();
-      const currentUser = current?.data?.user;
-      if (currentUser?.is_anonymous === true) {
-        await gcSupabase.auth.signOut({ scope: 'local' });
-        gcAnonymousUserPromise = null;
-      }
-    } catch (anonErr) {
-      console.warn('Could not clear the temporary anonymous session before registration:', anonErr);
-    }
 
     const first = await sendOtp();
 
