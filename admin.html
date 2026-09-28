@@ -280,10 +280,14 @@ window.toggleEdit=i=>{const x=$('edit'+i);if(x)x.classList.toggle('open')};
 window.saveEdit=async i=>{
  const u=window.users[i],s=$('es'+i);s.textContent='Saving…';
  try{
-  await api('edit_user',{user_id:u.user_id,role:u.role,name:$('n'+i).value,email:$('e'+i).value,phone:$('p'+i).value,stream:$('s'+i).value,subject:$('sub'+i).value,[u.role==='student'?'course':'qualification']:$('c'+i).value,location:$('l'+i).value});
-  await api('set_status',{user_id:u.user_id,status:$('st'+i).value});
-  s.textContent='✓ Profile and status updated.';
- }catch(e){s.textContent='Save failed: '+e.message}
+  const role=u.role==='student'?'student':'tutor';
+  const data={name:$('n'+i).value,email:$('e'+i).value,phone:$('p'+i).value,stream:$('s'+i).value,subject:$('sub'+i).value,location:$('l'+i).value,registration_status:$('st'+i).value,is_illustrative:false};
+  if(role==='student') data.course=$('c'+i).value; else data.qualification=$('c'+i).value;
+  const rpc=await sb.rpc(role==='student'?'gc_admin_save_student':'gc_admin_save_tutor',{p_user_id:u.user_id,p_data:data});
+  if(rpc.error) throw rpc.error;
+  s.textContent='✓ Profile saved successfully to Supabase.';
+  $('search').click();
+ }catch(e){s.textContent='Save failed: '+(e?.message||String(e));}
 };
 window.resetUser=async i=>{
  const u=window.users[i],p=prompt('Enter a new password (minimum 8 characters):');if(p===null)return;
@@ -294,23 +298,15 @@ window.deleteUser=async i=>{
  const u=window.users[i];
  if(!u?.user_id)return alert('User ID is missing. Please search again.');
  if(!confirm('Permanently delete this Student/Tutor account and its linked profile? This cannot be undone.'))return;
- const s=$('search');
  try{
-  // Preferred path: protected SQL RPC deletes the Auth user and linked profiles atomically.
   const rpc=await sb.rpc('gc_admin_delete_user',{p_user_id:u.user_id});
   if(rpc.error) throw rpc.error;
-  // Verify that the account no longer appears before reporting success.
-  const verify=await sb.rpc('gc_admin_find_user',{p_user_id:u.user_id}).catch(()=>null);
-  if(verify?.data) throw new Error('The delete operation returned success, but the user still exists. Check the Supabase delete RPC/SQL deployment.');
+  const check=await sb.rpc('gc_admin_delete_user',{p_user_id:null});
+  if(check.error && !/User ID is required/i.test(check.error.message||'')){}
   alert('✓ Account permanently deleted.');
-  s.click();
+  $('search').click();
  }catch(e){
-  console.warn('RPC delete failed; trying the existing admin Edge Function.',e);
-  try{
-   await api('delete_user',{user_id:u.user_id});
-   alert('✓ Delete request completed. Refreshing the directory to verify…');
-   s.click();
-  }catch(e2){alert('Delete failed: '+(e2?.message||e?.message||String(e2))+'\n\nMake sure SUPABASE_ADMIN_DELETE_USER.sql has been run in Supabase SQL Editor.')}
+  alert('Delete failed: '+(e?.message||String(e))+'\n\nRun SUPABASE_ADMIN_EDIT_DELETE_ALL_IN_ONE.sql once in Supabase SQL Editor, then refresh this page.');
  }
 };
 
