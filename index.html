@@ -7582,23 +7582,45 @@ This removes the Auth account and linked student/profile records from Supabase. 
             }
         }
 
-        function adminVerifyTutorPaid(tutorId) {
-            const t = tutorDirectoryList.find(item => item.id === tutorId);
+        async function adminVerifyTutorPaid(tutorId) {
+            if (!adminGuard()) return;
+            const t = tutorDirectoryList.find(item => String(item.id) === String(tutorId));
             if (!t) return;
-            t.paidStatus = 'PAID';
-            renderTutorDirectory();
-            renderAdminQueue();
-            showSuccessPopup(`Tutor ${t.name}'s UTR verified & marked PAID successfully!`);
+            try {
+                if (!window.gcSupabase) throw new Error('Supabase is not connected.');
+                const r = await window.gcSupabase.rpc('gc_admin_set_tutor_status', {
+                    p_tutor_id: String(tutorId), p_paid_status: 'PAID', p_verified: false, p_mode: 'PAID'
+                });
+                if (r.error) throw r.error;
+                t.paidStatus = 'PAID';
+                if (r.data?.profile) { t.paidStatus = r.data.profile.paid_status || 'PAID'; t.verified = r.data.profile.verified === true; }
+                renderTutorDirectory();
+                renderAdminQueue();
+                showSuccessPopup(`Tutor ${t.name}'s UTR verified & marked PAID successfully — no coins were charged.`);
+            } catch (e) {
+                alert('Admin PAID action failed: ' + (e.message || e));
+            }
         }
 
-        function adminGrantVerifiedTick(tutorId) {
-            const t = tutorDirectoryList.find(item => item.id === tutorId);
+        async function adminGrantVerifiedTick(tutorId) {
+            if (!adminGuard()) return;
+            const t = tutorDirectoryList.find(item => String(item.id) === String(tutorId));
             if (!t) return;
-            t.verified = true;
-            t.paidStatus = 'PAID';
-            renderTutorDirectory();
-            renderAdminQueue();
-            showSuccessPopup(`Verified Tick badge successfully granted to ${t.name}!`);
+            try {
+                if (!window.gcSupabase) throw new Error('Supabase is not connected.');
+                const r = await window.gcSupabase.rpc('gc_admin_set_tutor_status', {
+                    p_tutor_id: String(tutorId), p_paid_status: 'PAID', p_verified: true, p_mode: 'VERIFIED_TICK'
+                });
+                if (r.error) throw r.error;
+                t.verified = true;
+                t.paidStatus = 'PAID';
+                if (r.data?.profile) { t.paidStatus = r.data.profile.paid_status || 'PAID'; t.verified = r.data.profile.verified === true; }
+                renderTutorDirectory();
+                renderAdminQueue();
+                showSuccessPopup(`Verified Tick badge successfully granted to ${t.name} — no coins were charged.`);
+            } catch (e) {
+                alert('Admin Verified Tick action failed: ' + (e.message || e));
+            }
         }
 
         function adminRevokeTutorPaid(tutorId) {
