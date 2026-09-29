@@ -5091,7 +5091,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address *</label>
 <div class="flex gap-2">
 <input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm focus:border-brand-blue focus:outline-none font-medium bg-white" id="stu_email" placeholder="student@gmail.com" required="" type="email"/>
-<button class="bg-brand-blue hover:bg-blue-700 text-white font-bold px-3 py-2 rounded-xl text-[10px] sm:text-xs shrink-0 shadow" onclick="sendEmailOtp('student')" type="button">Send OTP</button>
+<button class="bg-brand-blue hover:bg-blue-700 text-white font-bold px-3 py-2 rounded-xl text-[10px] sm:text-xs shrink-0 shadow" onclick="gcRegistrationSendOtp('student')" type="button">SEND EMAIL OTP</button>
 </div>
 </div>
 <div>
@@ -5111,9 +5111,9 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 </div>
 <!-- Email OTP Verification Box for Student -->
 <div class="hidden bg-blue-50 border border-blue-200 p-3.5 rounded-xl space-y-2" id="stuOtpBox">
-<p class="text-[11px] font-bold text-brand-blue">Enter the 4-digit code sent from support@guruconnnect.in:</p>
+<p class="text-[11px] font-bold text-brand-blue">Email verification is handled by the secure GURU CONNECT OTP popup.</p>
 <div class="flex gap-2">
-<input class="w-32 border border-blue-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="stuEnteredOtp" maxlength="4" placeholder="1234" type="text"/>
+<input class="w-32 border border-blue-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="stuEnteredOtp" maxlength="8" placeholder="OTP" type="text"/>
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('student')" type="button">Verify OTP</button>
 </div>
 </div>
@@ -5458,7 +5458,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <label class="block text-[10px] sm:text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Email Address *</label>
 <div class="flex gap-2">
 <input class="w-full border border-slate-300 rounded-xl p-3 text-xs sm:text-sm bg-white" id="t_email" name="email" placeholder="tutor@gmail.com" required="" type="email"/>
-<button class="bg-brand-nagpurOrange hover:bg-orange-600 text-white font-bold px-3 py-2 rounded-xl text-[10px] sm:text-xs shrink-0 shadow" onclick="sendEmailOtp('tutor')" type="button">Send OTP</button>
+<button class="bg-brand-nagpurOrange hover:bg-orange-600 text-white font-bold px-3 py-2 rounded-xl text-[10px] sm:text-xs shrink-0 shadow" onclick="gcRegistrationSendOtp('tutor')" type="button">SEND EMAIL OTP</button>
 </div>
 </div>
 <div>
@@ -5468,9 +5468,9 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 </div>
 <!-- Email OTP Verification Box for Tutor -->
 <div class="hidden bg-orange-50 border border-orange-200 p-3.5 rounded-xl space-y-2" id="tutorOtpBox">
-<p class="text-[11px] font-bold text-brand-nagpurOrange">Enter the 4-digit code sent from support@guruconnnect.in:</p>
+<p class="text-[11px] font-bold text-brand-nagpurOrange">Email verification is handled by the secure GURU CONNECT OTP popup.</p>
 <div class="flex gap-2">
-<input class="w-32 border border-orange-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="tutorEnteredOtp" maxlength="4" placeholder="1234" type="text"/>
+<input class="w-32 border border-orange-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="tutorEnteredOtp" maxlength="8" placeholder="OTP" type="text"/>
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('tutor')" type="button">Verify OTP</button>
 </div>
 </div>
@@ -10527,6 +10527,7 @@ body {
     };
   }
 
+
   async function gcSaveProfileToCloud(role, profile, authUser) {
     if (!gcCloudEnabled) {
       return { ok: false, skipped: false, error: new Error('Supabase cloud is not configured.') };
@@ -10534,37 +10535,110 @@ body {
 
     try {
       const user = authUser || await gcGetAnonymousUser();
+      if (!user?.id) throw new Error('Authenticated Supabase user is missing.');
 
-      // Create the corresponding public profile record first. This keeps
-      // tutor_profiles/student_profiles linked to auth.users through user_id.
-      const profileRow = {
-        id: user.id,
-        role: role,
-        full_name: gcCleanText(profile.name),
-        email: gcCleanText(profile.email) || null,
-        phone: gcCleanText(profile.phone) || null,
-        photo_url: gcCleanText(profile.photoData || '')
+      const row = role === 'tutor'
+        ? gcTutorCloudRow(profile, user.id)
+        : gcStudentCloudRow(profile, user.id);
+
+      /*
+       * Preferred registration RPC. This is the RPC included in the supplied
+       * registration-profile fix SQL and is deliberately tied to auth.uid().
+       * The old gc_register_member RPC is kept as a compatibility fallback for
+       * projects that already have the older function installed.
+       */
+      const verifiedData = {
+        role,
+        name: profile.name || '',
+        email: profile.email || '',
+        phone: profile.phone || '',
+        course: profile.course || profile.std || '',
+        stream: profile.stream || '',
+        std: profile.std || profile.standard || '',
+        subject: profile.subject || profile.learningRequirement || '',
+        learning_requirement: profile.learningRequirement || profile.learning_requirement || profile.subject || '',
+        college: profile.college || '',
+        division: profile.division || '',
+        roll: profile.rollNumber || profile.roll_number || '',
+        location: profile.location || '',
+        about_me: profile.aboutMe || profile.about_me || '',
+        registration_date: profile.registrationDate || profile.memberSince || new Date().toISOString(),
+        experience: profile.experience || '',
+        qualification: profile.qualification || '',
+        tutor_college: profile.college || '',
+        teaching_college: profile.teachingCollege || profile.teaching_college || '',
+        address: profile.address || '',
+        rate_hour: profile.price || profile.rate_hour || '',
+        payment_plan: profile.paymentPlan || profile.payment_plan || '',
+        utr: profile.utr || '',
+        photo_url: profile.photoData || profile.photo || '',
+        achievement_photos: Array.isArray(profile.achievementPhotos) ? profile.achievementPhotos : [],
+        helpline_plan: profile.helpline?.plan || profile.helplinePlan || '',
+        helpline_status: profile.helpline?.status || profile.helplineStatus || '',
+        helpline_course: profile.helpline?.course || '',
+        helpline_subject: profile.helpline?.subject || '',
+        helpline_subject_count: Number(profile.helpline?.subjectCount || profile.helplineSubjectCount || 0) || 0,
+        helpline_amount: Number(profile.helpline?.amount || profile.helplineAmount || 0) || 0,
+        privacy: profile.privacy || {}
       };
 
-      const pRes = await gcSupabase.from('profiles').upsert(profileRow, { onConflict: 'id' });
-      if (pRes.error) throw pRes.error;
+      const preferred = await gcSupabase.rpc('gc_register_verified_profile', {
+        p_user_id: user.id,
+        p_role: role,
+        p_data: verifiedData
+      });
 
-      if (role === 'tutor') {
-        const row = gcTutorCloudRow(profile, user.id);
-        const res = await gcSupabase.from('tutor_profiles')
-          .insert(row)
-          .select('*').single();
-        if (res.error) throw res.error;
-        return { ok: true, row: res.data, userId: user.id };
+      if (!preferred.error) {
+        gcPageCache.clear();
+        return { ok: true, row: preferred.data?.profile || preferred.data, userId: user.id };
       }
 
+      console.warn('gc_register_verified_profile unavailable/failed; trying legacy gc_register_member.', preferred.error);
+
+      const payload = { ...row, role };
+      const legacy = await gcSupabase.rpc('gc_register_member', {
+        p_role: role,
+        p_data: payload
+      });
+
+      if (!legacy.error) {
+        const saved = legacy.data?.profile || legacy.data;
+        gcPageCache.clear();
+        return { ok: true, row: saved, userId: user.id };
+      }
+
+      // Final compatibility fallback for older databases where the legacy RPC
+      // uses ON CONFLICT(user_id) but user_id is not UNIQUE. We deliberately
+      // select by user_id first, then UPDATE by the actual primary-key id or
+      // INSERT when no role row exists. This removes the constraint dependency.
+      console.warn('Legacy registration RPC failed; using constraint-independent direct save.', legacy.error);
+      const pRes = await gcSupabase.from('profiles').upsert({
+        id: user.id, role, full_name: verifiedData.name, email: verifiedData.email,
+        phone: verifiedData.phone, photo_url: verifiedData.photo_url || null
+      }, { onConflict: 'id' });
+      if (pRes.error) {
+        throw new Error('Registration profile save failed. Preferred RPC: ' +
+          (preferred.error?.message || preferred.error) + ' | Legacy RPC: ' +
+          (legacy.error?.message || legacy.error) + ' | Profiles: ' +
+          (pRes.error?.message || pRes.error));
+      }
+
+      async function saveRoleRow(table, roleRow) {
+        const existing = await gcSupabase.from(table).select('id').eq('user_id', user.id).limit(1).maybeSingle();
+        if (existing.error) throw existing.error;
+        if (existing.data?.id) {
+          const updated = await gcSupabase.from(table).update(roleRow).eq('id', existing.data.id).select().maybeSingle();
+          if (updated.error) throw updated.error;
+          return updated.data;
+        }
+        const inserted = await gcSupabase.from(table).insert(roleRow).select().maybeSingle();
+        if (inserted.error) throw inserted.error;
+        return inserted.data;
+      }
+
+      const saved = await saveRoleRow(role === 'tutor' ? 'tutor_profiles' : 'student_profiles', row);
       gcPageCache.clear();
-      const row = gcStudentCloudRow(profile, user.id);
-      const res = await gcSupabase.from('student_profiles')
-        .insert(row)
-        .select('*').single();
-      if (res.error) throw res.error;
-      return { ok: true, row: res.data, userId: user.id };
+      return { ok: true, row: saved, userId: user.id };
     } catch (err) {
       console.error('GURU CONNECT cloud registration failed:', err);
       return { ok: false, skipped: false, error: err };
@@ -10835,31 +10909,289 @@ body {
    * shared Supabase directory.
    */
 
+
+  /*
+   * GURU CONNECT — REAL SUPABASE EMAIL OTP REGISTRATION
+   * The previous homepage flow sent a confirmation link while the visible
+   * registration UI also contained a separate 4-digit EmailJS OTP. That made
+   * registration verification inconsistent. The registration flow below uses
+   * one source of truth: Supabase Auth email OTP.
+   *
+   * Supabase's current email OTP template uses {{ .Token }}. The live
+   * Supabase email template should therefore display that token and the UI
+   * below expects 8 digits.
+   */
+  window.gcVerifiedRegistration = window.gcVerifiedRegistration || {
+    student: null,
+    tutor: null
+  };
+
+  function gcOtpDigits(value) {
+    return String(value || '').replace(/\D/g,'').slice(0,6);
+  }
+
+  function gcOtpPopup(email, role, verifyFn, resendFn) {
+    return new Promise((resolve, reject) => {
+      let box = document.getElementById('gcSupabaseOtpPopup');
+      if (!box) {
+        box = document.createElement('div');
+        box.id = 'gcSupabaseOtpPopup';
+        box.className = 'fixed inset-0 z-[99999] flex items-center justify-center p-4 sm:p-6';
+        document.body.appendChild(box);
+      }
+
+      const safeEmail = String(email || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const roleLabel = role === 'tutor' ? 'Tutor' : 'Student';
+
+      box.innerHTML = `
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-md"></div>
+        <div class="relative w-full max-w-xl overflow-hidden rounded-[30px] bg-white shadow-[0_30px_90px_rgba(0,0,0,.35)] border border-white/50">
+          <div class="relative overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-cyan-500 px-6 py-6 sm:px-9 sm:py-8 text-white">
+            <div class="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/15"></div>
+            <div class="absolute -left-12 -bottom-20 h-44 w-44 rounded-full bg-cyan-300/20"></div>
+            <div class="relative flex items-center gap-4">
+              <img src="guru-connect-round-logo.png" alt="GURU CONNECT" class="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-white p-1 shadow-xl object-contain">
+              <div>
+                <div class="text-[11px] font-black tracking-[.24em] uppercase text-blue-100">GURU CONNECT</div>
+                <h2 class="mt-1 text-2xl sm:text-3xl font-black tracking-tight">OTP Sent Successfully</h2>
+                <p class="mt-1 text-sm text-blue-50 font-semibold">Secure ${roleLabel} email verification</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="px-6 py-7 sm:px-9 sm:py-9 text-center">
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 text-3xl shadow-inner">✉️</div>
+            <h3 class="mt-4 text-xl sm:text-2xl font-black text-slate-900">Please check your email</h3>
+            <p class="mt-2 text-sm sm:text-base leading-6 text-slate-600">
+              Your 8-digit verification OTP has been sent to
+              <strong class="text-blue-700 break-all">${safeEmail}</strong>.
+            </p>
+            <p class="mt-2 text-xs sm:text-sm font-semibold text-slate-500">
+              Please check your <strong>Inbox</strong>. If you do not see it, also check your
+              <strong>Junk / Spam</strong> folder.
+            </p>
+
+            <div class="mt-6 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 sm:p-5">
+              <div class="text-[11px] font-black uppercase tracking-[.18em] text-blue-700">Enter 8-digit verification OTP</div>
+              <input id="gcRegistrationOtpInput"
+                     class="mt-3 w-full rounded-2xl border-2 border-blue-200 bg-white px-4 py-4 text-center text-2xl sm:text-3xl font-black tracking-[.42em] text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
+                     inputmode="numeric" autocomplete="one-time-code" maxlength="8"
+                     placeholder="••••••••" aria-label="8-digit email verification OTP">
+              <div id="gcRegistrationOtpStatus" class="mt-2 min-h-[20px] text-xs font-semibold text-slate-500"></div>
+            </div>
+
+            <button id="gcVerifyRegistrationOtp"
+                    class="mt-5 w-full rounded-2xl bg-gradient-to-r from-blue-700 to-cyan-500 px-5 py-3.5 text-sm sm:text-base font-black text-white shadow-lg shadow-blue-200 transition hover:scale-[1.01] disabled:opacity-60 disabled:hover:scale-100">
+              VERIFY OTP & CONTINUE
+            </button>
+
+            <div class="mt-4 flex items-center justify-center gap-3 text-xs font-bold">
+              <button id="gcResendRegistrationOtp" class="text-blue-700 hover:text-blue-900">RESEND OTP</button>
+              <span class="text-slate-300">•</span>
+              <button id="gcCancelRegistrationOtp" class="text-slate-500 hover:text-slate-800">CANCEL</button>
+            </div>
+
+            <p class="mt-5 text-[10px] sm:text-xs text-slate-400">
+              Never share your OTP with anyone. GURU CONNECT will never ask you to disclose it by phone or WhatsApp.
+            </p>
+          </div>
+        </div>`;
+
+      const input = box.querySelector('#gcRegistrationOtpInput');
+      const verifyButton = box.querySelector('#gcVerifyRegistrationOtp');
+      const resendButton = box.querySelector('#gcResendRegistrationOtp');
+      const cancelButton = box.querySelector('#gcCancelRegistrationOtp');
+      const status = box.querySelector('#gcRegistrationOtpStatus');
+
+      const close = () => {
+        box.remove();
+      };
+
+      input.addEventListener('input', () => {
+        input.value = gcOtpDigits(input.value);
+      });
+      input.addEventListener('paste', (e) => {
+        e.preventDefault();
+        input.value = gcOtpDigits((e.clipboardData || window.clipboardData).getData('text'));
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') verifyButton.click();
+        if (e.key === 'Escape') cancelButton.click();
+      });
+
+      verifyButton.addEventListener('click', async () => {
+        const token = gcOtpDigits(input.value);
+        if (token.length !== 8) {
+          status.textContent = 'Please enter all 8 digits from the latest email.';
+          status.className = 'mt-2 min-h-[20px] text-xs font-bold text-rose-600';
+          input.focus();
+          return;
+        }
+
+        verifyButton.disabled = true;
+        resendButton.disabled = true;
+        verifyButton.textContent = 'VERIFYING OTP…';
+        status.textContent = 'Checking your secure verification code…';
+        status.className = 'mt-2 min-h-[20px] text-xs font-semibold text-slate-500';
+
+        try {
+          const result = await verifyFn(token);
+          if (result?.error) throw result.error;
+          if (!result?.data?.user) throw new Error('Supabase did not return the verified user account.');
+
+          status.textContent = 'Email verified successfully.';
+          status.className = 'mt-2 min-h-[20px] text-xs font-bold text-emerald-600';
+          setTimeout(() => {
+            close();
+            resolve(result);
+          }, 450);
+        } catch (err) {
+          console.error('GURU CONNECT OTP verification error:', err);
+          status.textContent = err?.message || 'Invalid or expired OTP. Please use the newest code.';
+          status.className = 'mt-2 min-h-[20px] text-xs font-bold text-rose-600';
+          verifyButton.disabled = false;
+          resendButton.disabled = false;
+          verifyButton.textContent = 'VERIFY OTP & CONTINUE';
+          input.select();
+        }
+      });
+
+      resendButton.addEventListener('click', async () => {
+        resendButton.disabled = true;
+        verifyButton.disabled = true;
+        resendButton.textContent = 'SENDING…';
+        status.textContent = 'Sending a fresh OTP to your email…';
+        status.className = 'mt-2 min-h-[20px] text-xs font-semibold text-blue-600';
+
+        try {
+          const result = await resendFn();
+          if (result?.error) throw result.error;
+          input.value = '';
+          status.textContent = 'A fresh OTP was sent. Check Inbox and Junk / Spam.';
+          status.className = 'mt-2 min-h-[20px] text-xs font-bold text-emerald-600';
+          input.focus();
+        } catch (err) {
+          console.error('GURU CONNECT OTP resend error:', err);
+          status.textContent = err?.message || 'Could not resend the OTP. Please try again.';
+          status.className = 'mt-2 min-h-[20px] text-xs font-bold text-rose-600';
+        } finally {
+          resendButton.disabled = false;
+          verifyButton.disabled = false;
+          resendButton.textContent = 'RESEND OTP';
+          verifyButton.textContent = 'VERIFY OTP & CONTINUE';
+        }
+      });
+
+      cancelButton.addEventListener('click', () => {
+        close();
+        reject(new Error('Email OTP verification was cancelled.'));
+      });
+
+      setTimeout(() => input.focus(), 50);
+    });
+  }
+
   async function gcCreateEmailAccount(email, password, role, profile) {
     if (!gcSupabase) throw new Error('Supabase Authentication is not configured.');
     if (!email || !password) throw new Error('Email and password are required.');
     if (password.length < 8) throw new Error('Password must be at least 8 characters.');
-    const redirect = location.origin + location.pathname + '?email_verified=1';
-    const result = await gcSupabase.auth.signUp({
-      email: email.trim().toLowerCase(),
-      password,
-      options: { emailRedirectTo: redirect }
-    });
-    if (result.error) throw result.error;
-    const user = result.data && result.data.user;
-    if (!user) throw new Error('Supabase did not return a user account.');
 
-    // With email confirmation enabled Supabase normally returns no session.
-    // Keep the profile encrypted only by browser storage until the verified
-    // user logs in; then the authenticated session saves it to Supabase.
-    if (!result.data.session) {
-      localStorage.setItem('gc_pending_profile', JSON.stringify({ role, profile }));
-      localStorage.setItem('gc_pending_email', email.trim().toLowerCase());
-      showGcVerificationMessage(email);
-      return { user, session: null, pending: true };
+    const cleanEmail = email.trim().toLowerCase();
+    const cached = window.gcVerifiedRegistration?.[role];
+    if (cached && cached.email === cleanEmail && cached.user) {
+      return { user: cached.user, session: cached.session || null, pending: false };
     }
-    return { user, session: result.data.session, pending: false };
+
+    const redirect = location.origin + location.pathname + '?email_verified=1';
+    const signupOptions = {
+      email: cleanEmail,
+      password,
+      options: {
+        data: profile && typeof profile === 'object' ? {
+          role,
+          name: profile.name || ''
+        } : { role },
+        emailRedirectTo: redirect
+      }
+    };
+
+    const sendOtp = async () => {
+      const result = await gcSupabase.auth.signUp(signupOptions);
+      if (result.error) throw result.error;
+      if (!result.data?.user) throw new Error('Supabase did not return a user account.');
+      return result;
+    };
+
+    const first = await sendOtp();
+
+    /*
+     * With email confirmations enabled, signUp normally returns a user but no
+     * session. The user must enter the OTP before the profile is written.
+     */
+    const verified = await gcOtpPopup(
+      cleanEmail,
+      role,
+      (token) => gcSupabase.auth.verifyOtp({
+        email: cleanEmail,
+        token,
+        type: 'email'
+      }),
+      sendOtp
+    );
+
+    const verifiedUser = verified.data.user;
+    const verifiedSession = verified.data.session || null;
+
+    window.gcVerifiedRegistration[role] = {
+      email: cleanEmail,
+      user: verifiedUser,
+      session: verifiedSession
+    };
+
+    return { user: verifiedUser, session: verifiedSession, pending: false };
   }
+
+  /*
+   * The email input's SEND OTP button now uses the same Supabase OTP as the
+   * final registration submit. This removes the old separate 4-digit EmailJS
+   * verification path from Student/Tutor registration.
+   */
+  window.gcRegistrationSendOtp = async function(role) {
+    const emailId = role === 'tutor' ? 't_email' : 'stu_email';
+    const passwordId = role === 'tutor' ? 't_password' : 'stu_password';
+    const email = document.getElementById(emailId)?.value.trim().toLowerCase() || '';
+    const password = document.getElementById(passwordId)?.value || '';
+
+    if (!email || !/^\S+@\S+\.\S+$/.test(email)) {
+      gcV4Popup('VALID EMAIL REQUIRED', 'Please enter a valid email address before sending the verification OTP.', 'gold');
+      return;
+    }
+    if (password.length < 8) {
+      gcV4Popup('CREATE YOUR PASSWORD FIRST', 'Enter a password of at least 8 characters, then send the verification OTP.', 'gold');
+      return;
+    }
+
+    const button = document.querySelector(`button[onclick="gcRegistrationSendOtp('${role}')"]`);
+    if (button) {
+      button.disabled = true;
+      button.textContent = 'SENDING OTP…';
+    }
+
+    try {
+      await gcCreateEmailAccount(email, password, role, { name: document.getElementById(role === 'tutor' ? 't_name' : 'stu_name')?.value || '' });
+      gcV4Popup('EMAIL VERIFIED', 'Your email has been verified successfully. Complete the remaining registration fields and submit the form.', 'success');
+    } catch (err) {
+      if (!/cancelled/i.test(String(err?.message || ''))) {
+        console.error('GURU CONNECT registration OTP error:', err);
+        gcV4Popup('OTP VERIFICATION ISSUE', err?.message || 'We could not complete email verification. Please try again.', 'gold');
+      }
+    } finally {
+      if (button) {
+        button.disabled = false;
+        button.textContent = 'SEND EMAIL OTP';
+      }
+    }
+  };
 
   function showGcVerificationMessage(email) {
     let box=document.getElementById('gcEmailVerificationScreen');
@@ -12675,14 +13007,19 @@ async function paintDashboard(p){
 }
 function hookDashboard(){const old=window.renderUserDashboard;if(typeof old!=='function'||old.__gcAuthHook)return;const f=function(p){const r=old.apply(this,arguments);window.__gcAuthProfile=p;setTimeout(()=>paintDashboard(p),50);return r};f.__gcAuthHook=true;window.renderUserDashboard=f}
 async function loadPeople(q,kind){
- const s=S();if(!s||!q)return[];let out=[];
- async function one(table,role){if(kind!=='all'&&kind!==role)return;let r=await s.from(table).select('*').limit(3000);if(r.error){console.warn(table,r.error);return}for(const x of (r.data||[])){
-   if(x.is_illustrative===true)continue;
-   const id=String(x.id||'');if(!id)continue;const sid=publicId(id,role);
-   const vals=Object.entries(x).map(([k,v])=>String(v??'')).join(' ')+' '+sid;
-   if(vals.toLowerCase().includes(q))out.push({...x,__role:role,__id:id,__sid:sid});
- }}
- await Promise.all([one('tutor_profiles','tutor'),one('student_profiles','student')]);return out.slice(0,50);
+ const s=S();if(!s||!q)return[];
+ try{
+   const r=await s.rpc('gc_admin_search_coin_users',{p_query:String(q).trim(),p_role:kind||'all'});
+   if(r.error)throw r.error;
+   return (r.data||[]).map(x=>({
+     ...x,
+     // Coin wallets/ledger use the public profile row ID in this build.
+     __id:String(x.profile_id||x.user_id||''),
+     __userId:String(x.user_id||''),
+     __role:String(x.role||'').toLowerCase(),
+     __sid:publicId(String(x.profile_id||x.user_id||''),String(x.role||'').toLowerCase())
+   }));
+ }catch(e){console.warn('GURU COINS user search failed:',e);return[]}
 }
 async function ledger(id){const s=S();if(!s)return[];try{const q=await s.from('gc_coin_ledger').select('*').eq('profile_id',String(id)).order('created_at',{ascending:false}).limit(30);return q.data||[]}catch(e){return[]}}
 function adminPanel(){
@@ -12820,9 +13157,10 @@ async function loadJsPdf(){
  for(const url of urls){try{const js=await new Promise((resolve,reject)=>{const sc=document.createElement('script');sc.async=true;sc.src=url;const timer=setTimeout(()=>{sc.remove();reject(new Error('timeout'))},7000);sc.onload=()=>{clearTimeout(timer);resolve(window.jspdf?.jsPDF||null)};sc.onerror=()=>{clearTimeout(timer);sc.remove();reject(new Error('load'))};document.head.appendChild(sc)});if(js)return js}catch(e){console.warn('PDF engine fallback',url,e)}}
  return SimplePDF;
 }
-function pdfRows(doc,rows,title,subtitle){
+async function pdfRows(doc,rows,title,subtitle){
  const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();let y=18;
  const page=()=>{doc.addPage();y=18};
+ try{const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src='guru-connect-new-header.png'});doc.addImage(img,'PNG',12,6,58,13);y=25;}catch(_){y=18;}
  doc.setFontSize(15);doc.setFont(undefined,'bold');doc.text(title,12,y);y+=7;doc.setFontSize(8);doc.setFont(undefined,'normal');doc.text(subtitle,12,y);y+=7;
  const heads=['DATE / TIME','USER','ROLE','ID','TYPE','AMOUNT','REASON','REQUEST ID','TXN ID'];
  const widths=[24,25,15,22,24,16,38,28,27];let x=6;
@@ -12834,11 +13172,11 @@ function pdfRows(doc,rows,title,subtitle){
 async function buildMasterPdf(){
  const [rows,map,JsPDF]=await Promise.all([allRows(),peopleMap(),loadJsPdf()]);
  const data=rows.map(r=>{const p=map[String(r.profile_id)]||{};const role=p.__role||r.role||'unknown';return {date:r.created_at||'',user:p.name||p.full_name||'Unknown User',role:roleName(role),pid:publicId2(r.profile_id,role),type:r.transaction_type||r.type||'',amount:(Number(r.amount||0)>0?'+':'')+Number(r.amount||0)+' COINS',reason:r.reason||'',req:r.learning_request_id||r.request_id||r.learningRequestId||'—',txn:r.id||''}});
- const doc=new JsPDF({orientation:'landscape',unit:'mm',format:'a4'});pdfRows(doc,data,'GURU CONNECT — ALL-TIME COIN ACCOUNTABILITY','Complete Tutor + Student coin transaction history • '+data.length+' transaction(s)');doc.save('GURU_CONNECT_ALL_TIME_COIN_ACCOUNTABILITY.pdf');return data.length;
+ const doc=new JsPDF({orientation:'landscape',unit:'mm',format:'a4'});await pdfRows(doc,data,'GURU CONNECT — ALL-TIME COIN ACCOUNTABILITY','Complete Tutor + Student coin transaction history • '+data.length+' transaction(s)');doc.save('GURU_CONNECT_ALL_TIME_COIN_ACCOUNTABILITY.pdf');return data.length;
 }
 async function buildAccountPdf(profileId,role,name){
  const s=S();if(!s)throw new Error('Supabase is not connected.');let rows=[],start=0,step=1000;while(true){const q=await s.from('gc_coin_ledger').select('*').eq('profile_id',String(profileId)).order('created_at',{ascending:false}).range(start,start+step-1);if(q.error)throw q.error;rows=rows.concat(q.data||[]);if(!q.data||q.data.length<step)break;start+=step;if(start>100000)break;}
- const JsPDF=await loadJsPdf();const data=rows.map(r=>({date:r.created_at||'',user:name||'Account',role:roleName(role),pid:publicId2(profileId,role),type:r.transaction_type||r.type||'',amount:(Number(r.amount||0)>0?'+':'')+Number(r.amount||0)+' COINS',reason:r.reason||'',req:r.learning_request_id||r.request_id||'—',txn:r.id||''}));const doc=new JsPDF({orientation:'landscape',unit:'mm',format:'a4'});pdfRows(doc,data,'GURU CONNECT — '+roleName(role)+' COIN HISTORY',String(name||'Account')+' • '+publicId2(profileId,role)+' • '+data.length+' transaction(s)');doc.save('GURU_CONNECT_'+roleName(role)+'_'+publicId2(profileId,role)+'_COIN_HISTORY.pdf');return data.length;
+ const JsPDF=await loadJsPdf();const data=rows.map(r=>({date:r.created_at||'',user:name||'Account',role:roleName(role),pid:publicId2(profileId,role),type:r.transaction_type||r.type||'',amount:(Number(r.amount||0)>0?'+':'')+Number(r.amount||0)+' COINS',reason:r.reason||'',req:r.learning_request_id||r.request_id||'—',txn:r.id||''}));const doc=new JsPDF({orientation:'landscape',unit:'mm',format:'a4'});await pdfRows(doc,data,'GURU CONNECT — '+roleName(role)+' COIN HISTORY',String(name||'Account')+' • '+publicId2(profileId,role)+' • '+data.length+' transaction(s)');doc.save('GURU_CONNECT_'+roleName(role)+'_'+publicId2(profileId,role)+'_COIN_HISTORY.pdf');return data.length;
 }
 async function renderMaster(){const host=document.getElementById('gcMasterLedgerBody');if(!host)return;host.innerHTML='<div class="gc-auth-admin-sub">Loading complete all-time coin ledger…</div>';try{const [rows,map]=await Promise.all([allRows(),peopleMap()]);window.__gcMasterLedgerRows=rows;window.__gcMasterPeople=map;if(!rows.length){host.innerHTML='<div class="gc-auth-admin-sub">No coin transactions found.</div>';return}host.innerHTML='<div class="gc-master-table-wrap"><table class="gc-master-table"><thead><tr><th>Date / Time</th><th>User</th><th>Role</th><th>GURU CONNECT ID</th><th>Type</th><th>Amount</th><th>Reason</th><th>Learning Request ID</th><th>Transaction ID</th></tr></thead><tbody>'+rows.map(r=>{const p=map[String(r.profile_id)]||{},role=p.__role||r.role||'';const amt=Number(r.amount||0);return '<tr><td>'+E(r.created_at||'')+'</td><td>'+E(p.name||p.full_name||'Unknown User')+'</td><td>'+E(roleName(role))+'</td><td>'+E(publicId2(r.profile_id,role))+'</td><td>'+E(r.transaction_type||r.type||'')+'</td><td class="'+(amt>=0?'gc-master-pos':'gc-master-neg')+'">'+(amt>0?'+':'')+amt+' 🪙</td><td>'+E(r.reason||'')+'</td><td>'+E(r.learning_request_id||r.request_id||'—')+'</td><td>'+E(r.id||'')+'</td></tr>'}).join('')+'</tbody></table></div><div class="gc-auth-admin-sub" style="margin-top:8px">Showing '+rows.length+' all-time transaction(s).</div>'}catch(e){host.innerHTML='<div class="gc-auth-admin-sub">Ledger could not be loaded: '+E(e.message||e)+'</div>'}}
 function ensure(){const panel=document.getElementById('gcAuthAdminCoins');if(!panel)return;if(!panel.querySelector('#gcMasterLedger')){const box=document.createElement('div');box.id='gcMasterLedger';box.className='gc-auth-master-statement';box.innerHTML='<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><h4 style="margin:0;font-weight:950">🧾 ALL-TIME COIN ACCOUNTABILITY LEDGER</h4><div class="gc-auth-admin-sub">Every Tutor + Student coin transaction, including staff grants, deductions, service charges and rewards.</div></div><div class="gc-master-tools"><button type="button" class="gc-auth-admin-btn" id="gcMasterRefresh">↻ REFRESH LEDGER</button><button type="button" class="gc-pdf-btn" id="gcMasterPdf">⬇ DOWNLOAD MASTER PDF</button></div></div><div id="gcMasterLedgerStatus" class="gc-auth-admin-sub" style="margin-top:8px"></div><div id="gcMasterLedgerBody"></div>';panel.appendChild(box);box.querySelector('#gcMasterRefresh').onclick=renderMaster;box.querySelector('#gcMasterPdf').onclick=async function(){this.disabled=true;const st=box.querySelector('#gcMasterLedgerStatus');st.textContent='Preparing PDF…';try{const n=await buildMasterPdf();st.textContent='✓ PDF downloaded with '+n+' transaction(s).'}catch(e){st.textContent='';alert('PDF download failed: '+(e.message||e))}finally{this.disabled=false}};renderMaster()}}
@@ -13217,7 +13555,21 @@ function url(v){const x=String(v||'').trim();if(!x)return '';try{const u=new URL
 function active(a){const n=new Date(),s=a.start_at?new Date(a.start_at):null,e=a.end_at?new Date(a.end_at):null;return a.active===true&&(!s||s<=n)&&(!e||e>=n)}
 async function getAds(){const s=client();if(!s)throw Error('Supabase is not available');const q=await s.from('gc_advertisements').select('id,title,advertiser_name,placement,image_url,click_url,whatsapp_url,start_at,end_at,priority,created_at,active').eq('active',true).order('priority',{ascending:false}).order('created_at',{ascending:false});if(q.error)throw q.error;return(q.data||[]).filter(active)}
 function card(a){const href=url(a.click_url)||url(a.whatsapp_url),label=a.advertiser_name||a.title||'GURU CONNECT';const body='<div class="gc-site-ad-media"><img src="'+esc(a.image_url)+'" alt="'+esc(label)+' flyer" loading="lazy"></div><div class="gc-site-ad-copy"><b>'+esc(label)+'</b><span>CONNECT</span></div>';return '<article class="gc-site-ad-card">'+(href?'<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer sponsored" aria-label="Connect with '+esc(label)+'">'+body+'</a>':body)+'</article>'}
-function injectGrid(id,ads,kind){const g=$(id);if(!g)return;if(g.querySelector('.gc-site-ad-card'))return;const list=ads.filter(a=>a.placement==='all'||a.placement===kind);if(!list.length)return;const el=document.createRange().createContextualFragment(card(list[0],kind)).firstElementChild;if(el)g.insertBefore(el,g.children[Math.min(2,g.children.length)]||null)}
+function injectGrid(id,ads,kind){
+  const g=$(id);if(!g)return;
+  /* Remove previously rendered ads so the current complete active list is shown. */
+  g.querySelectorAll('.gc-site-ad-card').forEach(x=>x.remove());
+  const list=ads.filter(a=>a.placement==='all'||a.placement===kind);
+  if(!list.length)return;
+  /* Render EVERY matching advertisement, in priority DESC / newest-first order. */
+  const frag=document.createDocumentFragment();
+  list.forEach(a=>{
+    const el=document.createRange().createContextualFragment(card(a,kind)).firstElementChild;
+    if(el)frag.appendChild(el);
+  });
+  const target=g.children[Math.min(2,g.children.length)]||null;
+  g.insertBefore(frag,target);
+}
 async function renderIndexAds(){try{const ads=await getAds();injectGrid('tutorGrid',ads,'tutor');injectGrid('studentGridContainer',ads,'student');window.__gcActiveAds=ads}catch(e){console.warn('GURU CONNECT ads:',e.message||e)}}
 function fmtDate(v){if(!v)return '';try{const d=new Date(v);if(Number.isNaN(d.getTime()))return '';const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())}catch(_){return ''}}
 let editingId=null;
@@ -14953,8 +15305,11 @@ window.addEventListener('load',()=>setTimeout(mount,900));setInterval(mount,6000
   async function staff(){
     const s=S(); if(!s)throw new Error('Supabase is not connected.');
     const q=await s.auth.getSession(); const u=q.data?.session?.user;
-    if(u && String(u.email||'').toLowerCase()==='guruconnect.in@gmail.com') return s;
-    throw new Error('Staff Supabase session is required. Please login again.');
+    if(!u)throw new Error('Staff Supabase session is required. Please login again.');
+    if(String(u.email||'').toLowerCase()==='guruconnect.in@gmail.com') return s;
+    const p=await s.from('profiles').select('role').eq('id',u.id).maybeSingle();
+    if(!p.error && ['admin','staff','administrator'].includes(String(p.data?.role||'').toLowerCase())) return s;
+    throw new Error('Staff/Admin authorization required. Please login with an authorized Staff/Admin account.');
   }
   window.GC_ADMIN_CLOUD={
     updateTutor:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_admin_update_tutor_profile',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;},

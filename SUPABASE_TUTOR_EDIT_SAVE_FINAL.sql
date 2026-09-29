@@ -1,11 +1,8 @@
--- GURU CONNECT — STAFF/ADMIN AUTHORIZATION FIX
+-- GURU CONNECT — definitive Staff/Admin Tutor Edit Save migration
 -- Run this ONCE in Supabase SQL Editor.
--- Fixes: "Action not completed — Staff Authorization required"
---
--- The previous RPC checked a hard-coded Auth UUID as well as the Staff email.
--- That UUID can differ from the actual guruconnect.in@gmail.com Auth account.
--- This version authorizes the actual signed-in Staff/Admin account by its
--- verified Supabase Auth email and does NOT depend on a stale UUID.
+-- This creates the RPC that the Admin Tutor Editor calls.
+-- IMPORTANT: tutor_profiles does NOT contain email/phone in the deployed schema;
+-- those contact fields live in public.profiles and auth.users.
 
 begin;
 
@@ -16,7 +13,7 @@ stable
 security definer
 set search_path = public, auth
 as $$
-  select auth.uid() is not null
+  select auth.uid() = '1df7606a-3a96-4116-b022-804b37a3c3dd'::uuid
      and lower(coalesce(auth.jwt() ->> 'email','')) = 'guruconnect.in@gmail.com';
 $$;
 
@@ -73,6 +70,7 @@ begin
     raise exception 'Registered Tutor profile not found for user ID %', p_user_id;
   end if;
 
+  -- Keep the member contact record synchronized for Admin edits.
   update public.profiles
   set full_name = coalesce(p_data->>'name', full_name),
       email = coalesce(p_data->>'email', email),
@@ -80,6 +78,7 @@ begin
       photo_url = coalesce(p_data->>'photo_url', photo_url)
   where id = p_user_id;
 
+  -- Forgot-password/login uses auth.users.email, so keep it synchronized too.
   if nullif(lower(trim(coalesce(p_data->>'email',''))),'') is not null
      and lower(trim(p_data->>'email')) <> lower(coalesce((select email from auth.users where id=p_user_id),'')) then
     update auth.users
@@ -98,5 +97,7 @@ $$;
 revoke all on function public.gc_staff_save_tutor_profile(uuid, jsonb) from public;
 grant execute on function public.gc_staff_save_tutor_profile(uuid, jsonb) to authenticated;
 
+-- Refresh PostgREST's schema cache so the RPC is immediately visible to the website.
 notify pgrst, 'reload schema';
+
 commit;
