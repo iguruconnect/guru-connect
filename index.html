@@ -7597,7 +7597,8 @@ This removes the Auth account and linked student/profile records from Supabase. 
                     paid_status: t.paidStatus === 'PAID' ? 'PAID' : 'PENDING',
                     verified: t.verified === true
                 });
-                clearCaches();
+                try { window.gcPageCache?.clear?.(); } catch (_) {}
+                try { localStorage.removeItem("gc_tutor_directory_cache"); localStorage.removeItem("gc_student_directory_cache"); } catch (_) {}
                 saveRegisteredDirectories();
                 renderTutorDirectory();
                 renderAdminQueue();
