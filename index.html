@@ -7583,7 +7583,8 @@ This removes the Auth account and linked student/profile records from Supabase. 
         }
 
         async function adminVerifyTutorPaid(tutorId) {
-            if (!adminGuard()) return;
+            // Do not use the legacy localStorage admin gate here. Supabase RPC performs the authoritative staff/admin check.
+
             const t = tutorDirectoryList.find(item => String(item.id) === String(tutorId));
             if (!t) return;
             try {
@@ -7603,7 +7604,8 @@ This removes the Auth account and linked student/profile records from Supabase. 
         }
 
         async function adminGrantVerifiedTick(tutorId) {
-            if (!adminGuard()) return;
+            // Do not use the legacy localStorage admin gate here. Supabase RPC performs the authoritative staff/admin check.
+
             const t = tutorDirectoryList.find(item => String(item.id) === String(tutorId));
             if (!t) return;
             try {
@@ -7668,8 +7670,8 @@ This removes the Auth account and linked student/profile records from Supabase. 
                             <td class="p-3 sm:p-4 font-mono text-amber-600 font-bold">${t.utr || 'N/A'} ${paidBadge}</td>
                             <td class="p-3 sm:p-4">${badgeStatus}</td>
                             <td class="p-3 sm:p-4 text-right space-x-1 min-w-[280px]">
-                                ${t.paidStatus !== 'PAID' ? `<button onclick="adminVerifyTutorPaid('${t.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm">Mark PAID</button>` : `<button onclick="adminRevokeTutorPaid('${t.id}')" class="bg-slate-600 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-[10px] font-bold shadow-sm">Revoke Paid</button>`}
-                                ${!t.verified ? `<button onclick="adminGrantVerifiedTick('${t.id}')" class="bg-brand-blue hover:bg-blue-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm">Grant Tick</button>` : `<button onclick="adminRevokeVerifiedTick('${t.id}')" class="bg-slate-600 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-[10px] font-bold shadow-sm">Revoke Tick</button>`}
+                                ${t.paidStatus !== 'PAID' ? `<button type="button" onclick="adminVerifyTutorPaid('${t.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm">Mark PAID</button>` : `<button onclick="adminRevokeTutorPaid('${t.id}')" class="bg-slate-600 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-[10px] font-bold shadow-sm">Revoke Paid</button>`}
+                                ${!t.verified ? `<button type="button" onclick="adminGrantVerifiedTick('${t.id}')" class="bg-brand-blue hover:bg-blue-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm">Grant Tick</button>` : `<button onclick="adminRevokeVerifiedTick('${t.id}')" class="bg-slate-600 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-[10px] font-bold shadow-sm">Revoke Tick</button>`}
                                 <button onclick="adminEditTutor('${t.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-pen-to-square"></i></button>
                                 <button onclick="adminDeleteTutor('${t.id}')" class="bg-red-600 hover:bg-red-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-trash"></i></button>
                             </td>
