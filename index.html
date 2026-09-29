@@ -5113,7 +5113,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <div class="hidden bg-blue-50 border border-blue-200 p-3.5 rounded-xl space-y-2" id="stuOtpBox">
 <p class="text-[11px] font-bold text-brand-blue">Email verification is handled by the secure GURU CONNECT OTP popup.</p>
 <div class="flex gap-2">
-<input class="w-32 border border-blue-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="stuEnteredOtp" maxlength="8" placeholder="OTP" type="text"/>
+<input class="w-32 border border-blue-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="stuEnteredOtp" maxlength="8" minlength="8" inputmode="numeric" autocomplete="one-time-code" placeholder="8-digit OTP" type="text"/>
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('student')" type="button">Verify OTP</button>
 </div>
 </div>
@@ -5470,7 +5470,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <div class="hidden bg-orange-50 border border-orange-200 p-3.5 rounded-xl space-y-2" id="tutorOtpBox">
 <p class="text-[11px] font-bold text-brand-nagpurOrange">Email verification is handled by the secure GURU CONNECT OTP popup.</p>
 <div class="flex gap-2">
-<input class="w-32 border border-orange-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="tutorEnteredOtp" maxlength="8" placeholder="OTP" type="text"/>
+<input class="w-32 border border-orange-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="tutorEnteredOtp" maxlength="8" minlength="8" inputmode="numeric" autocomplete="one-time-code" placeholder="8-digit OTP" type="text"/>
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('tutor')" type="button">Verify OTP</button>
 </div>
 </div>
@@ -6709,7 +6709,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
                 alert('Please enter a valid email address.'); return;
             }
 
-            const otp = Math.floor(1000 + Math.random() * 9000).toString();
+            const otp = String(Math.floor(10000000 + Math.random() * 90000000));
             pendingEmailOtps[type] = otp;
             const button = document.querySelector(`button[onclick="sendEmailOtp('\${type}\')"]`);
             if (button) { button.disabled = true; button.textContent = 'Sending...'; }
@@ -6745,7 +6745,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
         async function verifyEmailOtp(type) {
             const nameInput = document.getElementById(type === 'student' ? 'stu_name' : 't_name');
             const emailInput = document.getElementById(type === 'student' ? 'stu_email' : 't_email');
-            const entered = document.getElementById(type === 'student' ? 'stuEnteredOtp' : 'tutorEnteredOtp').value.trim();
+            const entered = (document.getElementById(type === 'student' ? 'stuEnteredOtp' : 'tutorEnteredOtp')?.value || '').replace(/\D/g,'').slice(0,8);
             
             if (entered === pendingEmailOtps[type] && entered !== "") {
                 alert('Email verified successfully.');
@@ -8854,7 +8854,7 @@ This removes the Auth account and linked student/profile records from Supabase. 
     const name=nameInput?.value.trim()||'', email=emailInput?.value.trim()||'';
     if(!name){gcV4Popup('NAME REQUIRED','Please enter your name first.','gold');return;}
     if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){gcV4Popup('VALID EMAIL REQUIRED','Please enter a valid email address so we can send your OTP.','gold');return;}
-    const otp=Math.floor(1000+Math.random()*9000).toString();
+    const otp=String(Math.floor(10000000 + Math.random() * 90000000));
     try{pendingEmailOtps[type]=otp;}catch(e){window.pendingEmailOtps=window.pendingEmailOtps||{};window.pendingEmailOtps[type]=otp;}
     const button=document.querySelector(`button[onclick="sendEmailOtp('${type}')"]`); if(button){button.disabled=true;button.textContent='Sending...';}
     const params={name,email,to_email:email,recipient_email:email,reply_to:email,otp_code:otp};
@@ -8867,7 +8867,7 @@ This removes the Auth account and linked student/profile records from Supabase. 
   };
   window.verifyEmailOtp=async function(type){
     const nameInput=document.getElementById(type==='student'?'stu_name':'t_name'), emailInput=document.getElementById(type==='student'?'stu_email':'t_email');
-    const entered=document.getElementById(type==='student'?'stuEnteredOtp':'tutorEnteredOtp')?.value.trim()||'';
+    const entered=(document.getElementById(type==='student'?'stuEnteredOtp':'tutorEnteredOtp')?.value||'').replace(/\D/g,'').slice(0,8);
     let expected='';try{expected=pendingEmailOtps[type]}catch(e){expected=window.pendingEmailOtps?.[type]||'';}
     if(entered!==expected||!entered){gcV4Popup('INVALID OTP','The OTP does not match. Please check your email and enter the latest code.','gold');return;}
     gcV4Popup('EMAIL VERIFIED','Your email has been verified successfully.','success');
@@ -13694,6 +13694,35 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 })();
 </script>
 
+
+<script>
+/* GURU CONNECT: enforce 8-digit registration OTP inputs across legacy and current UI */
+(function(){
+  function bind(id){
+    var el=document.getElementById(id);
+    if(!el || el.dataset.gcOtp8Bound) return;
+    el.dataset.gcOtp8Bound='1';
+    el.setAttribute('maxlength','8');
+    el.setAttribute('minlength','8');
+    el.setAttribute('inputmode','numeric');
+    el.setAttribute('autocomplete','one-time-code');
+    el.setAttribute('pattern','[0-9]{8}');
+    el.placeholder='8-digit OTP';
+    el.addEventListener('input',function(){
+      this.value=String(this.value||'').replace(/\D/g,'').slice(0,8);
+    });
+    el.addEventListener('paste',function(e){
+      e.preventDefault();
+      var t=(e.clipboardData||window.clipboardData).getData('text');
+      this.value=String(t||'').replace(/\D/g,'').slice(0,8);
+      this.dispatchEvent(new Event('input',{bubbles:true}));
+    });
+  }
+  function bindAll(){ bind('stuEnteredOtp'); bind('tutorEnteredOtp'); bind('gcRegistrationOtpInput'); }
+  bindAll();
+  new MutationObserver(bindAll).observe(document.documentElement,{subtree:true,childList:true});
+})();
+</script>
 </body>
 <style id="gc-final-load-hero-transfer-pdf-fix">
 /* Final stable hero: one real image, exact 1640:515 ratio, no crop and no duplicate background artwork. */
