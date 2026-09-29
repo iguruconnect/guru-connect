@@ -11177,7 +11177,19 @@ body {
       return result;
     };
 
-    const first = await sendOtp();
+    let first;
+    try {
+      first = await sendOtp();
+    } catch (err) {
+      const em = String(err?.message || err || '');
+      if (/already registered|already exists|user.*already/i.test(em)) {
+        const resend = await gcSupabase.auth.resend({ type: 'signup', email: cleanEmail });
+        if (resend.error) throw resend.error;
+        first = { data: { user: resend.data?.user || null, session: resend.data?.session || null }, error: null };
+      } else {
+        throw err;
+      }
+    }
 
     /*
      * With email confirmations enabled, signUp normally returns a user but no
@@ -11189,7 +11201,7 @@ body {
       (token) => gcSupabase.auth.verifyOtp({
         email: cleanEmail,
         token,
-        type: 'email'
+        type: 'signup'
       }),
       sendOtp
     );

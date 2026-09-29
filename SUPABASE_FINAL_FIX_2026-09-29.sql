@@ -55,6 +55,7 @@ declare
   new_email text := lower(trim(coalesce(p_email,'')));
   current_email text;
   other_id uuid;
+  other_is_staff boolean := false;
 begin
   if not public.gc_is_staff_admin() then
     raise exception 'Staff/Admin authorization required';
@@ -89,7 +90,24 @@ begin
   limit 1;
 
   if other_id is not null then
-    raise exception 'Email % is already used by another GURU CONNECT Auth account. Choose a different email address.', new_email;
+    -- A previous failed registration can leave an orphan Auth account.
+    -- It is safe for Staff/Admin to clean it only when it has NO linked
+    -- GURU CONNECT profile and is not a staff/admin account.
+    select exists(
+      select 1 from public.gc_staff_admins sa
+      join auth.users au on lower(coalesce(sa.email,''))=lower(coalesce(au.email,''))
+      where au.id=other_id and coalesce(sa.active,false)=true
+    ) into other_is_staff;
+
+    if not exists (select 1 from public.profiles where id=other_id)
+       and not exists (select 1 from public.tutor_profiles where user_id=other_id)
+       and not exists (select 1 from public.student_profiles where user_id=other_id)
+       and not other_is_staff then
+      delete from auth.users where id=other_id;
+      other_id := null;
+    else
+      raise exception 'Email % is already used by another active GURU CONNECT Auth account. Choose a different email address.', new_email;
+    end if;
   end if;
 
   -- public.profiles may also have a unique/partial email index.
@@ -146,20 +164,8 @@ begin
 
   if p_user_id is null then raise exception 'Tutor user ID is required'; end if;
 
-  if new_email is not null then
-    if exists (
-      select 1 from auth.users
-      where lower(email)=new_email and id<>p_user_id
-    ) then
-      raise exception 'Tutor profile cannot be saved: email % is already used by another Auth account.', new_email;
-    end if;
-    if exists (
-      select 1 from public.profiles
-      where lower(coalesce(email,''))=new_email and id<>p_user_id
-    ) then
-      raise exception 'Tutor profile cannot be saved: email % is already used by another profile.', new_email;
-    end if;
-  end if;
+  -- Email uniqueness and orphan-Auth cleanup are handled centrally by
+  -- gc_admin_update_auth_email below, so the same rules apply everywhere.
 
   update public.tutor_profiles
   set
@@ -367,44 +373,70 @@ set search_path = public, auth
 as $$
 declare
   target_role text;
+  tutor_pid uuid;
+  student_pid uuid;
+  tbl text;
+  col text;
+  rel regclass;
 begin
   if not public.gc_is_staff_admin() then
     raise exception 'Only an authorized Staff/Admin can delete users.';
   end if;
-
   if p_user_id is null then raise exception 'User ID is required'; end if;
 
   select lower(role) into target_role from public.profiles where id=p_user_id;
-
   if target_role is null then
     if exists(select 1 from auth.users where id=p_user_id) then
       raise exception 'Auth account exists but the Student/Tutor profile is missing. Delete was blocked for safety.';
     end if;
     raise exception 'User profile was not found.';
   end if;
-
   if target_role not in ('student','tutor') then
     raise exception 'Only Student/Tutor accounts can be deleted here.';
   end if;
 
-  -- Known role records first. Other linked records should use ON DELETE CASCADE
-  -- from their Auth/profile foreign keys.
+  select id into tutor_pid from public.tutor_profiles where user_id=p_user_id limit 1;
+  select id into student_pid from public.student_profiles where user_id=p_user_id limit 1;
+
+  -- Remove known GURU CONNECT child records first.  The column checks make
+  -- this migration tolerant of optional tables/columns in older deployments.
+  foreach tbl in array ARRAY[
+    'gc_learning_request_messages','gc_learning_request_connections',
+    'gc_connection_requests','gc_learning_requests','gc_learning_requests_v2',
+    'gc_coin_ledger','gc_coin_wallets'
+  ] loop
+    if to_regclass('public.'||tbl) is not null then
+      foreach col in array ARRAY['user_id','profile_id','tutor_id','student_id','sender_id','receiver_id','created_by'] loop
+        if exists (
+          select 1 from information_schema.columns
+          where table_schema='public' and table_name=tbl and column_name=col
+        ) then
+          if col='user_id' then
+            execute format('delete from public.%I where %I=$1',tbl,col) using p_user_id;
+          elsif col='profile_id' then
+            execute format('delete from public.%I where %I=$1',tbl,col) using p_user_id;
+            if tutor_pid is not null then execute format('delete from public.%I where %I=$1',tbl,col) using tutor_pid; end if;
+            if student_pid is not null then execute format('delete from public.%I where %I=$1',tbl,col) using student_pid; end if;
+          else
+            execute format('delete from public.%I where %I=$1',tbl,col) using p_user_id;
+            if tutor_pid is not null then execute format('delete from public.%I where %I=$1',tbl,col) using tutor_pid; end if;
+            if student_pid is not null then execute format('delete from public.%I where %I=$1',tbl,col) using student_pid; end if;
+          end if;
+        end if;
+      end loop;
+    end if;
+  end loop;
+
   delete from public.tutor_profiles where user_id=p_user_id;
   delete from public.student_profiles where user_id=p_user_id;
   delete from public.profiles where id=p_user_id;
-
   delete from auth.users where id=p_user_id;
 
   if not found then
     raise exception 'Supabase Auth account could not be deleted.';
   end if;
 
-  return jsonb_build_object(
-    'ok',true,
-    'deleted',true,
-    'user_id',p_user_id,
-    'role',target_role
-  );
+  return jsonb_build_object('ok',true,'deleted',true,'user_id',p_user_id,'role',target_role);
 end;
 $$;
 
