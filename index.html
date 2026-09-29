@@ -8537,7 +8537,7 @@ This removes the Auth account and linked student/profile records from Supabase. 
 
     if(result.error) throw result.error;
 
-    if(typeof gcPageCache !== 'undefined') gcPageCache.clear();
+    if(window.gcPageCache) window.gcPageCache.clear();
     return true;
   };
 
@@ -10644,7 +10644,7 @@ body {
       });
 
       if (!preferred.error) {
-        gcPageCache.clear();
+        window.gcPageCache.clear();
         return { ok: true, row: preferred.data?.profile || preferred.data, userId: user.id };
       }
 
@@ -10658,7 +10658,7 @@ body {
 
       if (!legacy.error) {
         const saved = legacy.data?.profile || legacy.data;
-        gcPageCache.clear();
+        window.gcPageCache.clear();
         return { ok: true, row: saved, userId: user.id };
       }
 
@@ -10795,7 +10795,7 @@ body {
     const from = (safePage - 1) * size;
     const to = from + size - 1;
     const cacheKey = table + ':' + safePage + ':' + size;
-    const cached = gcPageCache.get(cacheKey);
+    const cached = window.gcPageCache.get(cacheKey);
     if (cached) return cached;
 
     const fields = table === 'tutor_profiles'
@@ -10829,7 +10829,7 @@ body {
       rows: (finalResult.data || []).map(mapper),
       total: Number(finalResult.count || 0)
     };
-    gcPageCache.set(cacheKey, payload);
+    window.gcPageCache.set(cacheKey, payload);
     return payload;
   }
 
@@ -10841,7 +10841,7 @@ body {
       : 'id,user_id,name,course,stream,learning_requirement,subject,year,semester,standard,college,division,roll_number,cgpa,email,phone,location,address,mode,teaching_mode,languages,availability,member_since,record_no,data_source,about_me,achievement_photos,helpline_plan,helpline_status,helpline_course,helpline_subject,helpline_subject_count,helpline_amount,privacy,photo_url,created_at';
 
     const cacheKey = 'ALL:' + table;
-    const cached = gcPageCache.get(cacheKey);
+    const cached = window.gcPageCache.get(cacheKey);
     if (cached) return cached;
 
     // Supabase/PostgREST has a server-side row limit. Fetch in chunks so a
@@ -10883,7 +10883,7 @@ body {
       total: rows.length
     };
 
-    gcPageCache.set(cacheKey, payload);
+    window.gcPageCache.set(cacheKey, payload);
     return payload;
   }
 

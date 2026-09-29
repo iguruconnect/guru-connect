@@ -57,5 +57,35 @@ window.generateAdminReceipt=function(i){
   w.document.open();w.document.write(adminReceiptWindowHtml(r,receiptNo));w.document.close();
 };
 window.setTutorApproval=async function(i,value){const u=window.users?.[i];if(!u?.user_id)return alert('Tutor record not found. Please search again.');const isPaid=value==='PAID';const verifiedValue=value==='true'?true:value==='false'?false:null;let payload={};if(isPaid)payload.paid_status='PAID';else if(verifiedValue!==null)payload.verified=verifiedValue;else return;const b=Array.from(document.querySelectorAll('.user'))[i]?.querySelector(isPaid?'.paid-btn':'.verified-btn');if(b){b.disabled=true;b.textContent=isPaid?'SAVING…':'UPDATING…'}try{const q=await sb.rpc('gc_admin_set_tutor_approval',{p_user_id:String(u.user_id),p_data:payload});if(q.error)throw q.error;if(!q.data?.ok)throw new Error('Supabase did not confirm the admin approval update.');alert(isPaid?'✓ Tutor marked PAID successfully.':'✓ Tutor verification status updated successfully.');await $('search').click()}catch(e){console.error('Tutor approval update failed:',e);alert('ADMIN UPDATE FAILED\n\n'+(e?.message||String(e)))}finally{if(b){b.disabled=false}}};
-window.toggleEdit=i=>document.getElementById('edit'+i).classList.toggle('open');window.saveEdit=async i=>{const u=window.users[i],s=$('es'+i);s.textContent='Saving…';try{await api('edit_user',{user_id:u.user_id,role:u.role,name:$('n'+i).value,email:$('e'+i).value,phone:$('p'+i).value,stream:$('s'+i).value,subject:$('sub'+i).value,[u.role==='student'?'course':'qualification']:$('c'+i).value,location:$('l'+i).value});await api('set_status',{user_id:u.user_id,status:$('st'+i).value});s.textContent='✓ Profile and status updated.'}catch(e){s.textContent='Save failed: '+e.message}};window.resetUser=async i=>{const u=window.users[i],p=prompt('Enter a new password (minimum 8 characters):');if(p===null)return;if(p.length<8)return alert('Password must be at least 8 characters.');try{await api('reset_password',{user_id:u.user_id,password:p});alert('✓ Password updated.')}catch(e){alert('Reset failed: '+e.message)}};window.deleteUser=async i=>{const u=window.users[i];if(!u?.user_id)return alert('This record has no Supabase Auth User ID and cannot be permanently deleted.');if(!confirm('PERMANENTLY delete this Student/Tutor account?\n\nAll linked GURU CONNECT profile, coin, learning-request, connection/message and Auth records will be removed. This cannot be undone.'))return;const b=document.querySelectorAll('.user')[i]?.querySelector('.btn.red');if(b){b.disabled=true;b.textContent='DELETING…'}try{const session=await sb.auth.getSession();if(!session.data?.session)throw new Error('Admin session missing. Please login again.');const q=await sb.rpc('gc_admin_delete_user',{p_user_id:String(u.user_id)});if(q.error)throw q.error;if(!q.data?.deleted)throw new Error('Supabase did not confirm permanent deletion.');alert('✓ Account permanently deleted from Supabase.');await $('search').click()}catch(e){console.error('Permanent admin delete failed:',e);alert('DELETE FAILED — account was NOT removed.\n\n'+(e?.message||String(e)))}finally{if(b){b.disabled=false;b.textContent='DELETE'}}};
+window.toggleEdit=i=>document.getElementById('edit'+i).classList.toggle('open');
+window.saveEdit=async i=>{
+  const u=window.users[i],status=$('es'+i);
+  status.textContent='Saving…';
+  try{
+    const payload={
+      name:$('n'+i).value.trim(),
+      email:$('e'+i).value.trim().toLowerCase(),
+      phone:$('p'+i).value.trim(),
+      stream:$('s'+i).value.trim(),
+      subject:$('sub'+i).value.trim(),
+      location:$('l'+i).value.trim()
+    };
+    if(u.role==='student'){
+      payload.course=$('c'+i).value.trim();
+      const q=await sb.rpc('gc_admin_update_student_profile',{p_user_id:String(u.user_id),p_data:payload});
+      if(q.error)throw q.error;
+    }else{
+      payload.qualification=$('c'+i).value.trim();
+      payload.paid_status=u.paid_status||'PENDING';
+      payload.verified=!!u.verified;
+      const q=await sb.rpc('gc_admin_update_tutor_profile',{p_user_id:String(u.user_id),p_data:payload});
+      if(q.error)throw q.error;
+    }
+    status.textContent='✓ Profile saved successfully. Auth email is synchronized by the secure Admin RPC.';
+    await $('search').click();
+  }catch(e){
+    console.error('Admin profile edit failed:',e);
+    status.textContent='Save failed: '+(e?.message||String(e));
+  }
+};window.resetUser=async i=>{const u=window.users[i],p=prompt('Enter a new password (minimum 8 characters):');if(p===null)return;if(p.length<8)return alert('Password must be at least 8 characters.');try{await api('reset_password',{user_id:u.user_id,password:p});alert('✓ Password updated.')}catch(e){alert('Reset failed: '+e.message)}};window.deleteUser=async i=>{const u=window.users[i];if(!u?.user_id)return alert('This record has no Supabase Auth User ID and cannot be permanently deleted.');if(!confirm('PERMANENTLY delete this Student/Tutor account?\n\nAll linked GURU CONNECT profile, coin, learning-request, connection/message and Auth records will be removed. This cannot be undone.'))return;const b=document.querySelectorAll('.user')[i]?.querySelector('.btn.red');if(b){b.disabled=true;b.textContent='DELETING…'}try{const session=await sb.auth.getSession();if(!session.data?.session)throw new Error('Admin session missing. Please login again.');const q=await sb.rpc('gc_admin_delete_user',{p_user_id:String(u.user_id)});if(q.error)throw q.error;if(!q.data?.deleted)throw new Error('Supabase did not confirm permanent deletion.');alert('✓ Account permanently deleted from Supabase.');await $('search').click()}catch(e){console.error('Permanent admin delete failed:',e);alert('DELETE FAILED — account was NOT removed.\n\n'+(e?.message||String(e)))}finally{if(b){b.disabled=false;b.textContent='DELETE'}}};
 </script></body></html>
