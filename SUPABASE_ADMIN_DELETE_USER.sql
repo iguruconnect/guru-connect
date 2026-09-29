@@ -1,3 +1,4 @@
+-- NOTICE: Use SUPABASE_FINAL_FIX_2026-09-29.sql instead. It includes the corrected delete RPC plus all related repairs.
 -- GURU CONNECT — Admin Delete User (Student/Tutor)
 -- Run once in Supabase SQL Editor.
 -- This creates a protected RPC used by the Staff/Admin dashboard.

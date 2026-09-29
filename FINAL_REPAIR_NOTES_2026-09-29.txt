@@ -1,0 +1,29 @@
+GURU CONNECT — FINAL REPAIR PACKAGE — 2026-09-29
+
+Fixed in this package:
+1. Admin Mark PAID / Grant Blue Tick no longer consumes tutor coins. These actions now call a staff-only Supabase RPC and persist paid_status/verified.
+2. Tutor Admin Edit email synchronization now uses a staff-only RPC with duplicate-email detection. The old user_email_partial_key failure is handled with a clear message when the target email is genuinely owned by another Auth account.
+3. Registration OTP verification now uses Supabase verifyOtp type=signup and can resend a signup code for an existing unconfirmed registration.
+4. Password reset pages no longer redirect to a missing login.html. A compatibility login.html is included and routes to the correct login page.
+5. Student/Tutor registration continues through gc_register_verified_profile without ON CONFLICT(user_id), reducing failures from old schema constraints.
+6. Admin permanent delete returns both ok=true and deleted=true and the frontend cache clearing is guarded, preventing gcPageCache reference errors.
+7. Main index.html admin edit/delete/status flows were kept intact; only the failing persistence/auth paths were changed.
+
+SUPABASE ACTION REQUIRED:
+Run SUPABASE_FINAL_FIX_2026-09-29.sql ONCE in Supabase SQL Editor, then reload the website.
+
+EMAIL / OTP:
+The current Supabase custom SMTP configuration must use the SMTP host supplied by the mail provider. If the Hostinger account is being used, Hostinger documents smtp.hostinger.com with port 587 + STARTTLS/TLS (or port 465 + SSL). A value such as smtp.nostinger.com will not send mail.
+Also ensure:
+- support@guruconnnect.in is a real mailbox
+- SMTP username is the full mailbox address
+- SMTP password is the mailbox password
+- Supabase Authentication > URL Configuration includes:
+  https://www.guruconnnect.in/reset-password.html
+- Test the mailbox in Hostinger webmail before testing OTP.
+
+IMPORTANT:
+If an Admin changes a Tutor's email to an address that already belongs to another Auth account, Supabase cannot legally assign the same Auth email twice. The new code reports that conflict instead of producing the generic user_email_partial_key error. Use the correct unique email.
+
+DEPLOY:
+Upload the contents of this folder to GitHub/hosting, replacing the existing website files. Do not expose a Supabase service-role key in any HTML.

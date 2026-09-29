@@ -7548,7 +7548,7 @@ This removes the Auth account and linked tutor/profile records from Supabase. Th
                 await gcAdminPermanentDelete(tutor, 'tutor');
                 tutorDirectoryList = tutorDirectoryList.filter(t => String(t.id) !== String(tutorId));
                 studentDirectoryList = studentDirectoryList.filter(s => String(s.user_id || '') !== String(tutor.user_id || ''));
-                gcPageCache?.clear?.();
+                try{window.gcPageCache?.clear?.()}catch(_){}
                 saveRegisteredDirectories();
                 renderTutorDirectory();
                 renderAdminQueue();
@@ -7570,7 +7570,7 @@ This removes the Auth account and linked student/profile records from Supabase. 
                 await gcAdminPermanentDelete(student, 'student');
                 studentDirectoryList = studentDirectoryList.filter(s => String(s.id) !== String(studentId));
                 tutorDirectoryList = tutorDirectoryList.filter(t => String(t.user_id || '') !== String(student.user_id || ''));
-                gcPageCache?.clear?.();
+                try{window.gcPageCache?.clear?.()}catch(_){}
                 saveRegisteredDirectories();
                 renderStudentDirectory();
                 renderAdminQueue();
@@ -7582,41 +7582,56 @@ This removes the Auth account and linked student/profile records from Supabase. 
             }
         }
 
-        function adminVerifyTutorPaid(tutorId) {
-            const t = tutorDirectoryList.find(item => item.id === tutorId);
+        async function gcAdminSetTutorApproval(tutorId, changes, successText){
+            const t = tutorDirectoryList.find(item => String(item.id) === String(tutorId));
             if (!t) return;
-            t.paidStatus = 'PAID';
-            renderTutorDirectory();
-            renderAdminQueue();
-            showSuccessPopup(`Tutor ${t.name}'s UTR verified & marked PAID successfully!`);
+            const uid = String(t.user_id || '').trim();
+            if (!uid) { alert('This tutor is not linked to a Supabase Auth user.'); return; }
+
+            const previous = {paidStatus:t.paidStatus, verified:t.verified};
+            Object.assign(t, changes);
+            try {
+                const cloud = window.GC_ADMIN_CLOUD;
+                if (!cloud?.setTutorApproval) throw new Error('Secure Admin approval service is not installed. Run the supplied final SQL migration first.');
+                await cloud.setTutorApproval(uid, {
+                    paid_status: t.paidStatus === 'PAID' ? 'PAID' : 'PENDING',
+                    verified: t.verified === true
+                });
+                clearCaches();
+                saveRegisteredDirectories();
+                renderTutorDirectory();
+                renderAdminQueue();
+                showSuccessPopup(successText || 'Tutor status updated successfully.');
+            } catch (e) {
+                Object.assign(t, previous);
+                renderTutorDirectory();
+                renderAdminQueue();
+                alert('Admin action was NOT saved.\n\n' + (e?.message || String(e)));
+            }
         }
 
-        function adminGrantVerifiedTick(tutorId) {
-            const t = tutorDirectoryList.find(item => item.id === tutorId);
+        async function adminVerifyTutorPaid(tutorId) {
+            const t = tutorDirectoryList.find(item => String(item.id) === String(tutorId));
             if (!t) return;
-            t.verified = true;
-            t.paidStatus = 'PAID';
-            renderTutorDirectory();
-            renderAdminQueue();
-            showSuccessPopup(`Verified Tick badge successfully granted to ${t.name}!`);
+            await gcAdminSetTutorApproval(tutorId,{paidStatus:'PAID'},`Tutor ${t.name || ''} marked PAID successfully.`);
         }
 
-        function adminRevokeTutorPaid(tutorId) {
-            const t = tutorDirectoryList.find(item => item.id === tutorId);
+        async function adminGrantVerifiedTick(tutorId) {
+            const t = tutorDirectoryList.find(item => String(item.id) === String(tutorId));
+            if (!t) return;
+            await gcAdminSetTutorApproval(tutorId,{verified:true,paidStatus:'PAID'},`Verified Tick granted to ${t.name || ''} successfully.`);
+        }
+
+        async function adminRevokeTutorPaid(tutorId) {
+            const t = tutorDirectoryList.find(item => String(item.id) === String(tutorId));
             if (!t || !confirm("Are you sure you want to revoke this tutor's PAID status?")) return;
-            t.paidStatus = 'PENDING';
-            renderTutorDirectory();
-            renderAdminQueue();
-            showSuccessPopup(`PAID status for ${t.name} has been revoked.`);
+            await gcAdminSetTutorApproval(tutorId,{paidStatus:'PENDING'},`PAID status for ${t.name || ''} has been revoked.`);
         }
 
-        function adminRevokeVerifiedTick(tutorId) {
-            const t = tutorDirectoryList.find(item => item.id === tutorId);
+        async function adminRevokeVerifiedTick(tutorId) {
+            const t = tutorDirectoryList.find(item => String(item.id) === String(tutorId));
             if (!t || !confirm("Are you sure you want to revoke this tutor's Verified Tick?")) return;
-            t.verified = false;
-            renderTutorDirectory();
-            renderAdminQueue();
-            showSuccessPopup(`Verified Tick for ${t.name} has been revoked.`);
+            await gcAdminSetTutorApproval(tutorId,{verified:false},`Verified Tick for ${t.name || ''} has been revoked.`);
         }
 
         function renderAdminQueue() {
@@ -8369,9 +8384,12 @@ This removes the Auth account and linked student/profile records from Supabase. 
     m.classList.remove('hidden'); document.getElementById('gcAdminTutorForm').onsubmit=async e=>{e.preventDefault();
       t.name=document.getElementById('a_t_name').value.trim()||t.name;t.email=document.getElementById('a_t_email').value.trim();t.qualification=document.getElementById('a_t_qualification').value.trim();t.experience=document.getElementById('a_t_experience').value.trim();t.teachingCollege=document.getElementById('a_t_teaching').value.trim();t.college=t.teachingCollege;t.subject=document.getElementById('a_t_subject').value.trim();t.price=document.getElementById('a_t_price').value.trim();t._manualRating=Math.min(5,Math.max(1,Number(document.getElementById('a_t_rating').value)||Number(tutorRating(t))));t.students=document.getElementById('a_t_students').value.trim();t.aboutMe=document.getElementById('a_t_about').value.trim();t.verified=document.getElementById('a_t_verified').checked;t.paidStatus=t.verified?'PAID':t.paidStatus;
       const f=document.getElementById('a_t_photo')?.files?.[0];if(f){const d=await readImageDataUrl(f,700);if(d)t.photoData=d;}const more=await readMany('a_t_ach',700);t.achievements=[...(t.achievements||[]),...more].slice(0,3);saveDirs();rerender();
-      if(t.isCloud && window.gcSupabase){
-        const statusResult=await persistTutorStatus(t);
-        if(!statusResult.ok){ alert('Profile was updated locally, but Supabase could not save the Verified/PAID status. Please check paid_status and RLS.'); }
+      if(t.isCloud && window.gcSupabaseAdminUpdateTutor){
+        try{
+          await window.gcSupabaseAdminUpdateTutor(t);
+        }catch(err){
+          alert('Tutor profile was updated locally, but Supabase could not save it.\n\n'+(err?.message||String(err)));
+        }
       }
       closeAdminEditTutorModal();alert('Tutor profile fully updated by Staff/Admin.');};
   };
@@ -10450,6 +10468,7 @@ body {
   let gcSupabase = null;
   let gcCloudEnabled = false;
   const gcPageCache = new Map();
+  window.gcPageCache = gcPageCache;
   let gcAnonymousUserPromise = null;
 
   try {
@@ -10673,7 +10692,7 @@ body {
       }
 
       const saved = await saveRoleRow(role === 'tutor' ? 'tutor_profiles' : 'student_profiles', row);
-      gcPageCache.clear();
+      try{window.gcPageCache?.clear?.()}catch(_){}
       return { ok: true, row: saved, userId: user.id };
     } catch (err) {
       console.error('GURU CONNECT cloud registration failed:', err);
@@ -13074,7 +13093,7 @@ async function selectPerson(i){const p=window.__gcAuthRows?.[i];if(!p)return;con
  document.getElementById('gcAuthApply').onclick=async()=>{const amount=Number(document.getElementById('gcAuthAmount').value),reason=clean(document.getElementById('gcAuthReason').value),st=document.getElementById('gcAuthStatus');if(!Number.isFinite(amount)||amount===0)return alert('Enter a non-zero coin amount.');if(!reason)return alert('Reason is mandatory.');st.textContent='Updating secure coin ledger…';try{const r=await S().rpc('gc_staff_adjust_coins',{p_profile_id:p.__id,p_role:p.__role,p_amount:amount,p_reason:reason});if(r.error)throw r.error;st.textContent='Coins updated successfully and permanently logged.';await selectPerson(i);await doSearch();paintCards()}catch(e){st.textContent='';alert('Coin update failed: '+(e.message||e))}};
 }
 function hookStatus(name,amount,type,reason){const old=window[name];if(typeof old!=='function'||old.__gcCoinHook)return;const f=async function(id){try{const r=await S()?.rpc('gc_staff_charge_tutor_service',{p_tutor_id:String(id),p_amount:amount,p_transaction_type:type,p_reason:reason});if(r?.error)throw r.error;return await old.apply(this,arguments)}catch(e){alert('Action not completed: '+(e.message||e));return null}};f.__gcCoinHook=true;window[name]=f}
-function boot(){adminPanel();hookDashboard();paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile);hookStatus('adminVerifyTutorPaid',100,'SPEND_TUTOR_LISTING','Tutor Monthly Listing');hookStatus('adminGrantVerifiedTick',200,'SPEND_VERIFIED_TICK','Verified Tick service')}
+function boot(){adminPanel();hookDashboard();paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile); /* Admin PAID / Verified Tick actions never charge tutor coins. */}
 document.addEventListener('DOMContentLoaded',boot);window.addEventListener('load',boot);setInterval(()=>{adminPanel();hookDashboard();paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile)},3500);
 new MutationObserver(()=>{clearTimeout(window.__gcAuthPaint);window.__gcAuthPaint=setTimeout(()=>{paintCards();if(window.__gcAuthProfile)paintDashboard(window.__gcAuthProfile)},450)}).observe(document.body,{subtree:true,childList:true});
 window.GC_COIN_PDF={account:buildAccountPdf,master:buildMasterPdf}; window.GC_AUTH_COINS={search:doSearch,select:selectPerson,balance};
@@ -13992,7 +14011,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
   function studentById(id){return students().find(x=>String(x.id)===String(id))||null;}
 
   function clearCaches(){
-    try{window.gcPageCache?.clear?.();}catch(_){}
+    try{window.gcPageCache?.clear?.()}catch(_){ }
     try{
       localStorage.removeItem('gc_tutor_directory_cache');
       localStorage.removeItem('gc_student_directory_cache');
@@ -15349,7 +15368,7 @@ window.addEventListener('load',()=>setTimeout(mount,900));setInterval(mount,6000
   }
   window.GC_ADMIN_CLOUD={
     updateTutor:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_admin_update_tutor_profile',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;},
-    updateStudent:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_admin_update_student_profile',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;},
+    updateStudent:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_admin_update_student_profile',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;},setTutorApproval:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_admin_set_tutor_approval',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;},
     deleteUser:async(uid)=>{const s=await staff();const q=await s.rpc('gc_admin_delete_user',{p_user_id:String(uid)});if(q.error)throw q.error;if(q.data && q.data.deleted===false)throw new Error(q.data.error||'Supabase did not confirm permanent deletion.');return q.data;}
   };
 })();
