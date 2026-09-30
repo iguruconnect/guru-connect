@@ -7546,14 +7546,21 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 This removes the Auth account and linked tutor/profile records from Supabase. This cannot be undone.`)) return;
             try {
                 await gcAdminPermanentDelete(tutor, 'tutor');
-                tutorDirectoryList = tutorDirectoryList.filter(t => String(t.id) !== String(tutorId));
-                studentDirectoryList = studentDirectoryList.filter(s => String(s.user_id || '') !== String(tutor.user_id || ''));
+                const deletedUid = String(tutor.user_id || tutor.userId || tutor.auth_user_id || '').trim();
+                tutorDirectoryList = tutorDirectoryList.filter(t => String(t.id) !== String(tutorId) && (!deletedUid || String(t.user_id || t.userId || t.auth_user_id || '') !== deletedUid));
+                studentDirectoryList = studentDirectoryList.filter(s => String(s.id) !== String(tutorId) && (!deletedUid || String(s.user_id || s.userId || s.auth_user_id || '') !== deletedUid));
                 try{window.gcPageCache?.clear?.()}catch(_){}
+                try{localStorage.removeItem('gc_tutor_directory_cache');localStorage.removeItem('gc_student_directory_cache')}catch(_){}
                 saveRegisteredDirectories();
                 renderTutorDirectory();
                 renderAdminQueue();
-                alert('Tutor permanently deleted from Supabase.');
+                if (typeof window.gcV4Popup === 'function') window.gcV4Popup('TUTOR DELETED SUCCESSFULLY', `${tutor.name || 'Tutor'} has been permanently deleted. The directory and admin records are being refreshed.`, 'success');
                 try { await gcLoadCloudDirectories(currentTutorPage || 1, currentStudentPage || 1); } catch (_) {}
+                // Re-apply the deletion locally after refresh; if the database still returns it,
+                // the next reload will reveal that the server-side delete did not persist.
+                if (deletedUid) tutorDirectoryList = tutorDirectoryList.filter(t => String(t.user_id || '') !== deletedUid);
+                tutorDirectoryList = tutorDirectoryList.filter(t => String(t.id) !== String(tutorId));
+                saveRegisteredDirectories(); renderTutorDirectory(); renderAdminQueue();
             } catch (err) {
                 console.error('Permanent tutor deletion failed:', err);
                 alert('DELETE FAILED — tutor was NOT removed.\n\n' + (err?.message || String(err)));
@@ -7568,14 +7575,19 @@ This removes the Auth account and linked tutor/profile records from Supabase. Th
 This removes the Auth account and linked student/profile records from Supabase. This cannot be undone.`)) return;
             try {
                 await gcAdminPermanentDelete(student, 'student');
-                studentDirectoryList = studentDirectoryList.filter(s => String(s.id) !== String(studentId));
-                tutorDirectoryList = tutorDirectoryList.filter(t => String(t.user_id || '') !== String(student.user_id || ''));
+                const deletedUid = String(student.user_id || student.userId || student.auth_user_id || '').trim();
+                studentDirectoryList = studentDirectoryList.filter(s => String(s.id) !== String(studentId) && (!deletedUid || String(s.user_id || s.userId || s.auth_user_id || '') !== deletedUid));
+                tutorDirectoryList = tutorDirectoryList.filter(t => !deletedUid || String(t.user_id || t.userId || t.auth_user_id || '') !== deletedUid);
                 try{window.gcPageCache?.clear?.()}catch(_){}
+                try{localStorage.removeItem('gc_tutor_directory_cache');localStorage.removeItem('gc_student_directory_cache')}catch(_){}
                 saveRegisteredDirectories();
                 renderStudentDirectory();
                 renderAdminQueue();
-                alert('Student permanently deleted from Supabase.');
+                if (typeof window.gcV4Popup === 'function') window.gcV4Popup('STUDENT DELETED SUCCESSFULLY', `${student.name || 'Student'} has been permanently deleted. The directory and admin records are being refreshed.`, 'success');
                 try { await gcLoadCloudDirectories(currentTutorPage || 1, currentStudentPage || 1); } catch (_) {}
+                if (deletedUid) studentDirectoryList = studentDirectoryList.filter(s => String(s.user_id || '') !== deletedUid);
+                studentDirectoryList = studentDirectoryList.filter(s => String(s.id) !== String(studentId));
+                saveRegisteredDirectories(); renderStudentDirectory(); renderAdminQueue();
             } catch (err) {
                 console.error('Permanent student deletion failed:', err);
                 alert('DELETE FAILED — student was NOT removed.\n\n' + (err?.message || String(err)));
@@ -7597,12 +7609,16 @@ This removes the Auth account and linked student/profile records from Supabase. 
                     paid_status: t.paidStatus === 'PAID' ? 'PAID' : 'PENDING',
                     verified: t.verified === true
                 });
-                try { window.gcPageCache?.clear?.(); } catch (_) {}
-                try { localStorage.removeItem("gc_tutor_directory_cache"); localStorage.removeItem("gc_student_directory_cache"); } catch (_) {}
+                clearCaches();
                 saveRegisteredDirectories();
                 renderTutorDirectory();
                 renderAdminQueue();
-                showSuccessPopup(successText || 'Tutor status updated successfully.');
+                if (typeof window.gcV4Popup === 'function') {
+                    const isVerified = Object.prototype.hasOwnProperty.call(changes, 'verified');
+                    const isPaid = Object.prototype.hasOwnProperty.call(changes, 'paidStatus');
+                    const title = isVerified && changes.verified === true ? 'VERIFIED TICK GRANTED' : isVerified && changes.verified === false ? 'VERIFIED TICK REVOKED' : isPaid && changes.paidStatus === 'PAID' ? 'PAYMENT MARKED PAID' : 'PAID STATUS REVOKED';
+                    window.gcV4Popup(title, successText || 'Tutor status updated successfully.', 'success');
+                } else { alert(successText || 'Tutor status updated successfully.'); }
             } catch (e) {
                 Object.assign(t, previous);
                 renderTutorDirectory();
@@ -8742,6 +8758,7 @@ This removes the Auth account and linked student/profile records from Supabase. 
       </div>`;
     m.classList.add('open');
   }
+  window.gcV4Popup = gcV4Popup;
   window.gcV4ClosePopup=function(){const m=document.getElementById('gcV4Notice');if(m)m.classList.remove('open');};
   window.gcV4ContactSent=function(){gcV4ClosePopup();};
   function contactSentPopup(){
