@@ -13642,16 +13642,17 @@ async function getAds(){const s=client();if(!s)throw Error('Supabase is not avai
 function card(a){const href=url(a.click_url)||url(a.whatsapp_url),label=a.advertiser_name||a.title||'GURU CONNECT';const body='<div class="gc-site-ad-media"><img src="'+esc(a.image_url)+'" alt="'+esc(label)+' flyer" loading="lazy"></div><div class="gc-site-ad-copy"><b>'+esc(label)+'</b><span>CONNECT</span></div>';return '<article class="gc-site-ad-card">'+(href?'<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer sponsored" aria-label="Connect with '+esc(label)+'">'+body+'</a>':body)+'</article>'}
 function injectGrid(id,ads,kind){
   const g=$(id);if(!g)return;
-  /* Remove previously rendered ads so the current complete active list is shown. */
-  g.querySelectorAll('.gc-site-ad-card').forEach(x=>x.remove());
-  const list=ads.filter(a=>a.placement==='all'||a.placement===kind);
+  const list=ads.filter(a=>(a.placement==='all'||a.placement===kind)&&url(a.image_url));
+  const old=[...g.querySelectorAll(':scope > .gc-site-ad-card')];
+  // Avoid clearing/recreating the same cards every 15 seconds (which caused
+  // flicker and made ads disappear while profile grids were being repainted).
+  const signature=list.map(a=>String(a.id)+':'+String(a.image_url)).join('|');
+  if(g.dataset.gcAdsSignature===signature&&old.length===list.length)return;
+  old.forEach(x=>x.remove());
+  g.dataset.gcAdsSignature=signature;
   if(!list.length)return;
-  /* Render EVERY matching advertisement, in priority DESC / newest-first order. */
   const frag=document.createDocumentFragment();
-  list.forEach(a=>{
-    const el=document.createRange().createContextualFragment(card(a,kind)).firstElementChild;
-    if(el)frag.appendChild(el);
-  });
+  list.forEach(a=>{const el=document.createRange().createContextualFragment(card(a,kind)).firstElementChild;if(el)frag.appendChild(el)});
   const target=g.children[Math.min(2,g.children.length)]||null;
   g.insertBefore(frag,target);
 }
@@ -13707,7 +13708,7 @@ function show(){const p=$('gcAdminAdvertisementsPanel');if(!p)return;if(!staffMo
 function boot(){if(window.__gcAdsBoot)return;window.__gcAdsBoot=true;
  $('gcAdSaveBtn')?.addEventListener('click',e=>{e.preventDefault();save()});$('gcAdClearBtn')?.addEventListener('click',e=>{e.preventDefault();clearForm()});$('gcAdRefreshBtn')?.addEventListener('click',e=>{e.preventDefault();adminLoad()});$('gcAdCancelEditBtn')?.addEventListener('click',e=>{e.preventDefault();clearForm()});
  const btn=$('gcAdminAdsButton');if(btn){btn.onclick=e=>{e.preventDefault();e.stopPropagation();show()};btn.style.pointerEvents='auto';btn.style.position='relative';btn.style.zIndex='20'}
- renderIndexAds();['tutorGrid','studentGridContainer'].forEach(id=>{const g=$(id);if(g){const obs=new MutationObserver(()=>{if(!g.querySelector('.gc-site-ad-card'))renderIndexAds()});obs.observe(g,{childList:true})}});setInterval(renderIndexAds,15000)}
+ renderIndexAds();['tutorGrid','studentGridContainer'].forEach(id=>{const g=$(id);if(g){let timer;const obs=new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(()=>renderIndexAds(),250)});obs.observe(g,{childList:true})}});setInterval(renderIndexAds,30000)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.GC_ADS={refresh:renderIndexAds,showAdmin:show,loadAdmin:adminLoad,edit:setEditMode};
 })();
 </script>
