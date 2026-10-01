@@ -7660,17 +7660,6 @@ This removes the Auth account and linked student/profile records from Supabase. 
             await gcAdminSetTutorApproval(tutorId,{verified:false},`Verified Tick for ${t.name || ''} has been revoked.`);
         }
 
-        function gcOpenReceiptFromAdmin(category, id, name, email, phone) {
-            const q = new URLSearchParams({
-                category: category || '',
-                member_id: id || '',
-                name: name || '',
-                email: email || '',
-                phone: phone || ''
-            });
-            window.open('receipt.html?' + q.toString(), '_blank', 'noopener,noreferrer');
-        }
-
         function renderAdminQueue() {
             const tutorTbody = document.getElementById('adminTutorQueueTable');
             const studentTbody = document.getElementById('adminStudentQueueTable');
@@ -7700,7 +7689,6 @@ This removes the Auth account and linked student/profile records from Supabase. 
                             <td class="p-3 sm:p-4 text-right space-x-1 min-w-[280px]">
                                 ${t.paidStatus !== 'PAID' ? `<button onclick="adminVerifyTutorPaid('${t.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm">Mark PAID</button>` : `<button onclick="adminRevokeTutorPaid('${t.id}')" class="bg-slate-600 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-[10px] font-bold shadow-sm">Revoke Paid</button>`}
                                 ${!t.verified ? `<button onclick="adminGrantVerifiedTick('${t.id}')" class="bg-brand-blue hover:bg-blue-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm">Grant Tick</button>` : `<button onclick="adminRevokeVerifiedTick('${t.id}')" class="bg-slate-600 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-[10px] font-bold shadow-sm">Revoke Tick</button>`}
-                                <button onclick="gcOpenReceiptFromAdmin('tutor', '${t.id}', ${JSON.stringify(t.name || '')}, ${JSON.stringify(t.email || '')}, ${JSON.stringify(t.phone || '')})" class="bg-violet-600 hover:bg-violet-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm" title="Create Receipt"><i class="fa-solid fa-receipt"></i> Receipt</button>
                                 <button onclick="adminEditTutor('${t.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-pen-to-square"></i></button>
                                 <button onclick="adminDeleteTutor('${t.id}')" class="bg-red-600 hover:bg-red-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-trash"></i></button>
                             </td>
@@ -7718,7 +7706,6 @@ This removes the Auth account and linked student/profile records from Supabase. 
                             <td class="p-3 sm:p-4">${s.std} • ${s.stream}</td>
                             <td class="p-3 sm:p-4 text-slate-600">${s.subject}</td>
                             <td class="p-3 sm:p-4 text-right space-x-1 sm:space-x-2">
-                                <button onclick="gcOpenReceiptFromAdmin('student', '${s.id}', ${JSON.stringify(s.name || '')}, ${JSON.stringify(s.email || '')}, ${JSON.stringify(s.phone || '')})" class="bg-violet-600 hover:bg-violet-700 text-white px-2.5 sm:px-3 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm" title="Create Receipt"><i class="fa-solid fa-receipt"></i> Receipt</button>
                                 <button onclick="adminEditStudent('${s.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 sm:px-3 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
                                 <button onclick="adminDeleteStudent('${s.id}')" class="bg-red-600 hover:bg-red-700 text-white px-2.5 sm:px-3 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-trash"></i> Delete</button>
                             </td>
