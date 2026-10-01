@@ -7594,6 +7594,14 @@ This removes the Auth account and linked student/profile records from Supabase. 
             }
         }
 
+        // Global cache invalidator used by legacy admin handlers.
+        // The authoritative directory layer keeps its own private clearCaches() function.
+        window.clearCaches = window.clearCaches || function(){
+            try { window.gcPageCache?.clear?.(); } catch (_) {}
+            try { localStorage.removeItem('gc_tutor_directory_cache'); } catch (_) {}
+            try { localStorage.removeItem('gc_student_directory_cache'); } catch (_) {}
+        };
+
         async function gcAdminSetTutorApproval(tutorId, changes, successText){
             const t = tutorDirectoryList.find(item => String(item.id) === String(tutorId));
             if (!t) return;
@@ -7605,11 +7613,12 @@ This removes the Auth account and linked student/profile records from Supabase. 
             try {
                 const cloud = window.GC_ADMIN_CLOUD;
                 if (!cloud?.setTutorApproval) throw new Error('Secure Admin approval service is not installed. Run the supplied final SQL migration first.');
-                await cloud.setTutorApproval(uid, {
+                const saved = await cloud.setTutorApproval(uid, {
                     paid_status: t.paidStatus === 'PAID' ? 'PAID' : 'PENDING',
                     verified: t.verified === true
                 });
-                clearCaches();
+                if (saved && saved.ok === false) throw new Error(saved.error || 'Supabase rejected the admin update.');
+                window.clearCaches();
                 saveRegisteredDirectories();
                 renderTutorDirectory();
                 renderAdminQueue();
