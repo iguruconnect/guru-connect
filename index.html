@@ -7660,35 +7660,15 @@ This removes the Auth account and linked student/profile records from Supabase. 
             await gcAdminSetTutorApproval(tutorId,{verified:false},`Verified Tick for ${t.name || ''} has been revoked.`);
         }
 
-        /* ===== ADMIN DASHBOARD RECEIPT BUTTON ===== */
-        (function(){
-          if(document.getElementById('gc-admin-receipt-style')) return;
-          const st=document.createElement('style'); st.id='gc-admin-receipt-style';
-          st.textContent='.gc-admin-receipt-btn{background:#7c3aed!important;color:#fff!important}.gc-admin-receipt-btn:hover{background:#6d28d9!important}.gc-admin-receipt-btn i{margin-right:3px}';
-          document.head.appendChild(st);
-        })();
-
-        function gcAdminReceiptEsc(v){return String(v ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-        function gcAdminReceiptRecord(role,id){
-          const list=role==='tutor'?tutorDirectoryList:studentDirectoryList;
-          const r=list.find(x=>String(x.id)===String(id));
-          if(!r) return null;
-          return {role,name:r.name||'Member',email:r.email||r.user_email||'—',phone:r.phone||'—',id:r.id||'—',utr:r.utr||r.transaction_id||'—',paid:r.paidStatus||r.paid_status||'PENDING',verified:!!r.verified,subject:r.subject||'—',stream:r.stream||'',standard:r.std||r.standard||'',course:r.course||'',plan:r.plan||r.paymentPlan||'',amount:r.amount??r.paymentAmount??r.payment_amount??''};
-        }
-        function adminGenerateReceipt(role,id){
-          const r=gcAdminReceiptRecord(role,id);
-          if(!r){alert('Member record not found. Please refresh the Admin Dashboard and try again.');return;}
-          const defaultPlan=role==='tutor'?'Tutor Profile Listing — 1 Month':'GURU CONNECT — Student Registration';
-          const plan=prompt('Enter payment plan / purpose:',r.plan||defaultPlan); if(plan===null)return;
-          const amount=prompt('Enter amount received in INR (₹):',String(r.amount|| (role==='tutor'?'200':''))); if(amount===null)return;
-          if(amount.trim()===''||!Number.isFinite(Number(amount))||Number(amount)<0){alert('Please enter a valid amount.');return;}
-          const utr=prompt('Enter UTR / transaction reference (optional):',r.utr==='—'?'':r.utr); if(utr===null)return;
-          const no='GC-REC-'+new Date().toISOString().slice(0,10).replace(/-/g,'')+'-'+String(Date.now()).slice(-6)+'-'+(role==='tutor'?'TU':'ST');
-          const logo=new URL('guru-connect-registration-receipt-logo.png',location.href).href;
-          const w=window.open('','_blank','width=900,height=850');
-          if(!w){alert('Receipt window was blocked. Please allow pop-ups for GURU CONNECT Admin.');return;}
-          const html='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+gcAdminReceiptEsc(no)+' — GURU CONNECT</title><style>*{box-sizing:border-box}body{margin:0;background:#eef2f7;color:#0f172a;font-family:Inter,Arial,sans-serif}.sheet{max-width:820px;margin:30px auto;background:#fff;border-radius:22px;box-shadow:0 15px 45px #0f172a18;overflow:hidden}.top{padding:26px;background:linear-gradient(135deg,#0b2b66,#155eef 60%,#0891b2);color:#fff;display:flex;align-items:center;gap:18px}.top img{width:76px;height:76px;object-fit:contain;background:#fff;border-radius:16px;padding:5px}.brand{font-size:27px;font-weight:950}.tag{font-size:12px;margin-top:5px;color:#dbeafe}.body{padding:28px}.title{display:flex;justify-content:space-between;gap:20px;border-bottom:1px solid #e2e8f0;padding-bottom:18px}.title h1{margin:0;font-size:26px}.no{font-weight:900;color:#475569}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}.item{border:1px solid #e2e8f0;border-radius:13px;padding:13px}.label{font-size:9px;text-transform:uppercase;color:#64748b;font-weight:900}.value{margin-top:5px;font-size:14px;font-weight:800}.amount{margin-top:22px;padding:18px;border-radius:15px;background:#f5f3ff;border:1px solid #ddd6fe;display:flex;justify-content:space-between;font-weight:950}.footer{margin-top:25px;padding-top:16px;border-top:1px solid #e2e8f0;color:#64748b;font-size:11px;line-height:1.6}.print{margin:0 0 20px;padding:11px 18px;border:0;border-radius:10px;background:#155eef;color:#fff;font-weight:900;cursor:pointer}@media print{body{background:#fff}.sheet{margin:0;box-shadow:none}.print{display:none}}@media(max-width:600px){.grid{grid-template-columns:1fr}.top{padding:18px}.brand{font-size:22px}.body{padding:18px}}</style></head><body><div class="sheet"><div class="top"><img src="'+gcAdminReceiptEsc(logo)+'" alt="GURU CONNECT"><div><div class="brand">GURU CONNECT</div><div class="tag">Connecting Mind - Creating Future...</div></div></div><div class="body"><button class="print" onclick="window.print()">PRINT / SAVE PDF</button><div class="title"><h1>PAYMENT RECEIPT</h1><div class="no">'+gcAdminReceiptEsc(no)+'</div></div><div class="grid"><div class="item"><div class="label">Member Name</div><div class="value">'+gcAdminReceiptEsc(r.name)+'</div></div><div class="item"><div class="label">Member Type</div><div class="value">'+gcAdminReceiptEsc(role.toUpperCase())+'</div></div><div class="item"><div class="label">Email</div><div class="value">'+gcAdminReceiptEsc(r.email)+'</div></div><div class="item"><div class="label">Phone</div><div class="value">'+gcAdminReceiptEsc(r.phone)+'</div></div><div class="item"><div class="label">Member ID</div><div class="value">'+gcAdminReceiptEsc(r.id)+'</div></div><div class="item"><div class="label">Payment Status</div><div class="value">PAID</div></div><div class="item"><div class="label">Payment Purpose</div><div class="value">'+gcAdminReceiptEsc(plan)+'</div></div><div class="item"><div class="label">UTR / Transaction Ref</div><div class="value">'+gcAdminReceiptEsc(utr.trim()||'—')+'</div></div></div><div class="amount"><span>AMOUNT RECEIVED</span><span>₹'+Number(amount).toLocaleString('en-IN')+'</span></div><div class="footer">Generated by GURU CONNECT Admin Dashboard.<br>Receipt No: '+gcAdminReceiptEsc(no)+'<br>AUTO-GENERATED RECEIPT — SIGNATURE NOT REQUIRED</div></div></div></body></html>';
-          w.document.open();w.document.write(html);w.document.close();
+        function gcOpenReceiptFromAdmin(category, id, name, email, phone) {
+            const q = new URLSearchParams({
+                category: category || '',
+                member_id: id || '',
+                name: name || '',
+                email: email || '',
+                phone: phone || ''
+            });
+            window.open('receipt.html?' + q.toString(), '_blank', 'noopener,noreferrer');
         }
 
         function renderAdminQueue() {
@@ -7720,7 +7700,7 @@ This removes the Auth account and linked student/profile records from Supabase. 
                             <td class="p-3 sm:p-4 text-right space-x-1 min-w-[280px]">
                                 ${t.paidStatus !== 'PAID' ? `<button onclick="adminVerifyTutorPaid('${t.id}')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm">Mark PAID</button>` : `<button onclick="adminRevokeTutorPaid('${t.id}')" class="bg-slate-600 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-[10px] font-bold shadow-sm">Revoke Paid</button>`}
                                 ${!t.verified ? `<button onclick="adminGrantVerifiedTick('${t.id}')" class="bg-brand-blue hover:bg-blue-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm">Grant Tick</button>` : `<button onclick="adminRevokeVerifiedTick('${t.id}')" class="bg-slate-600 hover:bg-slate-700 text-white px-2 py-1.5 rounded text-[10px] font-bold shadow-sm">Revoke Tick</button>`}
-                                <button onclick="adminGenerateReceipt('tutor','${t.id}')" class="gc-admin-receipt-btn bg-violet-600 hover:bg-violet-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm" title="Generate payment receipt"><i class="fa-solid fa-receipt"></i> Receipt</button>
+                                <button onclick="gcOpenReceiptFromAdmin('tutor', '${t.id}', ${JSON.stringify(t.name || '')}, ${JSON.stringify(t.email || '')}, ${JSON.stringify(t.phone || '')})" class="bg-violet-600 hover:bg-violet-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm" title="Create Receipt"><i class="fa-solid fa-receipt"></i> Receipt</button>
                                 <button onclick="adminEditTutor('${t.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-pen-to-square"></i></button>
                                 <button onclick="adminDeleteTutor('${t.id}')" class="bg-red-600 hover:bg-red-700 text-white px-2 sm:px-2.5 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-trash"></i></button>
                             </td>
@@ -7738,7 +7718,7 @@ This removes the Auth account and linked student/profile records from Supabase. 
                             <td class="p-3 sm:p-4">${s.std} • ${s.stream}</td>
                             <td class="p-3 sm:p-4 text-slate-600">${s.subject}</td>
                             <td class="p-3 sm:p-4 text-right space-x-1 sm:space-x-2">
-                                <button onclick="adminGenerateReceipt('student','${s.id}')" class="gc-admin-receipt-btn bg-violet-600 hover:bg-violet-700 text-white px-2.5 sm:px-3 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm" title="Generate payment receipt"><i class="fa-solid fa-receipt"></i> Receipt</button>
+                                <button onclick="gcOpenReceiptFromAdmin('student', '${s.id}', ${JSON.stringify(s.name || '')}, ${JSON.stringify(s.email || '')}, ${JSON.stringify(s.phone || '')})" class="bg-violet-600 hover:bg-violet-700 text-white px-2.5 sm:px-3 py-1.5 rounded text-[10px] sm:text-xs font-bold shadow-sm" title="Create Receipt"><i class="fa-solid fa-receipt"></i> Receipt</button>
                                 <button onclick="adminEditStudent('${s.id}')" class="bg-amber-500 hover:bg-amber-600 text-white px-2.5 sm:px-3 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-pen-to-square"></i> Edit</button>
                                 <button onclick="adminDeleteStudent('${s.id}')" class="bg-red-600 hover:bg-red-700 text-white px-2.5 sm:px-3 py-1.5 rounded text-[10px] sm:text-xs shadow-sm"><i class="fa-solid fa-trash"></i> Delete</button>
                             </td>
