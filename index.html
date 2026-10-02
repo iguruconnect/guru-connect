@@ -7543,10 +7543,17 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 
         async function gcAdminPermanentDelete(record, label) {
             const uid = String(record?.user_id || record?.userId || record?.auth_user_id || '').trim();
-            if (!uid) throw new Error('This profile is not linked to a Supabase Auth user ID, so permanent deletion was blocked.');
-            if (!window.GC_ADMIN_CLOUD?.deleteUser) throw new Error('Permanent delete service is not installed. Run the supplied GURU_CONNECT_PERMANENT_FIX.sql in Supabase first.');
-            await window.GC_ADMIN_CLOUD.deleteUser(uid);
-            return uid;
+            if (!window.GC_ADMIN_CLOUD?.deleteUser) throw new Error('Permanent delete service is not installed. Deploy the updated admin-create-user Edge Function first.');
+            // The Edge Function resolves legacy profile_id -> Auth UUID when available.
+            // It also removes a genuinely orphaned legacy profile instead of blocking deletion.
+            const deleted = await window.GC_ADMIN_CLOUD.deleteUser(uid, {
+                profile_id: String(record?.id || '').trim(),
+                role: String(label || record?.role || '').toLowerCase(),
+                email: String(record?.email || '').trim(),
+                name: String(record?.name || '').trim(),
+                phone: String(record?.phone || '').trim()
+            });
+            return String(deleted?.user_id || uid || '').trim();
         }
 
         async function adminDeleteTutor(tutorId) {
@@ -15511,7 +15518,17 @@ window.addEventListener('load',()=>setTimeout(mount,900));setInterval(mount,6000
   window.GC_ADMIN_CLOUD={
     updateTutor:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_admin_update_tutor_profile',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;},
     updateStudent:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_admin_update_student_profile',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;},setTutorApproval:async(uid,d)=>{const s=await staff();const q=await s.rpc('gc_admin_set_tutor_approval',{p_user_id:String(uid),p_data:d});if(q.error)throw q.error;return q.data;},
-    deleteUser:async(uid)=>{const s=await staff();const q=await s.rpc('gc_admin_delete_user',{p_user_id:String(uid)});if(q.error)throw q.error;if(q.data && q.data.deleted===false)throw new Error(q.data.error||'Supabase did not confirm permanent deletion.');return q.data;}
+    repairLegacy:async(d)=>{
+      const s=await staff();
+      const session=await s.auth.getSession(); const token=session.data?.session?.access_token;
+      if(!token)throw new Error('Staff Supabase session is required. Please login again.');
+      const fn='https://hzqqswrnawrfgufbxgay.supabase.co/functions/v1/admin-create-user';
+      const r=await fetch(fn,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action:'repair_legacy',...d})});
+      const data=await r.json().catch(()=>({}));
+      if(!r.ok)throw new Error(data.error||'Legacy Auth synchronization failed.');
+      return data;
+    },
+    deleteUser:async(uid,meta={})=>{const s=await staff();const sess=await s.auth.getSession();const token=sess.data?.session?.access_token;if(!token)throw new Error('Staff Supabase session is required. Please login again.');const fn='https://hzqqswrnawrfgufbxgay.supabase.co/functions/v1/admin-create-user';const r=await fetch(fn,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+token},body:JSON.stringify({action:'delete_user',user_id:String(uid||''),profile_id:String(meta.profile_id||''),role:String(meta.role||''),email:String(meta.email||''),name:String(meta.name||''),phone:String(meta.phone||'')})});const d=await r.json().catch(()=>({}));if(!r.ok||!d.deleted)throw new Error(d.error||'Supabase did not confirm permanent deletion.');return d;}
   };
 })();
 </script>
