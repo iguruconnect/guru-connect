@@ -7266,7 +7266,7 @@ body.gc-registration-lock{overflow:hidden !important;}
     const name=nameInput?.value.trim()||'', email=emailInput?.value.trim()||'';
     if(!name){gcV4Popup('NAME REQUIRED','Please enter your name first.','gold');return;}
     if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){gcV4Popup('VALID EMAIL REQUIRED','Please enter a valid email address so we can send your OTP.','gold');return;}
-    const otp=Math.floor(1000+Math.random()*9000).toString();
+    const otp=Math.floor(10000000+Math.random()*90000000).toString();
     try{pendingEmailOtps[type]=otp;}catch(e){window.pendingEmailOtps=window.pendingEmailOtps||{};window.pendingEmailOtps[type]=otp;}
     const button=document.querySelector(`button[onclick="sendEmailOtp('${type}')"]`); if(button){button.disabled=true;button.textContent='Sending...';}
     const params={name,email,to_email:email,recipient_email:email,reply_to:email,otp_code:otp};
