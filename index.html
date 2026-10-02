@@ -12812,6 +12812,39 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 new MutationObserver(run).observe(document.documentElement,{subtree:true,childList:true});
 })();
 </script>
+<style id="gc-advertising-admin-v2">
+.gc-advertising-admin{margin:0 0 22px;padding:20px;border-radius:18px;background:linear-gradient(135deg,#fff7ed,#ffffff 55%,#eff6ff);border:1px solid #fed7aa;box-shadow:0 8px 30px rgba(15,23,42,.08)}
+.gc-advertising-admin h3{margin:0;font-size:18px;font-weight:950;color:#123b8f}.gc-advertising-admin p{margin:6px 0 14px;color:#64748b;font-size:13px}.gc-ad-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.gc-ad-card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:13px}.gc-ad-card strong{display:block;color:#0f172a;font-size:13px}.gc-ad-card span{display:block;color:#64748b;font-size:11px;margin-top:4px}.gc-ad-btn{margin-top:9px;width:100%;border:0;border-radius:10px;padding:9px 11px;background:#ea580c;color:#fff;font-weight:900;cursor:pointer}.gc-ad-btn:hover{background:#c2410c}.gc-ad-custom{display:flex;gap:8px;align-items:center;margin-top:12px}.gc-ad-custom input{flex:1;min-width:0;border:1px solid #cbd5e1;border-radius:10px;padding:9px 11px}.gc-ad-custom button{border:0;border-radius:10px;padding:9px 14px;background:#123b8f;color:#fff;font-weight:900;cursor:pointer}@media(max-width:900px){.gc-ad-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:560px){.gc-ad-grid{grid-template-columns:1fr}.gc-ad-custom{flex-direction:column;align-items:stretch}}
+</style>
+<script id="gc-advertising-admin-v2-script">
+(function(){
+  function makeReceiptForAdvertising(name,amount){
+    const p=new URLSearchParams();
+    p.set('category','Advertiser'); p.set('service','Advertising');
+    if(name) p.set('name',name); if(amount) p.set('amount',amount); p.set('back','index.html');
+    window.open('receipt.html?'+p.toString(),'_blank','noopener,noreferrer');
+  }
+  function install(){
+    const dash=document.getElementById('staffAdminDashboard'); if(!dash||document.getElementById('gcAdvertisingAdmin')) return;
+    const panel=document.createElement('section'); panel.id='gcAdvertisingAdmin'; panel.className='gc-advertising-admin';
+    panel.innerHTML=`<h3><i class="fa-solid fa-bullhorn"></i> ADVERTISING MANAGEMENT</h3>
+      <p>Advertising is back in the Staff Dashboard. Select a common advertising service below, or create a custom advertising receipt. The receipt amount remains editable before final issue.</p>
+      <div class="gc-ad-grid">
+        <div class="gc-ad-card"><strong>Website Advertising</strong><span>General website advertising / promotion</span><button class="gc-ad-btn" data-ad="Website Advertising" data-amount="1000">Create Receipt</button></div>
+        <div class="gc-ad-card"><strong>Banner Advertising</strong><span>Banner placement / promotional display</span><button class="gc-ad-btn" data-ad="Banner Advertising" data-amount="2500">Create Receipt</button></div>
+        <div class="gc-ad-card"><strong>Featured Advertising</strong><span>Featured promotional placement</span><button class="gc-ad-btn" data-ad="Featured Advertising" data-amount="5000">Create Receipt</button></div>
+        <div class="gc-ad-card"><strong>Custom Advertising</strong><span>Open receipt and add any advertising combination</span><button class="gc-ad-btn" data-ad="Advertising" data-amount="0">Create Receipt</button></div>
+      </div>
+      <div class="gc-ad-custom"><input id="gcAdCustomerName" placeholder="Optional advertiser / company name"><input id="gcAdCustomAmount" inputmode="decimal" placeholder="Optional starting amount"><button type="button" id="gcAdOpenCustom">OPEN ADVERTISING RECEIPT</button></div>`;
+    const anchor=dash.querySelector('#adminTutorSection')||dash.querySelector('#adminStudentSection')||dash.firstElementChild;
+    if(anchor) anchor.parentNode.insertBefore(panel,anchor); else dash.prepend(panel);
+    panel.querySelectorAll('[data-ad]').forEach(b=>b.addEventListener('click',()=>{const p=new URLSearchParams();p.set('category','Advertiser');p.set('service',b.dataset.ad);p.set('amount',b.dataset.amount||'0');const n=document.getElementById('gcAdCustomerName')?.value.trim();if(n)p.set('name',n);p.set('back','index.html');window.open('receipt.html?'+p.toString(),'_blank','noopener,noreferrer')}));
+    panel.querySelector('#gcAdOpenCustom').addEventListener('click',()=>makeReceiptForAdvertising(document.getElementById('gcAdCustomerName')?.value.trim(),document.getElementById('gcAdCustomAmount')?.value.trim()));
+  }
+  document.addEventListener('DOMContentLoaded',()=>setTimeout(install,500));
+  const ob=new MutationObserver(()=>install()); ob.observe(document.documentElement,{childList:true,subtree:true});
+})();
+</script>
 </body>
 </html>
 <!-- =========================================================
