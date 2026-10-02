@@ -11173,76 +11173,52 @@ body {
     });
   }
 
-  async function gcCreateEmailAccount(email, password, role, profile) {
-    if (!gcSupabase) throw new Error('Supabase Authentication is not configured.');
-    if (!email || !password) throw new Error('Email and password are required.');
-    if (password.length < 8) throw new Error('Password must be at least 8 characters.');
-
-    const cleanEmail = email.trim().toLowerCase();
-    const cached = window.gcVerifiedRegistration?.[role];
-    if (cached && cached.email === cleanEmail && cached.user) {
-      return { user: cached.user, session: cached.session || null, pending: false };
+  function gcShowDuplicateRegistration(kind, role){
+    const old=document.getElementById('gcIndexDuplicateRegistration'); if(old)old.remove();
+    const emailId=role==='tutor'?'t_email':'stu_email', phoneId=role==='tutor'?'t_phone':'stu_phone';
+    const both=kind==='both';
+    const heading=both?'Email & phone number are already registered':kind==='email'?'Email address is already registered':'Phone number is already registered';
+    const box=document.createElement('div'); box.id='gcIndexDuplicateRegistration';
+    box.innerHTML=`<div class="gc-index-dup-backdrop"><section class="gc-index-dup-card" role="alertdialog" aria-modal="true">
+      <div class="gc-index-dup-head"><div class="gc-index-dup-icon">⚠</div><div><h2>Already Registered</h2><p>GURU CONNECT • MEMBER IDENTITY CHECK</p></div></div>
+      <div class="gc-index-dup-body"><h3>${heading}</h3>
+      <p>The details entered already belong to a GURU CONNECT account. A verification OTP will not be sent for an already registered email.</p>
+      <div class="gc-index-dup-alert">Please register with a <strong>new email address</strong> and enter a <strong>new phone number</strong> in the registration details.</div>
+      <div class="gc-index-dup-actions"><button id="gcDupEdit" class="gc-index-dup-btn gc-index-dup-primary">EDIT DETAILS</button><button id="gcDupClose" class="gc-index-dup-btn gc-index-dup-secondary">CLOSE</button></div></div>
+    </section></div>`;
+    document.body.appendChild(box);
+    const close=()=>box.remove(); box.querySelector('#gcDupClose').onclick=close;
+    box.querySelector('#gcDupEdit').onclick=()=>{const target=(kind==='phone'&&!both)?document.getElementById(phoneId):document.getElementById(emailId);close();target?.focus();target?.select()};
+  }
+  async function gcCheckRegistrationIdentity(email,phone){
+    const r=await gcSupabase.rpc('gc_check_registration_identity',{p_email:email,p_phone:phone});
+    if(r.error)throw r.error; return r.data||{};
+  }
+  async function gcCreateEmailAccount(email,password,role,profile){
+    if(!gcSupabase)throw new Error('Supabase Authentication is not configured.');
+    if(!email||!password)throw new Error('Email and password are required.');
+    if(password.length<8)throw new Error('Password must be at least 8 characters.');
+    const cleanEmail=email.trim().toLowerCase(), cleanPhone=String(profile?.phone||'').trim();
+    const cached=window.gcVerifiedRegistration?.[role];
+    if(cached&&cached.email===cleanEmail&&cached.user)return {user:cached.user,session:cached.session||null,pending:false};
+    const identity=await gcCheckRegistrationIdentity(cleanEmail,cleanPhone);
+    if(identity.email_exists||identity.phone_exists){
+      gcShowDuplicateRegistration(identity.email_exists&&identity.phone_exists?'both':identity.email_exists?'email':'phone',role);
+      throw new Error('Please use a new email address and a new phone number.');
     }
-
-    const redirect = location.origin + location.pathname + '?email_verified=1';
-    const signupOptions = {
-      email: cleanEmail,
-      password,
-      options: {
-        data: profile && typeof profile === 'object' ? {
-          role,
-          name: profile.name || ''
-        } : { role },
-        emailRedirectTo: redirect
-      }
-    };
-
-    const sendOtp = async () => {
-      const result = await gcSupabase.auth.signUp(signupOptions);
-      if (result.error) throw result.error;
-      if (!result.data?.user) throw new Error('Supabase did not return a user account.');
-      return result;
-    };
-
-    let first;
-    try {
-      first = await sendOtp();
-    } catch (err) {
-      const em = String(err?.message || err || '');
-      if (/already registered|already exists|user.*already/i.test(em)) {
-        const resend = await gcSupabase.auth.resend({ type: 'signup', email: cleanEmail });
-        if (resend.error) throw resend.error;
-        first = { data: { user: resend.data?.user || null, session: resend.data?.session || null }, error: null };
-      } else {
-        throw err;
-      }
-    }
-
-    /*
-     * With email confirmations enabled, signUp normally returns a user but no
-     * session. The user must enter the OTP before the profile is written.
-     */
-    const verified = await gcOtpPopup(
-      cleanEmail,
-      role,
-      (token) => gcSupabase.auth.verifyOtp({
-        email: cleanEmail,
-        token,
-        type: 'signup'
-      }),
-      sendOtp
+    const redirect=location.origin+location.pathname+'?email_verified=1';
+    const metadata={role,name:profile?.name||'',phone:profile?.phone||''};
+    const request=await gcSupabase.auth.signInWithOtp({email:cleanEmail,options:{shouldCreateUser:true,data:metadata,emailRedirectTo:redirect}});
+    if(request.error)throw request.error;
+    const verified=await gcOtpPopup(cleanEmail,role,
+      token=>gcSupabase.auth.verifyOtp({email:cleanEmail,token,type:'email'}),
+      async()=>{const again=await gcSupabase.auth.signInWithOtp({email:cleanEmail,options:{shouldCreateUser:true,data:metadata,emailRedirectTo:redirect}});if(again.error)throw again.error;return again;}
     );
-
-    const verifiedUser = verified.data.user;
-    const verifiedSession = verified.data.session || null;
-
-    window.gcVerifiedRegistration[role] = {
-      email: cleanEmail,
-      user: verifiedUser,
-      session: verifiedSession
-    };
-
-    return { user: verifiedUser, session: verifiedSession, pending: false };
+    const verifiedUser=verified.data?.user, verifiedSession=verified.data?.session||null;
+    if(!verifiedUser)throw new Error('Supabase verified the OTP but did not return a user account.');
+    const pw=await gcSupabase.auth.updateUser({password,data:metadata}); if(pw.error)throw pw.error;
+    window.gcVerifiedRegistration[role]={email:cleanEmail,user:verifiedUser,session:verifiedSession};
+    return {user:verifiedUser,session:verifiedSession,pending:false};
   }
 
   /*
@@ -11475,7 +11451,7 @@ body {
     try {
       authResult = await gcCreateEmailAccount(email, password, 'student', profile);
     } catch (err) {
-      alert('Account creation failed: ' + (err.message || err));
+      if(/new email address and a new phone number|already registered/i.test(String(err?.message||err))) return; alert('Account creation failed: ' + (err.message || err));
       return;
     }
     if (authResult.pending) return;
@@ -11556,7 +11532,7 @@ body {
     try {
       authResult = await gcCreateEmailAccount(email, password, 'tutor', profile);
     } catch (err) {
-      alert('Account creation failed: ' + (err.message || err));
+      if(/new email address and a new phone number|already registered/i.test(String(err?.message||err))) return; alert('Account creation failed: ' + (err.message || err));
       return;
     }
     if (authResult.pending) return;
@@ -11616,6 +11592,14 @@ body {
 
 })();
 </script>
+<style id="gc-index-duplicate-popup-design">
+.gc-index-dup-backdrop{position:fixed;inset:0;background:rgba(2,8,23,.84);backdrop-filter:blur(12px);z-index:2147483640;display:flex;align-items:center;justify-content:center;padding:18px}
+.gc-index-dup-card{width:min(650px,calc(100vw - 28px));background:#fff;border-radius:30px;overflow:hidden;box-shadow:0 35px 110px rgba(0,0,0,.48);font-family:Inter,system-ui,sans-serif}
+.gc-index-dup-head{padding:26px 28px;color:#fff;background:linear-gradient(135deg,#b91c1c,#ef4444 52%,#f97316);display:flex;align-items:center;gap:18px}
+.gc-index-dup-icon{width:76px;height:76px;flex:0 0 76px;border-radius:22px;background:rgba(255,255,255,.17);display:grid;place-items:center;font-size:35px}.gc-index-dup-head h2{margin:0;font-size:29px;font-weight:950}.gc-index-dup-head p{margin:7px 0 0;font-size:12px;color:#fee2e2;font-weight:750}
+.gc-index-dup-body{padding:28px;text-align:center}.gc-index-dup-body h3{margin:0;font-size:23px;font-weight:950;color:#111827}.gc-index-dup-body p{margin:10px auto 0;color:#64748b;font-size:14px;line-height:1.65}.gc-index-dup-alert{margin:20px auto;padding:17px;border-radius:18px;background:linear-gradient(135deg,#fff7ed,#fff1f2);border:1px solid #fecaca;color:#7f1d1d;font-size:14px;font-weight:850;line-height:1.6}
+.gc-index-dup-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}.gc-index-dup-btn{border:0;border-radius:15px;padding:14px 22px;font-size:14px;font-weight:950;cursor:pointer}.gc-index-dup-primary{background:linear-gradient(90deg,#0758d8,#0ea5e9);color:#fff}.gc-index-dup-secondary{background:#f1f5f9;color:#334155}
+</style>
 <style id="gc-stable-cloud-scroll">
 html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!important;overflow-y:auto!important}
 #tutors,#studentsDirectory,#tutorGrid,#studentGridContainer{height:auto!important;max-height:none!important;overflow:visible!important}
