@@ -42,24 +42,6 @@
 }
 </style>
 
-<style id="gc-duplicate-popup-design">
-.gc-duplicate-backdrop{position:fixed;inset:0;background:rgba(2,8,23,.84);backdrop-filter:blur(12px);z-index:10000;display:flex;align-items:center;justify-content:center;padding:18px}
-.gc-duplicate-card{width:min(650px,calc(100vw - 28px));background:#fff;border-radius:30px;overflow:hidden;box-shadow:0 35px 110px rgba(0,0,0,.48);font-family:Inter,system-ui,sans-serif;animation:gcDupRise .22s ease-out}
-.gc-duplicate-head{padding:26px 28px;color:#fff;background:linear-gradient(135deg,#b91c1c,#ef4444 52%,#f97316);display:flex;align-items:center;gap:18px}
-.gc-duplicate-icon{width:76px;height:76px;flex:0 0 76px;border-radius:22px;background:rgba(255,255,255,.17);display:grid;place-items:center;font-size:35px;border:1px solid rgba(255,255,255,.3)}
-.gc-duplicate-head h2{margin:0;font-size:29px;font-weight:950;line-height:1.05}
-.gc-duplicate-head p{margin:7px 0 0;font-size:12px;font-weight:750;color:#fee2e2}
-.gc-duplicate-body{padding:28px;text-align:center}
-.gc-duplicate-body h3{margin:0;color:#111827;font-size:23px;font-weight:950}
-.gc-duplicate-body p{margin:10px auto 0;max-width:520px;color:#64748b;font-size:14px;line-height:1.65}
-.gc-duplicate-alert{margin:20px auto;padding:17px 18px;border-radius:18px;background:linear-gradient(135deg,#fff7ed,#fff1f2);border:1px solid #fecaca;color:#7f1d1d;font-size:14px;font-weight:850;line-height:1.6}
-.gc-duplicate-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.gc-duplicate-btn{border:0;border-radius:15px;padding:14px 22px;font-size:14px;font-weight:950;cursor:pointer}
-.gc-duplicate-primary{background:linear-gradient(90deg,#0758d8,#0ea5e9);color:#fff;box-shadow:0 10px 25px rgba(7,88,216,.2)}
-.gc-duplicate-secondary{background:#f1f5f9;color:#334155}
-@keyframes gcDupRise{from{transform:translateY(18px) scale(.97);opacity:.6}to{transform:none;opacity:1}}
-@media(max-width:520px){.gc-duplicate-head{padding:20px}.gc-duplicate-icon{width:60px;height:60px;flex-basis:60px}.gc-duplicate-head h2{font-size:22px}.gc-duplicate-body{padding:22px 18px}.gc-duplicate-body h3{font-size:19px}}
-</style>
 <style id="gc-otp-popup-design">
 .gc-otp-popup-backdrop{position:fixed;inset:0;background:rgba(2,8,23,.82);backdrop-filter:blur(10px);z-index:9998}
 .gc-otp-popup-card{position:fixed;z-index:9999;left:50%;top:50%;transform:translate(-50%,-50%);width:min(620px,calc(100vw - 28px));overflow:hidden;border-radius:28px;background:#fff;box-shadow:0 30px 90px rgba(0,0,0,.42);font-family:Inter,system-ui,sans-serif}
@@ -86,7 +68,7 @@
 <section class="card"><h2 class="section-title"><span class="title-icon">✦</span>Choose your registration</h2><div class="roles"><button type="button" class="role active" data-role="student"><b>🎓 Student Registration</b><small>Post Learning Requirements, discover tutors and connect with educators.</small></button><button type="button" class="role" data-role="tutor"><b>👨‍🏫 Tutor Registration</b><small>Create your teaching profile and connect with students.</small></button></div>
 <div class="section blue"><h3>👤 Account Details</h3><div class="grid">
 <div class="field"><label>Full Name</label><input id="name" autocomplete="name"></div><div class="field"><label>Phone / WhatsApp</label><input id="phone" type="tel" autocomplete="tel"></div><div class="field"><label>Email *</label><input id="email" type="email" required autocomplete="email"></div><div class="field"><label>City / Location</label><input id="location" autocomplete="address-level2"></div><div class="field"><label>Password *</label><input id="password" type="password" minlength="8" required autocomplete="new-password"><div class="hint">Minimum 8 characters.</div></div><div class="field"><label>Confirm Password *</label><input id="password2" type="password" minlength="8" required autocomplete="new-password"></div></div>
-<div class="otp-card"><div class="otp-title">✉️ <span>Email Verification</span></div><div class="hint">Press SEND OTP after entering your email. Enter the 6–8 digit code from the latest verification email.</div><div class="otp-row" aria-label="6 to 8 digit OTP"><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled></div><div class="otp-actions"><button type="button" class="smallbtn send" id="sendOtp">SEND OTP</button><button type="button" class="smallbtn verify" id="verifyOtp" disabled>VERIFY OTP</button></div><div id="otpStatus" class="hint"></div><div id="verified" class="verified">✓ Email verified successfully.</div></div></div>
+<div class="otp-card"><div class="otp-title">✉️ <span>8-Digit Email Verification</span></div><div class="hint">Press SEND OTP after entering your email. Enter the 8-digit code from the latest verification email.</div><div class="otp-row" aria-label="8 digit OTP"><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled><input class="otp" maxlength="1" inputmode="numeric" autocomplete="one-time-code" disabled></div><div class="otp-actions"><button type="button" class="smallbtn send" id="sendOtp">SEND OTP</button><button type="button" class="smallbtn verify" id="verifyOtp" disabled>VERIFY 8-DIGIT OTP</button></div><div id="otpStatus" class="hint"></div><div id="verified" class="verified">✓ Email verified successfully.</div></div></div>
 <section class="section blue studentOnly" id="studentSection"><h3>🎓 Student Academic Details</h3><div class="grid"><div class="field"><label>Standard / Class</label><input id="std"></div><div class="field"><label>Stream</label><input id="stream"></div><div class="field"><label>Course</label><input id="course"></div><div class="field"><label>College Name</label><input id="college"></div><div class="field"><label>Division</label><input id="division"></div><div class="field"><label>Roll Number</label><input id="roll"></div><div class="field"><label>Subject</label><input id="subject"></div><div class="field full"><label>Learning Requirement</label><textarea id="learning_requirement" placeholder="Describe the learning help you need..."></textarea></div><div class="field full"><label>About Me</label><textarea id="student_about"></textarea></div><div class="field"><label>Student Photo</label><input id="student_photo" type="file" accept="image/*"></div><div class="field"><label>College ID</label><input id="student_college_id" type="file" accept="image/*,.pdf"></div><div class="field"><label>Aadhaar</label><input id="student_aadhaar" type="file" accept="image/*,.pdf"></div><div class="field"><label>Registration Date</label><input id="registration_date" type="date"></div></div></section>
 <section class="section green tutorOnly" id="tutorSection"><h3>👨‍🏫 Tutor Profile Details</h3><div class="grid"><div class="field"><label>Subject Expertise</label><input id="t_subject"></div><div class="field"><label>Rate / Hour</label><input id="t_price"></div><div class="field"><label>Experience</label><input id="t_exp"></div><div class="field"><label>Educational Qualification</label><input id="t_qualification"></div><div class="field"><label>College in Which You Are Teaching</label><input id="t_teaching_college"></div><div class="field"><label>College Name</label><input id="t_college"></div><div class="field full"><label>Residential Address</label><textarea id="t_address"></textarea></div><div class="field full"><label>About Me / Tutor Showcase</label><textarea id="t_about"></textarea></div><div class="field"><label>Tutor Photo</label><input id="t_photo" type="file" accept="image/*"></div><div class="field"><label>College ID</label><input id="t_college_id" type="file" accept="image/*,.pdf"></div><div class="field"><label>Aadhaar — required for Verified Tick</label><input id="t_aadhaar" type="file" accept="image/*,.pdf"></div><div class="field"><label>Achievement / Certificate 1</label><input id="t_achievement_1" type="file" accept="image/*,.pdf"></div><div class="field"><label>Achievement / Certificate 2</label><input id="t_achievement_2" type="file" accept="image/*,.pdf"></div><div class="field"><label>Achievement / Certificate 3</label><input id="t_achievement_3" type="file" accept="image/*,.pdf"></div></div></section>
 <section class="section orange tutorOnly" id="paymentSection"><h3>💳 Tutor Registration Payment</h3><div class="payment"><div><div class="grid"><div class="field"><label>Registration Plan</label><select id="payment_plan"><option value="regular_200">Regular Registration — ₹200 / 1 Month</option><option value="verified_100">Verified Batch — ₹100 Special Offer</option></select></div><div class="field"><label>UTR / Transaction ID *</label><input id="utr" placeholder="Enter UTR after payment"></div></div><a id="upiLink" class="upi" href="upi://pay?pa=verizon@upi&pn=GURU%20CONNECT&cu=INR&am=200">📱 Pay via UPI App</a><div class="hint">UPI ID: <b>verizon@upi</b>. Scan the QR on desktop or use the UPI button on mobile.</div></div><div><img id="qr" class="qr" src="guru-connect-upi-200-1-month.png" alt="GURU CONNECT UPI QR"></div></div></section>
@@ -149,7 +131,7 @@ function showOtpSentPopup(email){
       <div class="gc-otp-popup-body">
         <div class="gc-otp-mail-icon">✉</div>
         <h3>Please check your email inbox</h3>
-        <p>Your <strong>verification OTP</strong> has been sent to:</p>
+        <p>Your <strong>8-digit verification OTP</strong> has been sent to:</p>
         <div class="gc-otp-email">${String(email||'').replace(/[<>&"]/g,m=>({'<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;'}[m]))}</div>
         <div class="gc-otp-alert"><strong>IMPORTANT:</strong> Please check your <b>Inbox</b>. If you do not see the email, check your <b>Junk / Spam</b> folder too.</div>
         <button type="button" id="gcOtpPopupContinue">ENTER OTP</button>
@@ -166,109 +148,75 @@ function showOtpSentPopup(email){
     document.querySelector('.otp')?.focus();
   };
 }
-
-async function gcCheckRegistrationIdentity(email,phone){
-  const r=await sb.rpc('gc_check_registration_identity',{p_email:email,p_phone:phone});
-  if(!r.error) return r.data||{};
-  const msg=String(r.error?.message||r.error||'');
-  if(/could not find the function|function .* does not exist|schema cache|PGRST202/i.test(msg)){
-    console.warn('GURU CONNECT identity RPC is missing; continuing with OTP and post-verification checks.');
-    return {email_exists:false,phone_exists:false,identity_rpc_missing:true};
-  }
-  throw r.error;
-}
-function showDuplicateRegistrationPopup(kind){
-  const old=document.getElementById('gcDuplicateRegistrationPopup'); if(old)old.remove();
-  const email=($('email')?.value||'').trim();
-  const phone=($('phone')?.value||'').trim();
-  const both=kind==='both';
-  const message=both
-    ? 'The email address and phone number you entered are already registered with a GURU CONNECT account.'
-    : kind==='email'
-      ? 'The email address you entered is already registered with a GURU CONNECT account.'
-      : 'The phone number you entered is already registered with a GURU CONNECT account.';
-  const box=document.createElement('div');
-  box.id='gcDuplicateRegistrationPopup';
-  box.innerHTML=`<div class="gc-duplicate-backdrop">
-    <section class="gc-duplicate-card" role="alertdialog" aria-modal="true">
-      <div class="gc-duplicate-head"><div class="gc-duplicate-icon">⚠</div><div><h2>Already Registered</h2><p>GURU CONNECT • MEMBER IDENTITY CHECK</p></div></div>
-      <div class="gc-duplicate-body">
-        <h3>${both?'Email & phone number are already registered':kind==='email'?'Email address is already registered':'Phone number is already registered'}</h3>
-        <p>${message}</p>
-        <div class="gc-duplicate-alert">Please register with a <strong>new email address</strong> and enter a <strong>new phone number</strong> in the registration details.</div>
-        <div class="gc-duplicate-actions"><button class="gc-duplicate-btn gc-duplicate-primary" id="gcDuplicateEdit">EDIT DETAILS</button><button class="gc-duplicate-btn gc-duplicate-secondary" id="gcDuplicateClose">CLOSE</button></div>
-      </div></section></div>`;
-  document.body.appendChild(box);
-  const close=()=>box.remove();
-  box.querySelector('#gcDuplicateClose').onclick=close;
-  box.querySelector('#gcDuplicateEdit').onclick=()=>{
-    if(kind==='email'||both){$('email')?.focus();$('email')?.select();}
-    else {$('phone')?.focus();$('phone')?.select();}
-    close();
-  };
-}
-$('sendOtp').addEventListener('click',async()=>{
-  const problem=validateBeforeOtp(); if(problem)return show(problem);
-  const email=$('email').value.trim().toLowerCase(), password=$('password').value, phone=$('phone').value.trim();
-  $('sendOtp').disabled=true; $('sendOtp').textContent='CHECKING DETAILS…';
-  try{
-    const identity=await gcCheckRegistrationIdentity(email,phone);
-    if(identity.email_exists||identity.phone_exists){
-      showDuplicateRegistrationPopup(identity.email_exists&&identity.phone_exists?'both':identity.email_exists?'email':'phone');
-      return;
-    }
-    $('sendOtp').textContent='SENDING VERIFICATION CODE…';
-    const metadata=await profileMetadata();
-    const r=await sb.auth.signInWithOtp({
-      email,
-      options:{
-        shouldCreateUser:true,
-        data:metadata,
-        emailRedirectTo:new URL('index.html?email_verified=1',location.href).href
-      }
-    });
-    if(r.error)throw r.error;
-    otpEmail=email; otpVerified=false; pendingAuthUser=null; setOtpInputs(true);
-    showOtpSentPopup(email);
-    $('otpStatus').textContent='The newest GURU CONNECT verification code was sent to '+email+'. Use only that code.';
-    show('OTP request accepted. Please check Inbox and Spam/Junk for the verification email.',true);
-  }catch(err){
-    console.error(err);
-    const msg=String(err?.message||err);
-    if(/rate limit|too many|email rate/i.test(msg)) show('Supabase email rate limit reached. Please wait a few minutes and request one fresh OTP only.');
-    else show('OTP could not be sent: '+msg);
-  }finally{
-    $('sendOtp').disabled=false; $('sendOtp').textContent='SEND OTP';
-  }
-});;$('verifyOtp').addEventListener('click',async()=>{const entered=[...document.querySelectorAll('.otp')].map(x=>x.value).join('').replace(/\D/g,'');const email=$('email').value.trim().toLowerCase();if(entered.length<6||entered.length>8)return show('Please enter the complete 6–8 digit code from the latest GURU CONNECT verification email.');if(!otpEmail||otpEmail!==email)return show('The email address changed after the code was sent. Please send a new verification code.');$('verifyOtp').disabled=true;$('verifyOtp').textContent='VERIFYING…';try{const r=await sb.auth.verifyOtp({email,token:entered,type:'email'});if(r.error)throw r.error;const user=r.data?.user;if(!user?.email_confirmed_at)throw new Error('Supabase accepted the code but email confirmation is not complete yet. Please use the newest code.');
-const existingStudent=await sb.from('student_profiles').select('user_id').eq('user_id',user.id).limit(1).maybeSingle();
-if(existingStudent.error)throw existingStudent.error;
-const existingTutor=await sb.from('tutor_profiles').select('user_id').eq('user_id',user.id).limit(1).maybeSingle();
-if(existingTutor.error)throw existingTutor.error;
-if(existingStudent.data?.user_id||existingTutor.data?.user_id){
-  await sb.auth.signOut();
-  throw new Error('This email is already registered with a GURU CONNECT member profile. Please use the login option instead.');
-}
-pendingAuthUser=user;const pwUpdate=await sb.auth.updateUser({password:$('password').value,data:await profileMetadata()});if(pwUpdate.error)throw pwUpdate.error;otpVerified=true;$('verified').classList.add('show');$('otpStatus').textContent='✓ Email verified. Click COMPLETE REGISTRATION to save your Student/Tutor profile.';show('Email verified successfully. Your verification code has been accepted.',true)}catch(err){console.error(err);show('OTP verification failed: '+(err?.message||String(err)))}finally{$('verifyOtp').disabled=false;$('verifyOtp').textContent='VERIFY OTP'}});
+$('sendOtp').addEventListener('click',async()=>{const problem=validateBeforeOtp();if(problem)return show(problem);const email=$('email').value.trim().toLowerCase(),password=$('password').value;$('sendOtp').disabled=true;$('sendOtp').textContent='SENDING 8-DIGIT CODE…';try{const metadata=await profileMetadata();let r=await sb.auth.signUp({email,password,options:{data:metadata,emailRedirectTo:new URL('index.html?email_verified=1',location.href).href}});if(r.error)throw r.error;pendingAuthUser=r.data?.user||null;otpEmail=email;otpVerified=false;setOtpInputs(true);if(!r.data?.session&&r.data?.user&&!r.data.user.email_confirmed_at){/* normal email-confirmation flow */}showOtpSentPopup(email);$('otpStatus').textContent='The newest 8-digit Supabase verification code was sent to '+email+'. Use only that code.';show('OTP sent to your email. Please also check Spam / Junk folder.',true)}catch(err){console.error(err);const msg=String(err?.message||err);if(/already registered|already exists|user.*already/i.test(msg)){try{const rr=await sb.auth.resend({type:'signup',email});if(rr.error)throw rr.error;otpEmail=email;otpVerified=false;pendingAuthUser=null;setOtpInputs(true);showOtpSentPopup(email);$('otpStatus').textContent='A fresh verification code was requested for this email.';show('A fresh OTP was sent. Please use the newest code.',true)}catch(re){show('This email is already registered. If it is your account, use Password Reset instead. '+(re?.message||''))}}else show(msg||'Could not send the verification code.')}finally{$('sendOtp').disabled=false;$('sendOtp').textContent='SEND OTP'}});$('verifyOtp').addEventListener('click',async()=>{const entered=[...document.querySelectorAll('.otp')].map(x=>x.value).join('').replace(/\D/g,'');const email=$('email').value.trim().toLowerCase();if(entered.length!==8)return show('Please enter all 8 digits from the latest GURU CONNECT verification email.');if(!otpEmail||otpEmail!==email)return show('The email address changed after the code was sent. Please send a new verification code.');$('verifyOtp').disabled=true;$('verifyOtp').textContent='VERIFYING…';try{const r=await sb.auth.verifyOtp({email,token:entered,type:'signup'});if(r.error)throw r.error;const user=r.data?.user;if(!user?.email_confirmed_at)throw new Error('Supabase accepted the code but email confirmation is not complete yet. Please use the newest code.');pendingAuthUser=user;otpVerified=true;$('verified').classList.add('show');$('otpStatus').textContent='✓ Email verified. Click COMPLETE REGISTRATION to save your Student/Tutor profile.';show('Email verified successfully. Your 8-digit code has been accepted.',true)}catch(err){console.error(err);show('OTP verification failed: '+(err?.message||String(err)))}finally{$('verifyOtp').disabled=false;$('verifyOtp').textContent='VERIFY 8-DIGIT OTP'}});
 $('payment_plan').addEventListener('change',()=>{const v=$('payment_plan').value==='verified_100';$('qr').src=v?'guru-connect-upi-300-1-month-verified.png':'guru-connect-upi-200-1-month.png';$('upiLink').href='upi://pay?pa=verizon@upi&pn=GURU%20CONNECT&cu=INR&am='+(v?'100':'200')});
 async function saveVerifiedProfile(user){
   const m=await profileMetadata();
-  const roleData={role,name:m.name,email:m.email,phone:m.phone,course:m.course,stream:m.stream,std:m.std,
-    subject:m.subject,learning_requirement:m.learning_requirement,college:m.college,division:m.division,
-    roll_number:m.roll,location:m.location,about_me:m.about_me,registration_date:m.registration_date,
-    experience:m.experience,qualification:m.qualification,tutor_college:m.tutor_college,
-    teaching_college:m.teaching_college,address:m.address,rate_hour:m.rate_hour,
-    payment_plan:m.payment_plan,utr:m.utr};
-  const rpc=await sb.rpc('gc_register_verified_profile',{p_user_id:user.id,p_role:role,p_data:roleData});
-  if(rpc.error){
-    const msg=String(rpc.error.message||rpc.error);
-    if(msg.includes('GURU_DUPLICATE_EMAIL')){showDuplicateRegistrationPopup('email');throw new Error('Email is already registered.');}
-    if(msg.includes('GURU_DUPLICATE_PHONE')){showDuplicateRegistrationPopup('phone');throw new Error('Phone number is already registered.');}
-    throw rpc.error;
+  const roleData={
+    role,
+    name:m.name,email:m.email,phone:m.phone,
+    course:m.course,stream:m.stream,std:m.std,subject:m.subject,
+    learning_requirement:m.learning_requirement,college:m.college,
+    division:m.division,roll_number:m.roll,location:m.location,
+    about_me:m.about_me,registration_date:m.registration_date,
+    experience:m.experience,qualification:m.qualification,
+    tutor_college:m.tutor_college,teaching_college:m.teaching_college,
+    address:m.address,rate_hour:m.rate_hour,
+    payment_plan:m.payment_plan,utr:m.utr
+  };
+  /* The verified-registration RPC is security-definer and writes the
+     canonical profiles + role profile while checking auth.uid().  This avoids
+     public-browser RLS failures that were blocking new registrations. */
+  const rpc=await sb.rpc('gc_register_verified_profile',{
+    p_user_id:user.id,p_role:role,p_data:roleData
+  });
+  if(!rpc.error)return rpc.data;
+  console.warn('gc_register_verified_profile unavailable/failed; trying the legacy direct save for backward compatibility.',rpc.error);
+  // Compatibility fallback: do not use ON CONFLICT on user_id because older
+  // GURU CONNECT databases may not have a UNIQUE constraint on that column.
+  const p=await sb.from('profiles').upsert({
+    id:user.id,role,full_name:m.name,email:m.email,phone:m.phone,photo_url:null
+  },{onConflict:'id'});
+  if(p.error)throw rpc.error||p.error;
+  async function gcSaveRoleRow(table,row){
+    const existing=await sb.from(table).select('id').eq('user_id',user.id).limit(1).maybeSingle();
+    if(existing.error)throw existing.error;
+    if(existing.data?.id){
+      const updated=await sb.from(table).update(row).eq('id',existing.data.id).select().maybeSingle();
+      if(updated.error)throw updated.error;
+      return updated.data;
+    }
+    const inserted=await sb.from(table).insert(row).select().maybeSingle();
+    if(inserted.error)throw inserted.error;
+    return inserted.data;
   }
-  return rpc.data;
+  if(role==='student'){
+    const row={
+      user_id:user.id,name:m.name,course:m.course,stream:m.stream,standard:m.std,
+      subject:m.subject,learning_requirement:m.learning_requirement,year:m.std,
+      semester:'',college:m.college,division:m.division,roll_number:m.roll,
+      email:m.email,phone:m.phone,location:m.location,address:'',mode:'',
+      teaching_mode:'',languages:'',availability:'',member_since:m.registration_date,
+      record_no:'',data_source:'registration',about_me:m.about_me,
+      achievement_photos:[],helpline_plan:'',helpline_status:'',
+      helpline_course:'',helpline_subject:'',helpline_subject_count:0,
+      helpline_amount:0,privacy:{},photo_url:null
+    };
+    return await gcSaveRoleRow('student_profiles',row);
+  }
+  const row={
+    user_id:user.id,name:m.name,subject:m.subject,stream:'',experience:m.experience,
+    qualification:m.qualification,college:m.tutor_college,
+    teaching_college:m.teaching_college,address:m.address,price:m.rate_hour,
+    about_me:m.about_me,photo_url:null,verified:false,paid_status:'PENDING',
+    rating:null,review_count:0,students_taught:'',teaching_mode:'',
+    location:m.location,languages:'',availability:'',
+    teaching_since:m.registration_date,is_illustrative:false,
+    registration_status:'registered'
+  };
+  return await gcSaveRoleRow('tutor_profiles',row);
 }
-$('form').addEventListener('submit',async e=>{e.preventDefault();$('msg').className='msg';if(!otpVerified||!pendingAuthUser)return show('Please send and verify the email verification code first.');if(!$('terms').checked)return show('Please read and accept the Terms & Conditions.');const b=$('submit');b.disabled=true;b.textContent='SAVING PROFILE…';try{await saveVerifiedProfile(pendingAuthUser);show('✓ Registration completed successfully. Your email is verified and your '+role+' profile has been saved. Opening your dashboard...',true);localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_id',String(pendingAuthUser.id));localStorage.setItem('active_user_email',String(m.email||pendingAuthUser.email||''));localStorage.setItem('active_user_name',String(m.name||pendingAuthUser.email?.split('@')[0]||'User'));setTimeout(()=>location.replace('dashboard.html?registered=1&role='+encodeURIComponent(role)),900)}catch(err){console.error(err);show('Registration profile could not be saved: '+(err?.message||String(err)))}finally{b.disabled=false;if(otpVerified)$('submit').textContent='COMPLETE '+role.toUpperCase()+' REGISTRATION'}});
+$('form').addEventListener('submit',async e=>{e.preventDefault();$('msg').className='msg';if(!otpVerified||!pendingAuthUser)return show('Please send and verify the 8-digit email verification code first.');if(!$('terms').checked)return show('Please read and accept the Terms & Conditions.');const b=$('submit');b.disabled=true;b.textContent='SAVING PROFILE…';try{const m=await profileMetadata();await saveVerifiedProfile(pendingAuthUser);show('✓ Registration completed successfully. Your email is verified and your '+role+' profile has been saved. Opening your dashboard...',true);localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_id',String(pendingAuthUser.id));localStorage.setItem('active_user_email',String(m.email||pendingAuthUser.email||''));localStorage.setItem('active_user_name',String(m.name||pendingAuthUser.email?.split('@')[0]||'User'));setTimeout(()=>location.replace('dashboard.html?registered=1&role='+encodeURIComponent(role)),900)}catch(err){console.error(err);show('Registration profile could not be saved: '+(err?.message||String(err)))}finally{b.disabled=false;if(otpVerified)$('submit').textContent='COMPLETE '+role.toUpperCase()+' REGISTRATION'}});
 </script>
 <style id="gc-branded-popup-style">
 #gc-popup-overlay{position:fixed;inset:0;background:rgba(7,18,38,.62);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;z-index:2147483647;padding:18px;font-family:inherit}
