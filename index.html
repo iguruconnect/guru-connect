@@ -13631,12 +13631,12 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
       /* The original verifier clears/hides the OTP box only on success. */
       var box=document.getElementById(role==='student'?'stuOtpBox':'tutorOtpBox');
       if(email && box && box.classList.contains('hidden')){
-        /* Persist verification for this exact email before the periodic guard runs. */
+        /* OTP verifier hid the box: remember the verified address and undo any
+           one-second guard race without changing the original button styling. */
         localStorage.setItem('gc_emailjs_verified_'+role,email);
         var btn=document.getElementById(role==='student'?'stuSubmitBtn':'tutorSubmitBtn');
         if(btn){
           btn.disabled=false;
-          btn.className='w-full bg-gradient-to-r from-blue-600 via-cyan-500 to-blue-700 hover:from-blue-700 hover:to-cyan-600 text-white font-black py-3.5 sm:py-4 rounded-xl transition shadow-lg text-sm sm:text-base tracking-wider mt-2 ring-2 ring-blue-200';
           btn.textContent=role==='student'?'REGISTER STUDENT PROFILE':'SUBMIT TUTOR APPLICATION';
         }
       }
