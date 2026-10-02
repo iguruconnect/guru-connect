@@ -37,4 +37,5 @@ if(q.get('category')){const c=q.get('category');$('category').value=[...$('categ
 if($('category').value==='Tutor'){$('service').value='Tutor Listing';$('amount').value='200';}
 function render(){ $('pReceiptNo').textContent='Receipt No: '+$('receiptNo').value;$('pName').innerHTML=esc($('name').value||'—');$('pUserId').innerHTML=esc($('userId').value||'—');$('pCategory').innerHTML=esc($('category').value);$('pEmail').innerHTML=esc($('email').value||'—');$('pPhone').innerHTML=esc($('phone').value||'—');$('pService').innerHTML=esc($('service').value);$('pPlan').innerHTML=esc($('service').value==='Student Helpline Service'?$('plan').value:'—');$('pAmount').textContent='₹ '+Number($('amount').value||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});$('pMethod').textContent=$('method').value;$('pUtr').textContent=$('utr').value||'—';$('pDate').textContent=$('date').value;}
 $('previewBtn').onclick=render;$('printBtn').onclick=()=>{render();window.print()};$('backBtn').onclick=()=>{const back=q.get('back')||'index.html';location.href=back};render();
-</script></body></html>
+</script><script src="gc-activity-popup.js"></script>
+</body></html>
