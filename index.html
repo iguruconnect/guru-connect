@@ -5113,7 +5113,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <div class="hidden bg-blue-50 border border-blue-200 p-3.5 rounded-xl space-y-2" id="stuOtpBox">
 <p class="text-[11px] font-bold text-brand-blue">Email verification is handled by the secure GURU CONNECT OTP popup.</p>
 <div class="flex gap-2">
-<input class="w-32 border border-blue-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="stuEnteredOtp" maxlength="8" minlength="8" inputmode="numeric" autocomplete="one-time-code" placeholder="8-digit OTP" type="text"/>
+<input class="w-32 border border-blue-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="stuEnteredOtp" maxlength="8" placeholder="OTP" type="text"/>
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('student')" type="button">Verify OTP</button>
 </div>
 </div>
@@ -5470,7 +5470,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <div class="hidden bg-orange-50 border border-orange-200 p-3.5 rounded-xl space-y-2" id="tutorOtpBox">
 <p class="text-[11px] font-bold text-brand-nagpurOrange">Email verification is handled by the secure GURU CONNECT OTP popup.</p>
 <div class="flex gap-2">
-<input class="w-32 border border-orange-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="tutorEnteredOtp" maxlength="8" minlength="8" inputmode="numeric" autocomplete="one-time-code" placeholder="8-digit OTP" type="text"/>
+<input class="w-32 border border-orange-300 rounded-xl p-2 text-center font-black text-sm tracking-widest bg-white" id="tutorEnteredOtp" maxlength="8" placeholder="OTP" type="text"/>
 <button class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-xl text-xs shadow" onclick="verifyEmailOtp('tutor')" type="button">Verify OTP</button>
 </div>
 </div>
@@ -6709,7 +6709,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
                 alert('Please enter a valid email address.'); return;
             }
 
-            const otp = String(Math.floor(10000000 + Math.random() * 90000000));
+            const otp = Math.floor(1000 + Math.random() * 9000).toString();
             pendingEmailOtps[type] = otp;
             const button = document.querySelector(`button[onclick="sendEmailOtp('\${type}\')"]`);
             if (button) { button.disabled = true; button.textContent = 'Sending...'; }
@@ -6745,7 +6745,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
         async function verifyEmailOtp(type) {
             const nameInput = document.getElementById(type === 'student' ? 'stu_name' : 't_name');
             const emailInput = document.getElementById(type === 'student' ? 'stu_email' : 't_email');
-            const entered = (document.getElementById(type === 'student' ? 'stuEnteredOtp' : 'tutorEnteredOtp')?.value || '').replace(/\D/g,'').slice(0,8);
+            const entered = document.getElementById(type === 'student' ? 'stuEnteredOtp' : 'tutorEnteredOtp').value.trim();
             
             if (entered === pendingEmailOtps[type] && entered !== "") {
                 alert('Email verified successfully.');
@@ -7546,21 +7546,14 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 This removes the Auth account and linked tutor/profile records from Supabase. This cannot be undone.`)) return;
             try {
                 await gcAdminPermanentDelete(tutor, 'tutor');
-                const deletedUid = String(tutor.user_id || tutor.userId || tutor.auth_user_id || '').trim();
-                tutorDirectoryList = tutorDirectoryList.filter(t => String(t.id) !== String(tutorId) && (!deletedUid || String(t.user_id || t.userId || t.auth_user_id || '') !== deletedUid));
-                studentDirectoryList = studentDirectoryList.filter(s => String(s.id) !== String(tutorId) && (!deletedUid || String(s.user_id || s.userId || s.auth_user_id || '') !== deletedUid));
+                tutorDirectoryList = tutorDirectoryList.filter(t => String(t.id) !== String(tutorId));
+                studentDirectoryList = studentDirectoryList.filter(s => String(s.user_id || '') !== String(tutor.user_id || ''));
                 try{window.gcPageCache?.clear?.()}catch(_){}
-                try{localStorage.removeItem('gc_tutor_directory_cache');localStorage.removeItem('gc_student_directory_cache')}catch(_){}
                 saveRegisteredDirectories();
                 renderTutorDirectory();
                 renderAdminQueue();
-                if (typeof window.gcV4Popup === 'function') window.gcV4Popup('TUTOR DELETED SUCCESSFULLY', `${tutor.name || 'Tutor'} has been permanently deleted. The directory and admin records are being refreshed.`, 'success');
+                alert('Tutor permanently deleted from Supabase.');
                 try { await gcLoadCloudDirectories(currentTutorPage || 1, currentStudentPage || 1); } catch (_) {}
-                // Re-apply the deletion locally after refresh; if the database still returns it,
-                // the next reload will reveal that the server-side delete did not persist.
-                if (deletedUid) tutorDirectoryList = tutorDirectoryList.filter(t => String(t.user_id || '') !== deletedUid);
-                tutorDirectoryList = tutorDirectoryList.filter(t => String(t.id) !== String(tutorId));
-                saveRegisteredDirectories(); renderTutorDirectory(); renderAdminQueue();
             } catch (err) {
                 console.error('Permanent tutor deletion failed:', err);
                 alert('DELETE FAILED — tutor was NOT removed.\n\n' + (err?.message || String(err)));
@@ -7575,32 +7568,19 @@ This removes the Auth account and linked tutor/profile records from Supabase. Th
 This removes the Auth account and linked student/profile records from Supabase. This cannot be undone.`)) return;
             try {
                 await gcAdminPermanentDelete(student, 'student');
-                const deletedUid = String(student.user_id || student.userId || student.auth_user_id || '').trim();
-                studentDirectoryList = studentDirectoryList.filter(s => String(s.id) !== String(studentId) && (!deletedUid || String(s.user_id || s.userId || s.auth_user_id || '') !== deletedUid));
-                tutorDirectoryList = tutorDirectoryList.filter(t => !deletedUid || String(t.user_id || t.userId || t.auth_user_id || '') !== deletedUid);
+                studentDirectoryList = studentDirectoryList.filter(s => String(s.id) !== String(studentId));
+                tutorDirectoryList = tutorDirectoryList.filter(t => String(t.user_id || '') !== String(student.user_id || ''));
                 try{window.gcPageCache?.clear?.()}catch(_){}
-                try{localStorage.removeItem('gc_tutor_directory_cache');localStorage.removeItem('gc_student_directory_cache')}catch(_){}
                 saveRegisteredDirectories();
                 renderStudentDirectory();
                 renderAdminQueue();
-                if (typeof window.gcV4Popup === 'function') window.gcV4Popup('STUDENT DELETED SUCCESSFULLY', `${student.name || 'Student'} has been permanently deleted. The directory and admin records are being refreshed.`, 'success');
+                alert('Student permanently deleted from Supabase.');
                 try { await gcLoadCloudDirectories(currentTutorPage || 1, currentStudentPage || 1); } catch (_) {}
-                if (deletedUid) studentDirectoryList = studentDirectoryList.filter(s => String(s.user_id || '') !== deletedUid);
-                studentDirectoryList = studentDirectoryList.filter(s => String(s.id) !== String(studentId));
-                saveRegisteredDirectories(); renderStudentDirectory(); renderAdminQueue();
             } catch (err) {
                 console.error('Permanent student deletion failed:', err);
                 alert('DELETE FAILED — student was NOT removed.\n\n' + (err?.message || String(err)));
             }
         }
-
-        // Global cache invalidator used by legacy admin handlers.
-        // The authoritative directory layer keeps its own private clearCaches() function.
-        window.clearCaches = window.clearCaches || function(){
-            try { window.gcPageCache?.clear?.(); } catch (_) {}
-            try { localStorage.removeItem('gc_tutor_directory_cache'); } catch (_) {}
-            try { localStorage.removeItem('gc_student_directory_cache'); } catch (_) {}
-        };
 
         async function gcAdminSetTutorApproval(tutorId, changes, successText){
             const t = tutorDirectoryList.find(item => String(item.id) === String(tutorId));
@@ -7613,21 +7593,15 @@ This removes the Auth account and linked student/profile records from Supabase. 
             try {
                 const cloud = window.GC_ADMIN_CLOUD;
                 if (!cloud?.setTutorApproval) throw new Error('Secure Admin approval service is not installed. Run the supplied final SQL migration first.');
-                const saved = await cloud.setTutorApproval(uid, {
+                await cloud.setTutorApproval(uid, {
                     paid_status: t.paidStatus === 'PAID' ? 'PAID' : 'PENDING',
                     verified: t.verified === true
                 });
-                if (saved && saved.ok === false) throw new Error(saved.error || 'Supabase rejected the admin update.');
-                window.clearCaches();
+                clearCaches();
                 saveRegisteredDirectories();
                 renderTutorDirectory();
                 renderAdminQueue();
-                if (typeof window.gcV4Popup === 'function') {
-                    const isVerified = Object.prototype.hasOwnProperty.call(changes, 'verified');
-                    const isPaid = Object.prototype.hasOwnProperty.call(changes, 'paidStatus');
-                    const title = isVerified && changes.verified === true ? 'VERIFIED TICK GRANTED' : isVerified && changes.verified === false ? 'VERIFIED TICK REVOKED' : isPaid && changes.paidStatus === 'PAID' ? 'PAYMENT MARKED PAID' : 'PAID STATUS REVOKED';
-                    window.gcV4Popup(title, successText || 'Tutor status updated successfully.', 'success');
-                } else { alert(successText || 'Tutor status updated successfully.'); }
+                showSuccessPopup(successText || 'Tutor status updated successfully.');
             } catch (e) {
                 Object.assign(t, previous);
                 renderTutorDirectory();
@@ -8563,7 +8537,7 @@ This removes the Auth account and linked student/profile records from Supabase. 
 
     if(result.error) throw result.error;
 
-    if(window.gcPageCache) window.gcPageCache.clear();
+    if(typeof gcPageCache !== 'undefined') gcPageCache.clear();
     return true;
   };
 
@@ -8767,7 +8741,6 @@ This removes the Auth account and linked student/profile records from Supabase. 
       </div>`;
     m.classList.add('open');
   }
-  window.gcV4Popup = gcV4Popup;
   window.gcV4ClosePopup=function(){const m=document.getElementById('gcV4Notice');if(m)m.classList.remove('open');};
   window.gcV4ContactSent=function(){gcV4ClosePopup();};
   function contactSentPopup(){
@@ -8881,7 +8854,7 @@ This removes the Auth account and linked student/profile records from Supabase. 
     const name=nameInput?.value.trim()||'', email=emailInput?.value.trim()||'';
     if(!name){gcV4Popup('NAME REQUIRED','Please enter your name first.','gold');return;}
     if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){gcV4Popup('VALID EMAIL REQUIRED','Please enter a valid email address so we can send your OTP.','gold');return;}
-    const otp=String(Math.floor(10000000 + Math.random() * 90000000));
+    const otp=Math.floor(1000+Math.random()*9000).toString();
     try{pendingEmailOtps[type]=otp;}catch(e){window.pendingEmailOtps=window.pendingEmailOtps||{};window.pendingEmailOtps[type]=otp;}
     const button=document.querySelector(`button[onclick="sendEmailOtp('${type}')"]`); if(button){button.disabled=true;button.textContent='Sending...';}
     const params={name,email,to_email:email,recipient_email:email,reply_to:email,otp_code:otp};
@@ -8894,7 +8867,7 @@ This removes the Auth account and linked student/profile records from Supabase. 
   };
   window.verifyEmailOtp=async function(type){
     const nameInput=document.getElementById(type==='student'?'stu_name':'t_name'), emailInput=document.getElementById(type==='student'?'stu_email':'t_email');
-    const entered=(document.getElementById(type==='student'?'stuEnteredOtp':'tutorEnteredOtp')?.value||'').replace(/\D/g,'').slice(0,8);
+    const entered=document.getElementById(type==='student'?'stuEnteredOtp':'tutorEnteredOtp')?.value.trim()||'';
     let expected='';try{expected=pendingEmailOtps[type]}catch(e){expected=window.pendingEmailOtps?.[type]||'';}
     if(entered!==expected||!entered){gcV4Popup('INVALID OTP','The OTP does not match. Please check your email and enter the latest code.','gold');return;}
     gcV4Popup('EMAIL VERIFIED','Your email has been verified successfully.','success');
@@ -10671,7 +10644,7 @@ body {
       });
 
       if (!preferred.error) {
-        window.gcPageCache.clear();
+        gcPageCache.clear();
         return { ok: true, row: preferred.data?.profile || preferred.data, userId: user.id };
       }
 
@@ -10685,7 +10658,7 @@ body {
 
       if (!legacy.error) {
         const saved = legacy.data?.profile || legacy.data;
-        window.gcPageCache.clear();
+        gcPageCache.clear();
         return { ok: true, row: saved, userId: user.id };
       }
 
@@ -10822,7 +10795,7 @@ body {
     const from = (safePage - 1) * size;
     const to = from + size - 1;
     const cacheKey = table + ':' + safePage + ':' + size;
-    const cached = window.gcPageCache.get(cacheKey);
+    const cached = gcPageCache.get(cacheKey);
     if (cached) return cached;
 
     const fields = table === 'tutor_profiles'
@@ -10856,7 +10829,7 @@ body {
       rows: (finalResult.data || []).map(mapper),
       total: Number(finalResult.count || 0)
     };
-    window.gcPageCache.set(cacheKey, payload);
+    gcPageCache.set(cacheKey, payload);
     return payload;
   }
 
@@ -10868,7 +10841,7 @@ body {
       : 'id,user_id,name,course,stream,learning_requirement,subject,year,semester,standard,college,division,roll_number,cgpa,email,phone,location,address,mode,teaching_mode,languages,availability,member_since,record_no,data_source,about_me,achievement_photos,helpline_plan,helpline_status,helpline_course,helpline_subject,helpline_subject_count,helpline_amount,privacy,photo_url,created_at';
 
     const cacheKey = 'ALL:' + table;
-    const cached = window.gcPageCache.get(cacheKey);
+    const cached = gcPageCache.get(cacheKey);
     if (cached) return cached;
 
     // Supabase/PostgREST has a server-side row limit. Fetch in chunks so a
@@ -10910,7 +10883,7 @@ body {
       total: rows.length
     };
 
-    window.gcPageCache.set(cacheKey, payload);
+    gcPageCache.set(cacheKey, payload);
     return payload;
   }
 
@@ -11001,7 +10974,7 @@ body {
    *
    * Supabase's current email OTP template uses {{ .Token }}. The live
    * Supabase email template should therefore display that token and the UI
-   * below uses the configured Supabase OTP length (8 digits configured for this project).
+   * below uses the configured Supabase OTP length (6 digits by default).
    */
   window.gcVerifiedRegistration = window.gcVerifiedRegistration || {
     student: null,
@@ -11009,7 +10982,7 @@ body {
   };
 
   function gcOtpDigits(value) {
-    return String(value || '').replace(/\D/g,'').slice(0,8);
+    return String(value || '').replace(/\D/g,'').slice(0,6);
   }
 
   function gcOtpPopup(email, role, verifyFn, resendFn) {
@@ -11054,11 +11027,11 @@ body {
             </p>
 
             <div class="mt-6 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 sm:p-5">
-              <div class="text-[11px] font-black uppercase tracking-[.18em] text-blue-700">Enter 8-digit verification OTP</div>
+              <div class="text-[11px] font-black uppercase tracking-[.18em] text-blue-700">Enter 6-digit verification OTP</div>
               <input id="gcRegistrationOtpInput"
                      class="mt-3 w-full rounded-2xl border-2 border-blue-200 bg-white px-4 py-4 text-center text-2xl sm:text-3xl font-black tracking-[.42em] text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-                     inputmode="numeric" autocomplete="one-time-code" maxlength="8"
-                     placeholder="••••••••" aria-label="8-digit email verification OTP">
+                     inputmode="numeric" autocomplete="one-time-code" maxlength="6"
+                     placeholder="••••••••" aria-label="6-digit email verification OTP">
               <div id="gcRegistrationOtpStatus" class="mt-2 min-h-[20px] text-xs font-semibold text-slate-500"></div>
             </div>
 
@@ -11103,8 +11076,8 @@ body {
 
       verifyButton.addEventListener('click', async () => {
         const token = gcOtpDigits(input.value);
-        if (token.length !== 8) {
-          status.textContent = 'Please enter all 8 digits from the latest email.';
+        if (token.length !== 6) {
+          status.textContent = 'Please enter all 6 digits from the latest email.';
           status.className = 'mt-2 min-h-[20px] text-xs font-bold text-rose-600';
           input.focus();
           return;
@@ -13651,17 +13624,16 @@ async function getAds(){const s=client();if(!s)throw Error('Supabase is not avai
 function card(a){const href=url(a.click_url)||url(a.whatsapp_url),label=a.advertiser_name||a.title||'GURU CONNECT';const body='<div class="gc-site-ad-media"><img src="'+esc(a.image_url)+'" alt="'+esc(label)+' flyer" loading="lazy"></div><div class="gc-site-ad-copy"><b>'+esc(label)+'</b><span>CONNECT</span></div>';return '<article class="gc-site-ad-card">'+(href?'<a href="'+esc(href)+'" target="_blank" rel="noopener noreferrer sponsored" aria-label="Connect with '+esc(label)+'">'+body+'</a>':body)+'</article>'}
 function injectGrid(id,ads,kind){
   const g=$(id);if(!g)return;
-  const list=ads.filter(a=>(a.placement==='all'||a.placement===kind)&&url(a.image_url));
-  const old=[...g.querySelectorAll(':scope > .gc-site-ad-card')];
-  // Avoid clearing/recreating the same cards every 15 seconds (which caused
-  // flicker and made ads disappear while profile grids were being repainted).
-  const signature=list.map(a=>String(a.id)+':'+String(a.image_url)).join('|');
-  if(g.dataset.gcAdsSignature===signature&&old.length===list.length)return;
-  old.forEach(x=>x.remove());
-  g.dataset.gcAdsSignature=signature;
+  /* Remove previously rendered ads so the current complete active list is shown. */
+  g.querySelectorAll('.gc-site-ad-card').forEach(x=>x.remove());
+  const list=ads.filter(a=>a.placement==='all'||a.placement===kind);
   if(!list.length)return;
+  /* Render EVERY matching advertisement, in priority DESC / newest-first order. */
   const frag=document.createDocumentFragment();
-  list.forEach(a=>{const el=document.createRange().createContextualFragment(card(a,kind)).firstElementChild;if(el)frag.appendChild(el)});
+  list.forEach(a=>{
+    const el=document.createRange().createContextualFragment(card(a,kind)).firstElementChild;
+    if(el)frag.appendChild(el);
+  });
   const target=g.children[Math.min(2,g.children.length)]||null;
   g.insertBefore(frag,target);
 }
@@ -13717,59 +13689,12 @@ function show(){const p=$('gcAdminAdvertisementsPanel');if(!p)return;if(!staffMo
 function boot(){if(window.__gcAdsBoot)return;window.__gcAdsBoot=true;
  $('gcAdSaveBtn')?.addEventListener('click',e=>{e.preventDefault();save()});$('gcAdClearBtn')?.addEventListener('click',e=>{e.preventDefault();clearForm()});$('gcAdRefreshBtn')?.addEventListener('click',e=>{e.preventDefault();adminLoad()});$('gcAdCancelEditBtn')?.addEventListener('click',e=>{e.preventDefault();clearForm()});
  const btn=$('gcAdminAdsButton');if(btn){btn.onclick=e=>{e.preventDefault();e.stopPropagation();show()};btn.style.pointerEvents='auto';btn.style.position='relative';btn.style.zIndex='20'}
- renderIndexAds();['tutorGrid','studentGridContainer'].forEach(id=>{const g=$(id);if(g){let timer;const obs=new MutationObserver(()=>{clearTimeout(timer);timer=setTimeout(()=>renderIndexAds(),250)});obs.observe(g,{childList:true})}});setInterval(renderIndexAds,30000)}
+ renderIndexAds();['tutorGrid','studentGridContainer'].forEach(id=>{const g=$(id);if(g){const obs=new MutationObserver(()=>{if(!g.querySelector('.gc-site-ad-card'))renderIndexAds()});obs.observe(g,{childList:true})}});setInterval(renderIndexAds,15000)}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.GC_ADS={refresh:renderIndexAds,showAdmin:show,loadAdmin:adminLoad,edit:setEditMode};
 })();
 </script>
 
-
-<script>
-/* GURU CONNECT: enforce 8-digit registration OTP inputs across legacy and current UI */
-(function(){
-  function bind(id){
-    var el=document.getElementById(id);
-    if(!el || el.dataset.gcOtp8Bound) return;
-    el.dataset.gcOtp8Bound='1';
-    el.setAttribute('maxlength','8');
-    el.setAttribute('minlength','8');
-    el.setAttribute('inputmode','numeric');
-    el.setAttribute('autocomplete','one-time-code');
-    el.setAttribute('pattern','[0-9]{8}');
-    el.placeholder='8-digit OTP';
-    el.addEventListener('input',function(){
-      this.value=String(this.value||'').replace(/\D/g,'').slice(0,8);
-    });
-    el.addEventListener('paste',function(e){
-      e.preventDefault();
-      var t=(e.clipboardData||window.clipboardData).getData('text');
-      this.value=String(t||'').replace(/\D/g,'').slice(0,8);
-      this.dispatchEvent(new Event('input',{bubbles:true}));
-    });
-  }
-  function bindAll(){ bind('stuEnteredOtp'); bind('tutorEnteredOtp'); bind('gcRegistrationOtpInput'); }
-  bindAll();
-  new MutationObserver(bindAll).observe(document.documentElement,{subtree:true,childList:true});
-})();
-</script>
-<style id="gc-branded-popup-style">
-#gc-popup-overlay{position:fixed;inset:0;background:rgba(7,18,38,.62);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;z-index:2147483647;padding:18px;font-family:inherit}
-#gc-popup-overlay.gc-open{display:flex;animation:gcFade .18s ease-out}
-#gc-popup-card{width:min(420px,100%);background:#fff;border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.28);overflow:hidden;text-align:center;border:1px solid rgba(255,255,255,.7);animation:gcRise .22s ease-out}
-#gc-popup-top{padding:22px 24px 14px;background:linear-gradient(135deg,#eff6ff,#f0fdfa)}
-#gc-popup-logo{width:70px;height:70px;object-fit:contain;border-radius:18px;background:#fff;padding:6px;box-shadow:0 5px 18px rgba(15,23,42,.1)}
-#gc-popup-brand{font-weight:900;letter-spacing:1.2px;color:#12315b;font-size:18px;margin-top:9px}
-#gc-popup-tag{font-size:10px;letter-spacing:2px;color:#0f766e;font-weight:800;margin-top:3px}
-#gc-popup-icon{width:48px;height:48px;margin:17px auto 0;border-radius:50%;display:grid;place-items:center;font-size:25px;background:#dcfce7;color:#15803d}
-#gc-popup-icon.gc-error{background:#fee2e2;color:#b91c1c}#gc-popup-icon.gc-warn{background:#fef3c7;color:#b45309}
-#gc-popup-title{font-size:20px;font-weight:800;color:#14213d;margin:17px 20px 7px}
-#gc-popup-message{white-space:pre-wrap;overflow-wrap:anywhere;color:#526176;font-size:14px;line-height:1.6;margin:0 24px 20px;max-height:35vh;overflow:auto}
-#gc-popup-ok{border:0;border-radius:12px;background:linear-gradient(135deg,#2563eb,#0f766e);color:#fff;font-weight:800;letter-spacing:.4px;padding:12px 28px;min-width:125px;cursor:pointer;box-shadow:0 6px 16px rgba(37,99,235,.22)}
-#gc-popup-actions{padding:0 22px 22px;display:flex;justify-content:center;gap:10px}#gc-popup-ok:focus{outline:3px solid #93c5fd;outline-offset:3px}
-@keyframes gcFade{from{opacity:0}to{opacity:1}}@keyframes gcRise{from{transform:translateY(10px) scale(.98);opacity:.7}to{transform:none;opacity:1}}
-@media(prefers-reduced-motion:reduce){#gc-popup-overlay,#gc-popup-card{animation:none}}
-</style>
-<div id="gc-popup-overlay" role="presentation"><section id="gc-popup-card" role="alertdialog" aria-modal="true" aria-labelledby="gc-popup-title" aria-describedby="gc-popup-message"><div id="gc-popup-top"><img id="gc-popup-logo" src="guru-connect-logo.png" alt="GURU CONNECT logo"><div id="gc-popup-brand">GURU CONNECT</div><div id="gc-popup-tag">CONNECTING MINDS • CREATING FUTURES</div><div id="gc-popup-icon">✓</div></div><h2 id="gc-popup-title">Notice</h2><p id="gc-popup-message"></p><div id="gc-popup-actions"><button id="gc-popup-ok" type="button">CONTINUE</button></div></section></div>
-<script id="gc-branded-popup-script">(()=>{if(window.__gcBrandedPopupInstalled)return;window.__gcBrandedPopupInstalled=true;const overlay=document.getElementById('gc-popup-overlay');if(!overlay)return;const title=overlay.querySelector('#gc-popup-title'),msg=overlay.querySelector('#gc-popup-message'),icon=overlay.querySelector('#gc-popup-icon'),ok=overlay.querySelector('#gc-popup-ok');let queue=[],busy=false;function render(){if(!queue.length){overlay.classList.remove('gc-open');busy=false;return}busy=true;const item=queue[0];title.textContent=item.title;msg.textContent=item.message;icon.className=item.kind==='error'?'gc-error':item.kind==='warn'?'gc-warn':'';icon.textContent=item.kind==='error'?'!':item.kind==='warn'?'⚠':'✓';ok.textContent=item.button||'CONTINUE';overlay.classList.add('gc-open');ok.focus()}function close(){queue.shift();render()}ok.addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('gc-open')){e.preventDefault();close()}});const nativeAlert=window.alert.bind(window);window.alert=function(value){const message=String(value??'');const low=message.toLowerCase();const kind=/fail|error|unable|not saved|not updated|denied|invalid|expired/.test(low)?'error':/warning|please|cannot|missing/.test(low)?'warn':'success';queue.push({title:kind==='error'?'Action Unsuccessful':kind==='warn'?'Please Note':'Action Completed',message,kind});if(!busy)render()};window.gcShowPopup=(message,options={})=>{queue.push({title:options.title||'GURU CONNECT',message:String(message??''),kind:options.kind||'success',button:options.button});if(!busy)render()};})();</script><script id="gc-login-router-fix-20261001">(function(){function route(){try{const q=new URLSearchParams(location.search);if(q.get('open_login')!=='1')return;const role=(q.get('role')||'student').toLowerCase();history.replaceState({},'',location.pathname);const open=()=>{if(typeof window.openLoginModal==='function'){window.openLoginModal(role);return true}return false};if(open())return;let n=0;const t=setInterval(()=>{if(open()||++n>30)clearInterval(t)},100)}catch(e){console.error('GURU CONNECT login router:',e)}}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',route);else setTimeout(route,50)})();</script></body>
+</body>
 <style id="gc-final-load-hero-transfer-pdf-fix">
 /* Final stable hero: one real image, exact 1640:515 ratio, no crop and no duplicate background artwork. */
 .gc-beautiful-hero{height:auto!important;min-height:0!important;padding:0!important;overflow:hidden!important;background:#fff!important}
