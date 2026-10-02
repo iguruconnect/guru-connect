@@ -11011,6 +11011,10 @@ body {
   function gcOtpDigits(value) {
     return String(value || '').replace(/\D/g,'').slice(0,8);
   }
+  function gcOtpIsValidLength(value) {
+    const n = String(value || '').replace(/\D/g,'').length;
+    return n >= 6 && n <= 8;
+  }
 
   function gcOtpPopup(email, role, verifyFn, resendFn) {
     return new Promise((resolve, reject) => {
@@ -11054,11 +11058,11 @@ body {
             </p>
 
             <div class="mt-6 rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 sm:p-5">
-              <div class="text-[11px] font-black uppercase tracking-[.18em] text-blue-700">Enter 8-digit verification OTP</div>
+              <div class="text-[11px] font-black uppercase tracking-[.18em] text-blue-700">Enter your verification OTP (6–8 digits)</div>
               <input id="gcRegistrationOtpInput"
                      class="mt-3 w-full rounded-2xl border-2 border-blue-200 bg-white px-4 py-4 text-center text-2xl sm:text-3xl font-black tracking-[.42em] text-slate-900 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                      inputmode="numeric" autocomplete="one-time-code" maxlength="8"
-                     placeholder="••••••••" aria-label="8-digit email verification OTP">
+                     placeholder="••••••••" aria-label="6 to 8 digit email verification OTP">
               <div id="gcRegistrationOtpStatus" class="mt-2 min-h-[20px] text-xs font-semibold text-slate-500"></div>
             </div>
 
@@ -11103,8 +11107,8 @@ body {
 
       verifyButton.addEventListener('click', async () => {
         const token = gcOtpDigits(input.value);
-        if (token.length !== 8) {
-          status.textContent = 'Please enter all 8 digits from the latest email.';
+        if (!gcOtpIsValidLength(token)) {
+          status.textContent = 'Please enter the complete 6–8 digit code from the latest email.';
           status.className = 'mt-2 min-h-[20px] text-xs font-bold text-rose-600';
           input.focus();
           return;
@@ -11192,7 +11196,16 @@ body {
   }
   async function gcCheckRegistrationIdentity(email,phone){
     const r=await gcSupabase.rpc('gc_check_registration_identity',{p_email:email,p_phone:phone});
-    if(r.error)throw r.error; return r.data||{};
+    if(!r.error) return r.data||{};
+    // Older deployments may not yet contain the identity-check RPC. Do not
+    // block OTP delivery in that case; the verified session is checked again
+    // before a profile is saved.
+    const msg=String(r.error?.message||r.error||'');
+    if(/could not find the function|function .* does not exist|schema cache|PGRST202/i.test(msg)){
+      console.warn('GURU CONNECT identity RPC is missing; continuing with Auth OTP and post-verification safety checks.');
+      return {email_exists:false,phone_exists:false,identity_rpc_missing:true};
+    }
+    throw r.error;
   }
   async function gcCreateEmailAccount(email,password,role,profile){
     if(!gcSupabase)throw new Error('Supabase Authentication is not configured.');
@@ -11216,6 +11229,16 @@ body {
     );
     const verifiedUser=verified.data?.user, verifiedSession=verified.data?.session||null;
     if(!verifiedUser)throw new Error('Supabase verified the OTP but did not return a user account.');
+    // If the identity RPC was unavailable, re-check the canonical profile now
+    // that the OTP has authenticated the user. Never convert an existing member
+    // account into a second registration.
+    const safetyTable=role==='tutor'?'tutor_profiles':'student_profiles';
+    const safetyQ=await gcSupabase.from(safetyTable).select('user_id').eq('user_id',verifiedUser.id).limit(1).maybeSingle();
+    if(safetyQ.error) throw safetyQ.error;
+    if(safetyQ.data?.user_id){
+      await gcSupabase.auth.signOut();
+      throw new Error('This email is already registered as a GURU CONNECT '+role+'. Please use the login option instead.');
+    }
     const pw=await gcSupabase.auth.updateUser({password,data:metadata}); if(pw.error)throw pw.error;
     window.gcVerifiedRegistration[role]={email:cleanEmail,user:verifiedUser,session:verifiedSession};
     return {user:verifiedUser,session:verifiedSession,pending:false};
@@ -11455,6 +11478,10 @@ body {
       return;
     }
     if (authResult.pending) return;
+    try {
+      localStorage.setItem('gc_pending_email', email.trim().toLowerCase());
+      localStorage.setItem('gc_pending_profile', JSON.stringify({role:'student',profile}));
+    } catch (_) {}
     const cloud = await window.gcSaveProfileToCloud('student', profile, authResult.user);
     if (!cloud.ok) {
       const detail = cloud.error ? '\n\nSupabase: ' + (window.gcFormatCloudError ? window.gcFormatCloudError(cloud.error) : (cloud.error.message || cloud.error)) : '';
@@ -11465,6 +11492,7 @@ body {
     profile.id = cloud.row.id;
     profile.user_id = cloud.userId;
     profile.isCloud = true;
+    try { localStorage.removeItem('gc_pending_profile'); localStorage.removeItem('gc_pending_email'); } catch (_) {}
 
     studentDirectoryList.unshift(profile);
     window.studentDirectoryList = studentDirectoryList;
@@ -11536,6 +11564,10 @@ body {
       return;
     }
     if (authResult.pending) return;
+    try {
+      localStorage.setItem('gc_pending_email', email.trim().toLowerCase());
+      localStorage.setItem('gc_pending_profile', JSON.stringify({role:'tutor',profile}));
+    } catch (_) {}
     const cloud = await window.gcSaveProfileToCloud('tutor', profile, authResult.user);
     if (!cloud.ok) {
       const detail = cloud.error ? '\n\nSupabase: ' + (window.gcFormatCloudError ? window.gcFormatCloudError(cloud.error) : (cloud.error.message || cloud.error)) : '';
@@ -11546,6 +11578,7 @@ body {
     profile.id = cloud.row.id;
     profile.user_id = cloud.userId;
     profile.isCloud = true;
+    try { localStorage.removeItem('gc_pending_profile'); localStorage.removeItem('gc_pending_email'); } catch (_) {}
 
     tutorDirectoryList.unshift(profile);
     window.tutorDirectoryList = tutorDirectoryList;
