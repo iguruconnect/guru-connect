@@ -5,7 +5,7 @@
 .paid-btn{background:#0f766e!important;color:#fff!important}.paid-btn:hover{background:#115e59!important}
 .verified-btn{background:#2563eb!important;color:#fff!important}.verified-btn:hover{background:#1d4ed8!important}
 
-</style></head><body><header class="head"><div class="headin"><div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Secure Staff/Admin workspace for Student & Tutor account management.</p></div><button id="logout" class="btn logout">LOG OUT</button></div></header><main class="wrap"><div id="gate" class="panel">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">Admin actions below use a secure Supabase Edge Function. Do not put the Supabase service-role key into this HTML.</div><div class="panel"><h2 style="margin-top:0">Find Student / Tutor</h2><div class="grid"><div class="field"><label>Search name, email or phone</label><input id="term" placeholder="e.g. student@email.com"></div><div class="field"><label>Role filter</label><select id="roleFilter"><option value="">All Students & Tutors</option><option value="student">Student</option><option value="tutor">Tutor</option></select></div></div><div class="actions"><button id="search" class="btn primary">SEARCH USERS</button><button id="openReceipt" type="button" class="btn gc-receipt-btn">🧾 RECEIPT GENERATION</button></div><div id="searchStatus" class="status"></div><div id="results"></div></div>
+</style></head><body><header class="head"><div class="headin"><div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Secure Staff/Admin workspace for Student & Tutor account management.</p></div><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end"><button id="openReceiptTop" type="button" class="btn gc-receipt-btn">🧾 RECEIPTS</button><button id="logout" class="btn logout">LOG OUT</button></div></div></header><main class="wrap"><div id="gate" class="panel">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">Admin actions below use a secure Supabase Edge Function. Do not put the Supabase service-role key into this HTML.</div><div class="panel"><h2 style="margin-top:0">Find Student / Tutor</h2><div class="grid"><div class="field"><label>Search name, email or phone</label><input id="term" placeholder="e.g. student@email.com"></div><div class="field"><label>Role filter</label><select id="roleFilter"><option value="">All Students & Tutors</option><option value="student">Student</option><option value="tutor">Tutor</option></select></div></div><div class="actions"><button id="search" class="btn primary">SEARCH USERS</button><button id="openReceipt" type="button" class="btn gc-receipt-btn">🧾 RECEIPT GENERATION</button></div><div id="searchStatus" class="status"></div><div id="results"></div></div>
 <div class="panel"><h2 style="margin-top:0">Create User</h2><div class="grid"><div class="field"><label>Role</label><select id="newRole"><option value="student">Student</option><option value="tutor">Tutor</option></select></div><div class="field"><label>Name</label><input id="newName"></div><div class="field"><label>Email</label><input id="newEmail" type="email"></div><div class="field"><label>Phone</label><input id="newPhone"></div><div class="field"><label>Password</label><input id="newPass" type="password" minlength="8"></div></div><div class="actions"><button id="create" class="btn green">CREATE ACCOUNT</button></div><div id="createStatus" class="status"></div></div></section></main><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
 const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',FN=U+'/functions/v1/admin-user-actions',sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}}),$=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function api(action,payload={}){const s=await sb.auth.getSession(),t=s.data?.session?.access_token;if(!t)throw new Error('Admin session missing. Please login again.');const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({action,...payload})});const d=await r.json();if(!r.ok)throw new Error(d.error||'Server error');return d}
@@ -69,21 +69,22 @@ function adminReceiptWindowHtml(r,receiptNo){
 }
 function openReceiptForUser(u){
   if(!u){ alert('Member record not found. Please search again.'); return; }
-  const p=u.profile||{};
-  const params=new URLSearchParams({
-    name:u.name||p.name||p.full_name||'',
-    email:u.email||p.email||'',
-    phone:u.phone||p.phone||'',
-    category:(u.role||p.role||'').toLowerCase()==='tutor'?'Tutor':((u.role||p.role||'').toLowerCase()==='student'?'Student':''),
-    user_id:u.user_id||'',
-    status:u.registration_status||p.registration_status||'',
-    paid_status:u.paid_status||p.paid_status||'',
-    utr:u.utr||u.transaction_id||u.transaction_ref||p.utr||p.transaction_id||p.transaction_ref||''
-  });
-  location.href='receipt.html?'+params.toString();
+  const r=adminReceiptValue(u);
+  const receiptNo='GC-'+new Date().toISOString().slice(0,10).replaceAll('-','')+'-'+String(u.user_id||'MEMBER').replaceAll('-','').slice(0,8).toUpperCase();
+  const win=window.open('', '_blank');
+  if(!win){ alert('Please allow pop-ups for this website, then click GENERATE RECEIPT again.'); return; }
+  win.document.open();
+  win.document.write(adminReceiptWindowHtml(r,receiptNo));
+  win.document.close();
 }
 window.generateAdminReceipt=function(i){ openReceiptForUser(window.users?.[i]); };
-$('openReceipt').onclick=()=>{ location.href='receipt.html'; };
+function focusReceiptSearch(){
+  $('term').focus();
+  $('searchStatus').textContent='Search for a Student or Tutor, then click GENERATE RECEIPT on that member card.';
+  document.querySelector('#term')?.scrollIntoView({behavior:'smooth',block:'center'});
+}
+$('openReceipt').onclick=focusReceiptSearch;
+$('openReceiptTop').onclick=focusReceiptSearch;
 
 window.setTutorApproval=async function(i,value){const u=window.users?.[i];if(!u?.user_id)return alert('Tutor record not found. Please search again.');const isPaid=String(value).toUpperCase()==='PAID';const verifiedValue=(value===true||String(value).toLowerCase()==='true')?true:(value===false||String(value).toLowerCase()==='false')?false:null;let payload={};if(isPaid)payload.paid_status='PAID';else if(verifiedValue!==null)payload.verified=verifiedValue;else return alert('Unknown tutor status action.');const b=Array.from(document.querySelectorAll('.user'))[i]?.querySelector(isPaid?'.paid-btn':'.verified-btn');if(b){b.disabled=true;b.textContent=isPaid?'SAVING…':'UPDATING…'}try{const q=await sb.rpc('gc_admin_set_tutor_approval',{p_user_id:String(u.user_id),p_data:payload});if(q.error)throw q.error;if(q.data?.ok===false)throw new Error(q.data.error||'Supabase rejected the admin approval update.');if(!q.data||typeof q.data!=='object')throw new Error('Supabase returned no confirmation. Check the admin RPC migration.');alert(isPaid?'✓ Tutor marked PAID successfully.':verifiedValue?'✓ Verified Tick granted successfully.':'✓ Verified Tick revoked successfully.');await $('search').click()}catch(e){console.error('Tutor approval update failed:',e);alert('ADMIN UPDATE FAILED\n\n'+(e?.message||String(e)))}finally{if(b){b.disabled=false}}};window.toggleEdit=i=>document.getElementById('edit'+i).classList.toggle('open');
 window.saveEdit=async i=>{
