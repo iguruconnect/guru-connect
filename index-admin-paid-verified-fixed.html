@@ -4819,6 +4819,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <i class="fa-solid fa-user-graduate"></i> Student Directory (<span id="adminStudentCount">0</span>)
                 </button>
 <button type="button" class="w-full sm:w-auto justify-center bg-orange-500 hover:bg-orange-600 text-white font-bold text-sm px-6 py-3 rounded-xl border border-orange-600 shadow flex items-center gap-2" id="gcAdminAdsButton"><i class="fa-solid fa-bullhorn"></i> ADVERTISEMENTS</button>
+<button type="button" class="w-full sm:w-auto justify-center bg-violet-600 hover:bg-violet-700 text-white font-bold text-sm px-6 py-3 rounded-xl border border-violet-700 shadow flex items-center gap-2" id="gcAdminReceiptButton"><i class="fa-solid fa-receipt"></i> RECEIPTS</button>
 </div>
 <!-- SECTION 1: TUTOR MANAGEMENT TABLE -->
 <div class="overflow-x-auto rounded-xl sm:rounded-2xl border border-slate-200 w-full" id="adminTutorSection">
@@ -4935,6 +4936,16 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
  </div>
  <div class="gc-ad-list-head"><b>ACTIVE / SCHEDULED ADVERTISEMENTS</b><span id="gcAdCount">0</span></div>
  <div id="gcAdList" class="gc-ad-list"><div class="gc-ad-empty">No advertisements loaded yet.</div></div>
+</section>
+<section id="gcAdminReceiptsPanel" class="gc-ad-admin-panel" aria-label="Receipt Management" style="display:none">
+ <div class="gc-ad-admin-head"><div><div style="font-size:10px;font-weight:950;letter-spacing:.14em;opacity:.85">GURU CONNECT • ADMIN</div><h3>🧾 RECEIPT MANAGEMENT</h3><p>Generate the supplied GURU CONNECT payment receipt from inside the Admin Dashboard.</p></div></div>
+ <div class="gc-ad-admin-body">
+  <div class="gc-ad-form-grid"><label class="wide">Registered Student / Tutor<select id="gcReceiptMember"><option value="">Select a Student or Tutor</option></select></label></div>
+  <div style="margin-top:12px;padding:12px 14px;border-radius:13px;background:#f5f3ff;color:#4c1d95;font-size:11px;line-height:1.6"><b>Receipt source:</b> This dashboard section opens the supplied <b>receipt.html</b> template with the selected member's name, email, phone, role and Supabase User ID pre-filled. You can edit payment details and print/save the PDF from the receipt itself.</div>
+  <div class="gc-ad-actions"><button type="button" class="gc-ad-btn gc-ad-btn-primary" id="gcReceiptOpenBtn">🧾 OPEN / CREATE RECEIPT</button><button type="button" class="gc-ad-btn gc-ad-btn-light" id="gcReceiptRefreshBtn">↻ REFRESH USERS</button></div>
+  <div class="gc-ad-status" id="gcReceiptStatus" aria-live="polite"></div>
+  <div id="gcReceiptFrameWrap" style="margin-top:16px;display:none;border:1px solid #ddd6fe;border-radius:18px;overflow:hidden;background:#fff"><iframe id="gcReceiptFrame" title="GURU CONNECT Receipt" src="receipt.html?back=index-admin-paid-verified-fixed.html" style="width:100%;height:900px;border:0;background:#fff"></iframe></div>
+ </div>
 </section>
 </div>
 <!-- WRAPPER FOR PUBLIC WEBSITE CONTENT -->
@@ -10940,6 +10951,7 @@ body {
       window.currentTutorPage = Math.max(1, Number(pageTutor) || 1);
       window.currentStudentPage = Math.max(1, Number(pageStudent) || 1);
 
+      if (typeof window.renderAdminQueue === 'function' && localStorage.getItem('is_staff_logged') === 'true') window.renderAdminQueue();
       if (typeof window.renderTutorDirectory === 'function') window.renderTutorDirectory();
       if (typeof window.renderStudentDirectory === 'function') window.renderStudentDirectory();
       setTimeout(function(){ try { gcLoadVisiblePhotos(); } catch (_) {} }, 0);
@@ -10977,7 +10989,7 @@ body {
    *
    * Supabase's current email OTP template uses {{ .Token }}. The live
    * Supabase email template should therefore display that token and the UI
-   * below uses the configured Supabase OTP length (6 digits by default).
+   * below uses the configured 6-digit GURU CONNECT registration OTP.
    */
   window.gcVerifiedRegistration = window.gcVerifiedRegistration || {
     student: null,
@@ -11192,7 +11204,7 @@ body {
       (token) => gcSupabase.auth.verifyOtp({
         email: cleanEmail,
         token,
-        type: 'email'
+        type: 'signup'
       }),
       sendOtp
     );
@@ -13784,9 +13796,20 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
       clearForm();
       try{window.checkStaffSessionState?.();window.renderAdminQueue?.()}catch(_){}
     }catch(e){
-      console.error('Admin create user failed:',e);
-      status('Creation failed: '+(e.message||e),false);
-      alert('User creation failed:\\n\\n'+(e.message||e)+'\\n\\nIf this says "Failed to fetch", deploy the included Supabase Edge Function: admin-create-user.');
+      console.warn('Edge Function create_user failed; trying the protected Supabase RPC fallback.',e);
+      try{
+        const rpc=await s.rpc('gc_admin_create_user',{p_role:role,p_name:name,p_email:email,p_phone:phone,p_password:password});
+        if(rpc.error)throw rpc.error;
+        status((rpc.data?.repaired?'✓ Existing Auth account repaired and profile linked.':'✓ Real Supabase Auth account and profile created successfully.'),true);
+        alert('User account is now present in Supabase.\n\nRole: '+(role==='tutor'?'Tutor':'Student')+'\nEmail: '+email+'\n\nThe account can login immediately with the password you created.');
+        clearForm();
+        try{await window.gcLoadCloudDirectories?.(1,1)}catch(_){}
+        try{window.checkStaffSessionState?.();window.renderAdminQueue?.()}catch(_){}
+      }catch(rpcErr){
+        console.error('Admin create RPC fallback failed:',rpcErr);
+        status('Creation failed: '+(rpcErr.message||rpcErr),false);
+        alert('User creation failed:\n\n'+(rpcErr.message||rpcErr)+'\n\nRun SUPABASE_GURU_CONNECT_MASTER_FIX_2026-10-02.sql in Supabase and try again.');
+      }
     }finally{if(btn){btn.disabled=false;btn.textContent='CREATE USER ACCOUNT';}}
   }
   function bind(){
@@ -13799,6 +13822,20 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
 })();
 </script>
 
+
+<script id="gc-admin-receipt-dashboard-20261002">
+(function(){
+'use strict';
+const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+const $=id=>document.getElementById(id); const S=()=>window.gcSupabase||(window.supabase?.createClient?.(U,K,{auth:{persistSession:true,autoRefreshToken:true}}));
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function load(){const sel=$('gcReceiptMember'),st=$('gcReceiptStatus');if(!sel)return;sel.innerHTML='<option value="">Loading Students / Tutors…</option>';try{const s=S();if(!s)throw new Error('Supabase is not connected.');const q=await s.rpc('gc_admin_find_users',{p_term:''});if(q.error)throw q.error;const rows=Array.isArray(q.data)?q.data:[];window.__gcReceiptUsers=rows;sel.innerHTML='<option value="">Select a Student or Tutor</option>'+rows.map((u,i)=>'<option value="'+i+'">'+esc((u.role||'').toUpperCase())+' — '+esc(u.name||'User')+' — '+esc(u.email||'No email')+'</option>').join('');st.textContent=rows.length+' Student/Tutor account(s) available for receipt generation.';}catch(e){sel.innerHTML='<option value="">Unable to load users</option>';st.textContent='Receipt user list failed: '+(e.message||e);}}
+function open(){const sel=$('gcReceiptMember'),u=window.__gcReceiptUsers?.[Number(sel?.value)];if(!u)return alert('Select a Student or Tutor first.');const p=u.profile||{};const params=new URLSearchParams({name:u.name||p.name||'',email:u.email||p.email||'',phone:u.phone||p.phone||'',category:String(u.role||'').replace(/^./,m=>m.toUpperCase()),user_id:u.user_id||'',back:'index-admin-paid-verified-fixed.html'});const frame=$('gcReceiptFrame');if(frame)frame.src='receipt.html?'+params.toString();const wrap=$('gcReceiptFrameWrap');if(wrap){wrap.style.display='block';wrap.scrollIntoView({behavior:'smooth',block:'start'});}}
+function toggle(){const p=$('gcAdminReceiptsPanel');if(!p)return;const hidden=getComputedStyle(p).display==='none'||p.style.display==='none';p.style.display=hidden?'block':'none';if(hidden)load();}
+function boot(){const b=$('gcAdminReceiptButton');if(b)b.onclick=e=>{e.preventDefault();e.stopPropagation();toggle()};$('gcReceiptOpenBtn')?.addEventListener('click',open);$('gcReceiptRefreshBtn')?.addEventListener('click',load);}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.GC_RECEIPTS={load,open,show:toggle};
+})();
+</script>
 </html>
 <!-- =========================================================
      GURU CONNECT — HORIZONTAL SIGNATURE PROFILE CARDS
