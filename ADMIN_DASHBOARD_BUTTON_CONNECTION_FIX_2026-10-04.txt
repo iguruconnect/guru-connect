@@ -1,0 +1,13 @@
+GURU CONNECT ADMIN DASHBOARD BUTTON CONNECTION FIX — 2026-10-04
+
+Fixed admin.html:
+1. Directory now prefers the staff-authorized gc_admin_find_users RPC, so Admin sees actual Student/Tutor records instead of depending on public RLS SELECT policies.
+2. DETAILS button added to show the complete fields returned for the selected registered profile.
+3. EDIT now calls gc_admin_update_student_profile / gc_admin_update_tutor_profile, matching the newer Supabase repair SQL and saving the complete role-specific form.
+4. PAID toggles PAID/PENDING instead of only ever setting PAID.
+5. COINS button selects the exact member and uses gc_staff_adjust_coins with a mandatory reason.
+6. Learning Request now reads gc_learning_requests_v2 first, then falls back to gc_learning_requests, and displays course, stream, subject, topic/chapter, issue, mode, IDs, status and creation time.
+7. Receipt now passes the real user's name, email, phone and user ID to receipt.html.
+8. Advertisement SAVE now uploads the selected flyer to gc-advertisements storage and inserts the real record into gc_advertisements; no fake/local save.
+9. Password search uses the staff-authorized user search RPC.
+10. Existing branding/UI structure is preserved; this is a functional wiring repair.

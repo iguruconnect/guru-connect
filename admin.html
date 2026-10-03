@@ -215,7 +215,6 @@ async function loadLearning(){
   const h=$('learningResults');$('learningStatus').textContent='Loading live Learning Requests…';h.innerHTML='';
   try{
     let q=await sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(100);
-    if(q.error)q=await sb.from('gc_learning_requests').select('*').order('created_at',{ascending:false}).limit(100);
     if(q.error)throw q.error;
     const rows=q.data||[];
     $('learningStatus').textContent=rows.length+' Learning Request record(s).';
