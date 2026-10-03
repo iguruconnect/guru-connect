@@ -172,28 +172,72 @@ window.resetUser=async i=>{
 };
 window.deleteUser=async i=>{
   const u=filteredUsers()[i];if(!u)return;
-  if(!confirm('Permanently delete this '+u.role.toUpperCase()+' account? This cannot be undone.'))return;
+  const userId=String(u.user_id||'').trim();
+  const role=String(u.role||'').toLowerCase();
+  if(!userId)return alert('Delete failed: this user has no valid User ID.');
+  if(!confirm('Permanently delete this '+role.toUpperCase()+' account? This will remove the account/profile data and cannot be undone.'))return;
+
+  const oldResults=users.map(x=>String(x.user_id||''));
+  let lastError=null;
+
   try{
-    // Current Supabase installations may contain both the legacy one-argument
-    // RPC and the newer role/profile RPC. Supplying all three named arguments
-    // makes PostgREST select the intended overload unambiguously.
+    // Try the current role/profile-aware RPC first.
     let q=await sb.rpc('gc_admin_delete_user',{
-      p_user_id:String(u.user_id),
-      p_role:String(u.role||'').toLowerCase(),
-      p_profile_id:String(u.user_id)
+      p_user_id:userId,
+      p_role:role,
+      p_profile_id:userId
     });
+
+    // Older Supabase deployments may expose only the one-argument RPC.
     if(q.error){
-      // Compatibility fallback for databases that only have the legacy RPC.
-      const msg=String(q.error.message||'');
-      if(/could not find the function|does not exist|schema cache/i.test(msg)){
-        q=await sb.rpc('gc_admin_delete_user',{p_user_id:String(u.user_id)});
+      lastError=q.error;
+      const msg=String(q.error.message||q.error.details||'');
+      if(/could not find the function|does not exist|schema cache|function .* not found|42883/i.test(msg)){
+        q=await sb.rpc('gc_admin_delete_user',{p_user_id:userId});
       }
     }
-    if(q.error)throw q.error;
-    if(!q.data?.deleted && q.data?.ok!==true)throw new Error('Supabase did not confirm deletion.');
-    alert('✓ Account deleted.');
+
+    if(q.error){
+      lastError=q.error;
+      throw q.error;
+    }
+
+    // Do not depend on one exact RPC return shape. Different SQL functions
+    // may return {deleted:true}, {ok:true}, true, or a single-row array.
+    // The live directory is the final source of truth.
     await loadLiveUsers();
-  }catch(e){alert('Delete failed: '+(e.message||e))}
+    const stillThere=users.some(x=>String(x.user_id||'')===userId);
+
+    if(stillThere){
+      const returned=JSON.stringify(q.data??null);
+      throw new Error(
+        'Supabase deletion call completed, but the user is still present in the live directory. '+
+        'The database delete function/RLS policy needs to be checked. RPC response: '+returned
+      );
+    }
+
+    alert('✓ '+role.toUpperCase()+' account deleted successfully.');
+  }catch(e){
+    lastError=e||lastError;
+    // Refresh once more so a successful database deletion is not reported as
+    // a failure merely because the RPC returned an unusual response format.
+    try{
+      await loadLiveUsers();
+      const stillThere=users.some(x=>String(x.user_id||'')===userId);
+      if(!stillThere && oldResults.includes(userId)){
+        alert('✓ Account deleted successfully.');
+        return;
+      }
+    }catch(_){}
+
+    const msg=String(lastError?.message||lastError||'Unknown error');
+    alert(
+      'Delete failed.\\n\\n'+msg+
+      '\\n\\nUser ID: '+userId+
+      '\\nRole: '+role+
+      '\\n\\nIf the user is still listed, the Supabase gc_admin_delete_user RPC/function or its admin RLS permissions must be fixed on the database side.'
+    );
+  }
 };
 window.receipt=i=>{
   const u=filteredUsers()[i];if(!u)return;
