@@ -173,7 +173,27 @@ window.resetUser=async i=>{
 window.deleteUser=async i=>{
   const u=filteredUsers()[i];if(!u)return;
   if(!confirm('Permanently delete this '+u.role.toUpperCase()+' account? This cannot be undone.'))return;
-  try{const q=await sb.rpc('gc_admin_delete_user',{p_user_id:String(u.user_id)});if(q.error)throw q.error;if(!q.data?.deleted)throw new Error('Supabase did not confirm deletion.');alert('✓ Account deleted.');await loadLiveUsers()}catch(e){alert('Delete failed: '+e.message)}
+  try{
+    // Current Supabase installations may contain both the legacy one-argument
+    // RPC and the newer role/profile RPC. Supplying all three named arguments
+    // makes PostgREST select the intended overload unambiguously.
+    let q=await sb.rpc('gc_admin_delete_user',{
+      p_user_id:String(u.user_id),
+      p_role:String(u.role||'').toLowerCase(),
+      p_profile_id:String(u.user_id)
+    });
+    if(q.error){
+      // Compatibility fallback for databases that only have the legacy RPC.
+      const msg=String(q.error.message||'');
+      if(/could not find the function|does not exist|schema cache/i.test(msg)){
+        q=await sb.rpc('gc_admin_delete_user',{p_user_id:String(u.user_id)});
+      }
+    }
+    if(q.error)throw q.error;
+    if(!q.data?.deleted && q.data?.ok!==true)throw new Error('Supabase did not confirm deletion.');
+    alert('✓ Account deleted.');
+    await loadLiveUsers();
+  }catch(e){alert('Delete failed: '+(e.message||e))}
 };
 window.receipt=i=>{
   const u=filteredUsers()[i];if(!u)return;
