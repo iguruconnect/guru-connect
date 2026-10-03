@@ -1,0 +1,400 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GURU CONNECT — Admin Control Center</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f8fc;color:#0f172a;font-family:Inter,Arial,sans-serif}.head{background:linear-gradient(135deg,#08265c,#155eef 58%,#0891b2);color:#fff;padding:20px}.headin{width:min(1280px,94vw);margin:auto;display:flex;justify-content:space-between;align-items:center;gap:16px}h1{margin:0;font-size:clamp(21px,3vw,32px)}.head p{margin:5px 0 0;color:#dbeafe;font-size:12px;font-weight:700}.wrap{width:min(1280px,94vw);margin:22px auto 60px}.gate,.panel{background:#fff;border:1px solid #dbe3ef;border-radius:20px;box-shadow:0 12px 38px rgba(15,23,42,.07)}.gate{padding:22px;font-weight:800}.notice{padding:13px 16px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;font-size:12px;font-weight:800;margin-bottom:16px}.controlbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}.topbtn{border:1px solid #d7e0ed;background:#fff;color:#12315b;border-radius:15px;padding:15px 12px;text-align:left;font-weight:950;cursor:pointer;box-shadow:0 5px 16px rgba(15,23,42,.05);transition:.15s}.topbtn:hover,.topbtn.active{border-color:#155eef;background:#eff6ff;transform:translateY(-1px)}.topbtn small{display:block;color:#64748b;font-size:10px;font-weight:750;margin-top:4px}.section{display:none;background:#fff;border:1px solid #dbe3ef;border-radius:20px;box-shadow:0 12px 38px rgba(15,23,42,.07);overflow:hidden;margin-bottom:16px}.section.open{display:block}.secHead{padding:18px 20px;border-bottom:1px solid #e5eaf1;background:linear-gradient(135deg,#f8fbff,#fff);display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap}.secHead h2{margin:0;font-size:20px}.secHead p{margin:5px 0 0;color:#64748b;font-size:12px;font-weight:700}.secBody{padding:20px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field label{display:block;font-size:10px;font-weight:950;color:#475569;text-transform:uppercase;margin:0 0 6px}.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:11px;font:700 13px Inter,Arial;outline:0;background:#fff}.field textarea{min-height:80px;resize:vertical}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.btn{border:0;border-radius:11px;padding:11px 14px;font-weight:950;cursor:pointer}.btn:disabled{opacity:.6;cursor:not-allowed}.primary{background:#155eef;color:#fff}.green{background:#059669;color:#fff}.orange{background:#ea580c;color:#fff}.purple{background:#7c3aed;color:#fff}.red{background:#dc2626;color:#fff}.light{background:#eef2f7;color:#334155}.teal{background:#0f766e;color:#fff}.status{margin-top:10px;font-size:12px;font-weight:800;color:#64748b;white-space:pre-wrap}.finder{border:2px solid #155eef}.searchrow{display:grid;grid-template-columns:1fr 210px auto auto;gap:10px;align-items:end}.results{margin-top:15px}.user{border:1px solid #dbe3ef;border-radius:17px;padding:15px;margin-top:11px;background:#fbfdff}.userHead{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.identity b{font-size:16px}.badge{display:inline-block;margin-left:7px;padding:4px 8px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:9px;font-weight:950}.muted{color:#64748b;font-size:11px;line-height:1.65;margin-top:5px}.edit{display:none;margin-top:14px;padding-top:14px;border-top:1px solid #e2e8f0}.edit.open{display:block}.editTitle{font-size:11px;font-weight:950;color:#155eef;margin-bottom:10px;text-transform:uppercase}.empty{padding:20px;border:1px dashed #cbd5e1;border-radius:14px;color:#64748b;font-weight:800;text-align:center}.pill{padding:6px 9px;border-radius:999px;background:#ecfdf5;color:#047857;font-size:10px;font-weight:950}.dangerNote{background:#fff1f2;border:1px solid #fecdd3;color:#9f1239;border-radius:13px;padding:12px;font-size:11px;font-weight:750;line-height:1.55}@media(max-width:900px){.controlbar{grid-template-columns:repeat(2,minmax(0,1fr))}.searchrow{grid-template-columns:1fr 1fr}.searchrow .wide{grid-column:1/-1}}@media(max-width:650px){.controlbar{grid-template-columns:1fr}.grid,.searchrow{grid-template-columns:1fr}.userHead{flex-direction:column}.userHead .actions,.userHead .actions .btn{width:100%}.headin{align-items:flex-start;flex-direction:column}}
+</style><style id="gc-admin-connection-fix">#gcDetailsModal button{cursor:pointer}@media(max-width:650px){#gcDetailsModal>div{padding:14px!important}#gcDetailsModal .btn{min-height:42px}.actions{flex-wrap:wrap}}</style></head><body>
+<header class="head"><div class="headin"><div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
+<main class="wrap"><div id="gate" class="gate">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them.</div>
+<nav class="controlbar" aria-label="Admin sections">
+<button class="topbtn active" data-sec="directories">👥 <b>TUTOR + STUDENT DIRECTORIES</b><small>Search, edit, paid, verified, reset and delete</small></button>
+<button class="topbtn" data-sec="advertisement">📢 <b>ADVERTISEMENT</b><small>Create and manage website advertisements</small></button>
+<button class="topbtn" data-sec="receipt">🧾 <b>RECEIPT</b><small>Open receipt center</small></button>
+<button class="topbtn" data-sec="edit">✏️ <b>EDIT USER</b><small>Direct profile editing workspace</small></button>
+<button class="topbtn" data-sec="coins">🪙 <b>COINS MANAGEMENT</b><small>Adjust member GURU COINS</small></button>
+<button class="topbtn" data-sec="learning">📚 <b>LEARNING REQUEST</b><small>Review requests and coin approval</small></button>
+<button class="topbtn" data-sec="password">🔐 <b>PASSWORD RESET</b><small>Find account and reset password</small></button>
+<button class="topbtn" data-sec="create">➕ <b>CREATE USER</b><small>Create a Student or Tutor account</small></button>
+</nav>
+
+<section class="section open" id="sec-directories"><div class="secHead"><div><h2>👥 Tutor Directories | Student Directories</h2><p>Live Supabase directory. Use the search box for either a Student or Tutor.</p></div><span class="pill" id="directoryCount">LIVE DIRECTORY</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="term" autocomplete="off" placeholder="Name, email or phone…"></div><div class="field"><label>Show</label><select id="roleFilter"><option value="">ALL STUDENTS + TUTORS</option><option value="student">STUDENTS ONLY</option><option value="tutor">TUTORS ONLY</option></select></div><button id="search" class="btn primary">🔎 FIND</button><button id="refresh" class="btn light">↻ REFRESH</button></div><div id="searchStatus" class="status"></div><div id="results" class="results"><div class="empty">Click FIND to load the live Student + Tutor directory.</div></div></div></section>
+
+<section class="section" id="sec-advertisement"><div class="secHead"><div><h2>📢 Advertisement Management</h2><p>Create/manage advertisements without leaving the admin dashboard.</p></div></div><div class="secBody"><div class="grid"><div class="field"><label>Advertisement title</label><input id="adTitle" placeholder="Advertisement title"></div><div class="field"><label>Advertiser</label><input id="adAdvertiser" placeholder="Institute / advertiser"></div><div class="field"><label>Placement</label><select id="adPlacement"><option value="all">All Sections</option><option value="tutor">Tutor Profiles</option><option value="student">Student Profiles</option><option value="lrr">Learning Requests</option></select></div><div class="field"><label>Advertisement Flyer</label><input id="adFile" type="file" accept="image/jpeg,image/png,image/webp"></div><div class="field"><label>Click URL</label><input id="adUrl" placeholder="https://..."></div><div class="field"><label>WhatsApp URL (optional)</label><input id="adWhatsapp" placeholder="https://wa.me/..."></div><div class="field"><label>Start</label><input id="adStart" type="datetime-local"></div><div class="field"><label>End</label><input id="adEnd" type="datetime-local"></div><div class="field"><label>Priority</label><input id="adPriority" type="number" value="0" min="0" max="999"></div></div><div class="actions"><button id="adSave" class="btn orange">SAVE ADVERTISEMENT</button></div><div id="adStatus" class="status">Advertisement controls are ready. If your existing advertisement table/RPC is enabled, this workspace can be wired to it without changing member data.</div><div class="dangerNote">Advertisements are stored in the Supabase <b>gc_advertisements</b> table and flyer images in the <b>gc-advertisements</b> storage bucket. The dashboard never uses a fake local save.</div></div></section>
+
+<section class="section" id="sec-receipt"><div class="secHead"><div><h2>🧾 Receipt Center</h2><p>Generate/print GURU CONNECT receipts.</p></div></div><div class="secBody"><button id="openReceipt" class="btn purple">🧾 OPEN RECEIPT CENTER</button><div class="status">You can also use RECEIPT from any Student/Tutor result.</div></div></section>
+
+<section class="section" id="sec-edit"><div class="secHead"><div><h2>✏️ Edit User</h2><p>Search above, then use EDIT on the exact Student/Tutor record. The edit panel contains role-specific fields.</p></div></div><div class="secBody"><div class="empty">The EDIT buttons in the live directory open the complete profile editor here on the same page. No second admin page is required.</div></div></section>
+
+<section class="section" id="sec-coins"><div class="secHead"><div><h2>🪙 Coins Management</h2><p>Adjust a member's GURU COINS using the existing staff RPC.</p></div></div><div class="secBody"><div class="grid"><div class="field"><label>Member User ID</label><input id="coinUserId" placeholder="Select from a directory result"></div><div class="field"><label>Role</label><select id="coinRole"><option value="student">Student</option><option value="tutor">Tutor</option></select></div><div class="field"><label>Coin adjustment</label><input id="coinAmount" type="number" placeholder="e.g. 100 or -50"></div><div class="field"><label>Reason</label><input id="coinReason" placeholder="Reason for adjustment"></div></div><div class="actions"><button id="coinAdjust" class="btn teal">UPDATE COINS</button></div><div id="coinStatus" class="status"></div></div></section>
+
+<section class="section" id="sec-learning"><div class="secHead"><div><h2>📚 Learning Request</h2><p>Load the latest Student → Tutor requests and make admin decisions.</p></div></div><div class="secBody"><button id="loadLearning" class="btn primary">↻ LOAD LEARNING REQUESTS</button><div id="learningStatus" class="status"></div><div id="learningResults" class="results"></div></div></section>
+
+<section class="section" id="sec-password"><div class="secHead"><div><h2>🔐 Password Reset</h2><p>Find a registered Student/Tutor and issue a new password through the secure admin function.</p></div></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Email or phone</label><input id="resetSearch" placeholder="Registered email or phone"></div><button id="resetFind" class="btn primary">FIND ACCOUNT</button></div><div id="resetResult" class="results"></div></div></section>
+
+<section class="section" id="sec-create"><div class="secHead"><div><h2>➕ Create User</h2><p>Create a new Student or Tutor account through the existing secure admin function.</p></div></div><div class="secBody"><div class="grid"><div class="field"><label>Role</label><select id="newRole"><option value="student">Student</option><option value="tutor">Tutor</option></select></div><div class="field"><label>Name</label><input id="newName"></div><div class="field"><label>Email</label><input id="newEmail" type="email"></div><div class="field"><label>Phone</label><input id="newPhone"></div><div class="field"><label>Password</label><input id="newPass" type="password" minlength="8"></div></div><div class="actions"><button id="create" class="btn green">CREATE ACCOUNT</button></div><div id="createStatus" class="status"></div></div></section>
+</section></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
+const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',FN=U+'/functions/v1/admin-user-actions';
+const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function api(action,payload={}){
+  const s=await sb.auth.getSession(),t=s.data?.session?.access_token;
+  if(!t)throw new Error('Admin session missing. Please login again.');
+  const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({action,...payload})});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(d.error||'Server error');
+  return d;
+}
+async function staffCheck(){
+  const s=await sb.auth.getSession(),u=s.data?.session?.user;
+  if(!u||String(u.email||'').toLowerCase()!=='guruconnect.in@gmail.com'){location.href='login.html?role=staff';return false}
+  $('gate').style.display='none';$('app').style.display='block';return true;
+}
+let users=[];
+function switchSection(name){
+  document.querySelectorAll('.section').forEach(x=>x.classList.remove('open'));
+  document.querySelectorAll('.topbtn').forEach(x=>x.classList.toggle('active',x.dataset.sec===name));
+  $('sec-'+name)?.classList.add('open');
+}
+document.querySelectorAll('.topbtn').forEach(b=>b.addEventListener('click',()=>switchSection(b.dataset.sec)));
+$('logout').onclick=async()=>{await sb.auth.signOut({scope:'local'});location.href='login.html?role=staff'};
+
+function normalizeRpcUsers(rows){
+  return (Array.isArray(rows)?rows:[]).map(x=>{
+    const p=x.profile&&typeof x.profile==='object'?x.profile:{};
+    return Object.assign({},p,x,{
+      user_id:String(x.user_id||p.user_id||p.id||''),
+      email:x.email||p.email||'',
+      phone:x.phone||p.phone||'',
+      name:x.name||p.name||x.full_name||p.full_name||'',
+      role:String(x.role||p.role||'').toLowerCase(),
+      registration_status:x.registration_status||p.registration_status||'registered',
+      created_at:p.created_at||x.created_at||''
+    });
+  }).filter(x=>x.user_id&&['student','tutor'].includes(x.role));
+}
+
+async function loadLiveUsers(){
+  $('searchStatus').textContent='Loading authorized live Student and Tutor profiles from Supabase…';
+  $('results').innerHTML='';
+  try{
+    // Preferred path: staff-authorized security-definer RPC. This avoids
+    // depending on public SELECT/RLS policies for the admin directory.
+    const r=await sb.rpc('gc_admin_find_users',{p_term:''});
+    if(r.error)throw r.error;
+    users=normalizeRpcUsers(r.data);
+    // Fallback only for deployments where the RPC has not yet been installed.
+    if(!users.length){
+      const [pr,st,tr]=await Promise.all([
+        sb.from('profiles').select('id,role,full_name,email,phone,is_active,created_at,updated_at').order('created_at',{ascending:false}),
+        sb.from('student_profiles').select('*').order('created_at',{ascending:false}),
+        sb.from('tutor_profiles').select('*').order('created_at',{ascending:false})
+      ]);
+      if(pr.error)throw pr.error;if(st.error)throw st.error;if(tr.error)throw tr.error;
+      const pm=new Map((pr.data||[]).map(x=>[String(x.id),x]));
+      const merge=(row,role)=>Object.assign({},row,{user_id:row.user_id||pm.get(String(row.user_id))?.id,email:row.email||pm.get(String(row.user_id))?.email||'',phone:row.phone||pm.get(String(row.user_id))?.phone||'',name:row.name||pm.get(String(row.user_id))?.full_name||'',role});
+      users=[...(st.data||[]).map(x=>merge(x,'student')),...(tr.data||[]).map(x=>merge(x,'tutor'))];
+    }
+    users.sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+    renderUsers();
+    $('searchStatus').textContent=users.length?users.length+' live Student/Tutor profile(s) loaded from Supabase.':'No Student/Tutor profile records are currently visible to this Staff session.';
+    $('directoryCount').textContent=users.length+' LIVE PROFILES';
+  }catch(e){
+    $('searchStatus').textContent='Directory load failed: '+(e.message||e);
+    $('results').innerHTML='<div class="empty">The Staff-authorized Supabase directory could not be read. Check that gc_admin_find_users exists and that Staff/Admin authorization is active.</div>';
+  }
+}
+function filteredUsers(){
+  const q=$('term').value.trim().toLowerCase(),rf=$('roleFilter').value;
+  let list=users.filter(u=>!rf||u.role===rf);
+  if(q)list=list.filter(u=>[u.name,u.email,u.phone,u.user_id,u.subject,u.course,u.stream,u.qualification,u.college,u.teaching_college].some(v=>String(v??'').toLowerCase().includes(q)));
+  return list;
+}
+function renderUsers(){
+  const list=filteredUsers();
+  if(!list.length){$('results').innerHTML='<div class="empty">No matching Student/Tutor profile found.</div>';return}
+  $('results').innerHTML=list.map((u,i)=>userCard(u,i)).join('');
+}
+function userCard(u,i){
+  const role=u.role.toUpperCase(),sub=u.role==='tutor'?(u.qualification||u.subject||'Tutor'):(u.course||u.stream||'Student');
+  return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed user')}</b><span class="badge">${role}</span><div class="muted">${esc(sub)}<br>Email: ${esc(u.email||'—')}<br>Phone: ${esc(u.phone||'—')}<br>User ID: ${esc(u.user_id||'—')}<br>Status: ${esc(u.registration_status||'registered')}<br>${u.role==='tutor'?'Paid: '+esc(u.paid_status||'PENDING')+' · Verified: '+(u.verified?'YES':'NO'):''}</div></div><div class="actions"><button class="btn primary" onclick="viewDetails(${i})">👁️ DETAILS</button><button class="btn primary" onclick="toggleEdit(${i})">✏️ EDIT</button>${u.role==='tutor'?`<button class="btn teal" onclick="setPaid(${i})">${String(u.paid_status||'PENDING').toUpperCase()==='PAID'?'✓ PAID':'MARK PAID'}</button><button class="btn primary" onclick="toggleVerified(${i})">${u.verified?'✓ VERIFIED':'GRANT VERIFIED'}</button>`:''}<button class="btn teal" onclick="selectCoins(${i})">🪙 COINS</button><button class="btn purple" onclick="receipt(${i})">🧾 RECEIPT</button><button class="btn light" onclick="resetUser(${i})">RESET PASSWORD</button><button class="btn red" onclick="deleteUser(${i})">DELETE</button></div></div><div class="edit" id="edit-${i}">${editForm(u,i)}</div></article>`;
+}
+function v(id,val){return `<input id="${id}" value="${esc(val??'')}">`}
+function area(id,val){return `<textarea id="${id}">${esc(val??'')}</textarea>`}
+function editForm(u,i){
+  let s=`<div class="editTitle">Editing ${esc(u.role)} • ${esc(u.name)}</div><div class="grid">`;
+  s+=`<div class="field"><label>Name</label>${v('e-name-'+i,u.name)}</div><div class="field"><label>Email</label>${v('e-email-'+i,u.email)}</div><div class="field"><label>Phone</label>${v('e-phone-'+i,u.phone)}</div><div class="field"><label>Location</label>${v('e-location-'+i,u.location)}</div>`;
+  if(u.role==='student'){
+    s+=`<div class="field"><label>Course</label>${v('e-course-'+i,u.course)}</div><div class="field"><label>Stream</label>${v('e-stream-'+i,u.stream)}</div><div class="field"><label>Standard / Class</label>${v('e-standard-'+i,u.standard||u.year)}</div><div class="field"><label>Subject</label>${v('e-subject-'+i,u.subject)}</div><div class="field"><label>Learning Requirement</label>${area('e-learning-'+i,u.learning_requirement)}</div><div class="field"><label>College</label>${v('e-college-'+i,u.college)}</div><div class="field"><label>Division</label>${v('e-division-'+i,u.division)}</div><div class="field"><label>Roll Number</label>${v('e-roll-'+i,u.roll_number)}</div><div class="field"><label>Mode</label>${v('e-mode-'+i,u.mode||u.teaching_mode)}</div><div class="field"><label>About Me</label>${area('e-about-'+i,u.about_me)}</div>`;
+  }else{
+    s+=`<div class="field"><label>Qualification</label>${v('e-qualification-'+i,u.qualification)}</div><div class="field"><label>Subject</label>${v('e-subject-'+i,u.subject)}</div><div class="field"><label>Stream</label>${v('e-stream-'+i,u.stream)}</div><div class="field"><label>Experience</label>${v('e-experience-'+i,u.experience)}</div><div class="field"><label>College / Institute</label>${v('e-college-'+i,u.college)}</div><div class="field"><label>Teaching College</label>${v('e-teachingcollege-'+i,u.teaching_college)}</div><div class="field"><label>Rate / Hour</label>${v('e-price-'+i,u.price)}</div><div class="field"><label>Rating</label>${v('e-rating-'+i,u.rating)}</div><div class="field"><label>Students Taught</label>${v('e-students-'+i,u.students_taught)}</div><div class="field"><label>Teaching Mode</label>${v('e-mode-'+i,u.teaching_mode)}</div><div class="field"><label>Languages</label>${v('e-languages-'+i,u.languages)}</div><div class="field"><label>Address</label>${v('e-address-'+i,u.address)}</div><div class="field"><label>About Tutor</label>${area('e-about-'+i,u.about_me)}</div>`;
+  }
+  s+=`</div><div class="actions"><button class="btn green" onclick="saveUser(${i})">SAVE PROFILE</button><button class="btn light" onclick="toggleEdit(${i})">CLOSE</button></div><div id="save-status-${i}" class="status"></div>`;
+  return s;
+}
+function toggleEdit(i){document.getElementById('edit-'+i)?.classList.toggle('open');switchSection('directories')}
+function showDetails(u){
+  let fields=Object.entries(u).filter(([k,v])=>!['profile'].includes(k)&&v!==null&&v!==''&&typeof v!=='object');
+  let html=fields.map(([k,v])=>`<div style="border:1px solid #e2e8f0;border-radius:10px;padding:10px;background:#fff"><div style="font-size:9px;font-weight:900;color:#64748b;text-transform:uppercase">${esc(k.replace(/_/g,' '))}</div><div style="margin-top:4px;font-size:12px;font-weight:750;overflow-wrap:anywhere">${esc(v)}</div></div>`).join('');
+  let box=document.getElementById('gcDetailsModal');
+  if(!box){box=document.createElement('div');box.id='gcDetailsModal';box.style.cssText='position:fixed;inset:0;background:rgba(15,23,42,.58);z-index:99999;display:flex;align-items:center;justify-content:center;padding:18px';document.body.appendChild(box)}
+  box.innerHTML=`<div style="width:min(900px,96vw);max-height:90vh;overflow:auto;background:#fff;border-radius:20px;padding:20px;box-shadow:0 25px 80px rgba(0,0,0,.25)"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center"><div><h2 style="margin:0;color:#123b8f">${esc(u.name||'User')}</h2><div style="font-size:11px;color:#64748b;margin-top:4px">${esc(u.role||'')} · ${esc(u.user_id||'')}</div></div><button class="btn light" onclick="document.getElementById('gcDetailsModal').remove()">✕ CLOSE</button></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:16px">${html}</div></div>`;
+}
+window.viewDetails=i=>{const u=filteredUsers()[i];if(u)showDetails(u)};
+window.selectCoins=i=>{const u=filteredUsers()[i];if(!u)return;$('coinUserId').value=String(u.user_id||'');$('coinRole').value=u.role||'student';switchSection('coins');$('coinAmount').focus()};
+async function saveUser(i){
+  const u=filteredUsers()[i],st=$('save-status-'+i);if(!u)return;
+  st.textContent='Saving complete profile to Supabase…';
+  try{
+    let p={name:$('e-name-'+i).value.trim(),email:$('e-email-'+i).value.trim().toLowerCase(),phone:$('e-phone-'+i).value.trim(),location:$('e-location-'+i).value.trim()};
+    if(u.role==='student')Object.assign(p,{course:$('e-course-'+i).value.trim(),stream:$('e-stream-'+i).value.trim(),standard:$('e-standard-'+i).value.trim(),subject:$('e-subject-'+i).value.trim(),learning_requirement:$('e-learning-'+i).value.trim(),college:$('e-college-'+i).value.trim(),division:$('e-division-'+i).value.trim(),roll:$('e-roll-'+i).value.trim(),mode:$('e-mode-'+i).value.trim(),about_me:$('e-about-'+i).value.trim()});
+    else Object.assign(p,{qualification:$('e-qualification-'+i).value.trim(),subject:$('e-subject-'+i).value.trim(),stream:$('e-stream-'+i).value.trim(),experience:$('e-experience-'+i).value.trim(),college:$('e-college-'+i).value.trim(),teaching_college:$('e-teachingcollege-'+i).value.trim(),price:$('e-price-'+i).value.trim(),rating:$('e-rating-'+i).value.trim()===''?null:Number($('e-rating-'+i).value),students_taught:$('e-students-'+i).value.trim(),teaching_mode:$('e-mode-'+i).value.trim(),languages:$('e-languages-'+i).value.trim(),address:$('e-address-'+i).value.trim(),about_me:$('e-about-'+i).value.trim(),paid_status:u.paid_status||'PENDING',verified:!!u.verified});
+    const rpc=u.role==='tutor'?'gc_admin_update_tutor_profile':'gc_admin_update_student_profile';
+    const q=await sb.rpc(rpc,{p_user_id:String(u.user_id),p_data:p});
+    if(q.error)throw q.error;
+    st.textContent='✓ Complete profile saved in Supabase.';
+    await loadLiveUsers();
+  }catch(e){st.textContent='Save failed: '+(e.message||e)}
+}
+window.setPaid=async i=>{
+  const u=filteredUsers()[i];if(!u)return;
+  const next=String(u.paid_status||'').toUpperCase()==='PAID'?'PENDING':'PAID';
+  try{const q=await sb.rpc('gc_admin_set_tutor_approval',{p_user_id:String(u.user_id),p_data:{paid_status:next}});if(q.error)throw q.error;await loadLiveUsers()}catch(e){alert('PAID update failed: '+e.message)}
+};
+window.toggleVerified=async i=>{
+  const u=filteredUsers()[i];if(!u)return;
+  try{const q=await sb.rpc('gc_admin_set_tutor_approval',{p_user_id:String(u.user_id),p_data:{verified:!u.verified}});if(q.error)throw q.error;await loadLiveUsers()}catch(e){alert('Verified update failed: '+e.message)}
+};
+window.resetUser=async i=>{
+  const u=filteredUsers()[i];if(!u)return;
+  const p=prompt('Enter new password (minimum 8 characters):');if(p===null)return;
+  if(p.length<8)return alert('Password must be at least 8 characters.');
+  try{await api('reset_password',{user_id:u.user_id,password:p});alert('✓ Password updated successfully.')}catch(e){alert('Password reset failed: '+e.message)}
+};
+window.deleteUser=async i=>{
+  const u=filteredUsers()[i];if(!u)return;
+
+  const userId=String(u.user_id||'').trim();
+  const role=String(u.role||'').toLowerCase();
+  if(!userId)return alert('Delete failed: this user has no valid Supabase Auth User ID.');
+
+  if(!['student','tutor'].includes(role)){
+    return alert('Delete failed: invalid profile role.');
+  }
+
+  if(!confirm('Permanently delete this '+role.toUpperCase()+' account? This cannot be undone.'))return;
+
+  let profileId='';
+  let lastError=null;
+
+  try{
+    /*
+     * IMPORTANT:
+     * profiles.id/user_id is the Supabase Auth UUID, but
+     * student_profiles.id / tutor_profiles.id is a DIFFERENT UUID in
+     * this project. The delete RPC expects the role-profile ID.
+     *
+     * Therefore do NOT send userId as p_profile_id.
+     */
+    const table=role==='student'?'student_profiles':'tutor_profiles';
+
+    const byUser=await sb.from(table)
+      .select('id,user_id')
+      .eq('user_id',userId)
+      .maybeSingle();
+
+    if(byUser.error)throw byUser.error;
+    profileId=String(byUser.data?.id||'').trim();
+
+    // Compatibility for any directory row that already carries the
+    // role-profile primary key.
+    if(!profileId){
+      profileId=String(u.profile_id||u.profile_id_id||u.id||'').trim();
+    }
+
+    if(!profileId){
+      throw new Error(
+        'The '+role+' account exists in the admin directory, but its '+table+
+        ' profile row could not be found using user_id '+userId+'.'
+      );
+    }
+
+    const callDelete=async(args)=>await sb.rpc('gc_admin_delete_user',args);
+
+    // Primary/current RPC: Auth user ID + ACTUAL role profile ID.
+    let q=await callDelete({
+      p_user_id:userId,
+      p_role:role,
+      p_profile_id:profileId
+    });
+
+    /*
+     * If the installed RPC uses a different argument signature, try the
+     * legacy one-argument form. For this project the role profile ID is
+     * the safer legacy value because the server error specifically refers
+     * to a missing Student/Tutor profile.
+     */
+    if(q.error){
+      lastError=q.error;
+      const msg=String(q.error.message||q.error.details||'');
+      if(/could not find the function|does not exist|schema cache|function .* not found|42883|Student profile was not found|Tutor profile was not found/i.test(msg)){
+        const legacyProfile=await callDelete({p_user_id:profileId});
+        if(!legacyProfile.error)q=legacyProfile;
+      }
+    }
+
+    if(q.error){
+      lastError=q.error;
+      throw q.error;
+    }
+
+    // The database is the source of truth. Verify both role profile and
+    // canonical profiles records after the RPC returns.
+    const verifyRole=await sb.from(table)
+      .select('id')
+      .eq('id',profileId)
+      .maybeSingle();
+
+    if(verifyRole.error && !/no rows|PGRST116/i.test(String(verifyRole.error.message||''))){
+      throw verifyRole.error;
+    }
+
+    const verifyAuthProfile=await sb.from('profiles')
+      .select('id')
+      .eq('id',userId)
+      .maybeSingle();
+
+    if(verifyAuthProfile.error && !/no rows|PGRST116/i.test(String(verifyAuthProfile.error.message||''))){
+      throw verifyAuthProfile.error;
+    }
+
+    await loadLiveUsers();
+
+    const stillInDirectory=users.some(x=>String(x.user_id||'')===userId);
+
+    if(!stillInDirectory){
+      alert('✓ '+role.toUpperCase()+' account deleted successfully.');
+      return;
+    }
+
+    throw new Error(
+      'The delete function returned successfully, but the user is still in the live directory. '+
+      'This means the database RPC did not remove the account/profile.'
+    );
+
+  }catch(e){
+    lastError=e||lastError;
+
+    try{
+      await loadLiveUsers();
+      const stillThere=users.some(x=>String(x.user_id||'')===userId);
+      if(!stillThere){
+        alert('✓ Account deleted successfully.');
+        return;
+      }
+    }catch(_){}
+
+    const msg=String(lastError?.message||lastError||'Unknown error');
+
+    alert(
+      'Delete failed:\\n\\n'+msg+
+      '\\n\\nAuth User ID: '+userId+
+      '\\n'+role+' Profile ID: '+(profileId||'NOT FOUND')+
+      '\\n\\nThe admin HTML is now sending the actual '+role+'_profiles.id to the delete function.'
+    );
+  }
+};
+window.receipt=i=>{
+  const u=filteredUsers()[i];if(!u)return;
+  const p=new URLSearchParams({
+    name:u.name||'',email:u.email||'',phone:u.phone||'',user_id:u.user_id||'',
+    category:u.role==='tutor'?'Tutor':'Student',back:'admin.html',
+    date:new Date().toISOString().slice(0,10),
+    utr:u.transaction_ref||''
+  });
+  const w=window.open('receipt.html?'+p.toString(),'_blank','noopener,noreferrer');if(!w)alert('Please allow pop-ups for GURU CONNECT Admin.')
+};
+$('search').onclick=()=>renderUsers();
+$('term').addEventListener('input',()=>renderUsers());
+$('term').addEventListener('keydown',e=>{if(e.key==='Enter')renderUsers()});
+$('roleFilter').onchange=()=>renderUsers();
+$('refresh').onclick=loadLiveUsers;
+
+$('openReceipt').onclick=()=>{
+  const w=window.open('receipt.html?back=admin.html','_blank','noopener,noreferrer');
+  if(!w)alert('Please allow pop-ups.');
+};
+
+$('coinAdjust').onclick=async()=>{
+  try{
+    const id=String($('coinUserId').value).trim(),role=$('coinRole').value,amount=Number($('coinAmount').value),reason=$('coinReason').value.trim();
+    if(!id)throw new Error('Select a Student/Tutor first using the COINS button.');
+    if(!Number.isFinite(amount)||amount===0)throw new Error('Enter a non-zero coin adjustment.');
+    if(!reason)throw new Error('Reason is required.');
+    const r=await sb.rpc('gc_staff_adjust_coins',{p_profile_id:id,p_role:role,p_amount:amount,p_reason:reason});
+    if(r.error)throw r.error;
+    $('coinStatus').textContent='✓ Coins updated successfully and logged in the ledger.';
+    $('coinAmount').value='';$('coinReason').value='';
+    await loadLiveUsers();
+  }catch(e){$('coinStatus').textContent='Coin update failed: '+(e.message||e)}
+};
+
+$('loadLearning').onclick=loadLearning;
+async function loadLearning(){
+  const h=$('learningResults');$('learningStatus').textContent='Loading live Learning Requests…';h.innerHTML='';
+  try{
+    let q=await sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(100);
+    if(q.error)throw q.error;
+    const rows=q.data||[];
+    $('learningStatus').textContent=rows.length+' Learning Request record(s).';
+    h.innerHTML=rows.length?rows.map((r,i)=>`<div class="user"><div class="userHead"><div class="identity"><b>${esc(r.request_code||r.id||'Learning Request')}</b><span class="badge">${esc(r.status||'OPEN')}</span><div class="muted">Student: ${esc(r.student_id||r.student_user_id||'—')}<br>Tutor: ${esc(r.tutor_id||r.tutor_user_id||'—')}<br>Course: ${esc(r.course||'—')}<br>Stream: ${esc(r.stream||'—')}<br>Subject: ${esc(r.subject||'—')}<br>Chapter/Topic: ${esc(r.chapter||r.topic||'—')}<br>Issue: ${esc(r.problem||r.issue||r.learning_requirement||'—')}<br>Mode: ${esc(r.learning_mode||r.mode||'—')}<br>Created: ${esc(r.created_at||'—')}</div></div></div></div>`).join(''):'<div class="empty">No Learning Request records returned.</div>';
+  }catch(e){$('learningStatus').textContent='Learning Request load failed: '+(e.message||e)}
+}
+
+$('resetFind').onclick=async()=>{
+  const q=$('resetSearch').value.trim();$('resetResult').innerHTML='Searching…';
+  try{
+    const r=await sb.rpc('gc_admin_find_users',{p_term:q});if(r.error)throw r.error;
+    const rows=normalizeRpcUsers(r.data);
+    $('resetResult').innerHTML=rows.length?rows.map((u,i)=>`<div class="user"><b>${esc(u.name||'User')}</b><span class="badge">${esc(String(u.role||'').toUpperCase())}</span><div class="muted">${esc(u.email||'—')} · ${esc(u.phone||'—')}<br>ID: ${esc(u.user_id)}</div><div class="actions"><button class="btn primary" onclick="resetByFound('${esc(u.user_id)}')">RESET PASSWORD</button></div></div>`).join(''):'<div class="empty">No account found.</div>';
+  }catch(e){$('resetResult').innerHTML='<div class="empty">Search failed: '+esc(e.message||e)+'</div>'}
+};
+window.resetByFound=async id=>{
+  const p=prompt('Enter new password (minimum 8 characters):');if(p===null)return;if(p.length<8)return alert('Minimum 8 characters.');
+  try{await api('reset_password',{user_id:id,password:p});alert('✓ Password updated.')}catch(e){alert('Reset failed: '+e.message)}
+};
+
+$('create').onclick=async()=>{
+  const b=$('create');b.disabled=true;b.textContent='CREATING…';
+  try{
+    await api('create_user',{role:$('newRole').value,name:$('newName').value,email:$('newEmail').value,phone:$('newPhone').value,password:$('newPass').value});
+    $('createStatus').textContent='✓ Account created successfully. Refreshing directory…';await loadLiveUsers();
+  }catch(e){$('createStatus').textContent='Creation failed: '+e.message}
+  finally{b.disabled=false;b.textContent='CREATE ACCOUNT'}
+};
+
+$('adSave').onclick=async()=>{
+  const b=$('adSave');b.disabled=true;b.textContent='SAVING…';$('adStatus').textContent='Uploading advertisement…';
+  try{
+    const title=$('adTitle').value.trim(),advertiser=$('adAdvertiser').value.trim(),placement=$('adPlacement').value;
+    const file=$('adFile').files[0],click=$('adUrl').value.trim(),wa=$('adWhatsapp').value.trim(),priority=Number($('adPriority').value||0);
+    if(!title)throw new Error('Advertisement title is required.');
+    if(!file)throw new Error('Please select an advertisement flyer.');
+    if(file.size>5*1024*1024)throw new Error('Flyer must be 5 MB or smaller.');
+    if(!/^image\/(jpeg|png|webp)$/i.test(file.type))throw new Error('Only JPG, PNG or WEBP flyers are supported.');
+    const session=(await sb.auth.getSession()).data?.session;if(!session?.user?.id)throw new Error('Admin session missing. Please login again.');
+    const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-');
+    const path=`admin/${Date.now()}-${safe}`;
+    const up=await sb.storage.from('gc-advertisements').upload(path,file,{upsert:false,contentType:file.type});
+    if(up.error)throw up.error;
+    const pub=sb.storage.from('gc-advertisements').getPublicUrl(path);
+    const image_url=pub.data.publicUrl;
+    const ins=await sb.from('gc_advertisements').insert({title,advertiser_name:advertiser,placement,image_url,storage_path:path,click_url:click||null,whatsapp_url:wa||null,start_at:$('adStart').value?new Date($('adStart').value).toISOString():new Date().toISOString(),end_at:$('adEnd').value?new Date($('adEnd').value).toISOString():null,active:true,priority:Number.isFinite(priority)?priority:0,created_by:session.user.id}).select().single();
+    if(ins.error)throw ins.error;
+    $('adStatus').textContent='✓ Advertisement saved to Supabase and published to the selected placement.';
+    $('adTitle').value='';$('adAdvertiser').value='';$('adUrl').value='';$('adWhatsapp').value='';$('adFile').value='';$('adPriority').value='0';
+  }catch(e){$('adStatus').textContent='Advertisement save failed: '+(e.message||e)}
+  finally{b.disabled=false;b.textContent='SAVE ADVERTISEMENT'}
+};
+
+staffCheck().then(ok=>{if(ok)loadLiveUsers()});
+</script></body></html>
