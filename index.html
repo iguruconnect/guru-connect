@@ -15754,10 +15754,12 @@ window.handleStaffLogin=async function(e){
     localStorage.setItem('is_staff_logged','true');
     localStorage.setItem('gc_staff_supabase_auth','true');
     localStorage.removeItem('active_user_role');
+
+    // IMPORTANT: Staff/Admin must leave the public homepage after authentication.
+    // The authenticated Supabase session is persisted, so admin.html can reuse it.
     window.closeLoginModal();
-    try{window.checkStaffSessionState?.()}catch(_){}
-    try{window.renderAdminQueue?.()}catch(_){}
-    try{window.GC_ADMIN_PASSWORD_RESET?.mount?.()}catch(_){}
+    window.location.replace('/admin');
+
     return true;
   }catch(err){
     console.error('Staff login failed',err);
