@@ -1,31 +1,55 @@
 <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GURU CONNECT — Admin Control Center</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f5f8fc;color:#0f172a;font-family:Inter,Arial,sans-serif}.head{background:linear-gradient(135deg,#08265c,#155eef 58%,#0891b2);color:#fff;padding:20px}.headin{width:min(1280px,94vw);margin:auto;display:flex;justify-content:space-between;align-items:center;gap:16px}h1{margin:0;font-size:clamp(21px,3vw,32px)}.head p{margin:5px 0 0;color:#dbeafe;font-size:12px;font-weight:700}.wrap{width:min(1280px,94vw);margin:22px auto 60px}.gate,.panel{background:#fff;border:1px solid #dbe3ef;border-radius:20px;box-shadow:0 12px 38px rgba(15,23,42,.07)}.gate{padding:22px;font-weight:800}.notice{padding:13px 16px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;font-size:12px;font-weight:800;margin-bottom:16px}.controlbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}.topbtn{border:1px solid #d7e0ed;background:#fff;color:#12315b;border-radius:15px;padding:15px 12px;text-align:left;font-weight:950;cursor:pointer;box-shadow:0 5px 16px rgba(15,23,42,.05);transition:.15s}.topbtn:hover,.topbtn.active{border-color:#155eef;background:#eff6ff;transform:translateY(-1px)}.topbtn small{display:block;color:#64748b;font-size:10px;font-weight:750;margin-top:4px}.section{display:none;background:#fff;border:1px solid #dbe3ef;border-radius:20px;box-shadow:0 12px 38px rgba(15,23,42,.07);overflow:hidden;margin-bottom:16px}.section.open{display:block}.secHead{padding:18px 20px;border-bottom:1px solid #e5eaf1;background:linear-gradient(135deg,#f8fbff,#fff);display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap}.secHead h2{margin:0;font-size:20px}.secHead p{margin:5px 0 0;color:#64748b;font-size:12px;font-weight:700}.secBody{padding:20px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field label{display:block;font-size:10px;font-weight:950;color:#475569;text-transform:uppercase;margin:0 0 6px}.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:11px;font:700 13px Inter,Arial;outline:0;background:#fff}.field textarea{min-height:80px;resize:vertical}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.btn{border:0;border-radius:11px;padding:11px 14px;font-weight:950;cursor:pointer}.btn:disabled{opacity:.6;cursor:not-allowed}.primary{background:#155eef;color:#fff}.green{background:#059669;color:#fff}.orange{background:#ea580c;color:#fff}.purple{background:#7c3aed;color:#fff}.red{background:#dc2626;color:#fff}.light{background:#eef2f7;color:#334155}.teal{background:#0f766e;color:#fff}.status{margin-top:10px;font-size:12px;font-weight:800;color:#64748b;white-space:pre-wrap}.finder{border:2px solid #155eef}.searchrow{display:grid;grid-template-columns:1fr 210px auto auto;gap:10px;align-items:end}.results{margin-top:15px}.user{border:1px solid #dbe3ef;border-radius:17px;padding:15px;margin-top:11px;background:#fbfdff}.userHead{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.identity b{font-size:16px}.badge{display:inline-block;margin-left:7px;padding:4px 8px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:9px;font-weight:950}.muted{color:#64748b;font-size:11px;line-height:1.65;margin-top:5px}.edit{display:none;margin-top:14px;padding-top:14px;border-top:1px solid #e2e8f0}.edit.open{display:block}.editTitle{font-size:11px;font-weight:950;color:#155eef;margin-bottom:10px;text-transform:uppercase}.empty{padding:20px;border:1px dashed #cbd5e1;border-radius:14px;color:#64748b;font-weight:800;text-align:center}.pill{padding:6px 9px;border-radius:999px;background:#ecfdf5;color:#047857;font-size:10px;font-weight:950}.dangerNote{background:#fff1f2;border:1px solid #fecdd3;color:#9f1239;border-radius:13px;padding:12px;font-size:11px;font-weight:750;line-height:1.55}@media(max-width:900px){.controlbar{grid-template-columns:repeat(2,minmax(0,1fr))}.searchrow{grid-template-columns:1fr 1fr}.searchrow .wide{grid-column:1/-1}}@media(max-width:650px){.controlbar{grid-template-columns:1fr}.grid,.searchrow{grid-template-columns:1fr}.userHead{flex-direction:column}.userHead .actions,.userHead .actions .btn{width:100%}.headin{align-items:flex-start;flex-direction:column}}
+
+/* ADMIN V2 UX: stable sticky tabs, no section flicker, compact action controls */
+.controlbar{position:sticky;top:0;z-index:500;display:flex;gap:8px;overflow-x:auto;padding:10px;background:rgba(245,248,252,.96);backdrop-filter:blur(10px);border-bottom:1px solid #dbe3ef;scrollbar-width:thin;margin:0 0 16px}
+.topbtn{flex:0 0 auto;min-width:150px;padding:12px 13px;text-align:center;border-radius:12px;white-space:nowrap}
+.topbtn small{white-space:normal}
+.topbtn.priority{min-width:175px}
+.section{animation:none!important;transition:none!important}
+.section.open{display:block}
+.lrrGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.lrrMeta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px}
+.metaBox{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:8px;font-size:11px}
+.metaBox b{display:block;color:#64748b;font-size:9px;text-transform:uppercase;margin-bottom:3px}
+.lrrActions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0}
+.lrrActions .btn{font-size:11px;padding:9px 11px}
+.caseChat{background:#0ea5e9;color:#fff}
+.historyRow{display:grid;grid-template-columns:140px 1fr 100px 180px;gap:10px;align-items:center;border:1px solid #e2e8f0;border-radius:12px;padding:11px;margin-top:8px;background:#fff;font-size:11px}
+.historyRow .amount{font-weight:950}
+.historyRow.add .amount{color:#047857}.historyRow.sub .amount{color:#b91c1c}
+.quickSearch{display:grid;grid-template-columns:1fr auto;gap:9px;margin-bottom:12px}
+.quickSearch input{width:100%;padding:12px;border:2px solid #155eef;border-radius:12px;font-weight:700}
+@media(max-width:800px){.lrrGrid,.lrrMeta{grid-template-columns:1fr}.historyRow{grid-template-columns:1fr 1fr}.controlbar{padding:8px}}
 </style><style id="gc-admin-connection-fix">#gcDetailsModal button{cursor:pointer}@media(max-width:650px){#gcDetailsModal>div{padding:14px!important}#gcDetailsModal .btn{min-height:42px}.actions{flex-wrap:wrap}}</style></head><body>
 <header class="head"><div class="headin"><div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
 <main class="wrap"><div id="gate" class="gate">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them.</div>
 <nav class="controlbar" aria-label="Admin sections">
-<button class="topbtn active" data-sec="directories">👥 <b>TUTOR + STUDENT DIRECTORIES</b><small>Search, edit, paid, verified, reset and delete</small></button>
-<button class="topbtn" data-sec="advertisement">📢 <b>ADVERTISEMENT</b><small>Create and manage website advertisements</small></button>
-<button class="topbtn" data-sec="receipt">🧾 <b>RECEIPT</b><small>Open receipt center</small></button>
-<button class="topbtn" data-sec="edit">✏️ <b>EDIT USER</b><small>Direct profile editing workspace</small></button>
-<button class="topbtn" data-sec="coins">🪙 <b>COINS MANAGEMENT</b><small>Adjust member GURU COINS</small></button>
-<button class="topbtn" data-sec="learning">📚 <b>LEARNING REQUEST</b><small>Review requests and coin approval</small></button>
+<button class="topbtn priority active" data-sec="edit">✏️ <b>EDIT</b><small>Find, edit & delete Student/Tutor</small></button>
+<button class="topbtn priority" data-sec="coins">🪙 <b>COINS MANAGEMENT</b><small>Add/subtract coins + reason</small></button>
+<button class="topbtn priority" data-sec="coinhistory">📜 <b>COINS HISTORY</b><small>Every credit/debit + reason</small></button>
+<button class="topbtn priority" data-sec="learning">📚 <b>LRR</b><small>Learning Requirement Requests</small></button>
+<button class="topbtn priority" data-sec="receipt">🧾 <b>RECEIPT</b><small>Generate / print receipt</small></button>
+<button class="topbtn" data-sec="directories">👥 <b>DIRECTORIES</b><small>Live Student + Tutor list</small></button>
 <button class="topbtn" data-sec="password">🔐 <b>PASSWORD RESET</b><small>Find account and reset password</small></button>
-<button class="topbtn" data-sec="create">➕ <b>CREATE USER</b><small>Create a Student or Tutor account</small></button>
+<button class="topbtn" data-sec="create">➕ <b>CREATE USER</b><small>Create Student or Tutor</small></button>
+<button class="topbtn" data-sec="advertisement">📢 <b>ADVERTISEMENT</b><small>Manage website advertisements</small></button>
 </nav>
 
-<section class="section open" id="sec-directories"><div class="secHead"><div><h2>👥 Tutor Directories | Student Directories</h2><p>Live Supabase directory. Use the search box for either a Student or Tutor.</p></div><span class="pill" id="directoryCount">LIVE DIRECTORY</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="term" autocomplete="off" placeholder="Name, email or phone…"></div><div class="field"><label>Show</label><select id="roleFilter"><option value="">ALL STUDENTS + TUTORS</option><option value="student">STUDENTS ONLY</option><option value="tutor">TUTORS ONLY</option></select></div><button id="search" class="btn primary">🔎 FIND</button><button id="refresh" class="btn light">↻ REFRESH</button></div><div id="searchStatus" class="status"></div><div id="results" class="results"><div class="empty">Click FIND to load the live Student + Tutor directory.</div></div></div></section>
+<section class="section" id="sec-directories"><div class="secHead"><div><h2>👥 Tutor Directories | Student Directories</h2><p>Live Supabase directory. Use the search box for either a Student or Tutor.</p></div><span class="pill" id="directoryCount">LIVE DIRECTORY</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="term" autocomplete="off" placeholder="Name, email or phone…"></div><div class="field"><label>Show</label><select id="roleFilter"><option value="">ALL STUDENTS + TUTORS</option><option value="student">STUDENTS ONLY</option><option value="tutor">TUTORS ONLY</option></select></div><button id="search" class="btn primary">🔎 FIND</button><button id="refresh" class="btn light">↻ REFRESH</button></div><div id="searchStatus" class="status"></div><div id="results" class="results"><div class="empty">Click FIND to load the live Student + Tutor directory.</div></div></div></section>
 
 <section class="section" id="sec-advertisement"><div class="secHead"><div><h2>📢 Advertisement Management</h2><p>Create/manage advertisements without leaving the admin dashboard.</p></div></div><div class="secBody"><div class="grid"><div class="field"><label>Advertisement title</label><input id="adTitle" placeholder="Advertisement title"></div><div class="field"><label>Advertiser</label><input id="adAdvertiser" placeholder="Institute / advertiser"></div><div class="field"><label>Placement</label><select id="adPlacement"><option value="all">All Sections</option><option value="tutor">Tutor Profiles</option><option value="student">Student Profiles</option><option value="lrr">Learning Requests</option></select></div><div class="field"><label>Advertisement Flyer</label><input id="adFile" type="file" accept="image/jpeg,image/png,image/webp"></div><div class="field"><label>Click URL</label><input id="adUrl" placeholder="https://..."></div><div class="field"><label>WhatsApp URL (optional)</label><input id="adWhatsapp" placeholder="https://wa.me/..."></div><div class="field"><label>Start</label><input id="adStart" type="datetime-local"></div><div class="field"><label>End</label><input id="adEnd" type="datetime-local"></div><div class="field"><label>Priority</label><input id="adPriority" type="number" value="0" min="0" max="999"></div></div><div class="actions"><button id="adSave" class="btn orange">SAVE ADVERTISEMENT</button></div><div id="adStatus" class="status">Advertisement controls are ready. If your existing advertisement table/RPC is enabled, this workspace can be wired to it without changing member data.</div><div class="dangerNote">Advertisements are stored in the Supabase <b>gc_advertisements</b> table and flyer images in the <b>gc-advertisements</b> storage bucket. The dashboard never uses a fake local save.</div></div></section>
 
 <section class="section" id="sec-receipt"><div class="secHead"><div><h2>🧾 Receipt Center</h2><p>Generate/print GURU CONNECT receipts.</p></div></div><div class="secBody"><button id="openReceipt" class="btn purple">🧾 OPEN RECEIPT CENTER</button><div class="status">You can also use RECEIPT from any Student/Tutor result.</div></div></section>
 
-<section class="section" id="sec-edit"><div class="secHead"><div><h2>✏️ Edit User</h2><p>Search above, then use EDIT on the exact Student/Tutor record. The edit panel contains role-specific fields.</p></div></div><div class="secBody"><div class="empty">The EDIT buttons in the live directory open the complete profile editor here on the same page. No second admin page is required.</div></div></section>
+<section class="section open" id="sec-edit"><div class="secHead"><div><h2>✏️ Edit Student / Tutor</h2><p>Search a live account here. Edit the complete profile and delete it from the same editor.</p></div><span class="pill">PRIMARY ADMIN TOOL</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="editSearch" placeholder="Name, email, phone or User ID…" autocomplete="off"></div><div class="field"><label>Role</label><select id="editRole"><option value="">ALL</option><option value="student">STUDENT</option><option value="tutor">TUTOR</option></select></div><button id="editFind" class="btn primary">🔎 FIND</button><button id="editRefresh" class="btn light">↻ REFRESH</button></div><div id="editStatus" class="status"></div><div id="editResults" class="results"><div class="empty">Search for the Student/Tutor you want to edit.</div></div></div></section>
 
-<section class="section" id="sec-coins"><div class="secHead"><div><h2>🪙 Coins Management</h2><p>Adjust a member's GURU COINS using the existing staff RPC.</p></div></div><div class="secBody"><div class="grid"><div class="field"><label>Member User ID</label><input id="coinUserId" placeholder="Select from a directory result"></div><div class="field"><label>Role</label><select id="coinRole"><option value="student">Student</option><option value="tutor">Tutor</option></select></div><div class="field"><label>Coin adjustment</label><input id="coinAmount" type="number" placeholder="e.g. 100 or -50"></div><div class="field"><label>Reason</label><input id="coinReason" placeholder="Reason for adjustment"></div></div><div class="actions"><button id="coinAdjust" class="btn teal">UPDATE COINS</button></div><div id="coinStatus" class="status"></div></div></section>
+<section class="section" id="sec-coins"><div class="secHead"><div><h2>🪙 Coins Management</h2><p>Select a Student/Tutor, then add or subtract GURU COINS. A reason is mandatory and every change is logged.</p></div></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find member</label><input id="coinFindSearch" placeholder="Name, email, phone or User ID…"></div><button id="coinFind" class="btn primary">🔎 FIND MEMBER</button></div><div id="coinFindResults" class="results"></div><div class="grid" style="margin-top:14px"><div class="field"><label>Selected User ID</label><input id="coinUserId" readonly placeholder="Choose a member above"></div><div class="field"><label>Role</label><select id="coinRole"><option value="student">Student</option><option value="tutor">Tutor</option></select></div><div class="field"><label>Coins</label><input id="coinAmount" type="number" placeholder="e.g. 100"></div><div class="field"><label>Reason — required</label><input id="coinReason" placeholder="Why are coins being changed?"></div></div><div class="actions"><button id="coinAdd" class="btn green">＋ ADD COINS</button><button id="coinSubtract" class="btn red">− SUBTRACT COINS</button></div><div id="coinStatus" class="status"></div></div></section>
 
-<section class="section" id="sec-learning"><div class="secHead"><div><h2>📚 Learning Request</h2><p>Load the latest Student → Tutor requests and make admin decisions.</p></div></div><div class="secBody"><button id="loadLearning" class="btn primary">↻ LOAD LEARNING REQUESTS</button><div id="learningStatus" class="status"></div><div id="learningResults" class="results"></div></div></section>
+<section class="section" id="sec-coinhistory"><div class="secHead"><div><h2>📜 Coins History</h2><p>Complete coin ledger with member, amount, direction, reason and date.</p></div><button id="loadCoinHistory" class="btn light">↻ REFRESH HISTORY</button></div><div class="secBody"><div class="quickSearch"><input id="coinHistorySearch" placeholder="Search by name, user ID, reason or reference…"><button id="coinHistoryFind" class="btn primary">FIND</button></div><div id="coinHistoryStatus" class="status"></div><div id="coinHistoryResults" class="results"><div class="empty">Loading coin history…</div></div></div></section>
+
+<section class="section" id="sec-learning"><div class="secHead"><div><h2>📚 LRR — Learning Requirement Requests</h2><p>All posted LRRs load directly here. No second page and no repeated blinking reload.</p></div><div class="actions" style="margin:0"><span class="pill" id="lrrCount">0 REQUESTS</span><button id="loadLearning" class="btn light">↻ REFRESH</button></div></div><div class="secBody"><div id="learningStatus" class="status"></div><div id="learningResults" class="results"><div class="empty">Loading Learning Requirement Requests…</div></div></div></section>
 
 <section class="section" id="sec-password"><div class="secHead"><div><h2>🔐 Password Reset</h2><p>Find a registered Student/Tutor and issue a new password through the secure admin function.</p></div></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Email or phone</label><input id="resetSearch" placeholder="Registered email or phone"></div><button id="resetFind" class="btn primary">FIND ACCOUNT</button></div><div id="resetResult" class="results"></div></div></section>
 
@@ -50,10 +74,16 @@ async function staffCheck(){
   $('gate').style.display='none';$('app').style.display='block';return true;
 }
 let users=[];
+let activeSection='edit';
+let lrrLoaded=false,lrrLoading=false,coinHistoryLoaded=false;
 function switchSection(name){
+  if(!name||activeSection===name)return;
+  activeSection=name;
   document.querySelectorAll('.section').forEach(x=>x.classList.remove('open'));
   document.querySelectorAll('.topbtn').forEach(x=>x.classList.toggle('active',x.dataset.sec===name));
-  $('sec-'+name)?.classList.add('open');
+  const el=$('sec-'+name);if(el)el.classList.add('open');
+  if(name==='learning'&&!lrrLoaded&&!lrrLoading)loadLearning();
+  if(name==='coinhistory'&&!coinHistoryLoaded)loadCoinHistory();
 }
 document.querySelectorAll('.topbtn').forEach(b=>b.addEventListener('click',()=>switchSection(b.dataset.sec)));
 $('logout').onclick=async()=>{await sb.auth.signOut({scope:'local'});location.href='login.html?role=staff'};
@@ -77,32 +107,55 @@ async function loadLiveUsers(){
   $('searchStatus').textContent='Loading authorized live Student and Tutor profiles from Supabase…';
   $('results').innerHTML='';
   try{
-    // Preferred path: staff-authorized security-definer RPC. This avoids
-    // depending on public SELECT/RLS policies for the admin directory.
-    const r=await sb.rpc('gc_admin_find_users',{p_term:''});
-    if(r.error)throw r.error;
-    users=normalizeRpcUsers(r.data);
-    // Fallback only for deployments where the RPC has not yet been installed.
-    if(!users.length){
-      const [pr,st,tr]=await Promise.all([
-        sb.from('profiles').select('id,role,full_name,email,phone,is_active,created_at,updated_at').order('created_at',{ascending:false}),
-        sb.from('student_profiles').select('*').order('created_at',{ascending:false}),
-        sb.from('tutor_profiles').select('*').order('created_at',{ascending:false})
-      ]);
-      if(pr.error)throw pr.error;if(st.error)throw st.error;if(tr.error)throw tr.error;
-      const pm=new Map((pr.data||[]).map(x=>[String(x.id),x]));
-      const merge=(row,role)=>Object.assign({},row,{user_id:row.user_id||pm.get(String(row.user_id))?.id,email:row.email||pm.get(String(row.user_id))?.email||'',phone:row.phone||pm.get(String(row.user_id))?.phone||'',name:row.name||pm.get(String(row.user_id))?.full_name||'',role});
-      users=[...(st.data||[]).map(x=>merge(x,'student')),...(tr.data||[]).map(x=>merge(x,'tutor'))];
-    }
-    users.sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+    const rpc=await sb.rpc('gc_admin_find_users',{p_term:''});
+    const rpcUsers=(!rpc.error&&Array.isArray(rpc.data))?normalizeRpcUsers(rpc.data):[];
+
+    // Direct-table fallback is always attempted. This fixes the case where a
+    // registration exists on the public directory but the legacy admin RPC
+    // does not return that user.
+    const [pr,st,tr]=await Promise.all([
+      sb.from('profiles').select('*').order('created_at',{ascending:false}),
+      sb.from('student_profiles').select('*').order('created_at',{ascending:false}),
+      sb.from('tutor_profiles').select('*').order('created_at',{ascending:false})
+    ]);
+    const tableErrors=[pr.error,st.error,tr.error].filter(Boolean);
+    if(tableErrors.length && !rpcUsers.length) throw tableErrors[0];
+
+    const pm=new Map((pr.data||[]).map(x=>[String(x.id),x]));
+    const byEmail=new Map((pr.data||[]).filter(x=>x.email).map(x=>[String(x.email).toLowerCase(),x]));
+    const byPhone=new Map((pr.data||[]).filter(x=>x.phone).map(x=>[String(x.phone),x]));
+    const merge=(row,role)=>{
+      const candidateId=row.user_id||row.auth_user_id||row.profile_id||row.profileId||'';
+      const profile=pm.get(String(candidateId))
+        ||(row.email&&byEmail.get(String(row.email).toLowerCase()))
+        ||(row.phone&&byPhone.get(String(row.phone)))
+        ||{};
+      return Object.assign({},profile,row,{
+        user_id:String(candidateId||profile.id||''),
+        email:row.email||profile.email||'',
+        phone:row.phone||profile.phone||'',
+        name:row.name||row.full_name||profile.full_name||profile.name||'',
+        role, created_at:row.created_at||profile.created_at||''
+      });
+    };
+    const tableUsers=[...(st.data||[]).map(x=>merge(x,'student')),...(tr.data||[]).map(x=>merge(x,'tutor'))].filter(x=>x.user_id);
+
+    const map=new Map();
+    [...rpcUsers,...tableUsers].forEach(u=>{
+      const id=String(u.user_id||''); if(!id)return;
+      const old=map.get(id);
+      map.set(id,old?Object.assign({},old,u,{email:u.email||old.email,name:u.name||old.name}):u);
+    });
+    users=Array.from(map.values()).sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
     renderUsers();
     $('searchStatus').textContent=users.length?users.length+' live Student/Tutor profile(s) loaded from Supabase.':'No Student/Tutor profile records are currently visible to this Staff session.';
     $('directoryCount').textContent=users.length+' LIVE PROFILES';
   }catch(e){
     $('searchStatus').textContent='Directory load failed: '+(e.message||e);
-    $('results').innerHTML='<div class="empty">The Staff-authorized Supabase directory could not be read. Check that gc_admin_find_users exists and that Staff/Admin authorization is active.</div>';
+    $('results').innerHTML='<div class="empty">The live directory could not be read. Check Staff/Admin authorization and the profiles/student_profiles/tutor_profiles tables.</div>';
   }
 }
+
 function filteredUsers(){
   const q=$('term').value.trim().toLowerCase(),rf=$('roleFilter').value;
   let list=users.filter(u=>!rf||u.role===rf);
@@ -116,7 +169,7 @@ function renderUsers(){
 }
 function userCard(u,i){
   const role=u.role.toUpperCase(),sub=u.role==='tutor'?(u.qualification||u.subject||'Tutor'):(u.course||u.stream||'Student');
-  return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed user')}</b><span class="badge">${role}</span><div class="muted">${esc(sub)}<br>Email: ${esc(u.email||'—')}<br>Phone: ${esc(u.phone||'—')}<br>User ID: ${esc(u.user_id||'—')}<br>Status: ${esc(u.registration_status||'registered')}<br>${u.role==='tutor'?'Paid: '+esc(u.paid_status||'PENDING')+' · Verified: '+(u.verified?'YES':'NO'):''}</div></div><div class="actions"><button class="btn primary" onclick="viewDetails(${i})">👁️ DETAILS</button><button class="btn primary" onclick="toggleEdit(${i})">✏️ EDIT</button>${u.role==='tutor'?`<button class="btn teal" onclick="setPaid(${i})">${String(u.paid_status||'PENDING').toUpperCase()==='PAID'?'✓ PAID':'MARK PAID'}</button><button class="btn primary" onclick="toggleVerified(${i})">${u.verified?'✓ VERIFIED':'GRANT VERIFIED'}</button>`:''}<button class="btn teal" onclick="selectCoins(${i})">🪙 COINS</button><button class="btn purple" onclick="receipt(${i})">🧾 RECEIPT</button><button class="btn light" onclick="resetUser(${i})">RESET PASSWORD</button><button class="btn red" onclick="deleteUser(${i})">DELETE</button></div></div><div class="edit" id="edit-${i}">${editForm(u,i)}</div></article>`;
+  return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed user')}</b><span class="badge">${role}</span><div class="muted">${esc(sub)}<br>Email: ${esc(u.email||'—')}<br>Phone: ${esc(u.phone||'—')}<br>User ID: ${esc(u.user_id||'—')}<br>Status: ${esc(u.registration_status||'registered')}<br>${u.role==='tutor'?'Paid: '+esc(u.paid_status||'PENDING')+' · Verified: '+(u.verified?'YES':'NO'):''}</div></div><div class="actions"><button class="btn primary" onclick="viewDetails(${i})">👁️ DETAILS</button><button class="btn primary" onclick="toggleEdit(${i})">✏️ EDIT</button>${u.role==='tutor'?`<button class="btn teal" onclick="setPaid(${i})">${String(u.paid_status||'PENDING').toUpperCase()==='PAID'?'✓ PAID':'MARK PAID'}</button><button class="btn primary" onclick="toggleVerified(${i})">${u.verified?'✓ VERIFIED':'GRANT VERIFIED'}</button>`:''}<button class="btn teal" onclick="selectCoins(${i})">🪙 COINS</button><button class="btn caseChat" onclick="caseChat('${esc(u.user_id)}','','','${esc(u.role)}')">💬 CHAT</button><button class="btn purple" onclick="receipt(${i})">🧾 RECEIPT</button><button class="btn light" onclick="resetUser(${i})">RESET PASSWORD</button><button class="btn red" onclick="deleteUser(${i})">DELETE</button></div></div><div class="edit" id="edit-${i}">${editForm(u,i)}</div></article>`;
 }
 function v(id,val){return `<input id="${id}" value="${esc(val??'')}">`}
 function area(id,val){return `<textarea id="${id}">${esc(val??'')}</textarea>`}
@@ -128,7 +181,7 @@ function editForm(u,i){
   }else{
     s+=`<div class="field"><label>Qualification</label>${v('e-qualification-'+i,u.qualification)}</div><div class="field"><label>Subject</label>${v('e-subject-'+i,u.subject)}</div><div class="field"><label>Stream</label>${v('e-stream-'+i,u.stream)}</div><div class="field"><label>Experience</label>${v('e-experience-'+i,u.experience)}</div><div class="field"><label>College / Institute</label>${v('e-college-'+i,u.college)}</div><div class="field"><label>Teaching College</label>${v('e-teachingcollege-'+i,u.teaching_college)}</div><div class="field"><label>Rate / Hour</label>${v('e-price-'+i,u.price)}</div><div class="field"><label>Rating</label>${v('e-rating-'+i,u.rating)}</div><div class="field"><label>Students Taught</label>${v('e-students-'+i,u.students_taught)}</div><div class="field"><label>Teaching Mode</label>${v('e-mode-'+i,u.teaching_mode)}</div><div class="field"><label>Languages</label>${v('e-languages-'+i,u.languages)}</div><div class="field"><label>Address</label>${v('e-address-'+i,u.address)}</div><div class="field"><label>About Tutor</label>${area('e-about-'+i,u.about_me)}</div>`;
   }
-  s+=`</div><div class="actions"><button class="btn green" onclick="saveUser(${i})">SAVE PROFILE</button><button class="btn light" onclick="toggleEdit(${i})">CLOSE</button></div><div id="save-status-${i}" class="status"></div>`;
+  const saveBtn=typeof i==='number'?`saveUser(${i})`:`saveWorkspaceUser('${esc(String(i))}','${esc(String(u.user_id))}')`;const closeBtn=typeof i==='number'?`toggleEdit(${i})`:`document.getElementById('workspace-edit-${esc(String(u.user_id))}').classList.remove('open')`;s+=`</div><div class="actions"><button class="btn green" onclick="${saveBtn}">SAVE PROFILE</button><button class="btn light" onclick="${closeBtn}">CLOSE</button><button class="btn red" onclick="deleteFromWorkspace('${esc(String(u.user_id))}','${esc(String(u.role))}')">🗑️ DELETE USER</button></div><div id="save-status-${i}" class="status"></div>`;
   return s;
 }
 function toggleEdit(i){document.getElementById('edit-'+i)?.classList.toggle('open');switchSection('directories')}
@@ -189,8 +242,13 @@ window.deleteUser=async i=>{
         q=await sb.rpc('gc_admin_delete_user',{p_user_id:String(u.user_id)});
       }
     }
-    if(q.error)throw q.error;
-    if(!q.data?.deleted && q.data?.ok!==true)throw new Error('Supabase did not confirm deletion.');
+    if(q.error || (!q.data?.deleted && q.data?.ok!==true)){
+      const reason=q.error?.message||'RPC did not confirm deletion';
+      try{
+        const r=await api('delete_user',{user_id:String(u.user_id),role:String(u.role||'').toLowerCase()});
+        if(!r?.deleted && r?.ok!==true)throw new Error(r?.error||reason);
+      }catch(edgeErr){throw new Error(edgeErr.message||reason)}
+    }
     alert('✓ Account deleted.');
     await loadLiveUsers();
   }catch(e){alert('Delete failed: '+(e.message||e))}
@@ -216,40 +274,86 @@ $('openReceipt').onclick=()=>{
   if(!w)alert('Please allow pop-ups.');
 };
 
-$('coinAdjust').onclick=async()=>{
-  try{
-    const id=String($('coinUserId').value).trim(),role=$('coinRole').value,amount=Number($('coinAmount').value),reason=$('coinReason').value.trim();
-    if(!id)throw new Error('Select a Student/Tutor first using the COINS button.');
-    if(!Number.isFinite(amount)||amount===0)throw new Error('Enter a non-zero coin adjustment.');
-    if(!reason)throw new Error('Reason is required.');
-    const r=await sb.rpc('gc_staff_adjust_coins',{p_profile_id:id,p_role:role,p_amount:amount,p_reason:reason});
-    if(r.error)throw r.error;
-    $('coinStatus').textContent='✓ Coins updated successfully and logged in the ledger.';
-    $('coinAmount').value='';$('coinReason').value='';
-    await loadLiveUsers();
-  }catch(e){$('coinStatus').textContent='Coin update failed: '+(e.message||e)}
-};
 
-$('loadLearning').onclick=loadLearning;
-async function loadLearning(){
-  const h=$('learningResults');$('learningStatus').textContent='Loading live Learning Requests…';h.innerHTML='';
-  try{
-    let q=await sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(100);
-    if(q.error)throw q.error;
-    const rows=q.data||[];
-    $('learningStatus').textContent=rows.length+' Learning Request record(s).';
-    h.innerHTML=rows.length?rows.map((r,i)=>`<div class="user"><div class="userHead"><div class="identity"><b>${esc(r.request_code||r.id||'Learning Request')}</b><span class="badge">${esc(r.status||'OPEN')}</span><div class="muted">Student: ${esc(r.student_id||r.student_user_id||'—')}<br>Tutor: ${esc(r.tutor_id||r.tutor_user_id||'—')}<br>Course: ${esc(r.course||'—')}<br>Stream: ${esc(r.stream||'—')}<br>Subject: ${esc(r.subject||'—')}<br>Chapter/Topic: ${esc(r.chapter||r.topic||'—')}<br>Issue: ${esc(r.problem||r.issue||r.learning_requirement||'—')}<br>Mode: ${esc(r.learning_mode||r.mode||'—')}<br>Created: ${esc(r.created_at||'—')}</div></div></div></div>`).join(''):'<div class="empty">No Learning Request records returned.</div>';
-  }catch(e){$('learningStatus').textContent='Learning Request load failed: '+(e.message||e)}
+
+async function findForEdit(){
+  const q=$('editSearch').value.trim().toLowerCase(),role=$('editRole').value;
+  const list=users.filter(u=>(!role||u.role===role)&&(!q||[u.name,u.email,u.phone,u.user_id].some(v=>String(v??'').toLowerCase().includes(q))));
+  $('editStatus').textContent=list.length?list.length+' matching account(s).':'No matching account found.';
+  $('editResults').innerHTML=list.length?list.map((u,i)=>`<div class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed user')}</b><span class="badge">${esc(String(u.role||'').toUpperCase())}</span><div class="muted">${esc(u.email||'—')} · ${esc(u.phone||'—')}<br>ID: ${esc(u.user_id||'—')}</div></div><div class="actions"><button class="btn primary" onclick="openEditFromWorkspace('${esc(u.user_id)}')">✏️ EDIT</button><button class="btn red" onclick="deleteFromWorkspace('${esc(u.user_id)}','${esc(u.role)}')">🗑️ DELETE</button></div></div><div class="edit" id="workspace-edit-${esc(u.user_id)}"></div></div>`).join(''):'<div class="empty">No matching Student/Tutor found.</div>';
 }
+window.openEditFromWorkspace=async id=>{const u=users.find(x=>String(x.user_id)===String(id));if(!u)return;const box=$('workspace-edit-'+id);if(!box)return;const key='w'+String(id).replace(/[^a-zA-Z0-9_-]/g,'');box.innerHTML=editForm(u,key);box.classList.add('open')};
+window.saveWorkspaceUser=async(key,id)=>{const u=users.find(x=>String(x.user_id)===String(id));const st=$('save-status-'+key);if(!u)return;try{st.textContent='Saving complete profile to Supabase…';let p={name:$('e-name-'+key).value.trim(),email:$('e-email-'+key).value.trim().toLowerCase(),phone:$('e-phone-'+key).value.trim(),location:$('e-location-'+key).value.trim()};if(u.role==='student')Object.assign(p,{course:$('e-course-'+key).value.trim(),stream:$('e-stream-'+key).value.trim(),standard:$('e-standard-'+key).value.trim(),subject:$('e-subject-'+key).value.trim(),learning_requirement:$('e-learning-'+key).value.trim(),college:$('e-college-'+key).value.trim(),division:$('e-division-'+key).value.trim(),roll:$('e-roll-'+key).value.trim(),mode:$('e-mode-'+key).value.trim(),about_me:$('e-about-'+key).value.trim()});else Object.assign(p,{qualification:$('e-qualification-'+key).value.trim(),subject:$('e-subject-'+key).value.trim(),stream:$('e-stream-'+key).value.trim(),experience:$('e-experience-'+key).value.trim(),college:$('e-college-'+key).value.trim(),teaching_college:$('e-teachingcollege-'+key).value.trim(),price:$('e-price-'+key).value.trim(),rating:$('e-rating-'+key).value.trim()===''?null:Number($('e-rating-'+key).value),students_taught:$('e-students-'+key).value.trim(),teaching_mode:$('e-mode-'+key).value.trim(),languages:$('e-languages-'+key).value.trim(),address:$('e-address-'+key).value.trim(),about_me:$('e-about-'+key).value.trim(),paid_status:u.paid_status||'PENDING',verified:!!u.verified});const rpc=u.role==='tutor'?'gc_admin_update_tutor_profile':'gc_admin_update_student_profile';const q=await sb.rpc(rpc,{p_user_id:String(u.user_id),p_data:p});if(q.error)throw q.error;st.textContent='✓ Complete profile saved in Supabase.';await loadLiveUsers();await findForEdit()}catch(e){st.textContent='Save failed: '+(e.message||e)}};
+window.deleteFromWorkspace=async(id,role)=>{const u=users.find(x=>String(x.user_id)===String(id));if(!u)return;if(!confirm('Permanently delete this '+String(role).toUpperCase()+' account? This cannot be undone.'))return;try{let q=await sb.rpc('gc_admin_delete_user',{p_user_id:String(id),p_role:String(role),p_profile_id:String(id)});if(q.error&&/could not find the function|does not exist|schema cache/i.test(String(q.error.message||'')))q=await sb.rpc('gc_admin_delete_user',{p_user_id:String(id)});if(q.error)throw q.error;if(!q.data?.deleted&&q.data?.ok!==true)throw new Error('Supabase did not confirm deletion.');alert('✓ Account deleted.');await loadLiveUsers();await findForEdit()}catch(e){alert('Delete failed: '+(e.message||e))}};
+$('editFind').onclick=findForEdit;$('editRefresh').onclick=async()=>{await loadLiveUsers();findForEdit()};$('editSearch').addEventListener('keydown',e=>{if(e.key==='Enter')findForEdit()});
 
+function selectCoinMember(u){$('coinUserId').value=String(u.user_id||'');$('coinRole').value=u.role||'student';$('coinStatus').textContent='Selected: '+(u.name||u.user_id);}
+window.selectCoinById=id=>{const u=users.find(x=>String(x.user_id)===String(id));if(u)selectCoinMember(u)};
+$('coinFind').onclick=()=>{const q=$('coinFindSearch').value.trim().toLowerCase();const list=users.filter(u=>!q||[u.name,u.email,u.phone,u.user_id].some(v=>String(v??'').toLowerCase().includes(q)));$('coinFindResults').innerHTML=list.length?list.slice(0,25).map((u,i)=>`<div class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed')}</b><span class="badge">${esc(String(u.role||'').toUpperCase())}</span><div class="muted">${esc(u.email||'—')} · ${esc(u.phone||'—')}<br>ID: ${esc(u.user_id)}</div></div><button class="btn teal" onclick="selectCoinById('${esc(u.user_id)}')">SELECT</button></div></div>`).join(''):'<div class="empty">No member found.</div>'};
+async function adjustCoins(delta){try{const id=String($('coinUserId').value).trim(),role=$('coinRole').value,amount=Math.abs(Number($('coinAmount').value)),reason=$('coinReason').value.trim();if(!id)throw new Error('Select a Student/Tutor first.');if(!Number.isFinite(amount)||amount===0)throw new Error('Enter a non-zero coin amount.');if(!reason)throw new Error('Reason is required.');const r=await sb.rpc('gc_staff_adjust_coins',{p_profile_id:id,p_role:role,p_amount:delta*amount,p_reason:reason});if(r.error)throw r.error;$('coinStatus').textContent='✓ Coins updated and ledger entry created.';$('coinAmount').value='';$('coinReason').value='';coinHistoryLoaded=false;await loadLiveUsers()}catch(e){$('coinStatus').textContent='Coin update failed: '+(e.message||e)}}
+$('coinAdd').onclick=()=>adjustCoins(1);$('coinSubtract').onclick=()=>adjustCoins(-1);
+
+async function loadCoinHistory(){
+  if(coinHistoryLoaded)return;coinHistoryLoaded=true;$('coinHistoryStatus').textContent='Loading coin history…';
+  const host=$('coinHistoryResults');
+  try{
+    let r=await sb.from('gc_coin_ledger').select('*').order('created_at',{ascending:false}).limit(250);
+    if(r.error){coinHistoryLoaded=false;throw r.error}
+    const rows=r.data||[];$('coinHistoryStatus').textContent=rows.length+' ledger record(s).';
+    renderCoinHistory(rows);
+  }catch(e){$('coinHistoryStatus').textContent='Coin history could not be loaded: '+(e.message||e);host.innerHTML='<div class="dangerNote">The Coins Management RPC is installed, but the ledger table name/permissions are not available to this dashboard yet. Expected table: <b>gc_coin_ledger</b>.</div>'}
+}
+function renderCoinHistory(rows){const q=($('coinHistorySearch').value||'').trim().toLowerCase();const list=(rows||[]).filter(r=>!q||Object.values(r).some(v=>String(v??'').toLowerCase().includes(q)));$('coinHistoryResults').innerHTML=list.length?list.map(r=>{const amt=Number(r.amount??r.coin_amount??r.change??0);const add=amt>=0;return `<div class="historyRow ${add?'add':'sub'}"><div>${esc(r.created_at||r.date||'—')}</div><div><b>${esc(r.name||r.full_name||r.user_name||r.user_id||r.profile_id||'Member')}</b><br><span class="muted">${esc(r.reason||r.description||'—')}</span></div><div class="amount">${add?'+':''}${esc(amt)}</div><div>${esc(r.role||'')} · ${esc(r.reference||r.lrr_id||r.request_id||'')}</div></div>`}).join(''):'<div class="empty">No coin history matches the search.</div>'}
+$('loadCoinHistory').onclick=async()=>{coinHistoryLoaded=false;await loadCoinHistory()};$('coinHistoryFind').onclick=async()=>{if(!coinHistoryLoaded)await loadCoinHistory();else{const r=await sb.from('gc_coin_ledger').select('*').order('created_at',{ascending:false}).limit(250);if(!r.error)renderCoinHistory(r.data||[])}};$('coinHistorySearch').addEventListener('keydown',e=>{if(e.key==='Enter')$('coinHistoryFind').click()});
+
+async function lrrAction(id,action){const reason=action==='reject'?'Rejected by Admin':action==='return'?'Returned to Student':'Approved to Tutor';if(!confirm(reason+'?'))return;try{let r=await sb.rpc('gc_admin_lrr_action',{p_request_id:String(id),p_action:action,p_reason:reason});if(r.error&&/could not find the function|does not exist|schema cache/i.test(String(r.error.message||''))){r=await sb.from('gc_learning_requests_v2').update({status:action==='approve'?'APPROVED':action==='reject'?'REJECTED':'RETURNED'}).eq('id',id)}if(r.error)throw r.error;lrrLoaded=false;await loadLearning()}catch(e){alert('LRR action failed: '+(e.message||e))}}
+window.lrrAction=lrrAction;
+window.lrrCoins=async(id,studentId,tutorId,role)=>{const who=role==='tutor'?tutorId:studentId;if(!who)return alert('No '+role+' user ID is attached to this LRR.');$('coinUserId').value=String(who);$('coinRole').value=role;switchSection('coins');$('coinAmount').focus()};
+window.caseChat=(studentId,tutorId,lrrId,who)=>{const uid=who==='tutor'?tutorId:studentId;if(!uid)return alert('The selected '+who+' is not linked to this LRR.');const url='chat.html?user_id='+encodeURIComponent(uid)+'&role='+encodeURIComponent(who)+'&lrr_id='+encodeURIComponent(lrrId)+'&admin=1';const w=window.open(url,'_blank','noopener,noreferrer');if(!w)alert('Please allow pop-ups for GURU CONNECT Admin.')};
+async function loadLearning(){if(lrrLoading)return;lrrLoading=true;$('learningStatus').textContent=lrrLoaded?'Refreshing LRR…':'Loading LRR…';try{const q=await sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(200);if(q.error)throw q.error;const rows=q.data||[];$('lrrCount').textContent=rows.length+' REQUESTS';$('learningStatus').textContent=rows.length+' Learning Requirement Request(s).';const h=$('learningResults');h.innerHTML=rows.length?rows.map(r=>{const id=r.id||r.request_id||r.request_code;const st=r.status||'OPEN';const student=r.student_id||r.student_user_id||r.student_profile_id||'';const tutor=r.tutor_id||r.tutor_user_id||r.tutor_profile_id||'';return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(r.request_code||id||'Learning Request')}</b><span class="badge">${esc(st)}</span><div class="muted">Created: ${esc(r.created_at||'—')}</div></div><span class="pill">LRR CASE</span></div><div class="lrrMeta"><div class="metaBox"><b>Student</b>${esc(student||'Not linked')}</div><div class="metaBox"><b>Tutor</b>${esc(tutor||'Not assigned')}</div><div class="metaBox"><b>Course / Stream</b>${esc((r.course||'—')+' / '+(r.stream||'—'))}</div><div class="metaBox"><b>Subject / Topic</b>${esc((r.subject||'—')+' / '+(r.chapter||r.topic||'—'))}</div><div class="metaBox" style="grid-column:1/-1"><b>Requirement / Issue</b>${esc(r.problem||r.issue||r.learning_requirement||r.description||'—')}</div></div><div class="lrrActions"><button class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','tutor')">🪙 TUTOR COINS</button><button class="btn light" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','student')">🪙 STUDENT COINS</button><button class="btn caseChat" onclick="caseChat('${esc(student)}','${esc(tutor)}','${esc(id)}','student')">💬 CHAT STUDENT</button><button class="btn caseChat" onclick="caseChat('${esc(student)}','${esc(tutor)}','${esc(id)}','tutor')">💬 CHAT TUTOR</button></div></article>`}).join(''):'<div class="empty">No Learning Requirement Requests found.</div>';lrrLoaded=true}catch(e){lrrLoaded=false;$('learningStatus').textContent='LRR load failed: '+(e.message||e);$('learningResults').innerHTML='<div class="empty">Unable to load Learning Requirement Requests.</div>'}finally{lrrLoading=false}}
 $('resetFind').onclick=async()=>{
   const q=$('resetSearch').value.trim();$('resetResult').innerHTML='Searching…';
   try{
-    const r=await sb.rpc('gc_admin_find_users',{p_term:q});if(r.error)throw r.error;
-    const rows=normalizeRpcUsers(r.data);
-    $('resetResult').innerHTML=rows.length?rows.map((u,i)=>`<div class="user"><b>${esc(u.name||'User')}</b><span class="badge">${esc(String(u.role||'').toUpperCase())}</span><div class="muted">${esc(u.email||'—')} · ${esc(u.phone||'—')}<br>ID: ${esc(u.user_id)}</div><div class="actions"><button class="btn primary" onclick="resetByFound('${esc(u.user_id)}')">RESET PASSWORD</button></div></div>`).join(''):'<div class="empty">No account found.</div>';
+    let rows=[];
+    const r=await sb.rpc('gc_admin_find_users',{p_term:q});
+    if(!r.error) rows=normalizeRpcUsers(r.data);
+    if(!rows.length){
+      const [pr,st,tr]=await Promise.all([
+        sb.from('profiles').select('*'),
+        sb.from('student_profiles').select('*'),
+        sb.from('tutor_profiles').select('*')
+      ]);
+      if(pr.error)throw pr.error;if(st.error)throw st.error;if(tr.error)throw tr.error;
+      const pm=new Map((pr.data||[]).map(x=>[String(x.id),x]));
+      const build=(row,role)=>{
+        const pid=row.user_id||row.auth_user_id||row.profile_id||'';
+        const p=pm.get(String(pid))||{};
+        return Object.assign({},p,row,{user_id:String(pid||p.id||''),role,email:row.email||p.email||'',phone:row.phone||p.phone||'',name:row.name||row.full_name||p.full_name||p.name||''});
+      };
+      rows=[...(st.data||[]).map(x=>build(x,'student')),...(tr.data||[]).map(x=>build(x,'tutor'))]
+        .filter(u=>[u.name,u.email,u.phone,u.user_id].some(v=>String(v||'').toLowerCase().includes(q.toLowerCase())));
+    }
+    $('resetResult').innerHTML=rows.length?rows.map((u,i)=>`<div class="user"><b>${esc(u.name||'User')}</b><span class="badge">${esc(String(u.role||'').toUpperCase())}</span><div class="muted">${esc(u.email||'—')} · ${esc(u.phone||'—')}<br>ID: ${esc(u.user_id)}</div><div class="actions"><button class="btn primary" onclick="resetByFound('${esc(u.user_id)}')">RESET PASSWORD</button><button class="btn green" onclick="editFoundUser('${esc(u.user_id)}')">✏️ EDIT USER</button><button class="btn red" onclick="deleteFoundUser('${esc(u.user_id)}','${esc(u.role||'')}')">DELETE USER</button></div></div>`).join(''):'<div class="empty">No account found.</div>';
   }catch(e){$('resetResult').innerHTML='<div class="empty">Search failed: '+esc(e.message||e)+'</div>'}
 };
+window.editFoundUser=async id=>{
+  await loadLiveUsers();
+  const idx=users.findIndex(u=>String(u.user_id)===String(id));
+  if(idx<0){alert('User was found, but the complete profile record could not be loaded for editing.');return;}
+  switchSection('directories');
+  renderUsers();
+  setTimeout(()=>{const cardIndex=filteredUsers().findIndex(u=>String(u.user_id)===String(id));if(cardIndex>=0)toggleEdit(cardIndex)},50);
+};
+window.deleteFoundUser=async(id,role)=>{
+  if(!confirm('Permanently delete this '+String(role||'USER').toUpperCase()+' account? This cannot be undone.'))return;
+  try{
+    let r=await api('delete_user',{user_id:String(id),role:String(role||'').toLowerCase()});
+    if(!r?.deleted && r?.ok!==true) throw new Error(r?.error||'Delete was not confirmed by the server.');
+    alert('✓ Account deleted.');
+    $('resetResult').innerHTML='';$('resetSearch').value='';await loadLiveUsers();
+  }catch(e){alert('Delete failed: '+(e.message||e))}
+};
+
 window.resetByFound=async id=>{
   const p=prompt('Enter new password (minimum 8 characters):');if(p===null)return;if(p.length<8)return alert('Minimum 8 characters.');
   try{await api('reset_password',{user_id:id,password:p});alert('✓ Password updated.')}catch(e){alert('Reset failed: '+e.message)}
@@ -288,5 +392,5 @@ $('adSave').onclick=async()=>{
   finally{b.disabled=false;b.textContent='SAVE ADVERTISEMENT'}
 };
 
-staffCheck().then(ok=>{if(ok)loadLiveUsers()});
+staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit()}});
 </script></body></html>
