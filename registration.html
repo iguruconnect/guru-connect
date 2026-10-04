@@ -3337,6 +3337,104 @@ body.gc-registration-lock{overflow:hidden !important;}
 #tutorGrid.gc-directory-loading, #studentGridContainer.gc-directory-loading{visibility:hidden!important;opacity:0!important;}
 #tutorGrid.gc-directory-ready, #studentGridContainer.gc-directory-ready{visibility:visible!important;opacity:1!important;transition:none!important;}
 </style>
+
+<style id="gc-dedicated-registration-fix">
+/* GURU CONNECT — dedicated registration page
+   Prevents legacy/home/dashboard UI from appearing behind the registration form. */
+html.gc-registration-page,
+html.gc-registration-page body {
+  min-height: 100%;
+}
+html.gc-registration-page body {
+  background: #f8fafc !important;
+  overflow-x: hidden !important;
+}
+html.gc-registration-page body > header,
+html.gc-registration-page body > footer,
+html.gc-registration-page body > .publicTutorProfileModal,
+html.gc-registration-page body > .prelistedTutorBusyModal,
+html.gc-registration-page body > .staffAdminDashboard,
+html.gc-registration-page body > #userDashboardSection,
+html.gc-registration-page body > .helplineModal,
+html.gc-registration-page body > .aboutModal,
+html.gc-registration-page body > .contactModal,
+html.gc-registration-page body > .loginModal,
+html.gc-registration-page body > .upiQrModal,
+html.gc-registration-page body > .staffLoginModal,
+html.gc-registration-page body > .adminEditTutorModal,
+html.gc-registration-page body > .adminEditStudentModal,
+html.gc-registration-page body > .connectionModal,
+html.gc-registration-page body > .gcStandardFooter,
+html.gc-registration-page body > #gcStandardFooter,
+html.gc-registration-page body > #gc-footer-logo-sync,
+html.gc-registration-page body > #stickyAdminLogout {
+  display: none !important;
+}
+
+/* registration.html contains a copy of the complete public site. Keep only
+   the actual registration section visible on this dedicated route. */
+html.gc-registration-page .publicWebsiteContent > * {
+  display: none !important;
+}
+html.gc-registration-page .publicWebsiteContent #registrationSection {
+  display: block !important;
+  min-height: 100vh;
+  padding-top: 28px !important;
+  padding-bottom: 48px !important;
+}
+html.gc-registration-page .publicWebsiteContent #registrationSection > .max-w-3xl {
+  max-width: 860px !important;
+}
+
+/* Dedicated page header */
+.gc-registration-only-head {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  max-width:860px;
+  margin:0 auto 18px;
+  padding:0 16px;
+}
+.gc-registration-only-head .gc-reg-brand {
+  font-weight:900;
+  letter-spacing:.04em;
+  color:#0f172a;
+}
+.gc-registration-only-head .gc-reg-back {
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  border:1px solid #cbd5e1;
+  background:#fff;
+  color:#0f172a;
+  border-radius:12px;
+  padding:9px 13px;
+  font-size:12px;
+  font-weight:800;
+  text-decoration:none;
+  box-shadow:0 2px 7px rgba(15,23,42,.07);
+}
+.gc-registration-only-head .gc-reg-back:hover {
+  background:#f1f5f9;
+}
+html.gc-registration-page #registrationSection:before {
+  content:"GURU CONNECT  •  REGISTRATION";
+  display:block;
+  max-width:860px;
+  margin:0 auto 14px;
+  padding:0 16px;
+  color:#2563eb;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:.14em;
+}
+@media (max-width:640px) {
+  html.gc-registration-page .publicWebsiteContent #registrationSection {
+    padding-top:18px !important;
+  }
+}
+</style>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 <!-- Header / Navbar -->
@@ -12592,6 +12690,64 @@ header a[href="#home"] img[alt="Guru Connect Logo"]{
 })();
 </script>
 
+
+<script id="gc-dedicated-registration-js">
+(function () {
+  function initDedicatedRegistration() {
+    try {
+      var params = new URLSearchParams(window.location.search || "");
+      var role = (params.get("role") || "").toLowerCase();
+      if (role !== "student" && role !== "tutor") return;
+
+      document.documentElement.classList.add("gc-registration-page");
+      document.body.classList.add("gc-registration-page");
+
+      var section = document.getElementById("registrationSection");
+      if (!section) return;
+
+      // Explicitly select the requested registration form.
+      if (typeof window.switchTab === "function") {
+        window.switchTab(role);
+      } else {
+        var student = document.getElementById("studentFormCard");
+        var tutor = document.getElementById("tutorFormCard");
+        if (student) student.classList.toggle("hidden", role !== "student");
+        if (tutor) tutor.classList.toggle("hidden", role !== "tutor");
+      }
+
+      // Add a clean back-to-home control without restoring the legacy header.
+      if (!document.getElementById("gcRegistrationOnlyHead")) {
+        var head = document.createElement("div");
+        head.id = "gcRegistrationOnlyHead";
+        head.className = "gc-registration-only-head";
+        head.innerHTML =
+          '<div class="gc-reg-brand">GURU CONNECT</div>' +
+          '<a class="gc-reg-back" href="index.html">' +
+          '<i class="fa-solid fa-arrow-left"></i> BACK TO WEBSITE</a>';
+        section.insertBefore(head, section.firstElementChild);
+      }
+
+      // Ensure the selected card is visible even if an older script changed tabs.
+      var studentCard = document.getElementById("studentFormCard");
+      var tutorCard = document.getElementById("tutorFormCard");
+      if (studentCard) studentCard.classList.toggle("hidden", role !== "student");
+      if (tutorCard) tutorCard.classList.toggle("hidden", role !== "tutor");
+
+      // Keep the browser at the top of the dedicated form, not a legacy section.
+      window.scrollTo(0, 0);
+    } catch (err) {
+      console.error("GURU CONNECT registration route error:", err);
+    }
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initDedicatedRegistration);
+  } else {
+    initDedicatedRegistration();
+  }
+  window.addEventListener("load", initDedicatedRegistration);
+})();
+</script>
 </body>
 </html>
 <!-- =========================================================
