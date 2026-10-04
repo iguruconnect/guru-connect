@@ -57,8 +57,24 @@
 <div class="field"><label>Payment / Transaction Ref.</label><input id="receiptRef" placeholder="Optional UTR / transaction reference"></div>
 </div>
 <div class="receiptServiceBox">
-<div class="receiptServiceHead"><div><h3>Add Service</h3><p>Add each service separately. The amount is editable before the receipt is generated.</p></div><button id="receiptAddService" class="btn teal">＋ ADD SERVICE</button></div>
-<div class="receiptServiceAdd"><div class="field wide"><label>Service / Description</label><input id="receiptServiceName" placeholder="e.g. Economics Online Help, Home Tuition, Registration Fee"></div><div class="field"><label>Amount (₹)</label><input id="receiptServiceAmount" type="number" min="0" step="0.01" placeholder="0.00"></div></div>
+<div class="receiptServiceHead"><div><h3>Add Service</h3><p>Select a service and its standard amount will appear automatically. You can edit any amount before the receipt is generated, and the total updates instantly.</p></div><button id="receiptAddService" class="btn teal">＋ ADD SERVICE</button></div>
+<div class="receiptServiceAdd">
+<div class="field wide"><label>Service / Description</label>
+<select id="receiptServiceName" onchange="receiptServiceSelectionChanged()">
+<option value="">Select a GURU CONNECT service…</option>
+<option value="Tutor Profile Listing — 1 Month" data-amount="200">Tutor Profile Listing — 1 Month — ₹200</option>
+<option value="Helpline Service — FREE PLAN" data-amount="0">Helpline Service — FREE PLAN — ₹0</option>
+<option value="Helpline Service — PRO PLAN" data-amount="300">Helpline Service — PRO PLAN — ₹300</option>
+<option value="Helpline Service — GENX PLAN" data-amount="1000">Helpline Service — GENX PLAN — ₹1,000</option>
+<option value="Helpline Service — GENX PRO PLAN" data-amount="3000">Helpline Service — GENX PRO PLAN — ₹3,000</option>
+<option value="Helpline Service — PRIME PLAN" data-amount="5000">Helpline Service — PRIME PLAN — ₹5,000</option>
+<option value="Helpline Service — PREMIUM PLAN" data-amount="6000">Helpline Service — PREMIUM PLAN — ₹6,000</option>
+<option value="custom">Custom Service / Feature</option>
+</select>
+<input id="receiptCustomServiceName" class="receiptCustomService" placeholder="Enter custom service / description" style="display:none;margin-top:8px">
+</div>
+<div class="field"><label>Amount (₹) <span style="color:#64748b;font-weight:700">(auto-filled)</span></label><input id="receiptServiceAmount" type="number" min="0" step="0.01" placeholder="0.00"></div>
+</div>
 <div id="receiptServices" class="receiptServices"></div>
 <div class="receiptTotal"><span>TOTAL AMOUNT</span><strong>₹ <span id="receiptTotal">0.00</span></strong></div>
 </div>
@@ -293,18 +309,63 @@ $('roleFilter').onchange=()=>renderUsers();
 $('refresh').onclick=loadLiveUsers;
 
 let receiptServices=[];
+const RECEIPT_SERVICE_CATALOG={
+  "Tutor Profile Listing — 1 Month":200,
+  "Helpline Service — FREE PLAN":0,
+  "Helpline Service — PRO PLAN":300,
+  "Helpline Service — GENX PLAN":1000,
+  "Helpline Service — GENX PRO PLAN":3000,
+  "Helpline Service — PRIME PLAN":5000,
+  "Helpline Service — PREMIUM PLAN":6000
+};
 function renderReceiptServices(){
   const box=$('receiptServices');
-  box.innerHTML=receiptServices.length?receiptServices.map((x,i)=>`<div class=\"receiptServiceRow\"><div class=\"field\"><label>Service ${i+1}</label><input id=\"rs-name-${i}\" value=\"${esc(x.name)}\" oninput=\"receiptEditService(${i},'name',this.value)\"></div><div class=\"field\"><label>Amount (₹)</label><input id=\"rs-amount-${i}\" type=\"number\" min=\"0\" step=\"0.01\" value=\"${Number(x.amount||0).toFixed(2)}\" oninput=\"receiptEditService(${i},'amount',this.value)\"></div><button class=\"btn red receiptRemove\" onclick=\"removeReceiptService(${i})\">REMOVE</button></div>`).join(''):'<div class=\"empty\">No services added yet.</div>';
-  $('receiptTotal').textContent=receiptServices.reduce((n,x)=>n+Number(x.amount||0),0).toFixed(2);
+  box.innerHTML=receiptServices.length?receiptServices.map((x,i)=>`<div class="receiptServiceRow">
+    <div class="field"><label>Service ${i+1}</label><input id="rs-name-${i}" value="${esc(x.name)}" oninput="receiptEditService(${i},'name',this.value)"></div>
+    <div class="field"><label>Amount (₹)</label><input id="rs-amount-${i}" type="number" min="0" step="0.01" value="${Number(x.amount||0).toFixed(2)}" oninput="receiptEditService(${i},'amount',this.value)"></div>
+    <button class="btn red receiptRemove" onclick="removeReceiptService(${i})">REMOVE</button>
+  </div>`).join(''):'<div class="empty">No services added yet.</div>';
+  const total=receiptServices.reduce((n,x)=>n+Number(x.amount||0),0);
+  $('receiptTotal').textContent=total.toFixed(2);
+  const status=$('receiptStatus');
+  if(status) status.textContent=receiptServices.length?`${receiptServices.length} service(s) added • Total ₹${total.toFixed(2)}. You can edit any line amount before generating.`:'Add at least one service before generating the receipt.';
 }
-window.receiptEditService=(i,k,v)=>{if(receiptServices[i]){receiptServices[i][k]=k==='amount'?Number(v||0):v;renderReceiptServices()}};
+window.receiptServiceSelectionChanged=()=>{
+  const sel=$('receiptServiceName');
+  const opt=sel?.selectedOptions?.[0];
+  const custom=$('receiptCustomServiceName');
+  const amount=$('receiptServiceAmount');
+  if(!sel||!amount)return;
+  if(sel.value==='custom'){
+    if(custom){custom.style.display='block';custom.focus();}
+    amount.value='';
+  }else{
+    if(custom){custom.style.display='none';custom.value='';}
+    const a=opt?.dataset?.amount;
+    amount.value=(a!==undefined&&a!=='')?Number(a).toFixed(2):'';
+  }
+};
+window.receiptEditService=(i,k,v)=>{
+  if(receiptServices[i]){
+    receiptServices[i][k]=k==='amount'?Number(v||0):v;
+    renderReceiptServices();
+  }
+};
 window.removeReceiptService=i=>{receiptServices.splice(i,1);renderReceiptServices()};
 $('receiptAddService').onclick=()=>{
-  const name=$('receiptServiceName').value.trim(),amount=Number($('receiptServiceAmount').value);
-  if(!name)return alert('Enter the service / description.');
+  const sel=$('receiptServiceName');
+  const custom=$('receiptCustomServiceName');
+  const selected=sel?.value||'';
+  const name=selected==='custom'?(custom?.value||'').trim():(sel?.selectedOptions?.[0]?.textContent||'').replace(/\s+—\s+₹[\d,]+$/,'').trim();
+  const amount=Number($('receiptServiceAmount').value);
+  if(!selected)return alert('Select a service / feature first.');
+  if(!name)return alert('Enter the custom service / description.');
   if(!Number.isFinite(amount)||amount<0)return alert('Enter a valid service amount.');
-  receiptServices.push({name,amount});$('receiptServiceName').value='';$('receiptServiceAmount').value='';renderReceiptServices();$('receiptServiceName').focus();
+  receiptServices.push({name,amount});
+  if(sel)sel.value='';
+  if(custom){custom.value='';custom.style.display='none';}
+  $('receiptServiceAmount').value='';
+  renderReceiptServices();
 };
 $('generateReceipt').onclick=()=>{
   if(!receiptServices.length)return alert('Add at least one service.');
@@ -312,12 +373,19 @@ $('generateReceipt').onclick=()=>{
   const payload={category:$('receiptCategory').value,name:$('receiptName').value.trim(),email:$('receiptEmail').value.trim(),phone:$('receiptPhone').value.trim(),date:$('receiptDate').value||new Date().toISOString().slice(0,10),reference:$('receiptRef').value.trim(),services:receiptServices,total};
   if(!payload.name)return alert('Enter the recipient name.');
   const p=new URLSearchParams({back:'admin.html',category:payload.category,name:payload.name,email:payload.email,phone:payload.phone,date:payload.date,reference:payload.reference,services:JSON.stringify(payload.services),total:total.toFixed(2)});
-  const w=window.open('receipt.html?'+p.toString(),'_blank','noopener,noreferrer');if(!w)alert('Please allow pop-ups for GURU CONNECT Admin.');
+  const w=window.open('receipt.html?'+p.toString(),'_blank','noopener,noreferrer');
+  if(!w)alert('Please allow pop-ups for GURU CONNECT Admin.');
 };
-$('clearReceipt').onclick=()=>{receiptServices=[];$('receiptName').value='';$('receiptEmail').value='';$('receiptPhone').value='';$('receiptRef').value='';$('receiptDate').value=new Date().toISOString().slice(0,10);$('receiptServiceName').value='';$('receiptServiceAmount').value='';renderReceiptServices();};
+$('clearReceipt').onclick=()=>{
+  receiptServices=[];
+  $('receiptName').value='';$('receiptEmail').value='';$('receiptPhone').value='';$('receiptRef').value='';
+  $('receiptDate').value=new Date().toISOString().slice(0,10);
+  $('receiptServiceName').value='';$('receiptServiceAmount').value='';
+  const custom=$('receiptCustomServiceName');if(custom){custom.value='';custom.style.display='none';}
+  renderReceiptServices();
+};
 $('receiptDate').value=new Date().toISOString().slice(0,10);
 renderReceiptServices();
-
 
 
 async function findForEdit(){
