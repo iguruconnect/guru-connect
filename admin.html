@@ -16,6 +16,10 @@
 .lrrActions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0}
 .lrrActions .btn{font-size:11px;padding:9px 11px}
 .caseChat{background:#0ea5e9;color:#fff}
+.lrrEvidence{margin-top:14px;border:1px solid #dbeafe;border-radius:14px;background:#f8fbff;padding:12px}.lrrEvidenceTitle{font-size:11px;font-weight:950;color:#123b8f;text-transform:uppercase;margin-bottom:9px}.evidenceGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.evidenceBox{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:9px;font-size:11px;line-height:1.5}.evidenceBox b{display:block;color:#64748b;font-size:9px;text-transform:uppercase;margin-bottom:3px}.evidenceGood{color:#047857;font-weight:900}.evidenceWarn{color:#b45309;font-weight:900}.evidenceBad{color:#b91c1c;font-weight:900}.lrrDecision{margin-top:10px;padding:10px;border-radius:11px;background:#fff7ed;border:1px solid #fed7aa;font-size:10px;font-weight:800;color:#9a3412}.lrrActions .decisionBtn{font-size:11px;padding:9px 11px}
+@media(max-width:800px){.evidenceGrid{grid-template-columns:1fr}}
+.gcAdminChatOverlay{position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,.62);display:none;align-items:center;justify-content:center;padding:18px}.gcAdminChatOverlay.open{display:flex}.gcAdminChatCard{width:min(900px,96vw);height:min(760px,92vh);background:#fff;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 90px rgba(0,0,0,.3)}.gcAdminChatHead{padding:15px 18px;background:linear-gradient(135deg,#092a66,#1264d8);color:#fff}.gcAdminChatHead h3{margin:0;font-size:16px}.gcAdminChatHead p{margin:4px 0 0;font-size:10px;opacity:.9}.gcAdminChatMeta{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.gcAdminChatMeta span{background:rgba(255,255,255,.14);padding:5px 8px;border-radius:999px;font-size:9px;font-weight:800}.gcAdminChatClose{float:right;border:0;background:rgba(255,255,255,.15);color:#fff;border-radius:9px;padding:7px 10px;cursor:pointer;font-weight:900}.gcAdminChatMessages{flex:1;overflow:auto;padding:15px;background:#f8fafc}.gcAdminMsg{display:flex;margin:8px 0}.gcAdminMsg.mine{justify-content:flex-end}.gcAdminBubble{max-width:78%;padding:10px 12px;border-radius:15px;background:#fff;border:1px solid #dbe3ef}.gcAdminMsg.mine .gcAdminBubble{background:#1264d8;color:#fff;border-color:#1264d8}.gcAdminText{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.5}.gcAdminTime{font-size:8px;opacity:.65;margin-top:4px}.gcAdminCompose{display:flex;gap:8px;padding:10px;border-top:1px solid #e2e8f0}.gcAdminCompose textarea{flex:1;height:50px;resize:none;border:1px solid #cbd5e1;border-radius:11px;padding:10px;font:700 12px Arial}.gcAdminCompose button{border:0;border-radius:11px;background:#155eef;color:#fff;padding:0 16px;font-weight:950;cursor:pointer}
+
 .historyRow{display:grid;grid-template-columns:140px 1fr 100px 180px;gap:10px;align-items:center;border:1px solid #e2e8f0;border-radius:12px;padding:11px;margin-top:8px;background:#fff;font-size:11px}
 .historyRow .amount{font-weight:950}
 .historyRow.add .amount{color:#047857}.historyRow.sub .amount{color:#b91c1c}
@@ -346,11 +350,132 @@ async function loadCoinHistory(){
 function renderCoinHistory(rows){const q=($('coinHistorySearch').value||'').trim().toLowerCase();const list=(rows||[]).filter(r=>!q||Object.values(r).some(v=>String(v??'').toLowerCase().includes(q)));$('coinHistoryResults').innerHTML=list.length?list.map(r=>{const amt=Number(r.amount??r.coin_amount??r.change??0);const add=amt>=0;return `<div class="historyRow ${add?'add':'sub'}"><div>${esc(r.created_at||r.date||'—')}</div><div><b>${esc(r.name||r.full_name||r.user_name||r.user_id||r.profile_id||'Member')}</b><br><span class="muted">${esc(r.reason||r.description||'—')}</span></div><div class="amount">${add?'+':''}${esc(amt)}</div><div>${esc(r.role||'')} · ${esc(r.reference||r.lrr_id||r.request_id||'')}</div></div>`}).join(''):'<div class="empty">No coin history matches the search.</div>'}
 $('loadCoinHistory').onclick=async()=>{coinHistoryLoaded=false;await loadCoinHistory()};$('coinHistoryFind').onclick=async()=>{if(!coinHistoryLoaded)await loadCoinHistory();else{const r=await sb.from('gc_coin_ledger').select('*').order('created_at',{ascending:false}).limit(250);if(!r.error)renderCoinHistory(r.data||[])}};$('coinHistorySearch').addEventListener('keydown',e=>{if(e.key==='Enter')$('coinHistoryFind').click()});
 
-async function lrrAction(id,action){const reason=action==='reject'?'Rejected by Admin':action==='return'?'Returned to Student':'Approved to Tutor';if(!confirm(reason+'?'))return;try{let r=await sb.rpc('gc_admin_lrr_action',{p_request_id:String(id),p_action:action,p_reason:reason});if(r.error&&/could not find the function|does not exist|schema cache/i.test(String(r.error.message||''))){r=await sb.from('gc_learning_requests_v2').update({status:action==='approve'?'APPROVED':action==='reject'?'REJECTED':'RETURNED'}).eq('id',id)}if(r.error)throw r.error;lrrLoaded=false;await loadLearning()}catch(e){alert('LRR action failed: '+(e.message||e))}}
+async function lrrAction(id,action){
+  const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(id));
+  const reason=action==='reject'?'Rejected by Admin':action==='return'?'Returned to Student':'Approved to Tutor';
+  if(!confirm(reason+'?'))return;
+  try{
+    let r=await sb.rpc('gc_admin_lrr_action',{p_request_id:String(id),p_action:action,p_reason:reason});
+    if(r.error&&/could not find the function|does not exist|schema cache/i.test(String(r.error.message||''))){
+      r=await sb.from('gc_learning_requests_v2').update({status:action==='approve'?'APPROVED':action==='reject'?'REJECTED':'RETURNED'}).eq('id',id)
+    }
+    if(r.error)throw r.error;
+    lrrLoaded=false;await loadLearning()
+  }catch(e){alert('LRR action failed: '+(e.message||e))}
+}
 window.lrrAction=lrrAction;
+
 window.lrrCoins=async(id,studentId,tutorId,role)=>{const who=role==='tutor'?tutorId:studentId;if(!who)return alert('No '+role+' user ID is attached to this LRR.');$('coinUserId').value=String(who);$('coinRole').value=role;switchSection('coins');$('coinAmount').focus()};
-window.caseChat=(studentId,tutorId,lrrId,who)=>{const uid=who==='tutor'?tutorId:studentId;if(!uid)return alert('The selected '+who+' is not linked to this LRR.');const url='chat.html?user_id='+encodeURIComponent(uid)+'&role='+encodeURIComponent(who)+'&lrr_id='+encodeURIComponent(lrrId)+'&admin=1';const w=window.open(url,'_blank','noopener,noreferrer');if(!w)alert('Please allow pop-ups for GURU CONNECT Admin.')};
-async function loadLearning(){if(lrrLoading)return;lrrLoading=true;$('learningStatus').textContent=lrrLoaded?'Refreshing LRR…':'Loading LRR…';try{const q=await sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(200);if(q.error)throw q.error;const rows=q.data||[];$('lrrCount').textContent=rows.length+' REQUESTS';$('learningStatus').textContent=rows.length+' Learning Requirement Request(s).';const h=$('learningResults');h.innerHTML=rows.length?rows.map(r=>{const id=r.id||r.request_id||r.request_code;const st=r.status||'OPEN';const student=r.student_id||r.student_user_id||r.student_profile_id||'';const tutor=r.tutor_id||r.tutor_user_id||r.tutor_profile_id||'';return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(r.request_code||id||'Learning Request')}</b><span class="badge">${esc(st)}</span><div class="muted">Created: ${esc(r.created_at||'—')}</div></div><span class="pill">LRR CASE</span></div><div class="lrrMeta"><div class="metaBox"><b>Student</b>${esc(student||'Not linked')}</div><div class="metaBox"><b>Tutor</b>${esc(tutor||'Not assigned')}</div><div class="metaBox"><b>Course / Stream</b>${esc((r.course||'—')+' / '+(r.stream||'—'))}</div><div class="metaBox"><b>Subject / Topic</b>${esc((r.subject||'—')+' / '+(r.chapter||r.topic||'—'))}</div><div class="metaBox" style="grid-column:1/-1"><b>Requirement / Issue</b>${esc(r.problem||r.issue||r.learning_requirement||r.description||'—')}</div></div><div class="lrrActions"><button type="button" class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button type="button" class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button type="button" class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button type="button" class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','tutor')">🪙 TUTOR COINS</button><button type="button" class="btn light" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','student')">🪙 STUDENT COINS</button><button type="button" class="btn caseChat" onclick="caseChat('${esc(student)}','${esc(tutor)}','${esc(id)}','student')">💬 CHAT STUDENT</button><button type="button" class="btn caseChat" onclick="caseChat('${esc(student)}','${esc(tutor)}','${esc(id)}','tutor')">💬 CHAT TUTOR</button></div></article>`}).join(''):'<div class="empty">No Learning Requirement Requests found.</div>';lrrLoaded=true}catch(e){lrrLoaded=false;$('learningStatus').textContent='LRR load failed: '+(e.message||e);$('learningResults').innerHTML='<div class="empty">Unable to load Learning Requirement Requests.</div>'}finally{lrrLoading=false}}
+
+/* Final coin decision uses the authoritative LRR workflow already used by the main site. */
+window.lrrDecision=async(id,decision)=>{
+  const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(id));
+  if(!row)return alert('LRR record is no longer loaded. Refresh the LRR tab.');
+  const outcome=String(row.student_outcome||row.outcome||'').toUpperCase();
+  if(decision==='APPROVE' && !['SATISFIED','SATISFIED_BY_STUDENT','COMPLETED_SATISFIED'].includes(outcome)){
+    const ok=confirm('The Student has not marked this LRR as SATISFIED.\n\nYou can still open both chats and investigate, but releasing Tutor coins now is not supported by the evidence.\n\nContinue to the secure decision anyway?');
+    if(!ok)return;
+  }
+  let note='';
+  if(decision==='DENY')note=prompt('Reason for denying / returning the LRR coins:','Admin reviewed the case and did not approve the Tutor coin transfer.')??'';
+  try{
+    const q=await sb.rpc('gc_admin_decide_learning_request',{p_request_id:String(id),p_decision:decision,p_note:String(note).slice(0,1000)});
+    if(q.error)throw q.error;
+    alert(decision==='APPROVE'?'✓ Approved. The secure LRR workflow has released the Tutor reward.':'✓ Denied / returned according to the secure LRR workflow.');
+    lrrLoaded=false;await loadLearning();
+  }catch(e){alert('Coin decision failed: '+(e.message||e))}
+};
+
+/* Admin-specific case chat: uses the same gc_messages table and the same GCCHAT|LRR subject used by Student/Tutor chat. */
+let adminChatState=null,adminChatTimer=null;
+function ensureAdminChatModal(){
+  if(document.getElementById('gcAdminChatOverlay'))return;
+  const o=document.createElement('div');o.id='gcAdminChatOverlay';o.className='gcAdminChatOverlay';
+  o.innerHTML='<div class="gcAdminChatCard"><div class="gcAdminChatHead"><button class="gcAdminChatClose" type="button" onclick="closeAdminCaseChat()">✕ CLOSE</button><h3 id="gcAdminChatTitle">LRR Case Chat</h3><p id="gcAdminChatSub">GURU CONNECT Admin • Private case conversation</p><div id="gcAdminChatMeta" class="gcAdminChatMeta"></div></div><div id="gcAdminChatMessages" class="gcAdminChatMessages"></div><div class="gcAdminCompose"><textarea id="gcAdminChatInput" maxlength="5000" placeholder="Message the selected Student/Tutor about this LRR..."></textarea><button id="gcAdminChatSend" type="button">SEND</button></div></div>';
+  document.body.appendChild(o);
+  o.addEventListener('click',e=>{if(e.target===o)closeAdminCaseChat()});
+  document.getElementById('gcAdminChatSend').onclick=sendAdminCaseChat;
+}
+function adminChatKey(rid,other){return 'gc_admin_case_'+String(rid)+'_'+String(other)}
+function localAdminChatLoad(key){try{return JSON.parse(localStorage.getItem(key)||'[]')}catch(_){return[]}}
+async function loadAdminCaseMessages(){
+  const st=adminChatState;if(!st)return;
+  const host=$('gcAdminChatMessages');
+  try{
+    let q=await sb.from('gc_messages').select('*').like('subject','GCCHAT|'+String(st.requestId)+'|%').order('created_at',{ascending:true}).limit(500);
+    if(q.error)throw q.error;
+    const rows=(q.data||[]).filter(m=>{
+      const a=String(m.from_id||''),b=String(m.to_id||'');
+      return a===String(st.other)||b===String(st.other)||String(m.from_type||'')==='admin'||String(m.to_type||'')==='admin';
+    });
+    host.innerHTML=rows.length?rows.map(m=>{const mine=String(m.from_type||'')==='admin'||String(m.from_id||'')===String(st.adminId);return '<div class="gcAdminMsg '+(mine?'mine':'')+'"><div class="gcAdminBubble"><div class="gcAdminText">'+esc(m.body||'')+'</div><div class="gcAdminTime">'+esc(m.from_name||'User')+' · '+esc(m.created_at||'')+'</div></div></div>'}).join(''):'<div class="empty">No messages yet for this LRR. Start the conversation with the '+esc(st.role)+'.</div>';
+  }catch(e){
+    const rows=localAdminChatLoad(adminChatKey(st.requestId,st.other));
+    host.innerHTML=rows.length?rows.map(m=>'<div class="gcAdminMsg '+(m.mine?'mine':'')+'"><div class="gcAdminBubble"><div class="gcAdminText">'+esc(m.body)+'</div><div class="gcAdminTime">'+esc(m.from_name)+' · '+esc(m.created_at)+'</div></div></div>').join(''):'<div class="dangerNote">Cloud chat could not be read: '+esc(e.message||e)+'</div>';
+  }
+  host.scrollTop=host.scrollHeight;
+}
+window.caseChat=async(studentId,tutorId,lrrId,who)=>{
+  const uid=who==='tutor'?tutorId:studentId;
+  if(!uid)return alert('The selected '+who+' is not linked to this LRR.');
+  const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(lrrId))||{};
+  ensureAdminChatModal();
+  const sess=await sb.auth.getSession();const adminId=String(sess.data?.session?.user?.id||'ADMIN');
+  const name=who==='tutor'?(row.tutor_name||row.tutorName||'Tutor'):(row.student_name||row.studentName||'Student');
+  adminChatState={requestId:String(lrrId),requestCode:row.request_code||lrrId,subject:row.subject||'Learning Request',other:String(uid),role:who,adminId};
+  $('gcAdminChatTitle').textContent='Chat with '+name+' • '+(who==='tutor'?'TUTOR':'STUDENT');
+  $('gcAdminChatMeta').innerHTML='<span>📚 '+esc(row.subject||'Learning Request')+'</span><span>🔐 LRR: '+esc(row.request_code||lrrId)+'</span><span>👤 '+esc(who.toUpperCase())+'</span><span>🪙 Held: '+Number(row.coins_held||0)+'</span>';
+  $('gcAdminChatOverlay').classList.add('open');
+  await loadAdminCaseMessages();
+  clearInterval(adminChatTimer);adminChatTimer=setInterval(loadAdminCaseMessages,3500);
+  setTimeout(()=>$('gcAdminChatInput')?.focus(),100);
+};
+window.closeAdminCaseChat=()=>{$('gcAdminChatOverlay')?.classList.remove('open');clearInterval(adminChatTimer);adminChatTimer=null;adminChatState=null};
+async function sendAdminCaseChat(){
+  const st=adminChatState,input=$('gcAdminChatInput'),btn=$('gcAdminChatSend');if(!st||!input)return;const body=input.value.trim();if(!body)return;btn.disabled=true;
+  try{
+    const now=new Date().toISOString(),id='admin_chat_'+Date.now()+'_'+Math.random().toString(36).slice(2),subject='GCCHAT|'+st.requestId+'|'+st.subject;
+    const row={id,from_type:'admin',from_id:String(st.adminId),from_name:'GURU CONNECT ADMIN',to_type:'user',to_id:String(st.other),to_role:st.role,to_name:st.role==='tutor'?'Tutor':'Student',subject,body,created_at:now,read:false};
+    const q=await sb.from('gc_messages').upsert(row,{onConflict:'id'});if(q.error)throw q.error;
+    input.value='';await loadAdminCaseMessages();
+  }catch(e){alert('Chat message could not be sent: '+(e.message||e))}finally{btn.disabled=false}
+}
+
+async function loadLearning(){
+  if(lrrLoading)return;lrrLoading=true;$('learningStatus').textContent=lrrLoaded?'Refreshing LRR…':'Loading LRR…';
+  try{
+    const q=await sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(200);
+    if(q.error)throw q.error;
+    const rows=q.data||[];window.__adminLrrRows=rows;
+    $('lrrCount').textContent=rows.length+' REQUESTS';$('learningStatus').textContent=rows.length+' Learning Requirement Request(s).';
+    const h=$('learningResults');
+    h.innerHTML=rows.length?rows.map(r=>{
+      const id=r.id||r.request_id||r.request_code,st=r.status||'OPEN';
+      const student=r.student_id||r.student_user_id||r.student_profile_id||'',tutor=r.tutor_id||r.tutor_user_id||r.tutor_profile_id||'';
+      const outcome=r.student_outcome||r.outcome||'Pending';
+      const tutorCompleted=['TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED','APPROVED'].includes(String(st).toUpperCase());
+      const studentFeedback=r.student_feedback||r.student_remark||r.student_remarks||r.feedback||r.remark||'';
+      const tutorFeedback=r.tutor_feedback||r.tutor_remark||r.tutor_remarks||r.completion_note||r.tutor_completion_note||'';
+      const adminNote=r.admin_decision_note||r.admin_note||'';
+      const canDecide=['PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW'].includes(String(st).toUpperCase());
+      const satisfied=['SATISFIED','SATISFIED_BY_STUDENT','COMPLETED_SATISFIED'].includes(String(outcome).toUpperCase());
+      return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(r.request_code||id||'Learning Request')}</b><span class="badge">${esc(st)}</span><div class="muted">Created: ${esc(r.created_at||'—')}</div></div><span class="pill">LRR CASE</span></div>
+      <div class="lrrMeta"><div class="metaBox"><b>Student</b>${esc(student||'Not linked')}</div><div class="metaBox"><b>Tutor</b>${esc(tutor||'Not assigned')}</div><div class="metaBox"><b>Course / Stream</b>${esc((r.course||'—')+' / '+(r.stream||'—'))}</div><div class="metaBox"><b>Subject / Topic</b>${esc((r.subject||'—')+' / '+(r.chapter||r.topic||'—'))}</div><div class="metaBox" style="grid-column:1/-1"><b>Requirement / Issue</b>${esc(r.problem||r.issue||r.learning_requirement||r.description||'—')}</div></div>
+      <div class="lrrEvidence"><div class="lrrEvidenceTitle">🔎 Evidence & Service Outcome — Admin Review</div><div class="evidenceGrid">
+        <div class="evidenceBox"><b>Student outcome</b><span class="${satisfied?'evidenceGood':String(outcome).toUpperCase()==='NOT_SATISFIED'?'evidenceBad':'evidenceWarn'}">${esc(outcome)}</span></div>
+        <div class="evidenceBox"><b>Tutor service status</b><span class="${tutorCompleted?'evidenceGood':'evidenceWarn'}">${tutorCompleted?'✓ Tutor marked/completed the service':'Pending tutor completion'}</span></div>
+        <div class="evidenceBox"><b>Student feedback / remark</b>${esc(studentFeedback||'No written student feedback recorded.')}</div>
+        <div class="evidenceBox"><b>Tutor feedback / completion note</b>${esc(tutorFeedback||'No separate tutor feedback recorded. Status is used as the completion evidence.')}</div>
+        <div class="evidenceBox"><b>Coins held with Admin</b><strong>🪙 ${Number(r.coins_held||0)}</strong></div>
+        <div class="evidenceBox"><b>Learning deadline</b>${esc(r.learning_deadline||'Not set')}</div>
+        <div class="evidenceBox" style="grid-column:1/-1"><b>Admin decision / note</b>${esc(adminNote||'No Admin decision recorded yet.')}</div>
+      </div>${canDecide?`<div class="lrrDecision">${satisfied?'✅ Student has confirmed SATISFIED. This is the strongest evidence for releasing the Tutor reward.':'⚠️ Final coin decision is pending. Chat with both parties before releasing/denying if the evidence is incomplete.'}</div>`:''}</div>
+      <div class="lrrActions"><button type="button" class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button type="button" class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button type="button" class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button type="button" class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','tutor')">🪙 TUTOR COINS</button><button type="button" class="btn light" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','student')">🪙 STUDENT COINS</button><button type="button" class="btn caseChat" onclick="caseChat('${esc(student)}','${esc(tutor)}','${esc(id)}','student')">💬 CHAT STUDENT</button><button type="button" class="btn caseChat" onclick="caseChat('${esc(student)}','${esc(tutor)}','${esc(id)}','tutor')">💬 CHAT TUTOR</button>${canDecide?`<button type="button" class="btn green decisionBtn" onclick="lrrDecision('${esc(id)}','APPROVE')">💰 RELEASE TUTOR COINS</button><button type="button" class="btn red decisionBtn" onclick="lrrDecision('${esc(id)}','DENY')">↩ DENY / RETURN COINS</button>`:''}</div></article>`
+    }).join(''):'<div class="empty">No Learning Requirement Requests found.</div>';
+    lrrLoaded=true
+  }catch(e){lrrLoaded=false;$('learningStatus').textContent='LRR load failed: '+(e.message||e);$('learningResults').innerHTML='<div class="empty">Unable to load Learning Requirement Requests.</div>'}
+  finally{lrrLoading=false}
+}
 $('resetFind').onclick=async()=>{
   const q=$('resetSearch').value.trim();$('resetResult').innerHTML='Searching…';
   try{
