@@ -97,6 +97,229 @@
 <style id="gc-account-ledger-actions-v2">
 .gcRowActions{display:flex;gap:6px;flex-wrap:wrap;min-width:145px}.gcRowActions .btn{padding:7px 9px;font-size:10px}.gcTableWrap{overflow:auto;max-width:100%}.gcTable{min-width:980px}.gcTable td,.gcTable th{vertical-align:top}.gcAcctCard{max-width:98vw!important;width:1500px!important}.gcAcctPane{overflow:auto}.gcBox{overflow:hidden}
 </style>
+
+<!-- GURU CONNECT — MOBILE ADMIN TABS + WHATSAPP FINAL FIX -->
+<style id="gc-admin-mobile-interaction-fix">
+  /* Keep the existing desktop design. On phones make the admin section tabs a
+     genuine touch-scrolling strip so no tab is hidden or trapped by layout. */
+  @media (max-width: 600px){
+    .controlbar{
+      display:flex !important;
+      flex-wrap:nowrap !important;
+      align-items:stretch !important;
+      justify-content:flex-start !important;
+      gap:8px !important;
+      width:100% !important;
+      max-width:100% !important;
+      overflow-x:auto !important;
+      overflow-y:hidden !important;
+      -webkit-overflow-scrolling:touch !important;
+      overscroll-behavior-x:contain !important;
+      touch-action:pan-x !important;
+      scrollbar-width:thin !important;
+      padding:8px 6px 10px !important;
+      position:sticky !important;
+      top:0 !important;
+      z-index:5000 !important;
+    }
+    .controlbar .topbtn,
+    .controlbar .topbtn.priority{
+      flex:0 0 auto !important;
+      width:auto !important;
+      min-width:156px !important;
+      max-width:190px !important;
+      min-height:72px !important;
+      margin:0 !important;
+      cursor:pointer !important;
+      touch-action:manipulation !important;
+      -webkit-tap-highlight-color:rgba(21,94,239,.14) !important;
+      user-select:none !important;
+    }
+    .controlbar .topbtn b,
+    .controlbar .topbtn small{
+      pointer-events:none !important;
+    }
+    .controlbar .topbtn.active{
+      position:relative !important;
+      z-index:2 !important;
+    }
+  }
+
+  /* Never allow an action button to be accidentally treated as a form submit. */
+  .controlbar .topbtn,
+  .lrrActions .caseChat,
+  .lrrActions .btn{type:button;}
+
+  /* Mobile WhatsApp buttons need a large, direct touch target. */
+  @media (max-width: 600px){
+    .lrrActions .caseChat,
+    .user .caseChat{
+      min-height:44px !important;
+      min-width:145px !important;
+      padding:10px 13px !important;
+      touch-action:manipulation !important;
+      -webkit-tap-highlight-color:rgba(16,185,129,.18) !important;
+    }
+  }
+</style>
+<script id="gc-admin-mobile-interaction-fix-js">
+(function(){
+  'use strict';
+
+  function isMobileDevice(){
+    return window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
+  }
+
+  function mobileWhatsAppUrl(phone, message){
+    return 'https://wa.me/' + phone + '?text=' + encodeURIComponent(message);
+  }
+
+  function normalisePhone(value){
+    let digits=String(value==null?'':value).replace(/\D/g,'');
+    if(!digits) return '';
+    if(digits.indexOf('00')===0) digits=digits.slice(2);
+    if(digits.length===11 && digits.charAt(0)==='0') digits=digits.slice(1);
+    if(digits.length===10) digits='91'+digits;
+    return digits;
+  }
+
+  /*
+   * Replace only the navigation interaction layer. The original switchSection()
+   * remains responsible for loading LRR / Coin History data.
+   */
+  function installMobileTabs(){
+    if(typeof window.switchSection!=='function' || window.switchSection.__gcMobileFixed) return;
+    const originalSwitch=window.switchSection;
+
+    function safeSwitch(name){
+      if(!name) return;
+      /* The original function returns early when the same section is already
+         selected. On mobile we still force the section visible. */
+      try{ originalSwitch(name); }catch(e){ console.warn('Admin tab switch:',e); }
+      document.querySelectorAll('.section').forEach(function(section){
+        section.classList.toggle('open', section.id === 'sec-'+name);
+      });
+      document.querySelectorAll('.controlbar .topbtn').forEach(function(button){
+        button.classList.toggle('active', button.dataset.sec === name);
+      });
+      window.activeSection=name;
+    }
+    safeSwitch.__gcMobileFixed=true;
+    window.switchSection=safeSwitch;
+
+    const bar=document.querySelector('.controlbar');
+    if(!bar || bar.__gcMobileFixed) return;
+    bar.__gcMobileFixed=true;
+
+    /* Capture the touch/pointer activation before any legacy handler can lose
+       the event. preventDefault avoids a second delayed mobile click. */
+    bar.addEventListener('pointerup',function(event){
+      const button=event.target.closest && event.target.closest('.topbtn');
+      if(!button || !bar.contains(button)) return;
+      if(event.pointerType==='mouse') return;
+      event.preventDefault();
+      event.stopPropagation();
+      safeSwitch(button.dataset.sec);
+      if(isMobileDevice()){
+        try{button.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}catch(_){ }
+      }
+    },true);
+
+    /* iOS/Safari fallback where pointer events are unavailable or inconsistent. */
+    bar.addEventListener('touchend',function(event){
+      const touchTarget=event.target.closest && event.target.closest('.topbtn');
+      if(!touchTarget || !bar.contains(touchTarget)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      safeSwitch(touchTarget.dataset.sec);
+      try{touchTarget.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}catch(_){ }
+    },{capture:true,passive:false});
+
+    /* Make every tab an explicit non-submit control. */
+    bar.querySelectorAll('.topbtn').forEach(function(button){
+      button.setAttribute('type','button');
+    });
+  }
+
+  function installWhatsApp(){
+    /* User-card WhatsApp button: direct navigation on phones invokes the native
+       WhatsApp app when available; desktop keeps the existing new-tab behavior. */
+    window.adminWhatsAppUser=function(i){
+      const list=(typeof users!=='undefined' && Array.isArray(users))?users:[];
+      const u=list[i]||{};
+      const phone=normalisePhone(u.phone);
+      if(!phone){alert('This user has no registered phone/WhatsApp number.');return;}
+      const name=String(u.name||u.full_name||u.role||'GURU CONNECT member');
+      const msg='Hello '+name+', I am contacting you from GURU CONNECT Admin regarding your account.';
+      const url=mobileWhatsAppUrl(phone,msg);
+      if(isMobileDevice()){
+        /* location.href is intentionally used on mobile: it is a user-gesture
+           navigation and is much more reliable than window.open() in iOS/Android. */
+        window.location.href=url;
+      }else{
+        const w=window.open(url,'_blank','noopener,noreferrer');
+        if(!w) window.location.href=url;
+      }
+    };
+
+    /* Learning Requirement Request WhatsApp buttons also run after an async
+       Supabase lookup. Do not open about:blank on mobile; navigate directly
+       after the contact number has been resolved. */
+    if(typeof window.whatsappCaseChat==='function'){
+      const originalCaseChat=window.whatsappCaseChat;
+      window.whatsappCaseChat=async function(lrrId,who){
+        try{
+          const q=await sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(lrrId),p_target_role:who});
+          let contact=q.error?null:q.data;
+          let phone=normalisePhone(contact && contact.phone);
+          let name=String((contact && contact.name)||'');
+
+          if(!phone && q.error && !/no phone|phone number|mobile/i.test(q.error.message||'')){
+            throw q.error;
+          }
+          if(!phone && typeof lookupAdminLrrWhatsAppContact==='function'){
+            const fallback=await lookupAdminLrrWhatsAppContact(lrrId,who);
+            phone=normalisePhone(fallback && fallback.phone);
+            name=name||String((fallback && fallback.name)||'');
+          }
+          if(!phone){
+            throw new Error('No phone number is saved in the user profile. Please update the registered mobile number in the profile/admin user editor.');
+          }
+
+          name=name||(who==='tutor'?'Tutor':'Student');
+          const text='Hello '+name+', I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.';
+          const url=mobileWhatsAppUrl(phone,text);
+
+          if(isMobileDevice()){
+            window.location.href=url;
+          }else{
+            const popup=window.open(url,'_blank','noopener,noreferrer');
+            if(!popup) window.location.href=url;
+          }
+        }catch(error){
+          alert('WhatsApp chat could not be opened: '+(error && error.message ? error.message : error));
+        }
+      };
+      window.whatsappCaseChat.__gcMobileFixed=true;
+    }
+  }
+
+  function init(){
+    installMobileTabs();
+    installWhatsApp();
+  }
+
+  /* This file defines the admin functions in the main script before </body>.
+     Run after DOM creation and once more shortly afterward for slow devices. */
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',init,{once:true});
+  }else{
+    init();
+  }
+  setTimeout(init,250);
+  setTimeout(init,1000);
+})();
+</script>
 </head><body>
 <header class="head"><div class="headin"><div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
 <main class="wrap"><div id="gate" class="gate">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
