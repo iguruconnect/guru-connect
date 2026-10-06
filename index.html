@@ -6981,34 +6981,10 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 
         function tutorContactHtml(tutor) {
             if (!tutor) return '';
-            const email = String(tutor.email || '').trim();
-            const phone = String(tutor.phone || '').trim();
-            const digits = phone.replace(/\D/g, '');
-            const whatsappNumber = digits ? (digits.length === 10 ? '91' + digits : digits) : '';
-            const whatsappUrl = whatsappNumber
-                ? `https://wa.me/${whatsappNumber}?text=${encodeURIComponent('Hello ' + (tutor.name || 'Tutor') + ', I found your profile on Guru Connect and would like to discuss tuition.')}`
-                : '';
-
-            return `
-                <div class="mt-5 rounded-3xl border border-emerald-200 bg-emerald-50 p-4 sm:p-5">
-                    <div class="flex items-center gap-2 text-emerald-800 font-black text-xs sm:text-sm uppercase tracking-wider">
-                        <i class="fa-solid fa-address-card"></i> Tutor Contact Details
-                    </div>
-                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        ${email ? `<a href="mailto:${escapeHtml(email)}" class="flex items-center gap-3 bg-white border border-emerald-100 rounded-2xl p-3 hover:border-emerald-400 transition">
-                            <span class="w-10 h-10 rounded-xl bg-blue-50 text-brand-blue flex items-center justify-center shrink-0"><i class="fa-solid fa-envelope"></i></span>
-                            <span class="min-w-0"><span class="block text-[10px] font-black uppercase text-slate-500">Email</span><span class="block text-xs sm:text-sm font-bold text-slate-800 break-all">${escapeHtml(email)}</span></span>
-                        </a>` : ''}
-                        ${phone ? `<a href="tel:${escapeHtml(phone)}" class="flex items-center gap-3 bg-white border border-emerald-100 rounded-2xl p-3 hover:border-emerald-400 transition">
-                            <span class="w-10 h-10 rounded-xl bg-blue-50 text-brand-blue flex items-center justify-center shrink-0"><i class="fa-solid fa-phone"></i></span>
-                            <span class="min-w-0"><span class="block text-[10px] font-black uppercase text-slate-500">Phone / WhatsApp</span><span class="block text-xs sm:text-sm font-bold text-slate-800">${escapeHtml(phone)}</span></span>
-                        </a>` : ''}
-                        ${whatsappUrl ? `<a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 bg-white border border-emerald-100 rounded-2xl p-3 hover:border-emerald-400 transition">
-                            <span class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0"><i class="fa-brands fa-whatsapp text-xl"></i></span>
-                            <span class="min-w-0"><span class="block text-[10px] font-black uppercase text-slate-500">WhatsApp</span><span class="block text-xs sm:text-sm font-bold text-emerald-700">Chat with Tutor</span></span>
-                        </a>` : ''}
-                    </div>
-                </div>`;
+            return `<div class="mt-5 rounded-3xl border border-emerald-200 bg-emerald-50 p-4 sm:p-5">
+                <div class="flex items-center gap-2 text-emerald-800 font-black text-xs sm:text-sm uppercase tracking-wider"><i class="fa-solid fa-shield-halved"></i> Contact Details Protected</div>
+                <p class="mt-3 text-xs sm:text-sm font-semibold leading-relaxed text-slate-700">Send a CONNECT request first. The Tutor’s registered phone number and WhatsApp contact become available only after the Tutor accepts your connection request.</p>
+            </div>`;
         }
 
         function closePrelistedTutorBusyModal() {
@@ -7195,12 +7171,10 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
                     ${dashboardField('Roll Number', student.rollNumber, 'fa-hashtag')}
                     ${dashboardField('Learning Requirement', student.learningRequirement, 'fa-lightbulb')}
                 </div>` : `<div class="mt-5 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-500"><i class="fa-solid fa-eye-slash mr-1"></i> Student has hidden additional profile details.</div>`;
-            const contactHtml = visibleContact ? `
-                <div class="mt-4 bg-emerald-50 border border-emerald-200 rounded-2xl p-4">
-                    <div class="text-[10px] font-black uppercase tracking-wider text-emerald-700">Contact Details</div>
-                    <div class="mt-2 text-sm font-black text-slate-800">${escapeHtml(student.phone || 'Not provided')}</div>
-                    <div class="text-xs font-medium text-slate-600 break-all">${escapeHtml(student.email || 'Not provided')}</div>
-                </div>` : `<div class="mt-4 bg-slate-50 border border-slate-200 rounded-2xl p-4 text-xs text-slate-500"><i class="fa-solid fa-eye-slash mr-1"></i> Student has hidden contact details.</div>`;
+            const contactHtml = `<div class="mt-4 bg-emerald-50 border border-emerald-200 rounded-2xl p-4">
+                <div class="text-[10px] font-black uppercase tracking-wider text-emerald-700"><i class="fa-solid fa-shield-halved mr-1"></i> Contact Details Protected</div>
+                <p class="mt-2 text-xs sm:text-sm font-semibold leading-relaxed text-slate-700">The Student’s phone number and email are not shown on profile pages. Send a CONNECT request and wait for the Student to ACCEPT it. Then use CHAT ON WHATSAPP from your dashboard.</p>
+            </div>`;
 
             showProtectedPopup('CONNECTED STUDENT PROFILE', 'This student has initiated a connection with you. Only the information allowed by the student privacy settings is shown below.', 'fa-user-check', `<div class="text-left">
                 <div class="flex items-center gap-4">${profilePhotoHtml(student.photoData, student.name, 'student')}<div><h3 class="text-xl font-black text-brand-dark">${escapeHtml(student.name)}</h3><p class="text-xs text-brand-blue font-bold mt-1">Student • ${escapeHtml(student.stream || '')}</p></div></div>
@@ -7306,10 +7280,8 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
                 return;
             }
 
-            const contact = escapeHtml(student.phone || 'Not provided');
-            const email = escapeHtml(student.email || 'Not provided');
             tutorAccessTheme();
-            showProtectedPopup('STUDENT CONNECTION AVAILABLE', 'This organically registered student has an active learning requirement. Authorized contact details are shown below.', 'fa-user-check', `<div class="text-left bg-sky-50 border border-sky-200 rounded-2xl p-4"><div class="text-[10px] font-black uppercase tracking-wider text-blue-700">Student Contact Details</div><div class="mt-2 text-sm font-black text-slate-800"><i class="fa-solid fa-phone text-blue-600 mr-2"></i>${contact}</div><div class="mt-1 text-xs font-medium text-slate-600 break-all"><i class="fa-solid fa-envelope text-blue-600 mr-2"></i>${email}</div><div class="mt-3 text-[10px] font-bold text-slate-500">Learning Requirement: ${escapeHtml(student.learningRequirement)}</div></div>`);
+            showProtectedPopup('CONNECTION REQUEST REQUIRED', 'The Student’s registered phone number and email stay hidden until the Student accepts your connection request. Use CONNECT to send the request. After acceptance, open CHAT ON WHATSAPP from your dashboard.', 'fa-shield-halved', `<div class="text-left bg-sky-50 border border-sky-200 rounded-2xl p-4"><div class="text-[10px] font-black uppercase tracking-wider text-blue-700">Learning Requirement</div><div class="mt-2 text-sm font-bold text-slate-800">${escapeHtml(student.learningRequirement || 'Active learning requirement')}</div></div>`);
         }
 
         function connectWithTutor(tutorId) {
@@ -7347,32 +7319,9 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
         }
 
         function sendConnectionRequest(fromRole, targetId) {
-            const viewer = getActiveViewer();
-            if (!viewer.isRegistered) return;
-            const key = 'gc_connection_requests';
-            const requests = JSON.parse(localStorage.getItem(key) || '[]');
-            const student = viewer.role === 'student' ? studentDirectoryList.find(s => s.isDummy === false && String(s.phone).replace(/\D/g,'') === String(viewer.phone).replace(/\D/g,'')) : null;
-            const tutor = viewer.role === 'tutor' ? tutorDirectoryList.find(t => t.isDummy === false && String(t.phone).replace(/\D/g,'') === String(viewer.phone).replace(/\D/g,'')) : null;
-
-            const request = {
-                fromRole,
-                fromName: viewer.name,
-                fromPhone: viewer.phone,
-                fromStudentId: student ? student.id : '',
-                fromTutorId: tutor ? tutor.id : '',
-                targetId,
-                createdAt: new Date().toISOString()
-            };
-
-            const duplicate = requests.some(r => r.fromRole === fromRole && String(r.targetId) === String(targetId) && String(r.fromPhone) === String(viewer.phone));
-            if (!duplicate) {
-                requests.push(request);
-                localStorage.setItem(key, JSON.stringify(requests));
-            }
-
-            showProtectedPopup('REQUEST SENT', fromRole === 'student'
-                ? 'Your connection request has been sent. You can now control which profile details connected tutors may see from your Student Dashboard.'
-                : 'Your connection request has been recorded. The other registered member can respond when the connection is available.', 'fa-circle-check');
+            if (fromRole === 'student' && typeof window.connectWithTutor === 'function') return window.connectWithTutor(String(targetId));
+            if (fromRole === 'tutor' && typeof window.connectWithStudent === 'function') return window.connectWithStudent(String(targetId));
+            showProtectedPopup('CONNECTION UNAVAILABLE', 'Please log in as the correct Student or Tutor role and try again.', 'fa-shield-halved');
         }
 
         // ===== STAFF ADMIN DASHBOARD =====
@@ -15047,10 +14996,14 @@ function findProfile(id,rr){
 function phoneDigits(phone){
  let d=String(phone||'').replace(/\D/g,'');
  if(!d)return '';
+ if(d.startsWith('00'))d=d.slice(2);
+ if(d.length===11&&d.startsWith('0'))d=d.slice(1);
  if(d.length===10)d='91'+d;
  return d;
 }
 function requestState(r){
+ const accepted=['ACCEPTED','TUTOR_ACCEPTED','TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED','APPROVED','COMPLETED_SATISFIED','COMPLETED_NOT_SATISFIED'];
+ if(!accepted.includes(String(r?.status||'').toUpperCase()))return null;
  const me=currentProfileId(),myRole=role();
  const student=String(r.student_id||''),tutor=String(r.tutor_id||'');
  if(!me||!['student','tutor'].includes(myRole))return null;
@@ -15084,8 +15037,8 @@ function patchLearningCards(){
    const rows=window.__gcLearningRequestsCache||[];const r=rows.find(x=>String(x.request_code)===code);if(!r)return;
    const acts=card.querySelector('.gc-lr3-actions');if(!acts)return;
    const my=role(),me=pid();let should=false,label='CHAT ON WHATSAPP';
-   if(my==='tutor'&&String(r.tutor_id)===me&&['TUTOR_ACCEPTED','TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED','APPROVED'].includes(String(r.status)))should=true;
-   if(my==='student'&&String(r.student_id)===me&&String(r.tutor_id)&&!['OPEN'].includes(String(r.status)))should=true;
+   if(my==='tutor'&&String(r.tutor_id)===me&&['ACCEPTED','TUTOR_ACCEPTED','TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED','APPROVED','COMPLETED_SATISFIED','COMPLETED_NOT_SATISFIED'].includes(String(r.status||'').toUpperCase()))should=true;
+   if(my==='student'&&String(r.student_id)===me&&String(r.tutor_id)&&['ACCEPTED','TUTOR_ACCEPTED','TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED','APPROVED','COMPLETED_SATISFIED','COMPLETED_NOT_SATISFIED'].includes(String(r.status||'').toUpperCase()))should=true;
    if(should){acts.insertAdjacentHTML('afterbegin',whatsappButton(r,label));card.dataset.gcWhatsappPatched='1'}
  });
 }
