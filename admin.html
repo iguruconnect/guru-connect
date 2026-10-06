@@ -18,7 +18,7 @@
 .caseChat{background:#0ea5e9;color:#fff}
 .lrrEvidence{margin-top:14px;border:1px solid #dbeafe;border-radius:14px;background:#f8fbff;padding:12px}.lrrEvidenceTitle{font-size:11px;font-weight:950;color:#123b8f;text-transform:uppercase;margin-bottom:9px}.evidenceGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.evidenceBox{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:9px;font-size:11px;line-height:1.5}.evidenceBox b{display:block;color:#64748b;font-size:9px;text-transform:uppercase;margin-bottom:3px}.evidenceGood{color:#047857;font-weight:900}.evidenceWarn{color:#b45309;font-weight:900}.evidenceBad{color:#b91c1c;font-weight:900}.lrrDecision{margin-top:10px;padding:10px;border-radius:11px;background:#fff7ed;border:1px solid #fed7aa;font-size:10px;font-weight:800;color:#9a3412}.lrrActions .decisionBtn{font-size:11px;padding:9px 11px}
 @media(max-width:800px){.evidenceGrid{grid-template-columns:1fr}}
-
+.gcAdminChatOverlay{position:fixed;inset:0;z-index:99999;background:rgba(15,23,42,.62);display:none;align-items:center;justify-content:center;padding:18px}.gcAdminChatOverlay.open{display:flex}.gcAdminChatCard{width:min(900px,96vw);height:min(760px,92vh);background:#fff;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 90px rgba(0,0,0,.3)}.gcAdminChatHead{padding:15px 18px;background:linear-gradient(135deg,#092a66,#1264d8);color:#fff}.gcAdminChatHead h3{margin:0;font-size:16px}.gcAdminChatHead p{margin:4px 0 0;font-size:10px;opacity:.9}.gcAdminChatMeta{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.gcAdminChatMeta span{background:rgba(255,255,255,.14);padding:5px 8px;border-radius:999px;font-size:9px;font-weight:800}.gcAdminChatClose{float:right;border:0;background:rgba(255,255,255,.15);color:#fff;border-radius:9px;padding:7px 10px;cursor:pointer;font-weight:900}.gcAdminChatMessages{flex:1;overflow:auto;padding:15px;background:#f8fafc}.gcAdminMsg{display:flex;margin:8px 0}.gcAdminMsg.mine{justify-content:flex-end}.gcAdminBubble{max-width:78%;padding:10px 12px;border-radius:15px;background:#fff;border:1px solid #dbe3ef}.gcAdminMsg.mine .gcAdminBubble{background:#1264d8;color:#fff;border-color:#1264d8}.gcAdminText{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.5}.gcAdminTime{font-size:8px;opacity:.65;margin-top:4px}.gcAdminCompose{display:flex;gap:8px;padding:10px;border-top:1px solid #e2e8f0}.gcAdminCompose textarea{flex:1;height:50px;resize:none;border:1px solid #cbd5e1;border-radius:11px;padding:10px;font:700 12px Arial}.gcAdminCompose button{border:0;border-radius:11px;background:#155eef;color:#fff;padding:0 16px;font-weight:950;cursor:pointer}
 
 .historyRow{display:grid;grid-template-columns:140px 1fr 100px 180px;gap:10px;align-items:center;border:1px solid #e2e8f0;border-radius:12px;padding:11px;margin-top:8px;background:#fff;font-size:11px}
 .historyRow .amount{font-weight:950}
@@ -26,6 +26,15 @@
 .quickSearch{display:grid;grid-template-columns:1fr auto;gap:9px;margin-bottom:12px}
 .quickSearch input{width:100%;padding:12px;border:2px solid #155eef;border-radius:12px;font-weight:700}
 @media(max-width:800px){.lrrGrid,.lrrMeta{grid-template-columns:1fr}.historyRow{grid-template-columns:1fr 1fr}.controlbar{padding:8px}}
+/* GURU CONNECT MOBILE ADMIN NAV FIX: keep every Admin section reachable by touch. */
+@media(max-width:650px){
+  .controlbar{position:sticky;top:0;z-index:500;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow:visible;padding:8px;margin:0 0 14px;background:rgba(245,248,252,.98);backdrop-filter:blur(10px);}
+  .topbtn,.topbtn.priority{min-width:0;width:100%;min-height:64px;padding:10px 8px;white-space:normal;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;}
+  .topbtn b{font-size:11px;}
+  .topbtn small{font-size:8px;line-height:1.25;margin-top:4px;}
+  .section{scroll-margin-top:18px;}
+}
+
 </style><style id="gc-admin-connection-fix">#gcDetailsModal button{cursor:pointer}@media(max-width:650px){#gcDetailsModal>div{padding:14px!important}#gcDetailsModal .btn{min-height:42px}.actions{flex-wrap:wrap}}
 .lrrControlNote{padding:12px 14px;border:1px solid #bfdbfe;background:#eff6ff;color:#1e3a8a;border-radius:12px;font-size:11px;font-weight:800;margin-bottom:12px}.lrrActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #e2e8f0}.lrrActions .btn{min-height:40px}.receiptServiceBox{margin-top:16px;border:1px solid #dbe4f0;border-radius:16px;padding:16px;background:#f8fafc}.receiptServiceHead{display:flex;justify-content:space-between;gap:12px;align-items:center}.receiptServiceHead h3{margin:0;color:#123b8f}.receiptServiceHead p{margin:4px 0 0;color:#64748b;font-size:11px}.receiptServiceAdd{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:12px;margin-top:14px}.receiptServices{display:grid;gap:8px;margin-top:12px}.receiptServiceRow{display:grid;grid-template-columns:minmax(0,1fr) 160px 90px;gap:10px;align-items:end;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px}.receiptServiceRow .field{margin:0}.receiptServiceRow input{background:#fff}.receiptTotal{display:flex;justify-content:space-between;align-items:center;border-top:2px solid #cbd5e1;margin-top:14px;padding-top:14px;font-size:13px;font-weight:950}.receiptTotal strong{font-size:20px;color:#123b8f}.receiptRemove{min-height:40px}@media(max-width:650px){.receiptServiceAdd,.receiptServiceRow{grid-template-columns:1fr}.receiptServiceHead{align-items:flex-start;flex-direction:column}.receiptServiceHead .btn{width:100%}}
 </style>
@@ -57,10 +66,30 @@
     grid-template-columns:repeat(2,minmax(0,1fr)) !important;
   }
 }
-@media(max-width:600px){
+@media(max-width:650px){
+  /* Mobile: show all Admin sections as two large touch-friendly buttons per row.
+     Do not keep the large tab block sticky, so the selected section is never covered. */
   .controlbar{
-    grid-template-columns:1fr !important;
+    position:static !important;
+    display:grid !important;
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+    gap:8px !important;
+    overflow:visible !important;
+    padding:8px !important;
+    margin-bottom:14px !important;
   }
+  .controlbar .topbtn{
+    min-width:0 !important;
+    min-height:72px !important;
+    width:100% !important;
+    padding:10px 7px !important;
+    white-space:normal !important;
+    overflow:visible !important;
+    touch-action:manipulation;
+  }
+  .controlbar .topbtn b{font-size:11px !important;line-height:1.2 !important;}
+  .controlbar .topbtn small{font-size:8px !important;line-height:1.25 !important;}
+  .section{scroll-margin-top:12px !important;}
 }
 
 /* GURU CONNECT ACCOUNT CONTROL CENTER */
@@ -203,14 +232,18 @@ function switchSection(name){
   activeSection=name;
   document.querySelectorAll('.section').forEach(x=>x.classList.remove('open'));
   document.querySelectorAll('.topbtn').forEach(x=>x.classList.toggle('active',x.dataset.sec===name));
-  const el=$('sec-'+name);if(el)el.classList.add('open');
+  const el=$('sec-'+name);
+  if(el){
+    el.classList.add('open');
+    // On phones the selected section can otherwise remain below the navigation area.
+    requestAnimationFrame(()=>{try{el.scrollIntoView({behavior:'smooth',block:'start'});}catch(_){}});
+  }
   if(name==='learning'&&!lrrLoaded&&!lrrLoading)loadLearning();
   if(name==='coinhistory'&&!coinHistoryLoaded)loadCoinHistory();
 }
 document.querySelectorAll('.topbtn').forEach(b=>b.addEventListener('click',()=>switchSection(b.dataset.sec)));
 $('logout').onclick=async()=>{await sb.auth.signOut({scope:'local'});location.href='login.html?role=staff'};
 
-function adminWhatsAppUser(i){const u=users[i]||{};let phone=String(u.phone||'').replace(/\D/g,'');if(phone.startsWith('00'))phone=phone.slice(2);if(phone.length===11&&phone.startsWith('0'))phone=phone.slice(1);if(phone.length===10)phone='91'+phone;if(!phone){alert('This user has no registered phone/WhatsApp number.');return}const name=String(u.name||u.full_name||u.role||'GURU CONNECT member');const msg='Hello '+name+', I am contacting you from GURU CONNECT Admin regarding your account.';window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank','noopener,noreferrer')}
 function normalizeRpcUsers(rows){
   return (Array.isArray(rows)?rows:[]).map(x=>{
     const p=x.profile&&typeof x.profile==='object'?x.profile:{};
@@ -302,7 +335,7 @@ function renderUsers(){
 }
 function userCard(u,i){
   const role=u.role.toUpperCase(),sub=u.role==='tutor'?(u.qualification||u.subject||'Tutor'):(u.course||u.stream||'Student');
-  return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed user')}</b><span class="badge">${role}</span><div class="muted">${esc(sub)}<br>Email: ${esc(u.email||'—')}<br>Phone: ${esc(u.phone||'—')}<br>User ID: ${esc(u.user_id||'—')}<br>Status: ${esc(u.registration_status||'registered')}<br>Payment: ${esc(u.paid_status||'PENDING')} · Admin Verified: ${(u.admin_verified||u.verified)?'🟢 YES':'NO'} · Directory: ${u.directory_visible===false?'🔴 HIDDEN':'🟢 VISIBLE'}</div></div><div class="actions"><button class="btn primary" onclick="viewDetails(${i})">👁️ PROFILE / ACCOUNT</button><button class="btn primary" onclick="toggleEdit(${i})">✏️ EDIT</button><button class="btn teal" onclick="setPaid(${i})">${String(u.paid_status||'PENDING').toUpperCase()==='PAID'?'✓ PAID':'MARK PAID'}</button><button class="btn primary" onclick="toggleVerified(${i})">${(u.public_verified_tick||u.verified)?'✓ BLUE TICK':'GRANT BLUE TICK'}</button><button class="btn ${u.directory_visible===false?'orange':'light'}" onclick="toggleDirectory(${i})">${u.directory_visible===false?'👁 SHOW IN DIRECTORY':'🙈 HIDE FROM DIRECTORY'}</button><button class="btn teal" onclick="selectCoins(${i})">🪙 COINS</button><button class="btn caseChat" onclick="adminWhatsAppUser(${i})">💬 WHATSAPP</button><button class="btn purple" onclick="receipt(${i})">🧾 RECEIPT</button><button class="btn light" onclick="resetUser(${i})">RESET PASSWORD</button><button class="btn red" onclick="deleteUser(${i})">DELETE</button></div></div><div class="edit" id="edit-${i}">${editForm(u,i)}</div></article>`;
+  return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed user')}</b><span class="badge">${role}</span><div class="muted">${esc(sub)}<br>Email: ${esc(u.email||'—')}<br>Phone: ${esc(u.phone||'—')}<br>User ID: ${esc(u.user_id||'—')}<br>Status: ${esc(u.registration_status||'registered')}<br>Payment: ${esc(u.paid_status||'PENDING')} · Admin Verified: ${(u.admin_verified||u.verified)?'🟢 YES':'NO'} · Directory: ${u.directory_visible===false?'🔴 HIDDEN':'🟢 VISIBLE'}</div></div><div class="actions"><button class="btn primary" onclick="viewDetails(${i})">👁️ PROFILE / ACCOUNT</button><button class="btn primary" onclick="toggleEdit(${i})">✏️ EDIT</button><button class="btn teal" onclick="setPaid(${i})">${String(u.paid_status||'PENDING').toUpperCase()==='PAID'?'✓ PAID':'MARK PAID'}</button><button class="btn primary" onclick="toggleVerified(${i})">${(u.public_verified_tick||u.verified)?'✓ BLUE TICK':'GRANT BLUE TICK'}</button><button class="btn ${u.directory_visible===false?'orange':'light'}" onclick="toggleDirectory(${i})">${u.directory_visible===false?'👁 SHOW IN DIRECTORY':'🙈 HIDE FROM DIRECTORY'}</button><button class="btn teal" onclick="selectCoins(${i})">🪙 COINS</button><button class="btn caseChat" onclick="caseChat('${esc(u.user_id)}','','','${esc(u.role)}')">💬 CHAT</button><button class="btn purple" onclick="receipt(${i})">🧾 RECEIPT</button><button class="btn light" onclick="resetUser(${i})">RESET PASSWORD</button><button class="btn red" onclick="deleteUser(${i})">DELETE</button></div></div><div class="edit" id="edit-${i}">${editForm(u,i)}</div></article>`;
 }
 function v(id,val){return `<input id="${id}" value="${esc(val??'')}">`}
 function area(id,val){return `<textarea id="${id}">${esc(val??'')}</textarea>`}
@@ -696,43 +729,60 @@ window.lrrDecision=async(id,decision)=>{
   }catch(e){alert('Coin decision failed: '+(e.message||e))}
 };
 
-function normalizeWhatsAppNumber(v){
- const raw=String(v??'').trim();
- let digits=raw.replace(/\D/g,'');
- if(!digits)return '';
- if(digits.startsWith('00'))digits=digits.slice(2);
- if(digits.length===11&&digits.startsWith('0'))digits=digits.slice(1);
- if(digits.length===10)digits='91'+digits;
- return digits;
+/* Admin-specific case chat: uses the same gc_messages table and the same GCCHAT|LRR subject used by Student/Tutor chat. */
+let adminChatState=null,adminChatTimer=null;
+function ensureAdminChatModal(){
+  if(document.getElementById('gcAdminChatOverlay'))return;
+  const o=document.createElement('div');o.id='gcAdminChatOverlay';o.className='gcAdminChatOverlay';
+  o.innerHTML='<div class="gcAdminChatCard"><div class="gcAdminChatHead"><button class="gcAdminChatClose" type="button" onclick="closeAdminCaseChat()">✕ CLOSE</button><h3 id="gcAdminChatTitle">LRR Case Chat</h3><p id="gcAdminChatSub">GURU CONNECT Admin • Private case conversation</p><div id="gcAdminChatMeta" class="gcAdminChatMeta"></div></div><div id="gcAdminChatMessages" class="gcAdminChatMessages"></div><div class="gcAdminCompose"><textarea id="gcAdminChatInput" maxlength="5000" placeholder="Message the selected Student/Tutor about this LRR..."></textarea><button id="gcAdminChatSend" type="button">SEND</button></div></div>';
+  document.body.appendChild(o);
+  o.addEventListener('click',e=>{if(e.target===o)closeAdminCaseChat()});
+  document.getElementById('gcAdminChatSend').onclick=sendAdminCaseChat;
 }
-async function lookupAdminLrrWhatsAppContact(lrrId,who){
- const rq=await sb.from('gc_learning_requests_v2').select('id,student_id,tutor_id').eq('id',String(lrrId)).maybeSingle();
- if(rq.error)throw rq.error;if(!rq.data)throw new Error('Learning Request was not found.');
- const targetId=String(who==='tutor'?rq.data.tutor_id||'':rq.data.student_id||'');
- if(!targetId)throw new Error('The '+who+' account could not be identified for this request.');
- let phone='',name='';
- const tries=[
-  ()=>sb.from('profiles').select('phone,full_name').eq('id',targetId).maybeSingle(),
-  ()=>sb.from(who==='tutor'?'tutor_profiles':'student_profiles').select('phone,name,user_id').eq('user_id',targetId).maybeSingle(),
-  ()=>sb.from(who==='tutor'?'tutor_profiles':'student_profiles').select('phone,name,user_id').eq('id',targetId).maybeSingle()
- ];
- for(const run of tries){try{const x=await run();if(!x.error&&x.data){phone=phone||x.data.phone||'';name=name||x.data.full_name||x.data.name||'';if(phone)break}}catch(_){}}
- return {phone,name};
+function adminChatKey(rid,other){return 'gc_admin_case_'+String(rid)+'_'+String(other)}
+function localAdminChatLoad(key){try{return JSON.parse(localStorage.getItem(key)||'[]')}catch(_){return[]}}
+async function loadAdminCaseMessages(){
+  const st=adminChatState;if(!st)return;
+  const host=$('gcAdminChatMessages');
+  try{
+    let q=await sb.from('gc_messages').select('*').like('subject','GCCHAT|'+String(st.requestId)+'|%').order('created_at',{ascending:true}).limit(500);
+    if(q.error)throw q.error;
+    const rows=(q.data||[]).filter(m=>{
+      const a=String(m.from_id||''),b=String(m.to_id||'');
+      return a===String(st.other)||b===String(st.other)||String(m.from_type||'')==='admin'||String(m.to_type||'')==='admin';
+    });
+    host.innerHTML=rows.length?rows.map(m=>{const mine=String(m.from_type||'')==='admin'||String(m.from_id||'')===String(st.adminId);return '<div class="gcAdminMsg '+(mine?'mine':'')+'"><div class="gcAdminBubble"><div class="gcAdminText">'+esc(m.body||'')+'</div><div class="gcAdminTime">'+esc(m.from_name||'User')+' · '+esc(m.created_at||'')+'</div></div></div>'}).join(''):'<div class="empty">No messages yet for this LRR. Start the conversation with the '+esc(st.role)+'.</div>';
+  }catch(e){
+    const rows=localAdminChatLoad(adminChatKey(st.requestId,st.other));
+    host.innerHTML=rows.length?rows.map(m=>'<div class="gcAdminMsg '+(m.mine?'mine':'')+'"><div class="gcAdminBubble"><div class="gcAdminText">'+esc(m.body)+'</div><div class="gcAdminTime">'+esc(m.from_name)+' · '+esc(m.created_at)+'</div></div></div>').join(''):'<div class="dangerNote">Cloud chat could not be read: '+esc(e.message||e)+'</div>';
+  }
+  host.scrollTop=host.scrollHeight;
 }
-window.whatsappCaseChat=async function(lrrId,who){
- const popup=window.open('about:blank','_blank');
- try{
-  const q=await sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(lrrId),p_target_role:who});
-  let contact=q.error?null:q.data,phone=normalizeWhatsAppNumber(contact?.phone),name=String(contact?.name||'');
-  if(!phone && q.error && !/no phone|phone number|mobile/i.test(q.error.message||''))throw q.error;
-  if(!phone){const fallback=await lookupAdminLrrWhatsAppContact(lrrId,who);phone=normalizeWhatsAppNumber(fallback.phone);name=name||fallback.name||'';}
-  if(!phone)throw new Error('No phone number is saved in the user profile. Please update the registered mobile number in the profile/admin user editor.');
-  name=name||(who==='tutor'?'Tutor':'Student');
-  const text=`Hello ${name}, I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.`;
-  const url='https://wa.me/'+phone+'?text='+encodeURIComponent(text);
-  if(popup&&!popup.closed)popup.location.href=url;else window.location.href=url;
- }catch(e){if(popup&&!popup.closed)popup.close();alert('WhatsApp chat could not be opened: '+(e.message||e));}
+window.caseChat=async(studentId,tutorId,lrrId,who)=>{
+  const uid=who==='tutor'?tutorId:studentId;
+  if(!uid)return alert('The selected '+who+' is not linked to this LRR.');
+  const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(lrrId))||{};
+  ensureAdminChatModal();
+  const sess=await sb.auth.getSession();const adminId=String(sess.data?.session?.user?.id||'ADMIN');
+  const name=who==='tutor'?(row.tutor_name||row.tutorName||'Tutor'):(row.student_name||row.studentName||'Student');
+  adminChatState={requestId:String(lrrId),requestCode:row.request_code||lrrId,subject:row.subject||'Learning Request',other:String(uid),role:who,adminId};
+  $('gcAdminChatTitle').textContent='Chat with '+name+' • '+(who==='tutor'?'TUTOR':'STUDENT');
+  $('gcAdminChatMeta').innerHTML='<span>📚 '+esc(row.subject||'Learning Request')+'</span><span>🔐 LRR: '+esc(row.request_code||lrrId)+'</span><span>👤 '+esc(who.toUpperCase())+'</span><span>🪙 Held: '+Number(row.coins_held||0)+'</span>';
+  $('gcAdminChatOverlay').classList.add('open');
+  await loadAdminCaseMessages();
+  clearInterval(adminChatTimer);adminChatTimer=setInterval(loadAdminCaseMessages,3500);
+  setTimeout(()=>$('gcAdminChatInput')?.focus(),100);
 };
+window.closeAdminCaseChat=()=>{$('gcAdminChatOverlay')?.classList.remove('open');clearInterval(adminChatTimer);adminChatTimer=null;adminChatState=null};
+async function sendAdminCaseChat(){
+  const st=adminChatState,input=$('gcAdminChatInput'),btn=$('gcAdminChatSend');if(!st||!input)return;const body=input.value.trim();if(!body)return;btn.disabled=true;
+  try{
+    const now=new Date().toISOString(),id='admin_chat_'+Date.now()+'_'+Math.random().toString(36).slice(2),subject='GCCHAT|'+st.requestId+'|'+st.subject;
+    const row={id,from_type:'admin',from_id:String(st.adminId),from_name:'GURU CONNECT ADMIN',to_type:'user',to_id:String(st.other),to_role:st.role,to_name:st.role==='tutor'?'Tutor':'Student',subject,body,created_at:now,read:false};
+    const q=await sb.from('gc_messages').upsert(row,{onConflict:'id'});if(q.error)throw q.error;
+    input.value='';await loadAdminCaseMessages();
+  }catch(e){alert('Chat message could not be sent: '+(e.message||e))}finally{btn.disabled=false}
+}
 
 async function loadLearning(){
   if(lrrLoading)return;lrrLoading=true;$('learningStatus').textContent=lrrLoaded?'Refreshing LRR…':'Loading LRR…';
@@ -751,7 +801,6 @@ async function loadLearning(){
       const tutorFeedback=r.tutor_feedback||r.tutor_remark||r.tutor_remarks||r.completion_note||r.tutor_completion_note||'';
       const adminNote=r.admin_decision_note||r.admin_note||'';
       const canDecide=['PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW'].includes(String(st).toUpperCase());
-      const contactUnlocked=!!student&&!!tutor&&['ACCEPTED','TUTOR_ACCEPTED','TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED','APPROVED','COMPLETED_SATISFIED','COMPLETED_NOT_SATISFIED'].includes(String(st).toUpperCase());
       const satisfied=['SATISFIED','SATISFIED_BY_STUDENT','COMPLETED_SATISFIED'].includes(String(outcome).toUpperCase());
       return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(r.request_code||id||'Learning Request')}</b><span class="badge">${esc(st)}</span><div class="muted">Created: ${esc(r.created_at||'—')}</div></div><span class="pill">LRR CASE</span></div>
       <div class="lrrMeta"><div class="metaBox"><b>Student</b>${esc(student||'Not linked')}</div><div class="metaBox"><b>Tutor</b>${esc(tutor||'Not assigned')}</div><div class="metaBox"><b>Course / Stream</b>${esc((r.course||'—')+' / '+(r.stream||'—'))}</div><div class="metaBox"><b>Subject / Topic</b>${esc((r.subject||'—')+' / '+(r.chapter||r.topic||'—'))}</div><div class="metaBox" style="grid-column:1/-1"><b>Requirement / Issue</b>${esc(r.problem||r.issue||r.learning_requirement||r.description||'—')}</div></div>
@@ -764,7 +813,7 @@ async function loadLearning(){
         <div class="evidenceBox"><b>Learning deadline</b>${esc(r.learning_deadline||'Not set')}</div>
         <div class="evidenceBox" style="grid-column:1/-1"><b>Admin decision / note</b>${esc(adminNote||'No Admin decision recorded yet.')}</div>
       </div>${canDecide?`<div class="lrrDecision">${satisfied?'✅ Student has confirmed SATISFIED. This is the strongest evidence for releasing the Tutor reward.':'⚠️ Final coin decision is pending. Chat with both parties before releasing/denying if the evidence is incomplete.'}</div>`:''}</div>
-      <div class="lrrActions"><button type="button" class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button type="button" class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button type="button" class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button type="button" class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','tutor')">🪙 TUTOR COINS</button><button type="button" class="btn light" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','student')">🪙 STUDENT COINS</button>${contactUnlocked?`<button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','student')">💬 WHATSAPP STUDENT</button><button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','tutor')">💬 WHATSAPP TUTOR</button>`:''}${canDecide?`<button type="button" class="btn green decisionBtn" onclick="lrrDecision('${esc(id)}','APPROVE')">💰 RELEASE TUTOR COINS</button><button type="button" class="btn red decisionBtn" onclick="lrrDecision('${esc(id)}','DENY')">↩ DENY / RETURN COINS</button>`:''}</div></article>`
+      <div class="lrrActions"><button type="button" class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button type="button" class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button type="button" class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button type="button" class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','tutor')">🪙 TUTOR COINS</button><button type="button" class="btn light" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','student')">🪙 STUDENT COINS</button><button type="button" class="btn caseChat" onclick="caseChat('${esc(student)}','${esc(tutor)}','${esc(id)}','student')">💬 CHAT STUDENT</button><button type="button" class="btn caseChat" onclick="caseChat('${esc(student)}','${esc(tutor)}','${esc(id)}','tutor')">💬 CHAT TUTOR</button>${canDecide?`<button type="button" class="btn green decisionBtn" onclick="lrrDecision('${esc(id)}','APPROVE')">💰 RELEASE TUTOR COINS</button><button type="button" class="btn red decisionBtn" onclick="lrrDecision('${esc(id)}','DENY')">↩ DENY / RETURN COINS</button>`:''}</div></article>`
     }).join(''):'<div class="empty">No Learning Requirement Requests found.</div>';
     lrrLoaded=true
   }catch(e){lrrLoaded=false;$('learningStatus').textContent='LRR load failed: '+(e.message||e);$('learningResults').innerHTML='<div class="empty">Unable to load Learning Requirement Requests.</div>'}
