@@ -94,6 +94,9 @@
 @media(max-width:800px){.gcAcctGrid,.gcFormGrid{grid-template-columns:1fr}.gcDoc{grid-template-columns:1fr}.gcAcctTabs{top:86px}.gcPaymentRow{grid-template-columns:1fr 1fr}}
 </style>
 
+<style id="gc-account-ledger-actions-v2">
+.gcRowActions{display:flex;gap:6px;flex-wrap:wrap;min-width:145px}.gcRowActions .btn{padding:7px 9px;font-size:10px}.gcTableWrap{overflow:auto;max-width:100%}.gcTable{min-width:980px}.gcTable td,.gcTable th{vertical-align:top}.gcAcctCard{max-width:98vw!important;width:1500px!important}.gcAcctPane{overflow:auto}.gcBox{overflow:hidden}
+</style>
 </head><body>
 <header class="head"><div class="headin"><div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
 <main class="wrap"><div id="gate" class="gate">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
@@ -391,116 +394,92 @@ async function showDetails(u){
 }
 async function loadAccountVerification(){
   const u=accountUser();if(!u)return;
-  const p=$('gcPane-verification');p.innerHTML='<div class="empty">Loading verification…</div>';
+  const p=$('gcPane-verification');p.innerHTML='<div class="empty">Loading complete verification ledger…</div>';
   try{
-    const d=await accountRpc('get_account_overview',{user_id:u.user_id});
-    const docs=d.documents||[];
-    const count=docs.filter(x=>x.submitted||x.received).length;
-    const verifiedCount=docs.filter(x=>x.verified).length;
-    const adminVerified=!!d.account?.admin_verified;
-    const blue=!!d.account?.public_verified_tick;
-    p.innerHTML=`<div class="gcAccountNotice">At least <b>2 documents must be submitted</b> before the profile is eligible for Admin verification. The public Blue Verified Tick is granted separately by Admin.</div>
+    const d=await accountRpc('get_account_overview',{user_id:u.user_id}),docs=d.documents||[];
+    const count=docs.filter(x=>x.submitted||x.received).length,verifiedCount=docs.filter(x=>x.verified).length;
+    const adminVerified=!!d.account?.admin_verified,blue=!!d.account?.public_verified_tick;
+    p.innerHTML=`<div class="gcAccountNotice">Complete verification ledger. Admin can view every stored verification record and can edit/delete individual records. At least <b>2 submitted documents</b> are required before Admin Verification or the public Blue Verified Tick can be granted.</div>
       <div class="gcAcctGrid" style="margin-top:12px">
-        <div class="gcStat"><b>Documents Submitted</b><strong>${count} / 3</strong></div>
-        <div class="gcStat"><b>Documents Admin-Verified</b><strong>${verifiedCount} / 3</strong></div>
+        <div class="gcStat"><b>Submitted</b><strong>${count} / 3</strong></div><div class="gcStat"><b>Admin-Verified Documents</b><strong>${verifiedCount} / 3</strong></div>
         <div class="gcStat"><b>Admin Verification</b><strong class="${adminVerified?'gcGreen':'gcRed'}">${adminVerified?'🟢 VERIFIED':'🔴 NOT VERIFIED'}</strong></div>
         <div class="gcStat"><b>Public Blue Tick</b><strong class="${blue?'gcBlue':'gcRed'}">${blue?'🔵 ACTIVE':'🔴 NOT ACTIVE'}</strong></div>
       </div>
-      <div class="gcBox"><h3>🪪 Identity / Eligibility Documents</h3>
-        ${['AADHAAR','PAN','COLLEGE_ID'].map(type=>{
-          const x=docs.find(z=>String(z.document_type||z.type).toUpperCase()===type)||{};
-          const label=type==='COLLEGE_ID'?'College ID Card':type==='AADHAAR'?'Aadhaar Card':'PAN Card';
-          return `<div class="gcDoc"><div><div class="gcDocName">${label}</div><div class="gcDocMeta">Received: ${x.submitted||x.received?'YES':'NO'} · ${esc(x.submitted_at||x.received_at||'')}</div></div>
-            <label class="gcCheck"><input type="checkbox" ${x.submitted||x.received?'checked':''} onchange="saveDocStatus('${type}',this.checked,false)"> RECEIVED</label>
-            <label class="gcCheck"><input type="checkbox" ${x.verified?'checked':''} ${x.submitted||x.received?'':'disabled'} onchange="saveDocStatus('${type}',this.checked,true)"> ADMIN VERIFIED</label></div>`
-        }).join('')}
-      </div>
-      <div class="gcBox"><h3>🟢 Admin Verification</h3><div class="gcMiniActions">
-        <button class="btn green" onclick="grantAdminVerification()">🟢 MARK ADMIN VERIFIED</button>
-        <button class="btn red" onclick="removeAdminVerification()">REMOVE ADMIN VERIFICATION</button>
+      <div class="gcBox"><h3>🪪 Verification Ledger — Complete Records</h3><div class="gcTableWrap"><table class="gcTable"><thead><tr><th>ID</th><th>Document</th><th>Submitted</th><th>Verified</th><th>Submitted At</th><th>Verified At</th><th>Storage Path</th><th>Admin Note</th><th>ADMIN ACTION</th></tr></thead><tbody>${docs.length?docs.map(r=>`<tr>
+        <td style="font-size:10px;max-width:110px;overflow-wrap:anywhere">${esc(r.id||'—')}</td><td><b>${esc(r.document_type||r.type||'—')}</b></td>
+        <td>${r.submitted?'YES':'NO'}</td><td>${r.verified?'YES':'NO'}</td><td>${esc(r.submitted_at||'—')}</td><td>${esc(r.verified_at||'—')}</td>
+        <td style="font-size:10px;overflow-wrap:anywhere">${esc(r.storage_path||'—')}</td><td>${esc(r.admin_note||'—')}</td>
+        <td><div class="gcRowActions"><button class="btn primary" onclick="editVerificationRecord('${esc(r.id||'')}')">✏️ EDIT</button><button class="btn red" onclick="deleteVerificationRecord('${esc(r.id||'')}')">🗑️ DELETE</button></div></td>
+      </tr>`).join(''):'<tr><td colspan="9">No verification records have been submitted yet.</td></tr>'}</tbody></table></div></div>
+      <div class="gcBox"><h3>🟢 Verification Controls</h3><div class="gcMiniActions">
+        <button class="btn green" onclick="grantAdminVerification()">🟢 MARK ADMIN VERIFIED</button><button class="btn red" onclick="removeAdminVerification()">REMOVE ADMIN VERIFICATION</button>
         <button class="btn primary" onclick="setBlueTickFromAccount()">🔵 ${blue?'REMOVE':'GRANT'} BLUE VERIFIED TICK</button>
       </div><div id="gcVerificationStatus" class="status"></div></div>
-      <div class="gcPrivacy">Privacy: actual Aadhaar/PAN numbers and document images are not displayed here. The system should keep those files in private storage accessible only to authorized Admin/Staff.</div>`;
-  }catch(e){p.innerHTML='<div class="dangerNote">Verification data could not be loaded. Run the supplied verification/payment migration SQL first.<br><br>'+esc(e.message||e)+'</div>'}
+      <div class="gcPrivacy">Privacy: this ledger shows verification metadata. Actual Aadhaar/PAN images should remain in private Supabase Storage and should never be exposed through a public directory.</div>`;
+  }catch(e){p.innerHTML='<div class="dangerNote">Verification ledger could not be loaded.<br><br>'+esc(e.message||e)+'<br><br>Run the <b>v2 account-controls migration SQL</b> once in Supabase SQL Editor.</div>'}
 }
 async function saveDocStatus(type,value,isVerified){
   const u=accountUser();if(!u)return;
-  try{
-    await accountRpc('set_verification_document',{user_id:u.user_id,document_type:type,submitted:isVerified?true:value,verified:isVerified?value:undefined});
-    await loadAccountVerification();
-  }catch(e){alert('Document status could not be saved: '+(e.message||e));await loadAccountVerification()}
+  try{await accountRpc('set_verification_document',{user_id:u.user_id,document_type:type,submitted:isVerified?true:value,verified:isVerified?value:undefined});await loadAccountVerification();}
+  catch(e){alert('Document status could not be saved: '+(e.message||e));await loadAccountVerification()}
 }
-async function grantAdminVerification(){
+window.editVerificationRecord=async id=>{
+  if(!id)return;
   const u=accountUser();if(!u)return;
-  try{const d=await accountRpc('set_verification',{user_id:u.user_id,admin_verified:true});if(d?.eligible===false)throw new Error('At least 2 documents must be submitted before Admin verification.');await loadLiveUsers();window.__gcAccountUser=users.find(x=>String(x.user_id)===String(u.user_id))||u;renderAccountOverview(window.__gcAccountUser);openAccountPane('verification')}catch(e){alert('Verification failed: '+(e.message||e))}
-}
-async function removeAdminVerification(){
-  const u=accountUser();if(!u)return;
-  try{await accountRpc('set_verification',{user_id:u.user_id,admin_verified:false});await loadLiveUsers();window.__gcAccountUser=users.find(x=>String(x.user_id)===String(u.user_id))||u;renderAccountOverview(window.__gcAccountUser);openAccountPane('verification')}catch(e){alert('Could not remove verification: '+(e.message||e))}
-}
-async function setBlueTickFromAccount(){
-  const u=accountUser();if(!u)return;
-  const current=!!(u.public_verified_tick||u.verified);
-  try{
-    const d=await accountRpc('set_verification',{user_id:u.user_id,public_verified_tick:!current});
-    if(!current && d?.eligible===false)throw new Error('At least 2 submitted documents are required before the Blue Verified Tick can be granted.');
-    await loadLiveUsers();window.__gcAccountUser=users.find(x=>String(x.user_id)===String(u.user_id))||u;renderAccountOverview(window.__gcAccountUser);openAccountPane('verification');
-  }catch(e){alert('Blue Verified Tick update failed: '+(e.message||e))}
-}
-async function toggleDirectoryFromAccount(){
-  const u=accountUser();if(!u)return;
-  try{await accountRpc('set_account_controls',{user_id:u.user_id,directory_visible:!(u.directory_visible!==false)});await loadLiveUsers();window.__gcAccountUser=users.find(x=>String(x.user_id)===String(u.user_id))||u;renderAccountOverview(window.__gcAccountUser)}catch(e){alert('Directory visibility update failed: '+(e.message||e))}
-}
-async function setPaidFromAccount(){
-  const u=accountUser();if(!u)return;const next=String(u.paid_status||'PENDING').toUpperCase()!=='PAID';
-  try{await accountRpc('set_account_controls',{user_id:u.user_id,paid_status:next?'PAID':'PENDING'});await loadLiveUsers();window.__gcAccountUser=users.find(x=>String(x.user_id)===String(u.user_id))||u;renderAccountOverview(window.__gcAccountUser)}catch(e){alert('Payment status update failed: '+(e.message||e))}
-}
-async function toggleDirectory(i){
-  const u=filteredUsers()[i];if(!u)return;
-  try{await accountRpc('set_account_controls',{user_id:u.user_id,directory_visible:!(u.directory_visible!==false)});await loadLiveUsers()}catch(e){alert('Directory visibility update failed: '+(e.message||e))}
-}
+  const d=await accountRpc('get_account_overview',{user_id:u.user_id}),r=(d.documents||[]).find(x=>String(x.id)===String(id));if(!r)return alert('Verification record not found.');
+  const type=prompt('Document type (AADHAAR / PAN / COLLEGE_ID):',r.document_type||'');if(type===null)return;
+  const submitted=confirm('Click OK if this document is SUBMITTED/RECEIVED. Cancel means NOT SUBMITTED.');
+  const verified=submitted&&confirm('Should this document remain ADMIN VERIFIED?');
+  const note=prompt('Admin note:',r.admin_note||'');if(note===null)return;
+  try{await accountRpc('update_verification_document',{id:String(id),document_type:type.trim().toUpperCase(),submitted,verified,admin_note:note});await loadAccountVerification();}
+  catch(e){alert('Verification edit failed: '+(e.message||e))}
+};
+window.deleteVerificationRecord=async id=>{
+  if(!id||!confirm('Delete this verification ledger record permanently?'))return;
+  try{await accountRpc('delete_verification_document',{id:String(id)});await loadAccountVerification();await loadLiveUsers();}
+  catch(e){alert('Verification delete failed: '+(e.message||e))}
+};
+async function grantAdminVerification(){const u=accountUser();if(!u)return;try{const d=await accountRpc('set_verification',{user_id:u.user_id,admin_verified:true});if(d?.eligible===false)throw new Error('At least 2 documents must be submitted before Admin verification.');await loadLiveUsers();window.__gcAccountUser=users.find(x=>String(x.user_id)===String(u.user_id))||u;renderAccountOverview(window.__gcAccountUser);openAccountPane('verification')}catch(e){alert('Verification failed: '+(e.message||e))}}
+async function removeAdminVerification(){const u=accountUser();if(!u)return;try{await accountRpc('set_verification',{user_id:u.user_id,admin_verified:false});await loadLiveUsers();window.__gcAccountUser=users.find(x=>String(x.user_id)===String(u.user_id))||u;renderAccountOverview(window.__gcAccountUser);openAccountPane('verification')}catch(e){alert('Could not remove verification: '+(e.message||e))}}
+async function setBlueTickFromAccount(){const u=accountUser();if(!u)return;const current=!!(u.public_verified_tick||u.verified);try{const d=await accountRpc('set_verification',{user_id:u.user_id,public_verified_tick:!current});if(!current&&d?.eligible===false)throw new Error('At least 2 submitted documents are required before the Blue Verified Tick can be granted.');await loadLiveUsers();window.__gcAccountUser=users.find(x=>String(x.user_id)===String(u.user_id))||u;renderAccountOverview(window.__gcAccountUser);openAccountPane('verification')}catch(e){alert('Blue Verified Tick update failed: '+(e.message||e))}}
+async function toggleDirectoryFromAccount(){const u=accountUser();if(!u)return;try{await accountRpc('set_account_controls',{user_id:u.user_id,directory_visible:!(u.directory_visible!==false)});await loadLiveUsers();window.__gcAccountUser=users.find(x=>String(x.user_id)===String(u.user_id))||u;renderAccountOverview(window.__gcAccountUser)}catch(e){alert('Directory visibility update failed: '+(e.message||e))}}
+async function setPaidFromAccount(){const u=accountUser();if(!u)return;const next=String(u.paid_status||'PENDING').toUpperCase()!=='PAID';try{await accountRpc('set_account_controls',{user_id:u.user_id,paid_status:next?'PAID':'PENDING'});await loadLiveUsers();window.__gcAccountUser=users.find(x=>String(x.user_id)===String(u.user_id))||u;renderAccountOverview(window.__gcAccountUser)}catch(e){alert('Payment status update failed: '+(e.message||e))}}
+async function toggleDirectory(i){const u=filteredUsers()[i];if(!u)return;try{await accountRpc('set_account_controls',{user_id:u.user_id,directory_visible:!(u.directory_visible!==false)});await loadLiveUsers()}catch(e){alert('Directory visibility update failed: '+e.message)}}
+
 async function loadAccountPayments(){
-  const u=accountUser();if(!u)return;const p=$('gcPane-payments');p.innerHTML='<div class="empty">Loading payment history…</div>';
-  try{
-    const d=await accountRpc('get_account_overview',{user_id:u.user_id}),rows=d.payments||[];
-    const total=rows.reduce((n,r)=>n+Number(r.amount||0),0);
-    p.innerHTML=`<div class="gcAcctGrid"><div class="gcStat"><b>Total Paid (recorded)</b><strong>₹${total.toFixed(2)}</strong></div><div class="gcStat"><b>Payments</b><strong>${rows.length}</strong></div><div class="gcStat"><b>Last Payment</b><strong>${esc(rows[0]?.payment_date||rows[0]?.created_at||'—')}</strong></div></div>
-      <div class="gcBox"><h3>＋ Add Payment</h3><div class="gcFormGrid">
-        <div class="field"><label>Payment Date</label><input id="gcPayDate" type="date" value="${new Date().toISOString().slice(0,10)}"></div>
-        <div class="field"><label>Amount (₹)</label><input id="gcPayAmount" type="number" min="0" step="0.01"></div>
-        <div class="field"><label>Mode</label><select id="gcPayMode"><option>UPI</option><option>Online</option><option>Cash</option><option>Cheque</option><option>Bank Transfer</option><option>Other</option></select></div>
-        <div class="field"><label>Transaction / Reference No.</label><input id="gcPayRef" placeholder="UTR / cheque no. / cash receipt no."></div>
-        <div class="field"><label>Reason</label><input id="gcPayReason" placeholder="Monthly listing / renewal / other"></div>
-        <div class="field"><label>Status</label><select id="gcPayStatus"><option value="RECEIVED">RECEIVED</option><option value="PENDING">PENDING</option><option value="REFUNDED">REFUNDED</option></select></div>
-      </div><div class="gcMiniActions"><button class="btn green" onclick="addAccountPayment()">＋ SAVE PAYMENT</button></div><div id="gcPaymentStatus" class="status"></div></div>
-      <div class="gcBox"><h3>💳 Complete Payment History</h3><div class="gcTableWrap"><table class="gcTable"><thead><tr><th>Date</th><th>Amount</th><th>Mode</th><th>Transaction / Ref.</th><th>Reason</th><th>Status</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${esc(r.payment_date||r.created_at||'—')}</td><td><b>₹${Number(r.amount||0).toFixed(2)}</b></td><td>${esc(r.payment_mode||r.mode||'—')}</td><td>${esc(r.transaction_ref||r.reference_no||'—')}</td><td>${esc(r.reason||'—')}</td><td>${esc(r.status||'RECEIVED')}</td></tr>`).join(''):'<tr><td colspan="6">No payment records yet.</td></tr>'}</tbody></table></div></div>`;
-  }catch(e){p.innerHTML='<div class="dangerNote">Payment ledger could not be loaded. Run the supplied migration SQL first.<br><br>'+esc(e.message||e)+'</div>'}
+  const u=accountUser();if(!u)return;const p=$('gcPane-payments');p.innerHTML='<div class="empty">Loading complete payment ledger…</div>';
+  try{const d=await accountRpc('get_account_overview',{user_id:u.user_id}),rows=d.payments||[];const total=rows.reduce((n,r)=>n+Number(r.amount||0),0);
+    p.innerHTML=`<div class="gcAcctGrid"><div class="gcStat"><b>Total Recorded</b><strong>₹${total.toFixed(2)}</strong></div><div class="gcStat"><b>Ledger Records</b><strong>${rows.length}</strong></div><div class="gcStat"><b>Last Payment</b><strong>${esc(rows[0]?.payment_date||'—')}</strong></div></div>
+    <div class="gcBox"><h3>＋ Add Payment</h3><div class="gcFormGrid"><div class="field"><label>Date</label><input id="gcPayDate" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Amount (₹)</label><input id="gcPayAmount" type="number" min="0" step="0.01"></div><div class="field"><label>Mode</label><select id="gcPayMode"><option>UPI</option><option>Online</option><option>Cash</option><option>Cheque</option><option>Bank Transfer</option><option>Other</option></select></div><div class="field"><label>Transaction / Reference</label><input id="gcPayRef"></div><div class="field"><label>Reason</label><input id="gcPayReason"></div><div class="field"><label>Status</label><select id="gcPayStatus"><option>RECEIVED</option><option>PENDING</option><option>REFUNDED</option><option>CANCELLED</option></select></div></div><div class="gcMiniActions"><button class="btn green" onclick="addAccountPayment()">＋ SAVE PAYMENT</button></div><div id="gcPaymentStatus" class="status"></div></div>
+    <div class="gcBox"><h3>💳 Complete Payment Ledger — ${rows.length} Record(s)</h3><div class="gcTableWrap"><table class="gcTable"><thead><tr><th>ID</th><th>Date</th><th>Amount</th><th>Mode</th><th>Transaction / Ref.</th><th>Reason</th><th>Status</th><th>Notes</th><th>Created By</th><th>Created At</th><th>ADMIN ACTION</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td style="font-size:10px;overflow-wrap:anywhere">${esc(r.id||'—')}</td><td>${esc(r.payment_date||'—')}</td><td><b>₹${Number(r.amount||0).toFixed(2)}</b></td><td>${esc(r.payment_mode||'—')}</td><td>${esc(r.transaction_ref||'—')}</td><td>${esc(r.reason||'—')}</td><td>${esc(r.status||'—')}</td><td>${esc(r.notes||'—')}</td><td style="font-size:10px">${esc(r.created_by||'—')}</td><td>${esc(r.created_at||'—')}</td><td><div class="gcRowActions"><button class="btn primary" onclick="editPaymentRecord('${esc(r.id||'')}')">✏️ EDIT</button><button class="btn red" onclick="deletePaymentRecord('${esc(r.id||'')}')">🗑️ DELETE</button></div></td></tr>`).join(''):'<tr><td colspan="11">No payment records yet.</td></tr>'}</tbody></table></div></div>`;
+  }catch(e){p.innerHTML='<div class="dangerNote">Payment ledger could not be loaded.<br><br>'+esc(e.message||e)+'<br><br>Run the <b>v2 account-controls migration SQL</b>.</div>'}
 }
-async function addAccountPayment(){
-  const u=accountUser();if(!u)return;
-  try{
-    const amount=Number($('gcPayAmount').value);if(!Number.isFinite(amount)||amount<=0)throw new Error('Enter a valid amount.');
-    const reason=$('gcPayReason').value.trim();if(!reason)throw new Error('Payment reason is required.');
-    await accountRpc('add_payment',{user_id:u.user_id,payment_date:$('gcPayDate').value,amount,payment_mode:$('gcPayMode').value,transaction_ref:$('gcPayRef').value.trim(),reason,status:$('gcPayStatus').value});
-    $('gcPaymentStatus').textContent='✓ Payment record saved.';await loadAccountPayments();await loadLiveUsers();
-  }catch(e){$('gcPaymentStatus').textContent='Payment save failed: '+(e.message||e)}
-}
+async function addAccountPayment(){const u=accountUser();if(!u)return;try{const amount=Number($('gcPayAmount').value);if(!Number.isFinite(amount)||amount<=0)throw new Error('Enter a valid amount.');const reason=$('gcPayReason').value.trim();if(!reason)throw new Error('Payment reason is required.');await accountRpc('add_payment',{user_id:u.user_id,payment_date:$('gcPayDate').value,amount,payment_mode:$('gcPayMode').value,transaction_ref:$('gcPayRef').value.trim(),reason,status:$('gcPayStatus').value});$('gcPaymentStatus').textContent='✓ Payment record saved.';await loadAccountPayments();await loadLiveUsers()}catch(e){$('gcPaymentStatus').textContent='Payment save failed: '+(e.message||e)}}
+window.editPaymentRecord=async id=>{const u=accountUser();if(!u)return;const d=await accountRpc('get_account_overview',{user_id:u.user_id}),r=(d.payments||[]).find(x=>String(x.id)===String(id));if(!r)return alert('Payment record not found.');const date=prompt('Payment date (YYYY-MM-DD):',r.payment_date||'');if(date===null)return;const amount=prompt('Amount:',r.amount??'');if(amount===null)return;const mode=prompt('Payment mode:',r.payment_mode||'');if(mode===null)return;const ref=prompt('Transaction / Reference:',r.transaction_ref||'');if(ref===null)return;const reason=prompt('Payment reason:',r.reason||'');if(reason===null)return;const status=prompt('Status (RECEIVED/PENDING/REFUNDED/CANCELLED):',r.status||'RECEIVED');if(status===null)return;const notes=prompt('Notes:',r.notes||'');if(notes===null)return;try{await accountRpc('update_payment',{id:String(id),payment_date:date,amount,payment_mode:mode,transaction_ref:ref,reason,status,notes});await loadAccountPayments();await loadLiveUsers()}catch(e){alert('Payment edit failed: '+(e.message||e))}};
+window.deletePaymentRecord=async id=>{if(!id||!confirm('Delete this payment ledger record permanently?'))return;try{await accountRpc('delete_payment',{id:String(id)});await loadAccountPayments();await loadLiveUsers()}catch(e){alert('Payment delete failed: '+(e.message||e))}};
+
 async function loadAccountCoins(){
-  const u=accountUser();if(!u)return;const p=$('gcPane-coins');p.innerHTML='<div class="empty">Loading coin ledger…</div>';
-  try{
-    const d=await accountRpc('get_account_overview',{user_id:u.user_id}),rows=d.coins||[],balance=rows.length?Number(rows[0].balance_after??0):Number(d.account?.coin_balance||0);
-    p.innerHTML=`<div class="gcAcctGrid"><div class="gcStat"><b>Current Coin Balance</b><strong class="gcBlue">🪙 ${balance}</strong></div><div class="gcStat"><b>Ledger Records</b><strong>${rows.length}</strong></div><div class="gcStat"><b>Last Coin Change</b><strong>${esc(rows[0]?.created_at||'—')}</strong></div></div>
-    <div class="gcBox"><h3>🪙 Coin Ledger</h3><div class="gcTableWrap"><table class="gcTable"><thead><tr><th>Date</th><th>Change</th><th>Balance</th><th>Reason</th><th>Reference</th></tr></thead><tbody>${rows.length?rows.map(r=>{const a=Number(r.amount??r.coin_amount??r.change??0);return `<tr><td>${esc(r.created_at||r.date||'—')}</td><td class="${a>=0?'gcGreen':'gcRed'}"><b>${a>=0?'+':''}${a}</b></td><td>${esc(r.balance_after??'—')}</td><td>${esc(r.reason||r.description||'—')}</td><td>${esc(r.reference||r.lrr_id||r.request_id||'—')}</td></tr>`}).join(''):'<tr><td colspan="5">No coin ledger records found.</td></tr>'}</tbody></table></div></div>
+  const u=accountUser();if(!u)return;const p=$('gcPane-coins');p.innerHTML='<div class="empty">Loading complete coin ledger…</div>';
+  try{const d=await accountRpc('get_account_overview',{user_id:u.user_id}),rows=d.coins||[];let balance=Number(d.account?.coin_balance||0);if(rows.length){let running=0;const rev=[...rows].reverse();for(const r of rev)running+=Number(r.amount??r.coin_amount??r.change??0);balance=running;}
+    const cols=rows.length?Object.keys(rows[0]):[];
+    p.innerHTML=`<div class="gcAcctGrid"><div class="gcStat"><b>Estimated Current Balance</b><strong class="gcBlue">🪙 ${balance}</strong></div><div class="gcStat"><b>Ledger Records</b><strong>${rows.length}</strong></div><div class="gcStat"><b>Last Entry</b><strong>${esc(rows[0]?.created_at||'—')}</strong></div></div>
+    <div class="gcBox"><h3>🪙 Complete Coin Ledger — ${rows.length} Record(s)</h3><div class="gcTableWrap"><table class="gcTable"><thead><tr>${cols.map(c=>`<th>${esc(c.replace(/_/g,' ').toUpperCase())}</th>`).join('')}<th>ADMIN ACTION</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${cols.map(c=>`<td style="font-size:10px;max-width:220px;overflow-wrap:anywhere">${esc(r[c]??'—')}</td>`).join('')}<td><div class="gcRowActions"><button class="btn primary" onclick="editCoinRecord('${esc(r.id||'')}')">✏️ EDIT</button><button class="btn red" onclick="deleteCoinRecord('${esc(r.id||'')}')">🗑️ DELETE</button></div></td></tr>`).join(''):`<tr><td colspan="${cols.length+1}">No coin ledger records found.</td></tr>`}</tbody></table></div></div>
     <div class="gcMiniActions"><button class="btn teal" onclick="selectCoinsForAccount()">🪙 MANAGE COINS</button></div>`;
-  }catch(e){p.innerHTML='<div class="dangerNote">Coin ledger could not be loaded: '+esc(e.message||e)+'</div>'}
+  }catch(e){p.innerHTML='<div class="dangerNote">Coin ledger could not be loaded.<br><br>'+esc(e.message||e)+'<br><br>The existing <b>gc_coin_ledger</b> schema must contain an <b>id</b> column for Admin edit/delete.</div>'}
 }
+window.editCoinRecord=async id=>{if(!id)return;const u=accountUser();if(!u)return;const d=await accountRpc('get_account_overview',{user_id:u.user_id}),r=(d.coins||[]).find(x=>String(x.id)===String(id));if(!r)return alert('Coin ledger record not found.');const payload={id:String(id)};for(const k of ['amount','coin_amount','change','reason','description','reference','reference_no','lrr_id','request_id','role','note','notes']){if(Object.prototype.hasOwnProperty.call(r,k)){const v=prompt(k.replace(/_/g,' ')+':',r[k]??'');if(v===null)return;payload[k]=v}}try{await accountRpc('update_coin_ledger',payload);await loadAccountCoins()}catch(e){alert('Coin ledger edit failed: '+(e.message||e))}};
+window.deleteCoinRecord=async id=>{if(!id||!confirm('Delete this coin ledger record permanently? This changes the ledger history. Continue?'))return;try{await accountRpc('delete_coin_ledger',{id:String(id)});await loadAccountCoins()}catch(e){alert('Coin ledger delete failed: '+(e.message||e))}};
 function selectCoinsForAccount(){const u=accountUser();if(!u)return;$('coinUserId').value=String(u.user_id);$('coinRole').value=u.role||'student';closeAccountModal();switchSection('coins');$('coinAmount').focus()}
+
 async function loadAccountActivity(){
-  const u=accountUser();if(!u)return;const p=$('gcPane-activity');p.innerHTML='<div class="empty">Loading activity…</div>';
+  const u=accountUser();if(!u)return;const p=$('gcPane-activity');p.innerHTML='<div class="empty">Loading complete activity ledger…</div>';
   try{const d=await accountRpc('get_account_overview',{user_id:u.user_id}),rows=d.activity||[];
-    p.innerHTML=`<div class="gcBox"><h3>📜 Account Activity / Audit Trail</h3><div class="gcTableWrap"><table class="gcTable"><thead><tr><th>Date</th><th>Action</th><th>Details</th><th>Admin</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${esc(r.created_at||r.date||'—')}</td><td><b>${esc(r.action||r.event_type||'—')}</b></td><td>${esc(r.details||r.note||r.description||'—')}</td><td>${esc(r.admin_email||r.actor_email||r.created_by||'—')}</td></tr>`).join(''):'<tr><td colspan="4">No activity records yet.</td></tr>'}</tbody></table></div></div>`;
-  }catch(e){p.innerHTML='<div class="dangerNote">Activity history could not be loaded: '+esc(e.message||e)+'</div>'}
+    p.innerHTML=`<div class="gcBox"><h3>📜 Complete Account Activity / Audit Ledger — ${rows.length} Record(s)</h3><div class="gcTableWrap"><table class="gcTable"><thead><tr><th>ID</th><th>Date</th><th>Action</th><th>Details</th><th>Admin ID</th><th>Admin Email</th><th>ADMIN ACTION</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${esc(r.id||'—')}</td><td>${esc(r.created_at||'—')}</td><td><b>${esc(r.action||'—')}</b></td><td style="white-space:pre-wrap;max-width:420px;overflow-wrap:anywhere">${esc(r.details||'—')}</td><td style="font-size:10px">${esc(r.admin_id||'—')}</td><td>${esc(r.admin_email||'—')}</td><td><div class="gcRowActions"><button class="btn primary" onclick="editActivityRecord('${esc(r.id||'')}')">✏️ EDIT</button><button class="btn red" onclick="deleteActivityRecord('${esc(r.id||'')}')">🗑️ DELETE</button></div></td></tr>`).join(''):'<tr><td colspan="7">No activity records yet.</td></tr>'}</tbody></table></div></div>`;
+  }catch(e){p.innerHTML='<div class="dangerNote">Activity history could not be loaded.<br><br>'+esc(e.message||e)+'<br><br>Run the <b>v2 account-controls migration SQL</b>.</div>'}
 }
+window.editActivityRecord=async id=>{const u=accountUser();if(!u)return;const d=await accountRpc('get_account_overview',{user_id:u.user_id}),r=(d.activity||[]).find(x=>String(x.id)===String(id));if(!r)return alert('Activity record not found.');const action=prompt('Action:',r.action||'');if(action===null)return;const details=prompt('Details:',r.details||'');if(details===null)return;const email=prompt('Admin email:',r.admin_email||'');if(email===null)return;try{await accountRpc('update_activity',{id:String(id),action,details,admin_email:email});await loadAccountActivity()}catch(e){alert('Activity edit failed: '+(e.message||e))}};
+window.deleteActivityRecord=async id=>{if(!id||!confirm('Delete this audit activity record permanently?'))return;try{await accountRpc('delete_activity',{id:String(id)});await loadAccountActivity()}catch(e){alert('Activity delete failed: '+(e.message||e))}};
+
 window.viewDetails=i=>{const u=filteredUsers()[i];if(u)showDetails(u)};
 window.selectCoins=i=>{const u=filteredUsers()[i];if(!u)return;$('coinUserId').value=String(u.user_id||'');$('coinRole').value=u.role||'student';switchSection('coins');$('coinAmount').focus()};
 async function saveUser(i){
