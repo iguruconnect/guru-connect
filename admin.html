@@ -1101,26 +1101,55 @@ staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';s
     return {phone:gcNormalizeWA(phone),name};
   }
   async function gcTutorContact(lrrId){
-    const rq=await sb.from('gc_learning_requests_v2').select('id,tutor_id').eq('id',String(lrrId)).maybeSingle();
+    const rq=await sb.from('gc_learning_requests_v2').select('id,tutor_id,tutor_user_id,tutor_profile_id').eq('id',String(lrrId)).maybeSingle();
     if(rq.error)throw rq.error;
-    const id=String(rq.data?.tutor_id||'').trim();
-    if(!id)throw new Error('The tutor account could not be identified for this request.');
+    if(!rq.data)throw new Error('Learning Request was not found.');
 
-    // IMPORTANT: do not assume a `phone` column exists in public.profiles.
-    // Read the Tutor profile as-is and detect the actual contact field.
-    const attempts=[];
-    attempts.push(sb.from('tutor_profiles').select('*').eq('id',id).maybeSingle());
-    attempts.push(sb.from('tutor_profiles').select('*').eq('user_id',id).maybeSingle());
-    for(const q of attempts){
+    const ids=[rq.data.tutor_id,rq.data.tutor_user_id,rq.data.tutor_profile_id]
+      .map(v=>String(v||'').trim()).filter(Boolean)
+      .filter((v,i,a)=>a.indexOf(v)===i);
+    if(!ids.length)throw new Error('The tutor account could not be identified for this request.');
+
+    let phone='',name='',userId='';
+
+    // LRR tutor references can point to tutor_profiles.id, tutor_profiles.user_id,
+    // or directly to the Auth/profile UUID. Resolve all three forms.
+    for(const id of ids){
+      const attempts=[
+        ()=>sb.from('tutor_profiles').select('*').eq('id',id).maybeSingle(),
+        ()=>sb.from('tutor_profiles').select('*').eq('user_id',id).maybeSingle(),
+        ()=>sb.from('profiles').select('*').eq('id',id).maybeSingle()
+      ];
+      for(const run of attempts){
+        try{
+          const x=await run();
+          if(!x.error&&x.data){
+            const c=gcPickContact(x.data);
+            phone=phone||c.phone;
+            name=name||c.name;
+            userId=userId||String(x.data.user_id||x.data.auth_user_id||x.data.profile_id||'').trim();
+            if(phone)break;
+          }
+        }catch(_){}
+      }
+      if(phone)break;
+    }
+
+    // The working Tutor Directory gets registered contact details from
+    // public.profiles via tutor_profiles.user_id. Do the same for LRR.
+    const profileIds=[userId,...ids].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i);
+    for(const id of profileIds){
       try{
-        const x=await q;
+        const x=await sb.from('profiles').select('*').eq('id',id).maybeSingle();
         if(!x.error&&x.data){
           const c=gcPickContact(x.data);
-          if(c.phone)return c;
+          phone=phone||c.phone;
+          name=name||c.name;
+          if(phone)break;
         }
-      }catch(_){ }
+      }catch(_){}
     }
-    return {phone:'',name:'Tutor'};
+    return {phone,name:name||'Tutor'};
   }
   window.gcOpenTutorWhatsApp=async function(lrrId){
     try{
