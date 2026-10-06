@@ -6982,11 +6982,8 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
             const email = String(tutor.email || '').trim();
             const phone = String(tutor.phone || '').trim();
             let digits = phone.replace(/\D/g, '');
-            /*
-             * WhatsApp requires the international number without +, spaces,
-             * brackets or hyphens. Preserve an existing country code; add
-             * India's +91 only for a plain 10-digit Indian mobile number.
-             */
+            // A plain 10-digit Indian mobile number is stored as +91 for WhatsApp.
+            // Existing international country codes are preserved.
             if (digits.length === 10) digits = '91' + digits;
             const whatsappNumber = digits;
             const whatsappUrl = whatsappNumber
@@ -7007,10 +7004,10 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
                             <span class="w-10 h-10 rounded-xl bg-blue-50 text-brand-blue flex items-center justify-center shrink-0"><i class="fa-solid fa-phone"></i></span>
                             <span class="min-w-0"><span class="block text-[10px] font-black uppercase text-slate-500">Phone / WhatsApp</span><span class="block text-xs sm:text-sm font-bold text-slate-800">${escapeHtml(phone)}</span></span>
                         </a>` : ''}
-                        ${whatsappUrl ? `<a href="${whatsappUrl}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 bg-white border border-emerald-100 rounded-2xl p-3 hover:border-emerald-400 transition" title="Open WhatsApp chat with this Tutor">
+                        ${whatsappUrl ? `<button type="button" onclick="openTutorWhatsApp('${String(tutor.id).replace(/'/g, "\\'")}')" class="w-full flex items-center gap-3 bg-white border border-emerald-100 rounded-2xl p-3 hover:border-emerald-400 transition text-left" title="Open WhatsApp chat with this Tutor">
                             <span class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0"><i class="fa-brands fa-whatsapp text-xl"></i></span>
                             <span class="min-w-0"><span class="block text-[10px] font-black uppercase text-slate-500">WhatsApp</span><span class="block text-xs sm:text-sm font-bold text-emerald-700">Chat with Tutor</span></span>
-                        </a>` : ''}
+                        </button>` : ''}
                     </div>
                 </div>`;
         }
@@ -7031,21 +7028,88 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
             }
         }
 
+        // ===== TUTOR WHATSAPP APP LAUNCHER =====
+        // Uses the installed WhatsApp app first (whatsapp://), then falls back
+        // to the official web/API link if the device/browser does not support
+        // the app scheme.
+        async function openTutorWhatsApp(tutorId) {
+            const tutor = tutorDirectoryList.find(t => String(t.id) === String(tutorId));
+            if (!tutor) {
+                alert('Tutor profile could not be found.');
+                return;
+            }
+
+            let phone = String(tutor.phone || '').trim();
+
+            // Tutor phone is stored in public.profiles, linked by tutor_profiles.user_id.
+            if (!phone && tutor.user_id && typeof gcSupabase !== 'undefined' && gcSupabase) {
+                try {
+                    const contact = await gcSupabase
+                        .from('profiles')
+                        .select('phone')
+                        .eq('id', String(tutor.user_id))
+                        .maybeSingle();
+
+                    if (!contact.error && contact.data) {
+                        phone = String(contact.data.phone || '').trim();
+                        tutor.phone = phone;
+                    }
+                } catch (e) {
+                    console.warn('Tutor WhatsApp contact lookup failed:', e);
+                }
+            }
+
+            let digits = phone.replace(/\D/g, '');
+            if (digits.length === 10) digits = '91' + digits;
+
+            if (!digits) {
+                alert('WhatsApp number is not available for this Tutor. Please ask the Tutor to update the registered contact number.');
+                return;
+            }
+
+            const message = 'Hello ' + (tutor.name || 'Tutor') +
+                ', I found your profile on Guru Connect and would like to discuss tuition.';
+            const encodedMessage = encodeURIComponent(message);
+
+            const appUrl = 'whatsapp://send?phone=' + digits + '&text=' + encodedMessage;
+            const webUrl = 'https://wa.me/' + digits + '?text=' + encodedMessage;
+
+            // Close the profile before handing control to the WhatsApp app.
+            try { closePublicTutorProfile(); } catch (e) {}
+
+            let fallbackTimer = setTimeout(function () {
+                // If the app scheme was blocked/not installed, the web link opens.
+                window.open(webUrl, '_blank', 'noopener,noreferrer');
+            }, 1400);
+
+            const cancelFallback = function () {
+                clearTimeout(fallbackTimer);
+                fallbackTimer = null;
+                window.removeEventListener('pagehide', cancelFallback);
+                document.removeEventListener('visibilitychange', cancelFallback);
+            };
+
+            // If WhatsApp app takes over, pagehide/visibilitychange normally fires.
+            window.addEventListener('pagehide', cancelFallback, { once: true });
+            document.addEventListener('visibilitychange', function onVisibility() {
+                if (document.visibilityState === 'hidden') {
+                    cancelFallback();
+                }
+            }, { once: true });
+
+            try {
+                window.location.href = appUrl;
+            } catch (e) {
+                cancelFallback();
+                window.open(webUrl, '_blank', 'noopener,noreferrer');
+            }
+        }
+
         async function openPublicTutorProfile(tutorId) {
             const tutor = tutorDirectoryList.find(t => String(t.id) === String(tutorId));
             if (!tutor) return;
 
-            /*
-             * GURU CONNECT WhatsApp/contact fix:
-             * tutor_profiles does not own the phone column in this build.
-             * The registered user's contact number is stored in public.profiles
-             * and is linked through tutor_profiles.user_id.
-             *
-             * Never query tutor_profiles.phone here. Load the contact from
-             * profiles only when a registered Student opens the real Tutor
-             * profile. If the contact lookup is blocked/unavailable, the
-             * profile still opens and the WhatsApp button simply remains hidden.
-             */
+            // Registered Tutor contact details live in public.profiles, not tutor_profiles.
             if (tutor.isDummy === false && tutor.user_id && typeof gcSupabase !== 'undefined' && gcSupabase) {
                 try {
                     const contact = await gcSupabase
@@ -7057,11 +7121,9 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
                     if (!contact.error && contact.data) {
                         tutor.email = contact.data.email || tutor.email || '';
                         tutor.phone = contact.data.phone || tutor.phone || '';
-                    } else if (contact.error) {
-                        console.warn('Tutor contact lookup from profiles failed:', contact.error);
                     }
-                } catch (contactErr) {
-                    console.warn('Tutor contact lookup failed:', contactErr);
+                } catch (e) {
+                    console.warn('Tutor contact lookup from profiles failed:', e);
                 }
             }
 
