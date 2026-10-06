@@ -1081,164 +1081,226 @@ staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';s
   'use strict';
 
   function gcNormalizeWA(v){
-    let d=String(v||'').replace(/\D/g,'');
+    let d=String(v??'').trim().replace(/\D/g,'');
     if(!d)return '';
     if(d.startsWith('00'))d=d.slice(2);
-    if(d.length===11 && d.startsWith('0'))d=d.slice(1);
+    if(d.length===11&&d.startsWith('0'))d=d.slice(1);
     if(d.length===10)d='91'+d;
     return d;
   }
 
   function gcPickContact(row){
-    if(!row || typeof row!=='object') return {phone:'',name:''};
+    if(!row || typeof row!=='object') return {phone:'',name:'',userId:''};
     const preferred=[
       'phone','mobile','mobile_number','whatsapp','whatsapp_number',
       'whatsapp_phone','contact_number','contact_no','phone_number'
     ];
     let phone='';
     for(const k of preferred){
-      if(row[k]!=null && String(row[k]).trim()){
-        phone=String(row[k]); break;
-      }
+      if(row[k]!=null && String(row[k]).trim()){ phone=String(row[k]); break; }
     }
     if(!phone){
-      const k=Object.keys(row).find(k =>
-        /(phone|mobile|whatsapp|contact)/i.test(k) &&
-        row[k]!=null && String(row[k]).trim()
-      );
+      const k=Object.keys(row).find(x=>/(phone|mobile|whatsapp|contact)/i.test(x)
+        && row[x]!=null && String(row[x]).trim());
       if(k) phone=String(row[k]);
     }
     return {
       phone:gcNormalizeWA(phone),
-      name:String(row.name||row.full_name||row.display_name||'')
+      name:String(row.name||row.full_name||row.display_name||''),
+      userId:String(row.user_id||row.auth_user_id||row.profile_id||row.id||'')
     };
   }
 
-  async function gcTutorContact(lrrId){
+  async function gcTutorContactFromLRR(lrrId){
     const rq=await sb.from('gc_learning_requests_v2')
-      .select('*').eq('id',String(lrrId)).maybeSingle();
-    if(rq.error) throw rq.error;
+      .select('id,tutor_id')
+      .eq('id',String(lrrId))
+      .maybeSingle();
 
-    const tutorId=String(rq.data?.tutor_id||'').trim();
+    if(rq.error) throw rq.error;
+    if(!rq.data) throw new Error('Learning Request was not found.');
+
+    const tutorId=String(rq.data.tutor_id||'').trim();
     if(!tutorId) throw new Error('The tutor account could not be identified for this request.');
 
-    /* Try the tutor record using both possible identifiers. */
-    const tutorQueries=[
-      ()=>sb.from('tutor_profiles').select('*').eq('id',tutorId).maybeSingle(),
-      ()=>sb.from('tutor_profiles').select('*').eq('user_id',tutorId).maybeSingle()
-    ];
+    let phone='', name='', userId=tutorId;
 
-    for(const run of tutorQueries){
-      try{
-        const x=await run();
-        if(!x.error && x.data){
-          const c=gcPickContact(x.data);
-          if(c.phone) return c;
-        }
-      }catch(_){}
-    }
-
-    /*
-      Important LRR fallback:
-      in this project the registered mobile can live in public.profiles,
-      while tutor_profiles only contains the tutor linkage.
-    */
-    const profileQueries=[
-      ()=>sb.from('profiles').select('*').eq('id',tutorId).maybeSingle(),
-      async ()=>{
-        const t=await sb.from('tutor_profiles').select('user_id').eq('id',tutorId).maybeSingle();
-        if(t.error || !t.data?.user_id) return {error:null,data:null};
-        return sb.from('profiles').select('*').eq('id',String(t.data.user_id)).maybeSingle();
+    // 1) The tutor_id may itself be a profiles/auth user id.
+    try{
+      const p=await sb.from('profiles').select('*').eq('id',tutorId).maybeSingle();
+      if(!p.error && p.data){
+        const c=gcPickContact(p.data);
+        phone=phone||c.phone;
+        name=name||c.name;
+        userId=c.userId||userId;
       }
-    ];
+    }catch(_){}
 
-    for(const run of profileQueries){
+    // 2) The tutor_id may be tutor_profiles.id OR tutor_profiles.user_id.
+    let tp=null;
+    try{
+      const q=await sb.from('tutor_profiles').select('*').eq('id',tutorId).maybeSingle();
+      if(!q.error && q.data) tp=q.data;
+    }catch(_){}
+    if(!tp){
       try{
-        const x=await run();
-        if(!x.error && x.data){
-          const c=gcPickContact(x.data);
-          if(c.phone) return c;
+        const q=await sb.from('tutor_profiles').select('*').eq('user_id',tutorId).maybeSingle();
+        if(!q.error && q.data) tp=q.data;
+      }catch(_){}
+    }
+
+    if(tp){
+      const c=gcPickContact(tp);
+      phone=phone||c.phone;
+      name=name||c.name;
+      userId=String(tp.user_id||userId||'').trim();
+    }
+
+    // 3) Most important fallback: the registered mobile number is normally
+    // stored in public.profiles against tutor_profiles.user_id.
+    if(userId){
+      try{
+        const p=await sb.from('profiles').select('*').eq('id',userId).maybeSingle();
+        if(!p.error && p.data){
+          const c=gcPickContact(p.data);
+          phone=phone||c.phone;
+          name=name||c.name;
         }
       }catch(_){}
     }
 
-    return {phone:'',name:'Tutor'};
+    return {phone,name:name||'Tutor'};
   }
 
-  /*
-    One authoritative LRR Tutor WhatsApp handler.
-    It opens a temporary tab synchronously (while the click is still a
-    user gesture), then resolves the phone number asynchronously. This
-    avoids Chrome/Edge popup blocking after the Supabase await.
-  */
-  window.gcOpenTutorWhatsApp=async function(lrrId){
-    const popup=window.open('about:blank','_blank');
-
+  async function gcResolveTutorContact(lrrId){
+    // Try the secure RPC first when installed, but NEVER stop there if it
+    // returns an empty phone. Older databases may not have the RPC or may
+    // return a contact shape different from the frontend.
     try{
-      let phone='',name='';
+      const q=await sb.rpc('gc_get_whatsapp_contact',{
+        p_request_id:String(lrrId),
+        p_target_role:'tutor'
+      });
+      if(!q.error && q.data){
+        const c=gcPickContact(q.data);
+        if(c.phone) return {phone:c.phone,name:c.name||'Tutor'};
+      }
+    }catch(_){}
 
-      /* Preferred secure RPC. */
+    return await gcTutorContactFromLRR(lrrId);
+  }
+
+  async function gcLaunchWhatsApp(phone,name){
+    if(!phone) throw new Error(
+      'No WhatsApp number is saved for this tutor. Please update the tutor mobile/WhatsApp number in the Tutor profile.'
+    );
+
+    const msg='Hello '+(name||'Tutor')+
+      ', I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.';
+    const encoded=encodeURIComponent(msg);
+    const webUrl='https://wa.me/'+phone+'?text='+encoded;
+    const appUrl='whatsapp://send?phone='+phone+'&text='+encoded;
+
+    // On phones/tablets, try the native WhatsApp app first. If the browser
+    // blocks the custom scheme, fall back to wa.me.
+    const isMobile=window.matchMedia &&
+      window.matchMedia('(max-width: 700px)').matches;
+
+    if(isMobile){
+      let fallback=setTimeout(function(){
+        window.location.href=webUrl;
+      },1200);
+
+      const cancel=function(){
+        clearTimeout(fallback);
+        fallback=null;
+        window.removeEventListener('pagehide',cancel);
+        document.removeEventListener('visibilitychange',onVisibility);
+      };
+      const onVisibility=function(){
+        if(document.visibilityState==='hidden') cancel();
+      };
+
+      window.addEventListener('pagehide',cancel,{once:true});
+      document.addEventListener('visibilitychange',onVisibility,{once:true});
+
+      try{
+        window.location.href=appUrl;
+      }catch(_){
+        cancel();
+        window.location.href=webUrl;
+      }
+    }else{
+      const w=window.open(webUrl,'_blank','noopener,noreferrer');
+      if(!w) window.location.href=webUrl;
+    }
+  }
+
+  // This is the function used by the LRR button in the existing markup.
+  // Override it globally so the button works even if the database RPC is
+  // missing or the tutor number lives in public.profiles.
+  window.whatsappCaseChat=async function(lrrId,who){
+    if(String(who||'').toLowerCase()!=='tutor'){
+      // Preserve the existing student flow for the student button.
+      const popup=window.open('about:blank','_blank');
       try{
         const q=await sb.rpc('gc_get_whatsapp_contact',{
-          p_request_id:String(lrrId),
-          p_target_role:'tutor'
+          p_request_id:String(lrrId),p_target_role:who
         });
-        if(!q.error && q.data){
-          const c=gcPickContact(q.data);
-          phone=c.phone;
-          name=c.name;
+        let c=!q.error&&q.data?gcPickContact(q.data):{phone:'',name:''};
+        if(!c.phone){
+          const rq=await sb.from('gc_learning_requests_v2')
+            .select('student_id')
+            .eq('id',String(lrrId)).maybeSingle();
+          const uid=String(rq.data?.student_id||'');
+          if(uid){
+            const p=await sb.from('profiles').select('*').eq('id',uid).maybeSingle();
+            if(!p.error&&p.data)c=gcPickContact(p.data);
+          }
         }
-      }catch(_){}
-
-      /* Reliable database fallback. */
-      if(!phone){
-        const c=await gcTutorContact(lrrId);
-        phone=c.phone;
-        name=name||c.name;
+        if(!c.phone) throw new Error('No phone number is saved for the student.');
+        const msg='Hello '+(c.name||'Student')+
+          ', I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.';
+        const url='https://wa.me/'+c.phone+'?text='+encodeURIComponent(msg);
+        if(popup&&!popup.closed)popup.location.href=url;else window.location.href=url;
+      }catch(e){
+        if(popup&&!popup.closed)popup.close();
+        alert('WhatsApp chat could not be opened: '+(e.message||e));
       }
+      return;
+    }
 
-      if(!phone){
-        throw new Error(
-          'No WhatsApp number is saved for this tutor. Please update the registered mobile/WhatsApp number in the Tutor profile.'
-        );
-      }
-
-      const text='Hello '+(name||'Tutor')+
-        ', I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.';
-      const url='https://wa.me/'+phone+'?text='+encodeURIComponent(text);
-
-      if(popup && !popup.closed){
-        popup.location.href=url;
-        try{popup.focus();}catch(_){}
-      }else{
-        /* Popup blocked: direct navigation still invokes WhatsApp/Web WhatsApp. */
-        window.location.href=url;
-      }
+    try{
+      const c=await gcResolveTutorContact(lrrId);
+      await gcLaunchWhatsApp(c.phone,c.name);
     }catch(e){
-      if(popup && !popup.closed){
-        try{popup.close();}catch(_){}
-      }
       alert('WhatsApp Tutor could not be opened: '+(e.message||e));
     }
   };
 
-  /*
-    LRR cards are rendered dynamically, so use event delegation rather than
-    rewriting only the buttons that happen to exist during page load.
-  */
-  document.addEventListener('click',function(e){
-    const btn=e.target.closest && e.target.closest('.lrrActions .caseChat');
-    if(!btn) return;
+  window.gcOpenTutorWhatsApp=async function(lrrId){
+    return window.whatsappCaseChat(lrrId,'tutor');
+  };
 
-    const oc=btn.getAttribute('onclick')||'';
-    const m=oc.match(/whatsappCaseChat\(\s*(['"])(.*?)\1\s*,\s*(['"])tutor\3\s*\)/);
-    if(!m) return;
+  function install(){
+    document.querySelectorAll('.lrrActions .caseChat').forEach(function(btn){
+      const oc=btn.getAttribute('onclick')||'';
+      if(/whatsappCaseChat\([^,]+,\s*[\'"]tutor[\'"]\)/.test(oc)){
+        const m=oc.match(/whatsappCaseChat\(([\'"])(.*?)\1,\s*([\'"])tutor\3\)/);
+        if(m){
+          btn.setAttribute('onclick','gcOpenTutorWhatsApp('+JSON.stringify(m[2])+')');
+          btn.type='button';
+        }
+      }
+    });
+  }
 
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    window.gcOpenTutorWhatsApp(m[2]);
-  },true);
-
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',install);
+  }else{
+    install();
+  }
+  [500,1500,3000,5000].forEach(function(ms){setTimeout(install,ms);});
 })();
 </script>
 
