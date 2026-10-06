@@ -700,10 +700,95 @@ let adminChatState=null,adminChatTimer=null;
 function ensureAdminChatModal(){
   if(document.getElementById('gcAdminChatOverlay'))return;
   const o=document.createElement('div');o.id='gcAdminChatOverlay';o.className='gcAdminChatOverlay';
-  o.innerHTML='<div class="gcAdminChatCard"><div class="gcAdminChatHead"><button class="gcAdminChatClose" type="button" onclick="closeAdminCaseChat()">✕ CLOSE</button><h3 id="gcAdminChatTitle">LRR Case Chat</h3><p id="gcAdminChatSub">GURU CONNECT Admin • Private case conversation</p><div id="gcAdminChatMeta" class="gcAdminChatMeta"></div></div><div id="gcAdminChatMessages" class="gcAdminChatMessages"></div><div class="gcAdminCompose"><textarea id="gcAdminChatInput" maxlength="5000" placeholder="Message the selected Student/Tutor about this LRR..."></textarea><button id="gcAdminChatSend" type="button">SEND</button></div></div>';
+  o.innerHTML='<div class="gcAdminChatCard"><div class="gcAdminChatHead"><button class="gcAdminChatClose" type="button" onclick="closeAdminCaseChat()">✕ CLOSE</button><h3 id="gcAdminChatTitle">LRR Case Chat</h3><p id="gcAdminChatSub">GURU CONNECT Admin • Private case conversation</p><div id="gcAdminChatMeta" class="gcAdminChatMeta"></div></div><div id="gcAdminChatMessages" class="gcAdminChatMessages"></div><div class="gcAdminCompose">
+  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+    <button id="gcAdminWhatsapp" type="button" class="btn green" style="flex:1;min-width:180px">🟢 OPEN WHATSAPP</button>
+    <button id="gcAdminChatSend" type="button" class="btn primary" style="flex:1;min-width:140px">SEND ADMIN MESSAGE</button>
+  </div>
+  <textarea id="gcAdminChatInput" maxlength="5000" placeholder="Optional internal Admin message for this LRR..."></textarea>
+</div></div>';
   document.body.appendChild(o);
   o.addEventListener('click',e=>{if(e.target===o)closeAdminCaseChat()});
   document.getElementById('gcAdminChatSend').onclick=sendAdminCaseChat;
+  document.getElementById('gcAdminWhatsapp').onclick=openAdminWhatsApp;
+}
+
+/* Resolve the user's actual saved phone number instead of assuming the LRR ID is a phone number.
+   The LRR can contain auth user ID, profile ID, or role-profile ID depending on the workflow version. */
+function gcCleanWhatsAppPhone(value){
+  let s=String(value||'').trim();
+  if(!s)return '';
+  s=s.replace(/[^0-9+]/g,'');
+  if(s.startsWith('00'))s='+'+s.slice(2);
+  if(s.startsWith('+'))return s.slice(1);
+  // GURU CONNECT's primary market is India; preserve other already-complete international numbers.
+  if(/^91[6-9][0-9]{9}$/.test(s))return s;
+  if(/^[6-9][0-9]{9}$/.test(s))return '91'+s;
+  if(s.length>=10)return s;
+  return '';
+}
+async function gcResolveWhatsAppPhone(userId, role){
+  const id=String(userId||'').trim();
+  if(!id)return '';
+  const candidates=[];
+  const add=(v)=>{if(v!==null&&v!==undefined&&String(v).trim() && !candidates.includes(String(v).trim())) candidates.push(String(v).trim())};
+
+  // 1) Admin RPC — preferred because it already normalizes profile records for the dashboard.
+  try{
+    const q=await sb.rpc('gc_admin_find_users',{p_term:id});
+    if(!q.error){
+      for(const u of normalizeRpcUsers(q.data||[])){
+        if(String(u.user_id)===id || !role || String(u.role).toLowerCase()===String(role).toLowerCase()){
+          add(u.whatsapp_number); add(u.whatsapp); add(u.mobile); add(u.phone); add(u.contact_number);
+        }
+      }
+    }
+  }catch(_){}
+
+  // 2) Public profile table.
+  try{
+    const q=await sb.from('profiles').select('*').eq('id',id).maybeSingle();
+    if(!q.error && q.data){
+      add(q.data.whatsapp_number); add(q.data.whatsapp); add(q.data.mobile); add(q.data.phone); add(q.data.contact_number);
+    }
+  }catch(_){}
+
+  // 3) Role-specific profile table. Some older registrations keep the phone only here.
+  const table=String(role||'').toLowerCase()==='tutor'?'tutor_profiles':String(role||'').toLowerCase()==='student'?'student_profiles':'';
+  if(table){
+    try{
+      const q=await sb.from(table).select('*').or(`user_id.eq.${id},auth_user_id.eq.${id},profile_id.eq.${id},id.eq.${id}`).limit(1);
+      if(!q.error && q.data?.[0]){
+        const u=q.data[0];
+        add(u.whatsapp_number); add(u.whatsapp); add(u.mobile); add(u.phone); add(u.contact_number);
+      }
+    }catch(_){}
+  }
+
+  for(const v of candidates){
+    const p=gcCleanWhatsAppPhone(v);
+    if(p)return p;
+  }
+  return '';
+}
+async function openAdminWhatsApp(){
+  const st=adminChatState;
+  if(!st)return alert('Please select a Student or Tutor first.');
+  try{
+    const phone=await gcResolveWhatsAppPhone(st.other,st.role);
+    if(!phone){
+      alert('WhatsApp chat could not be opened: No phone/WhatsApp number is saved for this user.');
+      return;
+    }
+    const text=encodeURIComponent(
+      'Hello '+(st.role==='tutor'?'Tutor':'Student')+
+      ', this is GURU CONNECT Admin regarding Learning Request '+(st.requestCode||st.requestId)+'.'
+    );
+    const url='https://wa.me/'+phone+'?text='+text;
+    window.open(url,'_blank','noopener,noreferrer');
+  }catch(e){
+    alert('WhatsApp chat could not be opened: '+(e.message||e));
+  }
 }
 function adminChatKey(rid,other){return 'gc_admin_case_'+String(rid)+'_'+String(other)}
 function localAdminChatLoad(key){try{return JSON.parse(localStorage.getItem(key)||'[]')}catch(_){return[]}}
@@ -724,31 +809,6 @@ async function loadAdminCaseMessages(){
   }
   host.scrollTop=host.scrollHeight;
 }
-
-function normalizeWhatsAppNumber(v){
- const raw=String(v??'').trim();
- let digits=raw.replace(/\D/g,'');
- if(!digits)return '';
- if(digits.length===10)digits='91'+digits;
- return digits;
-}
-window.whatsappCaseChat=async function(lrrId,who){
- const popup=window.open('about:blank','_blank');
- try{
-  const q=await sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(lrrId),p_target_role:who});
-  if(q.error)throw q.error;
-  const phone=normalizeWhatsAppNumber(q.data?.phone);
-  if(!phone)throw new Error('WhatsApp number is not available for this '+who+'.');
-  const name=String(q.data?.name||(who==='tutor'?'Tutor':'Student'));
-  const text=`Hello ${name}, I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.`;
-  const url='https://wa.me/'+phone+'?text='+encodeURIComponent(text);
-  if(popup&&!popup.closed)popup.location.href=url;else window.location.href=url;
- }catch(e){
-  if(popup&&!popup.closed)popup.close();
-  alert('WhatsApp chat could not be opened: '+(e.message||e));
- }
-};
-
 window.caseChat=async(studentId,tutorId,lrrId,who)=>{
   const uid=who==='tutor'?tutorId:studentId;
   if(!uid)return alert('The selected '+who+' is not linked to this LRR.');
@@ -804,7 +864,7 @@ async function loadLearning(){
         <div class="evidenceBox"><b>Learning deadline</b>${esc(r.learning_deadline||'Not set')}</div>
         <div class="evidenceBox" style="grid-column:1/-1"><b>Admin decision / note</b>${esc(adminNote||'No Admin decision recorded yet.')}</div>
       </div>${canDecide?`<div class="lrrDecision">${satisfied?'✅ Student has confirmed SATISFIED. This is the strongest evidence for releasing the Tutor reward.':'⚠️ Final coin decision is pending. Chat with both parties before releasing/denying if the evidence is incomplete.'}</div>`:''}</div>
-      <div class="lrrActions"><button type="button" class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button type="button" class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button type="button" class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button type="button" class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','tutor')">🪙 TUTOR COINS</button><button type="button" class="btn light" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','student')">🪙 STUDENT COINS</button><button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','student')">💬 CHAT STUDENT</button><button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','tutor')">💬 CHAT TUTOR</button>${canDecide?`<button type="button" class="btn green decisionBtn" onclick="lrrDecision('${esc(id)}','APPROVE')">💰 RELEASE TUTOR COINS</button><button type="button" class="btn red decisionBtn" onclick="lrrDecision('${esc(id)}','DENY')">↩ DENY / RETURN COINS</button>`:''}</div></article>`
+      <div class="lrrActions"><button type="button" class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button type="button" class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button type="button" class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button type="button" class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','tutor')">🪙 TUTOR COINS</button><button type="button" class="btn light" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','student')">🪙 STUDENT COINS</button><button type="button" class="btn caseChat" onclick="caseChat('${esc(student)}','${esc(tutor)}','${esc(id)}','student')">💬 CHAT STUDENT</button><button type="button" class="btn caseChat" onclick="caseChat('${esc(student)}','${esc(tutor)}','${esc(id)}','tutor')">💬 CHAT TUTOR</button>${canDecide?`<button type="button" class="btn green decisionBtn" onclick="lrrDecision('${esc(id)}','APPROVE')">💰 RELEASE TUTOR COINS</button><button type="button" class="btn red decisionBtn" onclick="lrrDecision('${esc(id)}','DENY')">↩ DENY / RETURN COINS</button>`:''}</div></article>`
     }).join(''):'<div class="empty">No Learning Requirement Requests found.</div>';
     lrrLoaded=true
   }catch(e){lrrLoaded=false;$('learningStatus').textContent='LRR load failed: '+(e.message||e);$('learningResults').innerHTML='<div class="empty">Unable to load Learning Requirement Requests.</div>'}
