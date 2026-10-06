@@ -135,6 +135,20 @@ const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv
 const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function deleteUserViaAdminFunction(userId,role){
+  const s=await sb.auth.getSession(),t=s.data?.session?.access_token;
+  if(!t)throw new Error('Admin session missing. Please login again.');
+  const r=await fetch(U+'/functions/v1/admin-delete-user',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+t,'apikey':K},
+    body:JSON.stringify({user_id:String(userId),role:String(role||'').toLowerCase()})
+  });
+  const txt=await r.text();let data={};
+  try{data=txt?JSON.parse(txt):{}}catch{data={error:txt||'Invalid server response'}}
+  if(!r.ok)throw new Error(data.error||data.message||('Delete request failed ('+r.status+').'));
+  return data;
+}
+
 async function api(action,payload={}){
   const s=await sb.auth.getSession(),t=s.data?.session?.access_token;
   if(!t)throw new Error('Admin session missing. Please login again.');
@@ -302,28 +316,8 @@ window.deleteUser=async i=>{
   const u=filteredUsers()[i];if(!u)return;
   if(!confirm('Permanently delete this '+u.role.toUpperCase()+' account? This cannot be undone.'))return;
   try{
-    // Current Supabase installations may contain both the legacy one-argument
-    // RPC and the newer role/profile RPC. Supplying all three named arguments
-    // makes PostgREST select the intended overload unambiguously.
-    let q=await sb.rpc('gc_admin_delete_user',{
-      p_user_id:String(u.user_id),
-      p_role:String(u.role||'').toLowerCase(),
-      p_profile_id:String(u.user_id)
-    });
-    if(q.error){
-      // Compatibility fallback for databases that only have the legacy RPC.
-      const msg=String(q.error.message||'');
-      if(/could not find the function|does not exist|schema cache/i.test(msg)){
-        q=await sb.rpc('gc_admin_delete_user',{p_user_id:String(u.user_id)});
-      }
-    }
-    if(q.error || (!q.data?.deleted && q.data?.ok!==true)){
-      const reason=q.error?.message||'RPC did not confirm deletion';
-      try{
-        const r=await api('delete_user',{user_id:String(u.user_id),role:String(u.role||'').toLowerCase()});
-        if(!r?.deleted && r?.ok!==true)throw new Error(r?.error||reason);
-      }catch(edgeErr){throw new Error(edgeErr.message||reason)}
-    }
+    const r=await deleteUserViaAdminFunction(u.user_id,u.role);
+    if(!r?.deleted && r?.ok!==true)throw new Error(r?.error||'Delete was not confirmed by the server.');
     alert('✓ Account deleted.');
     await loadLiveUsers();
   }catch(e){alert('Delete failed: '+(e.message||e))}
@@ -432,7 +426,18 @@ async function findForEdit(){
 }
 window.openEditFromWorkspace=async id=>{const u=users.find(x=>String(x.user_id)===String(id));if(!u)return;const box=$('workspace-edit-'+id);if(!box)return;const key='w'+String(id).replace(/[^a-zA-Z0-9_-]/g,'');box.innerHTML=editForm(u,key);box.classList.add('open')};
 window.saveWorkspaceUser=async(key,id)=>{const u=users.find(x=>String(x.user_id)===String(id));const st=$('save-status-'+key);if(!u)return;try{st.textContent='Saving complete profile to Supabase…';let p={name:$('e-name-'+key).value.trim(),email:$('e-email-'+key).value.trim().toLowerCase(),phone:$('e-phone-'+key).value.trim(),location:$('e-location-'+key).value.trim()};if(u.role==='student')Object.assign(p,{course:$('e-course-'+key).value.trim(),stream:$('e-stream-'+key).value.trim(),standard:$('e-standard-'+key).value.trim(),subject:$('e-subject-'+key).value.trim(),learning_requirement:$('e-learning-'+key).value.trim(),college:$('e-college-'+key).value.trim(),division:$('e-division-'+key).value.trim(),roll:$('e-roll-'+key).value.trim(),mode:$('e-mode-'+key).value.trim(),about_me:$('e-about-'+key).value.trim()});else Object.assign(p,{qualification:$('e-qualification-'+key).value.trim(),subject:$('e-subject-'+key).value.trim(),stream:$('e-stream-'+key).value.trim(),experience:$('e-experience-'+key).value.trim(),college:$('e-college-'+key).value.trim(),teaching_college:$('e-teachingcollege-'+key).value.trim(),price:$('e-price-'+key).value.trim(),rating:$('e-rating-'+key).value.trim()===''?null:Number($('e-rating-'+key).value),students_taught:$('e-students-'+key).value.trim(),teaching_mode:$('e-mode-'+key).value.trim(),languages:$('e-languages-'+key).value.trim(),address:$('e-address-'+key).value.trim(),about_me:$('e-about-'+key).value.trim(),paid_status:u.paid_status||'PENDING',verified:!!u.verified});const rpc=u.role==='tutor'?'gc_admin_update_tutor_profile':'gc_admin_update_student_profile';const q=await sb.rpc(rpc,{p_user_id:String(u.user_id),p_data:p});if(q.error)throw q.error;st.textContent='✓ Complete profile saved in Supabase.';await loadLiveUsers();await findForEdit()}catch(e){st.textContent='Save failed: '+(e.message||e)}};
-window.deleteFromWorkspace=async(id,role)=>{const u=users.find(x=>String(x.user_id)===String(id));if(!u)return;if(!confirm('Permanently delete this '+String(role).toUpperCase()+' account? This cannot be undone.'))return;try{let q=await sb.rpc('gc_admin_delete_user',{p_user_id:String(id),p_role:String(role),p_profile_id:String(id)});if(q.error&&/could not find the function|does not exist|schema cache/i.test(String(q.error.message||'')))q=await sb.rpc('gc_admin_delete_user',{p_user_id:String(id)});if(q.error)throw q.error;if(!q.data?.deleted&&q.data?.ok!==true)throw new Error('Supabase did not confirm deletion.');alert('✓ Account deleted.');await loadLiveUsers();await findForEdit()}catch(e){alert('Delete failed: '+(e.message||e))}};
+window.deleteFromWorkspace=async(id,role)=>{
+  const u=users.find(x=>String(x.user_id)===String(id));if(!u)return;
+  if(!confirm('Permanently delete this '+String(role).toUpperCase()+' account? This cannot be undone.'))return;
+  try{
+    const r=await deleteUserViaAdminFunction(id,role);
+    if(!r?.deleted && r?.ok!==true)throw new Error(r?.error||'Delete was not confirmed by the server.');
+    alert('✓ Account deleted.');
+    await loadLiveUsers();await findForEdit();
+  }catch(e){alert('Delete failed: '+(e.message||e))}
+};
+$('editFind').onclick=findForEdit;$('editRefresh').onclick=async()=>{await loadLiveUsers();findForEdit()};$('editSearch').addEventListener('keydown',e=>{if(e.key==='Enter')findForEdit()});
+
 $('editFind').onclick=findForEdit;$('editRefresh').onclick=async()=>{await loadLiveUsers();findForEdit()};$('editSearch').addEventListener('keydown',e=>{if(e.key==='Enter')findForEdit()});
 
 function selectCoinMember(u){$('coinUserId').value=String(u.user_id||'');$('coinRole').value=u.role||'student';$('coinStatus').textContent='Selected: '+(u.name||u.user_id);}
@@ -616,8 +621,8 @@ window.editFoundUser=async id=>{
 window.deleteFoundUser=async(id,role)=>{
   if(!confirm('Permanently delete this '+String(role||'USER').toUpperCase()+' account? This cannot be undone.'))return;
   try{
-    let r=await api('delete_user',{user_id:String(id),role:String(role||'').toLowerCase()});
-    if(!r?.deleted && r?.ok!==true) throw new Error(r?.error||'Delete was not confirmed by the server.');
+    const r=await deleteUserViaAdminFunction(id,role);
+    if(!r?.deleted && r?.ok!==true)throw new Error(r?.error||'Delete was not confirmed by the server.');
     alert('✓ Account deleted.');
     $('resetResult').innerHTML='';$('resetSearch').value='';await loadLiveUsers();
   }catch(e){alert('Delete failed: '+(e.message||e))}
