@@ -160,21 +160,37 @@ function normalizeWhatsAppNumber(v){
  if(digits.length===10)digits='91'+digits;
  return digits;
 }
+async function lookupLrrWhatsAppContact(requestId,targetRole){
+ // Fallback for older RPCs that read a legacy phone column. The RPC is still
+ // called first so its connection/acceptance authorization remains authoritative.
+ const rq=await safe(sb.from('gc_learning_requests_v2').select('id,student_id,tutor_id').eq('id',String(requestId)).maybeSingle());
+ if(rq.error)throw rq.error;if(!rq.data)throw new Error('Learning Request was not found.');
+ const targetId=String(targetRole==='tutor'?rq.data.tutor_id||'':rq.data.student_id||'');
+ if(!targetId)throw new Error('The connected '+targetRole+' account could not be identified.');
+ let phone='',name='';
+ const tries=[
+  ()=>sb.from('profiles').select('phone,full_name').eq('id',targetId).maybeSingle(),
+  ()=>sb.from(targetRole==='tutor'?'tutor_profiles':'student_profiles').select('phone,name,user_id').eq('user_id',targetId).maybeSingle(),
+  ()=>sb.from(targetRole==='tutor'?'tutor_profiles':'student_profiles').select('phone,name,user_id').eq('id',targetId).maybeSingle()
+ ];
+ for(const run of tries){try{const x=await safe(run());if(!x.error&&x.data){phone=phone||x.data.phone||'';name=name||x.data.full_name||x.data.name||'';if(phone)break}}catch(_){}}
+ return {phone,name};
+}
 async function openWhatsAppForRequest(requestId,targetRole){
  const popup=window.open('about:blank','_blank');
  try{
   const q=await safe(sb.rpc('gc_get_whatsapp_contact',{p_request_id:requestId,p_target_role:targetRole}));
-  if(q.error)throw q.error;
-  const phone=normalizeWhatsAppNumber(q.data?.phone);
-  if(!phone)throw new Error('WhatsApp number is not available for this user.');
-  const name=String(q.data?.name||(targetRole==='tutor'?'Tutor':'Student'));
+  let contact=q.error?null:q.data;
+  let phone=normalizeWhatsAppNumber(contact?.phone);
+  let name=String(contact?.name||'');
+  if(!phone && q.error && !/no phone|phone number|mobile/i.test(q.error.message||''))throw q.error;
+  if(!phone){const fallback=await lookupLrrWhatsAppContact(requestId,targetRole);phone=normalizeWhatsAppNumber(fallback.phone);name=name||fallback.name||'';}
+  if(!phone)throw new Error('No phone number is saved in the user profile. Please update the registered mobile number in the profile/admin user editor.');
+  name=name||(targetRole==='tutor'?'Tutor':'Student');
   const text=`Hello ${name}, I am contacting you through GURU CONNECT regarding our accepted learning connection.`;
   const url='https://wa.me/'+phone+'?text='+encodeURIComponent(text);
   if(popup&&!popup.closed)popup.location.href=url;else window.location.href=url;
- }catch(e){
-  if(popup&&!popup.closed)popup.close();
-  msg('WhatsApp chat could not be opened: '+(e.message||e));
- }
+ }catch(e){if(popup&&!popup.closed)popup.close();msg('WhatsApp chat could not be opened: '+(e.message||e));}
 }
 
 async function connectionsView(){

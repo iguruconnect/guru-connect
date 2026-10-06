@@ -705,21 +705,33 @@ function normalizeWhatsAppNumber(v){
  if(digits.length===10)digits='91'+digits;
  return digits;
 }
+async function lookupAdminLrrWhatsAppContact(lrrId,who){
+ const rq=await sb.from('gc_learning_requests_v2').select('id,student_id,tutor_id').eq('id',String(lrrId)).maybeSingle();
+ if(rq.error)throw rq.error;if(!rq.data)throw new Error('Learning Request was not found.');
+ const targetId=String(who==='tutor'?rq.data.tutor_id||'':rq.data.student_id||'');
+ if(!targetId)throw new Error('The '+who+' account could not be identified for this request.');
+ let phone='',name='';
+ const tries=[
+  ()=>sb.from('profiles').select('phone,full_name').eq('id',targetId).maybeSingle(),
+  ()=>sb.from(who==='tutor'?'tutor_profiles':'student_profiles').select('phone,name,user_id').eq('user_id',targetId).maybeSingle(),
+  ()=>sb.from(who==='tutor'?'tutor_profiles':'student_profiles').select('phone,name,user_id').eq('id',targetId).maybeSingle()
+ ];
+ for(const run of tries){try{const x=await run();if(!x.error&&x.data){phone=phone||x.data.phone||'';name=name||x.data.full_name||x.data.name||'';if(phone)break}}catch(_){}}
+ return {phone,name};
+}
 window.whatsappCaseChat=async function(lrrId,who){
  const popup=window.open('about:blank','_blank');
  try{
   const q=await sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(lrrId),p_target_role:who});
-  if(q.error)throw q.error;
-  const phone=normalizeWhatsAppNumber(q.data?.phone);
-  if(!phone)throw new Error('WhatsApp number is not available for this '+who+'.');
-  const name=String(q.data?.name||(who==='tutor'?'Tutor':'Student'));
+  let contact=q.error?null:q.data,phone=normalizeWhatsAppNumber(contact?.phone),name=String(contact?.name||'');
+  if(!phone && q.error && !/no phone|phone number|mobile/i.test(q.error.message||''))throw q.error;
+  if(!phone){const fallback=await lookupAdminLrrWhatsAppContact(lrrId,who);phone=normalizeWhatsAppNumber(fallback.phone);name=name||fallback.name||'';}
+  if(!phone)throw new Error('No phone number is saved in the user profile. Please update the registered mobile number in the profile/admin user editor.');
+  name=name||(who==='tutor'?'Tutor':'Student');
   const text=`Hello ${name}, I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.`;
   const url='https://wa.me/'+phone+'?text='+encodeURIComponent(text);
   if(popup&&!popup.closed)popup.location.href=url;else window.location.href=url;
- }catch(e){
-  if(popup&&!popup.closed)popup.close();
-  alert('WhatsApp chat could not be opened: '+(e.message||e));
- }
+ }catch(e){if(popup&&!popup.closed)popup.close();alert('WhatsApp chat could not be opened: '+(e.message||e));}
 };
 
 async function loadLearning(){
