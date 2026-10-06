@@ -7004,7 +7004,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
                             <span class="w-10 h-10 rounded-xl bg-blue-50 text-brand-blue flex items-center justify-center shrink-0"><i class="fa-solid fa-phone"></i></span>
                             <span class="min-w-0"><span class="block text-[10px] font-black uppercase text-slate-500">Phone / WhatsApp</span><span class="block text-xs sm:text-sm font-bold text-slate-800">${escapeHtml(phone)}</span></span>
                         </a>` : ''}
-                        ${(whatsappUrl || (tutor.isDummy === false && tutor.id)) ? `<button type="button" onclick="openTutorWhatsApp('${String(tutor.id).replace(/'/g, "\\'")}')" class="w-full flex items-center gap-3 bg-white border border-emerald-100 rounded-2xl p-3 hover:border-emerald-400 transition text-left" title="Open WhatsApp chat with this Tutor">
+                        ${whatsappUrl ? `<button type="button" onclick="openTutorWhatsApp('${String(tutor.id).replace(/'/g, "\\'")}')" class="w-full flex items-center gap-3 bg-white border border-emerald-100 rounded-2xl p-3 hover:border-emerald-400 transition text-left" title="Open WhatsApp chat with this Tutor">
                             <span class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0"><i class="fa-brands fa-whatsapp text-xl"></i></span>
                             <span class="min-w-0"><span class="block text-[10px] font-black uppercase text-slate-500">WhatsApp</span><span class="block text-xs sm:text-sm font-bold text-emerald-700">Chat with Tutor</span></span>
                         </button>` : ''}
@@ -7078,9 +7078,8 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
             try { closePublicTutorProfile(); } catch (e) {}
 
             let fallbackTimer = setTimeout(function () {
-                // If the app scheme was blocked/not installed, navigate to WhatsApp Web.
-                // Using the current tab avoids popup-blocker restrictions on delayed window.open().
-                window.location.href = webUrl;
+                // If the app scheme was blocked/not installed, the web link opens.
+                window.open(webUrl, '_blank', 'noopener,noreferrer');
             }, 1400);
 
             const cancelFallback = function () {
@@ -7102,7 +7101,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
                 window.location.href = appUrl;
             } catch (e) {
                 cancelFallback();
-                window.location.href = webUrl;
+                window.open(webUrl, '_blank', 'noopener,noreferrer');
             }
         }
 
@@ -10842,8 +10841,6 @@ body {
       id: row.id,
       user_id: row.user_id,
       name: row.name || 'Tutor',
-      email: row.email || '',
-      phone: row.phone || row.mobile || row.mobile_number || '',
       subject: row.subject || '',
       stream: row.stream || '',
       experience: row.experience || '',
