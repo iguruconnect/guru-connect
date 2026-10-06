@@ -1075,4 +1075,83 @@ $('adSave').onclick=async()=>{
 };
 
 staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit()}});
-</script></body></html>
+</script>
+<script id="gc-final-tutor-whatsapp-fix-js">
+(function(){
+  'use strict';
+  function gcNormalizeWA(v){
+    let d=String(v||'').replace(/\D/g,'');
+    if(!d) return '';
+    if(d.startsWith('00')) d=d.slice(2);
+    if(d.length===11 && d.startsWith('0')) d=d.slice(1);
+    if(d.length===10) d='91'+d;
+    return d;
+  }
+  async function gcTutorContact(lrrId){
+    const rq=await sb.from('gc_learning_requests_v2')
+      .select('id,tutor_id')
+      .eq('id',String(lrrId)).maybeSingle();
+    if(rq.error) throw rq.error;
+    if(!rq.data || !rq.data.tutor_id) throw new Error('The tutor account could not be identified for this request.');
+    const id=String(rq.data.tutor_id);
+    let phone='',name='';
+    const tries=[
+      ()=>sb.from('tutor_profiles').select('phone,name,user_id').eq('id',id).maybeSingle(),
+      ()=>sb.from('tutor_profiles').select('phone,name,user_id').eq('user_id',id).maybeSingle(),
+      ()=>sb.from('profiles').select('phone,full_name').eq('id',id).maybeSingle(),
+      ()=>sb.from('profiles').select('phone,full_name').eq('user_id',id).maybeSingle()
+    ];
+    for(const run of tries){
+      try{
+        const x=await run();
+        if(!x.error && x.data){
+          phone=phone||x.data.phone||'';
+          name=name||x.data.name||x.data.full_name||'';
+          if(phone) break;
+        }
+      }catch(_){ }
+    }
+    return {phone:gcNormalizeWA(phone),name:name||'Tutor'};
+  }
+  window.gcOpenTutorWhatsApp=async function(lrrId){
+    try{
+      let phone='',name='';
+      // Do not let a Tutor RPC error block the direct profile lookup.
+      try{
+        const q=await sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(lrrId),p_target_role:'tutor'});
+        if(!q.error && q.data){
+          phone=gcNormalizeWA(q.data.phone);
+          name=String(q.data.name||'');
+        }
+      }catch(_){ }
+      if(!phone){
+        const c=await gcTutorContact(lrrId);
+        phone=c.phone; name=name||c.name;
+      }
+      if(!phone) throw new Error('No WhatsApp number is saved for this tutor. Please update the tutor mobile number in the tutor profile/admin editor.');
+      const msg='Hello '+(name||'Tutor')+', I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.';
+      const url='https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
+      // Direct navigation is intentional: on mobile this lets Android/iOS hand the link to WhatsApp.
+      window.location.href=url;
+    }catch(e){
+      alert('WhatsApp Tutor could not be opened: '+(e.message||e));
+    }
+  };
+  function install(){
+    document.querySelectorAll('.lrrActions .caseChat').forEach(btn=>{
+      const oc=btn.getAttribute('onclick')||'';
+      if(!/whatsappCaseChat\([^,]+,\s*[\'\"]tutor[\'\"]\)/.test(oc)) return;
+      const m=oc.match(/whatsappCaseChat\((['\"])(.*?)\1,\s*(['\"])tutor\3\)/);
+      if(!m) return;
+      btn.setAttribute('onclick','gcOpenTutorWhatsApp('+JSON.stringify(m[2])+')');
+      btn.type='button';
+    });
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',install);
+  else install();
+  setTimeout(install,500);
+  setTimeout(install,1500);
+})();
+</script>
+
+</body></html>
