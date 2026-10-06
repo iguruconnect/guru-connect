@@ -724,6 +724,31 @@ async function loadAdminCaseMessages(){
   }
   host.scrollTop=host.scrollHeight;
 }
+
+function normalizeWhatsAppNumber(v){
+ const raw=String(v??'').trim();
+ let digits=raw.replace(/\D/g,'');
+ if(!digits)return '';
+ if(digits.length===10)digits='91'+digits;
+ return digits;
+}
+window.whatsappCaseChat=async function(lrrId,who){
+ const popup=window.open('about:blank','_blank');
+ try{
+  const q=await sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(lrrId),p_target_role:who});
+  if(q.error)throw q.error;
+  const phone=normalizeWhatsAppNumber(q.data?.phone);
+  if(!phone)throw new Error('WhatsApp number is not available for this '+who+'.');
+  const name=String(q.data?.name||(who==='tutor'?'Tutor':'Student'));
+  const text=`Hello ${name}, I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.`;
+  const url='https://wa.me/'+phone+'?text='+encodeURIComponent(text);
+  if(popup&&!popup.closed)popup.location.href=url;else window.location.href=url;
+ }catch(e){
+  if(popup&&!popup.closed)popup.close();
+  alert('WhatsApp chat could not be opened: '+(e.message||e));
+ }
+};
+
 window.caseChat=async(studentId,tutorId,lrrId,who)=>{
   const uid=who==='tutor'?tutorId:studentId;
   if(!uid)return alert('The selected '+who+' is not linked to this LRR.');
@@ -779,7 +804,7 @@ async function loadLearning(){
         <div class="evidenceBox"><b>Learning deadline</b>${esc(r.learning_deadline||'Not set')}</div>
         <div class="evidenceBox" style="grid-column:1/-1"><b>Admin decision / note</b>${esc(adminNote||'No Admin decision recorded yet.')}</div>
       </div>${canDecide?`<div class="lrrDecision">${satisfied?'✅ Student has confirmed SATISFIED. This is the strongest evidence for releasing the Tutor reward.':'⚠️ Final coin decision is pending. Chat with both parties before releasing/denying if the evidence is incomplete.'}</div>`:''}</div>
-      <div class="lrrActions"><button type="button" class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button type="button" class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button type="button" class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button type="button" class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','tutor')">🪙 TUTOR COINS</button><button type="button" class="btn light" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','student')">🪙 STUDENT COINS</button><button type="button" class="btn caseChat" onclick="caseChat('${esc(student)}','${esc(tutor)}','${esc(id)}','student')">💬 CHAT STUDENT</button><button type="button" class="btn caseChat" onclick="caseChat('${esc(student)}','${esc(tutor)}','${esc(id)}','tutor')">💬 CHAT TUTOR</button>${canDecide?`<button type="button" class="btn green decisionBtn" onclick="lrrDecision('${esc(id)}','APPROVE')">💰 RELEASE TUTOR COINS</button><button type="button" class="btn red decisionBtn" onclick="lrrDecision('${esc(id)}','DENY')">↩ DENY / RETURN COINS</button>`:''}</div></article>`
+      <div class="lrrActions"><button type="button" class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button type="button" class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button type="button" class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button type="button" class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','tutor')">🪙 TUTOR COINS</button><button type="button" class="btn light" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','student')">🪙 STUDENT COINS</button><button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','student')">💬 CHAT STUDENT</button><button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','tutor')">💬 CHAT TUTOR</button>${canDecide?`<button type="button" class="btn green decisionBtn" onclick="lrrDecision('${esc(id)}','APPROVE')">💰 RELEASE TUTOR COINS</button><button type="button" class="btn red decisionBtn" onclick="lrrDecision('${esc(id)}','DENY')">↩ DENY / RETURN COINS</button>`:''}</div></article>`
     }).join(''):'<div class="empty">No Learning Requirement Requests found.</div>';
     lrrLoaded=true
   }catch(e){lrrLoaded=false;$('learningStatus').textContent='LRR load failed: '+(e.message||e);$('learningResults').innerHTML='<div class="empty">Unable to load Learning Requirement Requests.</div>'}
