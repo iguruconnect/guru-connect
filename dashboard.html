@@ -176,15 +176,53 @@ async function lookupLrrWhatsAppContact(requestId,targetRole){
  for(const run of tries){try{const x=await safe(run());if(!x.error&&x.data){phone=phone||x.data.phone||'';name=name||x.data.full_name||x.data.name||'';if(phone)break}}catch(_){}}
  return {phone,name};
 }
+async function getAcceptedLrrConnection(requestId){
+ // IMPORTANT: The WhatsApp button is rendered from gc_learning_request_connections.
+ // Older deployments could have the LRR status and the connection-row status out
+ // of sync. Treat an explicit ACCEPTED connection row as authoritative for the
+ // already-accepted tutor/student pair, then let the contact lookup fetch the
+ // phone number. This prevents the false "accept the request first" error.
+ try{
+  const q=await safe(sb.from('gc_learning_request_connections')
+    .select('id,request_id,student_id,tutor_id,status,created_at')
+    .eq('request_id',String(requestId))
+    .order('created_at',{ascending:false})
+    .limit(20));
+  if(q.error||!Array.isArray(q.data))return null;
+  const me=String(pid());
+  const accepted=(q.data||[]).find(c=>{
+    const st=String(c.status||'').trim().toUpperCase().replace(/[- ]/g,'_');
+    if(st!=='ACCEPTED' && st!=='APPROVED' && st!=='CONNECTED')return false;
+    return String(c.student_id||'')===me || String(c.tutor_id||'')===me;
+  });
+  return accepted||null;
+ }catch(_){return null;}
+}
 async function openWhatsAppForRequest(requestId,targetRole){
  const popup=window.open('about:blank','_blank');
  try{
-  const q=await safe(sb.rpc('gc_get_whatsapp_contact',{p_request_id:requestId,p_target_role:targetRole}));
-  let contact=q.error?null:q.data;
-  let phone=normalizeWhatsAppNumber(contact?.phone);
-  let name=String(contact?.name||'');
-  if(!phone && q.error && !/no phone|phone number|mobile/i.test(q.error.message||''))throw q.error;
-  if(!phone){const fallback=await lookupLrrWhatsAppContact(requestId,targetRole);phone=normalizeWhatsAppNumber(fallback.phone);name=name||fallback.name||'';}
+  let phone='',name='';
+  const acceptedConnection=await getAcceptedLrrConnection(requestId);
+
+  // If the actual connection record is already ACCEPTED, do NOT reject it
+  // merely because an older/alternate RPC still checks the LRR status field.
+  if(acceptedConnection){
+    const fallback=await lookupLrrWhatsAppContact(requestId,targetRole);
+    phone=normalizeWhatsAppNumber(fallback.phone);
+    name=fallback.name||'';
+  }else{
+    const q=await safe(sb.rpc('gc_get_whatsapp_contact',{p_request_id:requestId,p_target_role:targetRole}));
+    let contact=q.error?null:q.data;
+    phone=normalizeWhatsAppNumber(contact?.phone);
+    name=String(contact?.name||'');
+    if(!phone && q.error && !/no phone|phone number|mobile/i.test(q.error.message||''))throw q.error;
+    if(!phone){
+      const fallback=await lookupLrrWhatsAppContact(requestId,targetRole);
+      phone=normalizeWhatsAppNumber(fallback.phone);
+      name=name||fallback.name||'';
+    }
+  }
+
   if(!phone)throw new Error('No phone number is saved in the user profile. Please update the registered mobile number in the profile/admin user editor.');
   name=name||(targetRole==='tutor'?'Tutor':'Student');
   const text=`Hello ${name}, I am contacting you through GURU CONNECT regarding our accepted learning connection.`;
