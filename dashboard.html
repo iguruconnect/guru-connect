@@ -152,133 +152,35 @@ async function completeReq(id){const r=await safe(sb.rpc('gc_tutor_complete_lear
 async function outcomeReq(id,outcome){const r=await safe(sb.rpc('gc_student_learning_request_outcome',{p_request_id:id,p_outcome:outcome}));if(r.error)throw r.error;msg('Student remark submitted. Admin can now review the held coins.','success');await requestsView()}
 
 function normalizeWhatsAppNumber(v){
- const raw=String(v??'').trim();
- let digits=raw.replace(/\D/g,'');
- if(!digits)return '';
- if(digits.startsWith('00'))digits=digits.slice(2);
+ const raw=String(v??'').trim(); let digits=raw.replace(/\D/g,'');
+ if(!digits)return ''; if(digits.startsWith('00'))digits=digits.slice(2);
  if(digits.length===11&&digits.startsWith('0'))digits=digits.slice(1);
  if(digits.length===10)digits='91'+digits;
- return digits;
+ return /^[1-9]\d{10,14}$/.test(digits)?digits:'';
 }
-async function lookupLrrWhatsAppContact(requestId,targetRole){
- // Resolve the connected profile correctly: LR/connection IDs are profile IDs,
- // while the registered mobile number is stored on public.profiles against auth user_id.
+async function resolveLrrParticipant(requestId,targetRole){
  const rq=await safe(sb.from('gc_learning_requests_v2').select('id,student_id,tutor_id').eq('id',String(requestId)).maybeSingle());
  if(rq.error)throw rq.error;if(!rq.data)throw new Error('Learning Request was not found.');
- const targetProfileId=String(targetRole==='tutor'?rq.data.tutor_id||'':rq.data.student_id||'');
- if(!targetProfileId)throw new Error('The connected '+targetRole+' account could not be identified.');
- let phone='',name='',userId='';
- const table=targetRole==='tutor'?'tutor_profiles':'student_profiles';
- // 1) LR stores the member profile id. Read that profile and obtain its auth user_id.
- try{
-  const x=await safe(sb.from(table).select('id,user_id,name,email').eq('id',targetProfileId).maybeSingle());
-  if(!x.error&&x.data){userId=String(x.data.user_id||'');name=x.data.name||'';}
- }catch(_){}
- // 2) Some older rows may already contain auth user_id rather than profile id.
- if(!userId){
-  try{
-   const x=await safe(sb.from(table).select('id,user_id,name,email').eq('user_id',targetProfileId).maybeSingle());
-   if(!x.error&&x.data){userId=String(x.data.user_id||targetProfileId);name=name||x.data.name||'';}
-  }catch(_){}
- }
- // 3) Canonical phone is in public.profiles, keyed by auth user_id.
- if(userId){
-  try{
-   const x=await safe(sb.from('profiles').select('id,full_name,email,phone').eq('id',userId).maybeSingle());
-   if(!x.error&&x.data){phone=x.data.phone||'';name=name||x.data.full_name||'';}
-  }catch(_){}
- }
- // 4) Last-resort legacy phone columns, if present in the member table.
- if(!phone){
-  const cols=['phone','mobile','mobile_number','phone_number','whatsapp','whatsapp_number'];
-  for(const col of cols){
-   try{
-    const x=await safe(sb.from(table).select('name,'+col).eq('id',targetProfileId).maybeSingle());
-    if(!x.error&&x.data){phone=x.data[col]||'';name=name||x.data.name||'';if(phone)break;}
-   }catch(_){}
-  }
- }
- return {phone,name};
+ const rawId=String(targetRole==='tutor'?rq.data.tutor_id||'':rq.data.student_id||'').trim();
+ if(!rawId)throw new Error('The connected '+targetRole+' account could not be identified.');
+ const table=targetRole==='tutor'?'tutor_profiles':'student_profiles'; let userId=rawId,name='';
+ try{const rp=await safe(sb.from(table).select('id,user_id,name,full_name').eq('id',rawId).maybeSingle());if(!rp.error&&rp.data){userId=String(rp.data.user_id||rawId);name=String(rp.data.name||rp.data.full_name||'');}}catch(_){}
+ try{const pr=await safe(sb.from('profiles').select('id,phone,full_name').eq('id',userId).maybeSingle());if(!pr.error&&pr.data)return {userId,phone:normalizeWhatsAppNumber(pr.data.phone),name:name||String(pr.data.full_name||'')};}catch(_){}
+ try{const rp=await safe(sb.from(table).select('*').eq('user_id',userId).maybeSingle());if(!rp.error&&rp.data){const k=Object.keys(rp.data).find(x=>/(phone|mobile|whatsapp|contact)/i.test(x)&&rp.data[x]!=null&&String(rp.data[x]).trim());return {userId,phone:normalizeWhatsAppNumber(k?rp.data[k]:''),name:name||String(rp.data.name||rp.data.full_name||'')};}}catch(_){}
+ return {userId,phone:'',name};
 }
+async function lookupLrrWhatsAppContact(requestId,targetRole){return resolveLrrParticipant(requestId,targetRole);}
 async function openWhatsAppForRequest(requestId,targetRole){
  const popup=window.open('about:blank','_blank');
  try{
-  /* IMPORTANT: WhatsApp must use the SAME accepted connection shown on this
-     dashboard. Do not rely on the LR status or the gc_get_whatsapp_contact RPC,
-     because one Student can have multiple LRs/connections. */
-  const cq=await safe(sb.from('gc_learning_request_connections')
-    .select('id,request_id,student_id,tutor_id,status,created_at')
-    .eq('request_id',String(requestId))
-    .order('created_at',{ascending:false})
-    .limit(20));
-  if(cq.error)throw cq.error;
-
-  const myProfileId=pid();
-  const accepted=(cq.data||[]).find(c=>
-    String(c.status||'').toUpperCase()==='ACCEPTED' &&
-    (targetRole==='tutor'
-      ? String(c.student_id)===myProfileId
-      : String(c.tutor_id)===myProfileId)
-  );
-
-  if(!accepted){
-    throw new Error('WhatsApp chat is available only after the connection is accepted');
-  }
-
-  const targetProfileId=String(targetRole==='tutor'?accepted.tutor_id:accepted.student_id||'');
-  if(!targetProfileId)throw new Error('The connected '+targetRole+' account could not be identified.');
-
-  let phone='',name='',userId='';
-  const table=targetRole==='tutor'?'tutor_profiles':'student_profiles';
-
-  // First resolve the member profile -> Supabase Auth user_id.
-  try{
-    const x=await safe(sb.from(table).select('id,user_id,name,email,phone,mobile,mobile_number,phone_number,whatsapp,whatsapp_number').eq('id',targetProfileId).maybeSingle());
-    if(!x.error&&x.data){
-      userId=String(x.data.user_id||'');
-      name=x.data.name||x.data.full_name||'';
-      phone=x.data.phone||x.data.mobile||x.data.mobile_number||x.data.phone_number||x.data.whatsapp||x.data.whatsapp_number||'';
-    }
-  }catch(_){}
-
-  // Legacy case: the connection may contain the Auth user_id directly.
-  if(!userId || !phone){
-    try{
-      const x=await safe(sb.from(table).select('id,user_id,name,email,phone,mobile,mobile_number,phone_number,whatsapp,whatsapp_number').eq('user_id',targetProfileId).maybeSingle());
-      if(!x.error&&x.data){
-        userId=String(x.data.user_id||targetProfileId);
-        name=name||x.data.name||x.data.full_name||'';
-        phone=phone||x.data.phone||x.data.mobile||x.data.mobile_number||x.data.phone_number||x.data.whatsapp||x.data.whatsapp_number||'';
-      }
-    }catch(_){}
-  }
-
-  // Canonical registered mobile: public.profiles is keyed by Auth user_id.
-  if(userId || targetProfileId){
-    for(const uid of [userId,targetProfileId].filter(Boolean)){
-      try{
-        const x=await safe(sb.from('profiles').select('id,user_id,full_name,name,email,phone,mobile,mobile_number,phone_number,whatsapp,whatsapp_number').eq('id',uid).maybeSingle());
-        if(!x.error&&x.data){
-          phone=phone||x.data.phone||x.data.mobile||x.data.mobile_number||x.data.phone_number||x.data.whatsapp||x.data.whatsapp_number||'';
-          name=name||x.data.full_name||x.data.name||'';
-          if(phone)break;
-        }
-      }catch(_){}
-    }
-  }
-
-  if(!phone)throw new Error('No phone number is saved in the connected '+targetRole+' profile.');
-  phone=normalizeWhatsAppNumber(phone);
-  if(!phone)throw new Error('The connected '+targetRole+' profile has an invalid mobile number.');
-
+  const q=await safe(sb.rpc('gc_get_whatsapp_contact',{p_request_id:requestId,p_target_role:targetRole}));
+  let contact=q.error?null:q.data,phone=normalizeWhatsAppNumber(contact?.phone),name=String(contact?.name||'');
+  if(!phone){const fallback=await resolveLrrParticipant(requestId,targetRole);phone=normalizeWhatsAppNumber(fallback.phone);name=name||fallback.name||'';}
+  if(!phone)throw new Error('No WhatsApp number is saved for this connected user. Please update the registered Phone / WhatsApp number in the user profile.');
   name=name||(targetRole==='tutor'?'Tutor':'Student');
-  const text=`Hello ${name}, I am contacting you through GURU CONNECT regarding our accepted learning connection.`;
-  const url='https://wa.me/'+phone+'?text='+encodeURIComponent(text);
-  if(popup&&!popup.closed)popup.location.href=url;else window.location.href=url;
- }catch(e){
-  if(popup&&!popup.closed)popup.close();
-  msg('WhatsApp chat could not be opened: '+(e.message||e));
- }
+  const url='https://wa.me/'+phone+'?text='+encodeURIComponent(`Hello ${name}, I am contacting you through GURU CONNECT regarding our accepted learning connection.`);
+  if(popup&&!popup.closed)popup.location.href=url;else window.location.assign(url);
+ }catch(e){if(popup&&!popup.closed)popup.close();throw e;}
 }
 
 async function connectionsView(){

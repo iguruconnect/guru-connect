@@ -920,40 +920,34 @@ window.lrrDecision=async(id,decision)=>{
 };
 
 function normalizeWhatsAppNumber(v){
- const raw=String(v??'').trim();
- let digits=raw.replace(/\D/g,'');
- if(!digits)return '';
- if(digits.startsWith('00'))digits=digits.slice(2);
+ const raw=String(v??'').trim(); let digits=raw.replace(/\D/g,'');
+ if(!digits)return ''; if(digits.startsWith('00'))digits=digits.slice(2);
  if(digits.length===11&&digits.startsWith('0'))digits=digits.slice(1);
  if(digits.length===10)digits='91'+digits;
- return digits;
+ return /^[1-9]\d{10,14}$/.test(digits)?digits:'';
 }
-async function lookupAdminLrrWhatsAppContact(lrrId,who){
+async function resolveAdminLrrParticipant(lrrId,who){
  const rq=await sb.from('gc_learning_requests_v2').select('id,student_id,tutor_id').eq('id',String(lrrId)).maybeSingle();
  if(rq.error)throw rq.error;if(!rq.data)throw new Error('Learning Request was not found.');
- const targetId=String(who==='tutor'?rq.data.tutor_id||'':rq.data.student_id||'');
- if(!targetId)throw new Error('The '+who+' account could not be identified for this request.');
- let phone='',name='';
- const tries=[
-  ()=>sb.from('profiles').select('phone,full_name').eq('id',targetId).maybeSingle(),
-  ()=>sb.from(who==='tutor'?'tutor_profiles':'student_profiles').select('phone,name,user_id').eq('user_id',targetId).maybeSingle(),
-  ()=>sb.from(who==='tutor'?'tutor_profiles':'student_profiles').select('phone,name,user_id').eq('id',targetId).maybeSingle()
- ];
- for(const run of tries){try{const x=await run();if(!x.error&&x.data){phone=phone||x.data.phone||'';name=name||x.data.full_name||x.data.name||'';if(phone)break}}catch(_){}}
- return {phone,name};
+ const rawId=String(who==='tutor'?rq.data.tutor_id||'':rq.data.student_id||'').trim();
+ if(!rawId)throw new Error('The '+who+' account could not be identified for this request.');
+ const table=who==='tutor'?'tutor_profiles':'student_profiles'; let userId=rawId,name='';
+ try{const rp=await sb.from(table).select('id,user_id,name,full_name').eq('id',rawId).maybeSingle();if(!rp.error&&rp.data){userId=String(rp.data.user_id||rawId);name=String(rp.data.name||rp.data.full_name||'');}}catch(_){}
+ try{const pr=await sb.from('profiles').select('id,phone,full_name').eq('id',userId).maybeSingle();if(!pr.error&&pr.data)return {phone:normalizeWhatsAppNumber(pr.data.phone),name:name||String(pr.data.full_name||'')};}catch(_){}
+ try{const rp=await sb.from(table).select('*').eq('user_id',userId).maybeSingle();if(!rp.error&&rp.data){const k=Object.keys(rp.data).find(x=>/(phone|mobile|whatsapp|contact)/i.test(x)&&rp.data[x]!=null&&String(rp.data[x]).trim());return {phone:normalizeWhatsAppNumber(k?rp.data[k]:''),name:name||String(rp.data.name||rp.data.full_name||'')};}}catch(_){}
+ return {phone:'',name};
 }
+async function lookupAdminLrrWhatsAppContact(lrrId,who){return resolveAdminLrrParticipant(lrrId,who);}
 window.whatsappCaseChat=async function(lrrId,who){
  const popup=window.open('about:blank','_blank');
  try{
   const q=await sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(lrrId),p_target_role:who});
   let contact=q.error?null:q.data,phone=normalizeWhatsAppNumber(contact?.phone),name=String(contact?.name||'');
-  if(!phone && q.error && !/no phone|phone number|mobile/i.test(q.error.message||''))throw q.error;
-  if(!phone){const fallback=await lookupAdminLrrWhatsAppContact(lrrId,who);phone=normalizeWhatsAppNumber(fallback.phone);name=name||fallback.name||'';}
-  if(!phone)throw new Error('No phone number is saved in the user profile. Please update the registered mobile number in the profile/admin user editor.');
+  if(!phone){const fallback=await resolveAdminLrrParticipant(lrrId,who);phone=normalizeWhatsAppNumber(fallback.phone);name=name||fallback.name||'';}
+  if(!phone)throw new Error('No WhatsApp number is saved for this connected user. Please update the registered Phone / WhatsApp number in the user profile.');
   name=name||(who==='tutor'?'Tutor':'Student');
-  const text=`Hello ${name}, I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.`;
-  const url='https://wa.me/'+phone+'?text='+encodeURIComponent(text);
-  if(popup&&!popup.closed)popup.location.href=url;else window.location.href=url;
+  const url='https://wa.me/'+phone+'?text='+encodeURIComponent(`Hello ${name}, I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.`);
+  if(popup&&!popup.closed)popup.location.href=url;else window.location.assign(url);
  }catch(e){if(popup&&!popup.closed)popup.close();alert('WhatsApp chat could not be opened: '+(e.message||e));}
 };
 
