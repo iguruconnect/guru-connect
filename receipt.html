@@ -103,15 +103,15 @@
     <tbody id="items">
       <tr>
         <td>1</td>
-        <td>—</td>
-        <td class="amount">₹ 0.00</td>
+        <td>Flyer Adv 1 month in Student's Directory</td>
+        <td class="amount">₹ 500.00</td>
       </tr>
     </tbody>
   </table>
 
   <div class="total">
     <div class="total-label">TOTAL AMOUNT</div>
-    <div class="total-value" id="total">₹ 0.00</div>
+    <div class="total-value" id="total">₹ 500.00</div>
   </div>
 
   <section class="support">
@@ -136,50 +136,23 @@
     if (el && v !== null && v !== '') el.textContent = v;
     else if (el && fallback !== undefined) el.textContent = fallback;
   };
-
   set('receiptNo','receipt','GC-2026-0516309');
-  set('date','date',new Date().toISOString().slice(0,10));
-  set('name','name','GURU CONNECT');
-  set('category','category','Customer');
+  set('date','date','2026-10-04');
+  set('name','name','ICA');
+  set('category','category','Institution');
   set('phone','phone','—');
   set('reference','reference','—');
 
-  const money = value => {
-    const n = Number(String(value ?? '').replace(/[^0-9.\-]/g,''));
-    return Number.isFinite(n) ? n : 0;
-  };
-  const formatMoney = value => money(value).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
-  const escText = value => String(value ?? '').trim();
-
-  // Admin sends the complete service list as JSON. Render every line instead of
-  // using the old hard-coded advertisement description.
-  let services = [];
-  try {
-    const raw = p.get('services');
-    if(raw) {
-      const parsed = JSON.parse(raw);
-      if(Array.isArray(parsed)) services = parsed.filter(x => x && escText(x.name));
-    }
-  } catch(e) {
-    console.warn('GURU CONNECT receipt: invalid services parameter', e);
+  const service = p.get('service');
+  const amount = p.get('amount');
+  const row = document.querySelector('#items tr');
+  if(service) row.children[1].textContent = service;
+  if(amount){
+    const n = Number(String(amount).replace(/[^0-9.]/g,''));
+    const formatted = isNaN(n) ? amount : n.toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
+    row.children[2].textContent = '₹ ' + formatted;
+    document.getElementById('total').textContent = '₹ ' + formatted;
   }
-
-  // Backward compatibility for older receipt links that passed one service/amount.
-  if(!services.length && p.get('service')) {
-    services = [{name:escText(p.get('service')),amount:money(p.get('amount'))}];
-  }
-
-  const tbody = document.getElementById('items');
-  if(tbody && services.length) {
-    tbody.innerHTML = services.map((item,i)=>`<tr><td>${i+1}</td><td>${escText(item.name).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}</td><td class="amount">₹ ${formatMoney(item.amount)}</td></tr>`).join('');
-  }
-
-  const suppliedTotal = p.get('total');
-  const total = suppliedTotal !== null && suppliedTotal !== ''
-    ? money(suppliedTotal)
-    : services.reduce((sum,item)=>sum+money(item.amount),0);
-  const totalEl = document.getElementById('total');
-  if(totalEl) totalEl.textContent = '₹ ' + formatMoney(total);
 })();
 </script>
 </body>
