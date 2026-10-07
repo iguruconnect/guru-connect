@@ -201,7 +201,7 @@ function card(r){
   box('🎯','TOPIC',r.topic||'—')+box('⏳','DEADLINE',fmt(r.learning_deadline||r.deadline))+
   box('🪙','REWARD',Number(r.coins_held||100)+' GURU COINS')+box('🕒','POSTED',fmt(r.created_at))+
   '</div><div class="need"><b>📝 LEARNING REQUIREMENT</b>'+esc(r.issue||r.problem||'Student has not added a detailed issue.')+'</div>'+
-  '<div class="actions"><button class="more" data-id="'+esc(r.id||'')+'">VIEW DETAILS</button><button class="connect" data-connect="1">🤝 CONNECT</button></div></article>';
+  '<div class="actions"><button class="more" data-id="'+esc(r.id||'')+'">VIEW DETAILS</button><button class="connect" data-connect="'+esc(r.id||'')+'">🤝 CONNECT</button></div></article>';
 }
 function box(i,b,v){return '<div class="box"><span class="ico">'+i+'</span><div><b>'+b+'</b><span title="'+esc(v)+'">'+esc(v)+'</span></div></div>'}
 function render(){
