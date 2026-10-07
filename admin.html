@@ -1,0 +1,1173 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GURU CONNECT — Admin Control Center</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f8fc;color:#0f172a;font-family:Inter,Arial,sans-serif}.head{background:linear-gradient(135deg,#08265c,#155eef 58%,#0891b2);color:#fff;padding:20px}.headin{width:min(1280px,94vw);margin:auto;display:flex;justify-content:space-between;align-items:center;gap:16px}h1{margin:0;font-size:clamp(21px,3vw,32px)}.head p{margin:5px 0 0;color:#dbeafe;font-size:12px;font-weight:700}.wrap{width:min(1280px,94vw);margin:22px auto 60px}.gate,.panel{background:#fff;border:1px solid #dbe3ef;border-radius:20px;box-shadow:0 12px 38px rgba(15,23,42,.07)}.gate{padding:22px;font-weight:800}.notice{padding:13px 16px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;font-size:12px;font-weight:800;margin-bottom:16px}.controlbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}.topbtn{border:1px solid #d7e0ed;background:#fff;color:#12315b;border-radius:15px;padding:15px 12px;text-align:left;font-weight:950;cursor:pointer;box-shadow:0 5px 16px rgba(15,23,42,.05);transition:.15s}.topbtn:hover,.topbtn.active{border-color:#155eef;background:#eff6ff;transform:translateY(-1px)}.topbtn small{display:block;color:#64748b;font-size:10px;font-weight:750;margin-top:4px}.section{display:none;background:#fff;border:1px solid #dbe3ef;border-radius:20px;box-shadow:0 12px 38px rgba(15,23,42,.07);overflow:hidden;margin-bottom:16px}.section.open{display:block}.secHead{padding:18px 20px;border-bottom:1px solid #e5eaf1;background:linear-gradient(135deg,#f8fbff,#fff);display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap}.secHead h2{margin:0;font-size:20px}.secHead p{margin:5px 0 0;color:#64748b;font-size:12px;font-weight:700}.secBody{padding:20px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field label{display:block;font-size:10px;font-weight:950;color:#475569;text-transform:uppercase;margin:0 0 6px}.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:11px;font:700 13px Inter,Arial;outline:0;background:#fff}.field textarea{min-height:80px;resize:vertical}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.btn{border:0;border-radius:11px;padding:11px 14px;font-weight:950;cursor:pointer}.btn:disabled{opacity:.6;cursor:not-allowed}.primary{background:#155eef;color:#fff}.green{background:#059669;color:#fff}.orange{background:#ea580c;color:#fff}.purple{background:#7c3aed;color:#fff}.red{background:#dc2626;color:#fff}.light{background:#eef2f7;color:#334155}.teal{background:#0f766e;color:#fff}.status{margin-top:10px;font-size:12px;font-weight:800;color:#64748b;white-space:pre-wrap}.finder{border:2px solid #155eef}.searchrow{display:grid;grid-template-columns:1fr 210px auto auto;gap:10px;align-items:end}.results{margin-top:15px}.user{border:1px solid #dbe3ef;border-radius:17px;padding:15px;margin-top:11px;background:#fbfdff}.userHead{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.identity b{font-size:16px}.badge{display:inline-block;margin-left:7px;padding:4px 8px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:9px;font-weight:950}.muted{color:#64748b;font-size:11px;line-height:1.65;margin-top:5px}.edit{display:none;margin-top:14px;padding-top:14px;border-top:1px solid #e2e8f0}.edit.open{display:block}.editTitle{font-size:11px;font-weight:950;color:#155eef;margin-bottom:10px;text-transform:uppercase}.empty{padding:20px;border:1px dashed #cbd5e1;border-radius:14px;color:#64748b;font-weight:800;text-align:center}.pill{padding:6px 9px;border-radius:999px;background:#ecfdf5;color:#047857;font-size:10px;font-weight:950}.dangerNote{background:#fff1f2;border:1px solid #fecdd3;color:#9f1239;border-radius:13px;padding:12px;font-size:11px;font-weight:750;line-height:1.55}@media(max-width:900px){.controlbar{grid-template-columns:repeat(2,minmax(0,1fr))}.searchrow{grid-template-columns:1fr 1fr}.searchrow .wide{grid-column:1/-1}}@media(max-width:650px){.controlbar{grid-template-columns:1fr}.grid,.searchrow{grid-template-columns:1fr}.userHead{flex-direction:column}.userHead .actions,.userHead .actions .btn{width:100%}.headin{align-items:flex-start;flex-direction:column}}
+
+/* ADMIN V2 UX: stable sticky tabs, no section flicker, compact action controls */
+.controlbar{position:sticky;top:0;z-index:500;display:flex;gap:8px;overflow-x:auto;padding:10px;background:rgba(245,248,252,.96);backdrop-filter:blur(10px);border-bottom:1px solid #dbe3ef;scrollbar-width:thin;margin:0 0 16px}
+.topbtn{flex:0 0 auto;min-width:150px;padding:12px 13px;text-align:center;border-radius:12px;white-space:nowrap}
+.topbtn small{white-space:normal}
+.topbtn.priority{min-width:175px}
+.section{animation:none!important;transition:none!important}
+.section.open{display:block}
+.lrrGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.lrrMeta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:10px}
+.metaBox{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:8px;font-size:11px}
+.metaBox b{display:block;color:#64748b;font-size:9px;text-transform:uppercase;margin-bottom:3px}
+.lrrActions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px;padding-top:12px;border-top:1px solid #e2e8f0}
+.lrrActions .btn{font-size:11px;padding:9px 11px}
+.caseChat{background:#0ea5e9;color:#fff}
+.lrrEvidence{margin-top:14px;border:1px solid #dbeafe;border-radius:14px;background:#f8fbff;padding:12px}.lrrEvidenceTitle{font-size:11px;font-weight:950;color:#123b8f;text-transform:uppercase;margin-bottom:9px}.evidenceGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.evidenceBox{background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:9px;font-size:11px;line-height:1.5}.evidenceBox b{display:block;color:#64748b;font-size:9px;text-transform:uppercase;margin-bottom:3px}.evidenceGood{color:#047857;font-weight:900}.evidenceWarn{color:#b45309;font-weight:900}.evidenceBad{color:#b91c1c;font-weight:900}.lrrDecision{margin-top:10px;padding:10px;border-radius:11px;background:#fff7ed;border:1px solid #fed7aa;font-size:10px;font-weight:800;color:#9a3412}.lrrActions .decisionBtn{font-size:11px;padding:9px 11px}
+@media(max-width:800px){.evidenceGrid{grid-template-columns:1fr}}
+
+
+.historyRow{display:grid;grid-template-columns:140px 1fr 100px 180px;gap:10px;align-items:center;border:1px solid #e2e8f0;border-radius:12px;padding:11px;margin-top:8px;background:#fff;font-size:11px}
+.historyRow .amount{font-weight:950}
+.historyRow.add .amount{color:#047857}.historyRow.sub .amount{color:#b91c1c}
+.quickSearch{display:grid;grid-template-columns:1fr auto;gap:9px;margin-bottom:12px}
+.quickSearch input{width:100%;padding:12px;border:2px solid #155eef;border-radius:12px;font-weight:700}
+@media(max-width:800px){.lrrGrid,.lrrMeta{grid-template-columns:1fr}.historyRow{grid-template-columns:1fr 1fr}.controlbar{padding:8px}}
+.lrrMeta .metaBox b{color:#1e3a8a}.lrrMeta .metaBox:first-child,.lrrMeta .metaBox:nth-child(2){background:#eff6ff;border-color:#bfdbfe;font-size:13px;font-weight:950}.lrrMeta .metaBox:first-child b,.lrrMeta .metaBox:nth-child(2) b{font-size:9px}.lrrMeta .metaBox:first-child,.lrrMeta .metaBox:nth-child(2){line-height:1.45}
+</style><style id="gc-admin-connection-fix">#gcDetailsModal button{cursor:pointer}@media(max-width:650px){#gcDetailsModal>div{padding:14px!important}#gcDetailsModal .btn{min-height:42px}.actions{flex-wrap:wrap}}
+.lrrControlNote{padding:12px 14px;border:1px solid #bfdbfe;background:#eff6ff;color:#1e3a8a;border-radius:12px;font-size:11px;font-weight:800;margin-bottom:12px}.lrrActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #e2e8f0}.lrrActions .btn{min-height:40px}.receiptServiceBox{margin-top:16px;border:1px solid #dbe4f0;border-radius:16px;padding:16px;background:#f8fafc}.receiptServiceHead{display:flex;justify-content:space-between;gap:12px;align-items:center}.receiptServiceHead h3{margin:0;color:#123b8f}.receiptServiceHead p{margin:4px 0 0;color:#64748b;font-size:11px}.receiptServiceAdd{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:12px;margin-top:14px}.receiptServices{display:grid;gap:8px;margin-top:12px}.receiptServiceRow{display:grid;grid-template-columns:minmax(0,1fr) 160px 90px;gap:10px;align-items:end;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px}.receiptServiceRow .field{margin:0}.receiptServiceRow input{background:#fff}.receiptTotal{display:flex;justify-content:space-between;align-items:center;border-top:2px solid #cbd5e1;margin-top:14px;padding-top:14px;font-size:13px;font-weight:950}.receiptTotal strong{font-size:20px;color:#123b8f}.receiptRemove{min-height:40px}@media(max-width:650px){.receiptServiceAdd,.receiptServiceRow{grid-template-columns:1fr}.receiptServiceHead{align-items:flex-start;flex-direction:column}.receiptServiceHead .btn{width:100%}}
+</style>
+<style id="gc-admin-tabs-4x2-final">
+/* GURU CONNECT — preserve every existing admin section; change ONLY tab layout */
+.controlbar{
+  display:grid !important;
+  grid-template-columns:repeat(4,minmax(0,1fr)) !important;
+  grid-auto-flow:row !important;
+  gap:10px !important;
+  width:100% !important;
+  overflow:visible !important;
+}
+.controlbar .topbtn{
+  width:100% !important;
+  min-width:0 !important;
+  min-height:72px !important;
+  white-space:normal !important;
+  overflow:hidden !important;
+  text-align:center !important;
+}
+.controlbar .topbtn b,
+.controlbar .topbtn small{
+  display:block !important;
+  overflow-wrap:anywhere !important;
+}
+@media(max-width:900px){
+  .controlbar{
+    grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  }
+}
+@media(max-width:600px){
+  .controlbar{
+    grid-template-columns:1fr !important;
+  }
+}
+
+/* GURU CONNECT ACCOUNT CONTROL CENTER */
+.gcAcctOverlay{position:fixed;inset:0;z-index:100000;background:rgba(15,23,42,.68);display:none;align-items:center;justify-content:center;padding:16px}
+.gcAcctOverlay.open{display:flex}
+.gcAcctCard{width:min(1120px,97vw);max-height:94vh;overflow:auto;background:#fff;border-radius:22px;box-shadow:0 35px 110px rgba(0,0,0,.35)}
+.gcAcctHead{padding:18px 20px;background:linear-gradient(135deg,#08265c,#155eef 58%,#0891b2);color:#fff;position:sticky;top:0;z-index:3}
+.gcAcctHeadTop{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}
+.gcAcctHead h2{margin:0;font-size:22px}.gcAcctHead p{margin:5px 0 0;font-size:11px;opacity:.9}
+.gcAcctClose{border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:10px;padding:9px 12px;font-weight:950;cursor:pointer}
+.gcAcctTabs{display:flex;gap:7px;overflow:auto;padding:10px 14px;background:#f8fafc;border-bottom:1px solid #e2e8f0;position:sticky;top:82px;z-index:2}
+.gcAcctTab{border:1px solid #d7e0ed;background:#fff;color:#12315b;border-radius:11px;padding:9px 12px;font-weight:900;white-space:nowrap;cursor:pointer}
+.gcAcctTab.active{background:#eff6ff;border-color:#155eef;color:#155eef}
+.gcAcctPane{display:none;padding:18px}.gcAcctPane.open{display:block}
+.gcAcctGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.gcStat{border:1px solid #e2e8f0;border-radius:14px;padding:12px;background:#fff}.gcStat b{display:block;font-size:9px;text-transform:uppercase;color:#64748b;margin-bottom:5px}.gcStat strong{font-size:15px}
+.gcGreen{color:#047857}.gcBlue{color:#2563eb}.gcRed{color:#b91c1c}.gcOrange{color:#b45309}
+.gcTableWrap{overflow:auto;border:1px solid #e2e8f0;border-radius:14px;margin-top:12px}
+.gcTable{width:100%;border-collapse:collapse;min-width:760px}.gcTable th,.gcTable td{padding:9px 10px;border-bottom:1px solid #e2e8f0;text-align:left;font-size:11px;vertical-align:top}.gcTable th{background:#f8fafc;color:#475569;font-size:9px;text-transform:uppercase}
+.gcDoc{display:grid;grid-template-columns:1fr 130px 130px;gap:10px;align-items:center;border:1px solid #e2e8f0;border-radius:12px;padding:11px;margin-top:8px;background:#fff}
+.gcDocName{font-weight:900}.gcDocMeta{font-size:10px;color:#64748b;margin-top:3px}
+.gcCheck{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:900}.gcCheck input{width:17px;height:17px}
+.gcBox{border:1px solid #dbe3ef;border-radius:15px;padding:14px;background:#fbfdff;margin-top:12px}
+.gcBox h3{margin:0 0 9px;font-size:13px;color:#123b8f}.gcHint{font-size:10px;color:#64748b;line-height:1.55}
+.gcFormGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.gcMiniActions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}
+.gcPaymentRow{display:grid;grid-template-columns:120px 100px 120px 1fr 130px 90px;gap:8px;align-items:start}
+.gcBadge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:9px;font-weight:950}.gcBadge.green{background:#dcfce7;color:#166534}.gcBadge.blue{background:#dbeafe;color:#1d4ed8}.gcBadge.red{background:#fee2e2;color:#991b1b}.gcBadge.orange{background:#ffedd5;color:#9a3412}
+.gcAccountNotice{padding:11px 13px;border-radius:12px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;font-size:10px;font-weight:800;line-height:1.55}
+.gcPrivacy{padding:11px 13px;border-radius:12px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;font-size:10px;font-weight:800;line-height:1.55;margin-top:10px}
+@media(max-width:800px){.gcAcctGrid,.gcFormGrid{grid-template-columns:1fr}.gcDoc{grid-template-columns:1fr}.gcAcctTabs{top:86px}.gcPaymentRow{grid-template-columns:1fr 1fr}}
+</style>
+
+<style id="gc-account-ledger-actions-v2">
+.gcRowActions{display:flex;gap:6px;flex-wrap:wrap;min-width:145px}.gcRowActions .btn{padding:7px 9px;font-size:10px}.gcTableWrap{overflow:auto;max-width:100%}.gcTable{min-width:980px}.gcTable td,.gcTable th{vertical-align:top}.gcAcctCard{max-width:98vw!important;width:1500px!important}.gcAcctPane{overflow:auto}.gcBox{overflow:hidden}
+</style>
+
+<!-- GURU CONNECT — MOBILE ADMIN TABS + WHATSAPP FINAL FIX -->
+<style id="gc-admin-mobile-interaction-fix">
+  /* Keep the existing desktop design. On phones make the admin section tabs a
+     genuine touch-scrolling strip so no tab is hidden or trapped by layout. */
+  @media (max-width: 600px){
+    .controlbar{
+      display:flex !important;
+      flex-wrap:nowrap !important;
+      align-items:stretch !important;
+      justify-content:flex-start !important;
+      gap:8px !important;
+      width:100% !important;
+      max-width:100% !important;
+      overflow-x:auto !important;
+      overflow-y:hidden !important;
+      -webkit-overflow-scrolling:touch !important;
+      overscroll-behavior-x:contain !important;
+      touch-action:pan-x !important;
+      scrollbar-width:thin !important;
+      padding:8px 6px 10px !important;
+      position:sticky !important;
+      top:0 !important;
+      z-index:5000 !important;
+    }
+    .controlbar .topbtn,
+    .controlbar .topbtn.priority{
+      flex:0 0 auto !important;
+      width:auto !important;
+      min-width:156px !important;
+      max-width:190px !important;
+      min-height:72px !important;
+      margin:0 !important;
+      cursor:pointer !important;
+      touch-action:manipulation !important;
+      -webkit-tap-highlight-color:rgba(21,94,239,.14) !important;
+      user-select:none !important;
+    }
+    .controlbar .topbtn b,
+    .controlbar .topbtn small{
+      pointer-events:none !important;
+    }
+    .controlbar .topbtn.active{
+      position:relative !important;
+      z-index:2 !important;
+    }
+  }
+
+  /* Never allow an action button to be accidentally treated as a form submit. */
+  .controlbar .topbtn,
+  .lrrActions .caseChat,
+  .lrrActions .btn{type:button;}
+
+  /* Mobile WhatsApp buttons need a large, direct touch target. */
+  @media (max-width: 600px){
+    .lrrActions .caseChat,
+    .user .caseChat{
+      min-height:44px !important;
+      min-width:145px !important;
+      padding:10px 13px !important;
+      touch-action:manipulation !important;
+      -webkit-tap-highlight-color:rgba(16,185,129,.18) !important;
+    }
+  }
+</style>
+<script id="gc-admin-mobile-interaction-fix-js">
+(function(){
+  'use strict';
+
+  function isMobileDevice(){
+    return window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
+  }
+
+  function mobileWhatsAppUrl(phone, message){
+    return 'https://wa.me/' + phone + '?text=' + encodeURIComponent(message);
+  }
+
+  function normalisePhone(value){
+    let digits=String(value==null?'':value).replace(/\D/g,'');
+    if(!digits) return '';
+    if(digits.indexOf('00')===0) digits=digits.slice(2);
+    if(digits.length===11 && digits.charAt(0)==='0') digits=digits.slice(1);
+    if(digits.length===10) digits='91'+digits;
+    return digits;
+  }
+
+  /*
+   * Replace only the navigation interaction layer. The original switchSection()
+   * remains responsible for loading LRR / Coin History data.
+   */
+  function installMobileTabs(){
+    if(typeof window.switchSection!=='function' || window.switchSection.__gcMobileFixed) return;
+    const originalSwitch=window.switchSection;
+
+    function safeSwitch(name){
+      if(!name) return;
+      /* The original function returns early when the same section is already
+         selected. On mobile we still force the section visible. */
+      try{ originalSwitch(name); }catch(e){ console.warn('Admin tab switch:',e); }
+      document.querySelectorAll('.section').forEach(function(section){
+        section.classList.toggle('open', section.id === 'sec-'+name);
+      });
+      document.querySelectorAll('.controlbar .topbtn').forEach(function(button){
+        button.classList.toggle('active', button.dataset.sec === name);
+      });
+      window.activeSection=name;
+    }
+    safeSwitch.__gcMobileFixed=true;
+    window.switchSection=safeSwitch;
+
+    const bar=document.querySelector('.controlbar');
+    if(!bar || bar.__gcMobileFixed) return;
+    bar.__gcMobileFixed=true;
+
+    /* Capture the touch/pointer activation before any legacy handler can lose
+       the event. preventDefault avoids a second delayed mobile click. */
+    bar.addEventListener('pointerup',function(event){
+      const button=event.target.closest && event.target.closest('.topbtn');
+      if(!button || !bar.contains(button)) return;
+      if(event.pointerType==='mouse') return;
+      event.preventDefault();
+      event.stopPropagation();
+      safeSwitch(button.dataset.sec);
+      if(isMobileDevice()){
+        try{button.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}catch(_){ }
+      }
+    },true);
+
+    /* iOS/Safari fallback where pointer events are unavailable or inconsistent. */
+    bar.addEventListener('touchend',function(event){
+      const touchTarget=event.target.closest && event.target.closest('.topbtn');
+      if(!touchTarget || !bar.contains(touchTarget)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      safeSwitch(touchTarget.dataset.sec);
+      try{touchTarget.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}catch(_){ }
+    },{capture:true,passive:false});
+
+    /* Make every tab an explicit non-submit control. */
+    bar.querySelectorAll('.topbtn').forEach(function(button){
+      button.setAttribute('type','button');
+    });
+  }
+
+  function installWhatsApp(){
+    /* User-card WhatsApp button: direct navigation on phones invokes the native
+       WhatsApp app when available; desktop keeps the existing new-tab behavior. */
+    window.adminWhatsAppUser=function(i){
+      const list=(typeof users!=='undefined' && Array.isArray(users))?users:[];
+      const u=list[i]||{};
+      const phone=normalisePhone(u.phone);
+      if(!phone){alert('This user has no registered phone/WhatsApp number.');return;}
+      const name=String(u.name||u.full_name||u.role||'GURU CONNECT member');
+      const msg='Hello '+name+', I am contacting you from GURU CONNECT Admin regarding your account.';
+      const url=mobileWhatsAppUrl(phone,msg);
+      if(isMobileDevice()){
+        /* location.href is intentionally used on mobile: it is a user-gesture
+           navigation and is much more reliable than window.open() in iOS/Android. */
+        window.location.href=url;
+      }else{
+        const w=window.open(url,'_blank','noopener,noreferrer');
+        if(!w) window.location.href=url;
+      }
+    };
+
+    /* Learning Requirement Request WhatsApp buttons also run after an async
+       Supabase lookup. Do not open about:blank on mobile; navigate directly
+       after the contact number has been resolved. */
+    if(typeof window.whatsappCaseChat==='function'){
+      const originalCaseChat=window.whatsappCaseChat;
+      window.whatsappCaseChat=async function(lrrId,who){
+        try{
+          const q=await sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(lrrId),p_target_role:who});
+          let contact=q.error?null:q.data;
+          let phone=normalisePhone(contact && contact.phone);
+          let name=String((contact && contact.name)||'');
+
+          if(!phone && q.error && !/no phone|phone number|mobile/i.test(q.error.message||'')){
+            throw q.error;
+          }
+          if(!phone && typeof lookupAdminLrrWhatsAppContact==='function'){
+            const fallback=await lookupAdminLrrWhatsAppContact(lrrId,who);
+            phone=normalisePhone(fallback && fallback.phone);
+            name=name||String((fallback && fallback.name)||'');
+          }
+          if(!phone){
+            throw new Error('No phone number is saved in the user profile. Please update the registered mobile number in the profile/admin user editor.');
+          }
+
+          name=name||(who==='tutor'?'Tutor':'Student');
+          const text='Hello '+name+', I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.';
+          const url=mobileWhatsAppUrl(phone,text);
+
+          if(isMobileDevice()){
+            window.location.href=url;
+          }else{
+            const popup=window.open(url,'_blank','noopener,noreferrer');
+            if(!popup) window.location.href=url;
+          }
+        }catch(error){
+          alert('WhatsApp chat could not be opened: '+(error && error.message ? error.message : error));
+        }
+      };
+      window.whatsappCaseChat.__gcMobileFixed=true;
+    }
+  }
+
+  function init(){
+    installMobileTabs();
+    installWhatsApp();
+  }
+
+  /* This file defines the admin functions in the main script before </body>.
+     Run after DOM creation and once more shortly afterward for slow devices. */
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',init,{once:true});
+  }else{
+    init();
+  }
+  setTimeout(init,250);
+  setTimeout(init,1000);
+})();
+</script>
+</head><body>
+<header class="head"><div class="headin"><div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
+<main class="wrap"><div id="gate" class="gate">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
+<nav class="controlbar" aria-label="Admin sections">
+<button class="topbtn priority active" data-sec="edit">✏️ <b>EDIT</b><small>Find, edit & delete Student/Tutor</small></button>
+<button class="topbtn priority" data-sec="coins">🪙 <b>COINS MANAGEMENT</b><small>Add/subtract coins + reason</small></button>
+<button class="topbtn priority" data-sec="coinhistory">📜 <b>COINS HISTORY</b><small>Every credit/debit + reason</small></button>
+<button class="topbtn priority" data-sec="learning">📚 <b>LRR</b><small>Learning Requirement Requests</small></button>
+<button class="topbtn priority" data-sec="receipt">🧾 <b>RECEIPT</b><small>Generate / print receipt</small></button>
+<button class="topbtn" data-sec="directories">👥 <b>DIRECTORIES</b><small>Live Student + Tutor list</small></button>
+<button class="topbtn" data-sec="password">🔐 <b>PASSWORD RESET</b><small>Find account and reset password</small></button>
+<button class="topbtn" data-sec="create">➕ <b>CREATE USER</b><small>Create Student or Tutor</small></button>
+<button class="topbtn" data-sec="advertisement">📢 <b>ADVERTISEMENT</b><small>Manage website advertisements</small></button>
+</nav>
+
+<section class="section" id="sec-directories"><div class="secHead"><div><h2>👥 Tutor Directories | Student Directories</h2><p>Live Supabase directory. Use the search box for either a Student or Tutor.</p></div><span class="pill" id="directoryCount">LIVE DIRECTORY</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="term" autocomplete="off" placeholder="Name, email or phone…"></div><div class="field"><label>Show</label><select id="roleFilter"><option value="">ALL STUDENTS + TUTORS</option><option value="student">STUDENTS ONLY</option><option value="tutor">TUTORS ONLY</option></select></div><button id="search" class="btn primary">🔎 FIND</button><button id="refresh" class="btn light">↻ REFRESH</button></div><div id="searchStatus" class="status"></div><div id="results" class="results"><div class="empty">Click FIND to load the live Student + Tutor directory.</div></div></div></section>
+
+<section class="section" id="sec-advertisement"><div class="secHead"><div><h2>📢 Advertisement Management</h2><p>Create/manage advertisements without leaving the admin dashboard.</p></div></div><div class="secBody"><div class="grid"><div class="field"><label>Advertisement title</label><input id="adTitle" placeholder="Advertisement title"></div><div class="field"><label>Advertiser</label><input id="adAdvertiser" placeholder="Institute / advertiser"></div><div class="field"><label>Placement</label><select id="adPlacement"><option value="all">All Sections</option><option value="tutor">Tutor Profiles</option><option value="student">Student Profiles</option><option value="lrr">Learning Requests</option></select></div><div class="field"><label>Advertisement Flyer</label><input id="adFile" type="file" accept="image/jpeg,image/png,image/webp"></div><div class="field"><label>Click URL</label><input id="adUrl" placeholder="https://..."></div><div class="field"><label>WhatsApp URL (optional)</label><input id="adWhatsapp" placeholder="https://wa.me/..."></div><div class="field"><label>Start</label><input id="adStart" type="datetime-local"></div><div class="field"><label>End</label><input id="adEnd" type="datetime-local"></div><div class="field"><label>Priority</label><input id="adPriority" type="number" value="0" min="0" max="999"></div></div><div class="actions"><button id="adSave" class="btn orange">SAVE ADVERTISEMENT</button></div><div id="adStatus" class="status">Advertisement controls are ready. If your existing advertisement table/RPC is enabled, this workspace can be wired to it without changing member data.</div><div class="dangerNote">Advertisements are stored in the Supabase <b>gc_advertisements</b> table and flyer images in the <b>gc-advertisements</b> storage bucket. The dashboard never uses a fake local save.</div></div></section>
+
+<section class="section" id="sec-receipt"><div class="secHead"><div><h2>🧾 Receipt Center</h2><p>Create a complete receipt directly from Admin. Select the recipient category, add services one by one, edit every amount, then generate/print the final receipt.</p></div></div><div class="secBody">
+<div class="grid">
+<div class="field"><label>Category</label><select id="receiptCategory"><option value="Student">Student</option><option value="Tutor">Tutor</option><option value="Institution">Institution</option><option value="Individual Person">Individual Person</option></select></div>
+<div class="field"><label>Name / Recipient</label><input id="receiptName" placeholder="Student, Tutor, Institution or Person name"></div>
+<div class="field"><label>Email</label><input id="receiptEmail" type="email" placeholder="Optional email"></div>
+<div class="field"><label>Phone</label><input id="receiptPhone" placeholder="Optional phone number"></div>
+<div class="field"><label>Receipt Date</label><input id="receiptDate" type="date"></div>
+<div class="field"><label>Payment / Transaction Ref.</label><input id="receiptRef" placeholder="Optional UTR / transaction reference"></div>
+</div>
+<div class="receiptServiceBox">
+<div class="receiptServiceHead"><div><h3>Add Service</h3><p>Select a service and its standard amount will appear automatically. You can edit any amount before the receipt is generated, and the total updates instantly.</p></div><button id="receiptAddService" class="btn teal">＋ ADD SERVICE</button></div>
+<div class="receiptServiceAdd">
+<div class="field wide"><label>Service / Description</label>
+<select id="receiptServiceName" onchange="receiptServiceSelectionChanged()">
+<option value="">Select a GURU CONNECT service…</option>
+<option value="Tutor Profile Listing — 1 Month" data-amount="200">Tutor Profile Listing — 1 Month — ₹200</option>
+<option value="Helpline Service — FREE PLAN" data-amount="0">Helpline Service — FREE PLAN — ₹0</option>
+<option value="Helpline Service — PRO PLAN" data-amount="300">Helpline Service — PRO PLAN — ₹300</option>
+<option value="Helpline Service — GENX PLAN" data-amount="1000">Helpline Service — GENX PLAN — ₹1,000</option>
+<option value="Helpline Service — GENX PRO PLAN" data-amount="3000">Helpline Service — GENX PRO PLAN — ₹3,000</option>
+<option value="Helpline Service — PRIME PLAN" data-amount="5000">Helpline Service — PRIME PLAN — ₹5,000</option>
+<option value="Helpline Service — PREMIUM PLAN" data-amount="6000">Helpline Service — PREMIUM PLAN — ₹6,000</option>
+<option value="custom">Custom Service / Feature</option>
+</select>
+<input id="receiptCustomServiceName" class="receiptCustomService" placeholder="Enter custom service / description" style="display:none;margin-top:8px">
+</div>
+<div class="field"><label>Amount (₹) <span style="color:#64748b;font-weight:700">(auto-filled)</span></label><input id="receiptServiceAmount" type="number" min="0" step="0.01" placeholder="0.00"></div>
+</div>
+<div id="receiptServices" class="receiptServices"></div>
+<div class="receiptTotal"><span>TOTAL AMOUNT</span><strong>₹ <span id="receiptTotal">0.00</span></strong></div>
+</div>
+<div class="actions"><button id="generateReceipt" class="btn purple">🧾 GENERATE RECEIPT</button><button id="clearReceipt" class="btn light">CLEAR</button></div>
+<div id="receiptStatus" class="status">Add at least one service before generating the receipt.</div>
+</div></section>
+
+<section class="section open" id="sec-edit"><div class="secHead"><div><h2>✏️ Edit Student / Tutor</h2><p>Search a live account here. Edit the complete profile and delete it from the same editor.</p></div><span class="pill">PRIMARY ADMIN TOOL</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="editSearch" placeholder="Name, email, phone or User ID…" autocomplete="off"></div><div class="field"><label>Role</label><select id="editRole"><option value="">ALL</option><option value="student">STUDENT</option><option value="tutor">TUTOR</option></select></div><button id="editFind" class="btn primary">🔎 FIND</button><button id="editRefresh" class="btn light">↻ REFRESH</button></div><div id="editStatus" class="status"></div><div id="editResults" class="results"><div class="empty">Search for the Student/Tutor you want to edit.</div></div></div></section>
+
+<section class="section" id="sec-coins"><div class="secHead"><div><h2>🪙 Coins Management</h2><p>Select a Student/Tutor, then add or subtract GURU COINS. A reason is mandatory and every change is logged.</p></div></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find member</label><input id="coinFindSearch" placeholder="Name, email, phone or User ID…"></div><button id="coinFind" class="btn primary">🔎 FIND MEMBER</button></div><div id="coinFindResults" class="results"></div><div class="grid" style="margin-top:14px"><div class="field"><label>Selected User ID</label><input id="coinUserId" readonly placeholder="Choose a member above"></div><div class="field"><label>Role</label><select id="coinRole"><option value="student">Student</option><option value="tutor">Tutor</option></select></div><div class="field"><label>Coins</label><input id="coinAmount" type="number" placeholder="e.g. 100"></div><div class="field"><label>Reason — required</label><input id="coinReason" placeholder="Why are coins being changed?"></div></div><div class="actions"><button id="coinAdd" class="btn green">＋ ADD COINS</button><button id="coinSubtract" class="btn red">− SUBTRACT COINS</button></div><div id="coinStatus" class="status"></div></div></section>
+
+<section class="section" id="sec-coinhistory"><div class="secHead"><div><h2>📜 Coins History</h2><p>Complete coin ledger with member, amount, direction, reason and date.</p></div><button id="loadCoinHistory" class="btn light">↻ REFRESH HISTORY</button></div><div class="secBody"><div class="quickSearch"><input id="coinHistorySearch" placeholder="Search by name, user ID, reason or reference…"><button id="coinHistoryFind" class="btn primary">FIND</button></div><div id="coinHistoryStatus" class="status"></div><div id="coinHistoryResults" class="results"><div class="empty">Loading coin history…</div></div></div></section>
+
+<section class="section" id="sec-learning"><div class="secHead"><div><h2>📚 LRR — Learning Requirement Requests</h2><p>All Learning Requirement Requests load directly into this tab. Every request has Admin controls for tutor approval, rejection, return, coins and case chat.</p></div><div class="actions" style="margin:0"><span class="pill" id="lrrCount">0 REQUESTS</span><button id="loadLearning" class="btn light">↻ REFRESH LRR</button></div></div><div class="secBody"><div class="lrrControlNote"><b>LRR controls:</b> Approve to Tutor · Reject · Return to Student · Tutor Coins · Student Coins · Chat Student · Chat Tutor</div><div id="learningStatus" class="status"></div><div id="learningResults" class="results"><div class="empty">Loading Learning Requirement Requests…</div></div></div></section>
+
+<section class="section" id="sec-password"><div class="secHead"><div><h2>🔐 Password Reset</h2><p>Find a registered Student/Tutor and issue a new password through the secure admin function.</p></div></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Email or phone</label><input id="resetSearch" placeholder="Registered email or phone"></div><button id="resetFind" class="btn primary">FIND ACCOUNT</button></div><div id="resetResult" class="results"></div></div></section>
+
+<section class="section" id="sec-create"><div class="secHead"><div><h2>➕ Create User</h2><p>Create a new Student or Tutor account through the existing secure admin function.</p></div></div><div class="secBody"><div class="grid"><div class="field"><label>Role</label><select id="newRole"><option value="student">Student</option><option value="tutor">Tutor</option></select></div><div class="field"><label>Name</label><input id="newName"></div><div class="field"><label>Email</label><input id="newEmail" type="email"></div><div class="field"><label>Phone</label><input id="newPhone"></div><div class="field"><label>Password</label><input id="newPass" type="password" minlength="8"></div></div><div class="actions"><button id="create" class="btn green">CREATE ACCOUNT</button></div><div id="createStatus" class="status"></div></div></section>
+</section></main>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
+const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',FN=U+'/functions/v1/admin-user-actions';
+const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function deleteUserViaAdminFunction(userId,role){
+  const s=await sb.auth.getSession(),t=s.data?.session?.access_token;
+  if(!t)throw new Error('Admin session missing. Please login again.');
+  const r=await fetch(U+'/functions/v1/admin-delete-user',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':'Bearer '+t,'apikey':K},
+    body:JSON.stringify({user_id:String(userId),role:String(role||'').toLowerCase()})
+  });
+  const txt=await r.text();let data={};
+  try{data=txt?JSON.parse(txt):{}}catch{data={error:txt||'Invalid server response'}}
+  if(!r.ok)throw new Error(data.error||data.message||('Delete request failed ('+r.status+').'));
+  return data;
+}
+
+async function api(action,payload={}){
+  const s=await sb.auth.getSession(),t=s.data?.session?.access_token;
+  if(!t)throw new Error('Admin session missing. Please login again.');
+  const r=await fetch(FN,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({action,...payload})});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(d.error||'Server error');
+  return d;
+}
+async function staffCheck(){
+  const s=await sb.auth.getSession(),u=s.data?.session?.user;
+  if(!u||String(u.email||'').toLowerCase()!=='guruconnect.in@gmail.com'){location.href='login.html?role=staff';return false}
+  $('gate').style.display='none';$('app').style.display='block';return true;
+}
+let users=[];
+let activeSection='edit';
+let lrrLoaded=false,lrrLoading=false,coinHistoryLoaded=false;
+function switchSection(name){
+  if(!name||activeSection===name)return;
+  activeSection=name;
+  document.querySelectorAll('.section').forEach(x=>x.classList.remove('open'));
+  document.querySelectorAll('.topbtn').forEach(x=>x.classList.toggle('active',x.dataset.sec===name));
+  const el=$('sec-'+name);if(el)el.classList.add('open');
+  if(name==='learning'&&!lrrLoaded&&!lrrLoading)loadLearning();
+  if(name==='coinhistory'&&!coinHistoryLoaded)loadCoinHistory();
+}
+document.querySelectorAll('.topbtn').forEach(b=>b.addEventListener('click',()=>switchSection(b.dataset.sec)));
+$('logout').onclick=async()=>{try{await sb.auth.signOut({scope:'global'})}catch(_){};try{localStorage.removeItem('is_staff_logged');localStorage.removeItem('gc_staff_supabase_auth')}catch(_){};location.replace('./index.html?admin_logout=1&ts='+Date.now())};
+
+function adminWhatsAppUser(i){const u=users[i]||{};let phone=String(u.phone||'').replace(/\D/g,'');if(phone.startsWith('00'))phone=phone.slice(2);if(phone.length===11&&phone.startsWith('0'))phone=phone.slice(1);if(phone.length===10)phone='91'+phone;if(!phone){alert('This user has no registered phone/WhatsApp number.');return}const name=String(u.name||u.full_name||u.role||'GURU CONNECT member');const msg='Hello '+name+', I am contacting you from GURU CONNECT Admin regarding your account.';window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank','noopener,noreferrer')}
+function normalizeRpcUsers(rows){
+  return (Array.isArray(rows)?rows:[]).map(x=>{
+    const p=x.profile&&typeof x.profile==='object'?x.profile:{};
+    return Object.assign({},p,x,{
+      user_id:String(x.user_id||p.user_id||p.id||''),
+      email:x.email||p.email||'',
+      phone:x.phone||p.phone||'',
+      name:x.name||p.name||x.full_name||p.full_name||'',
+      role:String(x.role||p.role||'').toLowerCase(),
+      registration_status:x.registration_status||p.registration_status||'registered',
+      created_at:p.created_at||x.created_at||''
+    });
+  }).filter(x=>x.user_id&&['student','tutor'].includes(x.role));
+}
+
+async function loadLiveUsers(){
+  $('searchStatus').textContent='Loading authorized live Student and Tutor profiles from Supabase…';
+  $('results').innerHTML='';
+  try{
+    const rpc=await sb.rpc('gc_admin_find_users',{p_term:''});
+    const rpcUsers=(!rpc.error&&Array.isArray(rpc.data))?normalizeRpcUsers(rpc.data):[];
+
+    // Direct-table fallback is always attempted. This fixes the case where a
+    // registration exists on the public directory but the legacy admin RPC
+    // does not return that user.
+    const [pr,st,tr]=await Promise.all([
+      sb.from('profiles').select('*').order('created_at',{ascending:false}),
+      sb.from('student_profiles').select('*').order('created_at',{ascending:false}),
+      sb.from('tutor_profiles').select('*').order('created_at',{ascending:false})
+    ]);
+    const tableErrors=[pr.error,st.error,tr.error].filter(Boolean);
+    if(tableErrors.length && !rpcUsers.length) throw tableErrors[0];
+
+    const pm=new Map((pr.data||[]).map(x=>[String(x.id),x]));
+    const byEmail=new Map((pr.data||[]).filter(x=>x.email).map(x=>[String(x.email).toLowerCase(),x]));
+    const byPhone=new Map((pr.data||[]).filter(x=>x.phone).map(x=>[String(x.phone),x]));
+    const merge=(row,role)=>{
+      const candidateId=row.user_id||row.auth_user_id||row.profile_id||row.profileId||'';
+      const profile=pm.get(String(candidateId))
+        ||(row.email&&byEmail.get(String(row.email).toLowerCase()))
+        ||(row.phone&&byPhone.get(String(row.phone)))
+        ||{};
+      return Object.assign({},profile,row,{
+        user_id:String(candidateId||profile.id||''),
+        email:row.email||profile.email||'',
+        phone:row.phone||profile.phone||'',
+        name:row.name||row.full_name||profile.full_name||profile.name||'',
+        role, created_at:row.created_at||profile.created_at||''
+      });
+    };
+    const tableUsers=[...(st.data||[]).map(x=>merge(x,'student')),...(tr.data||[]).map(x=>merge(x,'tutor'))].filter(x=>x.user_id);
+
+    const map=new Map();
+    [...rpcUsers,...tableUsers].forEach(u=>{
+      const id=String(u.user_id||''); if(!id)return;
+      const old=map.get(id);
+      map.set(id,old?Object.assign({},old,u,{email:u.email||old.email,name:u.name||old.name}):u);
+    });
+    users=Array.from(map.values()).sort((a,b)=>String(b.created_at||'').localeCompare(String(a.created_at||'')));
+    try{
+      const ids=users.map(u=>String(u.user_id)).filter(Boolean);
+      if(ids.length){
+        const ar=await sb.from('gc_user_account_controls').select('*').in('user_id',ids);
+        if(!ar.error){
+          const am=new Map((ar.data||[]).map(x=>[String(x.user_id),x]));
+          users=users.map(u=>Object.assign({},u,am.get(String(u.user_id))||{}));
+        }
+      }
+    }catch(_){}
+    renderUsers();
+    $('searchStatus').textContent=users.length?users.length+' live Student/Tutor profile(s) loaded from Supabase.':'No Student/Tutor profile records are currently visible to this Staff session.';
+    $('directoryCount').textContent=users.length+' LIVE PROFILES';
+  }catch(e){
+    $('searchStatus').textContent='Directory load failed: '+(e.message||e);
+    $('results').innerHTML='<div class="empty">The live directory could not be read. Check Staff/Admin authorization and the profiles/student_profiles/tutor_profiles tables.</div>';
+  }
+}
+
+function filteredUsers(){
+  const q=$('term').value.trim().toLowerCase(),rf=$('roleFilter').value;
+  let list=users.filter(u=>!rf||u.role===rf);
+  if(q)list=list.filter(u=>[u.name,u.email,u.phone,u.user_id,u.subject,u.course,u.stream,u.qualification,u.college,u.teaching_college].some(v=>String(v??'').toLowerCase().includes(q)));
+  return list;
+}
+function renderUsers(){
+  const list=filteredUsers();
+  if(!list.length){$('results').innerHTML='<div class="empty">No matching Student/Tutor profile found.</div>';return}
+  $('results').innerHTML=list.map((u,i)=>userCard(u,i)).join('');
+}
+function userCard(u,i){
+  const role=u.role.toUpperCase(),sub=u.role==='tutor'?(u.qualification||u.subject||'Tutor'):(u.course||u.stream||'Student');
+  return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed user')}</b><span class="badge">${role}</span><div class="muted">${esc(sub)}<br>Email: ${esc(u.email||'—')}<br>Phone: ${esc(u.phone||'—')}<br>User ID: ${esc(u.user_id||'—')}<br>Status: ${esc(u.registration_status||'registered')}<br>Payment: ${esc(u.paid_status||'PENDING')} · Admin Verified: ${(u.admin_verified||u.verified)?'🟢 YES':'NO'} · Directory: ${u.directory_visible===false?'🔴 HIDDEN':'🟢 VISIBLE'}</div></div><div class="actions"><button class="btn primary" onclick="viewDetails(${i})">👁️ PROFILE / ACCOUNT</button><button class="btn primary" onclick="toggleEdit(${i})">✏️ EDIT</button><button class="btn teal" onclick="setPaid(${i})">${String(u.paid_status||'PENDING').toUpperCase()==='PAID'?'✓ PAID':'MARK PAID'}</button><button class="btn primary" onclick="toggleVerified(${i})">${(u.public_verified_tick||u.verified)?'✓ BLUE TICK':'GRANT BLUE TICK'}</button><button class="btn ${u.directory_visible===false?'orange':'light'}" onclick="toggleDirectory(${i})">${u.directory_visible===false?'👁 SHOW IN DIRECTORY':'🙈 HIDE FROM DIRECTORY'}</button><button class="btn teal" onclick="selectCoins(${i})">🪙 COINS</button><button class="btn caseChat" onclick="adminWhatsAppUser(${i})">💬 WHATSAPP</button><button class="btn purple" onclick="receipt(${i})">🧾 RECEIPT</button><button class="btn light" onclick="resetUser(${i})">RESET PASSWORD</button><button class="btn red" onclick="deleteUser(${i})">DELETE</button></div></div><div class="edit" id="edit-${i}">${editForm(u,i)}</div></article>`;
+}
+function v(id,val){return `<input id="${id}" value="${esc(val??'')}">`}
+function area(id,val){return `<textarea id="${id}">${esc(val??'')}</textarea>`}
+function editForm(u,i){
+  let s=`<div class="editTitle">Editing ${esc(u.role)} • ${esc(u.name)}</div><div class="grid">`;
+  s+=`<div class="field"><label>Name</label>${v('e-name-'+i,u.name)}</div><div class="field"><label>Email</label>${v('e-email-'+i,u.email)}</div><div class="field"><label>Phone</label>${v('e-phone-'+i,u.phone)}</div><div class="field"><label>Location</label>${v('e-location-'+i,u.location)}</div>`;
+  if(u.role==='student'){
+    s+=`<div class="field"><label>Course</label>${v('e-course-'+i,u.course)}</div><div class="field"><label>Stream</label>${v('e-stream-'+i,u.stream)}</div><div class="field"><label>Standard / Class</label>${v('e-standard-'+i,u.standard||u.year)}</div><div class="field"><label>Subject</label>${v('e-subject-'+i,u.subject)}</div><div class="field"><label>Learning Requirement</label>${area('e-learning-'+i,u.learning_requirement)}</div><div class="field"><label>College</label>${v('e-college-'+i,u.college)}</div><div class="field"><label>Division</label>${v('e-division-'+i,u.division)}</div><div class="field"><label>Roll Number</label>${v('e-roll-'+i,u.roll_number)}</div><div class="field"><label>Mode</label>${v('e-mode-'+i,u.mode||u.teaching_mode)}</div><div class="field"><label>About Me</label>${area('e-about-'+i,u.about_me)}</div>`;
+  }else{
+    s+=`<div class="field"><label>Qualification</label>${v('e-qualification-'+i,u.qualification)}</div><div class="field"><label>Subject</label>${v('e-subject-'+i,u.subject)}</div><div class="field"><label>Stream</label>${v('e-stream-'+i,u.stream)}</div><div class="field"><label>Experience</label>${v('e-experience-'+i,u.experience)}</div><div class="field"><label>College / Institute</label>${v('e-college-'+i,u.college)}</div><div class="field"><label>Teaching College</label>${v('e-teachingcollege-'+i,u.teaching_college)}</div><div class="field"><label>Rate / Hour</label>${v('e-price-'+i,u.price)}</div><div class="field"><label>Rating</label>${v('e-rating-'+i,u.rating)}</div><div class="field"><label>Students Taught</label>${v('e-students-'+i,u.students_taught)}</div><div class="field"><label>Teaching Mode</label>${v('e-mode-'+i,u.teaching_mode)}</div><div class="field"><label>Languages</label>${v('e-languages-'+i,u.languages)}</div><div class="field"><label>Address</label>${v('e-address-'+i,u.address)}</div><div class="field"><label>About Tutor</label>${area('e-about-'+i,u.about_me)}</div>`;
+  }
+  const saveBtn=typeof i==='number'?`saveUser(${i})`:`saveWorkspaceUser('${esc(String(i))}','${esc(String(u.user_id))}')`;const closeBtn=typeof i==='number'?`toggleEdit(${i})`:`document.getElementById('workspace-edit-${esc(String(u.user_id))}').classList.remove('open')`;s+=`</div><div class="actions"><button class="btn green" onclick="${saveBtn}">SAVE PROFILE</button><button class="btn light" onclick="${closeBtn}">CLOSE</button><button class="btn red" onclick="deleteFromWorkspace('${esc(String(u.user_id))}','${esc(String(u.role))}')">🗑️ DELETE USER</button></div><div id="save-status-${i}" class="status"></div>`;
+  return s;
+}
+function toggleEdit(i){document.getElementById('edit-'+i)?.classList.toggle('open');switchSection('directories')}
+function ensureAccountModal(){
+  if(document.getElementById('gcAcctOverlay'))return;
+  const o=document.createElement('div');o.id='gcAcctOverlay';o.className='gcAcctOverlay';
+  o.innerHTML=`<div class="gcAcctCard">
+    <div class="gcAcctHead"><div class="gcAcctHeadTop"><div><h2 id="gcAcctName">User Account</h2><p id="gcAcctSub"></p></div><button class="gcAcctClose" onclick="closeAccountModal()">✕ CLOSE</button></div></div>
+    <div class="gcAcctTabs">
+      <button class="gcAcctTab active" data-pane="overview">PROFILE & STATUS</button>
+      <button class="gcAcctTab" data-pane="verification">🟢 VERIFICATION</button>
+      <button class="gcAcctTab" data-pane="payments">💳 PAYMENTS</button>
+      <button class="gcAcctTab" data-pane="coins">🪙 COINS</button>
+      <button class="gcAcctTab" data-pane="activity">📜 ACTIVITY</button>
+    </div>
+    <div id="gcPane-overview" class="gcAcctPane open"></div>
+    <div id="gcPane-verification" class="gcAcctPane"></div>
+    <div id="gcPane-payments" class="gcAcctPane"></div>
+    <div id="gcPane-coins" class="gcAcctPane"></div>
+    <div id="gcPane-activity" class="gcAcctPane"></div>
+  </div>`;
+  document.body.appendChild(o);
+  o.querySelectorAll('.gcAcctTab').forEach(b=>b.onclick=()=>openAccountPane(b.dataset.pane));
+}
+function openAccountPane(name){
+  document.querySelectorAll('.gcAcctTab').forEach(b=>b.classList.toggle('active',b.dataset.pane===name));
+  document.querySelectorAll('.gcAcctPane').forEach(p=>p.classList.toggle('open',p.id==='gcPane-'+name));
+  if(name==='payments')loadAccountPayments();
+  if(name==='verification')loadAccountVerification();
+  if(name==='coins')loadAccountCoins();
+  if(name==='activity')loadAccountActivity();
+}
+function closeAccountModal(){document.getElementById('gcAcctOverlay')?.remove();window.__gcAccountUser=null}
+function accountUser(){return window.__gcAccountUser}
+function statusBadge(v,yesText='YES',noText='NO'){return v?`<span class="gcBadge green">${yesText}</span>`:`<span class="gcBadge red">${noText}</span>`}
+async function accountRpc(action,payload={}){
+  const r=await sb.rpc('gc_admin_account_action',{p_action:action,p_user_id:String(payload.user_id||''),p_payload:payload});
+  if(r.error)throw r.error;
+  return r.data||{};
+}
+function renderAccountOverview(u){
+  const paid=String(u.paid_status||'PENDING').toUpperCase()==='PAID';
+  const adminVerified=!!(u.admin_verified||u.verified);
+  const blue=!!(u.public_verified_tick||u.verified);
+  const visible=u.directory_visible!==false;
+  $('gcPane-overview').innerHTML=`
+    <div class="gcAcctGrid">
+      <div class="gcStat"><b>Payment Status</b><strong class="${paid?'gcGreen':'gcOrange'}">${paid?'🟢 PAID':'🟠 PENDING'}</strong></div>
+      <div class="gcStat"><b>Admin Verification</b><strong class="${adminVerified?'gcGreen':'gcRed'}">${adminVerified?'🟢 VERIFIED':'🔴 NOT VERIFIED'}</strong></div>
+      <div class="gcStat"><b>Public Blue Tick</b><strong class="${blue?'gcBlue':'gcRed'}">${blue?'🔵 ACTIVE':'🔴 NOT ACTIVE'}</strong></div>
+      <div class="gcStat"><b>Website Directory</b><strong class="${visible?'gcGreen':'gcRed'}">${visible?'🟢 VISIBLE':'🔴 HIDDEN'}</strong></div>
+      <div class="gcStat"><b>Role</b><strong>${esc(String(u.role||'').toUpperCase())}</strong></div>
+      <div class="gcStat"><b>User ID</b><strong style="font-size:11px;overflow-wrap:anywhere">${esc(u.user_id||'—')}</strong></div>
+    </div>
+    <div class="gcAccountNotice" style="margin-top:12px">This account workspace controls verification, public Blue Verified Tick, payment records, coins and directory visibility. These are separate controls.</div>
+    <div class="gcBox"><h3>👤 Profile</h3><div class="grid">
+      <div class="field"><label>Name</label><input value="${esc(u.name||'')}" readonly></div>
+      <div class="field"><label>Email</label><input value="${esc(u.email||'')}" readonly></div>
+      <div class="field"><label>Phone</label><input value="${esc(u.phone||'')}" readonly></div>
+      <div class="field"><label>Registration Status</label><input value="${esc(u.registration_status||'registered')}" readonly></div>
+    </div></div>
+    <div class="gcBox"><h3>⚙️ Quick Account Controls</h3><div class="gcMiniActions">
+      <button class="btn teal" onclick="setPaidFromAccount()">${paid?'✓ MARK PAYMENT PENDING':'✓ MARK PAYMENT RECEIVED'}</button>
+      <button class="btn primary" onclick="setBlueTickFromAccount()">${blue?'REMOVE BLUE VERIFIED TICK':'GRANT BLUE VERIFIED TICK'}</button>
+      <button class="btn ${visible?'orange':'green'}" onclick="toggleDirectoryFromAccount()">${visible?'🙈 HIDE FROM WEBSITE':'👁 SHOW ON WEBSITE'}</button>
+    </div><div id="gcAccountQuickStatus" class="status"></div></div>`;
+}
+async function showDetails(u){
+  ensureAccountModal();window.__gcAccountUser=u;
+  $('gcAcctName').textContent=(u.name||'User')+' • '+String(u.role||'').toUpperCase();
+  $('gcAcctSub').textContent=(u.email||'—')+' · '+(u.user_id||'—');
+  renderAccountOverview(u);
+  $('gcPane-verification').innerHTML='<div class="empty">Loading verification records…</div>';
+  $('gcPane-payments').innerHTML='<div class="empty">Open PAYMENTS to load the payment ledger.</div>';
+  $('gcPane-coins').innerHTML='<div class="empty">Open COINS to load the coin ledger.</div>';
+  $('gcPane-activity').innerHTML='<div class="empty">Open ACTIVITY to load account changes.</div>';
+  document.getElementById('gcAcctOverlay').classList.add('open');
+}
+async function loadAccountVerification(){
+  const u=accountUser();if(!u)return;
+  const p=$('gcPane-verification');p.innerHTML='<div class="empty">Loading complete verification ledger…</div>';
+  try{
+    const d=await accountRpc('get_account_overview',{user_id:u.user_id}),docs=d.documents||[];
+    const count=docs.filter(x=>x.submitted||x.received).length,verifiedCount=docs.filter(x=>x.verified).length;
+    const adminVerified=!!d.account?.admin_verified,blue=!!d.account?.public_verified_tick;
+    p.innerHTML=`<div class="gcAccountNotice">Complete verification ledger. Admin can view every stored verification record and can edit/delete individual records. At least <b>2 submitted documents</b> are required before Admin Verification or the public Blue Verified Tick can be granted.</div>
+      <div class="gcAcctGrid" style="margin-top:12px">
+        <div class="gcStat"><b>Submitted</b><strong>${count} / 3</strong></div><div class="gcStat"><b>Admin-Verified Documents</b><strong>${verifiedCount} / 3</strong></div>
+        <div class="gcStat"><b>Admin Verification</b><strong class="${adminVerified?'gcGreen':'gcRed'}">${adminVerified?'🟢 VERIFIED':'🔴 NOT VERIFIED'}</strong></div>
+        <div class="gcStat"><b>Public Blue Tick</b><strong class="${blue?'gcBlue':'gcRed'}">${blue?'🔵 ACTIVE':'🔴 NOT ACTIVE'}</strong></div>
+      </div>
+      <div class="gcBox"><h3>🪪 Verification Ledger — Complete Records</h3><div class="gcTableWrap"><table class="gcTable"><thead><tr><th>ID</th><th>Document</th><th>Submitted</th><th>Verified</th><th>Submitted At</th><th>Verified At</th><th>Storage Path</th><th>Admin Note</th><th>ADMIN ACTION</th></tr></thead><tbody>${docs.length?docs.map(r=>`<tr>
+        <td style="font-size:10px;max-width:110px;overflow-wrap:anywhere">${esc(r.id||'—')}</td><td><b>${esc(r.document_type||r.type||'—')}</b></td>
+        <td>${r.submitted?'YES':'NO'}</td><td>${r.verified?'YES':'NO'}</td><td>${esc(r.submitted_at||'—')}</td><td>${esc(r.verified_at||'—')}</td>
+        <td style="font-size:10px;overflow-wrap:anywhere">${esc(r.storage_path||'—')}</td><td>${esc(r.admin_note||'—')}</td>
+        <td><div class="gcRowActions"><button class="btn primary" onclick="editVerificationRecord('${esc(r.id||'')}')">✏️ EDIT</button><button class="btn red" onclick="deleteVerificationRecord('${esc(r.id||'')}')">🗑️ DELETE</button></div></td>
+      </tr>`).join(''):'<tr><td colspan="9">No verification records have been submitted yet.</td></tr>'}</tbody></table></div></div>
+      <div class="gcBox"><h3>🟢 Verification Controls</h3><div class="gcMiniActions">
+        <button class="btn green" onclick="grantAdminVerification()">🟢 MARK ADMIN VERIFIED</button><button class="btn red" onclick="removeAdminVerification()">REMOVE ADMIN VERIFICATION</button>
+        <button class="btn primary" onclick="setBlueTickFromAccount()">🔵 ${blue?'REMOVE':'GRANT'} BLUE VERIFIED TICK</button>
+      </div><div id="gcVerificationStatus" class="status"></div></div>
+      <div class="gcPrivacy">Privacy: this ledger shows verification metadata. Actual Aadhaar/PAN images should remain in private Supabase Storage and should never be exposed through a public directory.</div>`;
+  }catch(e){p.innerHTML='<div class="dangerNote">Verification ledger could not be loaded.<br><br>'+esc(e.message||e)+'<br><br>Run the <b>v2 account-controls migration SQL</b> once in Supabase SQL Editor.</div>'}
+}
+async function saveDocStatus(type,value,isVerified){
+  const u=accountUser();if(!u)return;
+  try{await accountRpc('set_verification_document',{user_id:u.user_id,document_type:type,submitted:isVerified?true:value,verified:isVerified?value:undefined});await loadAccountVerification();}
+  catch(e){alert('Document status could not be saved: '+(e.message||e));await loadAccountVerification()}
+}
+window.editVerificationRecord=async id=>{
+  if(!id)return;
+  const u=accountUser();if(!u)return;
+  const d=await accountRpc('get_account_overview',{user_id:u.user_id}),r=(d.documents||[]).find(x=>String(x.id)===String(id));if(!r)return alert('Verification record not found.');
+  const type=prompt('Document type (AADHAAR / PAN / COLLEGE_ID):',r.document_type||'');if(type===null)return;
+  const submitted=confirm('Click OK if this document is SUBMITTED/RECEIVED. Cancel means NOT SUBMITTED.');
+  const verified=submitted&&confirm('Should this document remain ADMIN VERIFIED?');
+  const note=prompt('Admin note:',r.admin_note||'');if(note===null)return;
+  try{await accountRpc('update_verification_document',{id:String(id),document_type:type.trim().toUpperCase(),submitted,verified,admin_note:note});await loadAccountVerification();}
+  catch(e){alert('Verification edit failed: '+(e.message||e))}
+};
+window.deleteVerificationRecord=async id=>{
+  if(!id||!confirm('Delete this verification ledger record permanently?'))return;
+  try{await accountRpc('delete_verification_document',{id:String(id)});await loadAccountVerification();await loadLiveUsers();}
+  catch(e){alert('Verification delete failed: '+(e.message||e))}
+};
+async function grantAdminVerification(){const u=accountUser();if(!u)return;try{const d=await accountRpc('set_verification',{user_id:u.user_id,admin_verified:true});if(d?.eligible===false)throw new Error('At least 2 documents must be submitted before Admin verification.');await loadLiveUsers();window.__gcAccountUser=users.find(x=>String(x.user_id)===String(u.user_id))||u;renderAccountOverview(window.__gcAccountUser);openAccountPane('verification')}catch(e){alert('Verification failed: '+(e.message||e))}}
+async function removeAdminVerification(){const u=accountUser();if(!u)return;try{await accountRpc('set_verification',{user_id:u.user_id,admin_verified:false});await loadLiveUsers();window.__gcAccountUser=users.find(x=>String(x.user_id)===String(u.user_id))||u;renderAccountOverview(window.__gcAccountUser);openAccountPane('verification')}catch(e){alert('Could not remove verification: '+(e.message||e))}}
+async function setBlueTickFromAccount(){const u=accountUser();if(!u)return;const current=!!(u.public_verified_tick||u.verified);try{const d=await accountRpc('set_verification',{user_id:u.user_id,public_verified_tick:!current});if(!current&&d?.eligible===false)throw new Error('At least 2 submitted documents are required before the Blue Verified Tick can be granted.');await loadLiveUsers();window.__gcAccountUser=users.find(x=>String(x.user_id)===String(u.user_id))||u;renderAccountOverview(window.__gcAccountUser);openAccountPane('verification')}catch(e){alert('Blue Verified Tick update failed: '+(e.message||e))}}
+async function toggleDirectoryFromAccount(){const u=accountUser();if(!u)return;try{await accountRpc('set_account_controls',{user_id:u.user_id,directory_visible:!(u.directory_visible!==false)});await loadLiveUsers();window.__gcAccountUser=users.find(x=>String(x.user_id)===String(u.user_id))||u;renderAccountOverview(window.__gcAccountUser)}catch(e){alert('Directory visibility update failed: '+(e.message||e))}}
+async function setPaidFromAccount(){const u=accountUser();if(!u)return;const next=String(u.paid_status||'PENDING').toUpperCase()!=='PAID';try{await accountRpc('set_account_controls',{user_id:u.user_id,paid_status:next?'PAID':'PENDING'});await loadLiveUsers();window.__gcAccountUser=users.find(x=>String(x.user_id)===String(u.user_id))||u;renderAccountOverview(window.__gcAccountUser)}catch(e){alert('Payment status update failed: '+(e.message||e))}}
+async function toggleDirectory(i){const u=filteredUsers()[i];if(!u)return;try{await accountRpc('set_account_controls',{user_id:u.user_id,directory_visible:!(u.directory_visible!==false)});await loadLiveUsers()}catch(e){alert('Directory visibility update failed: '+e.message)}}
+
+async function loadAccountPayments(){
+  const u=accountUser();if(!u)return;const p=$('gcPane-payments');p.innerHTML='<div class="empty">Loading complete payment ledger…</div>';
+  try{const d=await accountRpc('get_account_overview',{user_id:u.user_id}),rows=d.payments||[];const total=rows.reduce((n,r)=>n+Number(r.amount||0),0);
+    p.innerHTML=`<div class="gcAcctGrid"><div class="gcStat"><b>Total Recorded</b><strong>₹${total.toFixed(2)}</strong></div><div class="gcStat"><b>Ledger Records</b><strong>${rows.length}</strong></div><div class="gcStat"><b>Last Payment</b><strong>${esc(rows[0]?.payment_date||'—')}</strong></div></div>
+    <div class="gcBox"><h3>＋ Add Payment</h3><div class="gcFormGrid"><div class="field"><label>Date</label><input id="gcPayDate" type="date" value="${new Date().toISOString().slice(0,10)}"></div><div class="field"><label>Amount (₹)</label><input id="gcPayAmount" type="number" min="0" step="0.01"></div><div class="field"><label>Mode</label><select id="gcPayMode"><option>UPI</option><option>Online</option><option>Cash</option><option>Cheque</option><option>Bank Transfer</option><option>Other</option></select></div><div class="field"><label>Transaction / Reference</label><input id="gcPayRef"></div><div class="field"><label>Reason</label><input id="gcPayReason"></div><div class="field"><label>Status</label><select id="gcPayStatus"><option>RECEIVED</option><option>PENDING</option><option>REFUNDED</option><option>CANCELLED</option></select></div></div><div class="gcMiniActions"><button class="btn green" onclick="addAccountPayment()">＋ SAVE PAYMENT</button></div><div id="gcPaymentStatus" class="status"></div></div>
+    <div class="gcBox"><h3>💳 Complete Payment Ledger — ${rows.length} Record(s)</h3><div class="gcTableWrap"><table class="gcTable"><thead><tr><th>ID</th><th>Date</th><th>Amount</th><th>Mode</th><th>Transaction / Ref.</th><th>Reason</th><th>Status</th><th>Notes</th><th>Created By</th><th>Created At</th><th>ADMIN ACTION</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td style="font-size:10px;overflow-wrap:anywhere">${esc(r.id||'—')}</td><td>${esc(r.payment_date||'—')}</td><td><b>₹${Number(r.amount||0).toFixed(2)}</b></td><td>${esc(r.payment_mode||'—')}</td><td>${esc(r.transaction_ref||'—')}</td><td>${esc(r.reason||'—')}</td><td>${esc(r.status||'—')}</td><td>${esc(r.notes||'—')}</td><td style="font-size:10px">${esc(r.created_by||'—')}</td><td>${esc(r.created_at||'—')}</td><td><div class="gcRowActions"><button class="btn primary" onclick="editPaymentRecord('${esc(r.id||'')}')">✏️ EDIT</button><button class="btn red" onclick="deletePaymentRecord('${esc(r.id||'')}')">🗑️ DELETE</button></div></td></tr>`).join(''):'<tr><td colspan="11">No payment records yet.</td></tr>'}</tbody></table></div></div>`;
+  }catch(e){p.innerHTML='<div class="dangerNote">Payment ledger could not be loaded.<br><br>'+esc(e.message||e)+'<br><br>Run the <b>v2 account-controls migration SQL</b>.</div>'}
+}
+async function addAccountPayment(){const u=accountUser();if(!u)return;try{const amount=Number($('gcPayAmount').value);if(!Number.isFinite(amount)||amount<=0)throw new Error('Enter a valid amount.');const reason=$('gcPayReason').value.trim();if(!reason)throw new Error('Payment reason is required.');await accountRpc('add_payment',{user_id:u.user_id,payment_date:$('gcPayDate').value,amount,payment_mode:$('gcPayMode').value,transaction_ref:$('gcPayRef').value.trim(),reason,status:$('gcPayStatus').value});$('gcPaymentStatus').textContent='✓ Payment record saved.';await loadAccountPayments();await loadLiveUsers()}catch(e){$('gcPaymentStatus').textContent='Payment save failed: '+(e.message||e)}}
+window.editPaymentRecord=async id=>{const u=accountUser();if(!u)return;const d=await accountRpc('get_account_overview',{user_id:u.user_id}),r=(d.payments||[]).find(x=>String(x.id)===String(id));if(!r)return alert('Payment record not found.');const date=prompt('Payment date (YYYY-MM-DD):',r.payment_date||'');if(date===null)return;const amount=prompt('Amount:',r.amount??'');if(amount===null)return;const mode=prompt('Payment mode:',r.payment_mode||'');if(mode===null)return;const ref=prompt('Transaction / Reference:',r.transaction_ref||'');if(ref===null)return;const reason=prompt('Payment reason:',r.reason||'');if(reason===null)return;const status=prompt('Status (RECEIVED/PENDING/REFUNDED/CANCELLED):',r.status||'RECEIVED');if(status===null)return;const notes=prompt('Notes:',r.notes||'');if(notes===null)return;try{await accountRpc('update_payment',{id:String(id),payment_date:date,amount,payment_mode:mode,transaction_ref:ref,reason,status,notes});await loadAccountPayments();await loadLiveUsers()}catch(e){alert('Payment edit failed: '+(e.message||e))}};
+window.deletePaymentRecord=async id=>{if(!id||!confirm('Delete this payment ledger record permanently?'))return;try{await accountRpc('delete_payment',{id:String(id)});await loadAccountPayments();await loadLiveUsers()}catch(e){alert('Payment delete failed: '+(e.message||e))}};
+
+async function loadAccountCoins(){
+  const u=accountUser();if(!u)return;const p=$('gcPane-coins');p.innerHTML='<div class="empty">Loading complete coin ledger…</div>';
+  try{const d=await accountRpc('get_account_overview',{user_id:u.user_id}),rows=d.coins||[];let balance=Number(d.account?.coin_balance||0);if(rows.length){let running=0;const rev=[...rows].reverse();for(const r of rev)running+=Number(r.amount??r.coin_amount??r.change??0);balance=running;}
+    const cols=rows.length?Object.keys(rows[0]):[];
+    p.innerHTML=`<div class="gcAcctGrid"><div class="gcStat"><b>Estimated Current Balance</b><strong class="gcBlue">🪙 ${balance}</strong></div><div class="gcStat"><b>Ledger Records</b><strong>${rows.length}</strong></div><div class="gcStat"><b>Last Entry</b><strong>${esc(rows[0]?.created_at||'—')}</strong></div></div>
+    <div class="gcBox"><h3>🪙 Complete Coin Ledger — ${rows.length} Record(s)</h3><div class="gcTableWrap"><table class="gcTable"><thead><tr>${cols.map(c=>`<th>${esc(c.replace(/_/g,' ').toUpperCase())}</th>`).join('')}<th>ADMIN ACTION</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${cols.map(c=>`<td style="font-size:10px;max-width:220px;overflow-wrap:anywhere">${esc(r[c]??'—')}</td>`).join('')}<td><div class="gcRowActions"><button class="btn primary" onclick="editCoinRecord('${esc(r.id||'')}')">✏️ EDIT</button><button class="btn red" onclick="deleteCoinRecord('${esc(r.id||'')}')">🗑️ DELETE</button></div></td></tr>`).join(''):`<tr><td colspan="${cols.length+1}">No coin ledger records found.</td></tr>`}</tbody></table></div></div>
+    <div class="gcMiniActions"><button class="btn teal" onclick="selectCoinsForAccount()">🪙 MANAGE COINS</button></div>`;
+  }catch(e){p.innerHTML='<div class="dangerNote">Coin ledger could not be loaded.<br><br>'+esc(e.message||e)+'<br><br>The existing <b>gc_coin_ledger</b> schema must contain an <b>id</b> column for Admin edit/delete.</div>'}
+}
+window.editCoinRecord=async id=>{if(!id)return;const u=accountUser();if(!u)return;const d=await accountRpc('get_account_overview',{user_id:u.user_id}),r=(d.coins||[]).find(x=>String(x.id)===String(id));if(!r)return alert('Coin ledger record not found.');const payload={id:String(id)};for(const k of ['amount','coin_amount','change','reason','description','reference','reference_no','lrr_id','request_id','role','note','notes']){if(Object.prototype.hasOwnProperty.call(r,k)){const v=prompt(k.replace(/_/g,' ')+':',r[k]??'');if(v===null)return;payload[k]=v}}try{await accountRpc('update_coin_ledger',payload);await loadAccountCoins()}catch(e){alert('Coin ledger edit failed: '+(e.message||e))}};
+window.deleteCoinRecord=async id=>{if(!id||!confirm('Delete this coin ledger record permanently? This changes the ledger history. Continue?'))return;try{await accountRpc('delete_coin_ledger',{id:String(id)});await loadAccountCoins()}catch(e){alert('Coin ledger delete failed: '+(e.message||e))}};
+function selectCoinsForAccount(){const u=accountUser();if(!u)return;$('coinUserId').value=String(u.user_id);$('coinRole').value=u.role||'student';closeAccountModal();switchSection('coins');$('coinAmount').focus()}
+
+async function loadAccountActivity(){
+  const u=accountUser();if(!u)return;const p=$('gcPane-activity');p.innerHTML='<div class="empty">Loading complete activity ledger…</div>';
+  try{const d=await accountRpc('get_account_overview',{user_id:u.user_id}),rows=d.activity||[];
+    p.innerHTML=`<div class="gcBox"><h3>📜 Complete Account Activity / Audit Ledger — ${rows.length} Record(s)</h3><div class="gcTableWrap"><table class="gcTable"><thead><tr><th>ID</th><th>Date</th><th>Action</th><th>Details</th><th>Admin ID</th><th>Admin Email</th><th>ADMIN ACTION</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${esc(r.id||'—')}</td><td>${esc(r.created_at||'—')}</td><td><b>${esc(r.action||'—')}</b></td><td style="white-space:pre-wrap;max-width:420px;overflow-wrap:anywhere">${esc(r.details||'—')}</td><td style="font-size:10px">${esc(r.admin_id||'—')}</td><td>${esc(r.admin_email||'—')}</td><td><div class="gcRowActions"><button class="btn primary" onclick="editActivityRecord('${esc(r.id||'')}')">✏️ EDIT</button><button class="btn red" onclick="deleteActivityRecord('${esc(r.id||'')}')">🗑️ DELETE</button></div></td></tr>`).join(''):'<tr><td colspan="7">No activity records yet.</td></tr>'}</tbody></table></div></div>`;
+  }catch(e){p.innerHTML='<div class="dangerNote">Activity history could not be loaded.<br><br>'+esc(e.message||e)+'<br><br>Run the <b>v2 account-controls migration SQL</b>.</div>'}
+}
+window.editActivityRecord=async id=>{const u=accountUser();if(!u)return;const d=await accountRpc('get_account_overview',{user_id:u.user_id}),r=(d.activity||[]).find(x=>String(x.id)===String(id));if(!r)return alert('Activity record not found.');const action=prompt('Action:',r.action||'');if(action===null)return;const details=prompt('Details:',r.details||'');if(details===null)return;const email=prompt('Admin email:',r.admin_email||'');if(email===null)return;try{await accountRpc('update_activity',{id:String(id),action,details,admin_email:email});await loadAccountActivity()}catch(e){alert('Activity edit failed: '+(e.message||e))}};
+window.deleteActivityRecord=async id=>{if(!id||!confirm('Delete this audit activity record permanently?'))return;try{await accountRpc('delete_activity',{id:String(id)});await loadAccountActivity()}catch(e){alert('Activity delete failed: '+(e.message||e))}};
+
+window.viewDetails=i=>{const u=filteredUsers()[i];if(u)showDetails(u)};
+window.selectCoins=i=>{const u=filteredUsers()[i];if(!u)return;$('coinUserId').value=String(u.user_id||'');$('coinRole').value=u.role||'student';switchSection('coins');$('coinAmount').focus()};
+async function saveUser(i){
+  const u=filteredUsers()[i],st=$('save-status-'+i);if(!u)return;
+  st.textContent='Saving complete profile to Supabase…';
+  try{
+    let p={name:$('e-name-'+i).value.trim(),email:$('e-email-'+i).value.trim().toLowerCase(),phone:$('e-phone-'+i).value.trim(),location:$('e-location-'+i).value.trim()};
+    if(u.role==='student')Object.assign(p,{course:$('e-course-'+i).value.trim(),stream:$('e-stream-'+i).value.trim(),standard:$('e-standard-'+i).value.trim(),subject:$('e-subject-'+i).value.trim(),learning_requirement:$('e-learning-'+i).value.trim(),college:$('e-college-'+i).value.trim(),division:$('e-division-'+i).value.trim(),roll:$('e-roll-'+i).value.trim(),mode:$('e-mode-'+i).value.trim(),about_me:$('e-about-'+i).value.trim()});
+    else Object.assign(p,{qualification:$('e-qualification-'+i).value.trim(),subject:$('e-subject-'+i).value.trim(),stream:$('e-stream-'+i).value.trim(),experience:$('e-experience-'+i).value.trim(),college:$('e-college-'+i).value.trim(),teaching_college:$('e-teachingcollege-'+i).value.trim(),price:$('e-price-'+i).value.trim(),rating:$('e-rating-'+i).value.trim()===''?null:Number($('e-rating-'+i).value),students_taught:$('e-students-'+i).value.trim(),teaching_mode:$('e-mode-'+i).value.trim(),languages:$('e-languages-'+i).value.trim(),address:$('e-address-'+i).value.trim(),about_me:$('e-about-'+i).value.trim(),paid_status:u.paid_status||'PENDING',verified:!!u.verified});
+    const rpc=u.role==='tutor'?'gc_admin_update_tutor_profile':'gc_admin_update_student_profile';
+    const q=await sb.rpc(rpc,{p_user_id:String(u.user_id),p_data:p});
+    if(q.error)throw q.error;
+    st.textContent='✓ Complete profile saved in Supabase.';
+    await loadLiveUsers();
+  }catch(e){st.textContent='Save failed: '+(e.message||e)}
+}
+window.setPaid=async i=>{
+  const u=filteredUsers()[i];if(!u)return;
+  const next=String(u.paid_status||'').toUpperCase()!=='PAID';
+  try{await accountRpc('set_account_controls',{user_id:u.user_id,paid_status:next?'PAID':'PENDING'});await loadLiveUsers()}catch(e){alert('Payment status update failed: '+e.message)}
+};
+window.toggleVerified=async i=>{
+  const u=filteredUsers()[i];if(!u)return;
+  const current=!!(u.public_verified_tick||u.verified);
+  try{const d=await accountRpc('set_verification',{user_id:u.user_id,public_verified_tick:!current});if(!current&&d?.eligible===false)throw new Error('At least 2 submitted documents are required before the Blue Verified Tick can be granted.');await loadLiveUsers()}catch(e){alert('Verified tick update failed: '+e.message)}
+};
+window.resetUser=async i=>{
+  const u=filteredUsers()[i];if(!u)return;
+  const p=prompt('Enter new password (minimum 8 characters):');if(p===null)return;
+  if(p.length<8)return alert('Password must be at least 8 characters.');
+  try{await api('reset_password',{user_id:u.user_id,password:p});alert('✓ Password updated successfully.')}catch(e){alert('Password reset failed: '+e.message)}
+};
+window.deleteUser=async i=>{
+  const u=filteredUsers()[i];if(!u)return;
+  if(!confirm('Permanently delete this '+u.role.toUpperCase()+' account? This cannot be undone.'))return;
+  try{
+    const r=await deleteUserViaAdminFunction(u.user_id,u.role);
+    if(!r?.deleted && r?.ok!==true)throw new Error(r?.error||'Delete was not confirmed by the server.');
+    alert('✓ Account deleted.');
+    await loadLiveUsers();
+  }catch(e){alert('Delete failed: '+(e.message||e))}
+};
+window.receipt=i=>{
+  const u=filteredUsers()[i];if(!u)return;
+  const p=new URLSearchParams({
+    name:u.name||'',email:u.email||'',phone:u.phone||'',user_id:u.user_id||'',
+    category:u.role==='tutor'?'Tutor':'Student',back:'admin.html',
+    date:new Date().toISOString().slice(0,10),
+    utr:u.transaction_ref||''
+  });
+  const w=window.open('receipt.html?'+p.toString(),'_blank','noopener,noreferrer');if(!w)alert('Please allow pop-ups for GURU CONNECT Admin.')
+};
+$('search').onclick=()=>renderUsers();
+$('term').addEventListener('input',()=>renderUsers());
+$('term').addEventListener('keydown',e=>{if(e.key==='Enter')renderUsers()});
+$('roleFilter').onchange=()=>renderUsers();
+$('refresh').onclick=loadLiveUsers;
+
+let receiptServices=[];
+const RECEIPT_SERVICE_CATALOG={
+  "Tutor Profile Listing — 1 Month":200,
+  "Helpline Service — FREE PLAN":0,
+  "Helpline Service — PRO PLAN":300,
+  "Helpline Service — GENX PLAN":1000,
+  "Helpline Service — GENX PRO PLAN":3000,
+  "Helpline Service — PRIME PLAN":5000,
+  "Helpline Service — PREMIUM PLAN":6000
+};
+function renderReceiptServices(){
+  const box=$('receiptServices');
+  box.innerHTML=receiptServices.length?receiptServices.map((x,i)=>`<div class="receiptServiceRow">
+    <div class="field"><label>Service ${i+1}</label><input id="rs-name-${i}" value="${esc(x.name)}" oninput="receiptEditService(${i},'name',this.value)"></div>
+    <div class="field"><label>Amount (₹)</label><input id="rs-amount-${i}" type="number" min="0" step="0.01" value="${Number(x.amount||0).toFixed(2)}" oninput="receiptEditService(${i},'amount',this.value)"></div>
+    <button class="btn red receiptRemove" onclick="removeReceiptService(${i})">REMOVE</button>
+  </div>`).join(''):'<div class="empty">No services added yet.</div>';
+  const total=receiptServices.reduce((n,x)=>n+Number(x.amount||0),0);
+  $('receiptTotal').textContent=total.toFixed(2);
+  const status=$('receiptStatus');
+  if(status) status.textContent=receiptServices.length?`${receiptServices.length} service(s) added • Total ₹${total.toFixed(2)}. You can edit any line amount before generating.`:'Add at least one service before generating the receipt.';
+}
+window.receiptServiceSelectionChanged=()=>{
+  const sel=$('receiptServiceName');
+  const opt=sel?.selectedOptions?.[0];
+  const custom=$('receiptCustomServiceName');
+  const amount=$('receiptServiceAmount');
+  if(!sel||!amount)return;
+  if(sel.value==='custom'){
+    if(custom){custom.style.display='block';custom.focus();}
+    amount.value='';
+  }else{
+    if(custom){custom.style.display='none';custom.value='';}
+    const a=opt?.dataset?.amount;
+    amount.value=(a!==undefined&&a!=='')?Number(a).toFixed(2):'';
+  }
+};
+window.receiptEditService=(i,k,v)=>{
+  if(receiptServices[i]){
+    receiptServices[i][k]=k==='amount'?Number(v||0):v;
+    renderReceiptServices();
+  }
+};
+window.removeReceiptService=i=>{receiptServices.splice(i,1);renderReceiptServices()};
+$('receiptAddService').onclick=()=>{
+  const sel=$('receiptServiceName');
+  const custom=$('receiptCustomServiceName');
+  const selected=sel?.value||'';
+  const name=selected==='custom'?(custom?.value||'').trim():(sel?.selectedOptions?.[0]?.textContent||'').replace(/\s+—\s+₹[\d,]+$/,'').trim();
+  const amount=Number($('receiptServiceAmount').value);
+  if(!selected)return alert('Select a service / feature first.');
+  if(!name)return alert('Enter the custom service / description.');
+  if(!Number.isFinite(amount)||amount<0)return alert('Enter a valid service amount.');
+  receiptServices.push({name,amount});
+  if(sel)sel.value='';
+  if(custom){custom.value='';custom.style.display='none';}
+  $('receiptServiceAmount').value='';
+  renderReceiptServices();
+};
+$('generateReceipt').onclick=()=>{
+  if(!receiptServices.length)return alert('Add at least one service.');
+  const total=receiptServices.reduce((n,x)=>n+Number(x.amount||0),0);
+  const payload={category:$('receiptCategory').value,name:$('receiptName').value.trim(),email:$('receiptEmail').value.trim(),phone:$('receiptPhone').value.trim(),date:$('receiptDate').value||new Date().toISOString().slice(0,10),reference:$('receiptRef').value.trim(),services:receiptServices,total};
+  if(!payload.name)return alert('Enter the recipient name.');
+  const p=new URLSearchParams({back:'admin.html',category:payload.category,name:payload.name,email:payload.email,phone:payload.phone,date:payload.date,reference:payload.reference,services:JSON.stringify(payload.services),total:total.toFixed(2)});
+  const w=window.open('receipt.html?'+p.toString(),'_blank','noopener,noreferrer');
+  if(!w)alert('Please allow pop-ups for GURU CONNECT Admin.');
+};
+$('clearReceipt').onclick=()=>{
+  receiptServices=[];
+  $('receiptName').value='';$('receiptEmail').value='';$('receiptPhone').value='';$('receiptRef').value='';
+  $('receiptDate').value=new Date().toISOString().slice(0,10);
+  $('receiptServiceName').value='';$('receiptServiceAmount').value='';
+  const custom=$('receiptCustomServiceName');if(custom){custom.value='';custom.style.display='none';}
+  renderReceiptServices();
+};
+$('receiptDate').value=new Date().toISOString().slice(0,10);
+renderReceiptServices();
+
+
+async function findForEdit(){
+  const q=$('editSearch').value.trim().toLowerCase(),role=$('editRole').value;
+  const list=users.filter(u=>(!role||u.role===role)&&(!q||[u.name,u.email,u.phone,u.user_id].some(v=>String(v??'').toLowerCase().includes(q))));
+  $('editStatus').textContent=list.length?list.length+' matching account(s).':'No matching account found.';
+  $('editResults').innerHTML=list.length?list.map((u,i)=>`<div class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed user')}</b><span class="badge">${esc(String(u.role||'').toUpperCase())}</span><div class="muted">${esc(u.email||'—')} · ${esc(u.phone||'—')}<br>ID: ${esc(u.user_id||'—')}</div></div><div class="actions"><button class="btn primary" onclick="openEditFromWorkspace('${esc(u.user_id)}')">✏️ EDIT</button><button class="btn red" onclick="deleteFromWorkspace('${esc(u.user_id)}','${esc(u.role)}')">🗑️ DELETE</button></div></div><div class="edit" id="workspace-edit-${esc(u.user_id)}"></div></div>`).join(''):'<div class="empty">No matching Student/Tutor found.</div>';
+}
+window.openEditFromWorkspace=async id=>{const u=users.find(x=>String(x.user_id)===String(id));if(!u)return;const box=$('workspace-edit-'+id);if(!box)return;const key='w'+String(id).replace(/[^a-zA-Z0-9_-]/g,'');box.innerHTML=editForm(u,key);box.classList.add('open')};
+window.saveWorkspaceUser=async(key,id)=>{const u=users.find(x=>String(x.user_id)===String(id));const st=$('save-status-'+key);if(!u)return;try{st.textContent='Saving complete profile to Supabase…';let p={name:$('e-name-'+key).value.trim(),email:$('e-email-'+key).value.trim().toLowerCase(),phone:$('e-phone-'+key).value.trim(),location:$('e-location-'+key).value.trim()};if(u.role==='student')Object.assign(p,{course:$('e-course-'+key).value.trim(),stream:$('e-stream-'+key).value.trim(),standard:$('e-standard-'+key).value.trim(),subject:$('e-subject-'+key).value.trim(),learning_requirement:$('e-learning-'+key).value.trim(),college:$('e-college-'+key).value.trim(),division:$('e-division-'+key).value.trim(),roll:$('e-roll-'+key).value.trim(),mode:$('e-mode-'+key).value.trim(),about_me:$('e-about-'+key).value.trim()});else Object.assign(p,{qualification:$('e-qualification-'+key).value.trim(),subject:$('e-subject-'+key).value.trim(),stream:$('e-stream-'+key).value.trim(),experience:$('e-experience-'+key).value.trim(),college:$('e-college-'+key).value.trim(),teaching_college:$('e-teachingcollege-'+key).value.trim(),price:$('e-price-'+key).value.trim(),rating:$('e-rating-'+key).value.trim()===''?null:Number($('e-rating-'+key).value),students_taught:$('e-students-'+key).value.trim(),teaching_mode:$('e-mode-'+key).value.trim(),languages:$('e-languages-'+key).value.trim(),address:$('e-address-'+key).value.trim(),about_me:$('e-about-'+key).value.trim(),paid_status:u.paid_status||'PENDING',verified:!!u.verified});const rpc=u.role==='tutor'?'gc_admin_update_tutor_profile':'gc_admin_update_student_profile';const q=await sb.rpc(rpc,{p_user_id:String(u.user_id),p_data:p});if(q.error)throw q.error;st.textContent='✓ Complete profile saved in Supabase.';await loadLiveUsers();await findForEdit()}catch(e){st.textContent='Save failed: '+(e.message||e)}};
+window.deleteFromWorkspace=async(id,role)=>{
+  const u=users.find(x=>String(x.user_id)===String(id));if(!u)return;
+  if(!confirm('Permanently delete this '+String(role).toUpperCase()+' account? This cannot be undone.'))return;
+  try{
+    const r=await deleteUserViaAdminFunction(id,role);
+    if(!r?.deleted && r?.ok!==true)throw new Error(r?.error||'Delete was not confirmed by the server.');
+    alert('✓ Account deleted.');
+    await loadLiveUsers();await findForEdit();
+  }catch(e){alert('Delete failed: '+(e.message||e))}
+};
+$('editFind').onclick=findForEdit;$('editRefresh').onclick=async()=>{await loadLiveUsers();findForEdit()};$('editSearch').addEventListener('keydown',e=>{if(e.key==='Enter')findForEdit()});
+
+$('editFind').onclick=findForEdit;$('editRefresh').onclick=async()=>{await loadLiveUsers();findForEdit()};$('editSearch').addEventListener('keydown',e=>{if(e.key==='Enter')findForEdit()});
+
+function selectCoinMember(u){$('coinUserId').value=String(u.user_id||'');$('coinRole').value=u.role||'student';$('coinStatus').textContent='Selected: '+(u.name||u.user_id);}
+window.selectCoinById=id=>{const u=users.find(x=>String(x.user_id)===String(id));if(u)selectCoinMember(u)};
+$('coinFind').onclick=()=>{const q=$('coinFindSearch').value.trim().toLowerCase();const list=users.filter(u=>!q||[u.name,u.email,u.phone,u.user_id].some(v=>String(v??'').toLowerCase().includes(q)));$('coinFindResults').innerHTML=list.length?list.slice(0,25).map((u,i)=>`<div class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed')}</b><span class="badge">${esc(String(u.role||'').toUpperCase())}</span><div class="muted">${esc(u.email||'—')} · ${esc(u.phone||'—')}<br>ID: ${esc(u.user_id)}</div></div><button class="btn teal" onclick="selectCoinById('${esc(u.user_id)}')">SELECT</button></div></div>`).join(''):'<div class="empty">No member found.</div>'};
+async function adjustCoins(delta){try{const id=String($('coinUserId').value).trim(),role=$('coinRole').value,amount=Math.abs(Number($('coinAmount').value)),reason=$('coinReason').value.trim();if(!id)throw new Error('Select a Student/Tutor first.');if(!Number.isFinite(amount)||amount===0)throw new Error('Enter a non-zero coin amount.');if(!reason)throw new Error('Reason is required.');const r=await sb.rpc('gc_staff_adjust_coins',{p_profile_id:id,p_role:role,p_amount:delta*amount,p_reason:reason});if(r.error)throw r.error;$('coinStatus').textContent='✓ Coins updated and ledger entry created.';$('coinAmount').value='';$('coinReason').value='';coinHistoryLoaded=false;await loadLiveUsers()}catch(e){$('coinStatus').textContent='Coin update failed: '+(e.message||e)}}
+$('coinAdd').onclick=()=>adjustCoins(1);$('coinSubtract').onclick=()=>adjustCoins(-1);
+
+async function loadCoinHistory(){
+  if(coinHistoryLoaded)return;coinHistoryLoaded=true;$('coinHistoryStatus').textContent='Loading coin history…';
+  const host=$('coinHistoryResults');
+  try{
+    let r=await sb.from('gc_coin_ledger').select('*').order('created_at',{ascending:false}).limit(250);
+    if(r.error){coinHistoryLoaded=false;throw r.error}
+    const rows=r.data||[];$('coinHistoryStatus').textContent=rows.length+' ledger record(s).';
+    renderCoinHistory(rows);
+  }catch(e){$('coinHistoryStatus').textContent='Coin history could not be loaded: '+(e.message||e);host.innerHTML='<div class="dangerNote">The Coins Management RPC is installed, but the ledger table name/permissions are not available to this dashboard yet. Expected table: <b>gc_coin_ledger</b>.</div>'}
+}
+function renderCoinHistory(rows){const q=($('coinHistorySearch').value||'').trim().toLowerCase();const list=(rows||[]).filter(r=>!q||Object.values(r).some(v=>String(v??'').toLowerCase().includes(q)));$('coinHistoryResults').innerHTML=list.length?list.map(r=>{const amt=Number(r.amount??r.coin_amount??r.change??0);const add=amt>=0;return `<div class="historyRow ${add?'add':'sub'}"><div>${esc(r.created_at||r.date||'—')}</div><div><b>${esc(r.name||r.full_name||r.user_name||r.user_id||r.profile_id||'Member')}</b><br><span class="muted">${esc(r.reason||r.description||'—')}</span></div><div class="amount">${add?'+':''}${esc(amt)}</div><div>${esc(r.role||'')} · ${esc(r.reference||r.lrr_id||r.request_id||'')}</div></div>`}).join(''):'<div class="empty">No coin history matches the search.</div>'}
+$('loadCoinHistory').onclick=async()=>{coinHistoryLoaded=false;await loadCoinHistory()};$('coinHistoryFind').onclick=async()=>{if(!coinHistoryLoaded)await loadCoinHistory();else{const r=await sb.from('gc_coin_ledger').select('*').order('created_at',{ascending:false}).limit(250);if(!r.error)renderCoinHistory(r.data||[])}};$('coinHistorySearch').addEventListener('keydown',e=>{if(e.key==='Enter')$('coinHistoryFind').click()});
+
+async function lrrAction(id,action){
+  const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(id));
+  const reason=action==='reject'?'Rejected by Admin':action==='return'?'Returned to Student':'Approved to Tutor';
+  if(!confirm(reason+'?'))return;
+  try{
+    let r=await sb.rpc('gc_admin_lrr_action',{p_request_id:String(id),p_action:action,p_reason:reason});
+    if(r.error&&/could not find the function|does not exist|schema cache/i.test(String(r.error.message||''))){
+      r=await sb.from('gc_learning_requests_v2').update({status:action==='approve'?'APPROVED':action==='reject'?'REJECTED':'RETURNED'}).eq('id',id)
+    }
+    if(r.error)throw r.error;
+    lrrLoaded=false;await loadLearning()
+  }catch(e){alert('LRR action failed: '+(e.message||e))}
+}
+window.lrrAction=lrrAction;
+
+window.lrrCoins=async(id,studentId,tutorId,role)=>{const who=role==='tutor'?tutorId:studentId;if(!who)return alert('No '+role+' user ID is attached to this LRR.');$('coinUserId').value=String(who);$('coinRole').value=role;switchSection('coins');$('coinAmount').focus()};
+
+/* Final coin decision uses the authoritative LRR workflow already used by the main site. */
+window.lrrDecision=async(id,decision)=>{
+  const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(id));
+  if(!row)return alert('LRR record is no longer loaded. Refresh the LRR tab.');
+  const outcome=String(row.student_outcome||row.outcome||'').toUpperCase();
+  if(decision==='APPROVE' && !['SATISFIED','SATISFIED_BY_STUDENT','COMPLETED_SATISFIED'].includes(outcome)){
+    const ok=confirm('The Student has not marked this LRR as SATISFIED.\n\nYou can still open both chats and investigate, but releasing Tutor coins now is not supported by the evidence.\n\nContinue to the secure decision anyway?');
+    if(!ok)return;
+  }
+  let note='';
+  if(decision==='DENY')note=prompt('Reason for denying / returning the LRR coins:','Admin reviewed the case and did not approve the Tutor coin transfer.')??'';
+  try{
+    const q=await sb.rpc('gc_admin_decide_learning_request',{p_request_id:String(id),p_decision:decision,p_note:String(note).slice(0,1000)});
+    if(q.error)throw q.error;
+    alert(decision==='APPROVE'?'✓ Approved. The secure LRR workflow has released the Tutor reward.':'✓ Denied / returned according to the secure LRR workflow.');
+    lrrLoaded=false;await loadLearning();
+  }catch(e){alert('Coin decision failed: '+(e.message||e))}
+};
+
+function normalizeWhatsAppNumber(v){
+ const raw=String(v??'').trim(); let digits=raw.replace(/\D/g,'');
+ if(!digits)return ''; if(digits.startsWith('00'))digits=digits.slice(2);
+ if(digits.length===11&&digits.startsWith('0'))digits=digits.slice(1);
+ if(digits.length===10)digits='91'+digits;
+ return /^[1-9]\d{10,14}$/.test(digits)?digits:'';
+}
+async function resolveAdminLrrParticipant(lrrId,who){
+ const rq=await sb.from('gc_learning_requests_v2').select('id,student_id,tutor_id').eq('id',String(lrrId)).maybeSingle();
+ if(rq.error)throw rq.error;if(!rq.data)throw new Error('Learning Request was not found.');
+ const rawId=String(who==='tutor'?rq.data.tutor_id||'':rq.data.student_id||'').trim();
+ if(!rawId)throw new Error('The '+who+' account could not be identified for this request.');
+ const table=who==='tutor'?'tutor_profiles':'student_profiles'; let userId=rawId,name='';
+ try{const rp=await sb.from(table).select('id,user_id,name,full_name').eq('id',rawId).maybeSingle();if(!rp.error&&rp.data){userId=String(rp.data.user_id||rawId);name=String(rp.data.name||rp.data.full_name||'');}}catch(_){}
+ try{const pr=await sb.from('profiles').select('id,phone,full_name').eq('id',userId).maybeSingle();if(!pr.error&&pr.data)return {phone:normalizeWhatsAppNumber(pr.data.phone),name:name||String(pr.data.full_name||'')};}catch(_){}
+ try{const rp=await sb.from(table).select('*').eq('user_id',userId).maybeSingle();if(!rp.error&&rp.data){const k=Object.keys(rp.data).find(x=>/(phone|mobile|whatsapp|contact)/i.test(x)&&rp.data[x]!=null&&String(rp.data[x]).trim());return {phone:normalizeWhatsAppNumber(k?rp.data[k]:''),name:name||String(rp.data.name||rp.data.full_name||'')};}}catch(_){}
+ return {phone:'',name};
+}
+async function lookupAdminLrrWhatsAppContact(lrrId,who){return resolveAdminLrrParticipant(lrrId,who);}
+window.whatsappCaseChat=async function(lrrId,who){
+ const popup=window.open('about:blank','_blank');
+ try{
+  const q=await sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(lrrId),p_target_role:who});
+  let contact=q.error?null:q.data,phone=normalizeWhatsAppNumber(contact?.phone),name=String(contact?.name||'');
+  if(!phone){const fallback=await resolveAdminLrrParticipant(lrrId,who);phone=normalizeWhatsAppNumber(fallback.phone);name=name||fallback.name||'';}
+  if(!phone)throw new Error('No WhatsApp number is saved for this connected user. Please update the registered Phone / WhatsApp number in the user profile.');
+  name=name||(who==='tutor'?'Tutor':'Student');
+  const url='https://wa.me/'+phone+'?text='+encodeURIComponent(`Hello ${name}, I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.`);
+  if(popup&&!popup.closed)popup.location.href=url;else window.location.assign(url);
+ }catch(e){if(popup&&!popup.closed)popup.close();alert('WhatsApp chat could not be opened: '+(e.message||e));}
+};
+
+async function gcAdminParticipantName(id,targetRole){
+ const raw=String(id||'').trim();if(!raw)return '';
+ const table=targetRole==='tutor'?'tutor_profiles':'student_profiles';
+ try{const q=await sb.from(table).select('id,user_id,name,full_name').eq('id',raw).maybeSingle();if(!q.error&&q.data)return String(q.data.name||q.data.full_name||'').trim()}catch(_){}
+ try{const q=await sb.from(table).select('id,user_id,name,full_name').eq('user_id',raw).maybeSingle();if(!q.error&&q.data)return String(q.data.name||q.data.full_name||'').trim()}catch(_){}
+ try{const q=await sb.from('profiles').select('id,full_name,name').eq('id',raw).maybeSingle();if(!q.error&&q.data)return String(q.data.full_name||q.data.name||'').trim()}catch(_){}
+ return '';
+}
+async function loadLearning(){
+ if(lrrLoading)return;lrrLoading=true;$('learningStatus').textContent=lrrLoaded?'Refreshing LRR…':'Loading LRR…';
+ try{
+  const q=await sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(200);
+  if(q.error)throw q.error;
+  const rows=q.data||[];window.__adminLrrRows=rows;
+  $('lrrCount').textContent=rows.length+' REQUESTS';$('learningStatus').textContent=rows.length+' Learning Requirement Request(s).';
+  const h=$('learningResults'); const cards=[];
+  for(const r of rows){
+   const id=r.id||r.request_id||r.request_code,st=r.status||'OPEN';
+   const student=r.student_id||r.student_user_id||r.student_profile_id||'',tutor=r.tutor_id||r.tutor_user_id||r.tutor_profile_id||'';
+   const studentName=String(r.student_name||r.student_full_name||'').trim()||await gcAdminParticipantName(student,'student')||'Student';
+   const tutorName=tutor?(String(r.tutor_name||r.tutor_full_name||'').trim()||await gcAdminParticipantName(tutor,'tutor')||'Tutor'):'Not assigned';
+   const outcome=r.student_outcome||r.outcome||'Pending';
+   const tutorCompleted=['TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED','APPROVED'].includes(String(st).toUpperCase());
+   const studentFeedback=r.student_feedback||r.student_remark||r.student_remarks||r.feedback||r.remark||'';
+   const tutorFeedback=r.tutor_feedback||r.tutor_remark||r.tutor_remarks||r.completion_note||r.tutor_completion_note||'';
+   const adminNote=r.admin_decision_note||r.admin_note||'';
+   const canDecide=['PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW'].includes(String(st).toUpperCase());
+   const contactUnlocked=!!student&&!!tutor&&['ACCEPTED','TUTOR_ACCEPTED','TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED','APPROVED','COMPLETED_SATISFIED','COMPLETED_NOT_SATISFIED'].includes(String(st).toUpperCase());
+   const satisfied=['SATISFIED','SATISFIED_BY_STUDENT','COMPLETED_SATISFIED'].includes(String(outcome).toUpperCase());
+   cards.push(`<article class="user"><div class="userHead"><div class="identity"><b>${esc(r.request_code||id||'Learning Request')}</b><span class="badge">${esc(st)}</span><div class="muted">Created: ${esc(r.created_at||'—')}</div></div><span class="pill">LRR CASE</span></div>
+      <div class="lrrMeta"><div class="metaBox"><b>Student Name</b>${esc(studentName)}</div><div class="metaBox"><b>Tutor Name</b>${esc(tutorName)}</div><div class="metaBox"><b>Student ID</b>${esc(student||'Not linked')}</div><div class="metaBox"><b>Tutor ID</b>${esc(tutor||'Not assigned')}</div><div class="metaBox"><b>Course / Stream</b>${esc((r.course||'—')+' / '+(r.stream||'—'))}</div><div class="metaBox"><b>Subject / Topic</b>${esc((r.subject||'—')+' / '+(r.chapter||r.topic||'—'))}</div><div class="metaBox" style="grid-column:1/-1"><b>Requirement / Issue</b>${esc(r.problem||r.issue||r.learning_requirement||r.description||'—')}</div></div>
+      <div class="lrrEvidence"><div class="lrrEvidenceTitle">🔎 Evidence & Service Outcome — Admin Review</div><div class="evidenceGrid">
+        <div class="evidenceBox"><b>Student outcome</b><span class="${satisfied?'evidenceGood':String(outcome).toUpperCase()==='NOT_SATISFIED'?'evidenceBad':'evidenceWarn'}">${esc(outcome)}</span></div>
+        <div class="evidenceBox"><b>Tutor service status</b><span class="${tutorCompleted?'evidenceGood':'evidenceWarn'}">${tutorCompleted?'✓ Tutor marked/completed the service':'Pending tutor completion'}</span></div>
+        <div class="evidenceBox"><b>Student feedback / remark</b>${esc(studentFeedback||'No written student feedback recorded.')}</div>
+        <div class="evidenceBox"><b>Tutor feedback / completion note</b>${esc(tutorFeedback||'No separate tutor feedback recorded. Status is used as the completion evidence.')}</div>
+        <div class="evidenceBox"><b>Coins held with Admin</b><strong>🪙 ${Number(r.coins_held||0)}</strong></div>
+        <div class="evidenceBox"><b>Learning deadline</b>${esc(r.learning_deadline||'Not set')}</div>
+        <div class="evidenceBox" style="grid-column:1/-1"><b>Admin decision / note</b>${esc(adminNote||'No Admin decision recorded yet.')}</div>
+      </div>${contactUnlocked?`<div class="lrrDecision" style="background:#ecfdf5;border-color:#bbf7d0;color:#166534">✓ Connection accepted. Admin may contact the Student or Tutor on WhatsApp for this LRR case.</div>`:``}</div>
+      <div class="lrrActions"><button type="button" class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button type="button" class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button type="button" class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button type="button" class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(studentName)}','${esc(tutorName)}','tutor')">🪙 TUTOR COINS</button><button type="button" class="btn light" onclick="lrrCoins('${esc(id)}','${esc(studentName)}','${esc(tutorName)}','student')">🪙 STUDENT COINS</button>${contactUnlocked?`<button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','student')">💬 WHATSAPP STUDENT</button><button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','tutor')">💬 WHATSAPP TUTOR</button>`:''}${canDecide?`<button type="button" class="btn green decisionBtn" onclick="lrrDecision('${esc(id)}','APPROVE')">💰 RELEASE TUTOR COINS</button><button type="button" class="btn red decisionBtn" onclick="lrrDecision('${esc(id)}','DENY')">↩ DENY / RETURN COINS</button>`:''}</div></article>`);
+  }
+  h.innerHTML=cards.length?cards.join(''):'<div class="empty">No Learning Requirement Requests found.</div>';
+  lrrLoaded=true
+ }catch(e){lrrLoaded=false;$('learningStatus').textContent='LRR load failed: '+(e.message||e);$('learningResults').innerHTML='<div class="empty">Unable to load Learning Requirement Requests.</div>'}
+ finally{lrrLoading=false}
+}
+$('resetFind').onclick=async()=>{
+  const q=$('resetSearch').value.trim();$('resetResult').innerHTML='Searching…';
+  try{
+    let rows=[];
+    const r=await sb.rpc('gc_admin_find_users',{p_term:q});
+    if(!r.error) rows=normalizeRpcUsers(r.data);
+    if(!rows.length){
+      const [pr,st,tr]=await Promise.all([
+        sb.from('profiles').select('*'),
+        sb.from('student_profiles').select('*'),
+        sb.from('tutor_profiles').select('*')
+      ]);
+      if(pr.error)throw pr.error;if(st.error)throw st.error;if(tr.error)throw tr.error;
+      const pm=new Map((pr.data||[]).map(x=>[String(x.id),x]));
+      const build=(row,role)=>{
+        const pid=row.user_id||row.auth_user_id||row.profile_id||'';
+        const p=pm.get(String(pid))||{};
+        return Object.assign({},p,row,{user_id:String(pid||p.id||''),role,email:row.email||p.email||'',phone:row.phone||p.phone||'',name:row.name||row.full_name||p.full_name||p.name||''});
+      };
+      rows=[...(st.data||[]).map(x=>build(x,'student')),...(tr.data||[]).map(x=>build(x,'tutor'))]
+        .filter(u=>[u.name,u.email,u.phone,u.user_id].some(v=>String(v||'').toLowerCase().includes(q.toLowerCase())));
+    }
+    $('resetResult').innerHTML=rows.length?rows.map((u,i)=>`<div class="user"><b>${esc(u.name||'User')}</b><span class="badge">${esc(String(u.role||'').toUpperCase())}</span><div class="muted">${esc(u.email||'—')} · ${esc(u.phone||'—')}<br>ID: ${esc(u.user_id)}</div><div class="actions"><button class="btn primary" onclick="resetByFound('${esc(u.user_id)}')">RESET PASSWORD</button><button class="btn green" onclick="editFoundUser('${esc(u.user_id)}')">✏️ EDIT USER</button><button class="btn red" onclick="deleteFoundUser('${esc(u.user_id)}','${esc(u.role||'')}')">DELETE USER</button></div></div>`).join(''):'<div class="empty">No account found.</div>';
+  }catch(e){$('resetResult').innerHTML='<div class="empty">Search failed: '+esc(e.message||e)+'</div>'}
+};
+window.editFoundUser=async id=>{
+  await loadLiveUsers();
+  const idx=users.findIndex(u=>String(u.user_id)===String(id));
+  if(idx<0){alert('User was found, but the complete profile record could not be loaded for editing.');return;}
+  switchSection('directories');
+  renderUsers();
+  setTimeout(()=>{const cardIndex=filteredUsers().findIndex(u=>String(u.user_id)===String(id));if(cardIndex>=0)toggleEdit(cardIndex)},50);
+};
+window.deleteFoundUser=async(id,role)=>{
+  if(!confirm('Permanently delete this '+String(role||'USER').toUpperCase()+' account? This cannot be undone.'))return;
+  try{
+    const r=await deleteUserViaAdminFunction(id,role);
+    if(!r?.deleted && r?.ok!==true)throw new Error(r?.error||'Delete was not confirmed by the server.');
+    alert('✓ Account deleted.');
+    $('resetResult').innerHTML='';$('resetSearch').value='';await loadLiveUsers();
+  }catch(e){alert('Delete failed: '+(e.message||e))}
+};
+
+window.resetByFound=async id=>{
+  const p=prompt('Enter new password (minimum 8 characters):');if(p===null)return;if(p.length<8)return alert('Minimum 8 characters.');
+  try{await api('reset_password',{user_id:id,password:p});alert('✓ Password updated.')}catch(e){alert('Reset failed: '+e.message)}
+};
+
+$('create').onclick=async()=>{
+  const b=$('create');b.disabled=true;b.textContent='CREATING…';
+  try{
+    await api('create_user',{role:$('newRole').value,name:$('newName').value,email:$('newEmail').value,phone:$('newPhone').value,password:$('newPass').value});
+    $('createStatus').textContent='✓ Account created successfully. Refreshing directory…';await loadLiveUsers();
+  }catch(e){$('createStatus').textContent='Creation failed: '+e.message}
+  finally{b.disabled=false;b.textContent='CREATE ACCOUNT'}
+};
+
+$('adSave').onclick=async()=>{
+  const b=$('adSave');b.disabled=true;b.textContent='SAVING…';$('adStatus').textContent='Uploading advertisement…';
+  try{
+    const title=$('adTitle').value.trim(),advertiser=$('adAdvertiser').value.trim(),placement=$('adPlacement').value;
+    const file=$('adFile').files[0],click=$('adUrl').value.trim(),wa=$('adWhatsapp').value.trim(),priority=Number($('adPriority').value||0);
+    if(!title)throw new Error('Advertisement title is required.');
+    if(!file)throw new Error('Please select an advertisement flyer.');
+    if(file.size>5*1024*1024)throw new Error('Flyer must be 5 MB or smaller.');
+    if(!/^image\/(jpeg|png|webp)$/i.test(file.type))throw new Error('Only JPG, PNG or WEBP flyers are supported.');
+    const session=(await sb.auth.getSession()).data?.session;if(!session?.user?.id)throw new Error('Admin session missing. Please login again.');
+    const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-');
+    const path=`admin/${Date.now()}-${safe}`;
+    const up=await sb.storage.from('gc-advertisements').upload(path,file,{upsert:false,contentType:file.type});
+    if(up.error)throw up.error;
+    const pub=sb.storage.from('gc-advertisements').getPublicUrl(path);
+    const image_url=pub.data.publicUrl;
+    const ins=await sb.from('gc_advertisements').insert({title,advertiser_name:advertiser,placement,image_url,storage_path:path,click_url:click||null,whatsapp_url:wa||null,start_at:$('adStart').value?new Date($('adStart').value).toISOString():new Date().toISOString(),end_at:$('adEnd').value?new Date($('adEnd').value).toISOString():null,active:true,priority:Number.isFinite(priority)?priority:0,created_by:session.user.id}).select().single();
+    if(ins.error)throw ins.error;
+    $('adStatus').textContent='✓ Advertisement saved to Supabase and published to the selected placement.';
+    $('adTitle').value='';$('adAdvertiser').value='';$('adUrl').value='';$('adWhatsapp').value='';$('adFile').value='';$('adPriority').value='0';
+  }catch(e){$('adStatus').textContent='Advertisement save failed: '+(e.message||e)}
+  finally{b.disabled=false;b.textContent='SAVE ADVERTISEMENT'}
+};
+
+staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit()}});
+</script>
+<script id="gc-final-tutor-whatsapp-fix-js">
+(function(){
+  'use strict';
+  function gcNormalizeWA(v){
+    let d=String(v||'').replace(/\D/g,'');
+    if(!d)return '';
+    if(d.startsWith('00'))d=d.slice(2);
+    if(d.length===11&&d.startsWith('0'))d=d.slice(1);
+    if(d.length===10)d='91'+d;
+    return d;
+  }
+  function gcPickContact(row){
+    if(!row||typeof row!=='object')return {phone:'',name:''};
+    const keys=Object.keys(row);
+    const preferred=['phone','mobile','mobile_number','whatsapp','whatsapp_number','whatsapp_phone','contact_number','contact_no','phone_number'];
+    let phone='';
+    for(const k of preferred){if(row[k]!=null&&String(row[k]).trim()){phone=String(row[k]);break;}}
+    if(!phone){
+      const k=keys.find(x=>/(phone|mobile|whatsapp|contact)/i.test(x)&&row[x]!=null&&String(row[x]).trim());
+      if(k)phone=String(row[k]);
+    }
+    const name=String(row.name||row.full_name||row.display_name||'');
+    return {phone:gcNormalizeWA(phone),name};
+  }
+  async function gcTutorContact(lrrId){
+    const rq=await sb.from('gc_learning_requests_v2').select('id,tutor_id').eq('id',String(lrrId)).maybeSingle();
+    if(rq.error)throw rq.error;
+    const id=String(rq.data?.tutor_id||'').trim();
+    if(!id)throw new Error('The tutor account could not be identified for this request.');
+
+    // IMPORTANT: do not assume a `phone` column exists in public.profiles.
+    // Read the Tutor profile as-is and detect the actual contact field.
+    const attempts=[];
+    attempts.push(sb.from('tutor_profiles').select('*').eq('id',id).maybeSingle());
+    attempts.push(sb.from('tutor_profiles').select('*').eq('user_id',id).maybeSingle());
+    for(const q of attempts){
+      try{
+        const x=await q;
+        if(!x.error&&x.data){
+          const c=gcPickContact(x.data);
+          if(c.phone)return c;
+        }
+      }catch(_){ }
+    }
+    return {phone:'',name:'Tutor'};
+  }
+  window.gcOpenTutorWhatsApp=async function(lrrId){
+    try{
+      let phone='',name='';
+      // First use the existing secure RPC if it is available.
+      try{
+        const q=await sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(lrrId),p_target_role:'tutor'});
+        if(!q.error&&q.data){
+          const c=gcPickContact(q.data);phone=c.phone;name=c.name;
+        }
+      }catch(_){ }
+      // If RPC does not return the tutor number, use tutor_profiles directly.
+      if(!phone){
+        const c=await gcTutorContact(lrrId);
+        phone=c.phone;name=name||c.name;
+      }
+      if(!phone)throw new Error('No WhatsApp number is saved for this tutor. Please update the tutor mobile/WhatsApp number in the Tutor profile.');
+      const msg='Hello '+(name||'Tutor')+', I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.';
+      const url='https://wa.me/'+phone+'?text='+encodeURIComponent(msg);
+      if(window.matchMedia && window.matchMedia('(max-width: 700px)').matches){
+        window.location.href=url;
+      }else{
+        const w=window.open(url,'_blank','noopener,noreferrer');
+        if(!w)window.location.href=url;
+      }
+    }catch(e){alert('WhatsApp Tutor could not be opened: '+(e.message||e));}
+  };
+  function install(){
+    document.querySelectorAll('.lrrActions .caseChat').forEach(btn=>{
+      const oc=btn.getAttribute('onclick')||'';
+      if(!/whatsappCaseChat\([^,]+,\s*[\'"]tutor[\'"]\)/.test(oc))return;
+      const m=oc.match(/whatsappCaseChat\(([\'"])(.*?)\1,\s*([\'"])tutor\3\)/);
+      if(!m)return;
+      btn.setAttribute('onclick','gcOpenTutorWhatsApp('+JSON.stringify(m[2])+')');
+      btn.type='button';
+    });
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);
+  else install();
+  setTimeout(install,500);setTimeout(install,1500);setTimeout(install,3000);
+})();
+</script>
+
+</body></html>
