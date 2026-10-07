@@ -150,40 +150,18 @@ async function restRpc(name){
 async function load(){
   live.textContent='● LIVE FEED • CONNECTING...';
   try{
-    let rows=[];
-    /* The older public RPCs can reference legacy columns such as
-       student_short_id that are not present in the current database schema.
-       Read the live request table directly first; select('*') never asks
-       PostgREST for that obsolete column. */
-    if(window.supabase?.createClient){
-      try{
-        const s=window.supabase.createClient(URL,KEY,{auth:{persistSession:false}});
-        const q=await s.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(500);
-        if(!q.error){
-          rows=normalize(q.data);
-        }else{
-          console.warn('Direct LRR table read failed',q.error);
-        }
-      }catch(e){
-        console.warn('Direct LRR table read failed',e);
-      }
-    }
-    /* Only use the legacy RPC as a fallback when the table itself is not
-       readable. This prevents a broken legacy RPC from hiding all LRRs. */
-    if(!rows.length){
-      try{rows=await restRpc('gc_list_learning_requests_public_v5')}catch(e){
-        console.warn('V5 failed',e);
-        try{rows=await restRpc('gc_list_learning_requests_public_v4')}catch(e2){
-          console.warn('V4 REST failed',e2);
-          if(window.supabase?.createClient){
-            const s=window.supabase.createClient(URL,KEY,{auth:{persistSession:false}});
-            const q=await s.rpc('gc_list_learning_requests_public_v4');
-            if(q.error)throw q.error;
-            rows=normalize(q.data);
-          }else throw e2;
-        }
-      }
-    }
+    // IMPORTANT: Do not call the old public LRR RPCs here. Some of them
+    // reference the removed legacy column student_short_id and break the feed.
+    // Read the current LRR table directly through Supabase REST instead.
+    const r=await fetch(URL+'/rest/v1/gc_learning_requests_v2?select=*&order=created_at.desc&limit=500',{
+      method:'GET',
+      headers:{apikey:KEY,Authorization:'Bearer '+KEY,Accept:'application/json'},
+      cache:'no-store'
+    });
+    const raw=await r.text();
+    if(!r.ok) throw new Error(raw||('HTTP '+r.status));
+    const data=JSON.parse(raw);
+    const rows=Array.isArray(data)?data:[];
     all=rows.filter(r=>r&&typeof r==='object'&&!['DELETED','DELETED_BY_ADMIN'].includes(String(r.status||'').toUpperCase()));
     all.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
     rebuild();
@@ -202,8 +180,11 @@ function rebuild(){
 function rows(){
   const st=document.getElementById('status').value, s=document.getElementById('stream').value, sub=document.getElementById('subject').value;
   return all.filter(r=>{
-    if(st==='OPEN' && (closed(r)||String(r.status||'OPEN').toUpperCase()==='CLOSED'||String(r.status||'').toUpperCase()==='DELETED'||String(r.status||'').toUpperCase()==='DELETED_BY_ADMIN'))return false;
-    if(st==='CLOSED' && !closed(r))return false;
+    const rawStatus=String(r.status||'OPEN').toUpperCase().replace(/\s+/g,'_');
+    const statusClosed=['CLOSED','COMPLETED','REJECTED','RETURNED','DELETED','DELETED_BY_ADMIN'].includes(rawStatus);
+    if(st==='OPEN' && statusClosed)return false;
+    if(st==='CLOSED' && !statusClosed && !closed(r))return false;
+    if(st==='ALL')return true;
     if(st==='ADMIN_APPROVED' && !approved(r))return false;
     if(s!=='ALL'&&String(r.stream||'')!==s)return false;
     if(sub!=='ALL'&&String(r.subject||'')!==sub)return false;
@@ -227,7 +208,7 @@ function card(r){
 function box(i,b,v){return '<div class="box"><span class="ico">'+i+'</span><div><b>'+b+'</b><span title="'+esc(v)+'">'+esc(v)+'</span></div></div>'}
 function render(){
   const rs=rows();
-  grid.innerHTML=rs.length?rs.map(card).join(''):'<div class="empty">🔎 No Learning Requirement matches these filters.</div>';
+  grid.innerHTML=rs.length?rs.map(card).join(''):(all.length?'<div class="empty">🔎 No Learning Requirement matches these filters.<br><small>'+all.length+' LRR(s) were loaded, but the selected filters exclude them. Choose <b>ALL TIME LRR</b> to view every loaded request.</small></div>':'<div class="empty">📭 No Learning Requirements were returned from the database.</div>');
   grid.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>details(b.dataset.id));
   grid.querySelectorAll('[data-connect]').forEach(b=>b.onclick=()=>location.href='login-tutor.html?return=learning.html');
 }
