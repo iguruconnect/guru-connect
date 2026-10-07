@@ -161,49 +161,55 @@ function normalizeWhatsAppNumber(v){
  return digits;
 }
 async function lookupLrrWhatsAppContact(requestId,targetRole){
- // Resolve the contact from the ACCEPTED connection first. This avoids relying
- // on the LR's tutor_id/student_id being the same kind of ID as profiles.id.
- let connection=null;
- try{
-  const cq=await safe(sb.from('gc_learning_request_connections').select('*').eq('request_id',String(requestId)).eq(targetRole==='tutor'?'student_id':'tutor_id',pid()).eq('status','ACCEPTED').order('created_at',{ascending:false}).limit(1).maybeSingle());
-  if(!cq.error&&cq.data) connection=cq.data;
- }catch(_){}
+ // Resolve the connected profile correctly: LR/connection IDs are profile IDs,
+ // while the registered mobile number is stored on public.profiles against auth user_id.
  const rq=await safe(sb.from('gc_learning_requests_v2').select('id,student_id,tutor_id').eq('id',String(requestId)).maybeSingle());
  if(rq.error)throw rq.error;if(!rq.data)throw new Error('Learning Request was not found.');
- const rawTargetId=String(targetRole==='tutor'?(connection?.tutor_id||rq.data.tutor_id||''):(connection?.student_id||rq.data.student_id||''));
- if(!rawTargetId)throw new Error('The connected '+targetRole+' account could not be identified.');
- let phone='',name='',resolvedUserId='';
- const profileQueries=[
-  ()=>sb.from('profiles').select('id,phone,mobile,mobile_number,phone_number,full_name,name').eq('id',rawTargetId).maybeSingle(),
-  ()=>sb.from('tutor_profiles').select('id,user_id,phone,mobile,mobile_number,phone_number,full_name,name').eq('id',rawTargetId).maybeSingle(),
-  ()=>sb.from('tutor_profiles').select('id,user_id,phone,mobile,mobile_number,phone_number,full_name,name').eq('user_id',rawTargetId).maybeSingle(),
-  ()=>sb.from('student_profiles').select('id,user_id,phone,mobile,mobile_number,phone_number,full_name,name').eq('id',rawTargetId).maybeSingle(),
-  ()=>sb.from('student_profiles').select('id,user_id,phone,mobile,mobile_number,phone_number,full_name,name').eq('user_id',rawTargetId).maybeSingle()
- ];
- for(const run of profileQueries){
-  try{const x=await safe(run());if(!x.error&&x.data){
-    const d=x.data; phone=phone||d.phone||d.mobile||d.mobile_number||d.phone_number||''; name=name||d.full_name||d.name||''; resolvedUserId=resolvedUserId||d.user_id||d.id||'';
-    if(phone)break;
-  }}catch(_){}
+ const targetProfileId=String(targetRole==='tutor'?rq.data.tutor_id||'':rq.data.student_id||'');
+ if(!targetProfileId)throw new Error('The connected '+targetRole+' account could not be identified.');
+ let phone='',name='',userId='';
+ const table=targetRole==='tutor'?'tutor_profiles':'student_profiles';
+ // 1) LR stores the member profile id. Read that profile and obtain its auth user_id.
+ try{
+  const x=await safe(sb.from(table).select('id,user_id,name,email').eq('id',targetProfileId).maybeSingle());
+  if(!x.error&&x.data){userId=String(x.data.user_id||'');name=x.data.name||'';}
+ }catch(_){}
+ // 2) Some older rows may already contain auth user_id rather than profile id.
+ if(!userId){
+  try{
+   const x=await safe(sb.from(table).select('id,user_id,name,email').eq('user_id',targetProfileId).maybeSingle());
+   if(!x.error&&x.data){userId=String(x.data.user_id||targetProfileId);name=name||x.data.name||'';}
+  }catch(_){}
  }
- // If rawTargetId was a tutor/student profile ID, resolve its auth/profile row.
- if(!phone&&resolvedUserId){
-  try{const x=await safe(sb.from('profiles').select('id,phone,mobile,mobile_number,phone_number,full_name,name').eq('id',resolvedUserId).maybeSingle());if(!x.error&&x.data){phone=x.data.phone||x.data.mobile||x.data.mobile_number||x.data.phone_number||'';name=name||x.data.full_name||x.data.name||'';}}catch(_){}
+ // 3) Canonical phone is in public.profiles, keyed by auth user_id.
+ if(userId){
+  try{
+   const x=await safe(sb.from('profiles').select('id,full_name,email,phone').eq('id',userId).maybeSingle());
+   if(!x.error&&x.data){phone=x.data.phone||'';name=name||x.data.full_name||'';}
+  }catch(_){}
+ }
+ // 4) Last-resort legacy phone columns, if present in the member table.
+ if(!phone){
+  const cols=['phone','mobile','mobile_number','phone_number','whatsapp','whatsapp_number'];
+  for(const col of cols){
+   try{
+    const x=await safe(sb.from(table).select('name,'+col).eq('id',targetProfileId).maybeSingle());
+    if(!x.error&&x.data){phone=x.data[col]||'';name=name||x.data.name||'';if(phone)break;}
+   }catch(_){}
+  }
  }
  return {phone,name};
 }
 async function openWhatsAppForRequest(requestId,targetRole){
  const popup=window.open('about:blank','_blank');
  try{
-  // Verify the exact connection for this LR is accepted before opening WhatsApp.
-  const roleKey=targetRole==='tutor'?'student_id':'tutor_id';
-  const cq=await safe(sb.from('gc_learning_request_connections').select('*').eq('request_id',String(requestId)).eq(roleKey,pid()).eq('status','ACCEPTED').order('created_at',{ascending:false}).limit(1).maybeSingle());
-  if(cq.error)throw cq.error;
-  if(!cq.data)throw new Error('WhatsApp chat is available only after the connection is accepted');
-
-  // First try the secure RPC, then use the exact accepted connection/profile chain as fallback.
-  let phone='',name='';
-  try{const q=await safe(sb.rpc('gc_get_whatsapp_contact',{p_request_id:requestId,p_target_role:targetRole}));if(!q.error&&q.data){phone=normalizeWhatsAppNumber(q.data.phone);name=String(q.data.name||'');}}catch(_){}
+  // First use the canonical RPC. If it returns no phone because of a legacy/profile-id
+  // mismatch, use the corrected profile -> auth user -> public.profiles fallback below.
+  const q=await safe(sb.rpc('gc_get_whatsapp_contact',{p_request_id:requestId,p_target_role:targetRole}));
+  let contact=q.error?null:q.data;
+  let phone=normalizeWhatsAppNumber(contact?.phone);
+  let name=String(contact?.name||'');
+  if(!phone && q.error && !/no phone|phone number|mobile/i.test(q.error.message||''))throw q.error;
   if(!phone){const fallback=await lookupLrrWhatsAppContact(requestId,targetRole);phone=normalizeWhatsAppNumber(fallback.phone);name=name||fallback.name||'';}
   if(!phone)throw new Error('No phone number is saved in the connected '+targetRole+' profile.');
   name=name||(targetRole==='tutor'?'Tutor':'Student');
