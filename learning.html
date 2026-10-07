@@ -208,7 +208,7 @@ function render(){
   const rs=rows();
   grid.innerHTML=rs.length?rs.map(card).join(''):'<div class="empty">🔎 No Learning Requirement matches these filters.</div>';
   grid.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>details(b.dataset.id));
-  grid.querySelectorAll('[data-connect]').forEach(b=>b.onclick=()=>location.href='login-tutor.html?return=learning.html');
+  grid.querySelectorAll('[data-connect]').forEach(b=>b.onclick=()=>sendLearningConnection());
 }
 function details(id){
   const r=all.find(x=>String(x.id)===String(id));if(!r)return;
