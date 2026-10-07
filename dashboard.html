@@ -161,68 +161,64 @@ function normalizeWhatsAppNumber(v){
  return digits;
 }
 async function lookupLrrWhatsAppContact(requestId,targetRole){
- // Fallback for older RPCs that read a legacy phone column. The RPC is still
- // called first so its connection/acceptance authorization remains authoritative.
+ // Robust fallback: tutor_profiles/student_profiles identify the member via user_id,
+ // while the registered contact number is stored in public.profiles.phone.
  const rq=await safe(sb.from('gc_learning_requests_v2').select('id,student_id,tutor_id').eq('id',String(requestId)).maybeSingle());
  if(rq.error)throw rq.error;if(!rq.data)throw new Error('Learning Request was not found.');
  const targetId=String(targetRole==='tutor'?rq.data.tutor_id||'':rq.data.student_id||'');
  if(!targetId)throw new Error('The connected '+targetRole+' account could not be identified.');
- let phone='',name='';
- const tries=[
-  ()=>sb.from('profiles').select('phone,full_name').eq('id',targetId).maybeSingle(),
-  ()=>sb.from(targetRole==='tutor'?'tutor_profiles':'student_profiles').select('phone,name,user_id').eq('user_id',targetId).maybeSingle(),
-  ()=>sb.from(targetRole==='tutor'?'tutor_profiles':'student_profiles').select('phone,name,user_id').eq('id',targetId).maybeSingle()
- ];
- for(const run of tries){try{const x=await safe(run());if(!x.error&&x.data){phone=phone||x.data.phone||'';name=name||x.data.full_name||x.data.name||'';if(phone)break}}catch(_){}}
- return {phone,name};
-}
-async function getAcceptedLrrConnection(requestId){
- // IMPORTANT: The WhatsApp button is rendered from gc_learning_request_connections.
- // Older deployments could have the LRR status and the connection-row status out
- // of sync. Treat an explicit ACCEPTED connection row as authoritative for the
- // already-accepted tutor/student pair, then let the contact lookup fetch the
- // phone number. This prevents the false "accept the request first" error.
+ let phone='',name='',userId='';
+
+ // The LR stores the member/profile ID. Resolve it to the real Supabase Auth user ID.
+ const memberTable=targetRole==='tutor'?'tutor_profiles':'student_profiles';
  try{
-  const q=await safe(sb.from('gc_learning_request_connections')
-    .select('id,request_id,student_id,tutor_id,status,created_at')
-    .eq('request_id',String(requestId))
-    .order('created_at',{ascending:false})
-    .limit(20));
-  if(q.error||!Array.isArray(q.data))return null;
-  const me=String(pid());
-  const accepted=(q.data||[]).find(c=>{
-    const st=String(c.status||'').trim().toUpperCase().replace(/[- ]/g,'_');
-    if(st!=='ACCEPTED' && st!=='APPROVED' && st!=='CONNECTED')return false;
-    return String(c.student_id||'')===me || String(c.tutor_id||'')===me;
-  });
-  return accepted||null;
- }catch(_){return null;}
+  const m=await safe(sb.from(memberTable).select('id,user_id,name,full_name').eq('id',targetId).maybeSingle());
+  if(!m.error&&m.data){
+   userId=String(m.data.user_id||'');
+   name=name||m.data.full_name||m.data.name||'';
+  }
+ }catch(_){}
+
+ // Also support installations where the LR already stores auth.user.id.
+ if(!userId)userId=targetId;
+
+ // Registered phone lives in public.profiles for the current schema.
+ const profileIds=[userId,targetId].filter((v,i,a)=>v&&a.indexOf(v)===i);
+ for(const id of profileIds){
+  try{
+   const x=await safe(sb.from('profiles').select('phone,full_name,name').eq('id',id).maybeSingle());
+   if(!x.error&&x.data){
+    phone=phone||x.data.phone||'';
+    name=name||x.data.full_name||x.data.name||'';
+    if(phone)break;
+   }
+  }catch(_){}
+ }
+
+ // Legacy/older schema fallbacks, without assuming phone exists on tutor_profiles.
+ if(!phone){
+  try{
+   const x=await safe(sb.from(memberTable).select('phone,name,full_name,user_id').eq('user_id',userId).maybeSingle());
+   if(!x.error&&x.data){phone=x.data.phone||'';name=name||x.data.full_name||x.data.name||'';}
+  }catch(_){}
+ }
+ if(!phone && memberTable==='student_profiles'){
+  try{
+   const x=await safe(sb.from('student_profiles').select('phone,name,full_name,user_id').eq('id',targetId).maybeSingle());
+   if(!x.error&&x.data){phone=x.data.phone||'';name=name||x.data.full_name||x.data.name||'';}
+  }catch(_){}
+ }
+ return {phone,name};
 }
 async function openWhatsAppForRequest(requestId,targetRole){
  const popup=window.open('about:blank','_blank');
  try{
-  let phone='',name='';
-  const acceptedConnection=await getAcceptedLrrConnection(requestId);
-
-  // If the actual connection record is already ACCEPTED, do NOT reject it
-  // merely because an older/alternate RPC still checks the LRR status field.
-  if(acceptedConnection){
-    const fallback=await lookupLrrWhatsAppContact(requestId,targetRole);
-    phone=normalizeWhatsAppNumber(fallback.phone);
-    name=fallback.name||'';
-  }else{
-    const q=await safe(sb.rpc('gc_get_whatsapp_contact',{p_request_id:requestId,p_target_role:targetRole}));
-    let contact=q.error?null:q.data;
-    phone=normalizeWhatsAppNumber(contact?.phone);
-    name=String(contact?.name||'');
-    if(!phone && q.error && !/no phone|phone number|mobile/i.test(q.error.message||''))throw q.error;
-    if(!phone){
-      const fallback=await lookupLrrWhatsAppContact(requestId,targetRole);
-      phone=normalizeWhatsAppNumber(fallback.phone);
-      name=name||fallback.name||'';
-    }
-  }
-
+  const q=await safe(sb.rpc('gc_get_whatsapp_contact',{p_request_id:requestId,p_target_role:targetRole}));
+  let contact=q.error?null:q.data;
+  let phone=normalizeWhatsAppNumber(contact?.phone);
+  let name=String(contact?.name||'');
+  if(!phone && q.error && !/no phone|phone number|mobile/i.test(q.error.message||''))throw q.error;
+  if(!phone){const fallback=await lookupLrrWhatsAppContact(requestId,targetRole);phone=normalizeWhatsAppNumber(fallback.phone);name=name||fallback.name||'';}
   if(!phone)throw new Error('No phone number is saved in the user profile. Please update the registered mobile number in the profile/admin user editor.');
   name=name||(targetRole==='tutor'?'Tutor':'Student');
   const text=`Hello ${name}, I am contacting you through GURU CONNECT regarding our accepted learning connection.`;
