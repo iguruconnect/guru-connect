@@ -1,207 +1,329 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preload" as="image" href="guru-connect-round-logo.png">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>GURU CONNECT — My Kingdom</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(135deg,#f7fbff,#eef4ff);color:#0f172a}.top{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #e2e8f0}header{padding:13px 20px;display:flex;justify-content:space-between;align-items:center}header a,header button{border:0;background:0;padding:7px 14px;cursor:pointer;font:500 12px Inter,sans-serif;border-radius:8px;color:#0f172a}header a:hover,header button:hover{background:#f1f5f9}header button.active{background:#0f172a;color:#fff}.brand{display:flex;align-items:center;gap:8px}.brand img{height:32px;width:auto}.who{font-size:13px;font-weight:600;color:#64748b}main{max-width:1200px;margin:0 auto;padding:20px}.hero{text-align:center;margin-bottom:40px}h1{font-size:32px;font-weight:900;margin:0 0 8px;color:#0f172a}h1+p{font-size:14px;color:#64748b;margin:0 0 20px}.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:20px}.step{background:#fff;padding:16px 12px;border-radius:12px;text-align:center;font-size:13px;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e2e8f0}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(135deg,#f7fbff,#eef4ff);color:#0f172a}.top{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #e2e8f0}.bar{padding:13px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.brand{display:flex;align-items:center;gap:8px}.brand img{height:32px;width:auto}.who{font-size:12px;font-weight:700;color:#64748b}.top-actions{display:flex;gap:8px;flex-wrap:wrap}.tab{border:0;background:#f1f5f9;padding:10px 14px;cursor:pointer;font:600 12px Inter,sans-serif;border-radius:8px;color:#0f172a;transition:all .2s}.tab.active{background:#0f172a;color:#fff}.main{max-width:1200px;margin:0 auto;padding:20px}.hero{text-align:center;margin-bottom:30px}.hero h1{font-size:28px;font-weight:900;margin:0 0 8px;color:#0f172a}.hero p{font-size:13px;color:#64748b;margin:0 0 16px}.steps{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:16px}.step{background:#fff;padding:14px 10px;border-radius:10px;text-align:center;font-size:12px;font-weight:700;box-shadow:0 1px 2px rgba(0,0,0,.08);border:1px solid #e2e8f0}.step b{display:block;font-size:16px;margin-bottom:4px}.wrap{margin-top:24px}.empty-card,.card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 3px rgba(0,0,0,.08);border:1px solid #e2e8f0;margin-bottom:12px}.empty-card{text-align:center;color:#64748b;padding:40px 20px}.req{border:1px solid #e2e8f0;border-radius:10px;padding:16px;margin-bottom:12px;background:#fff}.subject{font-size:16px;font-weight:800;color:#0f172a;margin-bottom:6px}.small{font-size:12px;color:#64748b;margin-bottom:8px}.btn{border:0;padding:10px 16px;cursor:pointer;font:700 12px Inter,sans-serif;border-radius:8px;display:inline-block;margin-right:8px;margin-bottom:8px}.btn.orange{background:#f97316;color:#fff}.btn.green{background:#22c55e;color:#fff}.btn.gray{background:#e2e8f0;color:#0f172a}.success-note{background:#f0fdf4;border:1px solid #bbf7d0;padding:10px 12px;border-radius:8px;color:#166534;font-size:11px;font-weight:700;margin-top:8px}.alert{padding:12px 16px;border-radius:10px;font-size:13px;font-weight:700;margin-bottom:12px}.alert.error{background:#fee2e2;color:#b91c1c;border:1px solid #fca5a5}.alert.success{background:#dcfce7;color:#166534;border:1px solid #86efac}#globalError{margin-bottom:12px}.status-badge{display:inline-block;padding:5px 10px;border-radius:999px;background:#eef2ff;color:#3730a3;font-weight:700;font-size:10px;margin-top:8px}.@media(max-width:900px){.steps{grid-template-columns:repeat(3,1fr)}}@media(max-width:620px){.steps{grid-template-columns:1fr 1fr}.hero h1{font-size:22px}}
 </style>
 </head>
 <body>
-<header class="top">
-<div class="brand"><img src="guru-connect-round-logo.png" alt="GURU CONNECT"></div>
-<div id="who" class="who">Loading...</div>
-<div>
-<button id="kingdomBtn" class="active">👑 MY KINGDOM</button>
-<button id="websiteBtn">🌐 WEBSITE</button>
-<button id="logoutBtn">🚪 LOGOUT</button>
+<div class="top">
+  <div class="bar">
+    <div class="brand">
+      <img src="guru-connect-round-logo.png" alt="GURU CONNECT">
+    </div>
+    <div id="who" class="who">Loading...</div>
+    <div class="top-actions">
+      <button id="kingdomBtn" class="tab active">👑 MY KINGDOM</button>
+      <button id="websiteBtn" class="tab">🌐 WEBSITE</button>
+      <button id="logoutBtn" class="tab">🚪 LOGOUT</button>
+    </div>
+  </div>
 </div>
-</header>
-<main>
-<section class="hero">
-<h1>👑 MY KINGDOM — Learning Request Portal</h1>
-<p>Connect with tutors on WhatsApp after accepting learning requests</p>
-<section class="steps">
-<div class="step"><b>1</b>POST LR</div>
-<div class="step"><b>2</b>TUTOR SENDS CONNECTION</div>
-<div class="step"><b>3</b>STUDENT ACCEPTS</div>
-<div class="step"><b>4</b>WHATSAPP OPENS</div>
-<div class="step"><b>5</b>LEARNING BEGINS</div>
-</section>
-</section>
-<div class="wrap">
-<div id="globalError"></div>
-<div class="tabs" id="tabs"></div>
-<section id="app"><div class="card empty">Loading…</div></section>
-</div>
+
+<main class="main">
+  <section class="hero">
+    <h1>👑 MY KINGDOM — Learning Request Portal</h1>
+    <p>Student accepts connection → WhatsApp opens to connected tutor.</p>
+    <div class="steps">
+      <div class="step"><b>1</b>POST LR</div>
+      <div class="step"><b>2</b>TUTOR SENDS</div>
+      <div class="step"><b>3</b>STUDENT ACCEPTS</div>
+      <div class="step"><b>4</b>WHATSAPP</div>
+      <div class="step"><b>5</b>LEARNING</div>
+    </div>
+  </section>
+
+  <div id="globalError"></div>
+  <section id="app"><div class="empty-card">Loading...</div></section>
 </main>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
 'use strict';
-const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
-const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
-const $=id=>document.getElementById(id);
-let sb=null,me=null,role='',profile=null,tab='requests';
 
-function msg(t,kind='error'){$('globalError').innerHTML='<div class="'+kind+'">'+esc(t)+'</div>';}
-function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-function safe(p){return Promise.race([p,new Promise((_,rej)=>setTimeout(()=>rej(new Error('Timeout')),15000)))])}
-function pid(){return String(profile?.id||'')}
+const SUPABASE_URL = 'https://hzqqswrnawrfgufbxgay.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+
+const $ = id => document.getElementById(id);
+const esc = v => String(v ?? '').replace(/[&<>"']/g, m => ({
+  '&':'&amp;',
+  '<':'&lt;',
+  '>':'&gt;',
+  '"':'&quot;',
+  "'":'&#39;'
+}[m]));
+
+let sb = null;
+let me = null;
+let role = '';
+let profile = null;
+
+function showMessage(text, type='error'){
+  $('globalError').innerHTML = '<div class="alert '+type+'">'+esc(text)+'</div>';
+  if(type === 'success'){
+    setTimeout(() => $('globalError').innerHTML = '', 4000);
+  }
+}
+
+function wait(ms){
+  return new Promise((_, reject) => setTimeout(() => reject(new Error('Request timed out.')), ms));
+}
+async function safe(p){
+  return await Promise.race([p, wait(15000)]);
+}
+
+function pid(){ return String(profile?.id || ''); }
 
 function normalizeWhatsAppNumber(v){
-  const raw=String(v??'').trim();
-  let digits=raw.replace(/\D/g,'');
-  if(!digits)return '';
-  if(digits.startsWith('00'))digits=digits.slice(2);
-  if(digits.length===11&&digits.startsWith('0'))digits=digits.slice(1);
-  if(digits.length===10)digits='91'+digits;
+  const raw = String(v ?? '').trim();
+  let digits = raw.replace(/\D/g, '');
+  if(!digits) return '';
+  if(digits.startsWith('00')) digits = digits.slice(2);
+  if(digits.length === 11 && digits.startsWith('0')) digits = digits.slice(1);
+  if(digits.length === 10) digits = '91' + digits;
   return digits;
 }
 
 function gcIsMobileDevice(){
-  return /Android|iPhone|iPad|iPod|Windows Phone|webOS|BlackBerry/i.test(navigator.userAgent||'');
+  return /Android|iPhone|iPad|iPod|Windows Phone|webOS|BlackBerry/i.test(navigator.userAgent || '');
 }
 
-async function lookupLrrWhatsAppContact(requestId,targetRole){
-  const rq=await safe(sb.from('gc_learning_requests_v2').select('id,student_id,tutor_id').eq('id',String(requestId)).maybeSingle());
-  if(rq.error)throw rq.error;
-  if(!rq.data)throw new Error('Learning Request was not found.');
-  
-  const targetId=String(targetRole==='tutor'?rq.data.tutor_id||'':rq.data.student_id||'');
-  if(!targetId)throw new Error('The connected '+targetRole+' account could not be identified.');
-  
-  let phone='',name='';
-  const table=targetRole==='tutor'?'tutor_profiles':'student_profiles';
-  
-  const tries=[
-    ()=>sb.from('profiles').select('phone,full_name,name,user_id').eq('id',targetId).maybeSingle(),
-    ()=>sb.from('profiles').select('phone,full_name,name,user_id').eq('user_id',targetId).maybeSingle(),
-    ()=>sb.from(table).select('phone,name,full_name,user_id,id').eq('id',targetId).maybeSingle(),
-    ()=>sb.from(table).select('phone,name,full_name,user_id,id').eq('user_id',targetId).maybeSingle()
+async function getRequests(){
+  const q = await safe(sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(500));
+  if(q.error) throw q.error;
+  return q.data || [];
+}
+
+async function lookupLrrWhatsAppContact(requestId, targetRole){
+  const rq = await safe(sb.from('gc_learning_requests_v2')
+    .select('id,student_id,tutor_id')
+    .eq('id', String(requestId))
+    .maybeSingle());
+
+  if(rq.error) throw rq.error;
+  if(!rq.data) throw new Error('Learning Request was not found.');
+
+  const targetId = String(targetRole === 'tutor' ? (rq.data.tutor_id || '') : (rq.data.student_id || ''));
+  if(!targetId) throw new Error('Connected user could not be identified.');
+
+  const table = targetRole === 'tutor' ? 'tutor_profiles' : 'student_profiles';
+  let phone = '';
+  let name = '';
+
+  const tries = [
+    () => sb.from('profiles').select('phone,full_name,name,user_id').eq('id', targetId).maybeSingle(),
+    () => sb.from('profiles').select('phone,full_name,name,user_id').eq('user_id', targetId).maybeSingle(),
+    () => sb.from(table).select('phone,name,full_name,user_id,id').eq('id', targetId).maybeSingle(),
+    () => sb.from(table).select('phone,name,full_name,user_id,id').eq('user_id', targetId).maybeSingle()
   ];
-  
+
   for(const run of tries){
     try{
-      const x=await safe(run());
-      if(!x.error&&x.data){
-        phone=phone||x.data.phone||'';
-        name=name||x.data.full_name||x.data.name||'';
-        if(phone)break;
+      const x = await safe(run());
+      if(!x.error && x.data){
+        phone = phone || x.data.phone || '';
+        name = name || x.data.full_name || x.data.name || '';
+        if(phone) break;
       }
     }catch(_){}
   }
-  
+
   if(!phone){
     try{
-      const p=await safe(sb.from(table).select('phone,name,full_name,user_id').eq('id',targetId).maybeSingle());
-      if(!p.error&&p.data){
-        phone=p.data.phone||'';
-        name=name||p.data.full_name||p.data.name||'';
-        const uid=String(p.data.user_id||'');
-        if(!phone&&uid){
-          const u=await safe(sb.from(table).select('phone,name,full_name').eq('user_id',uid).maybeSingle());
-          if(!u.error&&u.data){
-            phone=u.data.phone||'';
-            name=name||u.data.full_name||u.data.name||'';
+      const p = await safe(sb.from(table).select('phone,name,full_name,user_id').eq('id', targetId).maybeSingle());
+      if(!p.error && p.data){
+        phone = p.data.phone || '';
+        name = name || p.data.full_name || p.data.name || '';
+        const uid = String(p.data.user_id || '');
+        if(!phone && uid){
+          const u = await safe(sb.from(table).select('phone,name,full_name').eq('user_id', uid).maybeSingle());
+          if(!u.error && u.data){
+            phone = u.data.phone || '';
+            name = name || u.data.full_name || u.data.name || '';
           }
         }
       }
     }catch(_){}
   }
-  return {phone,name};
+
+  return { phone, name };
 }
 
-async function openWhatsAppForRequest(requestId,targetRole){
-  const popup=window.open('about:blank','_blank');
+async function openWhatsAppForRequest(requestId, targetRole){
+  const popup = window.open('about:blank', '_blank');
   try{
-    let phone='',name='';
-    
-    // PRIMARY: Try the RPC function (most reliable)
-    try {
-      const q=await safe(sb.rpc('gc_get_whatsapp_contact',{
-        p_request_id:requestId,
-        p_target_role:targetRole
+    let phone = '';
+    let name = '';
+
+    try{
+      const q = await safe(sb.rpc('gc_get_whatsapp_contact', {
+        p_request_id: requestId,
+        p_target_role: targetRole
       }));
       if(!q.error && q.data){
-        phone=normalizeWhatsAppNumber(q.data.phone||'');
-        name=String(q.data.name||'');
-        console.log('RPC phone lookup:', {phone, name, raw: q.data.phone});
+        phone = normalizeWhatsAppNumber(q.data.phone || '');
+        name = String(q.data.name || '');
       }
     }catch(e){
       console.warn('RPC lookup failed:', e.message);
     }
-    
-    // FALLBACK: Direct database query if RPC didn't work
+
     if(!phone){
-      const fallback=await lookupLrrWhatsAppContact(requestId,targetRole);
-      phone=normalizeWhatsAppNumber(fallback.phone);
-      name=name||fallback.name||'';
-      console.log('Fallback phone lookup:', {phone, name, raw: fallback.phone});
+      const fallback = await lookupLrrWhatsAppContact(requestId, targetRole);
+      phone = normalizeWhatsAppNumber(fallback.phone);
+      name = name || fallback.name || '';
     }
-    
-    // VERIFY: Ensure we have a valid phone number
+
     if(!phone){
       throw new Error('No valid mobile number is saved for the connected user. Please update the registered mobile number in the profile/admin user editor.');
     }
-    
-    name=name||(targetRole==='tutor'?'Tutor':'Student');
-    const text=`Hello ${name}, I am contacting you through GURU CONNECT regarding our accepted learning connection.`;
-    const encoded=encodeURIComponent(text);
-    
-    const webUrl='https://wa.me/'+phone+'?text='+encoded;
-    const appUrl='whatsapp://send?phone='+phone+'&text='+encoded;
-    
+
+    name = name || (targetRole === 'tutor' ? 'Tutor' : 'Student');
+    const text = `Hello ${name}, I am contacting you through GURU CONNECT regarding our accepted learning connection.`;
+    const encoded = encodeURIComponent(text);
+    const webUrl = 'https://wa.me/' + phone + '?text=' + encoded;
+    const appUrl = 'whatsapp://send?phone=' + phone + '&text=' + encoded;
+
     if(gcIsMobileDevice()){
-      if(popup&&!popup.closed){
-        popup.location.href=appUrl;
-        setTimeout(()=>{
+      if(popup && !popup.closed){
+        popup.location.href = appUrl;
+        setTimeout(() => {
           try{
-            if(!popup.closed && document.visibilityState!=='hidden')popup.location.href=webUrl;
+            if(!popup.closed && document.visibilityState !== 'hidden'){
+              popup.location.href = webUrl;
+            }
           }catch(_){}
-        },1400);
+        }, 1400);
       }else{
-        window.location.href=appUrl;
-        setTimeout(()=>{
+        window.location.href = appUrl;
+        setTimeout(() => {
           try{
-            if(document.visibilityState!=='hidden')window.location.href=webUrl;
+            if(document.visibilityState !== 'hidden'){
+              window.location.href = webUrl;
+            }
           }catch(_){}
-        },1400);
+        }, 1400);
       }
     }else{
-      if(popup&&!popup.closed)popup.location.href=webUrl;
-      else window.location.href=webUrl;
+      if(popup && !popup.closed){
+        popup.location.href = webUrl;
+      }else{
+        window.location.href = webUrl;
+      }
     }
   }catch(e){
-    if(popup&&!popup.closed)popup.close();
-    msg('WhatsApp chat could not be opened: '+(e.message||e));
+    if(popup && !popup.closed) popup.close();
+    showMessage('WhatsApp chat could not be opened: ' + (e.message || e), 'error');
+  }
+}
+
+function renderRequestCard(r){
+  const subject = esc(r.subject || 'Learning Request');
+  const status = String(r.status || 'OPEN');
+  const connected = (String(r.tutor_id) === pid() || (role === 'student' && !!r.tutor_id)) &&
+    ['TUTOR_ACCEPTED','ACCEPTED','TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','COMPLETED','APPROVED'].includes(status);
+
+  let actions = '';
+
+  if(connected){
+    actions += '<button class="btn green" data-action="whatsapp" data-id="'+esc(r.id)+'">💬 WHATSAPP</button>';
+    actions += '<div class="success-note">✓ Connection accepted. You can now chat on WhatsApp.</div>';
+  } else {
+    actions += '<span class="status-badge">'+esc(status)+'</span>';
+  }
+
+  return `
+    <article class="req">
+      <div class="subject">${subject}</div>
+      <div class="small">Student ID: ${esc(r.student_id || 'N/A')}<br>Tutor ID: ${esc(r.tutor_id || 'Pending')}</div>
+      ${actions}
+    </article>
+  `;
+}
+
+async function render(){
+  $('app').innerHTML = '<div class=\"empty-card\">Loading...</div>';
+  try{
+    let rows = await getRequests();
+    if(role === 'student'){
+      rows = rows.filter(r => String(r.student_id) === pid());
+    } else {
+      rows = rows.filter(r => String(r.tutor_id) === pid() || (!r.tutor_id && ['OPEN','PENDING_STUDENT_CONNECTION'].includes(String(r.status || 'OPEN'))));
+    }
+
+    if(!rows.length){
+      $('app').innerHTML = '<div class=\"empty-card\">No learning requests found.</div>';
+      return;
+    }
+
+    $('app').innerHTML = rows.map(renderRequestCard).join('');
+
+    document.querySelectorAll('[data-action="whatsapp"]').forEach(button => {
+      button.onclick = async () => {
+        const requestId = button.dataset.id;
+        await openWhatsAppForRequest(requestId, role === 'student' ? 'tutor' : 'student');
+      };
+    });
+
+  }catch(e){
+    showMessage(e.message || e, 'error');
   }
 }
 
 async function init(){
   try{
-    if(!window.supabase?.createClient)throw new Error('Supabase library did not load.');
-    sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
-    const s=await safe(sb.auth.getSession());
-    me=s.data.session?.user;
-    if(!me){$('who').textContent='Not logged in';return;}
-    const ident=await safe(sb.rpc('gc_get_my_member_profile'));
-    if(ident.error)throw ident.error;
-    role=String(ident.data?.role||'').toLowerCase();
-    profile=ident.data?.profile||null;
-    if(!profile||!['student','tutor'].includes(role))throw new Error('Profile not linked.');
-    $('who').textContent=(role==='student'?'STUDENT':'TUTOR')+' • '+(profile.name||profile.full_name||me.email||'');
-  }catch(e){msg(e.message||e);}
+    if(!window.supabase?.createClient){
+      throw new Error('Supabase library did not load correctly.');
+    }
+
+    sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+    });
+
+    const s = await safe(sb.auth.getSession());
+    me = s.data.session?.user;
+
+    if(!me){
+      $('who').textContent = 'Not logged in';
+      showMessage('Your login session is missing. Please log in again from the website.', 'error');
+      setTimeout(() => window.location.href = 'index.html', 1800);
+      return;
+    }
+
+    const ident = await safe(sb.rpc('gc_get_my_member_profile'));
+    if(ident.error) throw ident.error;
+
+    role = String(ident.data?.role || '').toLowerCase();
+    profile = ident.data?.profile || null;
+
+    if(!profile || !['student','tutor'].includes(role)){
+      throw new Error('Your Student/Tutor profile is not linked to this account.');
+    }
+
+    $('who').textContent = (role === 'student' ? 'STUDENT' : 'TUTOR') + ' • ' + (profile.name || profile.full_name || me.email || '');
+
+    await render();
+
+  }catch(e){
+    showMessage(e.message || e, 'error');
+  }
 }
 
-init();
+$('kingdomBtn').onclick = () => render();
+$('websiteBtn').onclick = () => window.location.href = 'index.html';
+$('logoutBtn').onclick = async () => {
+  try{ await sb?.auth?.signOut({ scope: 'local' }); }catch(_){}
+  window.location.replace('index.html');
+};
 
-document.getElementById('kingdomBtn').onclick=()=>msg('Learning Requests loaded. Click on Learning Requests to view accepted connections and open WhatsApp.');
-document.getElementById('websiteBtn').onclick=()=>window.location.href='index.html';
-document.getElementById('logoutBtn').onclick=async()=>{try{await sb?.auth?.signOut()}catch(_){}window.location.href='index.html';};
+window.addEventListener('load', init);
 
 })();
 </script>
