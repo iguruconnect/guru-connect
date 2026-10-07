@@ -151,44 +151,39 @@ async function load(){
   live.textContent='● LIVE FEED • CONNECTING...';
   try{
     let rows=[];
-    const attempts=[
-      'gc_list_learning_requests_public_v6',
-      'gc_list_learning_requests_public_v5',
-      'gc_list_learning_requests_public_v4'
-    ];
-    let lastError=null;
-    for(const fn of attempts){
-      try{
-        const got=await restRpc(fn);
-        if(Array.isArray(got)&&got.length){
-          rows=got;
-          console.log('LRR feed source:',fn,'rows:',rows.length);
-          break;
-        }
-        console.warn(fn,'returned no rows');
-      }catch(e){
-        lastError=e;
-        console.warn(fn,'failed',e);
-      }
-    }
-    // Final fallback: read the canonical request table directly. This is useful
-    // on installations where the public RPC was not migrated yet.
-    if(!rows.length && window.supabase?.createClient){
+    /* The older public RPCs can reference legacy columns such as
+       student_short_id that are not present in the current database schema.
+       Read the live request table directly first; select('*') never asks
+       PostgREST for that obsolete column. */
+    if(window.supabase?.createClient){
       try{
         const s=window.supabase.createClient(URL,KEY,{auth:{persistSession:false}});
-        const q=await s.from('gc_learning_requests_v2')
-          .select('*')
-          .order('created_at',{ascending:false})
-          .limit(1000);
-        if(q.error)throw q.error;
-        rows=Array.isArray(q.data)?q.data:[];
-        console.log('LRR feed source: direct gc_learning_requests_v2 rows:',rows.length);
+        const q=await s.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(500);
+        if(!q.error){
+          rows=normalize(q.data);
+        }else{
+          console.warn('Direct LRR table read failed',q.error);
+        }
       }catch(e){
-        lastError=e;
-        console.warn('Direct gc_learning_requests_v2 fallback failed',e);
+        console.warn('Direct LRR table read failed',e);
       }
     }
-    if(!rows.length && lastError)throw lastError;
+    /* Only use the legacy RPC as a fallback when the table itself is not
+       readable. This prevents a broken legacy RPC from hiding all LRRs. */
+    if(!rows.length){
+      try{rows=await restRpc('gc_list_learning_requests_public_v5')}catch(e){
+        console.warn('V5 failed',e);
+        try{rows=await restRpc('gc_list_learning_requests_public_v4')}catch(e2){
+          console.warn('V4 REST failed',e2);
+          if(window.supabase?.createClient){
+            const s=window.supabase.createClient(URL,KEY,{auth:{persistSession:false}});
+            const q=await s.rpc('gc_list_learning_requests_public_v4');
+            if(q.error)throw q.error;
+            rows=normalize(q.data);
+          }else throw e2;
+        }
+      }
+    }
     all=rows.filter(r=>r&&typeof r==='object'&&!['DELETED','DELETED_BY_ADMIN'].includes(String(r.status||'').toUpperCase()));
     all.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
     rebuild();
@@ -207,7 +202,7 @@ function rebuild(){
 function rows(){
   const st=document.getElementById('status').value, s=document.getElementById('stream').value, sub=document.getElementById('subject').value;
   return all.filter(r=>{
-    if(st==='OPEN' && (closed(r)||approved(r)||String(r.status||'OPEN').toUpperCase()==='CLOSED'))return false;
+    if(st==='OPEN' && (closed(r)||String(r.status||'OPEN').toUpperCase()==='CLOSED'||String(r.status||'').toUpperCase()==='DELETED'||String(r.status||'').toUpperCase()==='DELETED_BY_ADMIN'))return false;
     if(st==='CLOSED' && !closed(r))return false;
     if(st==='ADMIN_APPROVED' && !approved(r))return false;
     if(s!=='ALL'&&String(r.stream||'')!==s)return false;
