@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="preload" as="image" href="guru-connect-round-logo.png">
+<title>GURU CONNECT — My Kingdom</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;background:linear-gradient(135deg,#f7fbff,#eef4ff);color:#0f172a}.top{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid #dbe5f0;box-shadow:0 8px 25px #0f172a12;padding:10px 3%}.bar{max-width:1280px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand img{width:min(250px,32vw);max-height:68px;object-fit:contain;border-radius:14px;display:block}.who{font-size:11px;font-weight:900;color:#475569;margin-top:2px}.actions,.tabs,.row{display:flex;gap:8px;flex-wrap:wrap}.btn,.tab{border:0;border-radius:11px;padding:11px 14px;font-weight:950;cursor:pointer}.btn{background:#2563eb;color:#fff}.btn.green{background:#059669}.btn.orange{background:#ea580c}.btn.gray{background:#475569}.btn.red{background:#dc2626}.btn:disabled{opacity:.5;cursor:not-allowed}.tab{background:#fff;border:1px solid #cbd5e1;color:#334155;position:relative}.tab.active{background:#2563eb;color:#fff;border-color:#2563eb}.tab-badge,.notif-badge{position:absolute;top:-7px;right:-7px;min-width:20px;height:20px;padding:0 5px;border-radius:999px;background:#dc2626;color:#fff;border:2px solid #fff;font-size:10px;line-height:16px;text-align:center;font-weight:1000;box-shadow:0 4px 10px #dc262655}.notif-wrap{position:relative}.notif-btn{position:relative;width:44px;height:44px;border:1px solid #cbd5e1;background:#fff;border-radius:12px;font-size:19px;cursor:pointer}.notif-panel{position:absolute;right:0;top:52px;width:min(390px,92vw);background:#fff;border:1px solid #dbe5f0;border-radius:16px;box-shadow:0 18px 50px #0f172a25;display:none;overflow:hidden}.notif-panel.open{display:block}.notif-head{padding:12px 14px;background:#092a66;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:8px}.notif-head strong{font-size:14px}.notif-head button{border:1px solid #ffffff55;background:#ffffff12;color:#fff;border-radius:8px;padding:6px 8px;font-size:9px;font-weight:900;cursor:pointer}.notif-list{max-height:430px;overflow:auto}.notif-item{padding:12px 14px;border-bottom:1px solid #eef2f7;cursor:pointer}.notif-item.unread{background:#eff6ff}.notif-item:hover{background:#f8fafc}.notif-title{font-size:11px;font-weight:1000;color:#102657}.notif-body{font-size:10px;color:#475569;margin-top:3px;line-height:1.4}.notif-time{font-size:8px;color:#94a3b8;margin-top:5px}.notif-empty{padding:30px;text-align:center;color:#64748b;font-size:11px;font-weight:800}.hero{max-width:1280px;margin:18px auto 0;background:linear-gradient(135deg,#092a66,#155eef);color:#fff;border-radius:22px;padding:22px;box-shadow:0 18px 45px #1e40af25}.hero h1{margin:0 0 7px;font-size:27px}.hero p{margin:0;color:#dbeafe;font-size:12px;font-weight:700}.steps{max-width:1280px;margin:14px auto;display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.step{background:#fff;border:1px solid #dbe5f0;border-radius:13px;padding:10px;text-align:center;font-size:9px;font-weight:950}.step b{display:block;font-size:16px;color:#155eef;margin-bottom:3px}.wrap{max-width:1280px;margin:auto;padding:0 16px 70px}.card{background:#fff;border:1px solid #dbe5f0;border-radius:18px;padding:17px;box-shadow:0 8px 24px #0f172a0b;margin:12px 0}.card h2{font-size:17px;margin:0 0 12px}.form{display:grid;gap:10px}.form input,.form textarea,.form select,.compose textarea{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:11px;outline:0;font-weight:700}.form textarea{min-height:110px;resize:vertical}.req{border:1px solid #dbe5f0;border-radius:16px;padding:15px;margin:10px 0}.reqhead{display:flex;justify-content:space-between;gap:10px}.subject{font-weight:1000;font-size:15px}.pill{padding:5px 8px;border-radius:999px;background:#eff6ff;color:#1d4ed8;font-size:9px;font-weight:1000;height:max-content}.pill.open{background:#ecfdf5;color:#047857}.pill.pending{background:#fff7ed;color:#c2410c}.pill.done{background:#f1f5f9;color:#475569}.meta{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}.meta div{background:#f8fafc;border-radius:10px;padding:8px}.meta b{display:block;font-size:8px;color:#64748b;text-transform:uppercase}.meta span{display:block;font-size:11px;font-weight:800;margin-top:3px;word-break:break-word}.note,.error,.success,.locked{padding:11px;border-radius:11px;font-size:11px;font-weight:800;margin:10px 0}.note{background:#fffbeb;border:1px solid #fde68a;color:#92400e}.error{background:#fef2f2;border:1px solid #fecaca;color:#991b1b}.success{background:#ecfdf5;border:1px solid #bbf7d0;color:#166534}.locked{background:#f1f5f9;color:#64748b}.empty{text-align:center;padding:35px;color:#64748b;font-weight:800}.balance{font-size:30px;font-weight:1000;color:#1d4ed8}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}.connection{border-left:4px solid #f59e0b}.connection.unread{box-shadow:0 0 0 2px #f59e0b22,0 10px 25px #0f172a10}.connection h2{margin-bottom:5px}.chatbox{border:1px solid #dbe5f0;border-radius:16px;overflow:hidden;background:#f8fbff;margin-top:12px}.chathead{padding:12px 14px;background:#092a66;color:#fff;font-weight:950}.messages{max-height:420px;overflow:auto;padding:12px}.bubble{max-width:78%;padding:9px 11px;border-radius:14px;background:#fff;border:1px solid #dbe5f0;margin:7px 0;font-size:12px;white-space:pre-wrap}.bubble.mine{margin-left:auto;background:#1264d8;color:#fff;border-color:#1264d8}.compose{display:flex;gap:7px;padding:10px;border-top:1px solid #dbe5f0;background:#fff}.compose textarea{flex:1;resize:none;height:45px}.small{font-size:9px;opacity:.75;margin-top:3px}.inbox-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.inbox-title{font-size:17px;font-weight:1000}.unread-pill{background:#dc2626;color:#fff;border-radius:999px;padding:5px 9px;font-size:9px;font-weight:1000}.chat-status{font-size:9px;font-weight:900;color:#64748b;margin-top:4px}.toast{position:fixed;right:18px;bottom:18px;z-index:100;max-width:min(390px,calc(100vw - 36px));background:#092a66;color:#fff;border-radius:14px;padding:13px 15px;box-shadow:0 15px 45px #0f172a44;display:none}.toast.show{display:block}.toast strong{display:block;font-size:11px}.toast span{display:block;font-size:10px;color:#dbeafe;margin-top:3px}
+@media(max-width:900px){.steps{grid-template-columns:repeat(3,1fr)}.meta{grid-template-columns:1fr 1fr}.grid2{grid-template-columns:1fr}}@media(max-width:620px){.bar{align-items:flex-start}.brand img{width:200px;max-width:45vw}.actions{justify-content:flex-end}.actions .btn{padding:9px 10px;font-size:9px}.steps{grid-template-columns:repeat(2,1fr)}.meta{grid-template-columns:1fr}.hero h1{font-size:22px}.compose{align-items:stretch}.compose .btn{padding:10px}.bubble{max-width:90%}}
+
+/* GURU CONNECT — WhatsApp-only connection workflow */
+html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+.tab-badge,.notif-badge{animation:gcBadgeBreathe 1.35s ease-in-out infinite;transform-origin:center}
+@keyframes gcBadgeBreathe{0%,100%{transform:scale(1);box-shadow:0 4px 10px #dc262655}50%{transform:scale(1.18);box-shadow:0 0 0 7px #dc262622,0 7px 18px #dc262677}}
+.notif-item.unread{animation:gcUnreadGlow 1.8s ease-in-out infinite}
+@keyframes gcUnreadGlow{0%,100%{box-shadow:inset 3px 0 0 transparent}50%{box-shadow:inset 3px 0 0 #dc2626}}
+.gc-chat-overlay{position:fixed;inset:0;z-index:9999;background:rgba(7,20,43,.58);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:22px}
+.gc-chat-window{width:min(1080px,96vw);height:min(860px,92vh);min-height:560px;background:#efeae2;border-radius:22px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.32);display:flex;flex-direction:column;border:1px solid #cbd5e1}
+.gc-chat-top{background:#0b2d63;color:#fff;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex:0 0 auto}
+.gc-chat-person{min-width:0}.gc-chat-person strong{display:block;font-size:17px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.gc-chat-person span{display:block;margin-top:3px;font-size:12px;color:#dbeafe;font-weight:600}
+.gc-chat-tools{display:flex;gap:7px;align-items:center}.gc-chat-tool{border:1px solid #ffffff44;background:#ffffff12;color:#fff;border-radius:10px;padding:9px 11px;font:800 12px/1 Inter,sans-serif;cursor:pointer}.gc-chat-tool:hover{background:#ffffff22}.gc-chat-close{font-size:20px;line-height:1}
+.gc-chat-messages{flex:1;overflow:auto;padding:24px 5%;display:flex;flex-direction:column;gap:4px;background-color:#efeae2;background-image:radial-gradient(rgba(15,23,42,.045) .8px,transparent .8px);background-size:13px 13px}
+.gc-chat-empty{margin:auto;background:#fff;border-radius:14px;padding:14px 18px;color:#64748b;font-size:13px;font-weight:700;box-shadow:0 2px 8px rgba(15,23,42,.08)}
+.gc-bubble{max-width:min(72%,720px);padding:10px 13px 7px;border-radius:14px;background:#fff;color:#172033;box-shadow:0 1px 2px rgba(15,23,42,.12);font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word;align-self:flex-start}
+.gc-bubble.mine{align-self:flex-end;background:#d9fdd3}.gc-bubble-text{font-size:13px;font-weight:500}.gc-bubble-time{text-align:right;margin-top:4px;font-size:10px;color:#718096;font-weight:600}.gc-chat-compose{display:flex;gap:9px;align-items:flex-end;padding:12px 14px;background:#f0f2f5;border-top:1px solid #d7dde6;flex:0 0 auto}.gc-chat-compose textarea{flex:1;min-height:48px;max-height:130px;resize:none;border:1px solid #cbd5e1;border-radius:14px;padding:12px 14px;background:#fff;font:500 13px/1.45 Inter,sans-serif;outline:none}.gc-chat-compose textarea:focus{border-color:#2563eb;box-shadow:0 0 0 3px #2563eb18}.gc-chat-send{height:48px;min-width:82px;border:0;border-radius:13px;background:#059669;color:#fff;font:900 13px/1 Inter,sans-serif;cursor:pointer}.gc-chat-send:disabled{opacity:.55;cursor:not-allowed}
+.gc-chat-request-badge{display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;padding:0 5px;margin-left:7px;border-radius:999px;background:#dc2626;color:#fff;font-size:10px;font-weight:900;animation:gcBadgeBreathe 1.35s ease-in-out infinite}
+.gc-chat-download{background:#155eef}
+@media(max-width:700px){.gc-chat-overlay{padding:0}.gc-chat-window{width:100vw;height:100dvh;min-height:0;border-radius:0}.gc-chat-top{padding:11px 12px}.gc-chat-person strong{font-size:15px}.gc-chat-person span{font-size:11px}.gc-chat-tools{gap:4px}.gc-chat-tool{padding:8px 9px;font-size:10px}.gc-chat-messages{padding:18px 10px}.gc-bubble{max-width:88%;font-size:13px}.gc-chat-compose{padding:9px}.gc-chat-compose textarea{font-size:13px}.gc-chat-send{min-width:68px}}
+@media(max-width:430px){.gc-chat-tools .gc-chat-download{font-size:0}.gc-chat-tools .gc-chat-download::before{content:'PDF';font-size:10px}.gc-chat-person strong{max-width:190px}}
+
+.gc-fast-dashboard-splash{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;background:#fff;opacity:1;visibility:visible;transition:opacity .18s ease,visibility .18s ease}.gc-fast-dashboard-splash.hide{opacity:0;visibility:hidden;pointer-events:none}.gc-fast-dashboard-splash img{width:min(390px,78vw);max-height:52vh;object-fit:contain;filter:drop-shadow(0 14px 30px rgba(15,61,145,.14))}@media(max-width:520px){.gc-fast-dashboard-splash img{width:min(310px,84vw)}}
+/* WhatsApp-only connection workflow */
+.gc-chat-window{width:min(1080px,96vw);height:min(860px,92vh);min-height:560px;background:#efeae2;border-radius:16px;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.32);display:flex;flex-direction:column;border:1px solid #cbd5e1}
+.gc-chat-top{background:#075e54;color:#fff;padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex:0 0 auto}
+.gc-chat-person span{color:#d7f5ef}.gc-chat-messages{flex:1;overflow:auto;padding:22px 5%;display:flex;flex-direction:column;gap:7px;background-color:#efeae2;background-image:radial-gradient(rgba(15,23,42,.045) .8px,transparent .8px);background-size:13px 13px}
+.gc-bubble{max-width:min(72%,720px);padding:9px 12px 6px;border-radius:8px 8px 8px 2px;background:#fff;color:#172033;box-shadow:0 1px 1px rgba(15,23,42,.13);font-size:13px;line-height:1.5;white-space:pre-wrap;word-break:break-word;align-self:flex-start;position:relative}.gc-bubble.mine{align-self:flex-end;background:#d9fdd3;border-radius:8px 8px 2px 8px}.gc-bubble-text{font-size:13px;font-weight:500}.gc-bubble-time{text-align:right;margin-top:3px;font-size:9px;color:#667781;font-weight:600}.gc-chat-compose{display:flex;gap:9px;align-items:flex-end;padding:10px 12px;background:#f0f2f5;border-top:1px solid #d7dde6;flex:0 0 auto}.gc-chat-compose textarea{min-height:46px;border-radius:22px;padding:12px 16px}.gc-chat-send{height:46px;min-width:78px;border-radius:22px;background:#075e54}.gc-chat-download{background:#dc2626!important;color:#fff!important;border-color:#dc2626!important;font-weight:900!important}.gc-chat-download:hover{background:#b91c1c!important}
+
+/* GC REQUEST FORM + RESPONSIVE READABILITY */
+.request-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field.full{grid-column:1/-1}
+.field label{font-size:12px;font-weight:900;color:#173b72}
+.field .hint{font-size:10px;color:#64748b;font-weight:600;margin-top:-2px}
+.form input,.form textarea,.form select{font-family:Inter,system-ui,sans-serif;font-size:14px;color:#172033;background:#fff;min-height:48px}
+.form textarea{min-height:135px}
+.form select{appearance:auto;cursor:pointer}
+.deadline-box{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:10px 12px;font-size:11px;color:#1e3a8a;font-weight:800}
+.gc-chat-messages{padding:20px clamp(12px,5vw,56px)}
+.gc-bubble{max-width:min(62%,640px);font-family:Inter,system-ui,sans-serif;font-size:14px;line-height:1.55;padding:11px 14px 8px}
+.gc-bubble-text{font-size:14px;font-weight:500}
+.gc-chat-window{width:min(1100px,96vw);height:min(860px,94vh)}
+@media(max-width:900px){.request-form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.gc-bubble{max-width:78%}}
+@media(max-width:620px){.gc-chat-overlay{padding:0}.gc-chat-window{width:100vw;height:100vh;min-height:0;border-radius:0}.gc-chat-top{padding:11px}.gc-chat-person strong{font-size:15px}.gc-chat-person span{font-size:10px}.gc-chat-tools{gap:4px}.gc-chat-download{padding:8px 7px;font-size:10px}.gc-chat-messages{padding:14px 9px}.gc-bubble{max-width:88%;font-size:13.5px}.gc-bubble-text{font-size:13.5px}.gc-chat-compose{padding:9px}.gc-chat-compose textarea{font-size:14px}}
+</style>
+
+<style id="gc-final-chat-responsive-v3">
+html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+/* LRR posting: readable Inter typography on PC/tablet/mobile */
+#app .form,#app .form input,#app .form select,#app .form textarea,#app .form button,#app .card{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+#app .form input,#app .form select,#app .form textarea{font-size:14px!important;line-height:1.45!important;min-height:48px!important}
+#app .form textarea{min-height:120px!important;padding:12px 14px!important}
+#app .form button{font-size:13px!important;min-height:48px!important}
+#app .card h2{font-size:20px!important;line-height:1.25!important}
+.gc-chat-overlay{padding:16px!important}
+.gc-chat-window{width:min(1180px,98vw)!important;height:min(900px,94vh)!important;min-height:0!important;border-radius:18px!important}
+.gc-chat-person strong{font-family:Inter,sans-serif!important;font-size:18px!important}
+.gc-chat-person span{font-family:Inter,sans-serif!important;font-size:12px!important}
+.gc-chat-messages{padding:24px clamp(14px,5vw,70px)!important}
+.gc-bubble,.gc-bubble-text{font-family:Inter,sans-serif!important;font-size:14px!important;line-height:1.55!important}
+.gc-bubble{max-width:min(70%,760px)!important;padding:10px 13px 7px!important}
+.gc-bubble-time{font-family:Inter,sans-serif!important;font-size:10px!important}
+.gc-chat-compose textarea{font-family:Inter,sans-serif!important;font-size:14px!important;line-height:1.45!important;min-height:50px!important}
+.gc-chat-send,.gc-chat-tool{font-family:Inter,sans-serif!important}
+.gc-chat-send{min-width:86px!important;height:50px!important}
+.gc-chat-download{background:#dc2626!important;color:#fff!important;border-color:#dc2626!important}
+@media(max-width:900px){.gc-chat-window{width:96vw!important;height:92vh!important}.gc-bubble{max-width:78%!important}.gc-chat-messages{padding:20px 22px!important}}
+@media(max-width:700px){.gc-chat-overlay{padding:0!important}.gc-chat-window{width:100vw!important;height:100dvh!important;border-radius:0!important}.gc-chat-top{padding:10px 11px!important}.gc-chat-person strong{font-size:15px!important}.gc-chat-person span{font-size:10px!important}.gc-chat-messages{padding:16px 9px!important}.gc-bubble{max-width:88%!important;padding:9px 11px 6px!important}.gc-bubble,.gc-bubble-text{font-size:13.5px!important}.gc-chat-compose{padding:8px!important;gap:7px!important}.gc-chat-compose textarea{min-height:46px!important;font-size:13.5px!important}.gc-chat-send{height:46px!important;min-width:70px!important}.gc-chat-download{font-size:10px!important;padding:8px!important}}
+@media(max-width:430px){.gc-chat-tools .gc-chat-download{font-size:0!important}.gc-chat-tools .gc-chat-download::before{content:'PDF';font-size:10px}.gc-chat-person strong{max-width:180px}.gc-bubble{max-width:92%!important}}
+</style>
+</head>
+<body><div class="gc-fast-dashboard-splash" id="gcDashboardSplash" aria-label="GURU CONNECT loading"><img src="guru-connect-round-logo.png" alt="GURU CONNECT"></div><script>(function(){var h=function(){var x=document.getElementById('gcDashboardSplash');if(!x)return;x.classList.add('hide');setTimeout(function(){x.remove()},240)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(h,1000)},{once:true});else setTimeout(h,1000);window.addEventListener('load',function(){setTimeout(h,1000)},{once:true})})();</script>
+<header class="top"><div class="bar"><div><div class="brand"><img src="guru-connect-new-header.png" alt="GURU CONNECT — Connecting Minds Creating Future"></div><div id="who" class="who">Loading your Kingdom…</div></div><div class="actions"><div class="notif-wrap"><button type="button" class="notif-btn" id="notifBtn" aria-label="Notifications">🔔<span id="notifBadge" class="notif-badge" style="display:none">0</span></button><div id="notifPanel" class="notif-panel"><div class="notif-head"><strong>Notifications</strong><button type="button" id="desktopNotifBtn">ENABLE DESKTOP</button></div><div id="notifList" class="notif-list"><div class="notif-empty">Loading notifications…</div></div></div></div><button type="button" class="btn green" id="kingdomBtn">👑 MY KINGDOM</button><button type="button" class="btn gray" id="websiteBtn">← WEBSITE</button><button type="button" class="btn red" id="logoutBtn">LOGOUT</button></div></div></header>
+<main>
+<section class="hero"><h1>👑 MY KINGDOM — Learning Request Portal</h1><p>1 Student posts LR → 2 Tutor sends connection → 3 Student accepts → 4 WhatsApp opens after acceptance → 5 Tutor completes + Student confirms → 6 Admin approves coins.</p></section>
+<section class="steps"><div class="step"><b>1</b>STUDENT POSTS LR</div><div class="step"><b>2</b>TUTOR SENDS CONNECTION</div><div class="step"><b>3</b>STUDENT ACCEPTS</div><div class="step"><b>4</b>WHATSAPP CHAT</div><div class="step"><b>5</b>TUTOR COMPLETES + STUDENT REMARK</div><div class="step"><b>6</b>ADMIN APPROVES COINS</div></section>
+<div class="wrap"><div id="globalError"></div><div class="tabs" id="tabs"></div><section id="app"><div class="card empty">Loading…</div></section></div>
+</main>
+<div id="toast" class="toast"><strong id="toastTitle"></strong><span id="toastBody"></span></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script>
+(function(){
+'use strict';
+const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
+const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+let sb=null,me=null,role='',profile=null,tab='requests',notificationTimer=null,realtimeChannel=null,notifications=[];
+function msg(t,kind='error'){$('globalError').innerHTML='<div class="'+kind+'">'+esc(t)+'</div>';if(kind==='success')setTimeout(clearMsg,4000)}
+function clearMsg(){$('globalError').innerHTML=''}
+function wait(ms){return new Promise((_,rej)=>setTimeout(()=>rej(new Error('Request timed out. Please refresh and try again.')),ms))}
+async function safe(p){return await Promise.race([p,wait(15000)])}
+function pid(){return String(profile?.id||'')}
+function publicId(v,r){return String(r||'').toLowerCase()+'-'+String(v||'').replaceAll('-','').slice(0,8).toUpperCase()}
+function fmt(v){try{return new Date(v).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'})}catch(_){return''}}
+function toast(title,body){$('toastTitle').textContent=title;$('toastBody').textContent=body;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),5200)}
+function roleProfileIds(){return pid()}
+async function init(){
+ try{
+  if(sessionStorage.getItem('gc_logged_out')==='1'){sessionStorage.removeItem('gc_logged_out');try{await sb?.auth?.signOut({scope:'local'})}catch(_){}window.location.replace('index.html');return}
+
+  if(!window.supabase?.createClient)throw new Error('Supabase library did not load. Please check internet/CDN access.');
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  const s=await safe(sb.auth.getSession());me=s.data.session?.user;
+  if(!me){$('who').textContent='Not logged in';msg('Your login session is missing. Please login again from the website.');setTimeout(()=>location.href='index.html',1800);return}
+  const ident=await safe(sb.rpc('gc_get_my_member_profile'));
+  if(ident.error)throw ident.error;
+  role=String(ident.data?.role||'').toLowerCase();profile=ident.data?.profile||null;
+  if(!profile||!['student','tutor'].includes(role))throw new Error('Your Student/Tutor profile is not linked to this Supabase Auth account. Please run SUPABASE_IDENTITY_MIGRATION_V15_2.sql once in Supabase SQL Editor.');
+  if(String(profile.user_id||'')!==String(me.id))throw new Error('Member identity mismatch. Please contact Admin.');
+  localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_profile_id',profile.id);localStorage.setItem('active_user_id',me.id);localStorage.setItem('active_user_name',profile.name||profile.full_name||me.email?.split('@')[0]||'User');
+  $('who').textContent=(role==='student'?'STUDENT':'TUTOR')+' • '+(profile.name||profile.full_name||me.email||'');
+  bind();await loadNotifications(true);startNotificationWatch();render();
+ }catch(e){msg(e.message||e)}
+}
+function bind(){
+ $('kingdomBtn').onclick=()=>{tab='requests';render();window.scrollTo({top:0,behavior:'smooth'})};
+ $('websiteBtn').onclick=()=>location.href='index.html';
+ $('logoutBtn').onclick=logout;
+ $('notifBtn').onclick=()=>{const p=$('notifPanel');p.classList.toggle('open');if(p.classList.contains('open'))loadNotifications(false)};
+ $('desktopNotifBtn').onclick=enableDesktopNotifications;
+ document.addEventListener('click',e=>{const wrap=document.querySelector('.notif-wrap');if(wrap&&!wrap.contains(e.target))$('notifPanel').classList.remove('open')});
+}
+function tabs(){
+ const a=[['requests','📚 MY LEARNING REQUESTS'],['post','➕ POST REQUEST'],['connections','🔔 CONNECTION REQUESTS'],['account','🪙 MY ACCOUNT']];
+ if(role!=='student')a.splice(1,1);
+ $('tabs').innerHTML=a.map(x=>{let badge='';if(x[0]==='connections')badge+='<span id="connBadge" class="tab-badge" style="display:none">0</span>';return '<button type="button" class="tab '+(tab===x[0]?'active':'')+'" data-tab="'+x[0]+'">'+x[1]+badge+'</button>'}).join('');
+ document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{tab=b.dataset.tab;clearMsg();if(tab==='connections')await markNotificationTypeRead(['CONNECTION_REQUEST','CONNECTION_RESPONSE']);await render()});updateBadges();
+}
+async function render(){tabs();$('app').innerHTML='<div class="card empty">Loading…</div>';try{if(tab==='post'){if(role!=='student')throw new Error('Only Students can post a Learning Request.');$('app').innerHTML=postView();const d=$('deadline');if(d){const x=new Date(Date.now()+30*60*1000);x.setSeconds(0,0);d.min=x.toISOString().slice(0,16)}$('postBtn').onclick=postRequest;return}if(tab==='connections'){await connectionsView();return}if(tab==='account'){await accountView();return}await requestsView()}catch(e){$('app').innerHTML='<div class="card error"><b>Could not load this section.</b><br>'+esc(e.message||e)+'</div>';}}
+function postView(){return '<div class="card"><h2>➕ POST A LEARNING REQUEST</h2><div class="note">100 GURU COINS are held in Admin escrow. Coins are released to the Tutor only after completion + Student remark + Admin approval.</div><div class="request-form-grid form"><div class="field"><label for="course">COURSE</label><input id="course" placeholder="HSC / JEE / NEET etc."></div><div class="field"><label for="stream">STREAM</label><input id="stream" placeholder="Science / Commerce / Arts etc."></div><div class="field"><label for="subject">SUBJECT *</label><input id="subject" placeholder="e.g. Economics"></div><div class="field"><label for="chapter">CHAPTER *</label><input id="chapter" placeholder="Write chapter name"></div><div class="field"><label for="topic">TOPIC *</label><input id="topic" placeholder="Write topic name"></div><div class="field"><label for="learningMode">LEARNING MODE *</label><select id="learningMode"><option value="">Select mode</option><option value="ONLINE">Online</option><option value="OFFLINE">Offline</option><option value="ONLINE_OR_OFFLINE">Online or Offline</option></select></div><div class="field full"><label for="deadline">LEARNING DEADLINE DATE & TIME *</label><input id="deadline" type="datetime-local"><div class="hint">Choose the date and time by which you want to learn/complete this topic.</div></div><div class="field full"><label for="issue">FULL ISSUE / PROBLEM *</label><textarea id="issue" placeholder="Clearly write the doubt, problem or concept you want the Tutor to explain."></textarea></div><div class="deadline-box field full">📅 <b>Learning Deadline:</b> Please select a future date and time. This deadline will be saved with your Learning Request.</div><div class="field full"><button type="button" class="btn" id="postBtn">POST REQUEST — 100 🪙</button></div></div></div>'}
+async function postRequest(){const b=$('postBtn');try{b.disabled=true;b.textContent='POSTING…';const subject=$('subject').value.trim(),chapter=$('chapter').value.trim(),topic=$('topic').value.trim(),issue=$('issue').value.trim(),dl=$('deadline').value,mode=$('learningMode').value;if(!subject||!chapter||!topic||!issue||!dl||!mode)throw new Error('Subject, Chapter, Topic, Learning Mode and Learning Deadline are required.');if(new Date(dl)<=new Date())throw new Error('Learning Deadline must be in the future.');const composite='Chapter: '+chapter+'\nTopic: '+topic+'\nLearning Mode: '+mode;const r=await safe(sb.rpc('gc_post_my_learning_request',{p_course:$('course').value.trim(),p_problem:issue,p_stream:$('stream').value.trim(),p_subject:subject,p_topic:composite}));if(r.error)throw r.error;const id=r.data?.id||r.data?.request_id;if(id){const d=await safe(sb.rpc('gc_set_learning_request_deadline',{p_request_id:id,p_deadline:new Date(dl).toISOString()}));if(d.error)console.warn('Deadline RPC failed',d.error);const up=await safe(sb.from('gc_learning_requests_v2').update({learning_deadline:new Date(dl).toISOString()}).eq('id',id));if(up.error)console.warn('Deadline direct-save fallback',up.error);try{const extra=await safe(sb.from('gc_learning_requests_v2').update({chapter:chapter,learning_mode:mode}).eq('id',id));if(extra.error)console.warn('Optional chapter/mode columns not available; composite topic retained.',extra.error)}catch(_){}}msg('Learning Request posted successfully. 100 coins are now held in Admin escrow.','success');tab='requests';await render()}catch(e){msg('POST REQUEST failed: '+(e.message||e))}finally{if($('postBtn')){b.disabled=false;b.textContent='POST REQUEST — 100 🪙'}}}
+async function getRequests(){const q=await safe(sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(500));if(q.error)throw q.error;return q.data||[]}
+async function requestsView(){let rows=await getRequests();if(role==='student')rows=rows.filter(r=>String(r.student_id)===pid());else rows=rows.filter(r=>String(r.tutor_id)===pid()||(!r.tutor_id&&['OPEN','PENDING_STUDENT_CONNECTION'].includes(String(r.status||'OPEN'))));$('app').innerHTML=rows.length?rows.map(card).join(''):'<div class="card empty">📚 No Learning Requests found.</div>';wireCards()}
+function statusClass(s){s=String(s||'');if(s==='OPEN')return'open';if(/PENDING|REQUEST/i.test(s))return'pending';if(/COMPLETED|APPROVED/i.test(s))return'done';return''}
+function requestTopicMeta(r){const raw=String(r.topic||'');const m=raw.match(/^Chapter:\s*([\s\S]*?)\nTopic:\s*([\s\S]*?)(?:\nLearning Mode:\s*(.*))?$/i);if(m)return{chapter:m[1].trim(),topic:m[2].trim(),mode:(m[3]||'').trim().replaceAll('_',' ')};return{chapter:'',topic:raw,mode:String(r.learning_mode||'').replaceAll('_',' ')};}
+function card(r){const st=String(r.status||'OPEN'),out=String(r.student_outcome||'PENDING'),tm=requestTopicMeta(r);let a='';if(role==='tutor'&&!r.tutor_id&&['OPEN','PENDING_STUDENT_CONNECTION'].includes(st))a+='<button type="button" class="btn orange" data-action="send" data-id="'+esc(r.id)+'">SEND CONNECTION REQUEST</button>';if(role==='tutor'&&String(r.tutor_id)===pid()&&['TUTOR_ACCEPTED','ACCEPTED'].includes(st))a+='<button type="button" class="btn orange" data-action="complete" data-id="'+esc(r.id)+'">MARK LR COMPLETED</button>';const connected=(String(r.tutor_id)===pid()||role==='student'&&!!r.tutor_id)&&['TUTOR_ACCEPTED','ACCEPTED','TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED','APPROVED'].includes(st);if(connected)a+='<button type="button" class="btn green" data-action="whatsapp" data-id="'+esc(r.id)+'">💬 CHAT ON WHATSAPP</button>';if(role==='student'&&String(r.student_id)===pid()&&['TUTOR_COMPLETED','COMPLETED'].includes(st)&&out==='PENDING')a+='<button type="button" class="btn green" data-action="satisfied" data-id="'+esc(r.id)+'">✓ LR COMPLETED & SATISFIED</button><button type="button" class="btn red" data-action="not_satisfied" data-id="'+esc(r.id)+'">✕ LR COMPLETED but NOT SATISFIED</button>';return '<article class="req"><div class="reqhead"><div><div class="subject">'+esc(r.subject||'Learning Request')+'</div><div class="small">'+(tm.chapter?'Chapter: '+esc(tm.chapter)+' • ':'')+'Topic: '+esc(tm.topic)+(tm.mode?' • '+esc(tm.mode):'')+(r.request_code?' • '+esc(r.request_code):'')+'</div></div><span class="pill '+statusClass(st)+'">'+esc(st.replaceAll('_',' '))+'</span></div><div class="meta"><div><b>Student</b><span>'+esc(r.student_short_id||publicId(r.student_id,'STUDENT'))+'</span></div><div><b>Tutor</b><span>'+esc(r.tutor_short_id||(r.tutor_id?publicId(r.tutor_id,'TUTOR'):'Connection pending'))+'</span></div><div><b>Coins Held</b><span>🪙 '+Number(r.coins_held||100)+'</span></div><div><b>Outcome</b><span>'+esc(out)+'</span></div><div><b>Course / Stream</b><span>'+esc(r.course||'—')+' / '+esc(r.stream||'—')+'</span></div><div><b>Learning Deadline</b><span>'+(r.learning_deadline?esc(new Date(r.learning_deadline).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'})):'—')+'</span></div></div><div class="note"><b>Chapter:</b> '+esc(tm.chapter||'—')+'<br><b>Topic:</b> '+esc(tm.topic||'—')+(tm.mode?'<br><b>Mode:</b> '+esc(tm.mode):'')+'<br><b>Issue:</b> '+esc(r.issue||r.problem||'—')+'</div><div class="row">'+(a||'<span class="small">Waiting for the next workflow step.</span>')+'</div></article>'}
+function wireCards(){document.querySelectorAll('[data-action]').forEach(b=>b.onclick=async()=>{const id=b.dataset.id,act=b.dataset.action;try{b.disabled=true;if(act==='send')await sendConnection(id);if(act==='complete')await completeReq(id);if(act==='satisfied')await outcomeReq(id,'SATISFIED');if(act==='not_satisfied')await outcomeReq(id,'NOT_SATISFIED');if(act==='whatsapp')await openWhatsAppForRequest(id,role==='student'?'tutor':'student')}catch(e){msg(e.message||String(e))}finally{b.disabled=false}})}
+async function sendConnection(id){const r=await safe(sb.rpc('gc_tutor_send_learning_connection',{p_request_id:id}));if(r.error)throw r.error;toast('Connection request sent','The Student has been notified.');msg('Connection request sent to the Student. The Student must ACCEPT before WhatsApp contact is unlocked.','success');await loadNotifications(false);await requestsView()}
+async function completeReq(id){const r=await safe(sb.rpc('gc_tutor_complete_learning_request',{p_request_id:id}));if(r.error)throw r.error;msg('LR marked completed. Student must now submit the final remark.','success');await requestsView()}
+async function outcomeReq(id,outcome){const r=await safe(sb.rpc('gc_student_learning_request_outcome',{p_request_id:id,p_outcome:outcome}));if(r.error)throw r.error;msg('Student remark submitted. Admin can now review the held coins.','success');await requestsView()}
+
+function normalizeWhatsAppNumber(v){
+ const raw=String(v??'').trim();
+ let digits=raw.replace(/\D/g,'');
+ if(!digits)return '';
+ if(digits.startsWith('00'))digits=digits.slice(2);
+ if(digits.length===11&&digits.startsWith('0'))digits=digits.slice(1);
+ if(digits.length===10)digits='91'+digits;
+ return digits;
+}
+
+function gcIsMobileDevice(){
+ return /Android|iPhone|iPad|iPod|Windows Phone|webOS|BlackBerry/i.test(navigator.userAgent||'');
+}
+
+async function lookupLrrWhatsAppContact(requestId,targetRole){
+ // Resolve the connected person's phone using BOTH profile-id and auth-user-id
+ // paths. Different GURU CONNECT deployments have used both relationships.
+ const rq=await safe(sb.from('gc_learning_requests_v2')
+   .select('id,student_id,tutor_id')
+   .eq('id',String(requestId))
+   .maybeSingle());
+ if(rq.error)throw rq.error;
+ if(!rq.data)throw new Error('Learning Request was not found.');
+
+ const targetId=String(targetRole==='tutor'?rq.data.tutor_id||'':rq.data.student_id||'');
+ if(!targetId)throw new Error('The connected '+targetRole+' account could not be identified.');
+
+ let phone='',name='';
+ const table=targetRole==='tutor'?'tutor_profiles':'student_profiles';
+
+ // Try the common profile representations without assuming which ID is stored.
+ const tries=[
+  ()=>sb.from('profiles').select('phone,full_name,name,user_id').eq('id',targetId).maybeSingle(),
+  ()=>sb.from('profiles').select('phone,full_name,name,user_id').eq('user_id',targetId).maybeSingle(),
+  ()=>sb.from(table).select('phone,name,full_name,user_id,id').eq('id',targetId).maybeSingle(),
+  ()=>sb.from(table).select('phone,name,full_name,user_id,id').eq('user_id',targetId).maybeSingle()
+ ];
+
+ for(const run of tries){
+  try{
+   const x=await safe(run());
+   if(!x.error&&x.data){
+    phone=phone||x.data.phone||'';
+    name=name||x.data.full_name||x.data.name||'';
+    if(phone)break;
+   }
+  }catch(_){}
+ }
+
+ // Last-resort: if the request stores a profile id while the phone is on
+ // the auth-linked profile, first obtain that profile's user_id and retry.
+ if(!phone){
+  try{
+   const p=await safe(sb.from(table).select('phone,name,full_name,user_id').eq('id',targetId).maybeSingle());
+   if(!p.error&&p.data){
+    phone=p.data.phone||'';
+    name=name||p.data.full_name||p.data.name||'';
+    const uid=String(p.data.user_id||'');
+    if(!phone&&uid){
+     const u=await safe(sb.from(table).select('phone,name,full_name').eq('user_id',uid).maybeSingle());
+     if(!u.error&&u.data){
+      phone=u.data.phone||'';
+      name=name||u.data.full_name||u.data.name||'';
+     }
+    }
+   }
+  }catch(_){}
+ }
+ return {phone,name};
+}
+
+async function getAcceptedLrrConnection(requestId){
+ // The accepted connection row is authoritative for the already-connected pair.
+ try{
+  const q=await safe(sb.from('gc_learning_request_connections')
+    .select('id,request_id,student_id,tutor_id,status,created_at')
+    .eq('request_id',String(requestId))
+    .order('created_at',{ascending:false})
+    .limit(20));
+  if(q.error||!Array.isArray(q.data))return null;
+  const me=String(pid());
+  return (q.data||[]).find(c=>{
+   const st=String(c.status||'').trim().toUpperCase().replace(/[- ]/g,'_');
+   return ['ACCEPTED','APPROVED','CONNECTED'].includes(st) &&
+     (String(c.student_id||'')===me || String(c.tutor_id||'')===me);
+  })||null;
+ }catch(_){return null;}
+}
+
+async function openWhatsAppForRequest(requestId,targetRole){
+ // Open a real browser window synchronously from the button click. This avoids
+ // popup blocking while Supabase is being queried asynchronously.
+ const popup=window.open('about:blank','_blank');
+ try{
+  let phone='',name='';
+  const acceptedConnection=await getAcceptedLrrConnection(requestId);
+
+  if(acceptedConnection){
+   const fallback=await lookupLrrWhatsAppContact(requestId,targetRole);
+   phone=normalizeWhatsAppNumber(fallback.phone);
+   name=fallback.name||'';
+  }else{
+   const q=await safe(sb.rpc('gc_get_whatsapp_contact',{
+    p_request_id:requestId,
+    p_target_role:targetRole
+   }));
+   const contact=q.error?null:q.data;
+   phone=normalizeWhatsAppNumber(contact?.phone);
+   name=String(contact?.name||'');
+   if(!phone && q.error && !/no phone|phone number|mobile/i.test(q.error.message||''))throw q.error;
+   if(!phone){
+    const fallback=await lookupLrrWhatsAppContact(requestId,targetRole);
+    phone=normalizeWhatsAppNumber(fallback.phone);
+    name=name||fallback.name||'';
+   }
+  }
+
+  if(!phone)throw new Error('No valid mobile number is saved for the connected user. Please update the registered mobile number in the profile/admin user editor.');
+
+  name=name||(targetRole==='tutor'?'Tutor':'Student');
+  const text=`Hello ${name}, I am contacting you through GURU CONNECT regarding our accepted learning connection.`;
+  const encoded=encodeURIComponent(text);
+
+  const webUrl='https://wa.me/'+phone+'?text='+encoded;
+  const appUrl='whatsapp://send?phone='+phone+'&text='+encoded;
+
+  // On phones/tablets explicitly invoke the installed WhatsApp application.
+  // If WhatsApp is not installed (or the browser blocks the custom protocol),
+  // fall back automatically to WhatsApp Web.
+  if(gcIsMobileDevice()){
+   if(popup&&!popup.closed){
+    popup.location.href=appUrl;
+    setTimeout(()=>{
+     try{
+      if(!popup.closed && document.visibilityState!=='hidden')popup.location.href=webUrl;
+     }catch(_){}
+    },1400);
+   }else{
+    window.location.href=appUrl;
+    setTimeout(()=>{
+     try{
+      if(document.visibilityState!=='hidden')window.location.href=webUrl;
+     }catch(_){}
+    },1400);
+   }
+  }else{
+   if(popup&&!popup.closed)popup.location.href=webUrl;
+   else window.location.href=webUrl;
+  }
+ }catch(e){
+  if(popup&&!popup.closed)popup.close();
+  msg('WhatsApp chat could not be opened: '+(e.message||e));
+ }
+}
+
+async function connectionsView(){
+ const q=await safe(sb.from('gc_learning_request_connections').select('*').order('created_at',{ascending:false}).limit(300));
+ if(q.error)throw new Error(q.error.message+' — Run the supplied SUPABASE_CHAT_NOTIFICATIONS_FINAL.sql in Supabase SQL Editor.');
+ const rows=(q.data||[]).filter(x=>role==='student'?String(x.student_id)===pid():String(x.tutor_id)===pid());
+ const ids=rows.map(x=>x.request_id);const rq=ids.length?await safe(sb.from('gc_learning_requests_v2').select('*').in('id',ids)):({data:[],error:null});if(rq.error)throw rq.error;const map=new Map((rq.data||[]).map(x=>[String(x.id),x]));
+ if(!rows.length){$('app').innerHTML='<div class="card empty">🔔 No connection requests yet.<br><span class="small">New Tutor requests and Student responses will appear here with a red notification badge.</span></div>';updateBadges();return}
+ $('app').innerHTML='<div class="card"><div class="inbox-head"><div><div class="inbox-title">🔔 CONNECTION REQUESTS</div><div class="small">Incoming requests and connection responses for your account.</div></div><span class="unread-pill" id="connectionCountText">'+rows.filter(x=>x.status==='PENDING_STUDENT').length+' pending</span></div></div>'+rows.map(c=>{const r=map.get(String(c.request_id))||{};let a='';if(role==='student'&&c.status==='PENDING_STUDENT')a='<button type="button" class="btn green" data-conn="accept" data-id="'+esc(c.id)+'">✓ ACCEPT CONNECTION</button><button type="button" class="btn red" data-conn="reject" data-id="'+esc(c.id)+'">✕ REJECT</button>';else if(role==='tutor'&&c.status==='PENDING_STUDENT')a='<div class="note">⏳ Waiting for the Student to ACCEPT this connection request.</div>';else if(c.status==='ACCEPTED')a='<button type="button" class="btn green" data-whatsapp-chat="'+esc(c.request_id)+'">💬 CHAT ON WHATSAPP</button><div class="success">✓ Connection accepted. WhatsApp chat is available.</div>';else a='<div class="locked">Connection rejected.</div>';const reqUnread=notifications.filter(n=>!n.read_at&&String(n.request_id||'')===String(c.request_id)).length;return '<div class="card connection '+(c.status==='PENDING_STUDENT'?'unread':'')+'"><h2>'+esc(r.subject||'Learning Request')+(reqUnread?'<span class="gc-chat-request-badge">'+(reqUnread>99?'99+':reqUnread)+'</span>':'')+'</h2><div class="small">'+esc(r.request_code||c.request_id)+' • '+esc(c.status)+' • '+esc(fmt(c.created_at))+'</div><p class="small">'+esc(r.issue||r.problem||'')+'</p><div class="row">'+a+'</div></div>'}).join('');
+ document.querySelectorAll('[data-conn]').forEach(b=>b.onclick=async()=>{try{b.disabled=true;const fn=b.dataset.conn==='accept'?'gc_student_accept_learning_connection':'gc_student_reject_learning_connection';const r=await safe(sb.rpc(fn,{p_connection_id:b.dataset.id}));if(r.error)throw r.error;toast(b.dataset.conn==='accept'?'Connection accepted':'Connection rejected',b.dataset.conn==='accept'?'The Tutor has been notified. WhatsApp is available after acceptance.':'The Tutor has been notified.');await loadNotifications(false);await connectionsView();await requestsView()}catch(e){msg(e.message||String(e))}finally{b.disabled=false}});
+ document.querySelectorAll('[data-whatsapp-chat]').forEach(b=>b.onclick=async()=>{try{b.disabled=true;await openWhatsAppForRequest(b.dataset.whatsappChat,role==='student'?'tutor':'student')}catch(e){msg(e.message||String(e))}finally{b.disabled=false}});
+ updateBadges();
+}
+async function accountView(){let bal=0;try{const q=await safe(sb.from('gc_coin_wallets').select('*').eq('profile_id',pid()).maybeSingle());if(!q.error)bal=Number(q.data?.balance??q.data?.coins??q.data?.available_coins??0)}catch(_){}$('app').innerHTML='<div class="grid2"><div class="card"><h2>🪙 MY GURU COINS</h2><div class="balance">'+bal.toLocaleString('en-IN')+' 🪙</div><div class="small">Live wallet balance</div></div><div class="card"><h2>🔐 PASSWORD RESET</h2><p class="small">Reset your password securely using the email reset link.</p><button type="button" class="btn" id="resetBtn">RESET PASSWORD BY EMAIL</button></div></div><div class="card"><h2>💰 LEARNING REQUEST ESCROW</h2><div class="success">100 coins are held when a Student posts an LR. They are credited to the Tutor only after completion, Student final remark, and Admin approval.</div></div>';$('resetBtn').onclick=()=>location.href='forgot-password.html'}
+async function loadNotifications(initial){
+ if(!sb||!pid())return;
+ try{
+  const q=await safe(sb.from('gc_notifications').select('id,type,title,body,request_id,connection_id,message_id,created_at,read_at').eq('recipient_profile_id',pid()).order('created_at',{ascending:false}).limit(80));
+  if(q.error){if(initial)console.warn('Notifications table not ready:',q.error.message);return}
+  const prevUnread=new Set(notifications.filter(n=>!n.read_at).map(n=>String(n.id)));notifications=q.data||[];renderNotifications();updateBadges();
+  if(!initial){const fresh=notifications.find(n=>!n.read_at&&!prevUnread.has(String(n.id)));if(fresh){toast(fresh.title||'New notification',fresh.body||'');browserNotify(fresh.title||'GURU CONNECT',fresh.body||'')}}
+ }catch(e){if(initial)console.warn(e)}
+}
+function renderNotifications(){const list=$('notifList');if(!list)return;if(!notifications.length){list.innerHTML='<div class="notif-empty">🔕 No notifications yet.</div>';return}list.innerHTML=notifications.map(n=>'<div class="notif-item '+(!n.read_at?'unread':'')+'" data-notif-id="'+esc(n.id)+'" data-request-id="'+esc(n.request_id||'')+'"><div class="notif-title">'+esc(n.title||'GURU CONNECT')+'</div><div class="notif-body">'+esc(n.body||'')+'</div><div class="notif-time">'+esc(fmt(n.created_at))+(n.read_at?'':' • NEW')+'</div></div>').join('');list.querySelectorAll('[data-notif-id]').forEach(el=>el.onclick=async()=>{const id=el.dataset.notifId,rid=el.dataset.requestId;await markNotificationsRead([id]);$('notifPanel').classList.remove('open');if(rid){tab='connections';await render()}})}
+function updateBadges(){
+ const unread=notifications.filter(n=>!n.read_at).length;const badge=$('notifBadge');if(badge){badge.textContent=unread>99?'99+':String(unread);badge.style.display=unread?'block':'none'}
+ const conn=notifications.filter(n=>!n.read_at&&['CONNECTION_REQUEST','CONNECTION_RESPONSE'].includes(String(n.type))).length;const cb=$('connBadge');if(cb){cb.textContent=conn>99?'99+':String(conn);cb.style.display=conn?'block':'none';cb.classList.toggle('breathe',!!conn)}
+ if(badge)badge.classList.toggle('breathe',!!unread);
+}
+async function markNotificationsRead(ids){if(!ids?.length)return;try{const q=await safe(sb.from('gc_notifications').update({read_at:new Date().toISOString()}).in('id',ids).eq('recipient_profile_id',pid()));if(q.error)throw q.error;notifications=notifications.map(n=>ids.includes(String(n.id))?{...n,read_at:new Date().toISOString()}:n);renderNotifications();updateBadges()}catch(e){console.warn('mark read failed',e)}}
+async function markNotificationTypeRead(types){const ids=notifications.filter(n=>!n.read_at&&types.includes(String(n.type))).map(n=>String(n.id));if(ids.length)await markNotificationsRead(ids)}
+async function markRequestNotificationsRead(requestId){const ids=notifications.filter(n=>!n.read_at&&String(n.request_id||'')===String(requestId)).map(n=>String(n.id));if(ids.length)await markNotificationsRead(ids)}
+function startNotificationWatch(){clearInterval(notificationTimer);notificationTimer=setInterval(()=>loadNotifications(false),4500);try{realtimeChannel=sb.channel('gc-notifications-'+pid()).on('postgres_changes',{event:'INSERT',schema:'public',table:'gc_notifications',filter:'recipient_profile_id=eq.'+pid()},()=>loadNotifications(false)).subscribe()}catch(_){} }
+async function enableDesktopNotifications(){if(!('Notification' in window)){toast('Desktop notifications unavailable','This browser does not support Web Notifications.');return}try{const p=await Notification.requestPermission();toast(p==='granted'?'Desktop notifications enabled':'Desktop notifications not enabled',p==='granted'?'New connection/chat alerts can appear outside the tab.':'You can still use the in-site red notification badge.')}catch(e){toast('Notification permission unavailable','Use the in-site notification bell instead.')}}
+function browserNotify(title,body){try{if('Notification' in window&&Notification.permission==='granted'&&document.hidden)new Notification(title,{body,icon:'guru-connect-new-header.png'})}catch(_){}
+}
+async function logout(){if(window.__gcLoggingOut)return;window.__gcLoggingOut=true;const b=$('logoutBtn');if(b){b.disabled=true;b.textContent='LOGGING OUT…'}sessionStorage.setItem('gc_logged_out','1');clearInterval(notificationTimer);try{if(realtimeChannel)await sb?.removeChannel(realtimeChannel)}catch(_){}['active_user_role','active_user_profile_id','active_user_id','active_user_name','active_user_email'].forEach(k=>localStorage.removeItem(k));const target=new URL('index.html',window.location.href).href;try{await Promise.race([sb?.auth.signOut({scope:'global'}),new Promise(r=>setTimeout(r,1200))])}catch(_){}window.location.replace(target)}
+window.addEventListener('error',e=>msg('Page error: '+(e.message||'Unknown JavaScript error')));window.addEventListener('unhandledrejection',e=>msg('System error: '+(e.reason?.message||e.reason||'Unknown error')));window.addEventListener('load',init);
+})();
+</script>
+<style id="gc-branded-popup-style">
+#gc-popup-overlay{position:fixed;inset:0;background:rgba(7,18,38,.62);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;z-index:2147483647;padding:18px;font-family:inherit}
+#gc-popup-overlay.gc-open{display:flex;animation:gcFade .18s ease-out}
+#gc-popup-card{width:min(420px,100%);background:#fff;border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.28);overflow:hidden;text-align:center;border:1px solid rgba(255,255,255,.7);animation:gcRise .22s ease-out}
+#gc-popup-top{padding:22px 24px 14px;background:linear-gradient(135deg,#eff6ff,#f0fdfa)}
+#gc-popup-logo{width:70px;height:70px;object-fit:contain;border-radius:18px;background:#fff;padding:6px;box-shadow:0 5px 18px rgba(15,23,42,.1)}
+#gc-popup-brand{font-weight:900;letter-spacing:1.2px;color:#12315b;font-size:18px;margin-top:9px}
+#gc-popup-tag{font-size:10px;letter-spacing:2px;color:#0f766e;font-weight:800;margin-top:3px}
+#gc-popup-icon{width:48px;height:48px;margin:17px auto 0;border-radius:50%;display:grid;place-items:center;font-size:25px;background:#dcfce7;color:#15803d}
+#gc-popup-icon.gc-error{background:#fee2e2;color:#b91c1c}#gc-popup-icon.gc-warn{background:#fef3c7;color:#b45309}
+#gc-popup-title{font-size:20px;font-weight:800;color:#14213d;margin:17px 20px 7px}
+#gc-popup-message{white-space:pre-wrap;overflow-wrap:anywhere;color:#526176;font-size:14px;line-height:1.6;margin:0 24px 20px;max-height:35vh;overflow:auto}
+#gc-popup-ok{border:0;border-radius:12px;background:linear-gradient(135deg,#2563eb,#0f766e);color:#fff;font-weight:800;letter-spacing:.4px;padding:12px 28px;min-width:125px;cursor:pointer;box-shadow:0 6px 16px rgba(37,99,235,.22)}
+#gc-popup-actions{padding:0 22px 22px;display:flex;justify-content:center;gap:10px}#gc-popup-ok:focus{outline:3px solid #93c5fd;outline-offset:3px}
+@keyframes gcFade{from{opacity:0}to{opacity:1}}@keyframes gcRise{from{transform:translateY(10px) scale(.98);opacity:.7}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){#gc-popup-overlay,#gc-popup-card{animation:none}}
+</style>
+<div id="gc-popup-overlay" role="presentation"><section id="gc-popup-card" role="alertdialog" aria-modal="true" aria-labelledby="gc-popup-title" aria-describedby="gc-popup-message"><div id="gc-popup-top"><img id="gc-popup-logo" src="guru-connect-logo.png" alt="GURU CONNECT logo"><div id="gc-popup-brand">GURU CONNECT</div><div id="gc-popup-tag">CONNECTING MINDS • CREATING FUTURES</div><div id="gc-popup-icon">✓</div></div><h2 id="gc-popup-title">Notice</h2><p id="gc-popup-message"></p><div id="gc-popup-actions"><button id="gc-popup-ok" type="button">CONTINUE</button></div></section></div>
+<script id="gc-branded-popup-script">(()=>{if(window.__gcBrandedPopupInstalled)return;window.__gcBrandedPopupInstalled=true;const overlay=document.getElementById('gc-popup-overlay');if(!overlay)return;const title=overlay.querySelector('#gc-popup-title'),msg=overlay.querySelector('#gc-popup-message'),icon=overlay.querySelector('#gc-popup-icon'),ok=overlay.querySelector('#gc-popup-ok');let queue=[],busy=false;function render(){if(!queue.length){overlay.classList.remove('gc-open');busy=false;return}busy=true;const item=queue[0];title.textContent=item.title;msg.textContent=item.message;icon.className=item.kind==='error'?'gc-error':item.kind==='warn'?'gc-warn':'';icon.textContent=item.kind==='error'?'!':item.kind==='warn'?'⚠':'✓';ok.textContent=item.button||'CONTINUE';overlay.classList.add('gc-open');ok.focus()}function close(){queue.shift();render()}ok.addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('gc-open')){e.preventDefault();close()}});const nativeAlert=window.alert.bind(window);window.alert=function(value){const message=String(value??'');const low=message.toLowerCase();const kind=/fail|error|unable|not saved|not updated|denied|invalid|expired/.test(low)?'error':/warning|please|cannot|missing/.test(low)?'warn':'success';queue.push({title:kind==='error'?'Action Unsuccessful':kind==='warn'?'Please Note':'Action Completed',message,kind});if(!busy)render()};window.gcShowPopup=(message,options={})=>{queue.push({title:options.title||'GURU CONNECT',message:String(message??''),kind:options.kind||'success',button:options.button});if(!busy)render()};})();</script><script src="gc-activity-popup.js"></script>
+</body></html>
