@@ -203,20 +203,82 @@ async function lookupLrrWhatsAppContact(requestId,targetRole){
 async function openWhatsAppForRequest(requestId,targetRole){
  const popup=window.open('about:blank','_blank');
  try{
-  // First use the canonical RPC. If it returns no phone because of a legacy/profile-id
-  // mismatch, use the corrected profile -> auth user -> public.profiles fallback below.
-  const q=await safe(sb.rpc('gc_get_whatsapp_contact',{p_request_id:requestId,p_target_role:targetRole}));
-  let contact=q.error?null:q.data;
-  let phone=normalizeWhatsAppNumber(contact?.phone);
-  let name=String(contact?.name||'');
-  if(!phone && q.error && !/no phone|phone number|mobile/i.test(q.error.message||''))throw q.error;
-  if(!phone){const fallback=await lookupLrrWhatsAppContact(requestId,targetRole);phone=normalizeWhatsAppNumber(fallback.phone);name=name||fallback.name||'';}
+  /* IMPORTANT: WhatsApp must use the SAME accepted connection shown on this
+     dashboard. Do not rely on the LR status or the gc_get_whatsapp_contact RPC,
+     because one Student can have multiple LRs/connections. */
+  const cq=await safe(sb.from('gc_learning_request_connections')
+    .select('id,request_id,student_id,tutor_id,status,created_at')
+    .eq('request_id',String(requestId))
+    .order('created_at',{ascending:false})
+    .limit(20));
+  if(cq.error)throw cq.error;
+
+  const myProfileId=pid();
+  const accepted=(cq.data||[]).find(c=>
+    String(c.status||'').toUpperCase()==='ACCEPTED' &&
+    (targetRole==='tutor'
+      ? String(c.student_id)===myProfileId
+      : String(c.tutor_id)===myProfileId)
+  );
+
+  if(!accepted){
+    throw new Error('WhatsApp chat is available only after the connection is accepted');
+  }
+
+  const targetProfileId=String(targetRole==='tutor'?accepted.tutor_id:accepted.student_id||'');
+  if(!targetProfileId)throw new Error('The connected '+targetRole+' account could not be identified.');
+
+  let phone='',name='',userId='';
+  const table=targetRole==='tutor'?'tutor_profiles':'student_profiles';
+
+  // First resolve the member profile -> Supabase Auth user_id.
+  try{
+    const x=await safe(sb.from(table).select('id,user_id,name,email,phone,mobile,mobile_number,phone_number,whatsapp,whatsapp_number').eq('id',targetProfileId).maybeSingle());
+    if(!x.error&&x.data){
+      userId=String(x.data.user_id||'');
+      name=x.data.name||x.data.full_name||'';
+      phone=x.data.phone||x.data.mobile||x.data.mobile_number||x.data.phone_number||x.data.whatsapp||x.data.whatsapp_number||'';
+    }
+  }catch(_){}
+
+  // Legacy case: the connection may contain the Auth user_id directly.
+  if(!userId || !phone){
+    try{
+      const x=await safe(sb.from(table).select('id,user_id,name,email,phone,mobile,mobile_number,phone_number,whatsapp,whatsapp_number').eq('user_id',targetProfileId).maybeSingle());
+      if(!x.error&&x.data){
+        userId=String(x.data.user_id||targetProfileId);
+        name=name||x.data.name||x.data.full_name||'';
+        phone=phone||x.data.phone||x.data.mobile||x.data.mobile_number||x.data.phone_number||x.data.whatsapp||x.data.whatsapp_number||'';
+      }
+    }catch(_){}
+  }
+
+  // Canonical registered mobile: public.profiles is keyed by Auth user_id.
+  if(userId || targetProfileId){
+    for(const uid of [userId,targetProfileId].filter(Boolean)){
+      try{
+        const x=await safe(sb.from('profiles').select('id,user_id,full_name,name,email,phone,mobile,mobile_number,phone_number,whatsapp,whatsapp_number').eq('id',uid).maybeSingle());
+        if(!x.error&&x.data){
+          phone=phone||x.data.phone||x.data.mobile||x.data.mobile_number||x.data.phone_number||x.data.whatsapp||x.data.whatsapp_number||'';
+          name=name||x.data.full_name||x.data.name||'';
+          if(phone)break;
+        }
+      }catch(_){}
+    }
+  }
+
   if(!phone)throw new Error('No phone number is saved in the connected '+targetRole+' profile.');
+  phone=normalizeWhatsAppNumber(phone);
+  if(!phone)throw new Error('The connected '+targetRole+' profile has an invalid mobile number.');
+
   name=name||(targetRole==='tutor'?'Tutor':'Student');
   const text=`Hello ${name}, I am contacting you through GURU CONNECT regarding our accepted learning connection.`;
   const url='https://wa.me/'+phone+'?text='+encodeURIComponent(text);
   if(popup&&!popup.closed)popup.location.href=url;else window.location.href=url;
- }catch(e){if(popup&&!popup.closed)popup.close();msg('WhatsApp chat could not be opened: '+(e.message||e));}
+ }catch(e){
+  if(popup&&!popup.closed)popup.close();
+  msg('WhatsApp chat could not be opened: '+(e.message||e));
+ }
 }
 
 async function connectionsView(){
