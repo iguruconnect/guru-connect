@@ -160,12 +160,22 @@ async function connectionsView(){
  document.querySelectorAll('[data-open-whatsapp]').forEach(b=>b.onclick=async()=>{try{b.disabled=true;await openWhatsAppForRequest(b.dataset.openWhatsapp)}catch(e){msg(e.message||String(e))}finally{b.disabled=false}});updateBadges();
 }
 async function getProfileContact(profileId,targetRole){
- const table=String(targetRole).toLowerCase()==='tutor'?'tutor_profiles':'student_profiles';
+ const isTutor=String(targetRole).toLowerCase()==='tutor';
+ const table=isTutor?'tutor_profiles':'student_profiles';
  const q=await safe(sb.from(table).select('*').eq('id',String(profileId)).maybeSingle());
  if(q.error)throw q.error;
  const x=q.data||{};
  const keys=['phone','mobile','mobile_number','whatsapp','whatsapp_number','contact_number','contact','phone_number'];
  for(const k of keys){const v=String(x[k]||'').trim();if(v)return v;}
+ // Registered Tutors keep their WhatsApp/mobile contact in public.profiles,
+ // linked from tutor_profiles.user_id. Use select('*') so we never assume
+ // a specific profiles column name in the query itself.
+ if(isTutor && x.user_id){
+   const p=await safe(sb.from('profiles').select('*').eq('id',String(x.user_id)).maybeSingle());
+   if(p.error)throw p.error;
+   const px=p.data||{};
+   for(const k of keys){const v=String(px[k]||'').trim();if(v)return v;}
+ }
  return '';
 }
 function whatsappNumber(raw){let s=String(raw||'').replace(/[^0-9]/g,'');if(s.length===10)s='91'+s;if(s.startsWith('0091')&&s.length===14)s=s.slice(2);if(s.startsWith('91')&&s.length===12)return s;return s;}
