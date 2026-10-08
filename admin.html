@@ -958,3 +958,62 @@ $('adSave').onclick=async()=>{
 
 staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit()}});
 </script></body></html>
+<style id="gc-admin-colorful-control-tiles-20261009">
+/* =========================================================
+   GURU CONNECT ADMIN — COLORFUL CONTROL TILES
+   Each main dashboard tile gets a distinct brand color while
+   preserving all existing actions/functionality.
+   ========================================================= */
+.controlbar .topbtn{
+  color:#fff!important;
+  border:0!important;
+  min-height:86px!important;
+  border-radius:16px!important;
+  padding:13px 12px!important;
+  box-shadow:0 10px 24px rgba(15,45,90,.13)!important;
+  position:relative!important;
+  overflow:hidden!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.14)!important;
+}
+.controlbar .topbtn:after{
+  content:"";
+  position:absolute;
+  width:110px;height:110px;
+  border-radius:50%;
+  right:-35px;top:-48px;
+  background:rgba(255,255,255,.16);
+  pointer-events:none;
+}
+.controlbar .topbtn b,.controlbar .topbtn small{position:relative;z-index:1;color:#fff!important;}
+.controlbar .topbtn small{opacity:.94!important;}
+
+/* Homepage-inspired palette */
+.controlbar .topbtn:nth-child(1){background:linear-gradient(135deg,#ff334e,#ef233c)!important;}
+.controlbar .topbtn:nth-child(2){background:linear-gradient(135deg,#19b957,#08a8cf)!important;}
+.controlbar .topbtn:nth-child(3){background:linear-gradient(135deg,#1264d8,#633eea)!important;}
+.controlbar .topbtn:nth-child(4){background:linear-gradient(135deg,#ff8a00,#ffd21a)!important;}
+.controlbar .topbtn:nth-child(5){background:linear-gradient(135deg,#0877e8,#1264d8)!important;}
+.controlbar .topbtn:nth-child(6){background:linear-gradient(135deg,#06a6d8,#19b957)!important;}
+.controlbar .topbtn:nth-child(7){background:linear-gradient(135deg,#7c3aed,#d51bd6)!important;}
+.controlbar .topbtn:nth-child(8){background:linear-gradient(135deg,#ef7d00,#ef233c)!important;}
+.controlbar .topbtn:nth-child(9){background:linear-gradient(135deg,#0891b2,#06b6d4)!important;}
+
+.controlbar .topbtn:hover,
+.controlbar .topbtn.active{
+  color:#fff!important;
+  border:0!important;
+  transform:translateY(-2px)!important;
+  filter:saturate(1.08) brightness(1.03)!important;
+  box-shadow:0 14px 30px rgba(15,45,90,.19)!important;
+}
+.controlbar .topbtn.active:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border:3px solid rgba(255,255,255,.82);
+  border-radius:16px;
+  pointer-events:none;
+}
+@media(max-width:900px){.controlbar .topbtn{min-height:82px!important;}}
+@media(max-width:600px){.controlbar .topbtn{min-height:76px!important;}}
+</style>
