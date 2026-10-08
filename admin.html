@@ -745,24 +745,20 @@ window.whatsappCaseChat=async function(lrrId,who){
 async function getLrrPeople(rows){
   const ids=new Set();
   (rows||[]).forEach(r=>{
-    ['student_id','student_user_id','student_profile_id','tutor_id','tutor_user_id','tutor_profile_id'].forEach(k=>{
-      if(r?.[k])ids.add(String(r[k]))
-    });
+    ['student_id','student_user_id','student_profile_id','tutor_id','tutor_user_id','tutor_profile_id'].forEach(k=>{if(r?.[k])ids.add(String(r[k]))});
   });
   const map=new Map();
   const add=(x,role)=>{
     if(!x)return;
     const name=String(x.full_name||x.name||x.display_name||'').trim();
     if(!name)return;
-    const roleName=role==='tutor'?'Tutor':role==='student'?'Student':'';
-    [x.id,x.user_id,x.profile_id].forEach(k=>{
-      if(k)map.set(String(k),{name,role:roleName});
-    });
+    const roleName=role==='tutor'?'Tutor':'Student';
+    [x.id,x.user_id,x.profile_id].forEach(k=>{if(k)map.set(String(k),{name,role:roleName})});
   };
-
-  // First try the normal profile tables. Map both profile UUID and auth/user UUID.
+  // Admin can normally read these profile tables. We map BOTH profile UUID and
+  // Auth/User UUID so the name is still found regardless of which UUID the LRR stores.
   for(const [table,role,cols] of [
-    ['profiles','', 'id,full_name,name,display_name,role'],
+    ['profiles','', 'id,user_id,full_name,name,display_name'],
     ['student_profiles','student','id,user_id,name,full_name,display_name'],
     ['tutor_profiles','tutor','id,user_id,name,full_name,display_name']
   ]){
@@ -771,47 +767,26 @@ async function getLrrPeople(rows){
       if(!q.error)(q.data||[]).forEach(x=>{
         if(!ids.size || ids.has(String(x.id)) || ids.has(String(x.user_id))) add(x,role||String(x.role||''));
       });
-    }catch(_){}
-  }
-
-  // Some deployments expose the profile rows only through the secure RPC.
-  // Resolve only the IDs that were not found above, so this stays fast for
-  // normal installations while fixing UUID-only LRR cards.
-  const unresolved=[...(ids)].filter(id=>!map.has(id));
-  if(unresolved.length){
-    await Promise.all((rows||[]).map(async r=>{
-      const student=String(r?.student_id||r?.student_user_id||r?.student_profile_id||'').trim();
-      const tutor=String(r?.tutor_id||r?.tutor_user_id||r?.tutor_profile_id||'').trim();
-      for(const [who,id] of [['student',student],['tutor',tutor]]){
-        if(!id||map.has(id))continue;
-        try{
-          const q=await sb.rpc('gc_get_whatsapp_contact',{
-            p_request_id:String(r.id||r.request_id||''),
-            p_target_role:who
-          });
-          if(!q.error && q.data){
-            const name=String(q.data.name||q.data.full_name||'').trim();
-            if(name){
-              map.set(id,{name,role:who==='tutor'?'Tutor':'Student'});
-            }
-          }
-        }catch(_){}
-      }
-    }));
+    }catch(_){ }
   }
   return map;
 }
-function lrrPersonHtml(id,people,role,label){
+function lrrPersonHtml(id,people,role,label,embeddedName){
   const key=String(id||'');
   const hit=people?.get(key);
-  const fallback=role==='tutor'?'Connected Tutor':role==='student'?'Student':'Member';
-  const name=hit?.name || (id?fallback:'Not assigned');
-  return '<div class="metaBox"><b>'+label+'</b><strong style="display:block;font-size:13px;margin-top:4px">'+esc(name)+'</strong></div>';
+  const name=String(embeddedName||hit?.name||'').trim() || (id?'Member':'Not assigned');
+  return '<div class="metaBox"><b>'+label+'</b><strong style="display:block;font-size:13px;margin-bottom:4px">'+esc(name)+'</strong><span style="font-size:10px;color:#64748b;word-break:break-all">'+esc(id||'Not assigned')+'</span></div>';
 }
 async function loadLearning(){
   if(lrrLoading)return;lrrLoading=true;$('learningStatus').textContent=lrrLoaded?'Refreshing LRR…':'Loading LRR…';
   try{
-    const q=await sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(200);
+    // Use the authoritative LRR RPC first. It returns student_name/tutor_name.
+    // The old page read gc_learning_requests_v2 directly and therefore could
+    // only display UUIDs when the profile lookup was restricted.
+    let q=await sb.rpc('gc_list_learning_requests_public_v6');
+    if(q.error){
+      q=await sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(200);
+    }
     if(q.error)throw q.error;
     const rows=q.data||[];window.__adminLrrRows=rows;
     const people=await getLrrPeople(rows);
@@ -829,7 +804,7 @@ async function loadLearning(){
       const contactUnlocked=!!student&&!!tutor&&['ACCEPTED','TUTOR_ACCEPTED','TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED','APPROVED','COMPLETED_SATISFIED','COMPLETED_NOT_SATISFIED'].includes(String(st).toUpperCase());
       const satisfied=['SATISFIED','SATISFIED_BY_STUDENT','COMPLETED_SATISFIED'].includes(String(outcome).toUpperCase());
       return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(r.request_code||id||'Learning Request')}</b><span class="badge">${esc(st)}</span><div class="muted">Created: ${esc(r.created_at||'—')}</div></div><span class="pill">LRR CASE</span></div>
-      <div class="lrrMeta">${lrrPersonHtml(student,people,'student','Student')} ${lrrPersonHtml(tutor,people,'tutor','Tutor')}<div class="metaBox"><b>Course / Stream</b>${esc((r.course||'—')+' / '+(r.stream||'—'))}</div><div class="metaBox"><b>Subject / Topic</b>${esc((r.subject||'—')+' / '+(r.chapter||r.topic||'—'))}</div><div class="metaBox" style="grid-column:1/-1"><b>Requirement / Issue</b>${esc(r.problem||r.issue||r.learning_requirement||r.description||'—')}</div></div>
+      <div class="lrrMeta">${lrrPersonHtml(student,people,'student','STUDENT',r.student_name||r.student_full_name||r.full_name||r.name)} ${lrrPersonHtml(tutor,people,'tutor','CONNECTED TUTOR',r.tutor_name||r.tutor_full_name)}<div class="metaBox"><b>Course / Stream</b>${esc((r.course||'—')+' / '+(r.stream||'—'))}</div><div class="metaBox"><b>Subject / Topic</b>${esc((r.subject||'—')+' / '+(r.chapter||r.topic||'—'))}</div><div class="metaBox" style="grid-column:1/-1"><b>Requirement / Issue</b>${esc(r.problem||r.issue||r.learning_requirement||r.description||'—')}</div></div>
       <div class="lrrEvidence"><div class="lrrEvidenceTitle">🔎 Evidence & Service Outcome — Admin Review</div><div class="evidenceGrid">
         <div class="evidenceBox"><b>Student outcome</b><span class="${satisfied?'evidenceGood':String(outcome).toUpperCase()==='NOT_SATISFIED'?'evidenceBad':'evidenceWarn'}">${esc(outcome)}</span></div>
         <div class="evidenceBox"><b>Tutor service status</b><span class="${tutorCompleted?'evidenceGood':'evidenceWarn'}">${tutorCompleted?'✓ Tutor marked/completed the service':'Pending tutor completion'}</span></div>
