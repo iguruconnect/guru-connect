@@ -5772,7 +5772,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-7 border relative">
 <div class="text-center mb-5">
 <div class="mx-auto mb-3 flex justify-center items-center">
-<img src="guru-connect-new-header.png" alt="GURU CONNECT" class="h-16 sm:h-20 w-auto max-w-[260px] object-contain drop-shadow-md">
+<img src="guru-connect-login-logo.png" alt="GURU CONNECT" class="gc-login-logo">
 </div>
 <h3 class="text-xl font-black text-brand-dark" id="gcUnifiedLoginTitle">GURU CONNECT LOGIN</h3>
 <p class="text-xs text-slate-500 mt-1">Secure login using your registered email and password.</p>
@@ -15757,5 +15757,72 @@ window.GC_UNIFIED_LOGIN_READY=true;
     }
   });
 
+})();
+</script>
+
+<style id="gc-modern-login-design">
+/* GURU CONNECT — modern login presentation */
+#loginModal{
+  background:radial-gradient(circle at 50% 18%,rgba(37,99,235,.20),transparent 42%),rgba(2,6,23,.78)!important;
+  backdrop-filter:blur(12px)!important;
+  -webkit-backdrop-filter:blur(12px)!important;
+}
+#loginModal>div{
+  max-width:430px!important;
+  padding:26px 27px 22px!important;
+  border:1px solid rgba(148,163,184,.20)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.99),rgba(248,250,252,.99))!important;
+  box-shadow:0 28px 80px rgba(2,6,23,.38),0 8px 28px rgba(37,99,235,.12)!important;
+  position:relative;
+  overflow:hidden;
+}
+#loginModal>div:before{
+  content:"";position:absolute;inset:0 0 auto 0;height:5px;
+  background:linear-gradient(90deg,#2563eb,#06b6d4,#22c55e,#f59e0b);
+}
+#loginModal .gc-login-logo-wrap{
+  display:flex;align-items:center;justify-content:center;
+  min-height:92px;margin:-2px auto 7px;
+}
+#loginModal .gc-login-logo{
+  display:block!important;width:285px!important;height:auto!important;max-width:92%!important;max-height:112px!important;
+  object-fit:contain!important;
+  filter:drop-shadow(0 8px 16px rgba(15,23,42,.12));
+  background:transparent!important;padding:0!important;border:0!important;border-radius:0!important;
+}
+#loginModal #gcUnifiedLoginTitle{font-size:22px!important;letter-spacing:-.025em;margin-top:4px!important;}
+#loginModal .gc-login-subtitle{font-size:12px;color:#64748b;margin-top:5px;}
+#loginModal select,#loginModal input{
+  border:1px solid #dbe3ef!important;background:#fff!important;
+  box-shadow:0 2px 8px rgba(15,23,42,.035);
+  transition:border-color .18s,box-shadow .18s,transform .18s;
+}
+#loginModal select:focus,#loginModal input:focus{
+  outline:none!important;border-color:#3b82f6!important;
+  box-shadow:0 0 0 4px rgba(59,130,246,.11)!important;
+}
+#loginModal button[onclick="gcEmailLogin()"]{
+  margin-top:4px;border:0!important;
+  background:linear-gradient(135deg,#2563eb,#1d4ed8)!important;
+  box-shadow:0 10px 22px rgba(37,99,235,.24)!important;
+  transition:transform .18s,box-shadow .18s,filter .18s;
+}
+#loginModal button[onclick="gcEmailLogin()"]:hover{transform:translateY(-1px);filter:brightness(1.04);box-shadow:0 13px 27px rgba(37,99,235,.28)!important;}
+#loginModal button[onclick="gcResetPassword()"]{color:#2563eb!important;}
+@media(max-width:480px){
+  #loginModal>div{padding:23px 19px 19px!important;}
+  #loginModal .gc-login-logo{width:255px!important;max-height:100px!important;}
+}
+</style>
+<script>
+(function(){
+  function tuneLoginLogo(){
+    const m=document.getElementById('loginModal'); if(!m)return;
+    const img=m.querySelector('.gc-login-logo'); if(!img)return;
+    const wrap=img.parentElement; if(wrap)wrap.classList.add('gc-login-logo-wrap');
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tuneLoginLogo,{once:true});
+  else tuneLoginLogo();
+  setTimeout(tuneLoginLogo,100);setTimeout(tuneLoginLogo,600);
 })();
 </script>
