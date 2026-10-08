@@ -5771,7 +5771,9 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 z-[100]" id="loginModal">
 <div class="bg-white rounded-3xl shadow-2xl max-w-md w-full p-7 border relative">
 <div class="text-center mb-5">
-<div class="w-14 h-14 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center text-2xl shadow-lg"><i class="fa-solid fa-shield-halved"></i></div>
+<div class="mx-auto mb-3 flex justify-center items-center">
+<img src="guru-connect-new-header.png" alt="GURU CONNECT" class="h-16 sm:h-20 w-auto max-w-[260px] object-contain drop-shadow-md">
+</div>
 <h3 class="text-xl font-black text-brand-dark" id="gcUnifiedLoginTitle">GURU CONNECT LOGIN</h3>
 <p class="text-xs text-slate-500 mt-1">Secure login using your registered email and password.</p>
 </div>
@@ -15545,16 +15547,30 @@ window.GC_UNIFIED_LOGIN_READY=true;
     ].forEach(k => localStorage.removeItem(k));
   }
 
-  async function profileFor(s, userId, role){
+  async function profileFor(s, userId, role, email){
     const table = role === 'tutor' ? 'tutor_profiles' : 'student_profiles';
-    let q = await s.from(table).select('*').eq('user_id', userId).maybeSingle();
+    let q = null;
 
-    // A very short retry handles a transient database/session propagation delay.
-    if(q.error || !q.data){
-      await new Promise(r => setTimeout(r, 250));
+    // Tutor accounts created by the newer registration flow are linked by
+    // user_id. Some older Tutor records can still be linked only by email.
+    // Try the auth-user link first, then retry briefly, then use the verified
+    // Auth email as a safe fallback. This prevents the first-login/profile-sync
+    // race that was making Tutors click LOGIN twice.
+    for(let attempt=0; attempt<3; attempt++){
       q = await s.from(table).select('*').eq('user_id', userId).maybeSingle();
+      if(q.data) return {table, q, matchedBy:'user_id'};
+      if(attempt < 2) await new Promise(r => setTimeout(r, 350));
     }
-    return {table, q};
+
+    if(email){
+      const byEmail = await s.from(table).select('*').ilike('email', email).maybeSingle();
+      if(byEmail.data) return {table, q:byEmail, matchedBy:'email'};
+      // A few legacy Tutor rows use full_name/name but still have the same
+      // registered email in the email column; do not fail on a non-match.
+      if(byEmail.error && q && q.error) return {table, q:byEmail, matchedBy:'email'};
+      q = byEmail;
+    }
+    return {table, q, matchedBy:null};
   }
 
   async function unifiedStudentTutorLogin(){
@@ -15583,9 +15599,9 @@ window.GC_UNIFIED_LOGIN_READY=true;
     clearStaleLoginState();
 
     try{
-      // If a stale browser session exists, remove it before starting a fresh login.
-      try { await s.auth.signOut({scope:'local'}); } catch(_){}
-
+      // signInWithPassword replaces the current Auth session itself. Do not
+      // signOut first: that extra round-trip was contributing to intermittent
+      // first-attempt Tutor login failures on slower connections.
       const r = await s.auth.signInWithPassword({email, password});
       if(r.error) throw r.error;
 
@@ -15608,13 +15624,13 @@ window.GC_UNIFIED_LOGIN_READY=true;
       }
 
       let role = selected === 'tutor' ? 'tutor' : 'student';
-      let result = await profileFor(s, user.id, role);
+      let result = await profileFor(s, user.id, role, email);
       let q = result.q;
 
       // If the selected role does not match, check the opposite profile automatically.
       if(!q.data){
         role = role === 'tutor' ? 'student' : 'tutor';
-        result = await profileFor(s, user.id, role);
+        result = await profileFor(s, user.id, role, email);
         q = result.q;
       }
 
@@ -15631,6 +15647,7 @@ window.GC_UNIFIED_LOGIN_READY=true;
       localStorage.setItem('active_user_role', role);
       localStorage.setItem('active_user_profile_id', String(p.id || ''));
       localStorage.setItem('active_user_id', String(user.id));
+      localStorage.setItem('gc_profile_match', result.matchedBy || 'user_id');
       localStorage.setItem('gc_user_supabase_auth', 'true');
       window.__gcLoggedInProfile = p;
 
