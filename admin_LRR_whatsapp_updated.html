@@ -28,23 +28,57 @@
 @media(max-width:800px){.lrrGrid,.lrrMeta{grid-template-columns:1fr}.historyRow{grid-template-columns:1fr 1fr}.controlbar{padding:8px}}
 .lrrMeta .metaBox b{color:#1e3a8a}.lrrMeta .metaBox:first-child,.lrrMeta .metaBox:nth-child(2){background:#eff6ff;border-color:#bfdbfe;font-size:13px;font-weight:950}.lrrMeta .metaBox:first-child b,.lrrMeta .metaBox:nth-child(2) b{font-size:9px}.lrrMeta .metaBox:first-child,.lrrMeta .metaBox:nth-child(2){line-height:1.45}
 
-/* GURU CONNECT LRR — colorful evidence cards + mobile-friendly admin review */
-.lrrEvidence{background:linear-gradient(135deg,#f0f9ff 0%,#fdf4ff 48%,#fff7ed 100%);border:2px solid #93c5fd;box-shadow:0 8px 24px rgba(37,99,235,.08)}
-.lrrEvidenceTitle{display:flex;align-items:center;gap:7px;color:#312e81;background:linear-gradient(90deg,#dbeafe,#ede9fe,#cffafe);border:1px solid #c4b5fd;border-radius:11px;padding:10px 11px;margin:-2px -2px 11px;font-size:11px}
-.evidenceGrid .evidenceBox{min-height:66px;box-shadow:0 3px 12px rgba(15,23,42,.05);font-weight:700}
-.evidenceGrid .evidenceBox:nth-child(1){background:#ecfdf5;border-color:#86efac}.evidenceGrid .evidenceBox:nth-child(1) b{color:#166534}
-.evidenceGrid .evidenceBox:nth-child(2){background:#eff6ff;border-color:#93c5fd}.evidenceGrid .evidenceBox:nth-child(2) b{color:#1d4ed8}
-.evidenceGrid .evidenceBox:nth-child(3){background:#fefce8;border-color:#fde68a}.evidenceGrid .evidenceBox:nth-child(3) b{color:#a16207}
-.evidenceGrid .evidenceBox:nth-child(4){background:#f5f3ff;border-color:#c4b5fd}.evidenceGrid .evidenceBox:nth-child(4) b{color:#6d28d9}
-.evidenceGrid .evidenceBox:nth-child(5){background:#fff7ed;border-color:#fdba74}.evidenceGrid .evidenceBox:nth-child(5) b{color:#c2410c}
-.evidenceGrid .evidenceBox:nth-child(6){background:#ecfeff;border-color:#67e8f9}.evidenceGrid .evidenceBox:nth-child(6) b{color:#0e7490}
-.evidenceGrid .evidenceBox:nth-child(7){background:#fff1f2;border-color:#fda4af}.evidenceGrid .evidenceBox:nth-child(7) b{color:#be123c}
-.lrrDeadlineBadge{display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:5px 8px;border-radius:999px;background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc;font-size:9px;font-weight:950}
-.lrrDeadlineBadge.expired{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}.lrrDeadlineBadge.warning{background:#fef3c7;color:#92400e;border-color:#fcd34d}
-.lrrDeleteBtn{background:#b91c1c!important;color:#fff!important;border:1px solid #991b1b!important;box-shadow:0 4px 12px rgba(185,28,28,.18)}
-.lrrDeleteBtn:hover{background:#991b1b!important;transform:translateY(-1px)}
-.lrrAutoNote{margin-top:10px;padding:9px 11px;border-radius:10px;background:linear-gradient(90deg,#fef3c7,#ffedd5);border:1px solid #fbbf24;color:#92400e;font-size:10px;font-weight:850}
-@media(max-width:650px){.lrrEvidence{padding:9px;border-radius:13px}.lrrEvidenceTitle{font-size:10px;line-height:1.35}.evidenceGrid .evidenceBox{min-height:auto;padding:10px}.lrrActions .btn{width:100%;min-height:42px}.lrrDeleteBtn{order:-1}}
+/* LRR Evidence & Service Outcome — colorful mobile-first admin review */
+.lrrEvidence{margin-top:14px;border:0;border-radius:16px;background:linear-gradient(135deg,#eff6ff 0%,#f5f3ff 45%,#ecfeff 100%);padding:2px;box-shadow:0 8px 24px rgba(15,23,42,.08)}
+.lrrEvidenceInner{border-radius:14px;background:#ffffffd9;padding:12px}
+.lrrEvidenceTitle{font-size:12px;font-weight:950;color:#fff;text-transform:uppercase;margin:0 0 10px;padding:11px 13px;border-radius:12px;background:linear-gradient(90deg,#2563eb,#7c3aed,#06b6d4);box-shadow:0 5px 14px rgba(37,99,235,.22);letter-spacing:.2px}
+.evidenceGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.evidenceBox{border-radius:12px;padding:10px;font-size:11px;line-height:1.55;min-height:64px;box-shadow:0 3px 10px rgba(15,23,42,.06);background:#fff}
+.evidenceBox b{display:block;color:#334155;font-size:9px;text-transform:uppercase;margin-bottom:5px;letter-spacing:.25px}
+.evidenceGrid .evidenceBox:nth-child(1){background:#ecfdf5;border:1px solid #86efac}.evidenceGrid .evidenceBox:nth-child(2){background:#eff6ff;border:1px solid #93c5fd}.evidenceGrid .evidenceBox:nth-child(3){background:#fffbeb;border:1px solid #fde68a}.evidenceGrid .evidenceBox:nth-child(4){background:#f5f3ff;border:1px solid #c4b5fd}.evidenceGrid .evidenceBox:nth-child(5){background:#fff7ed;border:1px solid #fdba74}.evidenceGrid .evidenceBox:nth-child(6){background:#ecfeff;border:1px solid #67e8f9}.evidenceGrid .evidenceBox:nth-child(7){background:#fef2f2;border:1px solid #fca5a5}
+.evidenceGood{color:#047857;font-weight:900}.evidenceWarn{color:#b45309;font-weight:900}.evidenceBad{color:#b91c1c;font-weight:900}
+.lrrDeleteBtn{background:#991b1b!important;color:#fff!important;border-color:#7f1d1d!important;font-weight:950;box-shadow:0 4px 10px rgba(153,27,27,.22)}
+.lrrDeleteBtn:hover{background:#7f1d1d!important}
+@media(max-width:650px){.evidenceGrid{grid-template-columns:1fr}.lrrEvidence{margin-top:12px}.lrrEvidenceInner{padding:9px}.evidenceBox{min-height:auto}.lrrActions .btn{width:100%;min-height:42px}.lrrDeleteBtn{order:-1}}
+
+/* LRR POST — colorful high-visibility mobile design requested by Admin */
+#learningResults .user{font-size:14px;border:2px solid #dbeafe;background:linear-gradient(145deg,#ffffff,#f8fbff);box-shadow:0 12px 28px rgba(15,23,42,.10);padding:18px}
+#learningResults .user .identity b{font-size:20px}
+#learningResults .user .muted{font-size:13px;line-height:1.7}
+#learningResults .badge{font-size:11px;padding:5px 10px}
+#learningResults .pill{font-size:11px}
+#learningResults .lrrMeta{gap:9px}
+#learningResults .lrrMeta .metaBox{font-size:14px;line-height:1.55;font-weight:800;color:#fff;border:0;min-height:72px;box-shadow:0 5px 14px rgba(15,23,42,.12)}
+#learningResults .lrrMeta .metaBox b{font-size:10px;color:#fff;opacity:.95;letter-spacing:.5px;margin-bottom:5px}
+#learningResults .lrrMeta .metaBox:nth-child(1){background:#16a34a}
+#learningResults .lrrMeta .metaBox:nth-child(2){background:#2563eb}
+#learningResults .lrrMeta .metaBox:nth-child(3){background:#ca8a04}
+#learningResults .lrrMeta .metaBox:nth-child(4){background:#7c3aed}
+#learningResults .lrrMeta .metaBox:nth-child(5){background:#ea580c}
+#learningResults .lrrEvidence{background:linear-gradient(135deg,#eff6ff,#f5f3ff,#ecfeff);padding:3px;border:0}
+#learningResults .lrrEvidenceInner{background:rgba(255,255,255,.88);padding:13px}
+#learningResults .lrrEvidenceTitle{font-size:15px;padding:13px 15px;background:linear-gradient(90deg,#2563eb,#7c3aed,#06b6d4,#16a34a);letter-spacing:.35px}
+#learningResults .evidenceGrid{gap:10px}
+#learningResults .evidenceBox{font-size:14px;line-height:1.65;min-height:82px;padding:13px;border:0;color:#fff!important;font-weight:750;box-shadow:0 5px 14px rgba(15,23,42,.12)}
+#learningResults .evidenceBox b{font-size:10px;color:#fff!important;margin-bottom:6px;letter-spacing:.45px}
+#learningResults .evidenceBox:nth-child(1){background:#16a34a}
+#learningResults .evidenceBox:nth-child(2){background:#2563eb}
+#learningResults .evidenceBox:nth-child(3){background:#ca8a04}
+#learningResults .evidenceBox:nth-child(4){background:#7c3aed}
+#learningResults .evidenceBox:nth-child(5){background:#ea580c}
+#learningResults .evidenceBox:nth-child(6){background:#0284c7}
+#learningResults .evidenceBox:nth-child(7){background:#dc2626}
+#learningResults .evidenceBox .evidenceGood,#learningResults .evidenceBox .evidenceWarn,#learningResults .evidenceBox .evidenceBad{color:#fff!important}
+#learningResults .lrrDecision{font-size:13px;line-height:1.6;font-weight:850}
+#learningResults .lrrActions .btn{font-size:13px;padding:11px 14px}
+@media(max-width:650px){
+ #learningResults .user{padding:14px}
+ #learningResults .user .identity b{font-size:18px}
+ #learningResults .lrrMeta .metaBox{font-size:15px;min-height:68px}
+ #learningResults .lrrEvidenceTitle{font-size:14px}
+ #learningResults .evidenceBox{font-size:15px;min-height:70px;padding:13px}
+ #learningResults .evidenceBox b{font-size:10px}
+}
 </style><style id="gc-admin-connection-fix">#gcDetailsModal button{cursor:pointer}@media(max-width:650px){#gcDetailsModal>div{padding:14px!important}#gcDetailsModal .btn{min-height:42px}.actions{flex-wrap:wrap}}
 .lrrControlNote{padding:12px 14px;border:1px solid #bfdbfe;background:#eff6ff;color:#1e3a8a;border-radius:12px;font-size:11px;font-weight:800;margin-bottom:12px}.lrrActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #e2e8f0}.lrrActions .btn{min-height:40px}.receiptServiceBox{margin-top:16px;border:1px solid #dbe4f0;border-radius:16px;padding:16px;background:#f8fafc}.receiptServiceHead{display:flex;justify-content:space-between;gap:12px;align-items:center}.receiptServiceHead h3{margin:0;color:#123b8f}.receiptServiceHead p{margin:4px 0 0;color:#64748b;font-size:11px}.receiptServiceAdd{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:12px;margin-top:14px}.receiptServices{display:grid;gap:8px;margin-top:12px}.receiptServiceRow{display:grid;grid-template-columns:minmax(0,1fr) 160px 90px;gap:10px;align-items:end;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px}.receiptServiceRow .field{margin:0}.receiptServiceRow input{background:#fff}.receiptTotal{display:flex;justify-content:space-between;align-items:center;border-top:2px solid #cbd5e1;margin-top:14px;padding-top:14px;font-size:13px;font-weight:950}.receiptTotal strong{font-size:20px;color:#123b8f}.receiptRemove{min-height:40px}@media(max-width:650px){.receiptServiceAdd,.receiptServiceRow{grid-template-columns:1fr}.receiptServiceHead{align-items:flex-start;flex-direction:column}.receiptServiceHead .btn{width:100%}}
 </style>
@@ -919,23 +953,6 @@ window.lrrAction=lrrAction;
 
 window.lrrCoins=async(id,studentId,tutorId,role)=>{const who=role==='tutor'?tutorId:studentId;if(!who)return alert('No '+role+' user ID is attached to this LRR.');$('coinUserId').value=String(who);$('coinRole').value=role;switchSection('coins');$('coinAmount').focus()};
 
-window.lrrDelete=async function(id){
-  const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(id));
-  if(!row)return alert('LRR record is no longer loaded. Refresh the LRR tab.');
-  const st=String(row.status||'').toUpperCase();
-  const outcome=String(row.student_outcome||row.outcome||'').toUpperCase();
-  const completed=['TUTOR_COMPLETED','COMPLETED','APPROVED','COMPLETED_SATISFIED','COMPLETED_NOT_SATISFIED'].includes(st)||['SATISFIED','SATISFIED_BY_STUDENT','COMPLETED_SATISFIED'].includes(outcome);
-  if(!completed)return alert('For safety, an LRR can be permanently deleted by Admin only after the case is completed/verified.');
-  const ok=confirm('DELETE THIS COMPLETED LRR?\n\nThis removes the LRR from the active Supabase data and cannot be undone.\n\nContinue?');
-  if(!ok)return;
-  try{
-    let q=await sb.rpc('gc_admin_lrr_action',{p_request_id:String(id),p_action:'delete',p_reason:'Deleted by Admin after completion/verification'});
-    if(q.error)throw q.error;
-    alert('✓ LRR deleted successfully.');
-    lrrLoaded=false;await loadLearning();
-  }catch(e){alert('LRR delete failed: '+(e.message||e)+'\n\nIf your database delete RPC is not installed yet, tell me and I will give you the exact SQL for it.')}
-};
-
 /* Final coin decision uses the authoritative LRR workflow already used by the main site. */
 window.lrrDecision=async(id,decision)=>{
   const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(id));
@@ -995,6 +1012,24 @@ async function gcAdminParticipantName(id,targetRole){
  try{const q=await sb.from('profiles').select('id,full_name,name').eq('id',raw).maybeSingle();if(!q.error&&q.data)return String(q.data.full_name||q.data.name||'').trim()}catch(_){}
  return '';
 }
+window.deleteLrrCase=async function(id){
+  const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(id));
+  if(!row)return alert('LRR record is no longer loaded. Please refresh the LRR list.');
+  const status=String(row.status||'').toUpperCase();
+  const held=Number(row.coins_held||0);
+  const finalStates=['COMPLETED','APPROVED','APPROVED_TO_TUTOR','ADMIN_APPROVED','REJECTED_BY_ADMIN','RETURNED_TO_STUDENT','DENIED','CLOSED'];
+  if(!finalStates.includes(status))return alert('This LRR is not finalized yet. Please verify/resolve the case before deleting it.');
+  if(held>0)return alert('This LRR still has '+held+' GURU COINS held with Admin. Release or return the coins first.');
+  if(!confirm('Permanently delete this verified/finalized LRR?\n\nThis removes the LRR record from Supabase and cannot be undone.'))return;
+  try{
+    const q=await sb.rpc('gc_admin_delete_learning_request',{p_request_id:String(id)});
+    if(q.error)throw q.error;
+    alert('✓ LRR deleted permanently.');
+    lrrLoaded=false;
+    await loadLearning();
+  }catch(e){alert('LRR delete failed: '+(e.message||e));}
+};
+
 async function loadLearning(){
  if(lrrLoading)return;lrrLoading=true;$('learningStatus').textContent=lrrLoaded?'Refreshing LRR…':'Loading LRR…';
  try{
@@ -1025,18 +1060,19 @@ async function loadLearning(){
    const canDecide=['PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW'].includes(String(st).toUpperCase());
    const contactUnlocked=!!student&&!!tutor&&['ACCEPTED','TUTOR_ACCEPTED','TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED','APPROVED','COMPLETED_SATISFIED','COMPLETED_NOT_SATISFIED'].includes(String(st).toUpperCase());
    const satisfied=['SATISFIED','SATISFIED_BY_STUDENT','COMPLETED_SATISFIED'].includes(String(outcome).toUpperCase());
+      const deletable=['COMPLETED','APPROVED','APPROVED_TO_TUTOR','ADMIN_APPROVED','REJECTED_BY_ADMIN','RETURNED_TO_STUDENT','DENIED','CLOSED'].includes(String(st).toUpperCase()) && Number(r.coins_held||0)<=0;
    cards.push(`<article class="user"><div class="userHead"><div class="identity"><b>${esc(r.request_code||id||'Learning Request')}</b><span class="badge">${esc(st)}</span><div class="muted">Created: ${esc(r.created_at||'—')}</div></div><span class="pill">LRR CASE</span></div>
       <div class="lrrMeta"><div class="metaBox"><b>STUDENT</b><strong style="display:block;font-size:13px">${esc(studentName)}</strong></div><div class="metaBox"><b>CONNECTED TUTOR</b><strong style="display:block;font-size:13px">${esc(tutorName)}</strong></div><div class="metaBox"><b>Student ID</b>${esc(student||'Not linked')}</div><div class="metaBox"><b>Tutor ID</b>${esc(tutor||'Not assigned')}</div><div class="metaBox"><b>Course / Stream</b>${esc((r.course||'—')+' / '+(r.stream||'—'))}</div><div class="metaBox"><b>Subject / Topic</b>${esc((r.subject||'—')+' / '+(r.chapter||r.topic||'—'))}</div><div class="metaBox" style="grid-column:1/-1"><b>Requirement / Issue</b>${esc(r.problem||r.issue||r.learning_requirement||r.description||'—')}</div></div>
-      <div class="lrrEvidence"><div class="lrrEvidenceTitle">🔎 Evidence & Service Outcome — Admin Review</div><div class="evidenceGrid">
+      <div class="lrrEvidence"><div class="lrrEvidenceInner"><div class="lrrEvidenceTitle">🔎 Evidence & Service Outcome — Admin Review</div><div class="evidenceGrid">
         <div class="evidenceBox"><b>Student outcome</b><span class="${satisfied?'evidenceGood':String(outcome).toUpperCase()==='NOT_SATISFIED'?'evidenceBad':'evidenceWarn'}">${esc(outcome)}</span></div>
         <div class="evidenceBox"><b>Tutor service status</b><span class="${tutorCompleted?'evidenceGood':'evidenceWarn'}">${tutorCompleted?'✓ Tutor marked/completed the service':'Pending tutor completion'}</span></div>
         <div class="evidenceBox"><b>Student feedback / remark</b>${esc(studentFeedback||'No written student feedback recorded.')}</div>
         <div class="evidenceBox"><b>Tutor feedback / completion note</b>${esc(tutorFeedback||'No separate tutor feedback recorded. Status is used as the completion evidence.')}</div>
         <div class="evidenceBox"><b>Coins held with Admin</b><strong>🪙 ${Number(r.coins_held||0)}</strong></div>
-        <div class="evidenceBox"><b>Learning deadline</b>${esc(r.learning_deadline||'Not set')}${r.learning_deadline?`<div class="lrrDeadlineBadge">⏳ Maximum service window: 20 days</div>`:''}</div>
+        <div class="evidenceBox"><b>Learning deadline</b>${esc(r.learning_deadline||'Not set')}</div>
         <div class="evidenceBox" style="grid-column:1/-1"><b>Admin decision / note</b>${esc(adminNote||'No Admin decision recorded yet.')}</div>
       </div>${contactUnlocked?`<div class="lrrDecision" style="background:#ecfdf5;border-color:#bbf7d0;color:#166534">✓ Connection accepted. Admin may contact the Student or Tutor on WhatsApp for this LRR case.</div>`:``}</div>
-      <div class="lrrActions"><button type="button" class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button type="button" class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button type="button" class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button type="button" class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(studentName)}','${esc(tutorName)}','tutor')">🪙 TUTOR COINS</button><button type="button" class="btn light" onclick="lrrCoins('${esc(id)}','${esc(studentName)}','${esc(tutorName)}','student')">🪙 STUDENT COINS</button>${contactUnlocked?`<button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','student')">💬 WHATSAPP STUDENT</button><button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','tutor')">💬 WHATSAPP TUTOR</button>`:''}${canDecide?`<button type="button" class="btn green decisionBtn" onclick="lrrDecision('${esc(id)}','APPROVE')">💰 RELEASE TUTOR COINS</button><button type="button" class="btn red decisionBtn" onclick="lrrDecision('${esc(id)}','DENY')">↩ DENY / RETURN COINS</button>`:''}${(tutorCompleted&&!canDecide)||satisfied?`<button type="button" class="btn lrrDeleteBtn" onclick="lrrDelete('${esc(id)}')">🗑️ DELETE COMPLETED LRR</button>`:''}</div><div class="lrrAutoNote">⏰ LRR retention rule: unresolved requests are intended to expire at 20 days, with held Student coins returned automatically.</div></article>`);
+      <div class="lrrActions"><button type="button" class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button type="button" class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button type="button" class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button type="button" class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(studentName)}','${esc(tutorName)}','tutor')">🪙 TUTOR COINS</button><button type="button" class="btn light" onclick="lrrCoins('${esc(id)}','${esc(studentName)}','${esc(tutorName)}','student')">🪙 STUDENT COINS</button>${contactUnlocked?`<button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','student')">💬 WHATSAPP STUDENT</button><button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','tutor')">💬 WHATSAPP TUTOR</button>`:''}${canDecide?`<button type="button" class="btn green decisionBtn" onclick="lrrDecision('${esc(id)}','APPROVE')">💰 RELEASE TUTOR COINS</button><button type="button" class="btn red decisionBtn" onclick="lrrDecision('${esc(id)}','DENY')">↩ DENY / RETURN COINS</button>`:''}${deletable?`<button type="button" class="btn lrrDeleteBtn" onclick="deleteLrrCase('${esc(id)}')">🗑️ DELETE VERIFIED LRR</button>`:''}</div></article>`);
   }
   h.innerHTML=cards.length?cards.join(''):'<div class="empty">No Learning Requirement Requests found.</div>';
   lrrLoaded=true
