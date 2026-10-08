@@ -6024,6 +6024,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <div class="gc-footer-inner">
 <div class="gc-footer-brand">
 <div class="gc-footer-logo-wrap"><img alt="GURU CONNECT round logo" id="gcFooterLogo" src="guru-connect-round-logo.png"/></div>
+<div class="gc-footer-brand-copy"><div class="gc-footer-title">GURU CONNECT</div><div class="gc-footer-tagline">Connecting Mind - Creating Future</div></div>
 </div>
 <div class="gc-footer-links">
 <a href="javascript:void(0)" onclick="openAboutModal()">About Us</a>
@@ -13992,6 +13993,159 @@ html,body{max-width:100%;overflow-x:hidden!important}
   .gc-home-tile h3{font-size:12px!important}
 }
 </style>
+
+<style id="gc-user-final-compact-proportion-fix-20261009">
+/* =========================================================
+   FINAL USER REQUEST — COMPACT HOME + LARGER HEADER LOGO
+   Logo appears in header and footer; the oversized centre logo is removed.
+   ========================================================= */
+html,body{overflow-x:hidden!important}
+
+/* HEADER — larger, but still compact and proportional */
+.gc-beautiful-header{height:auto!important;min-height:0!important;overflow:visible!important}
+.gc-header-inner{
+  height:80px!important;min-height:80px!important;
+  padding:4px 18px!important;gap:14px!important;
+  max-width:1440px!important;margin:0 auto!important;
+  box-sizing:border-box!important;display:flex!important;align-items:center!important;
+}
+.gc-logo3-lockup{
+  flex:0 0 250px!important;width:250px!important;min-width:250px!important;max-width:250px!important;
+  height:76px!important;display:flex!important;align-items:center!important;overflow:visible!important;
+}
+.gc-logo3-image{
+  display:block!important;width:250px!important;max-width:250px!important;
+  height:auto!important;max-height:none!important;flex:0 0 250px!important;
+  object-fit:contain!important;object-position:left center!important;
+  border-radius:0!important;background:transparent!important;box-shadow:none!important;
+}
+.gc-header-brand-stack{display:none!important}
+.gc-beautiful-nav{flex:1 1 auto!important;min-width:0!important;gap:0!important}
+.gc-beautiful-nav a{font-size:11px!important;padding:8px 9px!important}
+
+/* No giant logo/banner in the middle of the homepage. Keep a slim welcome strip. */
+.gc-image-hero{height:88px!important;min-height:88px!important;background:linear-gradient(135deg,#f7fbff 0%,#eef7ff 50%,#f7fff9 100%)!important;overflow:hidden!important;line-height:normal!important;display:flex!important;align-items:center!important;justify-content:center!important}
+.gc-image-hero-inner{height:88px!important;min-height:88px!important;width:100%!important;max-width:1440px!important;display:flex!important;align-items:center!important;justify-content:center!important;background:transparent!important}
+.gc-image-hero-img{display:none!important}
+.gc-image-hero-inner:after{content:"Learn  •  Connect  •  Grow";font-size:18px;font-weight:900;letter-spacing:.08em;color:#1454a6;opacity:.9}
+
+/* HOME TILES — short cards, not tall blocks */
+.gc-home-actions-grid{
+  max-width:1320px!important;padding:14px 18px 14px!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:11px!important;
+}
+.gc-home-tile{
+  min-height:0!important;height:152px!important;
+  padding:12px 13px!important;border-radius:15px!important;
+  box-shadow:0 5px 14px rgba(15,65,130,.09)!important;
+}
+.gc-home-tile-icon{width:40px!important;height:40px!important;font-size:17px!important;margin-bottom:7px!important}
+.gc-home-tile h3{font-size:14px!important;line-height:1.12!important;margin:0 0 4px!important}
+.gc-home-tile p{font-size:9.5px!important;line-height:1.25!important;margin:0 0 5px!important}
+.gc-home-tile-badge{right:12px!important;top:10px!important;padding:3px 7px!important;font-size:9px!important}
+.gc-lrr-statuses{gap:3px!important;margin-top:2px!important}
+.gc-lrr-statuses span{font-size:7px!important;padding:3px 4px!important}
+.gc-home-tile-btn{font-size:9px!important;padding:6px 9px!important;min-height:28px!important}
+.gc-home-benefits{gap:7px!important;padding:6px 18px 14px!important}
+.gc-home-benefits>div{padding:8px 7px!important}
+
+/* LOGIN MODAL — reduce vertical length */
+#loginModal .gc-modern-login-card{width:min(440px,calc(100vw - 20px))!important;max-width:440px!important;border-radius:20px!important}
+#loginModal .gc-modern-login-brand{padding:9px 12px 7px!important}
+#loginModal .gc-modern-login-logo{width:min(330px,92%)!important;max-width:92%!important;max-height:78px!important}
+#loginModal .gc-modern-login-tagline{display:none!important}
+#loginModal .p-6{padding:14px!important}
+#loginModal .text-center.mb-5{margin-bottom:10px!important}
+#loginModal .gc-login-security{padding:5px 9px!important;font-size:8px!important}
+#loginModal h3{font-size:20px!important;margin-top:7px!important}
+#loginModal .text-center p{font-size:10px!important;margin-top:4px!important}
+#loginModal .space-y-3{display:grid!important;gap:7px!important}
+#loginModal .space-y-3>*{margin-top:0!important}
+#loginModal select,#loginModal input{padding:9px 10px!important;border-radius:10px!important;font-size:12px!important}
+#loginModal .gc-modern-login-btn{padding:10px!important;border-radius:10px!important;font-size:11px!important}
+#loginModal .space-y-3 .text-blue-700{padding:4px!important;font-size:10px!important}
+#loginModal .space-y-3 .text-\[11px\]{font-size:9px!important;line-height:1.25!important}
+#loginModal .mt-4{margin-top:8px!important}
+
+/* FOOTER — logo + brand together */
+.gc-footer-brand{align-items:center!important;gap:12px!important}
+.gc-footer-logo-wrap,#gcFooterLogo{width:68px!important;height:68px!important}
+.gc-footer-brand-copy{display:block!important}
+.gc-footer-title{font-size:19px!important;line-height:1.1!important;color:#fff!important;font-weight:1000!important}
+.gc-footer-tagline{font-size:10px!important;color:#cbd5e1!important;margin-top:3px!important}
+
+/* TABLET */
+@media(max-width:1100px){
+  .gc-header-inner{height:76px!important;min-height:76px!important;padding:3px 12px!important}
+  .gc-logo3-lockup{flex-basis:225px!important;width:225px!important;min-width:225px!important;max-width:225px!important;height:72px!important}
+  .gc-logo3-image{width:225px!important;max-width:225px!important;flex-basis:225px!important}
+  .gc-home-tile{height:142px!important}
+  .gc-image-hero,.gc-image-hero-inner{height:76px!important;min-height:76px!important}
+}
+
+/* MOBILE — larger header logo, short tiles */
+@media(max-width:760px){
+  .gc-header-inner{height:74px!important;min-height:74px!important;padding:2px 7px!important;gap:5px!important}
+  .gc-logo3-lockup{flex:1 1 auto!important;width:auto!important;min-width:0!important;max-width:calc(100% - 68px)!important;height:70px!important;overflow:visible!important}
+  .gc-logo3-image{width:205px!important;max-width:100%!important;height:auto!important;max-height:none!important;flex:0 0 auto!important;object-fit:contain!important}
+  .gc-header-actions{flex:0 0 62px!important;width:62px!important;min-width:62px!important}
+  #publicMenuWrapper{width:62px!important;min-width:62px!important;max-width:62px!important}
+  .gc-menu-button{width:62px!important;min-width:62px!important;height:36px!important;border-radius:18px!important;font-size:9px!important}
+  #publicNavbarLinks{top:74px!important}
+
+  .gc-image-hero,.gc-image-hero-inner{height:58px!important;min-height:58px!important}
+  .gc-image-hero-inner:after{font-size:11px;letter-spacing:.05em}
+
+  .gc-home-actions-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;padding:9px 8px 10px!important}
+  .gc-home-tile{height:122px!important;min-height:122px!important;padding:9px!important;border-radius:12px!important}
+  .gc-home-tile-icon{width:32px!important;height:32px!important;font-size:14px!important;margin-bottom:4px!important}
+  .gc-home-tile h3{font-size:11px!important;line-height:1.1!important;margin-bottom:3px!important}
+  .gc-home-tile p{font-size:8px!important;line-height:1.18!important;margin-bottom:3px!important}
+  .gc-home-tile-badge{right:8px!important;top:7px!important;font-size:7px!important;padding:2px 5px!important}
+  .gc-lrr-statuses{display:none!important}
+  .gc-home-tile-btn{font-size:8px!important;padding:5px 7px!important;min-height:24px!important}
+  .gc-home-benefits{gap:5px!important;padding:5px 8px 12px!important}
+  .gc-home-benefits>div{padding:6px 5px!important}
+
+  #loginModal .gc-modern-login-card{width:calc(100vw - 24px)!important;max-width:420px!important}
+  #loginModal .gc-modern-login-brand{padding:7px 8px 5px!important}
+  #loginModal .gc-modern-login-logo{width:280px!important;max-width:90%!important;max-height:64px!important}
+  #loginModal .p-6{padding:11px!important}
+  #loginModal h3{font-size:18px!important}
+  #loginModal select,#loginModal input{padding:8px 9px!important;font-size:11px!important}
+  #loginModal .gc-modern-login-btn{padding:9px!important;font-size:10px!important}
+  #loginModal .space-y-3{gap:5px!important}
+}
+@media(max-width:430px){
+  .gc-header-inner{height:70px!important;min-height:70px!important}
+  .gc-logo3-lockup{height:66px!important;max-width:calc(100% - 62px)!important}
+  .gc-logo3-image{width:190px!important;max-width:100%!important}
+  .gc-header-actions,#publicMenuWrapper{width:58px!important;min-width:58px!important;max-width:58px!important;flex-basis:58px!important}
+  .gc-menu-button{width:58px!important;min-width:58px!important;height:34px!important}
+  #publicNavbarLinks{top:70px!important}
+  .gc-image-hero,.gc-image-hero-inner{height:50px!important;min-height:50px!important}
+  .gc-home-tile{height:112px!important;min-height:112px!important;padding:8px!important}
+  .gc-home-tile-icon{width:29px!important;height:29px!important;font-size:13px!important}
+  .gc-home-tile h3{font-size:10px!important}
+  .gc-home-tile p{font-size:7.5px!important}
+  .gc-home-tile-btn{font-size:7.5px!important;padding:4px 6px!important}
+  #loginModal .gc-modern-login-logo{max-height:56px!important}
+  #loginModal .p-6{padding:9px!important}
+  #loginModal h3{font-size:17px!important}
+}
+@media(max-width:360px){
+  .gc-header-inner{height:66px!important;min-height:66px!important}
+  .gc-logo3-lockup{height:62px!important}
+  .gc-logo3-image{width:178px!important}
+  .gc-header-actions,#publicMenuWrapper{width:54px!important;min-width:54px!important;max-width:54px!important;flex-basis:54px!important}
+  .gc-menu-button{width:54px!important;min-width:54px!important}
+  #publicNavbarLinks{top:66px!important}
+  .gc-image-hero,.gc-image-hero-inner{height:44px!important;min-height:44px!important}
+  .gc-home-tile{height:106px!important;min-height:106px!important}
+  .gc-home-tile h3{font-size:9.5px!important}
+}
+</style>
+
 </body>
 <script id="gc-admin-receipt-dashboard-20261002">
 (function(){
