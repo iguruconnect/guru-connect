@@ -4809,7 +4809,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <!-- Header / Navbar -->
 <header class="gc-beautiful-header">
 <div class="gc-header-inner">
-<a aria-label="GURU CONNECT Home" class="gc-beautiful-lockup gc-logo3-lockup" href="#home"><img alt="GURU CONNECT logo" class="gc-logo3-image" src="guru-connect-new-header.png"/></a>
+<a aria-label="GURU CONNECT Home" class="gc-beautiful-lockup gc-logo3-lockup" href="#home"><img alt="GURU CONNECT logo" class="gc-logo3-image" src="guru-connect-brand-lockup-transparent.png"/></a>
 <nav aria-label="Main navigation" class="gc-beautiful-nav">
 <a class="gc-beautiful-home" href="#home">Home</a>
 <a href="#tutors">Find Tutor</a>
@@ -13822,6 +13822,89 @@ body:has(.gc-login-page-fix){
   }
 }
 </style>
+
+
+<style id="gc-home-header-tiles-admin-final-fix-20261009">
+/* FINAL HOMEPAGE HEADER / TILE / ADMIN MOBILE REPAIR */
+.gc-beautiful-header{position:sticky!important;top:0!important;z-index:10000!important;background:#fff!important;}
+.gc-header-inner{height:88px!important;min-height:88px!important;padding:5px 18px!important;gap:18px!important;display:flex!important;align-items:center!important;box-sizing:border-box!important;overflow:visible!important;}
+.gc-logo3-lockup{display:flex!important;align-items:center!important;justify-content:flex-start!important;flex:0 0 235px!important;width:235px!important;min-width:235px!important;max-width:235px!important;height:82px!important;overflow:visible!important;}
+.gc-logo3-image{display:block!important;width:235px!important;max-width:235px!important;height:auto!important;max-height:82px!important;flex:0 0 auto!important;object-fit:contain!important;object-position:left center!important;border-radius:0!important;background:transparent!important;}
+.gc-header-brand-name,.gc-header-brand-stack,.gc-header-slogan{display:none!important;}
+/* The hero is a welcome banner, not a second giant header. */
+.gc-image-hero{width:100%!important;overflow:hidden!important;background:#fff!important;}
+.gc-image-hero-inner{width:100%!important;display:flex!important;justify-content:center!important;align-items:center!important;overflow:hidden!important;}
+.gc-image-hero-img{display:block!important;width:100%!important;max-width:1380px!important;height:auto!important;max-height:310px!important;object-fit:contain!important;object-position:center!important;margin:0 auto!important;}
+/* Whole action card is tappable; existing buttons keep their normal navigation. */
+#homeActionTiles{position:relative!important;z-index:2!important;pointer-events:auto!important;}
+#homeActionTiles .gc-home-tile{position:relative!important;z-index:3!important;pointer-events:auto!important;cursor:pointer!important;}
+#homeActionTiles .gc-home-tile-btn{position:relative!important;z-index:5!important;pointer-events:auto!important;}
+/* Make Staff/Admin reachable from the mobile menu. */
+#publicNavbarLinks .gc-mobile-admin-item{display:flex!important;align-items:center!important;gap:8px!important;background:#0f3d91!important;color:#fff!important;font-weight:950!important;margin-top:4px!important;}
+#publicNavbarLinks .gc-mobile-admin-item:hover{background:#082b69!important;color:#fff!important;}
+@media(max-width:850px){
+  .gc-header-inner{height:78px!important;min-height:78px!important;padding:4px 9px!important;gap:7px!important;}
+  .gc-logo3-lockup{flex:0 1 205px!important;width:205px!important;min-width:0!important;max-width:205px!important;height:72px!important;}
+  .gc-logo3-image{width:205px!important;max-width:205px!important;max-height:72px!important;}
+  .gc-image-hero-img{max-height:210px!important;}
+}
+@media(max-width:520px){
+  .gc-header-inner{height:72px!important;min-height:72px!important;padding:3px 6px!important;gap:5px!important;}
+  .gc-logo3-lockup{flex:0 1 190px!important;width:190px!important;min-width:0!important;max-width:calc(100vw - 75px)!important;height:66px!important;}
+  .gc-logo3-image{width:190px!important;max-width:100%!important;max-height:66px!important;height:auto!important;object-fit:contain!important;}
+  .gc-image-hero-img{max-height:165px!important;}
+  #homeActionTiles .gc-home-tile{min-height:205px!important;padding:18px!important;}
+  #homeActionTiles .gc-home-tile-btn{min-height:42px!important;}
+}
+@media(max-width:380px){
+  .gc-logo3-lockup{flex-basis:170px!important;width:170px!important;max-width:calc(100vw - 68px)!important;height:60px!important;}
+  .gc-logo3-image{width:170px!important;max-width:100%!important;max-height:60px!important;}
+  .gc-image-hero-img{max-height:140px!important;}
+}
+</style>
+<script id="gc-home-header-tiles-admin-final-js">
+(function(){
+'use strict';
+function ready(){
+  const menu=document.getElementById('publicNavbarLinks');
+  if(menu && !document.getElementById('gcMobileAdminLogin')){
+    const div=document.createElement('div');
+    div.className='gc-menu-divider';
+    div.style.cssText='height:1px;background:#e2e8f0;margin:7px 4px;';
+    const a=document.createElement('a');
+    a.id='gcMobileAdminLogin';
+    a.className='gc-mobile-admin-item';
+    a.href='javascript:void(0)';
+    a.innerHTML='<i class="fa-solid fa-user-shield"></i><span>STAFF / ADMIN DASHBOARD</span>';
+    a.addEventListener('click',function(e){
+      e.preventDefault(); e.stopImmediatePropagation();
+      try{window.closeNavMenu?.()}catch(_){ }
+      if(typeof window.openLoginModal==='function') window.openLoginModal('staff');
+      else location.href='login.html?role=staff';
+    });
+    menu.appendChild(div); menu.appendChild(a);
+  }
+  const cards=document.querySelectorAll('#homeActionTiles .gc-home-tile');
+  cards.forEach(function(card){
+    if(card.dataset.gcCardNavBound)return;
+    card.dataset.gcCardNavBound='1';
+    card.addEventListener('click',function(e){
+      if(e.target.closest('a,button,input,select,textarea'))return;
+      const link=card.querySelector('a.gc-home-tile-btn');
+      if(link){
+        if(link.getAttribute('href')==='#tutors'){
+          const t=document.getElementById('tutors'); if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+          return;
+        }
+        location.href=link.href;
+      }
+    });
+  });
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready);else ready();
+setTimeout(ready,400);setTimeout(ready,1200);setTimeout(ready,2500);
+})();
+</script>
 
 </body>
 <script id="gc-admin-receipt-dashboard-20261002">

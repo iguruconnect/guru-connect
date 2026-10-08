@@ -116,6 +116,25 @@
 <style id="gc-account-ledger-actions-v2">
 .gcRowActions{display:flex;gap:6px;flex-wrap:wrap;min-width:145px}.gcRowActions .btn{padding:7px 9px;font-size:10px}.gcTableWrap{overflow:auto;max-width:100%}.gcTable{min-width:980px}.gcTable td,.gcTable th{vertical-align:top}.gcAcctCard{max-width:98vw!important;width:1500px!important}.gcAcctPane{overflow:auto}.gcBox{overflow:hidden}
 </style>
+
+<style id="gc-admin-mobile-final-20261009">
+html,body{width:100%;max-width:100%;overflow-x:hidden!important;-webkit-text-size-adjust:100%;}
+button,a,input,select,textarea{touch-action:manipulation;}
+@media(max-width:650px){
+  .head{padding:13px 10px!important;}
+  .headin{width:100%!important;gap:10px!important;}
+  .wrap{width:calc(100% - 16px)!important;margin:12px auto 40px!important;}
+  .gate,.panel{border-radius:15px!important;}
+  .controlbar{grid-template-columns:1fr!important;gap:8px!important;}
+  .topbtn{width:100%!important;min-height:58px!important;padding:12px!important;}
+  .secBody{padding:12px!important;}
+  .searchrow{grid-template-columns:1fr!important;}
+  .user{padding:12px!important;}
+  .userHead .actions,.userHead .actions .btn{width:100%!important;}
+  .actions .btn{min-height:44px!important;}
+  .gcTableWrap{width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
+}
+</style>
 </head><body>
 <header class="head"><div class="headin"><div><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
 <main class="wrap"><div id="gate" class="gate">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
