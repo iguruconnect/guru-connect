@@ -27,6 +27,24 @@
 .quickSearch input{width:100%;padding:12px;border:2px solid #155eef;border-radius:12px;font-weight:700}
 @media(max-width:800px){.lrrGrid,.lrrMeta{grid-template-columns:1fr}.historyRow{grid-template-columns:1fr 1fr}.controlbar{padding:8px}}
 .lrrMeta .metaBox b{color:#1e3a8a}.lrrMeta .metaBox:first-child,.lrrMeta .metaBox:nth-child(2){background:#eff6ff;border-color:#bfdbfe;font-size:13px;font-weight:950}.lrrMeta .metaBox:first-child b,.lrrMeta .metaBox:nth-child(2) b{font-size:9px}.lrrMeta .metaBox:first-child,.lrrMeta .metaBox:nth-child(2){line-height:1.45}
+
+/* GURU CONNECT LRR — colorful evidence cards + mobile-friendly admin review */
+.lrrEvidence{background:linear-gradient(135deg,#f0f9ff 0%,#fdf4ff 48%,#fff7ed 100%);border:2px solid #93c5fd;box-shadow:0 8px 24px rgba(37,99,235,.08)}
+.lrrEvidenceTitle{display:flex;align-items:center;gap:7px;color:#312e81;background:linear-gradient(90deg,#dbeafe,#ede9fe,#cffafe);border:1px solid #c4b5fd;border-radius:11px;padding:10px 11px;margin:-2px -2px 11px;font-size:11px}
+.evidenceGrid .evidenceBox{min-height:66px;box-shadow:0 3px 12px rgba(15,23,42,.05);font-weight:700}
+.evidenceGrid .evidenceBox:nth-child(1){background:#ecfdf5;border-color:#86efac}.evidenceGrid .evidenceBox:nth-child(1) b{color:#166534}
+.evidenceGrid .evidenceBox:nth-child(2){background:#eff6ff;border-color:#93c5fd}.evidenceGrid .evidenceBox:nth-child(2) b{color:#1d4ed8}
+.evidenceGrid .evidenceBox:nth-child(3){background:#fefce8;border-color:#fde68a}.evidenceGrid .evidenceBox:nth-child(3) b{color:#a16207}
+.evidenceGrid .evidenceBox:nth-child(4){background:#f5f3ff;border-color:#c4b5fd}.evidenceGrid .evidenceBox:nth-child(4) b{color:#6d28d9}
+.evidenceGrid .evidenceBox:nth-child(5){background:#fff7ed;border-color:#fdba74}.evidenceGrid .evidenceBox:nth-child(5) b{color:#c2410c}
+.evidenceGrid .evidenceBox:nth-child(6){background:#ecfeff;border-color:#67e8f9}.evidenceGrid .evidenceBox:nth-child(6) b{color:#0e7490}
+.evidenceGrid .evidenceBox:nth-child(7){background:#fff1f2;border-color:#fda4af}.evidenceGrid .evidenceBox:nth-child(7) b{color:#be123c}
+.lrrDeadlineBadge{display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:5px 8px;border-radius:999px;background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc;font-size:9px;font-weight:950}
+.lrrDeadlineBadge.expired{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}.lrrDeadlineBadge.warning{background:#fef3c7;color:#92400e;border-color:#fcd34d}
+.lrrDeleteBtn{background:#b91c1c!important;color:#fff!important;border:1px solid #991b1b!important;box-shadow:0 4px 12px rgba(185,28,28,.18)}
+.lrrDeleteBtn:hover{background:#991b1b!important;transform:translateY(-1px)}
+.lrrAutoNote{margin-top:10px;padding:9px 11px;border-radius:10px;background:linear-gradient(90deg,#fef3c7,#ffedd5);border:1px solid #fbbf24;color:#92400e;font-size:10px;font-weight:850}
+@media(max-width:650px){.lrrEvidence{padding:9px;border-radius:13px}.lrrEvidenceTitle{font-size:10px;line-height:1.35}.evidenceGrid .evidenceBox{min-height:auto;padding:10px}.lrrActions .btn{width:100%;min-height:42px}.lrrDeleteBtn{order:-1}}
 </style><style id="gc-admin-connection-fix">#gcDetailsModal button{cursor:pointer}@media(max-width:650px){#gcDetailsModal>div{padding:14px!important}#gcDetailsModal .btn{min-height:42px}.actions{flex-wrap:wrap}}
 .lrrControlNote{padding:12px 14px;border:1px solid #bfdbfe;background:#eff6ff;color:#1e3a8a;border-radius:12px;font-size:11px;font-weight:800;margin-bottom:12px}.lrrActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #e2e8f0}.lrrActions .btn{min-height:40px}.receiptServiceBox{margin-top:16px;border:1px solid #dbe4f0;border-radius:16px;padding:16px;background:#f8fafc}.receiptServiceHead{display:flex;justify-content:space-between;gap:12px;align-items:center}.receiptServiceHead h3{margin:0;color:#123b8f}.receiptServiceHead p{margin:4px 0 0;color:#64748b;font-size:11px}.receiptServiceAdd{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:12px;margin-top:14px}.receiptServices{display:grid;gap:8px;margin-top:12px}.receiptServiceRow{display:grid;grid-template-columns:minmax(0,1fr) 160px 90px;gap:10px;align-items:end;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px}.receiptServiceRow .field{margin:0}.receiptServiceRow input{background:#fff}.receiptTotal{display:flex;justify-content:space-between;align-items:center;border-top:2px solid #cbd5e1;margin-top:14px;padding-top:14px;font-size:13px;font-weight:950}.receiptTotal strong{font-size:20px;color:#123b8f}.receiptRemove{min-height:40px}@media(max-width:650px){.receiptServiceAdd,.receiptServiceRow{grid-template-columns:1fr}.receiptServiceHead{align-items:flex-start;flex-direction:column}.receiptServiceHead .btn{width:100%}}
 </style>
@@ -901,6 +919,23 @@ window.lrrAction=lrrAction;
 
 window.lrrCoins=async(id,studentId,tutorId,role)=>{const who=role==='tutor'?tutorId:studentId;if(!who)return alert('No '+role+' user ID is attached to this LRR.');$('coinUserId').value=String(who);$('coinRole').value=role;switchSection('coins');$('coinAmount').focus()};
 
+window.lrrDelete=async function(id){
+  const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(id));
+  if(!row)return alert('LRR record is no longer loaded. Refresh the LRR tab.');
+  const st=String(row.status||'').toUpperCase();
+  const outcome=String(row.student_outcome||row.outcome||'').toUpperCase();
+  const completed=['TUTOR_COMPLETED','COMPLETED','APPROVED','COMPLETED_SATISFIED','COMPLETED_NOT_SATISFIED'].includes(st)||['SATISFIED','SATISFIED_BY_STUDENT','COMPLETED_SATISFIED'].includes(outcome);
+  if(!completed)return alert('For safety, an LRR can be permanently deleted by Admin only after the case is completed/verified.');
+  const ok=confirm('DELETE THIS COMPLETED LRR?\n\nThis removes the LRR from the active Supabase data and cannot be undone.\n\nContinue?');
+  if(!ok)return;
+  try{
+    let q=await sb.rpc('gc_admin_lrr_action',{p_request_id:String(id),p_action:'delete',p_reason:'Deleted by Admin after completion/verification'});
+    if(q.error)throw q.error;
+    alert('✓ LRR deleted successfully.');
+    lrrLoaded=false;await loadLearning();
+  }catch(e){alert('LRR delete failed: '+(e.message||e)+'\n\nIf your database delete RPC is not installed yet, tell me and I will give you the exact SQL for it.')}
+};
+
 /* Final coin decision uses the authoritative LRR workflow already used by the main site. */
 window.lrrDecision=async(id,decision)=>{
   const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(id));
@@ -998,10 +1033,10 @@ async function loadLearning(){
         <div class="evidenceBox"><b>Student feedback / remark</b>${esc(studentFeedback||'No written student feedback recorded.')}</div>
         <div class="evidenceBox"><b>Tutor feedback / completion note</b>${esc(tutorFeedback||'No separate tutor feedback recorded. Status is used as the completion evidence.')}</div>
         <div class="evidenceBox"><b>Coins held with Admin</b><strong>🪙 ${Number(r.coins_held||0)}</strong></div>
-        <div class="evidenceBox"><b>Learning deadline</b>${esc(r.learning_deadline||'Not set')}</div>
+        <div class="evidenceBox"><b>Learning deadline</b>${esc(r.learning_deadline||'Not set')}${r.learning_deadline?`<div class="lrrDeadlineBadge">⏳ Maximum service window: 20 days</div>`:''}</div>
         <div class="evidenceBox" style="grid-column:1/-1"><b>Admin decision / note</b>${esc(adminNote||'No Admin decision recorded yet.')}</div>
       </div>${contactUnlocked?`<div class="lrrDecision" style="background:#ecfdf5;border-color:#bbf7d0;color:#166534">✓ Connection accepted. Admin may contact the Student or Tutor on WhatsApp for this LRR case.</div>`:``}</div>
-      <div class="lrrActions"><button type="button" class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button type="button" class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button type="button" class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button type="button" class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(studentName)}','${esc(tutorName)}','tutor')">🪙 TUTOR COINS</button><button type="button" class="btn light" onclick="lrrCoins('${esc(id)}','${esc(studentName)}','${esc(tutorName)}','student')">🪙 STUDENT COINS</button>${contactUnlocked?`<button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','student')">💬 WHATSAPP STUDENT</button><button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','tutor')">💬 WHATSAPP TUTOR</button>`:''}${canDecide?`<button type="button" class="btn green decisionBtn" onclick="lrrDecision('${esc(id)}','APPROVE')">💰 RELEASE TUTOR COINS</button><button type="button" class="btn red decisionBtn" onclick="lrrDecision('${esc(id)}','DENY')">↩ DENY / RETURN COINS</button>`:''}</div></article>`);
+      <div class="lrrActions"><button type="button" class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button type="button" class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button type="button" class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button type="button" class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(studentName)}','${esc(tutorName)}','tutor')">🪙 TUTOR COINS</button><button type="button" class="btn light" onclick="lrrCoins('${esc(id)}','${esc(studentName)}','${esc(tutorName)}','student')">🪙 STUDENT COINS</button>${contactUnlocked?`<button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','student')">💬 WHATSAPP STUDENT</button><button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','tutor')">💬 WHATSAPP TUTOR</button>`:''}${canDecide?`<button type="button" class="btn green decisionBtn" onclick="lrrDecision('${esc(id)}','APPROVE')">💰 RELEASE TUTOR COINS</button><button type="button" class="btn red decisionBtn" onclick="lrrDecision('${esc(id)}','DENY')">↩ DENY / RETURN COINS</button>`:''}${(tutorCompleted&&!canDecide)||satisfied?`<button type="button" class="btn lrrDeleteBtn" onclick="lrrDelete('${esc(id)}')">🗑️ DELETE COMPLETED LRR</button>`:''}</div><div class="lrrAutoNote">⏰ LRR retention rule: unresolved requests are intended to expire at 20 days, with held Student coins returned automatically.</div></article>`);
   }
   h.innerHTML=cards.length?cards.join(''):'<div class="empty">No Learning Requirement Requests found.</div>';
   lrrLoaded=true
