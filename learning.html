@@ -18,7 +18,7 @@ body{margin:0;font-family:"Nunito Sans",Arial,sans-serif;background:#f4f7ff;colo
 .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
 .card{width:100%;min-height:520px;padding:18px;border-radius:20px;background:linear-gradient(145deg,#fff,#f4f8ff);border:1px solid #cbd9ef;box-shadow:0 10px 28px rgba(25,55,110,.08);display:flex;flex-direction:column}
 .cardtop{display:flex;justify-content:space-between;align-items:center;height:42px}.role{font-size:12px;font-weight:950;background:#e8f0ff;color:#1558c6;border-radius:9px;padding:8px 10px}.status{font-size:11px;font-weight:950;background:#dcfce7;color:#08753d;border-radius:9px;padding:8px 10px}.status.closed{background:#fee2e2;color:#b91c1c}.status.approved{background:#ede9fe;color:#6d28d9}
-.identity{display:flex;align-items:center;gap:13px;min-height:118px}.avatar{width:100px;height:100px;min-width:100px;border-radius:50%;display:block;object-fit:cover;background:#f1f3f5;border:4px solid #fff;box-shadow:0 6px 18px rgba(30,64,175,.15)}.name{font-size:24px;font-weight:950;margin:0;color:#102a72;line-height:1.2}.sub{font-size:15px;font-weight:900;color:#64748b;margin-top:6px}
+.identity{display:flex;align-items:center;gap:13px;min-height:118px}.avatar{width:100px;height:100px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#dbeafe,#bfdbfe);font-size:50px;border:4px solid #fff;box-shadow:0 6px 18px rgba(30,64,175,.15)}.name{font-size:24px;font-weight:950;margin:0;color:#102a72;line-height:1.2}.sub{font-size:15px;font-weight:900;color:#64748b;margin-top:6px}
 .info{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:7px 0 10px}.box{height:58px;background:#fff;border:1px solid #e2e8f0;border-radius:11px;padding:7px 9px;display:flex;align-items:center;gap:8px}.ico{font-size:20px;width:25px}.box b{display:block;font-size:10px;color:#64748b}.box span{display:block;font-size:12px;font-weight:900;color:#172554;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
 .need{margin-top:2px;min-height:82px;border:1px solid #fde68a;background:#fffdf0;border-radius:12px;padding:11px 12px;color:#9a3412;font-size:13px;font-weight:750;line-height:1.45}.need b{display:block;font-size:11px;margin-bottom:5px}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto;padding-top:12px}.actions button{height:44px;border-radius:10px;font-weight:950;font-size:13px;cursor:pointer}.more{background:#fff;border:1px solid #2563eb;color:#1558c6}.connect{border:0;background:linear-gradient(90deg,#087f55,#0b9c68);color:#fff}
@@ -42,7 +42,7 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
   .cardtop{height:auto;min-height:38px;gap:7px;align-items:center}
   .role,.status{font-size:10px;padding:7px 8px;line-height:1.15}
   .identity{width:100%;min-height:92px;gap:10px;margin-top:6px}
-  .avatar{width:78px;height:78px;min-width:78px;border-width:3px;object-fit:cover}
+  .avatar{width:78px;height:78px;min-width:78px;font-size:38px;border-width:3px}
   .name{font-size:21px;line-height:1.15;word-break:break-word}
   .sub{font-size:14px;margin-top:5px}
   .info{width:100%;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 10px}
@@ -67,22 +67,16 @@ html,body{width:100%;max-width:100%;overflow-x:hidden}
   .info{grid-template-columns:1fr}
   .box{height:58px}
   .identity{min-height:86px}
-  .avatar{width:72px;height:72px;min-width:72px;object-fit:cover}
+  .avatar{width:72px;height:72px;min-width:72px;font-size:34px}
   .name{font-size:20px}
   .sub{font-size:13px}
   .need{font-size:14px}
 }
 
 .gc-lrr-ad-host{width:100%;margin:14px 0 18px}.gc-lrr-ad-card{position:relative;overflow:hidden;width:100%;border-radius:20px;box-shadow:0 12px 30px rgba(20,50,110,.14);background:#fff;border:1px solid #dbe4f0;color:#10204f}.gc-lrr-ad-card a{display:flex;flex-direction:column;position:relative;width:100%;color:inherit;text-decoration:none}.gc-lrr-ad-card img{display:block;width:100%;height:auto;max-width:100%;object-fit:contain;background:#fff}.gc-lrr-ad-card .shade{display:none}.gc-lrr-ad-card .label{display:none}.gc-lrr-ad-card .copy{position:relative;left:auto;right:auto;bottom:auto;min-height:58px;height:58px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 12px 8px 16px;background:#fff;border-top:1px solid #e2e8f0}.gc-lrr-ad-card .copy b{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px;font-weight:950;color:#102a72;line-height:1.2}.gc-lrr-ad-card .copy span{display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;min-width:104px;height:38px;padding:0 16px;border-radius:10px;background:linear-gradient(135deg,#079447,#0bbf68);color:#fff;font-size:12px;font-weight:950;letter-spacing:.03em;box-shadow:0 5px 12px rgba(5,150,105,.22)}.gc-lrr-ad-card:hover .copy span{filter:brightness(.96);transform:translateY(-1px)}@media(max-width:650px){.gc-lrr-ad-card{border-radius:16px}.gc-lrr-ad-card img{height:auto}.gc-lrr-ad-card .copy{min-height:54px;height:54px;padding:7px 9px 7px 12px;gap:8px}.gc-lrr-ad-card .copy b{font-size:12px}.gc-lrr-ad-card .copy span{min-width:88px;height:34px;padding:0 12px;font-size:11px;border-radius:9px}}
-/* LRR PROFILE-CARD LAYER — follows the existing Tutor/Student card language */
-.identity{padding:10px 0 12px}
-.info .box:nth-child(1),.info .box:nth-child(2){background:#f8fbff!important}
-.info .box:nth-child(1) .ico{color:#2563eb}.info .box:nth-child(2) .ico{color:#7c3aed}
-.info .box:nth-child(n+3) .ico{opacity:.9}
-@media(max-width:650px){.identity{padding:8px 0 10px}}
 </style>
 
-<link rel="preconnect href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style id="gc-nunito-sans-font-final">
@@ -113,6 +107,54 @@ body{background:#f5f6f8!important;color:#202124!important}
 <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style id="gc-nunito-sans-font-final">
 html,body,button,input,select,textarea{font-family:"Nunito Sans",Arial,sans-serif!important}
+</style>
+<style id="gc-lrr-profile-card-final">
+/* GURU CONNECT LRR CARD — uses the same visual language as the live Tutor/Student profile cards. */
+.lrr-profile-card{
+  width:100%!important;min-height:0!important;height:auto!important;position:relative!important;overflow:hidden!important;
+  border-radius:16px!important;padding:16px!important;border:2px solid #ff6b0a!important;
+  background:linear-gradient(145deg,#fffaf5 0%,#fff4eb 52%,#ffeddc 100%)!important;
+  box-shadow:0 10px 25px rgba(15,23,42,.14),inset 0 1px 0 rgba(255,255,255,.9)!important;
+  font-family:Inter,Arial,sans-serif!important;color:#10162d!important;
+}
+.lrr-profile-card:before{content:"";position:absolute;inset:-70px -100px auto auto;width:280px;height:180px;border-radius:50%;background:rgba(255,255,255,.32);transform:rotate(-18deg);pointer-events:none}
+.lrr-profile-card:after{content:"";position:absolute;inset:0;opacity:.11;background-image:radial-gradient(circle,#fff 1px,transparent 1.4px);background-size:13px 13px;pointer-events:none}
+.lrr-profile-card>*{position:relative;z-index:2}
+.lrr-card-top{height:48px!important;display:flex!important;align-items:center!important;justify-content:space-between!important;gap:8px!important}
+.lrr-role{display:inline-flex!important;align-items:center!important;gap:7px!important;padding:7px 12px!important;border-radius:8px!important;background:#fff!important;color:#ef5e00!important;border:2px solid #ef6b1d!important;font-size:14px!important;font-weight:900!important;line-height:1!important;white-space:nowrap!important;box-shadow:0 2px 5px rgba(15,23,42,.07)!important}
+.lrr-role-icon{display:inline-flex;align-items:center;justify-content:center;font-size:19px;line-height:1}
+.lrr-chip-wifi{display:flex!important;align-items:center!important;gap:12px!important}
+.lrr-chip{width:40px!important;height:50px!important;border-radius:9px!important;border:2px solid #777!important;background:linear-gradient(135deg,#eee,#aaa)!important;box-shadow:inset 0 0 0 3px #ddd,0 2px 4px #0002!important;position:relative!important}
+.lrr-chip:before,.lrr-chip:after{content:"";position:absolute!important;inset:8px 0!important;border-top:1px solid #777!important;border-bottom:1px solid #777!important}.lrr-chip:after{inset:0 13px!important;border-left:1px solid #777!important;border-right:1px solid #777!important}
+.lrr-wifi{font-size:35px!important;line-height:1!important;color:#1d77e9!important;display:block!important;font-weight:900;transform:rotate(-35deg)}
+.lrr-identity{height:150px!important;display:flex!important;align-items:center!important;gap:16px!important;margin:0!important}
+.lrr-avatar{width:140px!important;height:140px!important;min-width:140px!important;border-radius:50%!important;overflow:hidden!important;border:2px solid #f28a28!important;background:#fff0dd!important;display:flex!important;align-items:center!important;justify-content:center!important;box-shadow:0 2px 8px rgba(15,23,42,.08)!important;padding:0!important}
+.lrr-avatar img{width:100%!important;height:100%!important;object-fit:cover!important;display:block!important;border-radius:50%!important}
+.lrr-avatar-fallback{width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;background:#fff0dd;color:#c2410c;font-size:62px;line-height:1}
+.lrr-profile-card .name{margin:0 0 8px!important;padding:5px 8px!important;background:#fff!important;border-radius:6px!important;color:#13246b!important;font-size:28px!important;line-height:1.05!important;font-weight:900!important;display:block!important;max-width:100%!important;box-shadow:0 2px 5px rgba(15,23,42,.07)!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lrr-profile-card .sub{font-size:17px!important;line-height:1.15!important;font-weight:700!important;color:#111827!important;display:block!important;max-width:100%!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:0!important}
+.lrr-info{display:grid!important;grid-template-columns:1fr 1fr!important;gap:4px!important;margin-top:5px!important;margin-bottom:7px!important}
+.lrr-info-box{height:48px!important;min-height:48px!important;background:#fff!important;border:1.5px solid #ffd0b9!important;border-radius:9px!important;padding:5px 8px!important;display:flex!important;align-items:center!important;gap:7px!important;box-shadow:0 2px 4px rgba(16,32,64,.04)!important}
+.lrr-info-icon{width:29px!important;min-width:29px!important;text-align:center!important;font-size:22px!important;line-height:1!important}
+.lrr-info-box:nth-child(1) .lrr-info-icon{color:#ef6b1d}.lrr-info-box:nth-child(2) .lrr-info-icon{color:#1d4ed8}
+.lrr-info-box>div{min-width:0!important;line-height:1.05!important}
+.lrr-info-box b{display:block!important;color:#13246b!important;font-size:12px!important;line-height:1.05!important;margin-bottom:2px!important;white-space:nowrap!important}
+.lrr-info-box span:not(.ico){display:block!important;color:#10162d!important;font-size:12px!important;font-weight:650!important;line-height:1.08!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.lrr-need{margin-top:3px!important;min-height:64px!important;border:1.5px solid #ffd0b9!important;background:rgba(255,255,255,.82)!important;border-radius:10px!important;padding:7px 9px!important;color:#7c2d12!important;font-size:11px!important;font-weight:750!important;line-height:1.35!important;overflow:hidden!important}
+.lrr-need b{display:block!important;color:#c2410c!important;font-size:10px!important;margin-bottom:3px!important}
+.lrr-actions{display:grid!important;grid-template-columns:1fr 1fr!important;gap:38px!important;margin:7px 50px 0!important;padding-top:0!important}
+.lrr-actions button{border:0!important;border-radius:8px!important;min-height:39px!important;color:#fff!important;font-size:17px!important;font-weight:900!important;line-height:1!important;cursor:pointer!important}
+.lrr-actions .more{background:#f2670b!important;color:#fff!important;border:0!important}.lrr-actions .connect{background:#0a9a45!important;color:#fff!important}
+.lrr-actions button:hover{filter:brightness(.95)!important;transform:translateY(-1px)}
+.lrr-actions .more span{font-size:14px;margin-left:3px}
+@media(max-width:980px){.lrr-profile-card{max-width:450px;margin-left:auto;margin-right:auto}}
+@media(max-width:520px){
+ .lrr-profile-card{width:100%!important;padding:12px!important;border-radius:14px!important}
+ .lrr-card-top{height:43px!important}.lrr-role{font-size:11px!important;padding:6px 9px!important}.lrr-role-icon{font-size:15px}.lrr-chip{width:30px!important;height:39px!important}.lrr-wifi{font-size:30px!important}.lrr-chip-wifi{gap:7px!important}
+ .lrr-identity{height:140px!important;gap:9px!important}.lrr-avatar{width:112px!important;height:112px!important;min-width:112px!important}.lrr-avatar-fallback{font-size:42px!important}.lrr-profile-card .name{font-size:21px!important;padding:5px 7px!important}.lrr-profile-card .sub{font-size:13px!important}
+ .lrr-info{gap:4px!important}.lrr-info-box{height:50px!important;min-height:50px!important;padding:5px!important;gap:5px!important}.lrr-info-icon{width:24px!important;min-width:24px!important;font-size:18px!important}.lrr-info-box b,.lrr-info-box span:not(.ico){font-size:10px!important}
+ .lrr-need{min-height:58px!important;font-size:10px!important}.lrr-need b{font-size:9px!important}.lrr-actions{gap:8px!important;margin:7px 22px 0!important}.lrr-actions button{font-size:14px!important;min-height:38px!important}
+}
 </style>
 </head>
 <body>
@@ -251,20 +293,25 @@ function rows(){
 }
 function card(r){
   const student=r.student_name||r.student_full_name||r.full_name||r.name||'GURU CONNECT Student';
+  const tutor=r.tutor_name||r.tutor_full_name||r.tutorName||'Not connected yet';
   const status=closed(r)?'LRR CLOSED':approved(r)?'LRR ADMIN APPROVED':'LRR OPEN';
   const cls=closed(r)?'closed':approved(r)?'approved':'';
-  return '<article class="card">'+
-  '<div class="cardtop"><span class="role">⚡ LRR • LIVE</span><span class="status '+cls+'">'+status+'</span></div>'+
-  '<div class="identity"><img class="avatar" src="guru-connect-logo.png" alt="GURU CONNECT default avatar"><div><h3 class="name">'+esc(student)+'</h3><div class="sub">📚 '+esc(r.subject||'Subject not specified')+'</div></div></div>'+
-  '<div class="info">'+
-  box('👨‍🎓','STUDENT',student)+box('👨‍🏫','TUTOR',r.tutor_name||r.tutor_full_name||r.tutorName||'Not connected yet')+
+  const photo=r.student_photo||r.student_photoData||r.student_image||r.student_avatar||r.photoData||r.photo||r.image||r.avatar||r.profileImage||'';
+  const avatar=photo
+    ? '<img src="'+esc(photo)+'" alt="'+esc(student)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><span class="lrr-avatar-fallback" style="display:none">👩🏻‍🎓</span>'
+    : '<span class="lrr-avatar-fallback">👩🏻‍🎓</span>';
+  return '<article class="card lrr-profile-card">'+
+  '<div class="cardtop lrr-card-top"><span class="role lrr-role"><span class="lrr-role-icon">🎓</span> LRR • STUDENT REQUEST</span><div class="lrr-chip-wifi"><span class="lrr-chip"></span><span class="lrr-wifi" aria-label="Live LRR">⌁</span></div></div>'+
+  '<div class="identity lrr-identity"><div class="avatar lrr-avatar">'+avatar+'</div><div><h3 class="name">'+esc(student)+'</h3><div class="sub">'+esc(r.subject||'Subject not specified')+'</div></div></div>'+
+  '<div class="info lrr-info">'+
+  box('📚','STUDENT',student)+box('👨‍🏫','TUTOR',tutor)+
   box('📖','COURSE',r.course||'—')+box('🌐','STREAM',r.stream||'—')+
   box('🎯','TOPIC',r.topic||'—')+box('⏳','DEADLINE',fmt(r.learning_deadline||r.deadline))+
   box('🪙','REWARD',Number(r.coins_held||100)+' GURU COINS')+box('🕒','POSTED',fmt(r.created_at))+
-  '</div><div class="need"><b>📝 LEARNING REQUIREMENT</b>'+esc(r.issue||r.problem||'Student has not added a detailed issue.')+'</div>'+
-  '<div class="actions"><button class="more" data-id="'+esc(r.id||'')+'">VIEW DETAILS</button><button class="connect" data-connect="1">🤝 CONNECT</button></div></article>';
+  '</div><div class="need lrr-need"><b>📝 LEARNING REQUIREMENT</b>'+esc(r.issue||r.problem||'Student has not added a detailed issue.')+'</div>'+
+  '<div class="actions lrr-actions"><button class="more" data-id="'+esc(r.id||'')+'">MORE <span>👤</span></button><button class="connect" data-connect="1">CONNECT ➤</button></div></article>';
 }
-function box(i,b,v){return '<div class="box"><span class="ico">'+i+'</span><div><b>'+b+'</b><span title="'+esc(v)+'">'+esc(v)+'</span></div></div>'}
+function box(i,b,v){return '<div class="box lrr-info-box"><span class="ico lrr-info-icon">'+i+'</span><div><b>'+b+'</b><span title="'+esc(v)+'">'+esc(v)+'</span></div></div>'}
 function render(){
   const rs=rows();
   grid.innerHTML=rs.length?rs.map(card).join(''):'<div class="empty">🔎 No Learning Requirement matches these filters.</div>';
@@ -277,7 +324,6 @@ function details(id){
   document.getElementById('mdetails').innerHTML=
     '<div class="detail"><b>LRR ID</b><div>'+esc(r.request_code||r.id)+'</div></div>'+
     '<div class="detail"><b>STUDENT</b><div>'+esc(r.student_name||r.student_full_name||r.full_name||r.name||'GURU CONNECT Student')+'</div></div>'+
-    '<div class="detail"><b>TUTOR</b><div>'+esc(r.tutor_name||r.tutor_full_name||r.tutorName||'Not connected yet')+'</div></div>'+
     '<div class="detail"><b>COURSE / STREAM</b><div>'+esc(r.course||'—')+' / '+esc(r.stream||'—')+'</div></div>'+
     '<div class="detail"><b>SUBJECT / TOPIC</b><div>'+esc(r.subject||'—')+' / '+esc(r.topic||'—')+'</div></div>'+
     '<div class="detail"><b>MODE</b><div>'+esc(r.mode||'—')+'</div></div>'+
