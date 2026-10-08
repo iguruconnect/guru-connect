@@ -209,11 +209,26 @@ async function api(action,payload={}){
   return d;
 }
 async function staffCheck(){
-  const s=await sb.auth.getSession(),u=s.data?.session?.user;
-  if(!u||String(u.email||'').toLowerCase()!=='guruconnect.in@gmail.com'){location.href='login.html?role=staff';return false}
-  $('gate').style.display='none';$('app').style.display='block';return true;
-}
-let users=[];
+  const s=await sb.auth.getSession();
+  const session=s.data?.session;
+  const u=session?.user;
+  const staffFlag=localStorage.getItem('is_staff_logged')==='true';
+  const valid=!!session && !!u && String(u.email||'').toLowerCase()==='guruconnect.in@gmail.com' && staffFlag;
+  if(!valid){
+    $('app').style.display='none';
+    $('gate').style.display='block';
+    $('gate').textContent='Your Staff/Admin session has ended. Returning to GURU CONNECT home…';
+    try{await s.auth.signOut({scope:'local'});}catch(_){}
+    localStorage.removeItem('is_staff_logged');
+    localStorage.removeItem('gc_staff_supabase_auth');
+    localStorage.removeItem('gc_user_supabase_auth');
+    location.replace('index.html?session=expired&t='+Date.now());
+    return false;
+  }
+  $('gate').style.display='none';
+  $('app').style.display='block';
+  return true;
+} let users=[];
 let activeSection='edit';
 let lrrLoaded=false,lrrLoading=false,coinHistoryLoaded=false;
 function switchSection(name){
@@ -226,7 +241,7 @@ function switchSection(name){
   if(name==='coinhistory'&&!coinHistoryLoaded)loadCoinHistory();
 }
 document.querySelectorAll('.topbtn').forEach(b=>b.addEventListener('click',()=>switchSection(b.dataset.sec)));
-$('logout').onclick=async()=>{await sb.auth.signOut({scope:'local'});location.href='login.html?role=staff'};
+$('logout').onclick=async()=>{try{await sb.auth.signOut({scope:'local'});}catch(_){};localStorage.removeItem('is_staff_logged');localStorage.removeItem('gc_staff_supabase_auth');localStorage.removeItem('gc_user_supabase_auth');location.replace('index.html?logout=1&t='+Date.now())};
 
 function adminWhatsAppUser(i){const u=users[i]||{};let phone=String(u.phone||'').replace(/\D/g,'');if(phone.startsWith('00'))phone=phone.slice(2);if(phone.length===11&&phone.startsWith('0'))phone=phone.slice(1);if(phone.length===10)phone='91'+phone;if(!phone){alert('This user has no registered phone/WhatsApp number.');return}const name=String(u.name||u.full_name||u.role||'GURU CONNECT member');const msg='Hello '+name+', I am contacting you from GURU CONNECT Admin regarding your account.';window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank','noopener,noreferrer')}
 function normalizeRpcUsers(rows){
@@ -938,3 +953,59 @@ $('adSave').onclick=async()=>{
 
 staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit()}});
 </script></body></html>
+
+<!-- GURU CONNECT FINAL ADMIN SESSION / LOGOUT REPAIR - 2026-10-08 -->
+<script id="gc-final-admin-session-repair">
+(function(){
+  'use strict';
+
+  function home(){
+    location.replace('index.html?session=expired&t='+Date.now());
+  }
+
+  async function enforce(){
+    try{
+      const s=window.sb;
+      if(!s || !s.auth){
+        const gate=document.getElementById('gate');
+        const app=document.getElementById('app');
+        if(app) app.style.display='none';
+        if(gate) gate.style.display='block';
+        home();
+        return;
+      }
+
+      const q=await s.auth.getSession();
+      const session=q.data?.session;
+      const user=session?.user;
+      const ok=!!session &&
+        !!user &&
+        String(user.email||'').toLowerCase()==='guruconnect.in@gmail.com' &&
+        localStorage.getItem('is_staff_logged')==='true';
+
+      if(!ok){
+        const app=document.getElementById('app');
+        if(app) app.style.display='none';
+        localStorage.removeItem('is_staff_logged');
+        localStorage.removeItem('gc_staff_supabase_auth');
+        localStorage.removeItem('gc_user_supabase_auth');
+        try{await s.auth.signOut({scope:'local'});}catch(_){}
+        home();
+      }
+    }catch(_){
+      home();
+    }
+  }
+
+  window.addEventListener('pageshow', function(){ setTimeout(enforce,0); });
+  window.addEventListener('popstate', function(){ setTimeout(enforce,0); });
+  document.addEventListener('visibilitychange', function(){
+    if(document.visibilityState==='visible') setTimeout(enforce,0);
+  });
+
+  // Prevent an old cached dashboard from being restored after logout.
+  try{
+    window.history.replaceState(null, document.title, window.location.href);
+  }catch(_){}
+})();
+</script>
