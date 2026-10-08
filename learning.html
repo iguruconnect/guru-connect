@@ -155,6 +155,42 @@ html,body,button,input,select,textarea{font-family:"Nunito Sans",Arial,sans-seri
  .lrr-info{gap:4px!important}.lrr-info-box{height:50px!important;min-height:50px!important;padding:5px!important;gap:5px!important}.lrr-info-icon{width:24px!important;min-width:24px!important;font-size:18px!important}.lrr-info-box b,.lrr-info-box span:not(.ico){font-size:10px!important}
  .lrr-need{min-height:58px!important;font-size:10px!important}.lrr-need b{font-size:9px!important}.lrr-actions{gap:8px!important;margin:7px 22px 0!important}.lrr-actions button{font-size:14px!important;min-height:38px!important}
 }
+
+/* LRR CARD FINAL PROFILE-MATCH FIX — keeps the existing Tutor/Student card language. */
+.lrr-profile-card{box-sizing:border-box!important;min-width:0!important;}
+.lrr-card-top{min-width:0!important;}
+.lrr-chip-wifi{flex:0 0 auto!important;align-items:center!important;gap:8px!important;height:24px!important;}
+.lrr-chip{display:grid!important;width:30px!important;height:19px!important;min-width:30px!important;flex:0 0 30px!important;border-radius:5px!important;background:linear-gradient(135deg,#fff0a0 0%,#e4b12e 38%,#ffd95a 65%,#c68b17 100%)!important;border:1px solid #b87c08!important;box-shadow:0 2px 6px rgba(0,0,0,.22)!important;overflow:hidden!important;position:relative!important;}
+.lrr-chip:before,.lrr-chip:after{content:""!important;position:absolute!important;inset:4px 0!important;border-top:1px solid rgba(100,65,0,.45)!important;border-bottom:1px solid rgba(100,65,0,.45)!important;}
+.lrr-chip:after{inset:0 9px!important;border-left:1px solid rgba(100,65,0,.45)!important;border-right:1px solid rgba(100,65,0,.45)!important;}
+.lrr-wifi{display:block!important;width:24px!important;height:20px!important;min-width:24px!important;font-size:0!important;line-height:0!important;transform:none!important;color:#fff!important;}
+.lrr-wifi svg{display:block!important;width:24px!important;height:20px!important;overflow:visible!important;}
+.lrr-wifi svg path{fill:none!important;stroke:#fff!important;stroke-width:2.2!important;stroke-linecap:round!important;}
+.lrr-wifi svg circle{fill:#fff!important;stroke:none!important;}
+.lrr-identity{display:grid!important;grid-template-columns:140px minmax(0,1fr)!important;align-items:center!important;gap:16px!important;height:auto!important;min-height:150px!important;overflow:visible!important;}
+.lrr-avatar{width:140px!important;height:140px!important;min-width:140px!important;}
+.lrr-avatar-fallback{font-size:82px!important;line-height:1!important;}
+.lrr-identity>div:last-child{min-width:0!important;width:100%!important;max-width:none!important;overflow:visible!important;}
+.lrr-profile-card .name{width:100%!important;max-width:none!important;min-width:0!important;box-sizing:border-box!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important;word-break:normal!important;line-height:1.08!important;}
+.lrr-profile-card .sub{width:100%!important;max-width:none!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important;overflow-wrap:anywhere!important;line-height:1.15!important;}
+.lrr-actions{width:100%!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:10px!important;margin:7px 0 0!important;padding:0!important;}
+.lrr-actions button{width:100%!important;min-width:0!important;box-sizing:border-box!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+@media(max-width:980px){.lrr-profile-card{max-width:450px!important;margin-left:auto!important;margin-right:auto!important;}}
+@media(max-width:520px){
+ .lrr-profile-card{padding:12px!important;border-radius:14px!important;}
+ .lrr-card-top{height:43px!important;}
+ .lrr-role{font-size:11px!important;padding:6px 9px!important;max-width:calc(100% - 72px)!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+ .lrr-role-icon{font-size:15px!important;}
+ .lrr-chip-wifi{gap:7px!important;}
+ .lrr-identity{grid-template-columns:112px minmax(0,1fr)!important;gap:9px!important;min-height:140px!important;}
+ .lrr-avatar{width:112px!important;height:112px!important;min-width:112px!important;}
+ .lrr-avatar-fallback{font-size:66px!important;}
+ .lrr-profile-card .name{font-size:clamp(18px,5.2vw,23px)!important;padding:5px 7px!important;}
+ .lrr-profile-card .sub{font-size:13px!important;}
+ .lrr-info-box{min-width:0!important;}
+ .lrr-actions{gap:8px!important;margin:7px 0 0!important;}
+ .lrr-actions button{font-size:14px!important;min-height:38px!important;padding:0 6px!important;}
+}
 </style>
 </head>
 <body>
@@ -301,7 +337,7 @@ function card(r){
     ? '<img src="'+esc(photo)+'" alt="'+esc(student)+'" loading="lazy" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'"><span class="lrr-avatar-fallback" style="display:none">👩🏻‍🎓</span>'
     : '<span class="lrr-avatar-fallback">👩🏻‍🎓</span>';
   return '<article class="card lrr-profile-card">'+
-  '<div class="cardtop lrr-card-top"><span class="role lrr-role"><span class="lrr-role-icon">🎓</span> LRR • STUDENT REQUEST</span><div class="lrr-chip-wifi"><span class="lrr-chip"></span><span class="lrr-wifi" aria-label="Live LRR">⌁</span></div></div>'+
+  '<div class="cardtop lrr-card-top"><span class="role lrr-role"><span class="lrr-role-icon">🎓</span> LRR • STUDENT REQUEST</span><div class="lrr-chip-wifi"><span class="lrr-chip" aria-label="SIM Network"></span><span class="lrr-wifi" aria-label="Wi-Fi Network"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
   '<div class="identity lrr-identity"><div class="avatar lrr-avatar">'+avatar+'</div><div><h3 class="name">'+esc(student)+'</h3><div class="sub">'+esc(r.subject||'Subject not specified')+'</div></div></div>'+
   '<div class="info lrr-info">'+
   box('📚','STUDENT',student)+box('👨‍🏫','TUTOR',tutor)+
