@@ -952,12 +952,23 @@ window.whatsappCaseChat=async function(lrrId,who){
  }catch(e){if(popup&&!popup.closed)popup.close();alert('WhatsApp chat could not be opened: '+(e.message||e));}
 };
 
-async function gcAdminParticipantName(id,targetRole){
+async function gcAdminParticipantName(id,targetRole,lrrId){
  const raw=String(id||'').trim();if(!raw)return '';
  const table=targetRole==='tutor'?'tutor_profiles':'student_profiles';
- try{const q=await sb.from(table).select('id,user_id,name,full_name').eq('id',raw).maybeSingle();if(!q.error&&q.data)return String(q.data.name||q.data.full_name||'').trim()}catch(_){}
- try{const q=await sb.from(table).select('id,user_id,name,full_name').eq('user_id',raw).maybeSingle();if(!q.error&&q.data)return String(q.data.name||q.data.full_name||'').trim()}catch(_){}
- try{const q=await sb.from('profiles').select('id,full_name,name').eq('id',raw).maybeSingle();if(!q.error&&q.data)return String(q.data.full_name||q.data.name||'').trim()}catch(_){}
+ try{const q=await sb.from(table).select('id,user_id,name,full_name').eq('id',raw).maybeSingle();if(!q.error&&q.data){const n=String(q.data.name||q.data.full_name||'').trim();if(n)return n;}}catch(_){}
+ try{const q=await sb.from(table).select('id,user_id,name,full_name').eq('user_id',raw).maybeSingle();if(!q.error&&q.data){const n=String(q.data.name||q.data.full_name||'').trim();if(n)return n;}}catch(_){}
+ try{const q=await sb.from('profiles').select('id,full_name,name').eq('id',raw).maybeSingle();if(!q.error&&q.data){const n=String(q.data.full_name||q.data.name||'').trim();if(n)return n;}}catch(_){}
+ // Secure fallback used by the WhatsApp workflow. It returns the actual
+ // connected participant name even when direct profile SELECT is restricted.
+ if(lrrId){
+  try{
+   const q=await sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(lrrId),p_target_role:targetRole});
+   if(!q.error&&q.data){
+    const n=String(q.data.name||q.data.full_name||'').trim();
+    if(n)return n;
+   }
+  }catch(_){}
+ }
  return '';
 }
 async function loadLearning(){
@@ -971,8 +982,8 @@ async function loadLearning(){
   for(const r of rows){
    const id=r.id||r.request_id||r.request_code,st=r.status||'OPEN';
    const student=r.student_id||r.student_user_id||r.student_profile_id||'',tutor=r.tutor_id||r.tutor_user_id||r.tutor_profile_id||'';
-   const studentName=String(r.student_name||r.student_full_name||'').trim()||await gcAdminParticipantName(student,'student')||'Student';
-   const tutorName=tutor?(String(r.tutor_name||r.tutor_full_name||'').trim()||await gcAdminParticipantName(tutor,'tutor')||'Tutor'):'Not assigned';
+   const studentName=String(r.student_name||r.student_full_name||'').trim()||await gcAdminParticipantName(student,'student',id)||'Student';
+   const tutorName=tutor?(String(r.tutor_name||r.tutor_full_name||'').trim()||await gcAdminParticipantName(tutor,'tutor',id)||'Tutor'):'Not assigned';
    const outcome=r.student_outcome||r.outcome||'Pending';
    const tutorCompleted=['TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED','APPROVED'].includes(String(st).toUpperCase());
    const studentFeedback=r.student_feedback||r.student_remark||r.student_remarks||r.feedback||r.remark||'';
@@ -982,7 +993,7 @@ async function loadLearning(){
    const contactUnlocked=!!student&&!!tutor&&['ACCEPTED','TUTOR_ACCEPTED','TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED','APPROVED','COMPLETED_SATISFIED','COMPLETED_NOT_SATISFIED'].includes(String(st).toUpperCase());
    const satisfied=['SATISFIED','SATISFIED_BY_STUDENT','COMPLETED_SATISFIED'].includes(String(outcome).toUpperCase());
    cards.push(`<article class="user"><div class="userHead"><div class="identity"><b>${esc(r.request_code||id||'Learning Request')}</b><span class="badge">${esc(st)}</span><div class="muted">Created: ${esc(r.created_at||'—')}</div></div><span class="pill">LRR CASE</span></div>
-      <div class="lrrMeta"><div class="metaBox"><b>Student Name</b>${esc(studentName)}</div><div class="metaBox"><b>Tutor Name</b>${esc(tutorName)}</div><div class="metaBox"><b>Student ID</b>${esc(student||'Not linked')}</div><div class="metaBox"><b>Tutor ID</b>${esc(tutor||'Not assigned')}</div><div class="metaBox"><b>Course / Stream</b>${esc((r.course||'—')+' / '+(r.stream||'—'))}</div><div class="metaBox"><b>Subject / Topic</b>${esc((r.subject||'—')+' / '+(r.chapter||r.topic||'—'))}</div><div class="metaBox" style="grid-column:1/-1"><b>Requirement / Issue</b>${esc(r.problem||r.issue||r.learning_requirement||r.description||'—')}</div></div>
+      <div class="lrrMeta"><div class="metaBox"><b>Student</b><strong style="display:block;font-size:13px;margin-top:4px">${esc(studentName)}</strong></div><div class="metaBox"><b>Connected Tutor</b><strong style="display:block;font-size:13px;margin-top:4px">${esc(tutorName)}</strong></div><div class="metaBox"><b>Course / Stream</b>${esc((r.course||'—')+' / '+(r.stream||'—'))}</div><div class="metaBox"><b>Subject / Topic</b>${esc((r.subject||'—')+' / '+(r.chapter||r.topic||'—'))}</div><div class="metaBox" style="grid-column:1/-1"><b>Requirement / Issue</b>${esc(r.problem||r.issue||r.learning_requirement||r.description||'—')}</div></div>
       <div class="lrrEvidence"><div class="lrrEvidenceTitle">🔎 Evidence & Service Outcome — Admin Review</div><div class="evidenceGrid">
         <div class="evidenceBox"><b>Student outcome</b><span class="${satisfied?'evidenceGood':String(outcome).toUpperCase()==='NOT_SATISFIED'?'evidenceBad':'evidenceWarn'}">${esc(outcome)}</span></div>
         <div class="evidenceBox"><b>Tutor service status</b><span class="${tutorCompleted?'evidenceGood':'evidenceWarn'}">${tutorCompleted?'✓ Tutor marked/completed the service':'Pending tutor completion'}</span></div>
