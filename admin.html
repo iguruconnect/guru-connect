@@ -112,7 +112,7 @@
 <button class="topbtn" data-sec="advertisement">📢 <b>ADVERTISEMENT</b><small>Manage website advertisements</small></button>
 </nav>
 
-<section class="section" id="sec-directories"><div class="secHead"><div><h2>👥 Tutor Directories | Student Directories</h2><p>Live Supabase directory. Use the search box for either a Student or Tutor.</p></div><span class="pill" id="directoryCount">LIVE DIRECTORY</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="term" autocomplete="off" placeholder="Name, email or phone…"></div><div class="field"><label>Show</label><select id="roleFilter"><option value="">ALL STUDENTS + TUTORS</option><option value="student">STUDENTS ONLY</option><option value="tutor">TUTORS ONLY</option></select></div><button id="search" class="btn primary">🔎 FIND</button><button id="refresh" class="btn light">↻ REFRESH</button></div><div id="searchStatus" class="status"></div><div id="results" class="results"><div class="empty">Click FIND to load the live Student + Tutor directory.</div></div></div></section>
+<section class="section" id="sec-directories"><div class="secHead"><div><h2>👥 Tutor Directories | Student Directories</h2><p>Live Supabase directory. Search by full or partial Student/Tutor ID, Profile ID, Auth User ID, name, email or phone.</p></div><span class="pill" id="directoryCount">LIVE DIRECTORY</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="term" autocomplete="off" placeholder="Name, email, phone or Student/Tutor ID…"></div><div class="field"><label>Show</label><select id="roleFilter"><option value="">ALL STUDENTS + TUTORS</option><option value="student">STUDENTS ONLY</option><option value="tutor">TUTORS ONLY</option></select></div><button id="search" class="btn primary">🔎 FIND</button><button id="refresh" class="btn light">↻ REFRESH</button></div><div id="searchStatus" class="status"></div><div id="results" class="results"><div class="empty">Click FIND to load the live Student + Tutor directory.</div></div></div></section>
 
 <section class="section" id="sec-advertisement"><div class="secHead"><div><h2>📢 Advertisement Management</h2><p>Create/manage advertisements without leaving the admin dashboard.</p></div></div><div class="secBody"><div class="grid"><div class="field"><label>Advertisement title</label><input id="adTitle" placeholder="Advertisement title"></div><div class="field"><label>Advertiser</label><input id="adAdvertiser" placeholder="Institute / advertiser"></div><div class="field"><label>Placement</label><select id="adPlacement"><option value="all">All Sections</option><option value="tutor">Tutor Profiles</option><option value="student">Student Profiles</option><option value="lrr">Learning Requests</option></select></div><div class="field"><label>Advertisement Flyer</label><input id="adFile" type="file" accept="image/jpeg,image/png,image/webp"></div><div class="field"><label>Click URL</label><input id="adUrl" placeholder="https://..."></div><div class="field"><label>WhatsApp URL (optional)</label><input id="adWhatsapp" placeholder="https://wa.me/..."></div><div class="field"><label>Start</label><input id="adStart" type="datetime-local"></div><div class="field"><label>End</label><input id="adEnd" type="datetime-local"></div><div class="field"><label>Priority</label><input id="adPriority" type="number" value="0" min="0" max="999"></div></div><div class="actions"><button id="adSave" class="btn orange">SAVE ADVERTISEMENT</button></div><div id="adStatus" class="status">Advertisement controls are ready. If your existing advertisement table/RPC is enabled, this workspace can be wired to it without changing member data.</div><div class="dangerNote">Advertisements are stored in the Supabase <b>gc_advertisements</b> table and flyer images in the <b>gc-advertisements</b> storage bucket. The dashboard never uses a fake local save.</div></div></section>
 
@@ -214,8 +214,12 @@ function adminWhatsAppUser(i){const u=users[i]||{};let phone=String(u.phone||'')
 function normalizeRpcUsers(rows){
   return (Array.isArray(rows)?rows:[]).map(x=>{
     const p=x.profile&&typeof x.profile==='object'?x.profile:{};
+    const uid=x.user_id||p.user_id||p.id||'';
+    const pid=x.profile_id||x.profileId||p.profile_id||p.profileId||p.id||uid;
     return Object.assign({},p,x,{
-      user_id:String(x.user_id||p.user_id||p.id||''),
+      user_id:String(uid),
+      profile_id:String(pid||''),
+      member_id:String(x.member_id||x.student_id||x.tutor_id||x.record_no||pid||uid||''),
       email:x.email||p.email||'',
       phone:x.phone||p.phone||'',
       name:x.name||p.name||x.full_name||p.full_name||'',
@@ -248,13 +252,17 @@ async function loadLiveUsers(){
     const byEmail=new Map((pr.data||[]).filter(x=>x.email).map(x=>[String(x.email).toLowerCase(),x]));
     const byPhone=new Map((pr.data||[]).filter(x=>x.phone).map(x=>[String(x.phone),x]));
     const merge=(row,role)=>{
-      const candidateId=row.user_id||row.auth_user_id||row.profile_id||row.profileId||'';
+      const candidateId=row.user_id||row.auth_user_id||'';
+      const profileId=row.profile_id||row.profileId||row.id||'';
       const profile=pm.get(String(candidateId))
+        ||pm.get(String(profileId))
         ||(row.email&&byEmail.get(String(row.email).toLowerCase()))
         ||(row.phone&&byPhone.get(String(row.phone)))
         ||{};
       return Object.assign({},profile,row,{
-        user_id:String(candidateId||profile.id||''),
+        user_id:String(candidateId||profile.user_id||profile.id||''),
+        profile_id:String(profileId||profile.profile_id||profile.id||candidateId||''),
+        member_id:String(row.member_id||row.student_id||row.tutor_id||row.record_no||profileId||profile.id||candidateId||''),
         email:row.email||profile.email||'',
         phone:row.phone||profile.phone||'',
         name:row.name||row.full_name||profile.full_name||profile.name||'',
@@ -292,7 +300,7 @@ async function loadLiveUsers(){
 function filteredUsers(){
   const q=$('term').value.trim().toLowerCase(),rf=$('roleFilter').value;
   let list=users.filter(u=>!rf||u.role===rf);
-  if(q)list=list.filter(u=>[u.name,u.email,u.phone,u.user_id,u.subject,u.course,u.stream,u.qualification,u.college,u.teaching_college].some(v=>String(v??'').toLowerCase().includes(q)));
+  if(q)list=list.filter(u=>[u.name,u.email,u.phone,u.user_id,u.profile_id,u.member_id,u.id,u.student_id,u.tutor_id,u.record_no,u.subject,u.course,u.stream,u.qualification,u.college,u.teaching_college].some(v=>String(v??'').toLowerCase().includes(q)));
   return list;
 }
 function renderUsers(){
@@ -302,7 +310,7 @@ function renderUsers(){
 }
 function userCard(u,i){
   const role=u.role.toUpperCase(),sub=u.role==='tutor'?(u.qualification||u.subject||'Tutor'):(u.course||u.stream||'Student');
-  return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed user')}</b><span class="badge">${role}</span><div class="muted">${esc(sub)}<br>Email: ${esc(u.email||'—')}<br>Phone: ${esc(u.phone||'—')}<br>User ID: ${esc(u.user_id||'—')}<br>Status: ${esc(u.registration_status||'registered')}<br>Payment: ${esc(u.paid_status||'PENDING')} · Admin Verified: ${(u.admin_verified||u.verified)?'🟢 YES':'NO'} · Directory: ${u.directory_visible===false?'🔴 HIDDEN':'🟢 VISIBLE'}</div></div><div class="actions"><button class="btn primary" onclick="viewDetails(${i})">👁️ PROFILE / ACCOUNT</button><button class="btn primary" onclick="toggleEdit(${i})">✏️ EDIT</button><button class="btn teal" onclick="setPaid(${i})">${String(u.paid_status||'PENDING').toUpperCase()==='PAID'?'✓ PAID':'MARK PAID'}</button><button class="btn primary" onclick="toggleVerified(${i})">${(u.public_verified_tick||u.verified)?'✓ BLUE TICK':'GRANT BLUE TICK'}</button><button class="btn ${u.directory_visible===false?'orange':'light'}" onclick="toggleDirectory(${i})">${u.directory_visible===false?'👁 SHOW IN DIRECTORY':'🙈 HIDE FROM DIRECTORY'}</button><button class="btn teal" onclick="selectCoins(${i})">🪙 COINS</button><button class="btn caseChat" onclick="adminWhatsAppUser(${i})">💬 WHATSAPP</button><button class="btn purple" onclick="receipt(${i})">🧾 RECEIPT</button><button class="btn light" onclick="resetUser(${i})">RESET PASSWORD</button><button class="btn red" onclick="deleteUser(${i})">DELETE</button></div></div><div class="edit" id="edit-${i}">${editForm(u,i)}</div></article>`;
+  return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed user')}</b><span class="badge">${role}</span><div class="muted">${esc(sub)}<br>Email: ${esc(u.email||'—')}<br>Phone: ${esc(u.phone||'—')}<br>Student/Tutor ID: ${esc(u.member_id||u.profile_id||u.user_id||'—')}<br>Auth User ID: ${esc(u.user_id||'—')}<br>Status: ${esc(u.registration_status||'registered')}<br>Payment: ${esc(u.paid_status||'PENDING')} · Admin Verified: ${(u.admin_verified||u.verified)?'🟢 YES':'NO'} · Directory: ${u.directory_visible===false?'🔴 HIDDEN':'🟢 VISIBLE'}</div></div><div class="actions"><button class="btn primary" onclick="viewDetails(${i})">👁️ PROFILE / ACCOUNT</button><button class="btn primary" onclick="toggleEdit(${i})">✏️ EDIT</button><button class="btn teal" onclick="setPaid(${i})">${String(u.paid_status||'PENDING').toUpperCase()==='PAID'?'✓ PAID':'MARK PAID'}</button><button class="btn primary" onclick="toggleVerified(${i})">${(u.public_verified_tick||u.verified)?'✓ BLUE TICK':'GRANT BLUE TICK'}</button><button class="btn ${u.directory_visible===false?'orange':'light'}" onclick="toggleDirectory(${i})">${u.directory_visible===false?'👁 SHOW IN DIRECTORY':'🙈 HIDE FROM DIRECTORY'}</button><button class="btn teal" onclick="selectCoins(${i})">🪙 COINS</button><button class="btn caseChat" onclick="adminWhatsAppUser(${i})">💬 WHATSAPP</button><button class="btn purple" onclick="receipt(${i})">🧾 RECEIPT</button><button class="btn light" onclick="resetUser(${i})">RESET PASSWORD</button><button class="btn red" onclick="deleteUser(${i})">DELETE</button></div></div><div class="edit" id="edit-${i}">${editForm(u,i)}</div></article>`;
 }
 function v(id,val){return `<input id="${id}" value="${esc(val??'')}">`}
 function area(id,val){return `<textarea id="${id}">${esc(val??'')}</textarea>`}
