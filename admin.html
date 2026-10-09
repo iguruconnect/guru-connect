@@ -26,25 +26,6 @@
 .quickSearch{display:grid;grid-template-columns:1fr auto;gap:9px;margin-bottom:12px}
 .quickSearch input{width:100%;padding:12px;border:2px solid #155eef;border-radius:12px;font-weight:700}
 @media(max-width:800px){.lrrGrid,.lrrMeta{grid-template-columns:1fr}.historyRow{grid-template-columns:1fr 1fr}.controlbar{padding:8px}}
-
-/* GURU CONNECT LRR — colorful evidence cards + mobile-friendly admin review */
-.lrrEvidence{background:linear-gradient(135deg,#f0f9ff 0%,#fdf4ff 48%,#fff7ed 100%);border:2px solid #93c5fd;box-shadow:0 8px 24px rgba(37,99,235,.08)}
-.lrrEvidenceTitle{display:flex;align-items:center;gap:7px;color:#312e81;background:linear-gradient(90deg,#dbeafe,#ede9fe,#cffafe);border:1px solid #c4b5fd;border-radius:11px;padding:10px 11px;margin:-2px -2px 11px;font-size:11px}
-.evidenceGrid .evidenceBox{min-height:66px;box-shadow:0 3px 12px rgba(15,23,42,.05);font-weight:700}
-.evidenceGrid .evidenceBox:nth-child(1){background:#ecfdf5;border-color:#86efac}.evidenceGrid .evidenceBox:nth-child(1) b{color:#166534}
-.evidenceGrid .evidenceBox:nth-child(2){background:#eff6ff;border-color:#93c5fd}.evidenceGrid .evidenceBox:nth-child(2) b{color:#1d4ed8}
-.evidenceGrid .evidenceBox:nth-child(3){background:#fefce8;border-color:#fde68a}.evidenceGrid .evidenceBox:nth-child(3) b{color:#a16207}
-.evidenceGrid .evidenceBox:nth-child(4){background:#f5f3ff;border-color:#c4b5fd}.evidenceGrid .evidenceBox:nth-child(4) b{color:#6d28d9}
-.evidenceGrid .evidenceBox:nth-child(5){background:#fff7ed;border-color:#fdba74}.evidenceGrid .evidenceBox:nth-child(5) b{color:#c2410c}
-.evidenceGrid .evidenceBox:nth-child(6){background:#ecfeff;border-color:#67e8f9}.evidenceGrid .evidenceBox:nth-child(6) b{color:#0e7490}
-.evidenceGrid .evidenceBox:nth-child(7){background:#fff1f2;border-color:#fda4af}.evidenceGrid .evidenceBox:nth-child(7) b{color:#be123c}
-.lrrDeadlineBadge{display:inline-flex;align-items:center;gap:5px;margin-top:6px;padding:5px 8px;border-radius:999px;background:#e0f2fe;color:#0369a1;border:1px solid #7dd3fc;font-size:9px;font-weight:950}
-.lrrDeadlineBadge.expired{background:#fee2e2;color:#b91c1c;border-color:#fca5a5}.lrrDeadlineBadge.warning{background:#fef3c7;color:#92400e;border-color:#fcd34d}
-.lrrDeleteBtn{background:#b91c1c!important;color:#fff!important;border:1px solid #991b1b!important;box-shadow:0 4px 12px rgba(185,28,28,.18)}
-.lrrDeleteBtn:hover{background:#991b1b!important;transform:translateY(-1px)}
-.lrrAutoNote{margin-top:10px;padding:9px 11px;border-radius:10px;background:linear-gradient(90deg,#fef3c7,#ffedd5);border:1px solid #fbbf24;color:#92400e;font-size:10px;font-weight:850}
-@media(max-width:650px){.lrrEvidence{padding:9px;border-radius:13px}.lrrEvidenceTitle{font-size:10px;line-height:1.35}.evidenceGrid .evidenceBox{min-height:auto;padding:10px}.lrrActions .btn{width:100%;min-height:42px}.lrrDeleteBtn{order:-1}}
-.gc-admin-brand{display:inline-flex;align-items:center;background:#fff;border-radius:16px;padding:7px 12px;margin-bottom:10px;box-shadow:0 8px 25px rgba(0,0,0,.12)}.gc-admin-brand img{display:block;width:min(310px,42vw);height:auto;max-height:82px;object-fit:contain}@media(max-width:650px){.gc-admin-brand img{width:min(260px,68vw);max-height:68px}}
 </style><style id="gc-admin-connection-fix">#gcDetailsModal button{cursor:pointer}@media(max-width:650px){#gcDetailsModal>div{padding:14px!important}#gcDetailsModal .btn{min-height:42px}.actions{flex-wrap:wrap}}
 .lrrControlNote{padding:12px 14px;border:1px solid #bfdbfe;background:#eff6ff;color:#1e3a8a;border-radius:12px;font-size:11px;font-weight:800;margin-bottom:12px}.lrrActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #e2e8f0}.lrrActions .btn{min-height:40px}.receiptServiceBox{margin-top:16px;border:1px solid #dbe4f0;border-radius:16px;padding:16px;background:#f8fafc}.receiptServiceHead{display:flex;justify-content:space-between;gap:12px;align-items:center}.receiptServiceHead h3{margin:0;color:#123b8f}.receiptServiceHead p{margin:4px 0 0;color:#64748b;font-size:11px}.receiptServiceAdd{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:12px;margin-top:14px}.receiptServices{display:grid;gap:8px;margin-top:12px}.receiptServiceRow{display:grid;grid-template-columns:minmax(0,1fr) 160px 90px;gap:10px;align-items:end;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px}.receiptServiceRow .field{margin:0}.receiptServiceRow input{background:#fff}.receiptTotal{display:flex;justify-content:space-between;align-items:center;border-top:2px solid #cbd5e1;margin-top:14px;padding-top:14px;font-size:13px;font-weight:950}.receiptTotal strong{font-size:20px;color:#123b8f}.receiptRemove{min-height:40px}@media(max-width:650px){.receiptServiceAdd,.receiptServiceRow{grid-template-columns:1fr}.receiptServiceHead{align-items:flex-start;flex-direction:column}.receiptServiceHead .btn{width:100%}}
 </style>
@@ -117,26 +98,314 @@
 .gcRowActions{display:flex;gap:6px;flex-wrap:wrap;min-width:145px}.gcRowActions .btn{padding:7px 9px;font-size:10px}.gcTableWrap{overflow:auto;max-width:100%}.gcTable{min-width:980px}.gcTable td,.gcTable th{vertical-align:top}.gcAcctCard{max-width:98vw!important;width:1500px!important}.gcAcctPane{overflow:auto}.gcBox{overflow:hidden}
 </style>
 
-<style id="gc-admin-mobile-final-20261009">
-html,body{width:100%;max-width:100%;overflow-x:hidden!important;-webkit-text-size-adjust:100%;}
-button,a,input,select,textarea{touch-action:manipulation;}
-@media(max-width:650px){
-  .head{padding:13px 10px!important;}
-  .headin{width:100%!important;gap:10px!important;}
-  .wrap{width:calc(100% - 16px)!important;margin:12px auto 40px!important;}
-  .gate,.panel{border-radius:15px!important;}
-  .controlbar{grid-template-columns:1fr!important;gap:8px!important;}
-  .topbtn{width:100%!important;min-height:58px!important;padding:12px!important;}
-  .secBody{padding:12px!important;}
-  .searchrow{grid-template-columns:1fr!important;}
-  .user{padding:12px!important;}
-  .userHead .actions,.userHead .actions .btn{width:100%!important;}
-  .actions .btn{min-height:44px!important;}
-  .gcTableWrap{width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
+<!-- GURU CONNECT — MOBILE ADMIN TABS + WHATSAPP FINAL FIX -->
+<style id="gc-admin-mobile-interaction-fix">
+  /* Keep the existing desktop design. On phones make the admin section tabs a
+     genuine touch-scrolling strip so no tab is hidden or trapped by layout. */
+  @media (max-width: 600px){
+    .controlbar{
+      display:flex !important;
+      flex-wrap:nowrap !important;
+      align-items:stretch !important;
+      justify-content:flex-start !important;
+      gap:8px !important;
+      width:100% !important;
+      max-width:100% !important;
+      overflow-x:auto !important;
+      overflow-y:hidden !important;
+      -webkit-overflow-scrolling:touch !important;
+      overscroll-behavior-x:contain !important;
+      touch-action:pan-x !important;
+      scrollbar-width:thin !important;
+      padding:8px 6px 10px !important;
+      position:sticky !important;
+      top:0 !important;
+      z-index:5000 !important;
+    }
+    .controlbar .topbtn,
+    .controlbar .topbtn.priority{
+      flex:0 0 auto !important;
+      width:auto !important;
+      min-width:156px !important;
+      max-width:190px !important;
+      min-height:72px !important;
+      margin:0 !important;
+      cursor:pointer !important;
+      touch-action:manipulation !important;
+      -webkit-tap-highlight-color:rgba(21,94,239,.14) !important;
+      user-select:none !important;
+    }
+    .controlbar .topbtn b,
+    .controlbar .topbtn small{
+      pointer-events:none !important;
+    }
+    .controlbar .topbtn.active{
+      position:relative !important;
+      z-index:2 !important;
+    }
+  }
+
+  /* Never allow an action button to be accidentally treated as a form submit. */
+  .controlbar .topbtn,
+  .lrrActions .caseChat,
+  .lrrActions .btn{type:button;}
+
+  /* Mobile WhatsApp buttons need a large, direct touch target. */
+  @media (max-width: 600px){
+    .lrrActions .caseChat,
+    .user .caseChat{
+      min-height:44px !important;
+      min-width:145px !important;
+      padding:10px 13px !important;
+      touch-action:manipulation !important;
+      -webkit-tap-highlight-color:rgba(16,185,129,.18) !important;
+    }
+  }
+</style>
+<script id="gc-admin-mobile-interaction-fix-js">
+(function(){
+  'use strict';
+
+  function isMobileDevice(){
+    return window.matchMedia && window.matchMedia('(max-width: 600px)').matches;
+  }
+
+  function mobileWhatsAppUrl(phone, message){
+    return 'https://wa.me/' + phone + '?text=' + encodeURIComponent(message);
+  }
+
+  function normalisePhone(value){
+    let digits=String(value==null?'':value).replace(/\D/g,'');
+    if(!digits) return '';
+    if(digits.indexOf('00')===0) digits=digits.slice(2);
+    if(digits.length===11 && digits.charAt(0)==='0') digits=digits.slice(1);
+    if(digits.length===10) digits='91'+digits;
+    return digits;
+  }
+
+  /*
+   * Replace only the navigation interaction layer. The original switchSection()
+   * remains responsible for loading LRR / Coin History data.
+   */
+  function installMobileTabs(){
+    if(typeof window.switchSection!=='function' || window.switchSection.__gcMobileFixed) return;
+    const originalSwitch=window.switchSection;
+
+    function safeSwitch(name){
+      if(!name) return;
+      /* The original function returns early when the same section is already
+         selected. On mobile we still force the section visible. */
+      try{ originalSwitch(name); }catch(e){ console.warn('Admin tab switch:',e); }
+      document.querySelectorAll('.section').forEach(function(section){
+        section.classList.toggle('open', section.id === 'sec-'+name);
+      });
+      document.querySelectorAll('.controlbar .topbtn').forEach(function(button){
+        button.classList.toggle('active', button.dataset.sec === name);
+      });
+      window.activeSection=name;
+    }
+    safeSwitch.__gcMobileFixed=true;
+    window.switchSection=safeSwitch;
+
+    const bar=document.querySelector('.controlbar');
+    if(!bar || bar.__gcMobileFixed) return;
+    bar.__gcMobileFixed=true;
+
+    /* Capture the touch/pointer activation before any legacy handler can lose
+       the event. preventDefault avoids a second delayed mobile click. */
+    bar.addEventListener('pointerup',function(event){
+      const button=event.target.closest && event.target.closest('.topbtn');
+      if(!button || !bar.contains(button)) return;
+      if(event.pointerType==='mouse') return;
+      event.preventDefault();
+      event.stopPropagation();
+      safeSwitch(button.dataset.sec);
+      if(isMobileDevice()){
+        try{button.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}catch(_){ }
+      }
+    },true);
+
+    /* iOS/Safari fallback where pointer events are unavailable or inconsistent. */
+    bar.addEventListener('touchend',function(event){
+      const touchTarget=event.target.closest && event.target.closest('.topbtn');
+      if(!touchTarget || !bar.contains(touchTarget)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      safeSwitch(touchTarget.dataset.sec);
+      try{touchTarget.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}catch(_){ }
+    },{capture:true,passive:false});
+
+    /* Make every tab an explicit non-submit control. */
+    bar.querySelectorAll('.topbtn').forEach(function(button){
+      button.setAttribute('type','button');
+    });
+  }
+
+  function installWhatsApp(){
+    /* User-card WhatsApp button: direct navigation on phones invokes the native
+       WhatsApp app when available; desktop keeps the existing new-tab behavior. */
+    window.adminWhatsAppUser=function(i){
+      const list=(typeof users!=='undefined' && Array.isArray(users))?users:[];
+      const u=list[i]||{};
+      const phone=normalisePhone(u.phone);
+      if(!phone){alert('This user has no registered phone/WhatsApp number.');return;}
+      const name=String(u.name||u.full_name||u.role||'GURU CONNECT member');
+      const msg='Hello '+name+', I am contacting you from GURU CONNECT Admin regarding your account.';
+      const url=mobileWhatsAppUrl(phone,msg);
+      if(isMobileDevice()){
+        /* location.href is intentionally used on mobile: it is a user-gesture
+           navigation and is much more reliable than window.open() in iOS/Android. */
+        window.location.href=url;
+      }else{
+        const w=window.open(url,'_blank','noopener,noreferrer');
+        if(!w) window.location.href=url;
+      }
+    };
+
+    /* Learning Requirement Request WhatsApp buttons also run after an async
+       Supabase lookup. Do not open about:blank on mobile; navigate directly
+       after the contact number has been resolved. */
+    if(typeof window.whatsappCaseChat==='function'){
+      const originalCaseChat=window.whatsappCaseChat;
+      window.whatsappCaseChat=async function(lrrId,who){
+        try{
+          const q=await sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(lrrId),p_target_role:who});
+          let contact=q.error?null:q.data;
+          let phone=normalisePhone(contact && contact.phone);
+          let name=String((contact && contact.name)||'');
+
+          if(!phone && q.error && !/no phone|phone number|mobile/i.test(q.error.message||'')){
+            throw q.error;
+          }
+          if(!phone && typeof lookupAdminLrrWhatsAppContact==='function'){
+            const fallback=await lookupAdminLrrWhatsAppContact(lrrId,who);
+            phone=normalisePhone(fallback && fallback.phone);
+            name=name||String((fallback && fallback.name)||'');
+          }
+          if(!phone){
+            throw new Error('No phone number is saved in the user profile. Please update the registered mobile number in the profile/admin user editor.');
+          }
+
+          name=name||(who==='tutor'?'Tutor':'Student');
+          const text='Hello '+name+', I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.';
+          const url=mobileWhatsAppUrl(phone,text);
+
+          if(isMobileDevice()){
+            window.location.href=url;
+          }else{
+            const popup=window.open(url,'_blank','noopener,noreferrer');
+            if(!popup) window.location.href=url;
+          }
+        }catch(error){
+          alert('WhatsApp chat could not be opened: '+(error && error.message ? error.message : error));
+        }
+      };
+      window.whatsappCaseChat.__gcMobileFixed=true;
+    }
+  }
+
+  function init(){
+    installMobileTabs();
+    installWhatsApp();
+  }
+
+  /* This file defines the admin functions in the main script before </body>.
+     Run after DOM creation and once more shortly afterward for slow devices. */
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',init,{once:true});
+  }else{
+    init();
+  }
+  setTimeout(init,250);
+  setTimeout(init,1000);
+})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800;900;1000&display=swap" rel="stylesheet">
+<style id="gc-premium-responsive-template">
+/* GURU CONNECT | Premium responsive design system */
+:root{--gc-premium-ink:#14213d;--gc-premium-muted:#66748b;--gc-premium-blue:#244fc7;--gc-premium-blue-deep:#142d69;--gc-premium-green:#14845d;--gc-premium-line:#e6ebf3;--gc-premium-surface:#fff;--gc-premium-bg:#f6f8fc;--gc-premium-shadow:0 14px 38px rgba(19,39,82,.09);--gc-premium-radius:20px}
+html{scroll-behavior:smooth;scroll-padding-top:90px;-webkit-text-size-adjust:100%}
+body{font-family:'Nunito Sans',system-ui,-apple-system,'Segoe UI',sans-serif!important;color:var(--gc-premium-ink);background:var(--gc-premium-bg);overflow-x:clip;line-height:1.55;-webkit-font-smoothing:antialiased}
+body *{box-sizing:border-box}
+img,svg,video,canvas{max-width:100%;height:auto}
+img{object-fit:contain}
+button,input,select,textarea{font:inherit;max-width:100%}
+button,[role=button],a,summary{ -webkit-tap-highlight-color:transparent }
+button,a,[role=button]{transition:background-color .2s ease,color .2s ease,border-color .2s ease,box-shadow .2s ease,transform .2s ease}
+button:not(:disabled),[role=button],summary{cursor:pointer}
+button:hover:not(:disabled),[role=button]:hover{filter:saturate(1.05)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid rgba(36,79,199,.28)!important;outline-offset:2px}
+input,select,textarea{border-radius:12px!important;min-height:42px}
+textarea{min-height:100px;resize:vertical}
+label{line-height:1.4}
+header,nav{max-width:100%}
+main,section,footer{min-width:0}
+[class*="card"],[class*= "tile"],.gccl-card,.gc-lr3-card,.gc-v3-modal-card,.gc-new-card-top{border-radius:var(--gc-premium-radius)}
+/* Softer premium surfaces */
+.bg-white,.card,.panel,.modal-content,.gccl-card,.gc-lr3-card,.gc-v3-modal-card{box-shadow:0 8px 28px rgba(19,39,82,.065)}
+.shadow,.shadow-md,.shadow-lg,.shadow-xl{box-shadow:var(--gc-premium-shadow)!important}
+.rounded-2xl,.rounded-3xl{border-radius:var(--gc-premium-radius)!important}
+/* Buttons: polished and consistent */
+button,.btn,[type=button],[type=submit],[role=button]{border-radius:12px}
+button:active:not(:disabled),[role=button]:active{transform:translateY(1px)}
+/* Homepage tile treatment */
+.gc-home-tile{min-width:0;min-height:170px;border-radius:22px!important;box-shadow:0 12px 28px rgba(20,43,90,.10);transition:transform .22s ease,box-shadow .22s ease}
+.gc-home-tile:hover{transform:translateY(-3px);box-shadow:0 18px 36px rgba(20,43,90,.15)}
+.gc-home-tile-icon{flex-shrink:0}
+.gc-beautiful-brand,.gc-beautiful-brand-text{font-family:'Nunito Sans',sans-serif!important;letter-spacing:-.025em}
+/* Admin / portal navigation and data layouts */
+.sidebar,.side-nav,.admin-sidebar{max-width:100%}
+table{width:100%;border-collapse:separate;border-spacing:0;max-width:100%}
+th,td{overflow-wrap:anywhere}
+pre,code{max-width:100%;overflow-wrap:anywhere;white-space:pre-wrap}
+.modal,.modal-dialog,[role=dialog]{max-width:calc(100vw - 24px)}
+/* Avoid common flex/grid overflow issues */
+.flex>*,.grid>*,[class*=grid-cols]>*{min-width:0}
+[class*=grid-cols-]{max-width:100%}
+/* Elegant scrollbars where supported */
+*{scrollbar-color:#c6d0e1 transparent;scrollbar-width:thin}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+@media(max-width:1024px){
+  .container{max-width:100%;padding-left:20px;padding-right:20px}
+  .gc-home-tile{min-height:155px}
+  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
 }
+@media(max-width:768px){
+  html{scroll-padding-top:72px}
+  body{font-size:15px}
+  h1{font-size:clamp(1.75rem,7vw,2.6rem)!important;line-height:1.13!important;overflow-wrap:anywhere}
+  h2{font-size:clamp(1.35rem,5vw,2rem)!important;line-height:1.2!important}
+  h3{line-height:1.25!important}
+  .container{padding-left:15px!important;padding-right:15px!important}
+  main,section{max-width:100%;min-width:0}
+  .gc-home-tile{width:100%;min-height:148px;padding:20px!important}
+  .gc-home-tile-icon{width:48px;height:48px}
+  .gc-home-tile-btn{min-height:44px}
+  .gc-v3-detail-grid,.gc-v3-ach-grid,.gc-new-info-grid,.gc-msg-grid2,.gccl-grid,.gc-ad-form-grid{grid-template-columns:minmax(0,1fr)!important}
+  .gccl-card.full{grid-column:auto!important}
+  .gc-v3-modal-card{width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px)!important;margin:12px auto!important;padding:18px!important}
+  .overflow-x-auto{max-width:100%;-webkit-overflow-scrolling:touch}
+  input,select,textarea{font-size:16px!important}
+  button,[type=button],[type=submit],.btn,[role=button]{min-height:42px}
+  .flex.flex-wrap{row-gap:10px}
+  .fixed.inset-0{padding:12px!important;overflow-y:auto}
+  footer{overflow-wrap:anywhere}
+}
+@media(max-width:480px){
+  .gc-home-tile{min-height:138px;padding:17px!important;border-radius:18px!important}
+  .gc-home-tile-icon{width:42px;height:42px}
+  .rounded-2xl,.rounded-3xl{border-radius:17px!important}
+  .p-8,.p-10{padding:18px!important}
+  .px-8,.px-10{padding-left:16px!important;padding-right:16px!important}
+  .gap-6{gap:1rem!important}
+  .gap-5{gap:.875rem!important}
+  .gc-new-card-top{overflow-wrap:anywhere}
+}
+
 </style>
 </head><body>
-<header class="head"><div class="headin"><div><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
+<header class="head"><div class="headin"><div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
 <main class="wrap"><div id="gate" class="gate">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
 <nav class="controlbar" aria-label="Admin sections">
 <button class="topbtn priority active" data-sec="edit">✏️ <b>EDIT</b><small>Find, edit & delete Student/Tutor</small></button>
@@ -150,7 +419,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
 <button class="topbtn" data-sec="advertisement">📢 <b>ADVERTISEMENT</b><small>Manage website advertisements</small></button>
 </nav>
 
-<section class="section" id="sec-directories"><div class="secHead"><div><h2>👥 Tutor Directories | Student Directories</h2><p>Live Supabase directory. Search by full or partial Student/Tutor ID, Profile ID, Auth User ID, name, email or phone.</p></div><span class="pill" id="directoryCount">LIVE DIRECTORY</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="term" autocomplete="off" placeholder="Name, email, phone or Student/Tutor ID…"></div><div class="field"><label>Show</label><select id="roleFilter"><option value="">ALL STUDENTS + TUTORS</option><option value="student">STUDENTS ONLY</option><option value="tutor">TUTORS ONLY</option></select></div><button id="search" class="btn primary">🔎 FIND</button><button id="refresh" class="btn light">↻ REFRESH</button></div><div id="searchStatus" class="status"></div><div id="results" class="results"><div class="empty">Click FIND to load the live Student + Tutor directory.</div></div></div></section>
+<section class="section" id="sec-directories"><div class="secHead"><div><h2>👥 Tutor Directories | Student Directories</h2><p>Live Supabase directory. Use the search box for either a Student or Tutor.</p></div><span class="pill" id="directoryCount">LIVE DIRECTORY</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="term" autocomplete="off" placeholder="Name, email or phone…"></div><div class="field"><label>Show</label><select id="roleFilter"><option value="">ALL STUDENTS + TUTORS</option><option value="student">STUDENTS ONLY</option><option value="tutor">TUTORS ONLY</option></select></div><button id="search" class="btn primary">🔎 FIND</button><button id="refresh" class="btn light">↻ REFRESH</button></div><div id="searchStatus" class="status"></div><div id="results" class="results"><div class="empty">Click FIND to load the live Student + Tutor directory.</div></div></div></section>
 
 <section class="section" id="sec-advertisement"><div class="secHead"><div><h2>📢 Advertisement Management</h2><p>Create/manage advertisements without leaving the admin dashboard.</p></div></div><div class="secBody"><div class="grid"><div class="field"><label>Advertisement title</label><input id="adTitle" placeholder="Advertisement title"></div><div class="field"><label>Advertiser</label><input id="adAdvertiser" placeholder="Institute / advertiser"></div><div class="field"><label>Placement</label><select id="adPlacement"><option value="all">All Sections</option><option value="tutor">Tutor Profiles</option><option value="student">Student Profiles</option><option value="lrr">Learning Requests</option></select></div><div class="field"><label>Advertisement Flyer</label><input id="adFile" type="file" accept="image/jpeg,image/png,image/webp"></div><div class="field"><label>Click URL</label><input id="adUrl" placeholder="https://..."></div><div class="field"><label>WhatsApp URL (optional)</label><input id="adWhatsapp" placeholder="https://wa.me/..."></div><div class="field"><label>Start</label><input id="adStart" type="datetime-local"></div><div class="field"><label>End</label><input id="adEnd" type="datetime-local"></div><div class="field"><label>Priority</label><input id="adPriority" type="number" value="0" min="0" max="999"></div></div><div class="actions"><button id="adSave" class="btn orange">SAVE ADVERTISEMENT</button></div><div id="adStatus" class="status">Advertisement controls are ready. If your existing advertisement table/RPC is enabled, this workspace can be wired to it without changing member data.</div><div class="dangerNote">Advertisements are stored in the Supabase <b>gc_advertisements</b> table and flyer images in the <b>gc-advertisements</b> storage bucket. The dashboard never uses a fake local save.</div></div></section>
 
@@ -246,18 +515,14 @@ function switchSection(name){
   if(name==='coinhistory'&&!coinHistoryLoaded)loadCoinHistory();
 }
 document.querySelectorAll('.topbtn').forEach(b=>b.addEventListener('click',()=>switchSection(b.dataset.sec)));
-$('logout').onclick=async()=>{await sb.auth.signOut({scope:'local'});location.href='login.html?role=staff'};
+$('logout').onclick=async()=>{try{await sb.auth.signOut({scope:'global'})}catch(_){};try{localStorage.removeItem('is_staff_logged');localStorage.removeItem('gc_staff_supabase_auth')}catch(_){};location.replace('./index.html?admin_logout=1&ts='+Date.now())};
 
 function adminWhatsAppUser(i){const u=users[i]||{};let phone=String(u.phone||'').replace(/\D/g,'');if(phone.startsWith('00'))phone=phone.slice(2);if(phone.length===11&&phone.startsWith('0'))phone=phone.slice(1);if(phone.length===10)phone='91'+phone;if(!phone){alert('This user has no registered phone/WhatsApp number.');return}const name=String(u.name||u.full_name||u.role||'GURU CONNECT member');const msg='Hello '+name+', I am contacting you from GURU CONNECT Admin regarding your account.';window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank','noopener,noreferrer')}
 function normalizeRpcUsers(rows){
   return (Array.isArray(rows)?rows:[]).map(x=>{
     const p=x.profile&&typeof x.profile==='object'?x.profile:{};
-    const uid=x.user_id||p.user_id||p.id||'';
-    const pid=x.profile_id||x.profileId||p.profile_id||p.profileId||p.id||uid;
     return Object.assign({},p,x,{
-      user_id:String(uid),
-      profile_id:String(pid||''),
-      member_id:String(x.member_id||x.student_id||x.tutor_id||x.registration_no||x.record_no||pid||uid||''),
+      user_id:String(x.user_id||p.user_id||p.id||''),
       email:x.email||p.email||'',
       phone:x.phone||p.phone||'',
       name:x.name||p.name||x.full_name||p.full_name||'',
@@ -290,17 +555,13 @@ async function loadLiveUsers(){
     const byEmail=new Map((pr.data||[]).filter(x=>x.email).map(x=>[String(x.email).toLowerCase(),x]));
     const byPhone=new Map((pr.data||[]).filter(x=>x.phone).map(x=>[String(x.phone),x]));
     const merge=(row,role)=>{
-      const candidateId=row.user_id||row.auth_user_id||'';
-      const profileId=row.profile_id||row.profileId||row.id||'';
+      const candidateId=row.user_id||row.auth_user_id||row.profile_id||row.profileId||'';
       const profile=pm.get(String(candidateId))
-        ||pm.get(String(profileId))
         ||(row.email&&byEmail.get(String(row.email).toLowerCase()))
         ||(row.phone&&byPhone.get(String(row.phone)))
         ||{};
       return Object.assign({},profile,row,{
-        user_id:String(candidateId||profile.user_id||profile.id||''),
-        profile_id:String(profileId||profile.profile_id||profile.id||candidateId||''),
-        member_id:String(row.member_id||row.student_id||row.tutor_id||row.registration_no||row.record_no||profile.registration_no||profileId||profile.id||candidateId||''),
+        user_id:String(candidateId||profile.id||''),
         email:row.email||profile.email||'',
         phone:row.phone||profile.phone||'',
         name:row.name||row.full_name||profile.full_name||profile.name||'',
@@ -338,7 +599,7 @@ async function loadLiveUsers(){
 function filteredUsers(){
   const q=$('term').value.trim().toLowerCase(),rf=$('roleFilter').value;
   let list=users.filter(u=>!rf||u.role===rf);
-  if(q)list=list.filter(u=>[u.name,u.email,u.phone,u.user_id,u.profile_id,u.member_id,u.id,u.student_id,u.tutor_id,u.record_no,u.subject,u.course,u.stream,u.qualification,u.college,u.teaching_college].some(v=>String(v??'').toLowerCase().includes(q)));
+  if(q)list=list.filter(u=>[u.name,u.email,u.phone,u.user_id,u.subject,u.course,u.stream,u.qualification,u.college,u.teaching_college].some(v=>String(v??'').toLowerCase().includes(q)));
   return list;
 }
 function renderUsers(){
@@ -348,7 +609,7 @@ function renderUsers(){
 }
 function userCard(u,i){
   const role=u.role.toUpperCase(),sub=u.role==='tutor'?(u.qualification||u.subject||'Tutor'):(u.course||u.stream||'Student');
-  return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed user')}</b><span class="badge">${role}</span><div class="muted">${esc(sub)}<br>Email: ${esc(u.email||'—')}<br>Phone: ${esc(u.phone||'—')}<br>Student/Tutor ID: ${esc(u.member_id||u.profile_id||u.user_id||'—')}<br>Auth User ID: ${esc(u.user_id||'—')}<br>Status: ${esc(u.registration_status||'registered')}<br>Payment: ${esc(u.paid_status||'PENDING')} · Admin Verified: ${(u.admin_verified||u.verified)?'🟢 YES':'NO'} · Directory: ${u.directory_visible===false?'🔴 HIDDEN':'🟢 VISIBLE'}</div></div><div class="actions"><button class="btn primary" onclick="viewDetails(${i})">👁️ PROFILE / ACCOUNT</button><button class="btn primary" onclick="toggleEdit(${i})">✏️ EDIT</button><button class="btn teal" onclick="setPaid(${i})">${String(u.paid_status||'PENDING').toUpperCase()==='PAID'?'✓ PAID':'MARK PAID'}</button><button class="btn primary" onclick="toggleVerified(${i})">${(u.public_verified_tick||u.verified)?'✓ BLUE TICK':'GRANT BLUE TICK'}</button><button class="btn ${u.directory_visible===false?'orange':'light'}" onclick="toggleDirectory(${i})">${u.directory_visible===false?'👁 SHOW IN DIRECTORY':'🙈 HIDE FROM DIRECTORY'}</button><button class="btn teal" onclick="selectCoins(${i})">🪙 COINS</button><button class="btn caseChat" onclick="adminWhatsAppUser(${i})">💬 WHATSAPP</button><button class="btn purple" onclick="receipt(${i})">🧾 RECEIPT</button><button class="btn light" onclick="resetUser(${i})">RESET PASSWORD</button><button class="btn red" onclick="deleteUser(${i})">DELETE</button></div></div><div class="edit" id="edit-${i}">${editForm(u,i)}</div></article>`;
+  return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed user')}</b><span class="badge">${role}</span><div class="muted">${esc(sub)}<br>Email: ${esc(u.email||'—')}<br>Phone: ${esc(u.phone||'—')}<br>User ID: ${esc(u.user_id||'—')}<br>Status: ${esc(u.registration_status||'registered')}<br>Payment: ${esc(u.paid_status||'PENDING')} · Admin Verified: ${(u.admin_verified||u.verified)?'🟢 YES':'NO'} · Directory: ${u.directory_visible===false?'🔴 HIDDEN':'🟢 VISIBLE'}</div></div><div class="actions"><button class="btn primary" onclick="viewDetails(${i})">👁️ PROFILE / ACCOUNT</button><button class="btn primary" onclick="toggleEdit(${i})">✏️ EDIT</button><button class="btn teal" onclick="setPaid(${i})">${String(u.paid_status||'PENDING').toUpperCase()==='PAID'?'✓ PAID':'MARK PAID'}</button><button class="btn primary" onclick="toggleVerified(${i})">${(u.public_verified_tick||u.verified)?'✓ BLUE TICK':'GRANT BLUE TICK'}</button><button class="btn ${u.directory_visible===false?'orange':'light'}" onclick="toggleDirectory(${i})">${u.directory_visible===false?'👁 SHOW IN DIRECTORY':'🙈 HIDE FROM DIRECTORY'}</button><button class="btn teal" onclick="selectCoins(${i})">🪙 COINS</button><button class="btn caseChat" onclick="adminWhatsAppUser(${i})">💬 WHATSAPP</button><button class="btn purple" onclick="receipt(${i})">🧾 RECEIPT</button><button class="btn light" onclick="resetUser(${i})">RESET PASSWORD</button><button class="btn red" onclick="deleteUser(${i})">DELETE</button></div></div><div class="edit" id="edit-${i}">${editForm(u,i)}</div></article>`;
 }
 function v(id,val){return `<input id="${id}" value="${esc(val??'')}">`}
 function area(id,val){return `<textarea id="${id}">${esc(val??'')}</textarea>`}
@@ -723,23 +984,6 @@ window.lrrAction=lrrAction;
 
 window.lrrCoins=async(id,studentId,tutorId,role)=>{const who=role==='tutor'?tutorId:studentId;if(!who)return alert('No '+role+' user ID is attached to this LRR.');$('coinUserId').value=String(who);$('coinRole').value=role;switchSection('coins');$('coinAmount').focus()};
 
-window.lrrDelete=async function(id){
-  const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(id));
-  if(!row)return alert('LRR record is no longer loaded. Refresh the LRR tab.');
-  const st=String(row.status||'').toUpperCase();
-  const outcome=String(row.student_outcome||row.outcome||'').toUpperCase();
-  const completed=['TUTOR_COMPLETED','COMPLETED','APPROVED','COMPLETED_SATISFIED','COMPLETED_NOT_SATISFIED'].includes(st)||['SATISFIED','SATISFIED_BY_STUDENT','COMPLETED_SATISFIED'].includes(outcome);
-  if(!completed)return alert('For safety, an LRR can be permanently deleted by Admin only after the case is completed/verified.');
-  const ok=confirm('DELETE THIS COMPLETED LRR?\n\nThis removes the LRR from the active Supabase data and cannot be undone.\n\nContinue?');
-  if(!ok)return;
-  try{
-    let q=await sb.rpc('gc_admin_lrr_action',{p_request_id:String(id),p_action:'delete',p_reason:'Deleted by Admin after completion/verification'});
-    if(q.error)throw q.error;
-    alert('✓ LRR deleted successfully.');
-    lrrLoaded=false;await loadLearning();
-  }catch(e){alert('LRR delete failed: '+(e.message||e)+'\n\nIf your database delete RPC is not installed yet, tell me and I will give you the exact SQL for it.')}
-};
-
 /* Final coin decision uses the authoritative LRR workflow already used by the main site. */
 window.lrrDecision=async(id,decision)=>{
   const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(id));
@@ -797,54 +1041,12 @@ window.whatsappCaseChat=async function(lrrId,who){
  }catch(e){if(popup&&!popup.closed)popup.close();alert('WhatsApp chat could not be opened: '+(e.message||e));}
 };
 
-async function getLrrPeople(rows){
-  const ids=new Set();
-  (rows||[]).forEach(r=>{
-    ['student_id','student_user_id','student_profile_id','tutor_id','tutor_user_id','tutor_profile_id'].forEach(k=>{if(r?.[k])ids.add(String(r[k]))});
-  });
-  const map=new Map();
-  const add=(x,role)=>{
-    if(!x)return;
-    const name=String(x.full_name||x.name||x.display_name||'').trim();
-    if(!name)return;
-    const roleName=role==='tutor'?'Tutor':'Student';
-    [x.id,x.user_id,x.profile_id].forEach(k=>{if(k)map.set(String(k),{name,role:roleName})});
-  };
-  // Admin can normally read these profile tables. We map BOTH profile UUID and
-  // Auth/User UUID so the name is still found regardless of which UUID the LRR stores.
-  for(const [table,role,cols] of [
-    ['profiles','', 'id,user_id,full_name,name,display_name'],
-    ['student_profiles','student','id,user_id,name,full_name,display_name'],
-    ['tutor_profiles','tutor','id,user_id,name,full_name,display_name']
-  ]){
-    try{
-      const q=await sb.from(table).select(cols);
-      if(!q.error)(q.data||[]).forEach(x=>{
-        if(!ids.size || ids.has(String(x.id)) || ids.has(String(x.user_id))) add(x,role||String(x.role||''));
-      });
-    }catch(_){ }
-  }
-  return map;
-}
-function lrrPersonHtml(id,people,role,label,embeddedName){
-  const key=String(id||'');
-  const hit=people?.get(key);
-  const name=String(embeddedName||hit?.name||'').trim() || (id?'Member':'Not assigned');
-  return '<div class="metaBox"><b>'+label+'</b><strong style="display:block;font-size:13px;margin-bottom:4px">'+esc(name)+'</strong><span style="font-size:10px;color:#64748b;word-break:break-all">'+esc(id||'Not assigned')+'</span></div>';
-}
 async function loadLearning(){
   if(lrrLoading)return;lrrLoading=true;$('learningStatus').textContent=lrrLoaded?'Refreshing LRR…':'Loading LRR…';
   try{
-    // Use the authoritative LRR RPC first. It returns student_name/tutor_name.
-    // The old page read gc_learning_requests_v2 directly and therefore could
-    // only display UUIDs when the profile lookup was restricted.
-    let q=await sb.rpc('gc_list_learning_requests_public_v6');
-    if(q.error){
-      q=await sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(200);
-    }
+    const q=await sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(200);
     if(q.error)throw q.error;
     const rows=q.data||[];window.__adminLrrRows=rows;
-    const people=await getLrrPeople(rows);
     $('lrrCount').textContent=rows.length+' REQUESTS';$('learningStatus').textContent=rows.length+' Learning Requirement Request(s).';
     const h=$('learningResults');
     h.innerHTML=rows.length?rows.map(r=>{
@@ -859,17 +1061,17 @@ async function loadLearning(){
       const contactUnlocked=!!student&&!!tutor&&['ACCEPTED','TUTOR_ACCEPTED','TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED','APPROVED','COMPLETED_SATISFIED','COMPLETED_NOT_SATISFIED'].includes(String(st).toUpperCase());
       const satisfied=['SATISFIED','SATISFIED_BY_STUDENT','COMPLETED_SATISFIED'].includes(String(outcome).toUpperCase());
       return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(r.request_code||id||'Learning Request')}</b><span class="badge">${esc(st)}</span><div class="muted">Created: ${esc(r.created_at||'—')}</div></div><span class="pill">LRR CASE</span></div>
-      <div class="lrrMeta">${lrrPersonHtml(student,people,'student','STUDENT',r.student_name||r.student_full_name||r.full_name||r.name)} ${lrrPersonHtml(tutor,people,'tutor','CONNECTED TUTOR',r.tutor_name||r.tutor_full_name)}<div class="metaBox"><b>Course / Stream</b>${esc((r.course||'—')+' / '+(r.stream||'—'))}</div><div class="metaBox"><b>Subject / Topic</b>${esc((r.subject||'—')+' / '+(r.chapter||r.topic||'—'))}</div><div class="metaBox" style="grid-column:1/-1"><b>Requirement / Issue</b>${esc(r.problem||r.issue||r.learning_requirement||r.description||'—')}</div></div>
+      <div class="lrrMeta"><div class="metaBox"><b>Student</b>${esc(student||'Not linked')}</div><div class="metaBox"><b>Tutor</b>${esc(tutor||'Not assigned')}</div><div class="metaBox"><b>Course / Stream</b>${esc((r.course||'—')+' / '+(r.stream||'—'))}</div><div class="metaBox"><b>Subject / Topic</b>${esc((r.subject||'—')+' / '+(r.chapter||r.topic||'—'))}</div><div class="metaBox" style="grid-column:1/-1"><b>Requirement / Issue</b>${esc(r.problem||r.issue||r.learning_requirement||r.description||'—')}</div></div>
       <div class="lrrEvidence"><div class="lrrEvidenceTitle">🔎 Evidence & Service Outcome — Admin Review</div><div class="evidenceGrid">
         <div class="evidenceBox"><b>Student outcome</b><span class="${satisfied?'evidenceGood':String(outcome).toUpperCase()==='NOT_SATISFIED'?'evidenceBad':'evidenceWarn'}">${esc(outcome)}</span></div>
         <div class="evidenceBox"><b>Tutor service status</b><span class="${tutorCompleted?'evidenceGood':'evidenceWarn'}">${tutorCompleted?'✓ Tutor marked/completed the service':'Pending tutor completion'}</span></div>
         <div class="evidenceBox"><b>Student feedback / remark</b>${esc(studentFeedback||'No written student feedback recorded.')}</div>
         <div class="evidenceBox"><b>Tutor feedback / completion note</b>${esc(tutorFeedback||'No separate tutor feedback recorded. Status is used as the completion evidence.')}</div>
         <div class="evidenceBox"><b>Coins held with Admin</b><strong>🪙 ${Number(r.coins_held||0)}</strong></div>
-        <div class="evidenceBox"><b>Learning deadline</b>${esc(r.learning_deadline||'Not set')}${r.learning_deadline?`<div class="lrrDeadlineBadge">⏳ Maximum service window: 20 days</div>`:''}</div>
+        <div class="evidenceBox"><b>Learning deadline</b>${esc(r.learning_deadline||'Not set')}</div>
         <div class="evidenceBox" style="grid-column:1/-1"><b>Admin decision / note</b>${esc(adminNote||'No Admin decision recorded yet.')}</div>
       </div>${canDecide?`<div class="lrrDecision">${satisfied?'✅ Student has confirmed SATISFIED. This is the strongest evidence for releasing the Tutor reward.':'⚠️ Final coin decision is pending. Chat with both parties before releasing/denying if the evidence is incomplete.'}</div>`:''}</div>
-      <div class="lrrActions"><button type="button" class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button type="button" class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button type="button" class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button type="button" class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','tutor')">🪙 TUTOR COINS</button><button type="button" class="btn light" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','student')">🪙 STUDENT COINS</button>${contactUnlocked?`<button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','student')">💬 WHATSAPP STUDENT</button><button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','tutor')">💬 WHATSAPP TUTOR</button>`:''}${canDecide?`<button type="button" class="btn green decisionBtn" onclick="lrrDecision('${esc(id)}','APPROVE')">💰 RELEASE TUTOR COINS</button><button type="button" class="btn red decisionBtn" onclick="lrrDecision('${esc(id)}','DENY')">↩ DENY / RETURN COINS</button>`:''}${(tutorCompleted&&!canDecide)||satisfied?`<button type="button" class="btn lrrDeleteBtn" onclick="lrrDelete('${esc(id)}')">🗑️ DELETE COMPLETED LRR</button>`:''}</div><div class="lrrAutoNote">⏰ LRR retention rule: unresolved requests are intended to expire at 20 days, with held Student coins returned automatically.</div></article>`
+      <div class="lrrActions"><button type="button" class="btn green" onclick="lrrAction('${esc(id)}','approve')">✓ APPROVE TO TUTOR</button><button type="button" class="btn red" onclick="lrrAction('${esc(id)}','reject')">✕ REJECT</button><button type="button" class="btn orange" onclick="lrrAction('${esc(id)}','return')">↩ RETURN TO STUDENT</button><button type="button" class="btn teal" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','tutor')">🪙 TUTOR COINS</button><button type="button" class="btn light" onclick="lrrCoins('${esc(id)}','${esc(student)}','${esc(tutor)}','student')">🪙 STUDENT COINS</button>${contactUnlocked?`<button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','student')">💬 WHATSAPP STUDENT</button><button type="button" class="btn caseChat" onclick="whatsappCaseChat('${esc(id)}','tutor')">💬 WHATSAPP TUTOR</button>`:''}${canDecide?`<button type="button" class="btn green decisionBtn" onclick="lrrDecision('${esc(id)}','APPROVE')">💰 RELEASE TUTOR COINS</button><button type="button" class="btn red decisionBtn" onclick="lrrDecision('${esc(id)}','DENY')">↩ DENY / RETURN COINS</button>`:''}</div></article>`
     }).join(''):'<div class="empty">No Learning Requirement Requests found.</div>';
     lrrLoaded=true
   }catch(e){lrrLoaded=false;$('learningStatus').textContent='LRR load failed: '+(e.message||e);$('learningResults').innerHTML='<div class="empty">Unable to load Learning Requirement Requests.</div>'}
@@ -957,63 +1159,233 @@ $('adSave').onclick=async()=>{
 };
 
 staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit()}});
-</script></body></html>
-<style id="gc-admin-colorful-control-tiles-20261009">
-/* =========================================================
-   GURU CONNECT ADMIN — COLORFUL CONTROL TILES
-   Each main dashboard tile gets a distinct brand color while
-   preserving all existing actions/functionality.
-   ========================================================= */
-.controlbar .topbtn{
-  color:#fff!important;
-  border:0!important;
-  min-height:86px!important;
-  border-radius:16px!important;
-  padding:13px 12px!important;
-  box-shadow:0 10px 24px rgba(15,45,90,.13)!important;
-  position:relative!important;
-  overflow:hidden!important;
-  text-shadow:0 1px 2px rgba(0,0,0,.14)!important;
-}
-.controlbar .topbtn:after{
-  content:"";
-  position:absolute;
-  width:110px;height:110px;
-  border-radius:50%;
-  right:-35px;top:-48px;
-  background:rgba(255,255,255,.16);
-  pointer-events:none;
-}
-.controlbar .topbtn b,.controlbar .topbtn small{position:relative;z-index:1;color:#fff!important;}
-.controlbar .topbtn small{opacity:.94!important;}
+</script>
+<script id="gc-final-tutor-whatsapp-fix-js">
+(function(){
+  'use strict';
 
-/* Homepage-inspired palette */
-.controlbar .topbtn:nth-child(1){background:linear-gradient(135deg,#ff334e,#ef233c)!important;}
-.controlbar .topbtn:nth-child(2){background:linear-gradient(135deg,#19b957,#08a8cf)!important;}
-.controlbar .topbtn:nth-child(3){background:linear-gradient(135deg,#1264d8,#633eea)!important;}
-.controlbar .topbtn:nth-child(4){background:linear-gradient(135deg,#ff8a00,#ffd21a)!important;}
-.controlbar .topbtn:nth-child(5){background:linear-gradient(135deg,#0877e8,#1264d8)!important;}
-.controlbar .topbtn:nth-child(6){background:linear-gradient(135deg,#06a6d8,#19b957)!important;}
-.controlbar .topbtn:nth-child(7){background:linear-gradient(135deg,#7c3aed,#d51bd6)!important;}
-.controlbar .topbtn:nth-child(8){background:linear-gradient(135deg,#ef7d00,#ef233c)!important;}
-.controlbar .topbtn:nth-child(9){background:linear-gradient(135deg,#0891b2,#06b6d4)!important;}
+  function gcNormalizeWA(v){
+    let d=String(v??'').trim().replace(/\D/g,'');
+    if(!d)return '';
+    if(d.startsWith('00'))d=d.slice(2);
+    if(d.length===11&&d.startsWith('0'))d=d.slice(1);
+    if(d.length===10)d='91'+d;
+    return d;
+  }
 
-.controlbar .topbtn:hover,
-.controlbar .topbtn.active{
-  color:#fff!important;
-  border:0!important;
-  transform:translateY(-2px)!important;
-  filter:saturate(1.08) brightness(1.03)!important;
-  box-shadow:0 14px 30px rgba(15,45,90,.19)!important;
-}
-.controlbar .topbtn.active:before{
-  content:"";
-  position:absolute;
-  inset:0;
-  border:3px solid rgba(255,255,255,.82);
-  border-radius:16px;
-  pointer-events:none;
-}
-@media(max-width:900px){.controlbar .topbtn{min-height:82px!important;}}
-@media(max-width:600px){.controlbar .topbtn{min-height:76px!important;}}
-</style>
+  function gcPickContact(row){
+    if(!row || typeof row!=='object') return {phone:'',name:'',userId:''};
+    const preferred=[
+      'phone','mobile','mobile_number','whatsapp','whatsapp_number',
+      'whatsapp_phone','contact_number','contact_no','phone_number'
+    ];
+    let phone='';
+    for(const k of preferred){
+      if(row[k]!=null && String(row[k]).trim()){ phone=String(row[k]); break; }
+    }
+    if(!phone){
+      const k=Object.keys(row).find(x=>/(phone|mobile|whatsapp|contact)/i.test(x)
+        && row[x]!=null && String(row[x]).trim());
+      if(k) phone=String(row[k]);
+    }
+    return {
+      phone:gcNormalizeWA(phone),
+      name:String(row.name||row.full_name||row.display_name||''),
+      userId:String(row.user_id||row.auth_user_id||row.profile_id||row.id||'')
+    };
+  }
+
+  async function gcTutorContactFromLRR(lrrId){
+    const rq=await sb.from('gc_learning_requests_v2')
+      .select('id,tutor_id')
+      .eq('id',String(lrrId))
+      .maybeSingle();
+
+    if(rq.error) throw rq.error;
+    if(!rq.data) throw new Error('Learning Request was not found.');
+
+    const tutorId=String(rq.data.tutor_id||'').trim();
+    if(!tutorId) throw new Error('The tutor account could not be identified for this request.');
+
+    let phone='', name='', userId=tutorId;
+
+    // 1) The tutor_id may itself be a profiles/auth user id.
+    try{
+      const p=await sb.from('profiles').select('*').eq('id',tutorId).maybeSingle();
+      if(!p.error && p.data){
+        const c=gcPickContact(p.data);
+        phone=phone||c.phone;
+        name=name||c.name;
+        userId=c.userId||userId;
+      }
+    }catch(_){}
+
+    // 2) The tutor_id may be tutor_profiles.id OR tutor_profiles.user_id.
+    let tp=null;
+    try{
+      const q=await sb.from('tutor_profiles').select('*').eq('id',tutorId).maybeSingle();
+      if(!q.error && q.data) tp=q.data;
+    }catch(_){}
+    if(!tp){
+      try{
+        const q=await sb.from('tutor_profiles').select('*').eq('user_id',tutorId).maybeSingle();
+        if(!q.error && q.data) tp=q.data;
+      }catch(_){}
+    }
+
+    if(tp){
+      const c=gcPickContact(tp);
+      phone=phone||c.phone;
+      name=name||c.name;
+      userId=String(tp.user_id||userId||'').trim();
+    }
+
+    // 3) Most important fallback: the registered mobile number is normally
+    // stored in public.profiles against tutor_profiles.user_id.
+    if(userId){
+      try{
+        const p=await sb.from('profiles').select('*').eq('id',userId).maybeSingle();
+        if(!p.error && p.data){
+          const c=gcPickContact(p.data);
+          phone=phone||c.phone;
+          name=name||c.name;
+        }
+      }catch(_){}
+    }
+
+    return {phone,name:name||'Tutor'};
+  }
+
+  async function gcResolveTutorContact(lrrId){
+    // Try the secure RPC first when installed, but NEVER stop there if it
+    // returns an empty phone. Older databases may not have the RPC or may
+    // return a contact shape different from the frontend.
+    try{
+      const q=await sb.rpc('gc_get_whatsapp_contact',{
+        p_request_id:String(lrrId),
+        p_target_role:'tutor'
+      });
+      if(!q.error && q.data){
+        const c=gcPickContact(q.data);
+        if(c.phone) return {phone:c.phone,name:c.name||'Tutor'};
+      }
+    }catch(_){}
+
+    return await gcTutorContactFromLRR(lrrId);
+  }
+
+  async function gcLaunchWhatsApp(phone,name){
+    if(!phone) throw new Error(
+      'No WhatsApp number is saved for this tutor. Please update the tutor mobile/WhatsApp number in the Tutor profile.'
+    );
+
+    const msg='Hello '+(name||'Tutor')+
+      ', I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.';
+    const encoded=encodeURIComponent(msg);
+    const webUrl='https://wa.me/'+phone+'?text='+encoded;
+    const appUrl='whatsapp://send?phone='+phone+'&text='+encoded;
+
+    // On phones/tablets, try the native WhatsApp app first. If the browser
+    // blocks the custom scheme, fall back to wa.me.
+    const isMobile=window.matchMedia &&
+      window.matchMedia('(max-width: 700px)').matches;
+
+    if(isMobile){
+      let fallback=setTimeout(function(){
+        window.location.href=webUrl;
+      },1200);
+
+      const cancel=function(){
+        clearTimeout(fallback);
+        fallback=null;
+        window.removeEventListener('pagehide',cancel);
+        document.removeEventListener('visibilitychange',onVisibility);
+      };
+      const onVisibility=function(){
+        if(document.visibilityState==='hidden') cancel();
+      };
+
+      window.addEventListener('pagehide',cancel,{once:true});
+      document.addEventListener('visibilitychange',onVisibility,{once:true});
+
+      try{
+        window.location.href=appUrl;
+      }catch(_){
+        cancel();
+        window.location.href=webUrl;
+      }
+    }else{
+      const w=window.open(webUrl,'_blank','noopener,noreferrer');
+      if(!w) window.location.href=webUrl;
+    }
+  }
+
+  // This is the function used by the LRR button in the existing markup.
+  // Override it globally so the button works even if the database RPC is
+  // missing or the tutor number lives in public.profiles.
+  window.whatsappCaseChat=async function(lrrId,who){
+    if(String(who||'').toLowerCase()!=='tutor'){
+      // Preserve the existing student flow for the student button.
+      const popup=window.open('about:blank','_blank');
+      try{
+        const q=await sb.rpc('gc_get_whatsapp_contact',{
+          p_request_id:String(lrrId),p_target_role:who
+        });
+        let c=!q.error&&q.data?gcPickContact(q.data):{phone:'',name:''};
+        if(!c.phone){
+          const rq=await sb.from('gc_learning_requests_v2')
+            .select('student_id')
+            .eq('id',String(lrrId)).maybeSingle();
+          const uid=String(rq.data?.student_id||'');
+          if(uid){
+            const p=await sb.from('profiles').select('*').eq('id',uid).maybeSingle();
+            if(!p.error&&p.data)c=gcPickContact(p.data);
+          }
+        }
+        if(!c.phone) throw new Error('No phone number is saved for the student.');
+        const msg='Hello '+(c.name||'Student')+
+          ', I am contacting you from GURU CONNECT Admin regarding your Learning Requirement Request.';
+        const url='https://wa.me/'+c.phone+'?text='+encodeURIComponent(msg);
+        if(popup&&!popup.closed)popup.location.href=url;else window.location.href=url;
+      }catch(e){
+        if(popup&&!popup.closed)popup.close();
+        alert('WhatsApp chat could not be opened: '+(e.message||e));
+      }
+      return;
+    }
+
+    try{
+      const c=await gcResolveTutorContact(lrrId);
+      await gcLaunchWhatsApp(c.phone,c.name);
+    }catch(e){
+      alert('WhatsApp Tutor could not be opened: '+(e.message||e));
+    }
+  };
+
+  window.gcOpenTutorWhatsApp=async function(lrrId){
+    return window.whatsappCaseChat(lrrId,'tutor');
+  };
+
+  function install(){
+    document.querySelectorAll('.lrrActions .caseChat').forEach(function(btn){
+      const oc=btn.getAttribute('onclick')||'';
+      if(/whatsappCaseChat\([^,]+,\s*[\'"]tutor[\'"]\)/.test(oc)){
+        const m=oc.match(/whatsappCaseChat\(([\'"])(.*?)\1,\s*([\'"])tutor\3\)/);
+        if(m){
+          btn.setAttribute('onclick','gcOpenTutorWhatsApp('+JSON.stringify(m[2])+')');
+          btn.type='button';
+        }
+      }
+    });
+  }
+
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',install);
+  }else{
+    install();
+  }
+  [500,1500,3000,5000].forEach(function(ms){setTimeout(install,ms);});
+})();
+</script>
+
+</body></html>
