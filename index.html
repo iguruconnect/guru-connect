@@ -4809,7 +4809,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <!-- Header / Navbar -->
 <header class="gc-beautiful-header">
 <div class="gc-header-inner">
-<a aria-label="GURU CONNECT Home" class="gc-beautiful-lockup gc-logo3-lockup" href="#home"><img alt="GURU CONNECT logo" class="gc-logo3-image" src="gc-brand-logo-only.png"/></a>
+<a aria-label="GURU CONNECT Home" class="gc-beautiful-lockup gc-logo3-lockup" href="#home"><img alt="GURU CONNECT logo" class="gc-logo3-image" src="guru-connect-brand-lockup-transparent.png"/></a>
 <nav aria-label="Main navigation" class="gc-beautiful-nav">
 <a class="gc-beautiful-home" href="#home">Home</a>
 <a href="#tutors">Find Tutor</a>
@@ -5038,7 +5038,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <!-- GURU CONNECT — responsive hero image supplied by the user -->
 <section class="gc-image-hero" id="home">
 <div class="gc-image-hero-inner">
-<img alt="GURU CONNECT — Connecting Mind - Creating Future" class="gc-image-hero-img" src="gc-home-hero-tutor-student.png"/>
+<img alt="GURU CONNECT — Connecting Mind - Creating Future" class="gc-image-hero-img" src="gc-hero-art-clean.png"/>
 </div>
 </section>
 <div id="gcHomeLrrAdHost" class="gc-lrr-ad-host" style="display:none"></div>
@@ -5856,7 +5856,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 z-[100]" id="loginModal">
 <div class="gc-modern-login-card bg-white rounded-[2rem] shadow-2xl max-w-lg w-full border relative overflow-hidden">
   <div class="gc-modern-login-brand">
-    <img src="gc-brand-logo-only.png" alt="GURU CONNECT — Connecting Mind - Creating Future" class="gc-modern-login-logo">
+    <img src="guru-connect-brand-lockup-transparent.png" alt="GURU CONNECT brand" class="gc-modern-login-logo">
     <div class="gc-modern-login-tagline">Connecting Mind - Creating Future</div>
   </div>
   <div class="p-6 sm:p-8">
@@ -6022,11 +6022,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <!-- Footer -->
 <footer class="w-full" id="gcStandardFooter">
 <div class="gc-footer-inner">
-<div class="gc-footer-brand">
-<div class="gc-footer-logo-wrap"><img alt="GURU CONNECT round logo" id="gcFooterLogo" src="gc-brand-logo-only.png"/></div>
-<div class="gc-footer-brand-copy"><div class="gc-footer-title">GURU CONNECT</div><div class="gc-footer-tagline">Connecting Mind - Creating Future</div></div>
-</div>
-<div class="gc-footer-links">
+<div class="gc-footer-brand"><div class="gc-footer-logo-wrap"><img alt="GURU CONNECT logo and brand" id="gcFooterLogo" src="guru-connect-brand-lockup-transparent.png"/></div></div> <div class="gc-footer-links">
 <a href="javascript:void(0)" onclick="openAboutModal()">About Us</a>
 <a href="javascript:void(0)" onclick="openContactModal()">Contact Us</a>
 <a href="#terms">Terms &amp; Conditions</a>
@@ -6059,7 +6055,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 @media(max-width:640px){.gc-footer-inner{padding:24px 15px 15px}.gc-footer-title{font-size:17px}.gc-footer-links{gap:9px 15px}.gc-footer-bottom{display:block}.gc-footer-bottom span{display:block;margin-top:5px}.gc-footer-policy{font-size:9px}}
 </style>
 <script id="gc-footer-logo-sync">
-(function(){function sync(){var img=document.getElementById('gcFooterLogo');if(img)img.src='gc-brand-logo-only.png';}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();window.addEventListener('load',sync);})();
+(function(){function sync(){var img=document.getElementById('gcFooterLogo');if(img)img.src='guru-connect-round-logo.png';}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();window.addEventListener('load',sync);})();
 </script>
 <!-- JavaScript Application Logic -->
 <script>
@@ -11086,7 +11082,7 @@ body {
             <div class="absolute -right-16 -top-16 h-44 w-44 rounded-full bg-white/15"></div>
             <div class="absolute -left-12 -bottom-20 h-44 w-44 rounded-full bg-cyan-300/20"></div>
             <div class="relative flex items-center gap-4">
-              <img src="gc-brand-logo-only.png" alt="GURU CONNECT" class="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-white p-1 shadow-xl object-contain">
+              <img src="guru-connect-round-logo.png" alt="GURU CONNECT" class="h-16 w-16 sm:h-20 sm:w-20 rounded-2xl bg-white p-1 shadow-xl object-contain">
               <div>
                 <div class="text-[11px] font-black tracking-[.24em] uppercase text-blue-100">GURU CONNECT</div>
                 <h2 class="mt-1 text-2xl sm:text-3xl font-black tracking-tight">OTP Sent Successfully</h2>
@@ -14146,31 +14142,27 @@ html,body{overflow-x:hidden!important}
 }
 </style>
 
-<script id="gc-modal-branding-global">
-(function(){
- const logo='gc-brand-logo-only.png';
- function addBranding(){
-  document.querySelectorAll('[id$="Modal"], [role="dialog"], .modal').forEach(function(modal){
-   if(modal.dataset.gcBrandingDone==='1') return;
-   const card=modal.querySelector(':scope > div, :scope > section, .modal-content, [role="document"]');
-   if(!card) return;
-   if(card.querySelector('.gc-modal-brand-header')) {modal.dataset.gcBrandingDone='1'; return;}
-   // Avoid duplicate logo when the existing login modal already has a branded header.
-   if(modal.id==='loginModal' && card.querySelector('.gc-modern-login-brand')) {modal.dataset.gcBrandingDone='1'; return;}
-   const header=document.createElement('div'); header.className='gc-modal-brand-header';
-   const img=document.createElement('img'); img.src=logo; img.alt='GURU CONNECT — Connecting Mind - Creating Future';
-   const name=document.createElement('div'); name.className='gc-modal-brand-name'; name.textContent='GURU CONNECT';
-   const tagline=document.createElement('div'); tagline.className='gc-modal-brand-tagline'; tagline.textContent='Connecting Mind - Creating Future';
-   header.append(img,name,tagline); card.insertBefore(header,card.firstChild); modal.dataset.gcBrandingDone='1';
-  });
- }
- const css=document.createElement('style'); css.textContent='.gc-modal-brand-header{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px 16px 10px;background:#071b49;border-radius:20px 20px 0 0;color:#fff;gap:3px}.gc-modal-brand-header img{display:block;width:min(220px,72%);max-height:84px;object-fit:contain;border-radius:12px;background:#fff;padding:4px;box-sizing:border-box}.gc-modal-brand-name{font:900 16px/1.2 "Nunito Sans",Arial,sans-serif;letter-spacing:.8px}.gc-modal-brand-tagline{font:600 10px/1.3 "Nunito Sans",Arial,sans-serif;opacity:.9}@media(max-width:480px){.gc-modal-brand-header{padding:9px 12px 8px}.gc-modal-brand-header img{max-height:64px;width:min(185px,72%)}}';
- document.head.appendChild(css);
- if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',addBranding); else addBranding();
- new MutationObserver(addBranding).observe(document.documentElement,{childList:true,subtree:true});
-})();
-</script>
-</body>
+
+<style id="gc-approved-brand-system">
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap');
+:root{--gc-brand-blue:#082db5;}
+.gc-beautiful-lockup,.gc-exact-brand-link,.gc-header-brand-name,.gc-footer-brand,.gc-footer-title,.gc-admin-brand{font-family:'Segoe UI',Arial,sans-serif!important;}
+.gc-brand-guru,.gc-footer-title{font-family:'Segoe UI',Arial,sans-serif!important;font-weight:800!important;}
+.gc-brand-connect,.gc-header-brand-name,.gc-footer-tagline{font-family:'Montserrat','Segoe UI',Arial,sans-serif!important;}
+.gc-header-slogan,.gc-footer-tagline{display:none!important;}
+.gc-header-inner{min-height:118px!important;height:auto!important;}
+.gc-logo3-lockup{width:clamp(300px,31vw,470px)!important;min-width:0!important;max-width:470px!important;flex:0 1 470px!important;height:auto!important;}
+.gc-logo3-image{width:100%!important;max-width:470px!important;height:auto!important;object-fit:contain!important;}
+#gcStandardFooter .gc-footer-inner{padding:24px 22px!important;}
+#gcStandardFooter .gc-footer-brand{display:flex!important;align-items:center!important;justify-content:flex-start!important;}
+#gcStandardFooter .gc-footer-logo-wrap{width:min(430px,42vw)!important;height:auto!important;max-width:430px!important;overflow:visible!important;border-radius:0!important;flex:0 1 430px!important;}
+#gcStandardFooter #gcFooterLogo{display:block!important;width:100%!important;height:auto!important;max-width:430px!important;max-height:none!important;object-fit:contain!important;}
+#gcStandardFooter .gc-footer-brand-copy{display:none!important;}
+.gc-image-hero{background:#fff!important;overflow:hidden!important;}
+.gc-image-hero-img{width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important;object-position:center!important;}
+@media(max-width:700px){.gc-header-inner{min-height:78px!important;height:auto!important;gap:8px!important;padding:6px 10px!important;}.gc-logo3-lockup{width:min(58vw,300px)!important;flex-basis:min(58vw,300px)!important;}.gc-logo3-image{width:100%!important;}#gcStandardFooter .gc-footer-logo-wrap{width:min(82vw,360px)!important;flex-basis:min(82vw,360px)!important;}}
+</style>
+<style id="gc-footer-brand-final">#gcStandardFooter .gc-footer-brand-copy,#gcStandardFooter .gc-footer-title,#gcStandardFooter .gc-footer-tagline{display:none!important}#gcStandardFooter .gc-footer-logo-wrap{width:min(430px,42vw)!important;height:auto!important;max-width:430px!important;border-radius:0!important;overflow:visible!important}#gcStandardFooter #gcFooterLogo{width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important}@media(max-width:700px){#gcStandardFooter .gc-footer-logo-wrap{width:min(82vw,360px)!important}}</style></body>
 <script id="gc-admin-receipt-dashboard-20261002">
 (function(){
 'use strict';
@@ -16308,35 +16300,4 @@ window.GC_UNIFIED_LOGIN_READY=true;
   #loginModal .gc-modern-login-logo{max-height:128px!important;}
   #loginModal .p-6{padding:16px!important;}
 }
-</style>
-
-<style id="gc-user-requested-header-hero-footer-final-20261009">
-/* Final visual corrections: full hero, larger header brand lockup, white footer. */
-.gc-image-hero,.gc-image-hero-inner{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;}
-.gc-image-hero-inner{padding:8px 10px!important;}
-.gc-image-hero-img{display:block!important;width:100%!important;max-width:1540px!important;height:auto!important;max-height:none!important;aspect-ratio:auto!important;object-fit:contain!important;object-position:center center!important;overflow:visible!important;clip-path:none!important;mask:none!important;-webkit-mask:none!important;margin:0 auto!important;border-radius:0!important;}
-@media(max-width:760px){.gc-image-hero-inner{padding:5px 4px!important}.gc-image-hero-img{width:100%!important;max-width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important;}}
-/* Restore the logo in the header and enlarge it substantially. */
-.gc-beautiful-header .gc-logo3-image{display:block!important;width:143px!important;height:105px!important;max-width:143px!important;max-height:105px!important;flex:0 0 143px!important;object-fit:contain!important;object-position:center!important;background:transparent!important;border:0!important;border-radius:10px!important;box-shadow:none!important;}
-.gc-beautiful-header .gc-logo3-lockup{display:flex!important;align-items:center!important;gap:14px!important;width:auto!important;min-width:0!important;max-width:none!important;height:auto!important;overflow:visible!important;flex:0 1 auto!important;}
-.gc-beautiful-header .gc-header-brand-stack{display:flex!important;flex-direction:column!important;justify-content:center!important;line-height:1!important;}
-.gc-beautiful-header .gc-header-brand-name{display:flex!important;align-items:baseline!important;gap:8px!important;font-family:"Nunito Sans",Arial,sans-serif!important;font-size:30px!important;font-weight:950!important;letter-spacing:-.8px!important;white-space:nowrap!important;}
-.gc-beautiful-header .gc-header-slogan{display:block!important;margin-top:6px!important;font-family:"Nunito Sans",Arial,sans-serif!important;font-size:11px!important;letter-spacing:.15px!important;color:#536b8d!important;white-space:normal!important;font-weight:750!important;}
-@media(max-width:900px){.gc-beautiful-header .gc-logo3-image{width:118px!important;height:88px!important;max-width:118px!important;max-height:88px!important;flex-basis:118px!important}.gc-beautiful-header .gc-header-brand-name{font-size:25px!important;gap:6px!important}.gc-beautiful-header .gc-header-slogan{font-size:9px!important}.gc-beautiful-header .gc-logo3-lockup{gap:10px!important;}}
-@media(max-width:600px){.gc-beautiful-header .gc-logo3-image{width:88px!important;height:68px!important;max-width:88px!important;max-height:68px!important;flex-basis:88px!important}.gc-beautiful-header .gc-header-brand-name{font-size:20px!important;letter-spacing:-.5px!important;gap:4px!important}.gc-beautiful-header .gc-header-slogan{font-size:8px!important;line-height:1.2!important;margin-top:4px!important;letter-spacing:0!important}.gc-beautiful-header .gc-logo3-lockup{gap:7px!important;max-width:calc(100vw - 70px)!important;}}
-@media(max-width:390px){.gc-beautiful-header .gc-logo3-image{width:76px!important;height:60px!important;max-width:76px!important;max-height:60px!important;flex-basis:76px!important}.gc-beautiful-header .gc-header-brand-name{font-size:17px!important}.gc-beautiful-header .gc-header-slogan{font-size:7px!important;}}
-/* Footer now uses a white surface; increase logo size and keep text legible. */
-#gcStandardFooter{background:#fff!important;color:#172554!important;border-top:3px solid #e7eef8!important;border-image:none!important;}
-.gc-footer-inner{padding:26px 22px 18px!important;}
-.gc-footer-brand{gap:14px!important;align-items:center!important;}
-.gc-footer-logo-wrap{width:104px!important;height:104px!important;border-radius:12px!important;background:transparent!important;overflow:visible!important;}
-#gcFooterLogo{width:104px!important;height:104px!important;object-fit:contain!important;border-radius:12px!important;background:transparent!important;}
-.gc-footer-title{font-family:"Nunito Sans",Arial,sans-serif!important;font-size:24px!important;color:#0b2eae!important;letter-spacing:.02em!important;}
-.gc-footer-tagline{font-family:"Nunito Sans",Arial,sans-serif!important;font-size:13px!important;color:#334155!important;}
-.gc-footer-links{border-top:1px solid #e2e8f0!important;}
-.gc-footer-links a{color:#123b8f!important;}
-.gc-footer-policy{border:1px solid #e2e8f0!important;background:#f8fafc!important;color:#334155!important;}
-.gc-footer-policy b{color:#0f172a!important;}
-.gc-footer-bottom{border-top:1px solid #e2e8f0!important;color:#64748b!important;}
-@media(max-width:640px){.gc-footer-inner{padding:20px 14px 14px!important}.gc-footer-logo-wrap,#gcFooterLogo{width:88px!important;height:88px!important}.gc-footer-title{font-size:19px!important}.gc-footer-tagline{font-size:11px!important}}
 </style>
