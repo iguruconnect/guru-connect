@@ -4724,7 +4724,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <!-- Header / Navbar -->
 <header class="gc-beautiful-header">
 <div class="gc-header-inner">
-<a aria-label="GURU CONNECT Home" class="gc-beautiful-lockup gc-logo3-lockup" href="#home"><img alt="GURU CONNECT logo" class="gc-logo3-image" src="guru-connect-new-header.png"/><span class="gc-header-brand-stack"><span class="gc-header-brand-name" aria-label="GURU CONNECT"><span class="gc-brand-guru">GURU</span><span class="gc-brand-connect">CONNECT</span></span><span class="gc-header-slogan">Connecting Mind - Creating Future...</span></span></a>
+<a aria-label="GURU CONNECT Home" class="gc-beautiful-lockup gc-logo3-lockup" href="#home"><img alt="GURU CONNECT logo" class="gc-logo3-image" src="guru-connect-blue-lockup.png"/><span class="gc-header-brand-stack"><span class="gc-header-brand-name" aria-label="GURU CONNECT"><span class="gc-brand-guru">GURU</span><span class="gc-brand-connect">CONNECT</span></span><span class="gc-header-slogan">Connecting Mind - Creating Future...</span></span></a>
 <nav aria-label="Main navigation" class="gc-beautiful-nav">
 <a class="gc-beautiful-home" href="#home">Home</a>
 <a href="#tutors">Find Tutor</a>
@@ -5930,7 +5930,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <footer class="w-full" id="gcStandardFooter">
 <div class="gc-footer-inner">
 <div class="gc-footer-brand">
-<div class="gc-footer-logo-wrap"><img alt="GURU CONNECT round logo" id="gcFooterLogo" src="guru-connect-round-logo.png"/></div>
+<div class="gc-footer-logo-wrap"><img alt="GURU CONNECT round logo" id="gcFooterLogo" src="guru-connect-blue-lockup.png"/></div>
 </div>
 <div class="gc-footer-links">
 <a href="javascript:void(0)" onclick="openAboutModal()">About Us</a>
@@ -5965,7 +5965,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 @media(max-width:640px){.gc-footer-inner{padding:24px 15px 15px}.gc-footer-title{font-size:17px}.gc-footer-links{gap:9px 15px}.gc-footer-bottom{display:block}.gc-footer-bottom span{display:block;margin-top:5px}.gc-footer-policy{font-size:9px}}
 </style>
 <script id="gc-footer-logo-sync">
-(function(){function sync(){var img=document.getElementById('gcFooterLogo');if(img)img.src='guru-connect-round-logo.png';}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();window.addEventListener('load',sync);})();
+(function(){function sync(){var img=document.getElementById('gcFooterLogo');if(img)img.src='guru-connect-blue-lockup.png';}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();window.addEventListener('load',sync);})();
 </script>
 <!-- JavaScript Application Logic -->
 <script>
@@ -13230,7 +13230,7 @@ async function loadJsPdf(){
 async function pdfRows(doc,rows,title,subtitle){
  const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();let y=18;
  const page=()=>{doc.addPage();y=18};
- try{const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src='guru-connect-new-header.png'});doc.addImage(img,'PNG',12,6,58,13);y=25;}catch(_){y=18;}
+ try{const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src='guru-connect-blue-lockup.png'});doc.addImage(img,'PNG',12,6,58,13);y=25;}catch(_){y=18;}
  doc.setFontSize(15);doc.setFont(undefined,'bold');doc.text(title,12,y);y+=7;doc.setFontSize(8);doc.setFont(undefined,'normal');doc.text(subtitle,12,y);y+=7;
  const heads=['DATE / TIME','USER','ROLE','ID','TYPE','AMOUNT','REASON','REQUEST ID','TXN ID'];
  const widths=[24,25,15,22,24,16,38,28,27];let x=6;
@@ -13716,6 +13716,14 @@ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',
 </style>
 <div id="gc-popup-overlay" role="presentation"><section id="gc-popup-card" role="alertdialog" aria-modal="true" aria-labelledby="gc-popup-title" aria-describedby="gc-popup-message"><div id="gc-popup-top"><img id="gc-popup-logo" src="guru-connect-logo.png" alt="GURU CONNECT logo"><div id="gc-popup-brand">GURU CONNECT</div><div id="gc-popup-tag">CONNECTING MINDS • CREATING FUTURES</div><div id="gc-popup-icon">✓</div></div><h2 id="gc-popup-title">Notice</h2><p id="gc-popup-message"></p><div id="gc-popup-actions"><button id="gc-popup-ok" type="button">CONTINUE</button></div></section></div>
 <script id="gc-branded-popup-script">(()=>{if(window.__gcBrandedPopupInstalled)return;window.__gcBrandedPopupInstalled=true;const overlay=document.getElementById('gc-popup-overlay');if(!overlay)return;const title=overlay.querySelector('#gc-popup-title'),msg=overlay.querySelector('#gc-popup-message'),icon=overlay.querySelector('#gc-popup-icon'),ok=overlay.querySelector('#gc-popup-ok');let queue=[],busy=false;function render(){if(!queue.length){overlay.classList.remove('gc-open');busy=false;return}busy=true;const item=queue[0];title.textContent=item.title;msg.textContent=item.message;icon.className=item.kind==='error'?'gc-error':item.kind==='warn'?'gc-warn':'';icon.textContent=item.kind==='error'?'!':item.kind==='warn'?'⚠':'✓';ok.textContent=item.button||'CONTINUE';overlay.classList.add('gc-open');ok.focus()}function close(){queue.shift();render()}ok.addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('gc-open')){e.preventDefault();close()}});const nativeAlert=window.alert.bind(window);window.alert=function(value){const message=String(value??'');const low=message.toLowerCase();const kind=/fail|error|unable|not saved|not updated|denied|invalid|expired/.test(low)?'error':/warning|please|cannot|missing/.test(low)?'warn':'success';queue.push({title:kind==='error'?'Action Unsuccessful':kind==='warn'?'Please Note':'Action Completed',message,kind});if(!busy)render()};window.gcShowPopup=(message,options={})=>{queue.push({title:options.title||'GURU CONNECT',message:String(message??''),kind:options.kind||'success',button:options.button});if(!busy)render()};})();</script><script src="gc-activity-popup.js"></script>
+
+<style id="gc-blue-footer-logo-final">
+.gc-footer-logo-wrap{width:min(320px,100%)!important;height:auto!important;min-height:0!important;border-radius:10px!important;background:#fff!important;overflow:hidden!important;padding:6px!important;box-sizing:border-box!important;flex:0 1 320px!important}
+#gcFooterLogo{display:block!important;width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important}
+.gc-footer-brand-copy{display:none!important}
+@media(max-width:640px){.gc-footer-logo-wrap{width:min(280px,100%)!important;flex-basis:280px!important}}
+</style>
+
 </body>
 <style id="gc-final-load-hero-transfer-pdf-fix">
 /* Final stable hero: one real image, exact 1640:515 ratio, no crop and no duplicate background artwork. */
