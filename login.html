@@ -1,85 +1,14 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GURU CONNECT — Secure Login</title><meta http-equiv="Cache-Control" content="no-store"><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:linear-gradient(135deg,#eff6ff,#f0fdfa);font-family:Inter,Arial,sans-serif;color:#12315b}.card{width:min(430px,90vw);background:#fff;border:1px solid #dbeafe;border-radius:24px;padding:30px;text-align:center;box-shadow:0 22px 60px rgba(15,23,42,.16)}img{width:82px;height:82px;object-fit:contain;border-radius:20px}.brand{font-size:24px;font-weight:950;margin-top:12px}.msg{color:#64748b;font-size:14px;line-height:1.6}.btn{display:inline-block;margin-top:15px;background:linear-gradient(135deg,#2563eb,#0f766e);color:#fff;text-decoration:none;font-weight:900;padding:12px 20px;border-radius:12px}</style>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800;900;1000&display=swap" rel="stylesheet">
-<style id="gc-premium-responsive-template">
-/* GURU CONNECT | Premium responsive design system */
-:root{--gc-premium-ink:#14213d;--gc-premium-muted:#66748b;--gc-premium-blue:#244fc7;--gc-premium-blue-deep:#142d69;--gc-premium-green:#14845d;--gc-premium-line:#e6ebf3;--gc-premium-surface:#fff;--gc-premium-bg:#f6f8fc;--gc-premium-shadow:0 14px 38px rgba(19,39,82,.09);--gc-premium-radius:20px}
-html{scroll-behavior:smooth;scroll-padding-top:90px;-webkit-text-size-adjust:100%}
-body{font-family:'Nunito Sans',system-ui,-apple-system,'Segoe UI',sans-serif!important;color:var(--gc-premium-ink);background:var(--gc-premium-bg);overflow-x:clip;line-height:1.55;-webkit-font-smoothing:antialiased}
-body *{box-sizing:border-box}
-img,svg,video,canvas{max-width:100%;height:auto}
-img{object-fit:contain}
-button,input,select,textarea{font:inherit;max-width:100%}
-button,[role=button],a,summary{ -webkit-tap-highlight-color:transparent }
-button,a,[role=button]{transition:background-color .2s ease,color .2s ease,border-color .2s ease,box-shadow .2s ease,transform .2s ease}
-button:not(:disabled),[role=button],summary{cursor:pointer}
-button:hover:not(:disabled),[role=button]:hover{filter:saturate(1.05)}
-button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[tabindex]:focus-visible{outline:3px solid rgba(36,79,199,.28)!important;outline-offset:2px}
-input,select,textarea{border-radius:12px!important;min-height:42px}
-textarea{min-height:100px;resize:vertical}
-label{line-height:1.4}
-header,nav{max-width:100%}
-main,section,footer{min-width:0}
-[class*="card"],[class*= "tile"],.gccl-card,.gc-lr3-card,.gc-v3-modal-card,.gc-new-card-top{border-radius:var(--gc-premium-radius)}
-/* Softer premium surfaces */
-.bg-white,.card,.panel,.modal-content,.gccl-card,.gc-lr3-card,.gc-v3-modal-card{box-shadow:0 8px 28px rgba(19,39,82,.065)}
-.shadow,.shadow-md,.shadow-lg,.shadow-xl{box-shadow:var(--gc-premium-shadow)!important}
-.rounded-2xl,.rounded-3xl{border-radius:var(--gc-premium-radius)!important}
-/* Buttons: polished and consistent */
-button,.btn,[type=button],[type=submit],[role=button]{border-radius:12px}
-button:active:not(:disabled),[role=button]:active{transform:translateY(1px)}
-/* Homepage tile treatment */
-.gc-home-tile{min-width:0;min-height:170px;border-radius:22px!important;box-shadow:0 12px 28px rgba(20,43,90,.10);transition:transform .22s ease,box-shadow .22s ease}
-.gc-home-tile:hover{transform:translateY(-3px);box-shadow:0 18px 36px rgba(20,43,90,.15)}
-.gc-home-tile-icon{flex-shrink:0}
-.gc-beautiful-brand,.gc-beautiful-brand-text{font-family:'Nunito Sans',sans-serif!important;letter-spacing:-.025em}
-/* Admin / portal navigation and data layouts */
-.sidebar,.side-nav,.admin-sidebar{max-width:100%}
-table{width:100%;border-collapse:separate;border-spacing:0;max-width:100%}
-th,td{overflow-wrap:anywhere}
-pre,code{max-width:100%;overflow-wrap:anywhere;white-space:pre-wrap}
-.modal,.modal-dialog,[role=dialog]{max-width:calc(100vw - 24px)}
-/* Avoid common flex/grid overflow issues */
-.flex>*,.grid>*,[class*=grid-cols]>*{min-width:0}
-[class*=grid-cols-]{max-width:100%}
-/* Elegant scrollbars where supported */
-*{scrollbar-color:#c6d0e1 transparent;scrollbar-width:thin}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
-@media(max-width:1024px){
-  .container{max-width:100%;padding-left:20px;padding-right:20px}
-  .gc-home-tile{min-height:155px}
-  table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GURU CONNECT — Secure Login</title><meta http-equiv="Cache-Control" content="no-store"><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:linear-gradient(135deg,#eff6ff,#f0fdfa);font-family:Inter,Arial,sans-serif;color:#12315b}.card{width:min(430px,90vw);background:#fff;border:1px solid #dbeafe;border-radius:24px;padding:30px;text-align:center;box-shadow:0 22px 60px rgba(15,23,42,.16)}img{width:min(520px,100%);height:auto;max-height:none;object-fit:contain;display:block;margin:0 auto}.brand{font-size:24px;font-weight:950;margin-top:4px}.msg{color:#64748b;font-size:14px;line-height:1.6}.btn{display:inline-block;margin-top:15px;background:linear-gradient(135deg,#2563eb,#0f766e);color:#fff;text-decoration:none;font-weight:900;padding:12px 20px;border-radius:12px}</style>
+<style id="gc-standalone-login-mobile-fix">
+html,body{width:100%;min-width:0;overflow-x:hidden}
+@media(max-width:520px){
+  body{padding:8px;box-sizing:border-box;display:flex;align-items:flex-start;justify-content:center;min-height:100dvh}
+  .gc-login-page-fix{width:100%;max-width:520px;max-height:calc(100dvh - 16px);overflow-y:auto;box-sizing:border-box;padding:16px!important}
+  .gc-login-page-fix img{width:100%;height:auto;max-height:120px;object-fit:contain}
 }
-@media(max-width:768px){
-  html{scroll-padding-top:72px}
-  body{font-size:15px}
-  h1{font-size:clamp(1.75rem,7vw,2.6rem)!important;line-height:1.13!important;overflow-wrap:anywhere}
-  h2{font-size:clamp(1.35rem,5vw,2rem)!important;line-height:1.2!important}
-  h3{line-height:1.25!important}
-  .container{padding-left:15px!important;padding-right:15px!important}
-  main,section{max-width:100%;min-width:0}
-  .gc-home-tile{width:100%;min-height:148px;padding:20px!important}
-  .gc-home-tile-icon{width:48px;height:48px}
-  .gc-home-tile-btn{min-height:44px}
-  .gc-v3-detail-grid,.gc-v3-ach-grid,.gc-new-info-grid,.gc-msg-grid2,.gccl-grid,.gc-ad-form-grid{grid-template-columns:minmax(0,1fr)!important}
-  .gccl-card.full{grid-column:auto!important}
-  .gc-v3-modal-card{width:calc(100vw - 24px)!important;max-width:calc(100vw - 24px)!important;margin:12px auto!important;padding:18px!important}
-  .overflow-x-auto{max-width:100%;-webkit-overflow-scrolling:touch}
-  input,select,textarea{font-size:16px!important}
-  button,[type=button],[type=submit],.btn,[role=button]{min-height:42px}
-  .flex.flex-wrap{row-gap:10px}
-  .fixed.inset-0{padding:12px!important;overflow-y:auto}
-  footer{overflow-wrap:anywhere}
+@media(max-width:380px){
+  .gc-login-page-fix{padding:13px!important}
+  .gc-login-page-fix img{max-height:105px}
 }
-@media(max-width:480px){
-  .gc-home-tile{min-height:138px;padding:17px!important;border-radius:18px!important}
-  .gc-home-tile-icon{width:42px;height:42px}
-  .rounded-2xl,.rounded-3xl{border-radius:17px!important}
-  .p-8,.p-10{padding:18px!important}
-  .px-8,.px-10{padding-left:16px!important;padding-right:16px!important}
-  .gap-6{gap:1rem!important}
-  .gap-5{gap:.875rem!important}
-  .gc-new-card-top{overflow-wrap:anywhere}
-}
-
 </style>
-</head><body><main class="card"><img src="guru-connect-logo.png" alt="GURU CONNECT"><div class="brand">GURU CONNECT</div><p class="msg">Opening secure GURU CONNECT login…</p><a class="btn" id="continue" href="index.html">CONTINUE TO LOGIN</a></main><script>(function(){const q=new URLSearchParams(location.search);const role=(q.get('role')||'student').toLowerCase();const target='index.html?open_login=1&role='+encodeURIComponent(role);document.getElementById('continue').href=target;setTimeout(()=>location.replace(target),350);})();</script></body></html>
+</head><body><main class="card gc-login-page-fix"><img src="guru-connect-brand-lockup-transparent.png" alt="GURU CONNECT"><p class="msg">Opening your secure GURU CONNECT login…</p><a class="btn" id="continue" href="index.html">CONTINUE TO LOGIN</a></main><script>(function(){const q=new URLSearchParams(location.search);const role=(q.get('role')||'student').toLowerCase();const target='index.html?open_login=1&role='+encodeURIComponent(role);document.getElementById('continue').href=target;setTimeout(()=>location.replace(target),350);})();</script></body></html>
