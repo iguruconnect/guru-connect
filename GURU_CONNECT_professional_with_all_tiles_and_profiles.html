@@ -5984,7 +5984,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <footer class="w-full" id="gcStandardFooter">
 <div class="gc-footer-inner">
 <div class="gc-footer-brand">
-<div class="gc-footer-logo-wrap"><img alt="GURU CONNECT round logo" id="gcFooterLogo" src="guru-connect-blue-lockup.png"/></div>
+<div class="gc-footer-logo-wrap"><img alt="GURU CONNECT round logo" id="gcFooterLogo" src="guru-connect-round-logo.png"/></div>
 </div>
 <div class="gc-footer-links">
 <a href="javascript:void(0)" onclick="openAboutModal()">About Us</a>
@@ -6019,7 +6019,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 @media(max-width:640px){.gc-footer-inner{padding:24px 15px 15px}.gc-footer-title{font-size:17px}.gc-footer-links{gap:9px 15px}.gc-footer-bottom{display:block}.gc-footer-bottom span{display:block;margin-top:5px}.gc-footer-policy{font-size:9px}}
 </style>
 <script id="gc-footer-logo-sync">
-(function(){function sync(){var img=document.getElementById('gcFooterLogo');if(img)img.src='guru-connect-blue-lockup.png';}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();window.addEventListener('load',sync);})();
+(function(){function sync(){var img=document.getElementById('gcFooterLogo');if(img)img.src='guru-connect-round-logo.png';}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',sync);else sync();window.addEventListener('load',sync);})();
 </script>
 <!-- JavaScript Application Logic -->
 <script>
@@ -13285,7 +13285,7 @@ async function loadJsPdf(){
 async function pdfRows(doc,rows,title,subtitle){
  const W=doc.internal.pageSize.getWidth(),H=doc.internal.pageSize.getHeight();let y=18;
  const page=()=>{doc.addPage();y=18};
- try{const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src='guru-connect-blue-lockup.png'});doc.addImage(img,'PNG',12,6,58,13);y=25;}catch(_){y=18;}
+ try{const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=reject;im.src='guru-connect-new-header.png'});doc.addImage(img,'PNG',12,6,58,13);y=25;}catch(_){y=18;}
  doc.setFontSize(15);doc.setFont(undefined,'bold');doc.text(title,12,y);y+=7;doc.setFontSize(8);doc.setFont(undefined,'normal');doc.text(subtitle,12,y);y+=7;
  const heads=['DATE / TIME','USER','ROLE','ID','TYPE','AMOUNT','REASON','REQUEST ID','TXN ID'];
  const widths=[24,25,15,22,24,16,38,28,27];let x=6;
@@ -13751,14 +13751,6 @@ function boot(){if(window.__gcAdsBoot)return;window.__gcAdsBoot=true;
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();window.GC_ADS={refresh:renderIndexAds,showAdmin:show,loadAdmin:adminLoad,edit:setEditMode};
 })();
 </script>
-
-
-<style id="gc-blue-footer-logo-final">
-.gc-footer-logo-wrap{width:min(320px,100%)!important;height:auto!important;min-height:0!important;border-radius:10px!important;background:#fff!important;overflow:hidden!important;padding:6px!important;box-sizing:border-box!important;flex:0 1 320px!important}
-#gcFooterLogo{display:block!important;width:100%!important;height:auto!important;max-height:none!important;object-fit:contain!important}
-.gc-footer-brand-copy{display:none!important}
-@media(max-width:640px){.gc-footer-logo-wrap{width:min(280px,100%)!important;flex-basis:280px!important}}
-</style>
 
 </body>
 <style id="gc-final-load-hero-transfer-pdf-fix">
