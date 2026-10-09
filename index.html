@@ -16329,3 +16329,63 @@ header.gc-beautiful-header .gc-logo3-image{display:block!important;width:clamp(2
 }
 @media(max-width:380px){header.gc-beautiful-header .gc-header-inner{gap:3px!important;padding-left:5px!important;padding-right:5px!important;}header.gc-beautiful-header .gc-logo3-lockup{max-width:calc(100% - 68px)!important;}}
 </style>
+
+
+<style id="gc-final-brand-hero-footer-login-security-20261009">
+/* Final controlled brand sizing: prevent the logo strip from covering navigation or hero. */
+header.gc-beautiful-header .gc-header-inner{min-height:82px!important;height:auto!important;display:flex!important;align-items:center!important;gap:14px!important;overflow:visible!important;}
+header.gc-beautiful-header .gc-logo3-lockup{display:flex!important;align-items:center!important;justify-content:flex-start!important;flex:0 1 290px!important;width:290px!important;min-width:0!important;max-width:290px!important;height:auto!important;max-height:76px!important;overflow:hidden!important;}
+header.gc-beautiful-header .gc-logo3-image{display:block!important;width:100%!important;max-width:290px!important;height:auto!important;max-height:76px!important;object-fit:contain!important;object-position:left center!important;}
+#gcStandardFooter .gc-footer-inner{padding:18px 16px 12px!important;}
+#gcStandardFooter .gc-footer-brand-image{display:flex!important;align-items:center!important;justify-content:flex-start!important;width:100%!important;max-width:390px!important;margin:0 auto!important;padding:0!important;background:transparent!important;border-radius:16px!important;overflow:hidden!important;}
+#gcStandardFooter .gc-footer-brand-image #gcFooterLogo{display:block!important;content:url("guru-connect-exact-brand-transparent.png")!important;width:100%!important;max-width:390px!important;height:auto!important;max-height:150px!important;object-fit:contain!important;object-position:center!important;border:0!important;border-radius:16px!important;background:#fff!important;}
+/* Keep the supplied hero banner whole. No fixed height, cover crop, zoom, or old hero text overlay. */
+.gc-image-hero{display:block!important;position:relative!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:hidden!important;background:#fff!important;line-height:0!important;}
+.gc-image-hero-inner{display:block!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;max-width:none!important;margin:0 auto!important;padding:0!important;overflow:hidden!important;}
+.gc-image-hero-img{display:block!important;position:static!important;width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;aspect-ratio:auto!important;object-fit:contain!important;object-position:center!important;margin:0 auto!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;transform:none!important;}
+#publicWebsiteContent .gc-beautiful-hero,#publicWebsiteContent .gc-brand-hero,#publicWebsiteContent .gc-public-hero{display:none!important;}
+/* Admin is not advertised as a public login role. */
+#navStaffBtn,#staffLoginModal,.gc-login-menu-group{display:none!important;visibility:hidden!important;pointer-events:none!important;}
+@media(max-width:760px){
+ header.gc-beautiful-header .gc-header-inner{min-height:68px!important;height:auto!important;padding:5px 8px!important;gap:5px!important;}
+ header.gc-beautiful-header .gc-logo3-lockup{flex:0 1 205px!important;width:205px!important;max-width:calc(100% - 58px)!important;min-width:0!important;max-height:58px!important;}
+ header.gc-beautiful-header .gc-logo3-image{width:100%!important;max-width:205px!important;max-height:58px!important;height:auto!important;}
+ .gc-image-hero,.gc-image-hero-inner{height:auto!important;min-height:0!important;max-height:none!important;}
+ .gc-image-hero-img{width:100%!important;height:auto!important;max-height:none!important;aspect-ratio:auto!important;object-fit:contain!important;}
+ #gcStandardFooter .gc-footer-inner{padding:12px 10px!important;}
+ #gcStandardFooter .gc-footer-brand-image{max-width:300px!important;border-radius:12px!important;}
+ #gcStandardFooter .gc-footer-brand-image #gcFooterLogo{max-width:300px!important;max-height:115px!important;border-radius:12px!important;}
+}
+@media(max-width:380px){header.gc-beautiful-header .gc-logo3-lockup{flex-basis:180px!important;width:180px!important;max-width:calc(100% - 54px)!important;}header.gc-beautiful-header .gc-logo3-image{max-width:180px!important;}}
+</style>
+<script id="gc-hide-admin-role-and-recognize-admin-email-20261009">
+(function(){
+ 'use strict';
+ const ADMIN_EMAIL='guruconnect.in@gmail.com';
+ function tidyLogin(){
+   const role=document.getElementById('loginRoleInput');
+   if(role){
+     Array.from(role.options).forEach(o=>{if(String(o.value).toLowerCase()==='staff'||/admin|staff/i.test(o.textContent))o.remove();});
+     if(!['student','tutor'].includes(String(role.value).toLowerCase()))role.value='student';
+   }
+   document.querySelectorAll('#publicNavbarLinks a,#publicNavbarLinks button').forEach(a=>{if(/admin\s*\/\s*staff\s*login|student\s*login|tutor\s*login|staff\s*login/i.test(a.textContent||''))a.style.display='none';});
+ }
+ const previous=window.gcEmailLogin;
+ window.gcEmailLogin=async function(){
+   const email=(document.getElementById('loginEmailInput')?.value||'').trim().toLowerCase();
+   const password=document.getElementById('loginPasswordInput')?.value||'';
+   if(email===ADMIN_EMAIL){
+     if(!password){alert('Enter your registered account password.');return false;}
+     // Uses Supabase password authentication and the configured admin email; email alone never grants access.
+     return window.handleStaffLogin({preventDefault:function(){}});
+   }
+   const role=document.getElementById('loginRoleInput');
+   if(role&& !['student','tutor'].includes(String(role.value).toLowerCase()))role.value='student';
+   if(typeof previous==='function')return previous.apply(this,arguments);
+   alert('Login is temporarily unavailable. Please refresh and try again.');return false;
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',tidyLogin);else tidyLogin();
+ setTimeout(tidyLogin,250);setTimeout(tidyLogin,1200);
+})();
+</script>
+
