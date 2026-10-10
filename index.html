@@ -4832,6 +4832,37 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 @media(max-width:650px){.gc-official-logo{width:54px!important;height:54px!important}.gc-official-brand-lockup{gap:7px!important}.gc-official-brand-lockup .gc-official-wordmark{font-size:clamp(18px,5vw,25px)!important}}
 </style>
 
+
+<style id="gc-login-brand-lockup-proportion-fix-2026-10">
+/* Official login lockup: separate circular logo + HTML wordmark; never crop a combined image. */
+#loginModal .gc-modern-login-brand{padding:16px 20px 13px!important;text-align:center!important;overflow:hidden!important;box-sizing:border-box!important}
+#loginModal .gc-modern-login-brand-inner{display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;margin:0 auto!important}
+#loginModal .gc-modern-login-logo{display:block!important;flex:0 0 clamp(58px,14vw,78px)!important;width:clamp(58px,14vw,78px)!important;height:clamp(58px,14vw,78px)!important;max-width:78px!important;max-height:78px!important;min-width:0!important;object-fit:contain!important;object-position:center!important;margin:0!important;padding:0!important;border:0!important;background:transparent!important;transform:none!important;filter:none!important}
+#loginModal .gc-login-wordmark{display:flex!important;align-items:baseline!important;justify-content:flex-start!important;gap:.17em!important;min-width:0!important;max-width:100%!important;white-space:nowrap!important;line-height:1!important;font-family:'Nunito Sans',Arial,sans-serif!important;font-size:clamp(22px,5.5vw,31px)!important;letter-spacing:-.035em!important;margin:0!important;padding:0!important}
+#loginModal .gc-login-wordmark .gc-word-guru{color:#e11d2e!important;font-weight:900!important}
+#loginModal .gc-login-wordmark .gc-word-connect{color:#1764d8!important;font-weight:300!important;letter-spacing:0!important}
+#loginModal .gc-modern-login-tagline{margin:7px 0 0!important;font-size:10px!important;line-height:1.25!important;letter-spacing:.025em!important;font-weight:650!important;color:#334b74!important;text-align:center!important}
+@media(max-width:420px){#loginModal .gc-modern-login-brand{padding:13px 10px 11px!important}#loginModal .gc-modern-login-brand-inner{gap:8px!important}#loginModal .gc-modern-login-logo{flex-basis:54px!important;width:54px!important;height:54px!important}#loginModal .gc-login-wordmark{font-size:clamp(19px,5.2vw,24px)!important;letter-spacing:-.04em!important}#loginModal .gc-modern-login-tagline{font-size:9px!important}}
+/* Standalone authentication pages use the same proportional brand lockup. */
+.gc-auth-brand-lockup{display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;width:100%!important;max-width:100%!important;margin:0 auto 18px!important;box-sizing:border-box!important}
+.gc-auth-brand-lockup img{width:clamp(58px,15vw,78px)!important;height:clamp(58px,15vw,78px)!important;max-width:78px!important;max-height:78px!important;flex:0 0 auto!important;object-fit:contain!important;margin:0!important}
+.gc-auth-brand-lockup .gc-auth-wordmark{display:flex!important;align-items:baseline!important;gap:.16em!important;white-space:nowrap!important;line-height:1!important;font-family:'Nunito Sans',Arial,sans-serif!important;font-size:clamp(21px,5.8vw,30px)!important;letter-spacing:-.035em!important}
+.gc-auth-brand-lockup .gc-word-guru{color:#e11d2e!important;font-weight:900!important}
+.gc-auth-brand-lockup .gc-word-connect{color:#1764d8!important;font-weight:300!important}
+@media(max-width:380px){.gc-auth-brand-lockup{gap:8px!important}.gc-auth-brand-lockup img{width:52px!important;height:52px!important}.gc-auth-brand-lockup .gc-auth-wordmark{font-size:20px!important}}
+</style>
+
+
+<style id="gc-login-brand-background-full-width-fix-2026-10-10">
+/* Keep the login brand banner full-width; no half-white header strip. */
+#loginModal .gc-modern-login-card{overflow:hidden!important;box-sizing:border-box!important}
+#loginModal .gc-modern-login-brand{display:block!important;width:100%!important;max-width:none!important;min-width:0!important;flex:0 0 100%!important;align-self:stretch!important;box-sizing:border-box!important;margin:0!important;float:none!important;position:relative!important;left:auto!important;right:auto!important;background:radial-gradient(circle at 15% 30%,rgba(237,28,36,.13),transparent 32%),radial-gradient(circle at 86% 28%,rgba(18,100,216,.15),transparent 34%),linear-gradient(115deg,#fff7f7 0%,#f5faff 52%,#fffaf0 100%)!important;border-bottom:1px solid #dce6f3!important;border-radius:20px 20px 0 0!important;overflow:hidden!important}
+#loginModal .gc-modern-login-brand:after{content:""!important;display:block!important;position:absolute!important;left:0!important;right:0!important;bottom:0!important;width:100%!important;height:3px!important;background:linear-gradient(90deg,#ed1c24,#ff7a00,#ffc928,#15a84a,#08b8e8,#1264d8,#d51bd6)!important}
+#loginModal .gc-modern-login-brand-inner{width:100%!important;max-width:100%!important;box-sizing:border-box!important}
+#loginModal .gc-modern-login-tagline{padding-bottom:3px!important}
+@media(max-width:520px){#loginModal .gc-modern-login-brand{width:100%!important;max-width:none!important;border-radius:18px 18px 0 0!important}}
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -5882,10 +5913,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <!-- LOGIN MODAL -->
 <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 flex items-center justify-center hidden p-4 z-[100]" id="loginModal">
 <div class="gc-modern-login-card bg-white rounded-[2rem] shadow-2xl max-w-lg w-full border relative overflow-hidden">
-  <div class="gc-modern-login-brand">
-    <img src="guru-connect-brand-lockup-transparent.png" alt="GURU CONNECT — Connecting Mind - Creating Future" class="gc-modern-login-logo">
-    <div class="gc-modern-login-tagline">Connecting Mind - Creating Future</div>
-  </div>
+  <div class="gc-modern-login-brand"><div class="gc-modern-login-brand-inner"><img src="guru-connect-header-transparent.png" alt="GURU CONNECT circular logo" class="gc-modern-login-logo"><div class="gc-login-wordmark" aria-label="GURU CONNECT"><span class="gc-word-guru">GURU</span><span class="gc-word-connect">CONNECT</span></div></div><div class="gc-modern-login-tagline">Connecting Mind - Creating Future</div></div>
   <div class="p-6 sm:p-8">
     <div class="text-center mb-5">
       <div class="gc-login-security"><i class="fa-solid fa-shield-halved"></i><span>SECURE MEMBER LOGIN</span></div>
