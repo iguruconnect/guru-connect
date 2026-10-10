@@ -8,6 +8,18 @@
 .postbox{background:#fff;border:1px solid #dbe5f2;border-radius:24px;padding:24px;margin-bottom:22px;box-shadow:0 14px 35px rgba(15,23,42,.07)}
 .posthead{display:flex;justify-content:space-between;gap:18px;align-items:flex-start}.eyebrow{font-size:11px;font-weight:950;color:#f97316;letter-spacing:.12em}.postbox h2{margin:4px 0;font-size:27px;color:#082f6b}.postbox p{margin:0;font-size:14px;color:#64748b}.coin{font-size:20px;font-weight:950;color:#b45309;background:#fff7ed;border:1px solid #fed7aa;padding:10px 14px;border-radius:14px;white-space:nowrap}.lrform{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-top:18px}.field{display:grid;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;font-weight:900;color:#334155}.field input,.field textarea{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:13px;font-size:15px;font-weight:650;outline:none}.field input:focus,.field textarea:focus{border-color:#2563eb;box-shadow:0 0 0 3px #2563eb18}.lrform .btn{border:0;border-radius:12px;padding:14px 18px;font-size:14px;font-weight:950;cursor:pointer}.statusmsg{font-size:13px;font-weight:800;color:#475569;align-self:center}@media(max-width:650px){.postbox{padding:18px}.posthead{flex-direction:column}.lrform{grid-template-columns:1fr}.field.full{grid-column:auto}.postbox h2{font-size:22px}}
 </style>
+
+<style id="gc-global-official-branding">
+.gc-official-wordmark{display:inline-flex!important;align-items:baseline!important;gap:.22em!important;white-space:nowrap!important;line-height:1.05!important;font-family:"Nunito Sans",Arial,sans-serif!important;text-decoration:none!important}
+.gc-official-wordmark .gc-word-guru{color:#e11d2e!important;font-weight:900!important;letter-spacing:-.035em!important}
+.gc-official-wordmark .gc-word-connect{color:#1764d8!important;font-weight:300!important;letter-spacing:.005em!important}
+.gc-official-logo{display:block!important;width:clamp(48px,5.2vw,72px)!important;height:clamp(48px,5.2vw,72px)!important;max-width:72px!important;max-height:72px!important;min-width:0!important;object-fit:contain!important;object-position:center!important;aspect-ratio:1/1!important;flex:0 0 auto!important;opacity:1!important;filter:none!important;mix-blend-mode:normal!important;transform:none!important;border:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;border-radius:0!important}
+.gc-official-brand-lockup{display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;max-width:100%!important;text-decoration:none!important;overflow:visible!important}
+.gc-official-brand-lockup .gc-official-wordmark{font-size:clamp(20px,2.2vw,30px)!important}
+#gc-popup-brand.gc-official-wordmark,.gc-footer-title.gc-official-wordmark,.brandtext.gc-official-wordmark{font-size:inherit!important}
+@media(max-width:650px){.gc-official-logo{width:54px!important;height:54px!important}.gc-official-brand-lockup{gap:7px!important}.gc-official-brand-lockup .gc-official-wordmark{font-size:clamp(18px,5vw,25px)!important}}
+</style>
+
 </head><body>
 <header class="top"><div class="topin"><div class="brand"><img src="guru-connect-royal-logo.png" alt="GURU CONNECT logo"><div class="brandCopy"><div class="brandName"><span class="guru">GURU</span><span class="connect">CONNECT</span></div><div class="brandSlogan">Connecting Mind - Creating Future...</div></div></div><a class="home" href="index.html">← WEBSITE</a><a class="dash" id="dashBtn" href="dashboard.html">MY KINGDOM</a></div></header>
 <main class="wrap">
@@ -100,4 +112,53 @@ document.addEventListener('submit',async e=>{
 document.addEventListener('DOMContentLoaded',()=>setTimeout(gc168SyncPostForm,350));
 })();
 </script>
+
+<script id="gc-global-official-branding-script">
+(function(){
+  if(window.__gcOfficialBrandingApplied)return;window.__gcOfficialBrandingApplied=true;
+  const logoURL='guru-connect-header-transparent.png';
+  const isBrandImg=(img)=>{
+    const src=(img.getAttribute('src')||'').toLowerCase();
+    const alt=(img.getAttribute('alt')||'').toLowerCase();
+    const cls=(typeof img.className==='string'?img.className:'').toLowerCase();
+    const id=(img.id||'').toLowerCase();
+    if(/verified|payment|upi|tick|hero|student|tutor|advert|banner|receipt-banner/.test(alt+' '+cls+' '+id)) return false;
+    return /logo|brand|guru.?connect/.test(src+' '+alt+' '+cls+' '+id);
+  };
+  const wordmark=()=>{
+    const el=document.createElement('span');el.className='gc-official-wordmark';
+    el.innerHTML='<span class="gc-word-guru">GURU</span><span class="gc-word-connect">CONNECT</span>';
+    return el;
+  };
+  document.querySelectorAll('img').forEach(img=>{
+    if(!isBrandImg(img))return;
+    img.setAttribute('src',logoURL);img.setAttribute('alt','GURU CONNECT official circular logo');
+    img.removeAttribute('srcset');img.classList.add('gc-official-logo');
+    const holder=img.closest('a, .brand, .logo, .brand-lockup, .gc-footer-brand, .gc-footer-logo-wrap, .gc-modern-login-brand, header, footer')||img.parentElement;
+    if(!holder)return;
+    holder.classList.add('gc-official-brand-lockup');
+    const nearby=(holder.innerText||holder.textContent||holder.parentElement?.innerText||'').replace(/\s+/g,' ').trim().toUpperCase();
+    const hasNearbyBrand=nearby.includes('GURU')&&nearby.includes('CONNECT');
+    if(hasNearbyBrand){
+      const scope=holder.parentElement||holder;
+      const brandText=scope.querySelector('.brandtext,.gc-footer-title,#gc-popup-brand,.gc-modern-login-title,.exact-registration-brand');
+      if(brandText&&!brandText.classList.contains('gc-official-wordmark')){
+        brandText.innerHTML='<span class="gc-word-guru">GURU</span> <span class="gc-word-connect">CONNECT</span>';
+        brandText.classList.add('gc-official-wordmark');
+      }
+    }else{
+      let existing=holder.querySelector(':scope > .gc-official-wordmark');
+      if(!existing){existing=wordmark();img.insertAdjacentElement('afterend',existing);}
+    }
+  });
+  document.querySelectorAll('.brandtext,.gc-footer-title,#gc-popup-brand,.gc-modern-login-title,.exact-registration-brand').forEach(el=>{
+    const txt=(el.innerText||el.textContent||'').replace(/\s+/g,' ').trim().toUpperCase();
+    if(txt.includes('GURU')&&txt.includes('CONNECT')){
+      el.innerHTML='<span class="gc-word-guru">GURU</span> <span class="gc-word-connect">CONNECT</span>';
+      el.classList.add('gc-official-wordmark');
+    }
+  });
+})();
+</script>
+
 </body></html>

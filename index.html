@@ -4820,6 +4820,18 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 @media(max-width:390px){.gc-approved-logo{width:46px!important;height:46px!important;max-width:46px!important;flex-basis:46px!important}.gc-approved-wordmark{font-size:18px!important;letter-spacing:-.5px!important}.gc-approved-lockup{gap:6px!important;}}
 </style>
 
+
+<style id="gc-global-official-branding">
+.gc-official-wordmark{display:inline-flex!important;align-items:baseline!important;gap:.22em!important;white-space:nowrap!important;line-height:1.05!important;font-family:"Nunito Sans",Arial,sans-serif!important;text-decoration:none!important}
+.gc-official-wordmark .gc-word-guru{color:#e11d2e!important;font-weight:900!important;letter-spacing:-.035em!important}
+.gc-official-wordmark .gc-word-connect{color:#1764d8!important;font-weight:300!important;letter-spacing:.005em!important}
+.gc-official-logo{display:block!important;width:clamp(48px,5.2vw,72px)!important;height:clamp(48px,5.2vw,72px)!important;max-width:72px!important;max-height:72px!important;min-width:0!important;object-fit:contain!important;object-position:center!important;aspect-ratio:1/1!important;flex:0 0 auto!important;opacity:1!important;filter:none!important;mix-blend-mode:normal!important;transform:none!important;border:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;border-radius:0!important}
+.gc-official-brand-lockup{display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;max-width:100%!important;text-decoration:none!important;overflow:visible!important}
+.gc-official-brand-lockup .gc-official-wordmark{font-size:clamp(20px,2.2vw,30px)!important}
+#gc-popup-brand.gc-official-wordmark,.gc-footer-title.gc-official-wordmark,.brandtext.gc-official-wordmark{font-size:inherit!important}
+@media(max-width:650px){.gc-official-logo{width:54px!important;height:54px!important}.gc-official-brand-lockup{gap:7px!important}.gc-official-brand-lockup .gc-official-wordmark{font-size:clamp(18px,5vw,25px)!important}}
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -14196,6 +14208,55 @@ html,body{overflow-x:hidden!important}
 @media(max-width:850px){.gc-beautiful-header .gc-header-inner{min-height:74px!important;padding:7px 12px!important}.gc-beautiful-header .gc-final-brand-lockup{flex:1 1 auto!important;min-width:0!important;max-width:calc(100% - 110px)!important}.gc-beautiful-header .gc-final-header-logo{width:50px!important;height:50px!important;min-width:50px!important;max-width:50px!important;flex-basis:50px!important}.gc-beautiful-nav{display:none!important}.gc-final-brand-name{font-size:20px}.gc-final-brand-slogan{font-size:9px}.gc-final-tutoring-hero{height:500px!important;min-height:500px!important}.gc-final-tutoring-hero .gc-final-hero-photo{object-position:58% center!important}.gc-final-tutoring-hero:after{background:linear-gradient(90deg,rgba(248,252,255,.97) 0%,rgba(248,252,255,.91) 42%,rgba(248,252,255,.3) 74%,rgba(248,252,255,.06) 100%)}.gc-final-hero-copy{padding:42px 24px 34px}.gc-final-hero-copy h1{font-size:46px!important;max-width:450px!important}.gc-final-hero-copy p{max-width:430px;font-size:14px}}
 @media(max-width:520px){.gc-beautiful-header .gc-header-inner{min-height:68px!important;padding:6px 9px!important}.gc-beautiful-header .gc-final-brand-lockup{gap:7px!important;max-width:calc(100% - 76px)!important}.gc-beautiful-header .gc-final-header-logo{width:43px!important;height:43px!important;min-width:43px!important;max-width:43px!important;flex-basis:43px!important}.gc-final-brand-name{font-size:17px;letter-spacing:-.5px}.gc-final-brand-slogan{font-size:7px;letter-spacing:.7px}.gc-final-tutoring-hero{height:570px!important;min-height:570px!important}.gc-final-tutoring-hero .gc-final-hero-photo{object-position:63% center!important;opacity:.72}.gc-final-tutoring-hero:after{background:linear-gradient(180deg,rgba(248,252,255,.94) 0%,rgba(248,252,255,.87) 53%,rgba(248,252,255,.4) 100%)}.gc-final-hero-copy{justify-content:flex-start;padding:35px 19px 28px}.gc-final-hero-kicker{font-size:9px;letter-spacing:.6px;padding:7px 10px;margin-bottom:14px}.gc-final-hero-copy h1{font-size:39px!important;letter-spacing:-1.2px!important}.gc-final-hero-copy p{font-size:13px;line-height:1.55;max-width:360px}.gc-final-hero-actions{width:100%;gap:9px}.gc-final-hero-primary,.gc-final-hero-secondary{min-height:44px;padding:0 14px;font-size:12px}.gc-final-hero-trust{gap:10px;font-size:10px}.gc-home-actions-grid{padding:18px 12px 20px!important}}
 </style>
+
+
+<script id="gc-global-official-branding-script">
+(function(){
+  if(window.__gcOfficialBrandingApplied)return;window.__gcOfficialBrandingApplied=true;
+  const logoURL='guru-connect-header-transparent.png';
+  const isBrandImg=(img)=>{
+    const src=(img.getAttribute('src')||'').toLowerCase();
+    const alt=(img.getAttribute('alt')||'').toLowerCase();
+    const cls=(typeof img.className==='string'?img.className:'').toLowerCase();
+    const id=(img.id||'').toLowerCase();
+    if(/verified|payment|upi|tick|hero|student|tutor|advert|banner|receipt-banner/.test(alt+' '+cls+' '+id)) return false;
+    return /logo|brand|guru.?connect/.test(src+' '+alt+' '+cls+' '+id);
+  };
+  const wordmark=()=>{
+    const el=document.createElement('span');el.className='gc-official-wordmark';
+    el.innerHTML='<span class="gc-word-guru">GURU</span><span class="gc-word-connect">CONNECT</span>';
+    return el;
+  };
+  document.querySelectorAll('img').forEach(img=>{
+    if(!isBrandImg(img))return;
+    img.setAttribute('src',logoURL);img.setAttribute('alt','GURU CONNECT official circular logo');
+    img.removeAttribute('srcset');img.classList.add('gc-official-logo');
+    const holder=img.closest('a, .brand, .logo, .brand-lockup, .gc-footer-brand, .gc-footer-logo-wrap, .gc-modern-login-brand, header, footer')||img.parentElement;
+    if(!holder)return;
+    holder.classList.add('gc-official-brand-lockup');
+    const nearby=(holder.innerText||holder.textContent||holder.parentElement?.innerText||'').replace(/\s+/g,' ').trim().toUpperCase();
+    const hasNearbyBrand=nearby.includes('GURU')&&nearby.includes('CONNECT');
+    if(hasNearbyBrand){
+      const scope=holder.parentElement||holder;
+      const brandText=scope.querySelector('.brandtext,.gc-footer-title,#gc-popup-brand,.gc-modern-login-title,.exact-registration-brand');
+      if(brandText&&!brandText.classList.contains('gc-official-wordmark')){
+        brandText.innerHTML='<span class="gc-word-guru">GURU</span> <span class="gc-word-connect">CONNECT</span>';
+        brandText.classList.add('gc-official-wordmark');
+      }
+    }else{
+      let existing=holder.querySelector(':scope > .gc-official-wordmark');
+      if(!existing){existing=wordmark();img.insertAdjacentElement('afterend',existing);}
+    }
+  });
+  document.querySelectorAll('.brandtext,.gc-footer-title,#gc-popup-brand,.gc-modern-login-title,.exact-registration-brand').forEach(el=>{
+    const txt=(el.innerText||el.textContent||'').replace(/\s+/g,' ').trim().toUpperCase();
+    if(txt.includes('GURU')&&txt.includes('CONNECT')){
+      el.innerHTML='<span class="gc-word-guru">GURU</span> <span class="gc-word-connect">CONNECT</span>';
+      el.classList.add('gc-official-wordmark');
+    }
+  });
+})();
+</script>
 
 </body>
 <script id="gc-admin-receipt-dashboard-20261002">
