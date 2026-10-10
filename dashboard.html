@@ -80,18 +80,6 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 @media(max-width:700px){.gc-chat-overlay{padding:0!important}.gc-chat-window{width:100vw!important;height:100dvh!important;border-radius:0!important}.gc-chat-top{padding:10px 11px!important}.gc-chat-person strong{font-size:15px!important}.gc-chat-person span{font-size:10px!important}.gc-chat-messages{padding:16px 9px!important}.gc-bubble{max-width:88%!important;padding:9px 11px 6px!important}.gc-bubble,.gc-bubble-text{font-size:13.5px!important}.gc-chat-compose{padding:8px!important;gap:7px!important}.gc-chat-compose textarea{min-height:46px!important;font-size:13.5px!important}.gc-chat-send{height:46px!important;min-width:70px!important}.gc-chat-download{font-size:10px!important;padding:8px!important}}
 @media(max-width:430px){.gc-chat-tools .gc-chat-download{font-size:0!important}.gc-chat-tools .gc-chat-download::before{content:'PDF';font-size:10px}.gc-chat-person strong{max-width:180px}.gc-bubble{max-width:92%!important}}
 </style>
-
-<style id="gc-global-official-branding">
-.gc-official-wordmark{display:inline-flex!important;align-items:baseline!important;gap:.22em!important;white-space:nowrap!important;line-height:1.05!important;font-family:"Nunito Sans",Arial,sans-serif!important;text-decoration:none!important}
-.gc-official-wordmark .gc-word-guru{color:#e11d2e!important;font-weight:900!important;letter-spacing:-.035em!important}
-.gc-official-wordmark .gc-word-connect{color:#1764d8!important;font-weight:300!important;letter-spacing:.005em!important}
-.gc-official-logo{display:block!important;width:clamp(48px,5.2vw,72px)!important;height:clamp(48px,5.2vw,72px)!important;max-width:72px!important;max-height:72px!important;min-width:0!important;object-fit:contain!important;object-position:center!important;aspect-ratio:1/1!important;flex:0 0 auto!important;opacity:1!important;filter:none!important;mix-blend-mode:normal!important;transform:none!important;border:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;border-radius:0!important}
-.gc-official-brand-lockup{display:inline-flex!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;max-width:100%!important;text-decoration:none!important;overflow:visible!important}
-.gc-official-brand-lockup .gc-official-wordmark{font-size:clamp(20px,2.2vw,30px)!important}
-#gc-popup-brand.gc-official-wordmark,.gc-footer-title.gc-official-wordmark,.brandtext.gc-official-wordmark{font-size:inherit!important}
-@media(max-width:650px){.gc-official-logo{width:54px!important;height:54px!important}.gc-official-brand-lockup{gap:7px!important}.gc-official-brand-lockup .gc-official-wordmark{font-size:clamp(18px,5vw,25px)!important}}
-</style>
-
 </head>
 <body><div class="gc-fast-dashboard-splash" id="gcDashboardSplash" aria-label="GURU CONNECT loading"><img src="guru-connect-round-logo.png" alt="GURU CONNECT"></div><script>(function(){var h=function(){var x=document.getElementById('gcDashboardSplash');if(!x)return;x.classList.add('hide');setTimeout(function(){x.remove()},240)};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(h,1000)},{once:true});else setTimeout(h,1000);window.addEventListener('load',function(){setTimeout(h,1000)},{once:true})})();</script>
 <header class="top"><div class="bar"><div><div class="brand"><img src="guru-connect-new-header.png" alt="GURU CONNECT — Connecting Minds Creating Future"></div><div id="who" class="who">Loading your Kingdom…</div></div><div class="actions"><div class="notif-wrap"><button type="button" class="notif-btn" id="notifBtn" aria-label="Notifications">🔔<span id="notifBadge" class="notif-badge" style="display:none">0</span></button><div id="notifPanel" class="notif-panel"><div class="notif-head"><strong>Notifications</strong><button type="button" id="desktopNotifBtn">ENABLE DESKTOP</button></div><div id="notifList" class="notif-list"><div class="notif-empty">Loading notifications…</div></div></div></div><button type="button" class="btn green" id="kingdomBtn">👑 MY KINGDOM</button><button type="button" class="btn gray" id="websiteBtn">← WEBSITE</button><button type="button" class="btn red" id="logoutBtn">LOGOUT</button></div></div></header>
@@ -390,54 +378,5 @@ window.addEventListener('error',e=>msg('Page error: '+(e.message||'Unknown JavaS
 </style>
 <div id="gc-popup-overlay" role="presentation"><section id="gc-popup-card" role="alertdialog" aria-modal="true" aria-labelledby="gc-popup-title" aria-describedby="gc-popup-message"><div id="gc-popup-top"><img id="gc-popup-logo" src="guru-connect-logo.png" alt="GURU CONNECT logo"><div id="gc-popup-brand">GURU CONNECT</div><div id="gc-popup-tag">CONNECTING MINDS • CREATING FUTURES</div><div id="gc-popup-icon">✓</div></div><h2 id="gc-popup-title">Notice</h2><p id="gc-popup-message"></p><div id="gc-popup-actions"><button id="gc-popup-ok" type="button">CONTINUE</button></div></section></div>
 <script id="gc-branded-popup-script">(()=>{if(window.__gcBrandedPopupInstalled)return;window.__gcBrandedPopupInstalled=true;const overlay=document.getElementById('gc-popup-overlay');if(!overlay)return;const title=overlay.querySelector('#gc-popup-title'),msg=overlay.querySelector('#gc-popup-message'),icon=overlay.querySelector('#gc-popup-icon'),ok=overlay.querySelector('#gc-popup-ok');let queue=[],busy=false;function render(){if(!queue.length){overlay.classList.remove('gc-open');busy=false;return}busy=true;const item=queue[0];title.textContent=item.title;msg.textContent=item.message;icon.className=item.kind==='error'?'gc-error':item.kind==='warn'?'gc-warn':'';icon.textContent=item.kind==='error'?'!':item.kind==='warn'?'⚠':'✓';ok.textContent=item.button||'CONTINUE';overlay.classList.add('gc-open');ok.focus()}function close(){queue.shift();render()}ok.addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('gc-open')){e.preventDefault();close()}});const nativeAlert=window.alert.bind(window);window.alert=function(value){const message=String(value??'');const low=message.toLowerCase();const kind=/fail|error|unable|not saved|not updated|denied|invalid|expired/.test(low)?'error':/warning|please|cannot|missing/.test(low)?'warn':'success';queue.push({title:kind==='error'?'Action Unsuccessful':kind==='warn'?'Please Note':'Action Completed',message,kind});if(!busy)render()};window.gcShowPopup=(message,options={})=>{queue.push({title:options.title||'GURU CONNECT',message:String(message??''),kind:options.kind||'success',button:options.button});if(!busy)render()};})();</script><script src="gc-activity-popup.js"></script>
-
-<script id="gc-global-official-branding-script">
-(function(){
-  if(window.__gcOfficialBrandingApplied)return;window.__gcOfficialBrandingApplied=true;
-  const logoURL='guru-connect-header-transparent.png';
-  const isBrandImg=(img)=>{
-    const src=(img.getAttribute('src')||'').toLowerCase();
-    const alt=(img.getAttribute('alt')||'').toLowerCase();
-    const cls=(typeof img.className==='string'?img.className:'').toLowerCase();
-    const id=(img.id||'').toLowerCase();
-    if(/verified|payment|upi|tick|hero|student|tutor|advert|banner|receipt-banner/.test(alt+' '+cls+' '+id)) return false;
-    return /logo|brand|guru.?connect/.test(src+' '+alt+' '+cls+' '+id);
-  };
-  const wordmark=()=>{
-    const el=document.createElement('span');el.className='gc-official-wordmark';
-    el.innerHTML='<span class="gc-word-guru">GURU</span><span class="gc-word-connect">CONNECT</span>';
-    return el;
-  };
-  document.querySelectorAll('img').forEach(img=>{
-    if(!isBrandImg(img))return;
-    img.setAttribute('src',logoURL);img.setAttribute('alt','GURU CONNECT official circular logo');
-    img.removeAttribute('srcset');img.classList.add('gc-official-logo');
-    const holder=img.closest('a, .brand, .logo, .brand-lockup, .gc-footer-brand, .gc-footer-logo-wrap, .gc-modern-login-brand, header, footer')||img.parentElement;
-    if(!holder)return;
-    holder.classList.add('gc-official-brand-lockup');
-    const nearby=(holder.innerText||holder.textContent||holder.parentElement?.innerText||'').replace(/\s+/g,' ').trim().toUpperCase();
-    const hasNearbyBrand=nearby.includes('GURU')&&nearby.includes('CONNECT');
-    if(hasNearbyBrand){
-      const scope=holder.parentElement||holder;
-      const brandText=scope.querySelector('.brandtext,.gc-footer-title,#gc-popup-brand,.gc-modern-login-title,.exact-registration-brand');
-      if(brandText&&!brandText.classList.contains('gc-official-wordmark')){
-        brandText.innerHTML='<span class="gc-word-guru">GURU</span> <span class="gc-word-connect">CONNECT</span>';
-        brandText.classList.add('gc-official-wordmark');
-      }
-    }else{
-      let existing=holder.querySelector(':scope > .gc-official-wordmark');
-      if(!existing){existing=wordmark();img.insertAdjacentElement('afterend',existing);}
-    }
-  });
-  document.querySelectorAll('.brandtext,.gc-footer-title,#gc-popup-brand,.gc-modern-login-title,.exact-registration-brand').forEach(el=>{
-    const txt=(el.innerText||el.textContent||'').replace(/\s+/g,' ').trim().toUpperCase();
-    if(txt.includes('GURU')&&txt.includes('CONNECT')){
-      el.innerHTML='<span class="gc-word-guru">GURU</span> <span class="gc-word-connect">CONNECT</span>';
-      el.classList.add('gc-official-wordmark');
-    }
-  });
-})();
-</script>
-
 </body></html>
 ```
