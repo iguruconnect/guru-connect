@@ -12924,7 +12924,7 @@ async function paintDashboard(p){
  const host=document.getElementById('userDashboardContent');if(!host||!p)return;const id=profileId(p);if(!id)return;
  const role=(p.registrationRole||localStorage.getItem('active_user_role')||'student').toLowerCase();const b=await balance(id);let strip=document.getElementById('gcAuthDashboardStrip');
  if(!strip){strip=document.createElement('div');strip.id='gcAuthDashboardStrip';strip.className='gc-auth-dashboard-strip';host.prepend(strip)}
- strip.innerHTML='<div class="gc-auth-dashboard-card"><small>GURU CONNECT ID</small><strong>'+esc(publicId(id,role))+'</strong></div><div class="gc-auth-dashboard-card"><small>GURU COINS BALANCE</small><strong>🪙 '+Number(b).toLocaleString('en-IN')+' COINS</strong></div>';
+ strip.innerHTML='<div class="gc-auth-dashboard-card"><small>GURU CONNECT ID</small><strong>'+esc(publicId(id,role))+'</strong></div><div class="gc-auth-dashboard-card"><small>GURU COINS BALANCE</small><strong>🪙 '+(b===null?'Balance unavailable':Number(b).toLocaleString('en-IN')+' COINS')+'</strong></div>';
 }
 function hookDashboard(){const old=window.renderUserDashboard;if(typeof old!=='function'||old.__gcAuthHook)return;const f=function(p){const r=old.apply(this,arguments);window.__gcAuthProfile=p;setTimeout(()=>paintDashboard(p),50);return r};f.__gcAuthHook=true;window.renderUserDashboard=f}
 async function loadPeople(q,kind){
@@ -13105,8 +13105,7 @@ const oldAdmin=window.GC_AUTH_COINS;
 window.GC_COIN_ACCOUNTABILITY={masterPdf:buildMasterPdf,accountPdf:buildAccountPdf,refresh:renderMaster,ensure};
 setInterval(ensure,3500);document.addEventListener('DOMContentLoaded',ensure);window.addEventListener('load',ensure);
 // Strong card repair: always create a dedicated COINS field if the template does not expose one.
-async function repairCardCoins(){const s=S();if(!s)return;const cards=[...document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card')];const ids=[];const meta=[];cards.forEach(c=>{let role=(c.className.match(/student/i)||c.classList.contains('gc-target-student')||c.classList.contains('gc-new-student-card'))?'student':'tutor';let id=c.dataset.studentId||c.dataset.tutorId||'';if(!id){const n=c.querySelector('[data-student-id],[data-tutor-id],[data-gc-more-tutor],[data-gc-more-student]');id=n?.dataset.studentId||n?.dataset.tutorId||n?.getAttribute('data-gc-more-tutor')||n?.getAttribute('data-gc-more-student')||''}if(id){id=String(id);ids.push(id);meta.push({c,id,role})}});if(!ids.length)return;let map={};try{const q=await s.rpc('gc_public_profile_coin_balances',{p_profile_ids:[...new Set(ids)]});if(q.error)throw q.error;map=Object.fromEntries((q.data||[]).map(x=>[String(x.profile_id),Number(x.balance||0)]))}catch(e){console.warn('Card coin refresh failed:',e)}meta.forEach(({c,id,role})=>{let box=c.querySelector('.gc-final-coin-box');if(!box){box=document.createElement('div');box.className='gc-final-coin-box';box.innerHTML='<span class="gc-final-coin-icon">🪙</span><div><small>GURU COINS</small><strong>—</strong></div>';const grids=c.querySelector('.gc-target-info,.gc-info-grid,.gc-beautiful-info,.gc-profile-info-grid,.gc-new-info-grid');if(grids)grids.appendChild(box);else{const host=c.querySelector('.gc-action-row,.gc-target-actions')||c.lastElementChild||c;host.parentNode.insertBefore(box,host)}}const strong=box.querySelector('strong');if(strong)strong.textContent=Object.prototype.hasOwnProperty.call(map,id)?Number(map[id]).toLocaleString('en-IN')+' COINS':'Balance unavailable';box.dataset.profileId=id;box.dataset.role=role})}
-setInterval(repairCardCoins,3500);document.addEventListener('DOMContentLoaded',repairCardCoins);window.addEventListener('load',repairCardCoins);
+
 })();
 </script>
 <!-- GURU CONNECT PROFILE COINS — FINAL VISIBILITY FIX -->
@@ -16343,7 +16342,4 @@ window.GC_UNIFIED_LOGIN_READY=true;
 .gc-beautiful-card .gc-auth-coin-field,
 .gc-target-card .gc-auth-coin-field,
 .gc-profile-card .gc-auth-coin-field {display:flex!important;visibility:visible!important;opacity:1!important;}
-.gc-final-coin-box{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:5px!important;min-width:0!important;padding:3px 5px!important;border-radius:5px!important;background:linear-gradient(135deg,#159447,#0b7d3d)!important;color:#fff!important;overflow:hidden!important}
-.gc-final-coin-box small{display:block!important;font-size:6px!important;color:#fff!important;line-height:1.1!important}
-.gc-final-coin-box strong{display:block!important;font-size:7px!important;color:#fff!important;line-height:1.1!important;white-space:nowrap!important}
 </style>
