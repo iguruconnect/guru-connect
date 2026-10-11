@@ -371,6 +371,58 @@ async function accountView() {
     console.error('Could not load Guru Coins balance:', e);
   }
 
+async function loadNotifications(initial) {
+  if (!sb || !pid()) return;
+
+  try {
+    const q = await safe(
+      sb.from('gc_notifications')
+        .select('id,type,title,body,request_id,connection_id,message_id,created_at,read_at')
+        .eq('recipient_profile_id', pid())
+        .order('created_at', { ascending: false })
+        .limit(80)
+    );
+
+    if (q.error) {
+      if (initial) {
+        console.warn(
+          'Notifications table not ready:',
+          q.error.message
+        );
+      }
+      return;
+    }
+
+    const prevUnread = new Set(
+      notifications
+        .filter(n => !n.read_at)
+        .map(n => String(n.id))
+    );
+
+    notifications = q.data || [];
+
+    renderNotifications();
+    updateBadges();
+
+    if (!initial) {
+      const fresh = notifications.find(
+        n => !n.read_at && !prevUnread.has(String(n.id))
+      );
+
+      if (fresh) {
+        toast(fresh.title || 'New notification', fresh.body || '');
+
+        browserNotify(
+          fresh.title || 'GURU CONNECT',
+          fresh.body || ''
+        );
+      }
+    }
+  } catch (e) {
+    if (initial) console.warn(e);
+  }
+}
+
   $('app').innerHTML =
     '<div class="grid2">' +
       '<div class="card">' +
