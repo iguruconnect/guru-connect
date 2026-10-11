@@ -365,23 +365,6 @@ async function accountView(){
     '<div class="card"><h2>💰 LEARNING REQUEST ESCROW</h2>'+
     '<div class="success">100 coins are held when a Student posts an LR. They are credited to the Tutor only after completion, Student final remark, and Admin approval.</div></div>';
 
-  $('resetBtn').onclick=()=>location.href='forgot-password.html';
-}
-
-
-  $('resetBtn').onclick = () => location.href = 'forgot-password.html';
-}
-
-
-    const q = await safe(
-      sb.from('gc_coin_wallets')
-        .select('balance, held_balance')
-        .eq('profile_id', walletId)
-        .eq('profile_role', walletRole)
-        .maybeSingle()
-    );
-
-    if (q.error) throw q.error;
 
     if (q.data) {
       bal = Number(q.data.balance ?? 0);
