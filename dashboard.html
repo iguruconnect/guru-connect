@@ -369,43 +369,6 @@ async function accountView(){
 }
 
 
-    const q = await safe(
-      sb.from('gc_coin_wallets')
-        .select('balance, held_balance')
-        .eq('profile_id', walletId)
-        .eq('profile_role', walletRole)
-        .maybeSingle()
-    );
-
-    if (q.error) throw q.error;
-
-    if (q.data) {
-      bal = Number(q.data.balance ?? 0);
-    } else {
-      console.warn('Wallet not found for:', walletRole, walletId);
-    }
-  } catch (e) {
-    console.error('Guru Coins wallet loading failed:', e);
-  }
-
-  $('app').innerHTML =
-    '<div class="grid2">' +
-      '<div class="card">' +
-        '<h2>🪙 MY GURU COINS</h2>' +
-        '<div class="balance">' + bal.toLocaleString('en-IN') + ' 🪙</div>' +
-        '<div class="small">Live wallet balance</div>' +
-      '</div>' +
-      '<div class="card">' +
-        '<h2>🔐 PASSWORD RESET</h2>' +
-        '<p class="small">Reset your password securely using the email reset link.</p>' +
-        '<button type="button" class="btn" id="resetBtn">RESET PASSWORD BY EMAIL</button>' +
-      '</div>' +
-    '</div>' +
-    '<div class="card">' +
-      '<h2>💰 LEARNING REQUEST ESCROW</h2>' +
-      '<div class="success">100 coins are held when a Student posts an LR. They are credited to the Tutor only after completion, Student final remark, and Admin approval.</div>' +
-    '</div>';
-
   $('resetBtn').onclick = () => location.href = 'forgot-password.html';
 }
 
