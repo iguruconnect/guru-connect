@@ -54,6 +54,14 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 .gc-chat-window{width:min(1100px,96vw);height:min(860px,94vh)}
 @media(max-width:900px){.request-form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.gc-bubble{max-width:78%}}
 @media(max-width:620px){.gc-chat-overlay{padding:0}.gc-chat-window{width:100vw;height:100vh;min-height:0;border-radius:0}.gc-chat-top{padding:11px}.gc-chat-person strong{font-size:15px}.gc-chat-person span{font-size:10px}.gc-chat-tools{gap:4px}.gc-chat-download{padding:8px 7px;font-size:10px}.gc-chat-messages{padding:14px 9px}.gc-bubble{max-width:88%;font-size:13.5px}.gc-bubble-text{font-size:13.5px}.gc-chat-compose{padding:9px}.gc-chat-compose textarea{font-size:14px}}
+
+/* Unified LRR + GURU COINS account ledger */
+.table-wrap{width:100%;overflow:auto;margin-top:12px;border:1px solid #e2e8f0;border-radius:12px}
+.table-wrap table{width:100%;border-collapse:collapse;min-width:680px;font-size:11px}
+.table-wrap th,.table-wrap td{padding:10px 11px;text-align:left;vertical-align:top;border-bottom:1px solid #e2e8f0}
+.table-wrap th{font-size:9px;text-transform:uppercase;letter-spacing:.04em;background:#f8fafc;color:#475569;white-space:nowrap}
+.table-wrap tr:last-child td{border-bottom:0}
+.coin-positive{color:#047857;font-weight:900}.coin-negative{color:#b91c1c;font-weight:900}
 </style>
 
 <style id="gc-final-chat-responsive-v3">
@@ -112,19 +120,13 @@ async function init(){
   if(sessionStorage.getItem('gc_logged_out')==='1'){sessionStorage.removeItem('gc_logged_out');try{await sb?.auth?.signOut({scope:'local'})}catch(_){}window.location.replace('index.html');return}
 
   if(!window.supabase?.createClient)throw new Error('Supabase library did not load. Please check internet/CDN access.');
-  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});window.gcSupabase=sb;
+  sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
   const s=await safe(sb.auth.getSession());me=s.data.session?.user;
   if(!me){$('who').textContent='Not logged in';msg('Your login session is missing. Please login again from the website.');setTimeout(()=>location.href='index.html',1800);return}
   const ident=await safe(sb.rpc('gc_get_my_member_profile'));
   if(ident.error)throw ident.error;
-  role=String(ident.data?.role||'').toLowerCase();profile=ident.data?.profile||null;window.__gcDashboardProfile=profile;window.__gcDashboardRole=role;window.__gcDashboardUser=meif(!profile||!['student','tutor'].includes(role)){
-  throw new Error(
-    'Profile lookup diagnostic: Auth ID=' + me.id +
-    '; role=' + JSON.stringify(ident.data?.role) +
-    '; profile returned=' + Boolean(ident.data?.profile) +
-    '; RPC error=' + (ident.error?.message || 'none')
-  );
-}
+  role=String(ident.data?.role||'').toLowerCase();profile=ident.data?.profile||null;
+  if(!profile||!['student','tutor'].includes(role))throw new Error('Your Student/Tutor profile is not linked to this Supabase Auth account. Please run SUPABASE_IDENTITY_MIGRATION_V15_2.sql once in Supabase SQL Editor.');
   if(String(profile.user_id||'')!==String(me.id))throw new Error('Member identity mismatch. Please contact Admin.');
   localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_profile_id',profile.id);localStorage.setItem('active_user_id',me.id);localStorage.setItem('active_user_name',profile.name||profile.full_name||me.email?.split('@')[0]||'User');
   $('who').textContent=(role==='student'?'STUDENT':'TUTOR')+' • '+(profile.name||profile.full_name||me.email||'');
@@ -335,7 +337,18 @@ async function downloadChatPDF(existingRows){
   const safeName=subject.replace(/[^a-z0-9]+/gi,'-').replace(/^-+|-+$/g,'').slice(0,50)||'learning-request';doc.save('GURU-CONNECT-'+safeName+'-chat.pdf');toast('PDF downloaded','The complete chat for this Learning Request has been saved.');
  }catch(e){console.error(e);toast('PDF failed',e.message||'Please try again.');}
 }
-async function accountView(){let bal=0;try{const ci=await window.GC_LIVE_COIN_BALANCE?.();if(ci?.ok)bal=Number(ci.balance||0);else{const q=await safe(sb.from('gc_coin_wallets').select('*').eq('profile_id',pid()).maybeSingle());if(!q.error)bal=Number(q.data?.balance??q.data?.coins??q.data?.available_coins??0)}}catch(_){}$('app').innerHTML='<div class="grid2"><div class="card"><h2>🪙 MY GURU COINS</h2><div class="balance">'+bal.toLocaleString('en-IN')+' 🪙</div><div class="small">Live wallet balance</div></div><div class="card"><h2>🔐 PASSWORD RESET</h2><p class="small">Reset your password securely using the email reset link.</p><button type="button" class="btn" id="resetBtn">RESET PASSWORD BY EMAIL</button></div></div><div class="card"><h2>💰 LEARNING REQUEST ESCROW</h2><div class="success">100 coins are held when a Student posts an LR. They are credited to the Tutor only after completion, Student final remark, and Admin approval.</div></div>';$('resetBtn').onclick=()=>location.href='forgot-password.html'}
+async function accountView(){
+ let bal=null,walletError='';
+ try{const q=await safe(sb.from('gc_coin_wallets').select('balance').eq('profile_id',pid()).maybeSingle());if(q.error)throw q.error;bal=Number(q.data?.balance||0)}catch(e){walletError=e?.message||'Wallet could not be read.'}
+ let ledger=[],ledgerError='',requests=[];
+ try{const q=await safe(sb.from('gc_coin_ledger').select('*').eq('profile_id',pid()).order('created_at',{ascending:false}).limit(50));if(q.error)throw q.error;ledger=q.data||[]}catch(e){ledgerError=e?.message||'Coin history is not available.'}
+ try{const field=role==='student'?'student_id':'tutor_id';const q=await safe(sb.from('gc_learning_requests_v2').select('id,request_code,subject,status,student_outcome,coins_held,created_at,admin_decision_note').eq(field,pid()).order('created_at',{ascending:false}).limit(100));if(!q.error)requests=q.data||[]}catch(_){}
+ const held=requests.reduce((n,r)=>n+Math.max(0,Number(r.coins_held||0)),0);
+ const ledgerRows=ledger.map(r=>{const amount=Number(r.amount||0),type=String(r.transaction_type||r.type||'Transaction');return '<tr><td>'+esc(fmt(r.created_at))+'</td><td>'+esc(type.replaceAll('_',' '))+'</td><td class="'+(amount>0?'coin-positive':amount<0?'coin-negative':'')+'">'+(amount>0?'+':'')+amount.toLocaleString('en-IN')+' 🪙</td><td>'+esc(r.reason||r.description||r.reference||'—')+'</td><td>'+esc(r.learning_request_id||r.request_id||'—')+'</td></tr>'}).join('');
+ const requestRows=requests.map(r=>'<tr><td>'+esc(r.request_code||String(r.id||'').slice(0,8))+'</td><td>'+esc(r.subject||'Learning Request')+'</td><td>'+esc(String(r.status||'OPEN').replaceAll('_',' '))+'</td><td>'+esc(String(r.student_outcome||'PENDING').replaceAll('_',' '))+'</td><td>'+Number(r.coins_held||0).toLocaleString('en-IN')+' 🪙</td><td>'+esc(fmt(r.created_at))+'</td></tr>').join('');
+ $('app').innerHTML='<div class="grid2"><div class="card"><h2>🪙 MY GURU COINS</h2><div class="balance">'+(bal===null?'Unavailable':bal.toLocaleString('en-IN')+' 🪙')+'</div><div class="small">'+(walletError?'Wallet could not be read: '+esc(walletError):'Live balance from the Supabase wallet')+'</div></div><div class="card"><h2>🔐 PASSWORD RESET</h2><p class="small">Reset your password securely using the email reset link.</p><button type="button" class="btn" id="resetBtn">RESET PASSWORD BY EMAIL</button></div></div><div class="card"><h2>🛡️ LEARNING REQUEST COINS — ESCROW</h2><div class="success">Student request deposits are held by the secure Admin workflow. Tutor coins are released only after completion, Student final remark and Admin approval.</div><div class="grid2"><div><div class="small">Coins currently held across your requests</div><div class="balance">'+held.toLocaleString('en-IN')+' 🪙</div></div><div><div class="small">Records shown</div><div class="balance">'+requests.length+'</div></div></div><div class="table-wrap"><table><thead><tr><th>LR ID</th><th>Subject</th><th>Status</th><th>Student Outcome</th><th>Coins Held</th><th>Created</th></tr></thead><tbody>'+(requestRows||'<tr><td colspan="6">No Learning Request escrow records found for this account.</td></tr>')+'</tbody></table></div></div><div class="card"><h2>📒 MY COIN TRANSACTION HISTORY</h2><p class="small">Every row is read from the coin ledger. This page does not directly edit your wallet.</p><div class="table-wrap"><table><thead><tr><th>Date / Time</th><th>Transaction</th><th>Amount</th><th>Reason</th><th>Learning Request ID</th></tr></thead><tbody>'+(ledgerRows||'<tr><td colspan="5">'+(ledgerError?'History unavailable: '+esc(ledgerError):'No coin transactions recorded yet.')+'</td></tr>')+'</tbody></table></div><div class="row"><button type="button" class="btn gray" id="refreshCoinsBtn">↻ REFRESH BALANCE &amp; HISTORY</button></div></div>';
+ $('resetBtn').onclick=()=>location.href='forgot-password.html';$('refreshCoinsBtn').onclick=()=>accountView();
+}
 async function loadNotifications(initial){
  if(!sb||!pid())return;
  try{
@@ -384,23 +397,5 @@ window.addEventListener('error',e=>msg('Page error: '+(e.message||'Unknown JavaS
 </style>
 <div id="gc-popup-overlay" role="presentation"><section id="gc-popup-card" role="alertdialog" aria-modal="true" aria-labelledby="gc-popup-title" aria-describedby="gc-popup-message"><div id="gc-popup-top"><img id="gc-popup-logo" src="guru-connect-logo.png" alt="GURU CONNECT logo"><div id="gc-popup-brand">GURU CONNECT</div><div id="gc-popup-tag">CONNECTING MINDS • CREATING FUTURES</div><div id="gc-popup-icon">✓</div></div><h2 id="gc-popup-title">Notice</h2><p id="gc-popup-message"></p><div id="gc-popup-actions"><button id="gc-popup-ok" type="button">CONTINUE</button></div></section></div>
 <script id="gc-branded-popup-script">(()=>{if(window.__gcBrandedPopupInstalled)return;window.__gcBrandedPopupInstalled=true;const overlay=document.getElementById('gc-popup-overlay');if(!overlay)return;const title=overlay.querySelector('#gc-popup-title'),msg=overlay.querySelector('#gc-popup-message'),icon=overlay.querySelector('#gc-popup-icon'),ok=overlay.querySelector('#gc-popup-ok');let queue=[],busy=false;function render(){if(!queue.length){overlay.classList.remove('gc-open');busy=false;return}busy=true;const item=queue[0];title.textContent=item.title;msg.textContent=item.message;icon.className=item.kind==='error'?'gc-error':item.kind==='warn'?'gc-warn':'';icon.textContent=item.kind==='error'?'!':item.kind==='warn'?'⚠':'✓';ok.textContent=item.button||'CONTINUE';overlay.classList.add('gc-open');ok.focus()}function close(){queue.shift();render()}ok.addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('gc-open')){e.preventDefault();close()}});const nativeAlert=window.alert.bind(window);window.alert=function(value){const message=String(value??'');const low=message.toLowerCase();const kind=/fail|error|unable|not saved|not updated|denied|invalid|expired/.test(low)?'error':/warning|please|cannot|missing/.test(low)?'warn':'success';queue.push({title:kind==='error'?'Action Unsuccessful':kind==='warn'?'Please Note':'Action Completed',message,kind});if(!busy)render()};window.gcShowPopup=(message,options={})=>{queue.push({title:options.title||'GURU CONNECT',message:String(message??''),kind:options.kind||'success',button:options.button});if(!busy)render()};})();</script><script src="gc-activity-popup.js"></script>
-
-<!-- GURU CONNECT LIVE GURU COINS STRIP FOR STUDENT/TUTOR DASHBOARD -->
-<style id="gc-dashboard-live-coins-style">
-#gcDashboardCoinBalance{display:flex;align-items:center;gap:12px;margin:0 0 16px;padding:13px 16px;border-radius:17px;background:linear-gradient(120deg,#151515,#463307 58%,#b8860b);border:1px solid #d4af37;color:#fff;box-shadow:0 8px 22px rgba(0,0,0,.14)}
-#gcDashboardCoinBalance .gc-db-coin{width:42px;height:42px;flex:0 0 42px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 25%,#fff4b0,#d4af37 48%,#765000 88%);border:2px solid #f8e7a0;color:#392500;font-size:18px;font-weight:1000;box-shadow:inset 0 1px 3px #fff8b0,0 2px 4px #0008}
-#gcDashboardCoinBalance .gc-db-label{font-size:10px;font-weight:900;letter-spacing:.12em;color:#f8e7a0}#gcDashboardCoinBalance .gc-db-value{font-size:23px;line-height:1.2;font-weight:1000;color:#fff}#gcDashboardCoinBalance .gc-db-sub{font-size:10px;font-weight:700;color:#f8e7a0;margin-top:2px}@media(max-width:560px){#gcDashboardCoinBalance{padding:11px 12px}#gcDashboardCoinBalance .gc-db-value{font-size:20px}}
-</style>
-<script id="gc-dashboard-live-coins-fix">
-(function(){'use strict';if(window.__gcDashboardLiveCoinsFix)return;window.__gcDashboardLiveCoinsFix=true;
-const client=()=>window.gcSupabase||window.GC_SUPABASE_CLIENT||window.__gcDashboardSupabase||null;
-function ids(){return [...new Set([window.__gcDashboardProfile?.id,window.__gcDashboardProfile?.profile_id,window.__gcDashboardProfile?.user_id,window.__gcDashboardProfile?.userId,localStorage.getItem('active_user_profile_id'),localStorage.getItem('active_user_id')].map(x=>String(x||'').trim()).filter(Boolean))]}
-async function read(){const s=client();if(!s)return {ok:false};const candidates=ids();let last=null;if(candidates.length){try{const q=await s.from('gc_coin_wallets').select('profile_id,balance,held_balance,auth_user_id,profile_role').in('profile_id',candidates);if(q.error)last=q.error;else if(q.data?.length){const w=q.data.find(x=>candidates.includes(String(x.profile_id)))||q.data[0];return {ok:true,balance:Number(w.balance||0),held:Number(w.held_balance||0)}}else if(!last)return {ok:true,balance:0,held:0}}catch(e){last=e}}
-let uid=String(window.__gcDashboardUser?.id||localStorage.getItem('active_user_id')||'');if(uid){try{const q=await s.from('gc_coin_wallets').select('profile_id,balance,held_balance,auth_user_id,profile_role').eq('auth_user_id',uid).limit(1);if(q.error)last=q.error;else if(q.data?.length)return {ok:true,balance:Number(q.data[0].balance||0),held:Number(q.data[0].held_balance||0)};else if(!last)return {ok:true,balance:0,held:0}}catch(e){last=e}}return {ok:false,error:last?.message||'Wallet could not be read'}}
-async function paint(){if(!window.__gcDashboardProfile||!['student','tutor'].includes(String(window.__gcDashboardRole||'').toLowerCase()))return;const tabsEl=document.getElementById('tabs');if(!tabsEl)return;let box=document.getElementById('gcDashboardCoinBalance');if(!box){box=document.createElement('section');box.id='gcDashboardCoinBalance';box.innerHTML='<div class="gc-db-coin">G</div><div><div class="gc-db-label">GURU COINS BALANCE</div><div class="gc-db-value">Loading…</div><div class="gc-db-sub"></div></div>';tabsEl.insertAdjacentElement('afterend',box)}const r=await read();const v=box.querySelector('.gc-db-value'),sub=box.querySelector('.gc-db-sub');if(v)v.textContent=r.ok?Number(r.balance).toLocaleString('en-IN')+' COINS':'Balance unavailable';if(sub)sub.textContent=r.ok&&r.held?Number(r.held).toLocaleString('en-IN')+' coins held in Learning Request escrow':(!r.ok?'Wallet could not be read. Please check Supabase wallet access.':'Live wallet balance');}
-window.GC_LIVE_COIN_BALANCE=read;window.GC_REFRESH_LIVE_COINS=paint;document.addEventListener('DOMContentLoaded',()=>{setTimeout(paint,300);setTimeout(paint,1300)});window.addEventListener('load',paint);setInterval(paint,6000);const obs=new MutationObserver(()=>{clearTimeout(window.__gcDbCoinTimer);window.__gcDbCoinTimer=setTimeout(paint,250)});if(document.body)obs.observe(document.body,{subtree:true,childList:true});
-})();
-</script>
-
 </body></html>
 ```
