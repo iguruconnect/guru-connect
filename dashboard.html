@@ -176,7 +176,11 @@ async function postRequest(){
     p_problem: issue
   }));
 
-  if (r.error) throw r.error;
+    throw new Error(
+    'Learning Request posting is temporarily paused while account security is fixed. No coins have been deducted by this attempt.'
+  );  throw new Error(
+    'Learning Request posting is temporarily paused while account security is fixed. No coins have been deducted by this attempt.'
+  );
   // Deadline is a separate field in the original workflow.
   try{
     const d=await safe(sb.rpc('gc_set_learning_request_deadline',{
