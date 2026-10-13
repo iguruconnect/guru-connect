@@ -186,15 +186,7 @@ const id = typeof data === 'string'
 if (!id) {
   throw new Error(
     'Supabase returned no Learning Request ID. No request was confirmed as created.'
-  );
-}
-
-    throw new Error(
-      'Supabase returned no Learning Request ID. No request was confirmed as created.'
-    );
-  }
-
-
+  );}
   // Deadline is a separate field in the original workflow.
   try{
     const d=await safe(sb.rpc('gc_set_learning_request_deadline',{
