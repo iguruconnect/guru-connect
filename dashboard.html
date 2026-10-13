@@ -177,7 +177,31 @@ async function postRequest(){
   let data=r.data;
   if(Array.isArray(data)) data=data[0]||null;
   const id=data?.id||data?.request_id||data?.requestId;
-  if(!id) throw new Error('Supabase returned no Learning Request ID. No request was confirmed as created.');
+  
+  const r = await safe(sb.rpc('gc_post_learning_request', {
+    p_student_id: String(pid()),
+    p_course: course,
+    p_stream: stream,
+    p_subject: subject,
+    p_topic: composite,
+    p_problem: issue
+  }));
+
+  if (r.error) throw r.error;
+
+  let data = r.data;
+  if (Array.isArray(data)) data = data[0] || null;
+
+  const id = typeof data === 'string'
+    ? data
+    : data?.id || data?.request_id || data?.requestId;
+
+  if (!id) {
+    throw new Error(
+      'Supabase returned no Learning Request ID. No request was confirmed as created.'
+    );
+  }
+
 
   // Deadline is a separate field in the original workflow.
   try{
