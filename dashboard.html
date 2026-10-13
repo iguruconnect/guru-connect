@@ -164,14 +164,7 @@ async function postRequest(){
 
   // This is the authoritative LRR posting RPC used by the original GURU CONNECT build.
   // It performs the 100-coin escrow server-side; the browser never edits the wallet.
-  const r=await safe(sb.rpc('gc_post_learning_request',{
-    p_subject:subject,
-    p_mode:mode,
-    p_topic:topic,
-    p_stream:stream,
-    p_course:course,
-    p_issue:issue
-  }));
+  
   if(r.error) throw r.error;
 
   let data=r.data;
