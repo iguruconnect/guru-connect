@@ -164,44 +164,20 @@ async function postRequest(){
 
   // This is the authoritative LRR posting RPC used by the original GURU CONNECT build.
   // It performs the 100-coin escrow server-side; the browser never edits the wallet.
-  
-const r = await safe(sb.rpc('gc_post_learning_request', {
-  p_student_id: String(pid()),
-  p_course: course,
-  p_stream: stream,
-  p_subject: subject,
-  p_topic: composite,
-  p_problem: issue
-}));
-
-if (r.error) throw r.error;
-
-let data = r.data;
-if (Array.isArray(data)) data = data[0] || null;
-
-const id = typeof data === 'string'
-  ? data
-  : data?.id || data?.request_id || data?.requestId;
-
-if (!id) {
-  throw new Error(
-    'Supabase returned no Learning Request ID. No request was confirmed as created.'
-  );
-}
-
+  const r=await safe(sb.rpc('gc_post_learning_request',{
+    p_subject:subject,
+    p_mode:mode,
+    p_topic:topic,
+    p_stream:stream,
+    p_course:course,
+    p_issue:issue
+  }));
   if(r.error) throw r.error;
 
   let data=r.data;
   if(Array.isArray(data)) data=data[0]||null;
   const id=data?.id||data?.request_id||data?.requestId;
-  
-  
-  if (!id) {
-    throw new Error(
-      'Supabase returned no Learning Request ID. No request was confirmed as created.'
-    );
-  }
-
+  if(!id) throw new Error('Supabase returned no Learning Request ID. No request was confirmed as created.');
 
   // Deadline is a separate field in the original workflow.
   try{
@@ -353,7 +329,7 @@ async function downloadChatPDF(existingRows){
   const safeName=subject.replace(/[^a-z0-9]+/gi,'-').replace(/^-+|-+$/g,'').slice(0,50)||'learning-request';doc.save('GURU-CONNECT-'+safeName+'-chat.pdf');toast('PDF downloaded','The complete chat for this Learning Request has been saved.');
  }catch(e){console.error(e);toast('PDF failed',e.message||'Please try again.');}
 }
-async function accountView(){let bal=0;try{const q=await safe(sb.rpc('gc_public_profile_coin_balances',{p_profile_ids:[String(pid())]}));if(q.error)throw q.error;const row=(q.data||[]).find(x=>String(x.profile_id)===String(pid()));bal=Number(row?.balance??0)}catch(_){}$('app').innerHTML='<div class="grid2"><div class="card"><h2>🪙 MY GURU COINS</h2><div class="balance">'+bal.toLocaleString('en-IN')+' 🪙</div><div class="small">Live wallet balance</div></div><div class="card"><h2>🔐 PASSWORD RESET</h2><p class="small">Reset your password securely using the email reset link.</p><button type="button" class="btn" id="resetBtn">RESET PASSWORD BY EMAIL</button></div></div><div class="card"><h2>💰 LEARNING REQUEST ESCROW</h2><div class="success">100 coins are held when a Student posts an LR. They are credited to the Tutor only after completion, Student final remark, and Admin approval.</div></div>';$('resetBtn').onclick=()=>location.href='forgot-password.html'}
+async function accountView(){let bal=0;try{const q=await safe(sb.from('gc_coin_wallets').select('*').eq('profile_id',pid()).maybeSingle());if(!q.error)bal=Number(q.data?.balance??q.data?.coins??q.data?.available_coins??0)}catch(_){}$('app').innerHTML='<div class="grid2"><div class="card"><h2>🪙 MY GURU COINS</h2><div class="balance">'+bal.toLocaleString('en-IN')+' 🪙</div><div class="small">Live wallet balance</div></div><div class="card"><h2>🔐 PASSWORD RESET</h2><p class="small">Reset your password securely using the email reset link.</p><button type="button" class="btn" id="resetBtn">RESET PASSWORD BY EMAIL</button></div></div><div class="card"><h2>💰 LEARNING REQUEST ESCROW</h2><div class="success">100 coins are held when a Student posts an LR. They are credited to the Tutor only after completion, Student final remark, and Admin approval.</div></div>';$('resetBtn').onclick=()=>location.href='forgot-password.html'}
 async function loadNotifications(initial){
  if(!sb||!pid())return;
  try{
@@ -402,15 +378,5 @@ window.addEventListener('error',e=>msg('Page error: '+(e.message||'Unknown JavaS
 </style>
 <div id="gc-popup-overlay" role="presentation"><section id="gc-popup-card" role="alertdialog" aria-modal="true" aria-labelledby="gc-popup-title" aria-describedby="gc-popup-message"><div id="gc-popup-top"><img id="gc-popup-logo" src="guru-connect-logo.png" alt="GURU CONNECT logo"><div id="gc-popup-brand">GURU CONNECT</div><div id="gc-popup-tag">CONNECTING MINDS • CREATING FUTURES</div><div id="gc-popup-icon">✓</div></div><h2 id="gc-popup-title">Notice</h2><p id="gc-popup-message"></p><div id="gc-popup-actions"><button id="gc-popup-ok" type="button">CONTINUE</button></div></section></div>
 <script id="gc-branded-popup-script">(()=>{if(window.__gcBrandedPopupInstalled)return;window.__gcBrandedPopupInstalled=true;const overlay=document.getElementById('gc-popup-overlay');if(!overlay)return;const title=overlay.querySelector('#gc-popup-title'),msg=overlay.querySelector('#gc-popup-message'),icon=overlay.querySelector('#gc-popup-icon'),ok=overlay.querySelector('#gc-popup-ok');let queue=[],busy=false;function render(){if(!queue.length){overlay.classList.remove('gc-open');busy=false;return}busy=true;const item=queue[0];title.textContent=item.title;msg.textContent=item.message;icon.className=item.kind==='error'?'gc-error':item.kind==='warn'?'gc-warn':'';icon.textContent=item.kind==='error'?'!':item.kind==='warn'?'⚠':'✓';ok.textContent=item.button||'CONTINUE';overlay.classList.add('gc-open');ok.focus()}function close(){queue.shift();render()}ok.addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('gc-open')){e.preventDefault();close()}});const nativeAlert=window.alert.bind(window);window.alert=function(value){const message=String(value??'');const low=message.toLowerCase();const kind=/fail|error|unable|not saved|not updated|denied|invalid|expired/.test(low)?'error':/warning|please|cannot|missing/.test(low)?'warn':'success';queue.push({title:kind==='error'?'Action Unsuccessful':kind==='warn'?'Please Note':'Action Completed',message,kind});if(!busy)render()};window.gcShowPopup=(message,options={})=>{queue.push({title:options.title||'GURU CONNECT',message:String(message??''),kind:options.kind||'success',button:options.button});if(!busy)render()};})();</script><script src="gc-activity-popup.js"></script>
-\n<!-- GURU CONNECT DASHBOARD REAL WALLET LOOKUP PATCH -->
-<script id="gc-dashboard-wallet-id-lookup-fix">
-(function(){
-'use strict';
-const sb=()=>window.gcSupabase||window.GC_SUPABASE_CLIENT||null;
-const keys=['id','profile_id','profileId','user_id','userId','auth_user_id','authUserId','uid'];
-function ids(p){let a=[];keys.forEach(k=>{let v=p&&p[k];if(v!==undefined&&v!==null&&String(v).trim()&&!a.includes(String(v).trim()))a.push(String(v).trim())});return a}
-window.GC_GET_REAL_WALLET_BALANCE=async function(profile){let s=sb();let a=ids(profile);if(!s||!a.length)return {ok:false,balance:null,reason:'Supabase session/profile ID unavailable'};try{let q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',a);if(q.error)return {ok:false,balance:null,reason:q.error.message};let row=(q.data||[]).find(x=>a.includes(String(x.profile_id)));return {ok:true,balance:Number(row?.balance||0),profile_id:row?.profile_id||null}}catch(e){return {ok:false,balance:null,reason:String(e?.message||e)}}};
-})();
-</script>
 </body></html>
 ```
