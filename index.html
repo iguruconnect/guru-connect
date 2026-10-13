@@ -4831,7 +4831,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <a class="gc-beautiful-home" href="#home">Home</a>
 <a href="#tutors">Find Tutor</a>
 <a href="#studentsDirectory">Find Student</a>
-<a href="dashboard.html">Learning Request</a>
+<a href="learning.html">Learning Request</a>
 <a href="registration.html">Register</a>
 <a href="javascript:void(0)" onclick="openLoginModal()">Login</a>
 </nav>
@@ -4849,7 +4849,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition" href="#tutors" onclick="closeNavMenu()">EXPLORE TUTORS</a>
 <a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition" href="#studentsDirectory" onclick="closeNavMenu()">STUDENTS DIRECTORY</a>
 <a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition" href="portal-requests.html" onclick="closeNavMenu()">PORTAL &amp; REQUESTS</a>
-<a class="gc-menu-yellow-item" href="dashboard.html" onclick="closeNavMenu()">LEARNING REQUESTS</a>
+<a class="gc-menu-yellow-item" href="learning.html" onclick="closeNavMenu()">LEARNING REQUESTS</a>
 <a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition" href="javascript:void(0)" onclick="openHelplineModal(); closeNavMenu();">HELPLINE PLANS</a>
 <a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openAboutModal(); closeNavMenu();">ABOUT US</a>
 <a class="gc-menu-yellow-item" href="javascript:void(0)" onclick="openContactModal(); closeNavMenu();">CONTACT US</a>
@@ -5064,7 +5064,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
   <h3>Live Learning<br>Requirement Request</h3>
   <p>Post or browse learning requests and find the right tutor.</p>
   <div class="gc-lrr-statuses"><span>OPEN</span><span>CLOSED</span><span>ADMIN APPROVED</span><span>ALL TIME</span></div>
-  <a class="gc-home-tile-btn" href="dashboard.html">View LRR Cards <i class="fa-solid fa-arrow-right"></i></a>
+  <a class="gc-home-tile-btn" href="learning.html">View LRR Cards <i class="fa-solid fa-arrow-right"></i></a>
 </article>
 <article class="gc-quick-card gc-home-tile gc-home-tutor">
   <div class="gc-home-tile-icon"><i class="fa-solid fa-graduation-cap"></i></div>
@@ -14197,6 +14197,32 @@ html,body{overflow-x:hidden!important}
 @media(max-width:520px){.gc-beautiful-header .gc-header-inner{min-height:68px!important;padding:6px 9px!important}.gc-beautiful-header .gc-final-brand-lockup{gap:7px!important;max-width:calc(100% - 76px)!important}.gc-beautiful-header .gc-final-header-logo{width:43px!important;height:43px!important;min-width:43px!important;max-width:43px!important;flex-basis:43px!important}.gc-final-brand-name{font-size:17px;letter-spacing:-.5px}.gc-final-brand-slogan{font-size:7px;letter-spacing:.7px}.gc-final-tutoring-hero{height:570px!important;min-height:570px!important}.gc-final-tutoring-hero .gc-final-hero-photo{object-position:63% center!important;opacity:.72}.gc-final-tutoring-hero:after{background:linear-gradient(180deg,rgba(248,252,255,.94) 0%,rgba(248,252,255,.87) 53%,rgba(248,252,255,.4) 100%)}.gc-final-hero-copy{justify-content:flex-start;padding:35px 19px 28px}.gc-final-hero-kicker{font-size:9px;letter-spacing:.6px;padding:7px 10px;margin-bottom:14px}.gc-final-hero-copy h1{font-size:39px!important;letter-spacing:-1.2px!important}.gc-final-hero-copy p{font-size:13px;line-height:1.55;max-width:360px}.gc-final-hero-actions{width:100%;gap:9px}.gc-final-hero-primary,.gc-final-hero-secondary{min-height:44px;padding:0 14px;font-size:12px}.gc-final-hero-trust{gap:10px;font-size:10px}.gc-home-actions-grid{padding:18px 12px 20px!important}}
 </style>
 
+\n<!-- GURU CONNECT FINAL COIN DISPLAY + VERIFIED TICK SAFETY PATCH -->
+<style id="gc-coin-authoritative-display-css">
+.gc-auth-coin-field .gc-target-info-text span,.gc-auth-coin-field span.gc-coin-value{font-weight:1000!important}
+.gc-verified-fallback{display:inline-flex!important;align-items:center!important;justify-content:center!important;width:22px!important;height:22px!important;min-width:22px!important;border-radius:50%!important;background:#1877f2!important;color:#fff!important;font:bold 16px/1 Arial,sans-serif!important;box-shadow:0 1px 4px #0002!important;vertical-align:middle!important}
+</style>
+<script id="gc-final-wallet-display-repair">
+(function(){
+'use strict';
+const sb=()=>window.gcSupabase||window.GC_SUPABASE_CLIENT||null;
+const str=v=>(v===undefined||v===null)?'':String(v).trim();
+const keys=['id','profile_id','profileId','user_id','userId','auth_user_id','authUserId','uid'];
+function candidates(obj,card){const a=[];function add(v){v=str(v);if(v&&!a.includes(v))a.push(v)};if(obj)keys.forEach(k=>add(obj[k]));if(card){['profileId','profile_id','userId','user_id','authUserId','auth_user_id','tutorId','studentId'].forEach(k=>add(card.dataset[k]));try{JSON.parse(card.dataset.walletCandidates||'[]').forEach(add)}catch(e){} }return a}
+function sourceObject(card){let id=str(card.dataset.tutorId||card.dataset.studentId||card.dataset.profileId);let role=card.classList.contains('gc-target-student')||card.classList.contains('gc-new-student-card')||card.classList.contains('gc-beautiful-student')||/student/i.test(card.className)?'student':'tutor';let list=[];try{list=role==='student'?(Array.isArray(window.studentDirectoryList)?window.studentDirectoryList:[]):(Array.isArray(window.tutorDirectoryList)?window.tutorDirectoryList:[])}catch(e){}return {role,obj:list.find(x=>x&&candidates(x).includes(id))||list.find(x=>x&&str(x.id)===id)||null}}
+function coinField(card){let fields=[...card.querySelectorAll('.gc-target-info-box,.gc-target-info > div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box,.gc-info-grid > div')];let b=fields.find(x=>{let l=x.querySelector('b,small,strong');return l&&/^\s*(GURU\s*)?COINS(\s*BALANCE)?\s*$/i.test(l.textContent)});if(b)return b;let old=card.querySelector('.gc-final-coin-box');if(old)return old;return null}
+function setCoin(card,n){let box=coinField(card);if(!box)return;box.classList.add('gc-auth-coin-field');let lab=box.querySelector('b,small');if(lab)lab.textContent='COINS';let value=box.querySelector('.gc-target-info-text span,.gc-coin-value,.gc-info-value,.gc-beautiful-field span,.gc-new-info-box span,.gc-profile-info-box span');if(!value){let spans=[...box.querySelectorAll('span,strong')];value=spans.find(x=>x!==lab&&!x.classList.contains('gc-target-icon')&&!x.classList.contains('gc-info-icon')&&!x.classList.contains('gc-final-coin-icon'))}if(value)value.textContent=(n===null?'Balance unavailable':Number(n||0).toLocaleString('en-IN')+' COINS');let extras=card.querySelectorAll('.gc-final-coin-box');extras.forEach(x=>{if(x!==box)x.remove()});}
+async function walletMap(ids){let s=sb();if(!s||!ids.length)return null;try{let q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',[...new Set(ids)]);if(q.error){console.warn('[GURU CONNECT] wallet balance lookup failed:',q.error.message);return null}let m={};(q.data||[]).forEach(r=>m[str(r.profile_id)]=Number(r.balance||0));return m}catch(e){console.warn('[GURU CONNECT] wallet balance lookup failed:',e);return null}}
+async function paintCards(){let cards=[...document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card,.gc-clean-card')];let rows=cards.map(c=>{let x=sourceObject(c);let ids=candidates(x.obj,c);return {c,ids}});let all=[...new Set(rows.flatMap(x=>x.ids))];if(!all.length)return;let map=await walletMap(all);rows.forEach(({c,ids})=>{if(!ids.length)return;if(map===null){setCoin(c,null);return}let hit=ids.find(id=>Object.prototype.hasOwnProperty.call(map,id));setCoin(c,hit?map[hit]:0)});}
+function profileNow(){try{if(typeof getCurrentUserProfile==='function'){let p=getCurrentUserProfile();if(p)return p}}catch(e){}return window.__gcAuthProfile||window.__gcLoggedInProfile||null}
+async function paintDashboard(){let p=profileNow(),host=document.getElementById('userDashboardContent');if(!p||!host)return;let ids=candidates(p);if(!ids.length)return;let map=await walletMap(ids);let b=map===null?null:(ids.find(id=>Object.prototype.hasOwnProperty.call(map,id))!==undefined?map[ids.find(id=>Object.prototype.hasOwnProperty.call(map,id))]:0);let v=document.getElementById('gcProfileCoinsValue');if(v)v.textContent=b===null?'Balance unavailable':Number(b||0).toLocaleString('en-IN')+' COINS';let strip=document.getElementById('gcAuthDashboardStrip');if(strip){let strong=strip.querySelectorAll('.gc-auth-dashboard-card strong');if(strong.length>1)strong[1].textContent='🪙 '+(b===null?'Balance unavailable':Number(b||0).toLocaleString('en-IN')+' COINS')}}
+function verifiedFallbacks(){document.querySelectorAll('img[alt*="Verified"],img[alt*="verified"]').forEach(img=>{if(img.dataset.gcTickFallbackBound)return;img.dataset.gcTickFallbackBound='1';function fallback(){if(!img.isConnected)return;let holder=img.parentElement;if(!holder)return;holder.innerHTML='<span class="gc-verified-fallback" role="img" aria-label="Verified Tutor" title="Verified Tutor">✓</span>'}img.addEventListener('error',fallback);if(img.complete&&img.naturalWidth===0)fallback()})}
+let busy=false;async function run(){if(busy)return;busy=true;try{verifiedFallbacks();await paintCards();await paintDashboard()}finally{busy=false}}
+function boot(){run();setTimeout(run,500);setTimeout(run,1500);setInterval(run,2500);new MutationObserver(()=>{if(!busy)setTimeout(run,150)}).observe(document.body,{childList:true,subtree:true})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
+window.GC_REFRESH_REAL_COIN_BALANCES=run;
+})();
+</script>
 </body>
 <script id="gc-admin-receipt-dashboard-20261002">
 (function(){
@@ -15849,7 +15875,7 @@ setInterval(()=>{if(document.getElementById('gcMyChatPanel')&&role()!=='admin')r
 'use strict';
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const S=()=>window.gcSupabase||null;
-function goLearning(e){const a=e.target.closest&&e.target.closest('#publicNavbarLinks a');if(!a)return;const txt=(a.textContent||'').trim().toLowerCase();if(txt.includes('learning request')){e.preventDefault();e.stopImmediatePropagation();location.href='dashboard.html';return false}}
+function goLearning(e){const a=e.target.closest&&e.target.closest('#publicNavbarLinks a');if(!a)return;const txt=(a.textContent||'').trim().toLowerCase();if(txt.includes('learning request')){e.preventDefault();e.stopImmediatePropagation();location.href='learning.html';return false}}
 document.addEventListener('click',goLearning,true);
 function forceDashboard(){const r=localStorage.getItem('active_user_role');if(r==='student'||r==='tutor'){location.replace('dashboard.html');return true}return false}
 const oldOpen=window.openUserDashboard;window.openUserDashboard=function(){if(forceDashboard())return;if(typeof oldOpen==='function')return oldOpen.apply(this,arguments)};
@@ -16336,63 +16362,3 @@ window.GC_UNIFIED_LOGIN_READY=true;
   #loginModal .p-6{padding:16px!important;}
 }
 </style>
-
-<!-- GURU CONNECT: ONE AUTHORITATIVE COIN TILE PER PUBLIC PROFILE CARD -->
-<style id="gc-single-real-coin-tile-fix">
-/* Keep the original Coins tile; hide the extra tile injected by older patches. */
-.gc-final-coin-box{display:none!important}
-.gc-profile-card .gc-auth-coin-field,
-.gc-target-card .gc-auth-coin-field,
-.gc-beautiful-card .gc-auth-coin-field,
-.gc-new-student-card .gc-auth-coin-field,
-.gc-target-card .gc-duplicate-coin-hidden,
-.gc-profile-card .gc-duplicate-coin-hidden,
-.gc-beautiful-card .gc-duplicate-coin-hidden,
-.gc-new-student-card .gc-duplicate-coin-hidden{display:flex!important}
-</style>
-<script id="gc-single-real-coin-tile-fix-js">
-(function(){
- 'use strict';
- function client(){return window.gcSupabase||window.GC_SUPABASE_CLIENT||null}
- function profileId(card){
-   var id=card.dataset.studentId||card.dataset.tutorId||'';
-   if(!id){var n=card.querySelector('[data-student-id],[data-tutor-id],[data-gc-more-tutor],[data-gc-more-student]');id=n&&(n.dataset.studentId||n.dataset.tutorId||n.getAttribute('data-gc-more-tutor')||n.getAttribute('data-gc-more-student'))||''}
-   if(!id){var b=card.querySelector('[data-gc-more-tutor],[data-gc-more-student]');id=b&&(b.getAttribute('data-gc-more-tutor')||b.getAttribute('data-gc-more-student'))||''}
-   if(!id){var b2=card.querySelector('button[onclick*="openTutorProfile"],button[onclick*="openStudentProfile"],button[onclick*="openPublicTutorProfile"]');var m=String(b2&&b2.getAttribute('onclick')||'').match(/(?:openTutorProfile|openStudentProfile|openPublicTutorProfile)\(\s*[\'"]?([^\'")]+)[\'"]?\s*\)/);id=m&&m[1]||''}
-   return String(id||'');
- }
- function isCoinTile(el){var label=el.querySelector('b,small,strong');return !!label&&/^(?:🪙\s*)?(?:GURU\s+)?COINS(?:\s+BALANCE)?$/i.test(String(label.textContent||'').trim())}
- function prepareCard(card){
-   /* Remove legacy injected duplicates; never touch buttons or unrelated profile data. */
-   card.querySelectorAll('.gc-final-coin-box').forEach(function(el){el.remove()});
-   var all=Array.from(card.querySelectorAll('.gc-target-info-box,.gc-target-info>div,.gc-info-grid>div,.gc-info-box,.gc-beautiful-field,.gc-new-info-box,.gc-profile-info-box'));
-   var coins=all.filter(isCoinTile);
-   if(!coins.length)return null;
-   var keep=coins[0];
-   coins.slice(1).forEach(function(el){el.style.setProperty('display','none','important');el.classList.add('gc-duplicate-coin-hidden')});
-   keep.classList.add('gc-auth-coin-field');keep.style.setProperty('display','flex','important');
-   var label=keep.querySelector('b,small');if(label)label.textContent='COINS';
-   var val=keep.querySelector('.gc-target-info-text span,.gc-coin-value,div span,div strong,span,strong');
-   if(val){val.classList.add('gc-coin-value');return {tile:keep,value:val,id:profileId(card)}}
-   return null;
- }
- async function refresh(){
-   var s=client();if(!s||!document.body)return;
-   var cards=Array.from(document.querySelectorAll('.gc-target-card,.gc-profile-card,.gc-beautiful-card,.gc-new-student-card'));
-   var items=cards.map(function(c){return {card:c,info:prepareCard(c)}}).filter(function(x){return x.info&&x.info.id});
-   if(!items.length)return;
-   var ids=Array.from(new Set(items.map(function(x){return x.info.id})));var balances={};
-   try{var q=await s.from('gc_coin_wallets').select('profile_id,balance').in('profile_id',ids);if(q.error)throw q.error;(q.data||[]).forEach(function(w){balances[String(w.profile_id)]=Number(w.balance||0)})}
-   catch(e){console.warn('GURU CONNECT profile coin tile could not refresh from wallet:',e);return}
-   items.forEach(function(x){if(document.body.contains(x.info.value))x.info.value.textContent=Number(balances[x.info.id]||0).toLocaleString('en-IN')+' COINS';});
- }
- var busy=false;async function run(){if(busy)return;busy=true;try{await refresh()}finally{busy=false}}
- if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',run,{once:true});else run();
- window.addEventListener('load',run);setInterval(run,4000);
- if(typeof MutationObserver!=='undefined'){
-   function observe(){if(!document.body)return;new MutationObserver(function(){if(!window.__gcSingleCoinTileTimer){window.__gcSingleCoinTileTimer=setTimeout(function(){window.__gcSingleCoinTileTimer=null;run()},250)}}).observe(document.body,{subtree:true,childList:true})}
-   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',observe,{once:true});else observe();
- }
- window.GC_SINGLE_COIN_TILE_REFRESH=run;
-})();
-</script>
