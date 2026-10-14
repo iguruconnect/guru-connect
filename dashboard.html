@@ -166,8 +166,9 @@ async function postRequest(){
   // It performs the 100-coin escrow server-side; the browser never edits the wallet.
  
  
+
 const r = await safe(sb.rpc('gc_post_learning_request_secure', {
-  p_student_id: String(profile.id),
+ p_student_id: String(profile.id),
   p_course: course,
   p_stream: stream,
   p_subject: subject,
