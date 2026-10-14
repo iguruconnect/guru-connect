@@ -311,6 +311,10 @@ async function openWhatsAppForLrr(requestId) {
       throw new Error('Please sign in again.');
     }
 
+async function openWhatsAppForStudent(requestId) {
+  return openWhatsAppForLrr(requestId);
+}
+
     const studentResult = await safe(
       sb.from('student_profiles')
         .select('id')
