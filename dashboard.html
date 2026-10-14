@@ -397,7 +397,9 @@ async function accountView() {
         esc(e.message || String(e)) +
       '</div>';
   }
-} async function loadNotifications(initial = false) {
+}
+
+async function loadNotifications(initial = false) {
   try {
     const q = await safe(
       sb.from('gc_notifications')
