@@ -4815,7 +4815,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 .gc-approved-brand-copy .gc-final-brand-slogan{display:block!important;color:#1264d8!important;font-size:clamp(10px,1vw,14px)!important;line-height:1.25!important;font-weight:600!important;white-space:normal!important;}
 .gc-approved-hero{display:block!important;position:relative!important;width:100%!important;max-width:none!important;margin:0!important;padding:0!important;overflow:hidden!important;background:#fff!important;line-height:0!important;opacity:1!important;filter:none!important;mask:none!important;-webkit-mask:none!important;}
 .gc-approved-hero::before,.gc-approved-hero::after{content:none!important;display:none!important;opacity:0!important;background:none!important;}
-.gc-approved-hero-image{display:block!important;width:100%!important;height:auto!important;max-width:none!important;max-height:none!important;object-fit:contain!important;object-position:center!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;opacity:1!important;filter:none!important;mix-blend-mode:normal!important;mask:none!important;-webkit-mask:none!important;transform:none!important;}
+.gc-approved-ho-image{display:block!important;width:100%!important;height:auto!important;max-width:none!important;max-height:none!important;object-fit:contain!important;object-position:center!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;opacity:1!important;filter:none!important;mix-blend-mode:normal!important;mask:none!important;-webkit-mask:none!important;transform:none!important;}
 @media(max-width:760px){.gc-approved-lockup{gap:7px!important}.gc-approved-logo{width:54px!important;height:54px!important;max-width:54px!important;flex-basis:54px!important}.gc-approved-wordmark{font-size:clamp(18px,5vw,25px)!important;gap:5px!important}.gc-approved-brand-copy .gc-final-brand-slogan{font-size:10px!important;}}
 @media(max-width:390px){.gc-approved-logo{width:46px!important;height:46px!important;max-width:46px!important;flex-basis:46px!important}.gc-approved-wordmark{font-size:18px!important;letter-spacing:-.5px!important}.gc-approved-lockup{gap:6px!important;}}
 </style>
@@ -14233,6 +14233,65 @@ html,body{overflow-x:hidden!important}
 @media(max-width:850px){.gc-beautiful-header .gc-header-inner{min-height:74px!important;padding:7px 12px!important}.gc-beautiful-header .gc-final-brand-lockup{flex:1 1 auto!important;min-width:0!important;max-width:calc(100% - 110px)!important}.gc-beautiful-header .gc-final-header-logo{width:50px!important;height:50px!important;min-width:50px!important;max-width:50px!important;flex-basis:50px!important}.gc-beautiful-nav{display:none!important}.gc-final-brand-name{font-size:20px}.gc-final-brand-slogan{font-size:9px}.gc-final-tutoring-hero{height:500px!important;min-height:500px!important}.gc-final-tutoring-hero .gc-final-hero-photo{object-position:58% center!important}.gc-final-tutoring-hero:after{background:linear-gradient(90deg,rgba(248,252,255,.97) 0%,rgba(248,252,255,.91) 42%,rgba(248,252,255,.3) 74%,rgba(248,252,255,.06) 100%)}.gc-final-hero-copy{padding:42px 24px 34px}.gc-final-hero-copy h1{font-size:46px!important;max-width:450px!important}.gc-final-hero-copy p{max-width:430px;font-size:14px}}
 @media(max-width:520px){.gc-beautiful-header .gc-header-inner{min-height:68px!important;padding:6px 9px!important}.gc-beautiful-header .gc-final-brand-lockup{gap:7px!important;max-width:calc(100% - 76px)!important}.gc-beautiful-header .gc-final-header-logo{width:43px!important;height:43px!important;min-width:43px!important;max-width:43px!important;flex-basis:43px!important}.gc-final-brand-name{font-size:17px;letter-spacing:-.5px}.gc-final-brand-slogan{font-size:7px;letter-spacing:.7px}.gc-final-tutoring-hero{height:570px!important;min-height:570px!important}.gc-final-tutoring-hero .gc-final-hero-photo{object-position:63% center!important;opacity:.72}.gc-final-tutoring-hero:after{background:linear-gradient(180deg,rgba(248,252,255,.94) 0%,rgba(248,252,255,.87) 53%,rgba(248,252,255,.4) 100%)}.gc-final-hero-copy{justify-content:flex-start;padding:35px 19px 28px}.gc-final-hero-kicker{font-size:9px;letter-spacing:.6px;padding:7px 10px;margin-bottom:14px}.gc-final-hero-copy h1{font-size:39px!important;letter-spacing:-1.2px!important}.gc-final-hero-copy p{font-size:13px;line-height:1.55;max-width:360px}.gc-final-hero-actions{width:100%;gap:9px}.gc-final-hero-primary,.gc-final-hero-secondary{min-height:44px;padding:0 14px;font-size:12px}.gc-final-hero-trust{gap:10px;font-size:10px}.gc-home-actions-grid{padding:18px 12px 20px!important}}
 </style>
+
+<script id="gc-hide-profile-coin-tiles">
+(function () {
+  const coinText = /\b(guru\s*coins?|coins?\s*balance|coin\s*balance)\b/i;
+  const cardText = /\b(profile|directory|tutor|student|member)[\w-]*card\b/i;
+
+  function hideProfileCoinTiles() {
+    document.querySelectorAll("body *").forEach(function (el) {
+      if (!el.children.length) return;
+
+      const text = (el.innerText || "").trim();
+      if (!text || text.length > 180 || !coinText.test(text)) return;
+
+      const parent = el.parentElement;
+      if (!parent) return;
+
+      // Avoid hiding large sections of the page.
+      if ((parent.innerText || "").trim().length > 260) return;
+
+      let card = el.closest(
+        '[class*="profile-card"], [class*="directory-card"], ' +
+        '[class*="tutor-card"], [class*="student-card"], ' +
+        '[class*="member-card"], [class*="profileCard"]'
+      );
+
+      if (!card) {
+        card = el.parentElement.closest(
+          '[class*="profile-card"], [class*="directory-card"], ' +
+          '[class*="tutor-card"], [class*="student-card"], ' +
+          '[class*="member-card"], [class*="profileCard"]'
+        );
+      }
+
+      if (!card) return;
+
+      // Hide the smallest coin-labelled tile, not the whole profile.
+      let tile = el;
+      while (
+        tile.parentElement &&
+        tile.parentElement !== card &&
+        (tile.parentElement.innerText || "").trim().length <= 180
+      ) {
+        tile = tile.parentElement;
+      }
+
+      if (tile !== card && coinText.test(tile.innerText || "")) {
+        tile.style.setProperty("display", "none", "important");
+      }
+    });
+  }
+
+  hideProfileCoinTiles();
+
+  new MutationObserver(hideProfileCoinTiles).observe(
+    document.body,
+    { childList: true, subtree: true }
+  );
+})();
+</script>
 
 </body>
 <script id="gc-admin-receipt-dashboard-20261002">
