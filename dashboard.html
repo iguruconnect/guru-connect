@@ -164,20 +164,30 @@ async function postRequest(){
 
   // This is the authoritative LRR posting RPC used by the original GURU CONNECT build.
   // It performs the 100-coin escrow server-side; the browser never edits the wallet.
-  const r=await safe(sb.rpc('gc_post_learning_request',{
-    p_subject:subject,
-    p_mode:mode,
-    p_topic:topic,
-    p_stream:stream,
-    p_course:course,
-    p_issue:issue
+ 
+  const r = await safe(sb.rpc('gc_post_learning_request', {
+    p_student_id: String(profile.id),
+    p_course: course,
+    p_stream: stream,
+    p_subject: subject,
+    p_topic: topic,
+    p_problem: 'Chapter: ' + chapter +
+      '\nLearning Mode: ' + mode +
+      '\nIssue: ' + issue
   }));
-  if(r.error) throw r.error;
 
-  let data=r.data;
-  if(Array.isArray(data)) data=data[0]||null;
-  const id=data?.id||data?.request_id||data?.requestId;
-  if(!id) throw new Error('Supabase returned no Learning Request ID. No request was confirmed as created.');
+  if (r.error) throw r.error;
+
+  // The database function returns the request ID as plain text.
+  const id = typeof r.data === 'string'
+    ? r.data
+    : (r.data?.id || r.data?.request_id || r.data?.requestId);
+
+  if (!id) {
+    throw new Error(
+      'Supabase returned no Learning Request ID. Please check Learning Requests before retrying.'
+    );
+  }
 
   // Deadline is a separate field in the original workflow.
   try{
