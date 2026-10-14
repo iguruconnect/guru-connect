@@ -6511,6 +6511,14 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
                         </button>
                     </div>
 
+<div class="gc-tutor-coins-strip">
+    <i class="fa-solid fa-coins"></i>
+    <span>GURU COINS</span>
+    <strong class="gc-tutor-coin-balance"
+            data-tutor-profile-id="${t.id}"
+            data-tutor-user-id="${t.userId || ''}">Loading...</strong>
+</div>
+
                     <div class="gc-action-row">
                         <button onclick="openStudentProfile('${stu.id}')" class="gc-view-btn">VIEW PROFILE</button>
                         <button onclick="connectWithStudent('${stu.id}')" class="gc-connect-btn">CONNECT</button>
@@ -16335,4 +16343,130 @@ window.GC_UNIFIED_LOGIN_READY=true;
   #loginModal .gc-modern-login-logo{max-height:128px!important;}
   #loginModal .p-6{padding:16px!important;}
 }
+<style id="gc-private-masked-coins">
+/* Never show wallet balances on public tutor/student directory cards. */
+.gc-final-coin-box,
+.gc-auth-coin-field,
+.gc-profile-coin-badge,
+.gc-coins-pill {
+  display: none !important;
+}
+
+/* Keep the dashboard's duplicate coin tile hidden; retain its Guru Connect ID tile. */
+#gcAuthDashboardStrip .gc-auth-dashboard-card:nth-child(2) {
+  display: none !important;
+}
+
+.gc-coin-mask-row {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+}
+.gc-coin-mask-toggle {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  border: 1px solid #d7b84b !important;
+  border-radius: 999px !important;
+  background: #fffdf2 !important;
+  color: #624a00 !important;
+  padding: 5px 10px !important;
+  font-size: 11px !important;
+  font-weight: 900 !important;
+  cursor: pointer !important;
+}
+.gc-coin-mask-toggle:focus-visible {
+  outline: 3px solid #2563eb !important;
+  outline-offset: 2px !important;
+}
+</style>
+
+<script id="gc-private-masked-coins-js">
+(function () {
+  'use strict';
+
+  const MASK = '•••••• COINS';
+  const SELECTORS = [
+    '#gcProfileCoinsCard #gcProfileCoinsValue',
+    '#gcAuthDashboardStrip .gc-auth-dashboard-card:nth-child(2) strong'
+  ].join(',');
+
+  function isMasked(text) {
+    return String(text || '').trim().startsWith('••••••');
+  }
+
+  function addToggle(el) {
+    if (!el || !el.isConnected) return;
+
+    const parent = el.parentElement;
+    if (!parent) return;
+
+    let button = parent.querySelector(':scope > .gc-coin-mask-toggle');
+    if (!button) {
+      parent.classList.add('gc-coin-mask-row');
+      button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'gc-coin-mask-toggle';
+      button.textContent = 'Show';
+      button.setAttribute('aria-label', 'Reveal Guru Coins balance');
+      button.setAttribute('aria-pressed', 'false');
+      parent.appendChild(button);
+
+      button.addEventListener('click', function () {
+        const visible = button.dataset.visible === 'true';
+        const nextVisible = !visible;
+        button.dataset.visible = String(nextVisible);
+        button.textContent = nextVisible ? 'Hide' : 'Show';
+        button.setAttribute('aria-label', nextVisible ? 'Hide Guru Coins balance' : 'Reveal Guru Coins balance');
+        button.setAttribute('aria-pressed', String(nextVisible));
+
+        if (nextVisible) {
+          el.textContent = el.dataset.gcRealCoins || 'Balance unavailable';
+        } else {
+          el.textContent = MASK;
+        }
+      });
+    }
+
+    // Save the real value whenever the existing dashboard script refreshes it.
+    const current = String(el.textContent || '').trim();
+    if (current && !isMasked(current)) {
+      el.dataset.gcRealCoins = current;
+    }
+
+    if (button.dataset.visible !== 'true') {
+      if (el.textContent !== MASK) el.textContent = MASK;
+      button.textContent = 'Show';
+      button.setAttribute('aria-label', 'Reveal Guru Coins balance');
+      button.setAttribute('aria-pressed', 'false');
+    }
+  }
+
+  function apply() {
+    document.querySelectorAll(SELECTORS).forEach(addToggle);
+  }
+
+  function boot() {
+    apply();
+    const observer = new MutationObserver(function () {
+      if (window.__gcPrivateCoinMaskScheduled) return;
+      window.__gcPrivateCoinMaskScheduled = true;
+      requestAnimationFrame(function () {
+        window.__gcPrivateCoinMaskScheduled = false;
+        apply();
+      });
+    });
+    if (document.body) observer.observe(document.body, { subtree: true, childList: true, characterData: true });
+    setInterval(apply, 1500);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot, { once: true });
+  } else {
+    boot();
+  }
+})();
+</script>
 </style>
