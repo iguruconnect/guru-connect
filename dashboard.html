@@ -387,6 +387,24 @@ async function accountView() {
         esc(e.message || String(e)) +
       '</div>';
   }
+} async function loadNotifications(initial = false) {
+  try {
+    const q = await safe(
+      sb.from('gc_notifications')
+        .select('*')
+        .eq('recipient_profile_id', pid())
+        .order('created_at', { ascending: false })
+        .limit(100)
+    );
+
+    if (q.error) throw q.error;
+
+    notifications = q.data || [];
+    renderNotifications();
+    updateBadges();
+  } catch (e) {
+    console.error('Notification loading failed:', e);
+  }
 }
 function renderNotifications(){const list=$('notifList');if(!list)return;if(!notifications.length){list.innerHTML='<div class="notif-empty">🔕 No notifications yet.</div>';return}list.innerHTML=notifications.map(n=>'<div class="notif-item '+(!n.read_at?'unread':'')+'" data-notif-id="'+esc(n.id)+'" data-request-id="'+esc(n.request_id||'')+'"><div class="notif-title">'+esc(n.title||'GURU CONNECT')+'</div><div class="notif-body">'+esc(n.body||'')+'</div><div class="notif-time">'+esc(fmt(n.created_at))+(n.read_at?'':' • NEW')+'</div></div>').join('');list.querySelectorAll('[data-notif-id]').forEach(el=>el.onclick=async()=>{const id=el.dataset.notifId,rid=el.dataset.requestId;await markNotificationsRead([id]);$('notifPanel').classList.remove('open');if(rid){tab='connections';await render();setTimeout(()=>openChatIfAccepted(rid),150)}})}
 async function openChatIfAccepted(id){try{const q=await safe(sb.from('gc_learning_request_connections').select('status').eq('request_id',id).limit(1).maybeSingle());if(q.data?.status==='ACCEPTED')await openChat(id);else{tab='connections';await render()}}catch(_){} }
