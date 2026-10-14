@@ -16432,9 +16432,14 @@ window.GC_UNIFIED_LOGIN_READY=true;
 
     // Save the real value whenever the existing dashboard script refreshes it.
     const current = String(el.textContent || '').trim();
-    if (current && !isMasked(current)) {
-      el.dataset.gcRealCoins = current;
-    }
+   if (
+    current &&
+    !isMasked(current) &&
+    !/^0(?:\.0+)?(?:\s|$)/.test(current) &&
+    !/loading|unavailable|error/i.test(current)
+) {
+    el.dataset.gcRealCoins = current;
+}
 
     if (button.dataset.visible !== 'true') {
       if (el.textContent !== MASK) el.textContent = MASK;
