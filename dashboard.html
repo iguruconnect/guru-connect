@@ -250,84 +250,178 @@ async function connectionsView(){
  document.querySelectorAll('[data-conn]').forEach(b=>b.onclick=async()=>{try{b.disabled=true;const fn=b.dataset.conn==='accept'?'gc_student_accept_learning_connection':'gc_student_reject_learning_connection';const r=await safe(sb.rpc(fn,{p_connection_id:b.dataset.id}));if(r.error)throw r.error;toast(b.dataset.conn==='accept'?'Connection accepted':'Connection rejected',b.dataset.conn==='accept'?'The Tutor has been notified. Private chat is now active.':'The Tutor has been notified.');await loadNotifications(false);await connectionsView();await requestsView()}catch(e){msg(e.message||String(e))}finally{b.disabled=false}});
  document.querySelectorAll('[data-open-chat]').forEach(b=>b.onclick=async()=>{try{b.disabled=true;await openChat(b.dataset.openChat)}catch(e){msg(e.message||String(e))}finally{b.disabled=false}});document.querySelectorAll('[data-open-whatsapp]').forEach(b=>b.onclick=async()=>{try{b.disabled=true;await openWhatsAppForStudent(b.dataset.openWhatsapp)}catch(e){msg(e.message||String(e))}finally{b.disabled=false}});updateBadges();
 }
-async function getLrrWhatsAppContact(requestId){
-  // Prefer the server-side contact resolver so the student's browser never
-  // needs to know the tutor's profile-table structure.
-  try{
-    const q=await safe(sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(requestId),p_target_role:'tutor'}));
-    if(!q.error){
-      const d=Array.isArray(q.data)?q.data[0]:q.data;
-      const phone=d?.whatsapp_number||d?.whatsapp_phone||d?.phone||d?.mobile||d?.mobile_number||d?.contact_number||'';
-      const name=d?.name||d?.full_name||d?.tutor_name||'Tutor';
-      if(phone)return {phone,name};
-    }
-  }catch(_){ }
-  return null;
+
+async function getLrrWhatsAppContact(requestId, targetRole) {
+  const q = await safe(sb.rpc('gc_get_whatsapp_contact', {
+    p_request_id: String(requestId),
+    p_target_role: targetRole
+  }));
+
+  if (q.error) throw q.error;
+
+  const d = Array.isArray(q.data) ? q.data[0] : q.data;
+  const phone = d?.phone || d?.whatsapp_number ||
+    d?.whatsapp_phone || d?.mobile || '';
+  const name = d?.name || d?.full_name ||
+    (targetRole === 'tutor' ? 'Tutor' : 'Student');
+
+  if (!phone) {
+    throw new Error(
+      'No WhatsApp number is saved for the connected ' +
+      targetRole + '. Please update the registered mobile number.'
+    );
+  }
+
+  return { phone, name };
 }
-function normalizeWhatsAppNumber(v){
-  let n=String(v||'').trim().replace(/[^0-9+]/g,'');
-  if(n.startsWith('00'))n=n.slice(2);
-  if(n.startsWith('+'))n=n.slice(1);
-  // Indian numbers are commonly stored as 10 digits in the profile.
-  if(/^\d{10}$/.test(n))n='91'+n;
+
+function normalizeWhatsAppNumber(value) {
+  let n = String(value || '').replace(/\D/g, '');
+
+  if (n.startsWith('00')) n = n.slice(2);
+
+  // Handle common Indian mobile number formats.
+  if (/^0\d{10}$/.test(n)) n = '91' + n.slice(1);
+  else if (/^\d{10}$/.test(n)) n = '91' + n;
+
+  if (!/^\d{10,15}$/.test(n)) {
+    throw new Error(
+      'The registered WhatsApp number is invalid. ' +
+      'Please check the profile mobile number.'
+    );
+  }
+
   return n;
 }
-async function openWhatsAppForStudent(requestId){
-  const popup=window.open('about:blank','gcWhatsApp','width=520,height=720');
-  try{
-    const conn=await safe(sb.from('gc_learning_request_connections')
-      .select('id,request_id,student_id,tutor_id,status,created_at')
-      .eq('request_id',String(requestId))
-      .order('created_at',{ascending:false}).limit(20));
-    if(conn.error)throw conn.error;
-    // Use the actual authenticated student's profile UUID. pid() belongs to
-    // the member-profile layer and is not guaranteed to equal student_profiles.id.
-    const me=await safe(sb.auth.getUser());
-    if(me.error)throw me.error;
-    const authUserId=me.data?.user?.id;
-    if(!authUserId)throw new Error('Your login session has expired. Please sign in again.');
-    const studentProfile=await safe(sb.from('student_profiles').select('id').eq('user_id',authUserId).maybeSingle());
-    if(studentProfile.error)throw studentProfile.error;
-    const actualStudentId=studentProfile.data?.id;
-    if(!actualStudentId)throw new Error('Registered Student profile could not be found.');
-    const accepted=(conn.data||[]).find(x=>['ACCEPTED','APPROVED','CONNECTED'].includes(String(x.status||'').toUpperCase()) && String(x.student_id)===String(actualStudentId));
-    if(!accepted)throw new Error('WhatsApp chat can begin only after the Tutor accepts the connection request.');
-    const contact=await getLrrWhatsAppContact(requestId);
-    if(!contact?.phone)throw new Error('No WhatsApp number is saved for this Tutor. Please ask the Tutor to update the registered mobile/WhatsApp number in the Tutor profile.');
-    const phone=normalizeWhatsAppNumber(contact.phone);
-    if(!/^\d{10,15}$/.test(phone))throw new Error('The Tutor WhatsApp number is invalid. Please ask the Tutor to update it in the profile.');
-    const text=encodeURIComponent('Hello '+String(contact.name||'Tutor')+', I am contacting you through GURU CONNECT regarding our accepted learning connection.');
-    const appUrl='https://wa.me/'+phone+'?text='+text;
-    if(popup&&!popup.closed){popup.location.href=appUrl;setTimeout(()=>{try{if(!popup.closed)popup.location.href='https://web.whatsapp.com/send?phone='+phone+'&text='+text}catch(_){ }},900)}
-    else window.location.href=appUrl;
-  }catch(e){if(popup&&!popup.closed)popup.close();throw e}
+
+async function openWhatsAppForLrr(requestId) {
+  // Open a window immediately to reduce popup-blocking issues.
+  const popup = window.open(
+    'about:blank',
+    '_blank',
+    'width=520,height=720'
+  );
+
+  try {
+    const auth = await safe(sb.auth.getUser());
+    if (auth.error) throw auth.error;
+
+    const userId = auth.data?.user?.id;
+    if (!userId) {
+      throw new Error('Please sign in again.');
+    }
+
+    const studentResult = await safe(
+      sb.from('student_profiles')
+        .select('id')
+        .eq('user_id', userId)
+        .maybeSingle()
+    );
+    if (studentResult.error) throw studentResult.error;
+
+    const tutorResult = await safe(
+      sb.from('tutor_profiles')
+        .select('id')
+        .eq('user_id', userId)
+        .maybeSingle()
+    );
+    if (tutorResult.error) throw tutorResult.error;
+
+    const studentId = studentResult.data?.id;
+    const tutorId = tutorResult.data?.id;
+
+    if (!studentId && !tutorId) {
+      throw new Error(
+        'Your registered Student/Tutor profile could not be found.'
+      );
+    }
+
+    const connections = await safe(
+      sb.from('gc_learning_request_connections')
+        .select('student_id,tutor_id,status,created_at')
+        .eq('request_id', String(requestId))
+        .order('created_at', { ascending: false })
+        .limit(20)
+    );
+    if (connections.error) throw connections.error;
+
+    const accepted = (connections.data || []).find(c =>
+      String(c.status || '').toUpperCase() === 'ACCEPTED' &&
+      (
+        (studentId && String(c.student_id) === String(studentId)) ||
+        (tutorId && String(c.tutor_id) === String(tutorId))
+      )
+    );
+
+    if (!accepted) {
+      throw new Error(
+        'WhatsApp is available only after your connection is accepted.'
+      );
+    }
+
+    let targetRole;
+
+    if (
+      studentId &&
+      String(accepted.student_id) === String(studentId)
+    ) {
+      targetRole = 'tutor';
+    } else if (
+      tutorId &&
+      String(accepted.tutor_id) === String(tutorId)
+    ) {
+      targetRole = 'student';
+    } else {
+      throw new Error(
+        'Your account is not a participant in this connection.'
+      );
+    }
+
+    // The secure database function validates the accepted connection
+    // and returns only the other participant's contact details.
+    const contact = await getLrrWhatsAppContact(
+      requestId,
+      targetRole
+    );
+
+    const phone = normalizeWhatsAppNumber(contact.phone);
+    const greeting = 'Hello ' + contact.name +
+      ', I am contacting you through GURU CONNECT regarding our ' +
+      'accepted Learning Request.';
+
+    const url = 'https://wa.me/' + phone +
+      '?text=' + encodeURIComponent(greeting);
+
+    if (popup && !popup.closed) {
+      popup.location.href = url;
+    } else {
+      window.location.href = url;
+    }
+  } catch (e) {
+    if (popup && !popup.closed) popup.close();
+
+    const message = e?.message || String(e);
+    if (typeof msg === 'function') {
+      msg('WHATSAPP: ' + message);
+    } else {
+      alert('WHATSAPP: ' + message);
+    }
+  }
 }
-async function openChat(id){
- const r=await safe(sb.from('gc_learning_requests_v2').select('*').eq('id',id).maybeSingle());
- if(r.error)throw r.error;if(!r.data)throw new Error('Learning Request could not be loaded.');currentChat=r.data;
- const cutoff=new Date(Date.now()-24*60*60*1000).toISOString();const c=await safe(sb.from('gc_learning_request_messages').select('*').eq('request_id',id).gte('created_at',cutoff).order('created_at',{ascending:true}));
- if(c.error)throw new Error(c.error.message+' — Run the supplied SUPABASE_CHAT_NOTIFICATIONS_FINAL.sql in Supabase SQL Editor.');
- const rows=c.data||[];
- const messages=rows.map(m=>'<div class="gc-bubble '+(String(m.sender_profile_id)===pid()?'mine':'')+'"><div class="gc-bubble-text">'+esc(m.body)+'</div><div class="gc-bubble-time">'+esc(new Date(m.created_at).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}))+'</div></div>').join('')||'<div class="gc-chat-empty">No messages yet. Start the conversation.</div>';
- const old=$('gcChatOverlay');if(old)old.remove();
- const html='<div class="gc-chat-overlay" id="gcChatOverlay"><div class="gc-chat-window" role="dialog" aria-modal="true" aria-label="Private chat">'+
- '<div class="gc-chat-top"><div class="gc-chat-person"><strong>💬 '+esc(currentChat.subject||'Learning Request')+'</strong><span>Private chat • Student & Tutor only • messages auto-delete after 24 hours</span></div><div class="gc-chat-tools"><button type="button" class="gc-chat-tool gc-chat-download" id="downloadChatPdf">⬇ DOWNLOAD CHAT</button><button type="button" class="gc-chat-tool gc-chat-close" id="closeChatBtn" aria-label="Close">✕</button></div></div>'+ 
- '<div class="gc-chat-messages" id="chatMessages">'+messages+'</div>'+ 
- '<div class="gc-chat-compose"><textarea id="chatInput" maxlength="5000" placeholder="Type a message… (Enter = send, Shift+Enter = new line)"></textarea><button type="button" class="gc-chat-send" id="sendChatBtn">SEND</button></div></div></div>';
- document.body.insertAdjacentHTML('beforeend',html);
- $('closeChatBtn').onclick=()=>{const x=$('gcChatOverlay');if(x)x.remove();currentChat=null};
- $('gcChatOverlay').addEventListener('click',e=>{if(e.target.id==='gcChatOverlay')$('closeChatBtn').click()});
- $('downloadChatPdf').onclick=()=>downloadChatPDF(rows);
- $('sendChatBtn').onclick=sendChat;
- $('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat()}});
- $('chatMessages').scrollTop=$('chatMessages').scrollHeight;
- await markRequestNotificationsRead(id);await loadNotifications(false);
- setTimeout(()=>$('chatInput')?.focus(),80);
+
+// Keep the existing button handler name, but open WhatsApp
+// instead of loading the internal private-chat window.
+async function openChat(id) {
+  return openWhatsAppForLrr(id);
 }
-async function sendChat(){
- const input=$('chatInput'),b=$('sendChatBtn'),body=input?.value.trim();if(!body||!currentChat)return;
- try{b.disabled=true;const r=await safe(sb.rpc('gc_lr_send_message',{p_request_id:currentChat.id,p_body:body}));if(r.error)throw r.error;input.value='';await openChat(currentChat.id);toast('Message sent','The other user has been notified.')}catch(e){msg('MESSAGE NOT SENT: '+(e.message||String(e)))}finally{if(b)b.disabled=false}
+
+// Internal website messaging is no longer used.
+async function sendChat() {
+  throw new Error(
+    'Internal chat is disabled. Please use the WhatsApp Chat button.'
+  );
 }
+
 async function downloadChatPDF(existingRows){
  const rows=existingRows||[];const subject=String(currentChat?.subject||'Learning Request');
  if(!window.jspdf?.jsPDF){toast('PDF library unavailable','Use the browser print option for this chat.');return window.print()}
