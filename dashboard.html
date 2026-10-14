@@ -53,6 +53,7 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 .gc-chat-window{width:min(1100px,96vw);height:min(860px,94vh)}
 @media(max-width:900px){.request-form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.gc-bubble{max-width:78%}}
 @media(max-width:620px){.gc-chat-overlay{padding:0}.gc-chat-window{width:100vw;height:100vh;min-height:0;border-radius:0}.gc-chat-top{padding:11px}.gc-chat-person strong{font-size:15px}.gc-chat-person span{font-size:10px}.gc-chat-tools{gap:4px}.gc-chat-download{padding:8px 7px;font-size:10px}.gc-chat-messages{padding:14px 9px}.gc-bubble{max-width:88%;font-size:13.5px}.gc-bubble-text{font-size:13.5px}.gc-chat-compose{padding:9px}.gc-chat-compose textarea{font-size:14px}}
+.gc-coin-statement-shortcut{display:flex;align-items:center;justify-content:space-between;gap:16px;border:2px solid #f59e0b;background:linear-gradient(110deg,#fff7ed,#ffffff);box-shadow:0 8px 24px #f59e0b20}.gc-coin-statement-shortcut h2{margin:0 0 6px!important;color:#9a3412}.gc-coin-statement-shortcut p{margin:0;color:#475569;font-size:12px;font-weight:700;line-height:1.5}.gc-coin-statement-shortcut button{flex:0 0 auto;min-height:46px}@media(max-width:620px){.gc-coin-statement-shortcut{align-items:stretch;flex-direction:column}.gc-coin-statement-shortcut button{width:100%}}
 </style>
 
 <style id="gc-final-chat-responsive-v3">
@@ -85,7 +86,7 @@ html,body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI
 <main>
 <section class="hero"><h1>👑 MY KINGDOM — Learning Request Portal</h1><p>1 Student posts LR → 2 Tutor sends connection → 3 Student accepts → 4 Private chat → 5 Tutor completes + Student confirms → 6 Admin approves coins.</p></section>
 <section class="steps"><div class="step"><b>1</b>STUDENT POSTS LR</div><div class="step"><b>2</b>TUTOR SENDS CONNECTION</div><div class="step"><b>3</b>STUDENT ACCEPTS</div><div class="step"><b>4</b>PRIVATE CHAT</div><div class="step"><b>5</b>TUTOR COMPLETES + STUDENT REMARK</div><div class="step"><b>6</b>ADMIN APPROVES COINS</div></section>
-<div class="wrap"><div id="globalError"></div><div class="tabs" id="tabs"></div><section id="app"><div class="card empty">Loading…</div></section></div>
+<div class="wrap"><div id="globalError"></div><div class="card gc-coin-statement-shortcut"><div><h2>📄 YOUR GURU COINS STATEMENT</h2><p>View your private coin credits, debits, transaction notes and Learning Request references. Available to both Students and Tutors.</p></div><button type="button" class="btn orange" id="coinStatementShortcutBtn">OPEN COIN STATEMENT →</button></div><div class="tabs" id="tabs"></div><section id="app"><div class="card empty">Loading…</div></section></div>
 </main>
 <div id="toast" class="toast"><strong id="toastTitle"></strong><span id="toastBody"></span></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -126,7 +127,7 @@ async function init(){
  }catch(e){msg(e.message||e)}
 }
 function bind(){
- $('headerCoinStatementBtn').onclick=()=>{statementOffset=0;statementRows=[];tab='statement';render();window.scrollTo({top:0,behavior:'smooth'})};
+ const openCoinStatement=()=>{statementOffset=0;statementRows=[];tab='statement';render();window.scrollTo({top:0,behavior:'smooth'})};$('headerCoinStatementBtn').onclick=openCoinStatement;$('coinStatementShortcutBtn').onclick=openCoinStatement;
  $('kingdomBtn').onclick=()=>{tab='requests';render();window.scrollTo({top:0,behavior:'smooth'})};
  $('websiteBtn').onclick=()=>location.href='index.html';
  $('logoutBtn').onclick=logout;
