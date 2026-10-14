@@ -16343,7 +16343,15 @@ window.GC_UNIFIED_LOGIN_READY=true;
   #loginModal .gc-modern-login-logo{max-height:128px!important;}
   #loginModal .p-6{padding:16px!important;}
 }
-<style id="gc-private-masked-coins">
+<style id="gc-private-masked-coins"
+/* PRIVACY FIX: Never display coin balances on public profile cards. */
+.gc-profile-card .gc-tutor-coins-strip,
+.gc-target-card .gc-tutor-coins-strip,
+.gc-beautiful-card .gc-tutor-coins-strip,
+.gc-new-student-card .gc-tutor-coins-strip {
+  display: none !important;
+}
+>
 /* Never show wallet balances on public tutor/student directory cards. */
 .gc-final-coin-box,
 .gc-auth-coin-field,
