@@ -200,7 +200,9 @@ const r = await safe(sb.rpc('gc_post_learning_request_secure', {
     if(d.error) console.warn('Deadline RPC:',d.error);
   }catch(e){console.warn('Deadline RPC unavailable:',e)}
 
-  msg('Learning Request '+(data?.request_code||'created')+' posted successfully. 100 Guru Coins are now held in Admin escrow.','success');
+  
+msg('Learning Request created successfully. 100 Guru Coins are now held in Admin escrow.','success');
+
   tab='requests';
   await render();
  }catch(e){
