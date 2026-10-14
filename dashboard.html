@@ -1,4 +1,3 @@
-```
 <!doctype html>
 <html lang="en">
 <head>
@@ -98,6 +97,7 @@ const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
 const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 let sb=null,me=null,role='',profile=null,tab='requests',currentChat=null,notificationTimer=null,realtimeChannel=null,notifications=[];
+let statementOffset=0,statementTotal=0,statementRows=[];
 function msg(t,kind='error'){$('globalError').innerHTML='<div class="'+kind+'">'+esc(t)+'</div>';if(kind==='success')setTimeout(clearMsg,4000)}
 function clearMsg(){$('globalError').innerHTML=''}
 function wait(ms){return new Promise((_,rej)=>setTimeout(()=>rej(new Error('Request timed out. Please refresh and try again.')),ms))}
@@ -135,12 +135,12 @@ function bind(){
  document.addEventListener('click',e=>{const wrap=document.querySelector('.notif-wrap');if(wrap&&!wrap.contains(e.target))$('notifPanel').classList.remove('open')});
 }
 function tabs(){
- const a=[['requests','📚 MY LEARNING REQUESTS'],['post','➕ POST REQUEST'],['connections','🔔 CONNECTION REQUESTS'],['account','🪙 MY ACCOUNT']];
+ const a=[['requests','📚 MY LEARNING REQUESTS'],['post','➕ POST REQUEST'],['connections','🔔 CONNECTION REQUESTS'],['account','🪙 MY ACCOUNT'],['statement','📄 COIN STATEMENT']];
  if(role!=='student')a.splice(1,1);
  $('tabs').innerHTML=a.map(x=>{let badge='';if(x[0]==='requests')badge='<span id="chatBadge" class="tab-badge" style="display:none">0</span>';if(x[0]==='connections')badge+='<span id="connBadge" class="tab-badge" style="display:none">0</span>';return '<button type="button" class="tab '+(tab===x[0]?'active':'')+'" data-tab="'+x[0]+'">'+x[1]+badge+'</button>'}).join('');
  document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{tab=b.dataset.tab;clearMsg();if(tab==='connections')await markNotificationTypeRead(['CONNECTION_REQUEST','CONNECTION_RESPONSE']);if(tab==='requests')await markNotificationTypeRead(['CHAT_MESSAGE']);await render()});updateBadges();
 }
-async function render(){tabs();$('app').innerHTML='<div class="card empty">Loading…</div>';try{if(tab==='post'){if(role!=='student')throw new Error('Only Students can post a Learning Request.');$('app').innerHTML=postView();const d=$('deadline');if(d){const x=new Date(Date.now()+30*60*1000);x.setSeconds(0,0);d.min=x.toISOString().slice(0,16)}$('postBtn').onclick=postRequest;const postForm=$('postBtn')?.closest('form');if(postForm){postForm.onsubmit=e=>{e.preventDefault();postRequest()}}return}if(tab==='connections'){await connectionsView();return}if(tab==='account'){await accountView();return}await requestsView()}catch(e){$('app').innerHTML='<div class="card error"><b>Could not load this section.</b><br>'+esc(e.message||e)+'</div>';}}
+async function render(){tabs();$('app').innerHTML='<div class="card empty">Loading…</div>';try{if(tab==='post'){if(role!=='student')throw new Error('Only Students can post a Learning Request.');$('app').innerHTML=postView();const d=$('deadline');if(d){const x=new Date(Date.now()+30*60*1000);x.setSeconds(0,0);d.min=x.toISOString().slice(0,16)}$('postBtn').onclick=postRequest;const postForm=$('postBtn')?.closest('form');if(postForm){postForm.onsubmit=e=>{e.preventDefault();postRequest()}}return}if(tab==='connections'){await connectionsView();return}if(tab==='account'){await accountView();return}if(tab==='statement'){await statementView(false);return}await requestsView()}catch(e){$('app').innerHTML='<div class="card error"><b>Could not load this section.</b><br>'+esc(e.message||e)+'</div>';}}
 function postView(){return '<div class="card"><h2>➕ POST A LEARNING REQUEST</h2><div class="note">100 GURU COINS are held in Admin escrow. Coins are released to the Tutor only after completion + Student remark + Admin approval.</div><div class="request-form-grid form"><div class="field"><label for="course">COURSE</label><input id="course" placeholder="HSC / JEE / NEET etc."></div><div class="field"><label for="stream">STREAM</label><input id="stream" placeholder="Science / Commerce / Arts etc."></div><div class="field"><label for="subject">SUBJECT *</label><input id="subject" placeholder="e.g. Economics"></div><div class="field"><label for="chapter">CHAPTER *</label><input id="chapter" placeholder="Write chapter name"></div><div class="field"><label for="topic">TOPIC *</label><input id="topic" placeholder="Write topic name"></div><div class="field"><label for="learningMode">LEARNING MODE *</label><select id="learningMode"><option value="">Select mode</option><option value="ONLINE">Online</option><option value="OFFLINE">Offline</option><option value="ONLINE_OR_OFFLINE">Online or Offline</option></select></div><div class="field full"><label for="deadline">LEARNING DEADLINE DATE & TIME *</label><input id="deadline" type="datetime-local"><div class="hint">Choose the date and time by which you want to learn/complete this topic.</div></div><div class="field full"><label for="issue">FULL ISSUE / PROBLEM *</label><textarea id="issue" placeholder="Clearly write the doubt, problem or concept you want the Tutor to explain."></textarea></div><div class="deadline-box field full">📅 <b>Learning Deadline:</b> Please select a future date and time. This deadline will be saved with your Learning Request.</div><div class="field full"><button type="button" class="btn" id="postBtn">POST REQUEST — 100 🪙</button></div></div></div>'}
 async function postRequest(){
  const b=$('postBtn');
@@ -443,6 +443,133 @@ async function downloadChatPDF(existingRows){
  }catch(e){console.error(e);toast('PDF failed',e.message||'Please try again.');}
 }
 
+
+function statementReason(row) {
+  return String(row.reason || row.note || row.transaction_type || 'Coin transaction');
+}
+function statementReference(row) {
+  return String(row.request_id || row.learning_request_id || row.reference_id || '—');
+}
+function statementDate(value) {
+  if (!value) return '—';
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? '—' : d.toLocaleString('en-IN', {
+    day:'2-digit', month:'short', year:'numeric',
+    hour:'2-digit', minute:'2-digit'
+  });
+}
+async function statementView(append) {
+  if (!append) {
+    statementOffset = 0;
+    statementRows = [];
+    $('app').innerHTML = '<div class="card empty">Loading your private Guru Coins statement…</div>';
+  }
+  try {
+    const q = await safe(sb.rpc('gc_get_my_coin_statement', {
+      p_limit: 100,
+      p_offset: statementOffset
+    }));
+    if (q.error) throw q.error;
+    const data = Array.isArray(q.data) ? q.data[0] : q.data;
+    if (!data || !Array.isArray(data.transactions)) {
+      throw new Error('The statement function returned an unexpected response. Please contact Admin.');
+    }
+    statementTotal = Number(data.total_entries || 0);
+    const incoming = data.transactions;
+    statementRows = append ? statementRows.concat(incoming) : incoming.slice();
+    const rowsHtml = statementRows.map(row => {
+      const amount = Number(row.amount || 0);
+      const kind = amount > 0 ? 'CREDIT' : amount < 0 ? 'DEBIT' : 'NO CHANGE';
+      const amtText = (amount > 0 ? '+' : '') + amount.toLocaleString('en-IN');
+      const voided = !!row.voided_at;
+      return '<tr>' +
+        '<td>' + esc(statementDate(row.date)) + '</td>' +
+        '<td><span class="gc-stmt-kind ' + (amount > 0 ? 'credit' : amount < 0 ? 'debit' : '') + '">' + kind + '</span>' +
+          (voided ? '<div class="gc-stmt-void">VOIDED • audit record</div>' : '') +
+          '<div class="gc-stmt-type">' + esc(row.transaction_type || 'Transaction') + '</div></td>' +
+        '<td class="gc-stmt-amount ' + (amount > 0 ? 'credit' : amount < 0 ? 'debit' : '') + '">' + esc(amtText) + '</td>' +
+        '<td>' + esc(statementReason(row)) + '</td>' +
+        '<td class="gc-stmt-ref">' + esc(statementReference(row)) + '</td>' +
+      '</tr>';
+    }).join('');
+    $('app').innerHTML =
+      '<style>' +
+      '.gc-stmt-table-wrap{overflow-x:auto;width:100%}.gc-stmt-table{border-collapse:collapse;width:100%;min-width:760px;font-size:12px}.gc-stmt-table th,.gc-stmt-table td{padding:11px 10px;border-bottom:1px solid #e2e8f0;text-align:left;vertical-align:top;overflow-wrap:anywhere}.gc-stmt-table th{background:#f1f5f9;color:#334155;font-size:10px;text-transform:uppercase;letter-spacing:.4px}.gc-stmt-kind{display:inline-block;font-size:9px;font-weight:900;border-radius:99px;padding:4px 7px;background:#f1f5f9;color:#475569}.gc-stmt-kind.credit{background:#dcfce7;color:#166534}.gc-stmt-kind.debit{background:#fee2e2;color:#991b1b}.gc-stmt-amount{font-weight:900;white-space:nowrap}.gc-stmt-amount.credit{color:#047857}.gc-stmt-amount.debit{color:#b91c1c}.gc-stmt-type{font-size:10px;color:#64748b;margin-top:4px}.gc-stmt-ref{font-size:10px;max-width:190px;word-break:break-word}.gc-stmt-void{font-size:9px;color:#b91c1c;font-weight:900;margin-top:4px}.gc-stmt-actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.gc-stmt-muted{font-size:11px;color:#64748b;line-height:1.5}' +
+      '</style>' +
+      '<div class="card">' +
+        '<div class="inbox-head"><div><h2>📄 MY GURU COINS STATEMENT</h2><div class="gc-stmt-muted">Private statement for your signed-in ' + esc(role) + ' account. Credits and debits are taken from the coin ledger.</div></div>' +
+        '<div class="gc-stmt-actions"><button type="button" class="btn green" id="downloadCoinStatementBtn">DOWNLOAD PDF</button><button type="button" class="btn gray" id="refreshCoinStatementBtn">REFRESH</button></div></div>' +
+        '<div class="grid2"><div class="card"><div class="small">LEDGER ENTRIES</div><div class="balance">' + statementTotal.toLocaleString('en-IN') + '</div></div>' +
+        '<div class="card"><div class="small">ENTRIES LOADED</div><div class="balance">' + statementRows.length.toLocaleString('en-IN') + '</div></div></div>' +
+        '<div class="note">This is a transaction history, not a running-balance reconciliation. Voided entries remain visible for audit transparency. Your wallet balance and escrow are not changed by viewing or downloading this statement.</div>' +
+        (statementRows.length ? '<div class="gc-stmt-table-wrap"><table class="gc-stmt-table"><thead><tr><th>Date &amp; time</th><th>Type</th><th>Amount</th><th>Reason / note</th><th>Request / reference</th></tr></thead><tbody>' + rowsHtml + '</tbody></table></div>' : '<div class="empty">No coin ledger entries were found for this account.</div>') +
+        '<div class="gc-stmt-actions" style="margin-top:14px">' +
+          (statementRows.length < statementTotal ? '<button type="button" class="btn" id="loadOlderCoinStatementBtn">LOAD OLDER ENTRIES</button>' : '') +
+          '<span class="gc-stmt-muted">Showing ' + statementRows.length + ' of ' + statementTotal + ' entries.</span>' +
+        '</div>' +
+      '</div>';
+    $('downloadCoinStatementBtn').onclick = downloadCoinStatementPDF;
+    $('refreshCoinStatementBtn').onclick = () => { statementOffset = 0; statementRows = []; statementView(false); };
+    const older = $('loadOlderCoinStatementBtn');
+    if (older) older.onclick = async () => {
+      older.disabled = true; older.textContent = 'LOADING…';
+      statementOffset = statementRows.length;
+      await statementView(true);
+    };
+  } catch (e) {
+    $('app').innerHTML = '<div class="card error"><b>Guru Coins statement could not be loaded.</b><br>' + esc(e.message || String(e)) + '<p class="small">No coin balances or ledger transactions were changed.</p><button type="button" class="btn gray" id="retryCoinStatementBtn">TRY AGAIN</button></div>';
+    $('retryCoinStatementBtn').onclick = () => statementView(false);
+  }
+}
+function downloadCoinStatementPDF() {
+  if (!statementRows.length) {
+    toast('No statement entries', 'There are no loaded ledger entries to export.');
+    return;
+  }
+  if (!window.jspdf?.jsPDF) {
+    toast('PDF library unavailable', 'Please check your internet connection and try again.');
+    return;
+  }
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit:'mm', format:'a4' });
+    const margin = 14, pageWidth = 210;
+    let y = 18;
+    doc.setFont('helvetica','bold'); doc.setFontSize(16);
+    doc.text('GURU CONNECT — GURU COINS STATEMENT', margin, y); y += 8;
+    doc.setFont('helvetica','normal'); doc.setFontSize(9);
+    doc.text('Account role: ' + role.toUpperCase(), margin, y); y += 5;
+    doc.text('Profile ID: ' + String(profile?.id || '—'), margin, y); y += 5;
+    doc.text('Generated: ' + new Date().toLocaleString('en-IN'), margin, y); y += 5;
+    doc.text('Entries in this PDF: ' + statementRows.length + ' of ' + statementTotal, margin, y); y += 8;
+    doc.setDrawColor(210,220,232); doc.line(margin,y,pageWidth-margin,y); y += 7;
+    for (const row of statementRows) {
+      const amount = Number(row.amount || 0);
+      const type = amount > 0 ? 'CREDIT' : amount < 0 ? 'DEBIT' : 'NO CHANGE';
+      const line = [
+        statementDate(row.date),
+        type + ': ' + ((amount > 0 ? '+' : '') + amount.toLocaleString('en-IN')),
+        'Transaction: ' + String(row.transaction_type || '—'),
+        'Reason: ' + statementReason(row),
+        'Request/reference: ' + statementReference(row),
+        row.voided_at ? 'VOIDED at: ' + statementDate(row.voided_at) : ''
+      ].filter(Boolean).join('\n');
+      const lines = doc.splitTextToSize(line, pageWidth - margin * 2);
+      const blockHeight = lines.length * 4.5 + 4;
+      if (y + blockHeight > 282) { doc.addPage(); y = 18; }
+      doc.setFont('helvetica','normal'); doc.setFontSize(9);
+      doc.text(lines, margin, y);
+      y += blockHeight;
+      doc.setDrawColor(230,235,242); doc.line(margin,y,pageWidth-margin,y); y += 3;
+    }
+    const filename = 'GURU-CONNECT-' + role.toUpperCase() + '-COIN-STATEMENT.pdf';
+    doc.save(filename);
+    toast('PDF downloaded', 'Your loaded personal coin statement has been saved.');
+  } catch (e) {
+    toast('PDF failed', e?.message || 'Please try again.');
+  }
+}
+
 async function accountView() {
   $('app').innerHTML =
     '<div class="card empty">Loading your Guru Coins balance…</div>';
@@ -488,10 +615,21 @@ async function accountView() {
           'They are credited to the Tutor only after completion, ' +
           'the Student’s final remark, and Admin approval.' +
         '</div>' +
+      '</div>' +
+      '<div class="card">' +
+        '<h2>📄 GURU COINS STATEMENT</h2>' +
+        '<p class="small">View your private credits, debits, transaction reasons and Learning Request references. Download your personal PDF statement.</p>' +
+        '<button type="button" class="btn" id="openCoinStatementBtn">OPEN COIN STATEMENT</button>' +
       '</div>';
 
     $('resetBtn').onclick = () => {
       location.href = 'forgot-password.html';
+    };
+    $('openCoinStatementBtn').onclick = () => {
+      statementOffset = 0;
+      statementRows = [];
+      tab = 'statement';
+      render();
     };
   } catch (e) {
     $('app').innerHTML =
@@ -561,4 +699,3 @@ window.addEventListener('error',e=>msg('Page error: '+(e.message||'Unknown JavaS
 <div id="gc-popup-overlay" role="presentation"><section id="gc-popup-card" role="alertdialog" aria-modal="true" aria-labelledby="gc-popup-title" aria-describedby="gc-popup-message"><div id="gc-popup-top"><img id="gc-popup-logo" src="guru-connect-logo.png" alt="GURU CONNECT logo"><div id="gc-popup-brand">GURU CONNECT</div><div id="gc-popup-tag">CONNECTING MINDS • CREATING FUTURES</div><div id="gc-popup-icon">✓</div></div><h2 id="gc-popup-title">Notice</h2><p id="gc-popup-message"></p><div id="gc-popup-actions"><button id="gc-popup-ok" type="button">CONTINUE</button></div></section></div>
 <script id="gc-branded-popup-script">(()=>{if(window.__gcBrandedPopupInstalled)return;window.__gcBrandedPopupInstalled=true;const overlay=document.getElementById('gc-popup-overlay');if(!overlay)return;const title=overlay.querySelector('#gc-popup-title'),msg=overlay.querySelector('#gc-popup-message'),icon=overlay.querySelector('#gc-popup-icon'),ok=overlay.querySelector('#gc-popup-ok');let queue=[],busy=false;function render(){if(!queue.length){overlay.classList.remove('gc-open');busy=false;return}busy=true;const item=queue[0];title.textContent=item.title;msg.textContent=item.message;icon.className=item.kind==='error'?'gc-error':item.kind==='warn'?'gc-warn':'';icon.textContent=item.kind==='error'?'!':item.kind==='warn'?'⚠':'✓';ok.textContent=item.button||'CONTINUE';overlay.classList.add('gc-open');ok.focus()}function close(){queue.shift();render()}ok.addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('gc-open')){e.preventDefault();close()}});const nativeAlert=window.alert.bind(window);window.alert=function(value){const message=String(value??'');const low=message.toLowerCase();const kind=/fail|error|unable|not saved|not updated|denied|invalid|expired/.test(low)?'error':/warning|please|cannot|missing/.test(low)?'warn':'success';queue.push({title:kind==='error'?'Action Unsuccessful':kind==='warn'?'Please Note':'Action Completed',message,kind});if(!busy)render()};window.gcShowPopup=(message,options={})=>{queue.push({title:options.title||'GURU CONNECT',message:String(message??''),kind:options.kind||'success',button:options.button});if(!busy)render()};})();</script><script src="gc-activity-popup.js"></script>
 </body></html>
-```
