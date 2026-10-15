@@ -135,6 +135,65 @@ button,a,input,select,textarea{touch-action:manipulation;}
   .gcTableWrap{width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
 }
 </style>
+<style id="gc-admin-colorful-control-tiles-20261009">
+/* =========================================================
+   GURU CONNECT ADMIN — COLORFUL CONTROL TILES
+   Each main dashboard tile gets a distinct brand color while
+   preserving all existing actions/functionality.
+   ========================================================= */
+.controlbar .topbtn{
+  color:#fff!important;
+  border:0!important;
+  min-height:86px!important;
+  border-radius:16px!important;
+  padding:13px 12px!important;
+  box-shadow:0 10px 24px rgba(15,45,90,.13)!important;
+  position:relative!important;
+  overflow:hidden!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.14)!important;
+}
+.controlbar .topbtn:after{
+  content:"";
+  position:absolute;
+  width:110px;height:110px;
+  border-radius:50%;
+  right:-35px;top:-48px;
+  background:rgba(255,255,255,.16);
+  pointer-events:none;
+}
+.controlbar .topbtn b,.controlbar .topbtn small{position:relative;z-index:1;color:#fff!important;}
+.controlbar .topbtn small{opacity:.94!important;}
+
+/* Homepage-inspired palette */
+.controlbar .topbtn:nth-child(1){background:linear-gradient(135deg,#ff334e,#ef233c)!important;}
+.controlbar .topbtn:nth-child(2){background:linear-gradient(135deg,#19b957,#08a8cf)!important;}
+.controlbar .topbtn:nth-child(3){background:linear-gradient(135deg,#1264d8,#633eea)!important;}
+.controlbar .topbtn:nth-child(4){background:linear-gradient(135deg,#ff8a00,#ffd21a)!important;}
+.controlbar .topbtn:nth-child(5){background:linear-gradient(135deg,#0877e8,#1264d8)!important;}
+.controlbar .topbtn:nth-child(6){background:linear-gradient(135deg,#06a6d8,#19b957)!important;}
+.controlbar .topbtn:nth-child(7){background:linear-gradient(135deg,#7c3aed,#d51bd6)!important;}
+.controlbar .topbtn:nth-child(8){background:linear-gradient(135deg,#ef7d00,#ef233c)!important;}
+.controlbar .topbtn:nth-child(9){background:linear-gradient(135deg,#0891b2,#06b6d4)!important;}
+
+.controlbar .topbtn:hover,
+.controlbar .topbtn.active{
+  color:#fff!important;
+  border:0!important;
+  transform:translateY(-2px)!important;
+  filter:saturate(1.08) brightness(1.03)!important;
+  box-shadow:0 14px 30px rgba(15,45,90,.19)!important;
+}
+.controlbar .topbtn.active:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border:3px solid rgba(255,255,255,.82);
+  border-radius:16px;
+  pointer-events:none;
+}
+@media(max-width:900px){.controlbar .topbtn{min-height:82px!important;}}
+@media(max-width:600px){.controlbar .topbtn{min-height:76px!important;}}
+</style>
 </head><body>
 <header class="head"><div class="headin"><div><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
 <main class="wrap"><div id="gate" class="gate">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
@@ -509,10 +568,7 @@ async function loadAccountCoins(){
   const u=accountUser();if(!u)return;const p=$('gcPane-coins');p.innerHTML='<div class="empty">Loading complete coin ledger…</div>';
   try{const d = await accountRpc('get_account_overview', {user_id: u.user_id}); const rows = d.coins || []; const balance = Number(d.wallet?.balance ?? d.account?.coin_balance ?? 0); const held = Number(d.wallet?.held_balance ?? 0);
     const cols=rows.length?Object.keys(rows[0]):[];
-     p.innerHTML=`<div class="gcAcctGrid">   <div class="gcStat">     <b>Available Guru Coins</b>     <strong class="gcBlue">🪙 ${balance}</strong>   </div>   <div class="gcStat">     <b>Held Guru Coins</b>     <strong class="gcOrange">🪙 ${held}</strong>   </div>   <div class="gcStat">     <b>Ledger Records</b>     <strong>${rows.length}</strong>   </div>   <div class="gcStat">     <b>Last Entry</b>     <strong>${esc(rows[0]?.created_at||'—')}</strong>   </div> </div> <div class="gcBox">   <h3>🪙 Complete Coin Ledger — ${rows.length} Record(s)</h3>   <div class="gcTableWrap">     <table class="gcTable">       <thead>         <tr>           ${cols.map(c=>`<th>${esc(c.replace(/_/g,' ').toUpperCase())}</th>`).join('')}           <th>ADMIN ACTION</th>         </tr>       </thead>       <tbody>         ${rows.length?rows.map(r=>`<tr>${cols.map(c=>`<td style="font-size:10px;max-width:220px;overflow-wrap:anywhere">${esc(r[c]??'—')}</td>`).join('')}<td><div class="gcRowActions"><button class="btn primary" onclick="editCoinRecord('${esc(r.id||'')}')">✏️ EDIT</button><button class="btn red" onclick="deleteCoinRecord('${esc(r.id||'')}')">🗑️ DELETE</button></div></td></tr>`).join(''):`<tr><td colspan="${cols.length+1}">No coin ledger records found.</td></tr>`}       </tbody>     </table>   </div> </div> <div class="gcMiniActions">   <button class="btn teal" onclick="selectCoinsForAccount()">🪙 MANAGE COINS</button> </div>`;<strong class="gcBlue">🪙 ${balance}</strong></div><div class="gcStat"><b>Ledger Records</b><strong>${rows.length}</strong></div><div class="gcStat"><b>Last Entry</b><strong>${esc(rows[0]?.created_at||'—')}</strong></div></div>
-    <div class="gcBox"><h3>🪙 Complete Coin Ledger — ${rows.length} Record(s)</h3><div class="gcTableWrap"><table class="gcTable"><thead><tr>${cols.map(c=>`<th>${esc(c.replace(/_/g,' ').toUpperCase())}</th>`).join('')}<th>ADMIN ACTION</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${cols.map(c=>`<td style="font-size:10px;max-width:220px;overflow-wrap:anywhere">${esc(r[c]??'—')}</td>`).join('')}<td><div class="gcRowActions"><button class="btn primary" onclick="editCoinRecord('${esc(r.id||'')}')">✏️ EDIT</button><button class="btn red" onclick="deleteCoinRecord('${esc(r.id||'')}')">🗑️ DELETE</button></div></td></tr>`).join(''):`<tr><td colspan="${cols.length+1}">No coin ledger records found.</td></tr>`}</tbody></table></div></div>
-    <div class="gcMiniActions"><button class="btn teal" onclick="selectCoinsForAccount()">🪙 MANAGE COINS</button></div>`;
-  }catch(e){p.innerHTML='<div class="dangerNote">Coin ledger could not be loaded.<br><br>'+esc(e.message||e)+'<br><br>The existing <b>gc_coin_ledger</b> schema must contain an <b>id</b> column for Admin edit/delete.</div>'}
+     p.innerHTML=`<div class="gcAcctGrid">   <div class="gcStat">     <b>Available Guru Coins</b>     <strong class="gcBlue">🪙 ${balance}</strong>   </div>   <div class="gcStat">     <b>Held Guru Coins</b>     <strong class="gcOrange">🪙 ${held}</strong>   </div>   <div class="gcStat">     <b>Ledger Records</b>     <strong>${rows.length}</strong>   </div>   <div class="gcStat">     <b>Last Entry</b>     <strong>${esc(rows[0]?.created_at||'—')}</strong>   </div> </div> <div class="gcBox">   <h3>🪙 Complete Coin Ledger — ${rows.length} Record(s)</h3>   <div class="gcTableWrap">     <table class="gcTable">       <thead>         <tr>           ${cols.map(c=>`<th>${esc(c.replace(/_/g,' ').toUpperCase())}</th>`).join('')}           <th>ADMIN ACTION</th>         </tr>       </thead>       <tbody>         ${rows.length?rows.map(r=>`<tr>${cols.map(c=>`<td style="font-size:10px;max-width:220px;overflow-wrap:anywhere">${esc(r[c]??'—')}</td>`).join('')}<td><div class="gcRowActions"><button class="btn primary" onclick="editCoinRecord('${esc(r.id||'')}')">✏️ EDIT</button><button class="btn red" onclick="deleteCoinRecord('${esc(r.id||'')}')">🗑️ DELETE</button></div></td></tr>`).join(''):`<tr><td colspan="${cols.length+1}">No coin ledger records found.</td></tr>`}       </tbody>     </table>   </div> </div> <div class="gcMiniActions">   <button class="btn teal" onclick="selectCoinsForAccount()">🪙 MANAGE COINS</button> </div>`  }catch(e){p.innerHTML='<div class="dangerNote">Coin ledger could not be loaded.<br><br>'+esc(e.message||e)+'<br><br>The existing <b>gc_coin_ledger</b> schema must contain an <b>id</b> column for Admin edit/delete.</div>'}
 }
 window.editCoinRecord=async id=>{if(!id)return;const u=accountUser();if(!u)return;const d=await accountRpc('get_account_overview',{user_id:u.user_id}),r=(d.coins||[]).find(x=>String(x.id)===String(id));if(!r)return alert('Coin ledger record not found.');const payload={id:String(id)};for(const k of ['amount','coin_amount','change','reason','description','reference','reference_no','lrr_id','request_id','role','note','notes']){if(Object.prototype.hasOwnProperty.call(r,k)){const v=prompt(k.replace(/_/g,' ')+':',r[k]??'');if(v===null)return;payload[k]=v}}try{await accountRpc('update_coin_ledger',payload);await loadAccountCoins()}catch(e){alert('Coin ledger edit failed: '+(e.message||e))}};
 window.deleteCoinRecord=async id=>{if(!id||!confirm('Delete this coin ledger record permanently? This changes the ledger history. Continue?'))return;try{await accountRpc('delete_coin_ledger',{id:String(id)});await loadAccountCoins()}catch(e){alert('Coin ledger delete failed: '+(e.message||e))}};
@@ -958,62 +1014,3 @@ $('adSave').onclick=async()=>{
 
 staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit()}});
 </script></body></html>
-<style id="gc-admin-colorful-control-tiles-20261009">
-/* =========================================================
-   GURU CONNECT ADMIN — COLORFUL CONTROL TILES
-   Each main dashboard tile gets a distinct brand color while
-   preserving all existing actions/functionality.
-   ========================================================= */
-.controlbar .topbtn{
-  color:#fff!important;
-  border:0!important;
-  min-height:86px!important;
-  border-radius:16px!important;
-  padding:13px 12px!important;
-  box-shadow:0 10px 24px rgba(15,45,90,.13)!important;
-  position:relative!important;
-  overflow:hidden!important;
-  text-shadow:0 1px 2px rgba(0,0,0,.14)!important;
-}
-.controlbar .topbtn:after{
-  content:"";
-  position:absolute;
-  width:110px;height:110px;
-  border-radius:50%;
-  right:-35px;top:-48px;
-  background:rgba(255,255,255,.16);
-  pointer-events:none;
-}
-.controlbar .topbtn b,.controlbar .topbtn small{position:relative;z-index:1;color:#fff!important;}
-.controlbar .topbtn small{opacity:.94!important;}
-
-/* Homepage-inspired palette */
-.controlbar .topbtn:nth-child(1){background:linear-gradient(135deg,#ff334e,#ef233c)!important;}
-.controlbar .topbtn:nth-child(2){background:linear-gradient(135deg,#19b957,#08a8cf)!important;}
-.controlbar .topbtn:nth-child(3){background:linear-gradient(135deg,#1264d8,#633eea)!important;}
-.controlbar .topbtn:nth-child(4){background:linear-gradient(135deg,#ff8a00,#ffd21a)!important;}
-.controlbar .topbtn:nth-child(5){background:linear-gradient(135deg,#0877e8,#1264d8)!important;}
-.controlbar .topbtn:nth-child(6){background:linear-gradient(135deg,#06a6d8,#19b957)!important;}
-.controlbar .topbtn:nth-child(7){background:linear-gradient(135deg,#7c3aed,#d51bd6)!important;}
-.controlbar .topbtn:nth-child(8){background:linear-gradient(135deg,#ef7d00,#ef233c)!important;}
-.controlbar .topbtn:nth-child(9){background:linear-gradient(135deg,#0891b2,#06b6d4)!important;}
-
-.controlbar .topbtn:hover,
-.controlbar .topbtn.active{
-  color:#fff!important;
-  border:0!important;
-  transform:translateY(-2px)!important;
-  filter:saturate(1.08) brightness(1.03)!important;
-  box-shadow:0 14px 30px rgba(15,45,90,.19)!important;
-}
-.controlbar .topbtn.active:before{
-  content:"";
-  position:absolute;
-  inset:0;
-  border:3px solid rgba(255,255,255,.82);
-  border-radius:16px;
-  pointer-events:none;
-}
-@media(max-width:900px){.controlbar .topbtn{min-height:82px!important;}}
-@media(max-width:600px){.controlbar .topbtn{min-height:76px!important;}}
-</style>
