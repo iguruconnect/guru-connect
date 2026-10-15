@@ -350,9 +350,13 @@ async function accountView(){
   addId(me?.id);
   for(const walletId of ids){
    try{
-    const q=await safe(sb.from('gc_coin_wallets').select('profile_id,balance,coins,available_coins').eq('profile_id',walletId).maybeSingle());
+   
+const q=await safe(sb.from('gc_coin_wallets').select('profile_id,balance').eq('profile_id',walletId).maybeSingle());
+
     if(!q.error&&q.data){
-     bal=Math.max(0,Number(q.data.balance??q.data.coins??q.data.available_coins??0)||0);
+    
+bal=Math.max(0,Number(q.data.balance)||0);
+
      break;
     }
     if(q.error)console.warn('[GURU COINS] Wallet lookup failed for candidate profile',walletId,q.error.message);
