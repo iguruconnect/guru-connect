@@ -12986,6 +12986,7 @@ async function balances(ids){
 }
 
 
+
 function cardMeta(c){
   const role =
     c.classList.contains('gc-target-student') ||
@@ -12996,42 +12997,44 @@ function cardMeta(c){
 
   let id = c.dataset.studentId || c.dataset.tutorId || '';
 
-  if(!id){
+  if (!id) {
     const n = c.querySelector(
       '[data-student-id],[data-tutor-id],[data-gc-more-tutor],[data-gc-more-student]'
     );
+
     id = n?.dataset.studentId ||
          n?.dataset.tutorId ||
          n?.getAttribute('data-gc-more-tutor') ||
          n?.getAttribute('data-gc-more-student') || '';
   }
 
-  if(!id){
+  if (!id) {
     const b = c.querySelector(
       'button[onclick*="openTutorProfile"],' +
       'button[onclick*="openStudentProfile"],' +
       'button[onclick*="openPublicTutorProfile"]'
     );
+
     const m = String(b?.getAttribute('onclick') || '').match(
       /(?:openTutorProfile|openStudentProfile|openPublicTutorProfile)\(\s*['"]?([^'")]+)['"]?\s*\)/
     );
+
     id = m?.[1] || '';
   }
+
+  if (!id) return {id:'', role, walletId:''};
 
   const source = role === 'student'
     ? (Array.isArray(window.studentDirectoryList) ? window.studentDirectoryList : [])
     : (Array.isArray(window.tutorDirectoryList) ? window.tutorDirectoryList : []);
 
-  const item = source.find(x => String(x?.id ?? '') === String(id));
-
-  const walletId = String(
-    item?.id ||
-    item?.profile_id ||
-    id
+  const item = source.find(
+    x => String(x?.id ?? '') === String(id)
   );
 
-return { id: String(id || ''), role, walletId };
+  const walletId = String(item?.profile_id || item?.id || id);
 
+  return {id:String(id), role, walletId};
 }
 function publicIdBadge(c,pid){let h=c.querySelector('.gc-auth-public-id');if(!h){const host=c.querySelector('.gc-target-name,.gc-clean-name,.gc-beautiful-name,.gc-new-name,h3,h4');if(host){h=document.createElement('span');h.className='gc-auth-public-id';host.appendChild(h)}}if(h)h.textContent=pid}
 function labelOf(box){return (box.querySelector('b,small,strong')?.textContent||'').trim().replace(/^📍\s*/,'').toUpperCase()}
