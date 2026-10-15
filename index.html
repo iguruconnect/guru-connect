@@ -13048,6 +13048,7 @@ async function paintDashboard(p){
 }
 function hookDashboard(){const old=window.renderUserDashboard;if(typeof old!=='function'||old.__gcAuthHook)return;const f=function(p){const r=old.apply(this,arguments);window.__gcAuthProfile=p;setTimeout(()=>paintDashboard(p),50);return r};f.__gcAuthHook=true;window.renderUserDashboard=f}
 
+
 async function loadPeople(q, kind) {
   const s = S();
   if (!s || !q) return [];
@@ -13060,39 +13061,26 @@ async function loadPeople(q, kind) {
 
     if (r.error) throw r.error;
 
-    return await Promise.all((r.data || []).map(async x => {
+    return (r.data || []).map(x => {
       const role = String(x.role || '').toLowerCase();
-      const authId = String(x.user_id || '');
-      let canonicalId = '';
 
-      if (authId && ['tutor', 'student'].includes(role)) {
-        const table = role === 'tutor'
-          ? 'tutor_profiles'
-          : 'student_profiles';
-
-        const p = await s.from(table)
-          .select('id,user_id')
-          .eq('user_id', authId)
-          .maybeSingle();
-
-        if (p.error) {
-          console.warn('Canonical coin wallet ID lookup failed:', p.error);
-        } else if (p.data?.id) {
-          canonicalId = String(p.data.id);
-        }
-      }
+      // Supabase already returns the canonical tutor/student profile ID.
+      // Use this ID for wallet balances, ledger history and coin adjustments.
+      const canonicalId = String(x.profile_id || '');
 
       return {
         ...x,
-        __id: canonicalId || String(x.profile_id || ''),
-        __userId: authId,
+        __id: canonicalId,
+        __userId: String(x.user_id || ''),
         __role: role,
-        __sid: publicId(
-          canonicalId || String(x.profile_id || ''),
-          role
-        )
+        __sid: canonicalId
+          ? publicId(canonicalId, role)
+          : 'PROFILE ID MISSING'
       };
-    }));
+    }).filter(x =>
+      ['tutor', 'student'].includes(x.__role) && x.__id
+    );
+
   } catch (e) {
     console.warn('GURU COINS user search failed:', e);
     return [];
