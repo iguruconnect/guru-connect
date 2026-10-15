@@ -12991,15 +12991,10 @@ function cardMeta(c){
   const item = source.find(x => String(x?.id ?? '') === String(id));
 
   const walletId = String(
-    item?.user_id ||
-    item?.userId ||
-    item?.auth_user_id ||
+    item?.id ||
     item?.profile_id ||
     id
   );
-
-  return {id:String(id || ''), walletId, role};
-}
 
 }
 function publicIdBadge(c,pid){let h=c.querySelector('.gc-auth-public-id');if(!h){const host=c.querySelector('.gc-target-name,.gc-clean-name,.gc-beautiful-name,.gc-new-name,h3,h4');if(host){h=document.createElement('span');h.className='gc-auth-public-id';host.appendChild(h)}}if(h)h.textContent=pid}
@@ -13052,20 +13047,57 @@ async function paintDashboard(p){
  strip.innerHTML='<div class="gc-auth-dashboard-card"><small>GURU CONNECT ID</small><strong>'+esc(publicId(id,role))+'</strong></div><div class="gc-auth-dashboard-card"><small>GURU COINS BALANCE</small><strong>🪙 '+Number(b).toLocaleString('en-IN')+' COINS</strong></div>';
 }
 function hookDashboard(){const old=window.renderUserDashboard;if(typeof old!=='function'||old.__gcAuthHook)return;const f=function(p){const r=old.apply(this,arguments);window.__gcAuthProfile=p;setTimeout(()=>paintDashboard(p),50);return r};f.__gcAuthHook=true;window.renderUserDashboard=f}
-async function loadPeople(q,kind){
- const s=S();if(!s||!q)return[];
- try{
-   const r=await s.rpc('gc_admin_search_coin_users',{p_query:String(q).trim(),p_role:kind||'all'});
-   if(r.error)throw r.error;
-   return (r.data||[]).map(x=>({
-     ...x,
-     // Coin wallets/ledger use the public profile row ID in this build.
-     __id:String(x.profile_id||x.user_id||''),
-     __userId:String(x.user_id||''),
-     __role:String(x.role||'').toLowerCase(),
-     __sid:publicId(String(x.profile_id||x.user_id||''),String(x.role||'').toLowerCase())
-   }));
- }catch(e){console.warn('GURU COINS user search failed:',e);return[]}
+
+async function loadPeople(q, kind) {
+  const s = S();
+  if (!s || !q) return [];
+
+  try {
+    const r = await s.rpc('gc_admin_search_coin_users', {
+      p_query: String(q).trim(),
+      p_role: kind || 'all'
+    });
+
+    if (r.error) throw r.error;
+
+    return await Promise.all((r.data || []).map(async x => {
+      const role = String(x.role || '').toLowerCase();
+      const authId = String(x.user_id || '');
+      let canonicalId = '';
+
+      if (authId && ['tutor', 'student'].includes(role)) {
+        const table = role === 'tutor'
+          ? 'tutor_profiles'
+          : 'student_profiles';
+
+        const p = await s.from(table)
+          .select('id,user_id')
+          .eq('user_id', authId)
+          .maybeSingle();
+
+        if (p.error) {
+          console.warn('Canonical coin wallet ID lookup failed:', p.error);
+        } else if (p.data?.id) {
+          canonicalId = String(p.data.id);
+        }
+      }
+
+      return {
+        ...x,
+        __id: canonicalId || String(x.profile_id || ''),
+        __userId: authId,
+        __role: role,
+        __sid: publicId(
+          canonicalId || String(x.profile_id || ''),
+          role
+        )
+      };
+    }));
+  } catch (e) {
+    console.warn('GURU COINS user search failed:', e);
+    return [];
+  }
+}
 }
 async function ledger(id){const s=S();if(!s)return[];try{const q=await s.from('gc_coin_ledger').select('*').eq('profile_id',String(id)).order('created_at',{ascending:false}).limit(30);return q.data||[]}catch(e){return[]}}
 function adminPanel(){
@@ -14380,6 +14412,15 @@ html,body{overflow-x:hidden!important}
   );
 })();
 </script>
+
+<style id="gc-show-authoritative-coin-field">
+.gc-profile-card .gc-auth-coin-field,
+.gc-target-card .gc-auth-coin-field,
+.gc-beautiful-card .gc-auth-coin-field,
+.gc-new-student-card .gc-auth-coin-field {
+  display: block !important;
+}
+</style>
 
 </body>
 <script id="gc-admin-receipt-dashboard-20261002">
