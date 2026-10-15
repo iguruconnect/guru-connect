@@ -13098,7 +13098,6 @@ async function loadPeople(q, kind) {
     return [];
   }
 }
-}
 async function ledger(id){const s=S();if(!s)return[];try{const q=await s.from('gc_coin_ledger').select('*').eq('profile_id',String(id)).order('created_at',{ascending:false}).limit(30);return q.data||[]}catch(e){return[]}}
 function adminPanel(){
  const dash=document.getElementById('staffAdminDashboard');if(!dash)return;let panel=document.getElementById('gcAuthAdminCoins');
