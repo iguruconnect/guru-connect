@@ -390,84 +390,17 @@ function openAccountPane(name){
   document.querySelectorAll('.gcAcctPane').forEach(p=>p.classList.toggle('open',p.id==='gcPane-'+name));
   if(name==='payments')loadAccountPayments();
   if(name==='verification')loadAccountVerification();
-  if(name==='coins') 
-async function loadAccountCoins(){
-  const u = accountUser();
-  if (!u) return;
-
-  const p = $('gcPane-coins');
-  p.innerHTML = '<div class="empty">Loading complete coin ledger…</div>';
-
-  try {
-    const d = await accountRpc('get_account_overview', {
-      user_id: u.user_id
-    });
-
-    const rows = d.coins || [];
-    const balance = Number(d.wallet?.balance ?? d.account?.coin_balance ?? 0);
-    const held = Number(d.wallet?.held_balance ?? 0);
-    const cols = rows.length ? Object.keys(rows[0]) : [];
-
-    p.innerHTML = `
-      <div class="gcAcctGrid">
-        <div class="gcStat">
-          <b>Available Guru Coins</b>
-          <strong class="gcBlue">🪙 ${balance}</strong>
-        </div>
-        <div class="gcStat">
-          <b>Held Guru Coins</b>
-          <strong class="gcOrange">🪙 ${held}</strong>
-        </div>
-        <div class="gcStat">
-          <b>Ledger Records</b>
-          <strong>${rows.length}</strong>
-        </div>
-        <div class="gcStat">
-          <b>Last Entry</b>
-          <strong>${esc(rows[0]?.created_at || '—')}</strong>
-        </div>
-      </div>
-
-      <div class="gcBox">
-        <h3>🪙 Complete Coin Ledger — ${rows.length} Record(s)</h3>
-        <div class="gcTableWrap">
-          <table class="gcTable">
-            <thead>
-              <tr>
-                ${cols.map(c => `<th>${esc(c.replace(/_/g, ' ').toUpperCase())}</th>`).join('')}
-                <th>ADMIN ACTION</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${rows.length ? rows.map(r => `
-                <tr>
-                  ${cols.map(c => `<td style="font-size:10px;max-width:220px;overflow-wrap:anywhere">${esc(r[c] ?? '—')}</td>`).join('')}
-                  <td>
-                    <div class="gcRowActions">
-                      <button class="btn primary" onclick="editCoinRecord('${esc(r.id || '')}')">EDIT</button>
-                      <button class="btn red" onclick="deleteCoinRecord('${esc(r.id || '')}')">DELETE</button>
-                    </div>
-                  </td>
-                </tr>
-              `).join('') : `
-                <tr><td colspan="${cols.length + 1}">No coin ledger records found.</td></tr>
-              `}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div class="gcMiniActions">
-        <button class="btn teal" onclick="selectCoinsForAccount()">MANAGE COINS</button>
-      </div>
-    `;
-  } catch (e) {
-    p.innerHTML =
-      '<div class="dangerNote">Coin ledger could not be loaded.<br><br>' +
-      esc(e.message || e) + '</div>';
-  }
+  if(name==='coins')loadAccountCoins();
+  if(name==='activity')loadAccountActivity();
 }
-
+function closeAccountModal(){document.getElementById('gcAcctOverlay')?.remove();window.__gcAccountUser=null}
+function accountUser(){return window.__gcAccountUser}
+function statusBadge(v,yesText='YES',noText='NO'){return v?`<span class="gcBadge green">${yesText}</span>`:`<span class="gcBadge red">${noText}</span>`}
+async function accountRpc(action,payload={}){
+  const r=await sb.rpc('gc_admin_account_action',{p_action:action,p_user_id:String(payload.user_id||''),p_payload:payload});
+  if(r.error)throw r.error;
+  return r.data||{};
+}
 function renderAccountOverview(u){
   const paid=String(u.paid_status||'PENDING').toUpperCase()==='PAID';
   const adminVerified=!!(u.admin_verified||u.verified);
