@@ -12929,7 +12929,41 @@ const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&
 const clean=v=>String(v??'').trim();
 function hash6(v){let h=2166136261>>>0;for(const ch of String(v??'')){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0}return h.toString(36).toUpperCase().padStart(6,'0').slice(-6)}
 function publicId(id,role){return 'GC-'+(role==='student'?'S':'T')+'-'+hash6(id)}
-async function balance(id){const s=S();if(!s||!id)return 0;try{const q=await s.from('gc_coin_wallets').select('balance').eq('profile_id',String(id)).maybeSingle();return Number(q.data?.balance||0)}catch(e){return 0}}
+
+async function balance(id) {
+  const s = S();
+  if (!s || !id) return 0;
+
+  try {
+    const profileId = String(id);
+
+    const q = await s.rpc('gc_public_coin_balances', {
+      p_profile_ids: [profileId]
+    });
+
+    if (q.error) throw q.error;
+
+    const row = (q.data || []).find(
+      x => String(x.profile_id) === profileId
+    );
+
+    if (!row) {
+      console.warn(
+        'No wallet returned for profile ID:',
+        profileId,
+        q.data
+      );
+      return 0;
+    }
+
+    return Number(row.balance || 0);
+
+  } catch (e) {
+    console.error('GURU COINS balance lookup failed:', e);
+    return 0;
+  }
+}
+
 
 async function balances(ids){
   const s=S();
