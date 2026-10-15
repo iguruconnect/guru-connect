@@ -335,34 +335,36 @@ async function accountView(){
   try {
     // profile.id is the canonical tutor_profiles/student_profiles ID
     // returned by gc_get_my_member_profile().
-    const walletId = String(profile?.id || '').trim();
+    
+const q = await safe(sb.rpc('gc_get_my_coin_balance'));
 
-    if (!walletId) {
-      throw new Error('Member profile ID is missing. Please log in again.');
-    }
+if (q.error) throw q.error;
 
-    const q = await safe(
-      sb.from('gc_coin_wallets')
-        .select('profile_id,balance')
-        .eq('profile_id', walletId)
-        .maybeSingle()
-    );
+const result = q.data;
+let value = null;
 
-    if (q.error) throw q.error;
+if (typeof result === 'number' || typeof result === 'string') {
+  value = Number(result);
+} else if (Array.isArray(result) && result.length) {
+  const row = result[0];
+  value = Number(
+    row.balance ?? row.coins ?? row.gc_get_my_coin_balance
+  );
+} else if (result && typeof result === 'object') {
+  value = Number(
+    result.balance ??
+    result.coins ??
+    result.gc_get_my_coin_balance
+  );
+}
 
-    if (!q.data) {
-      throw new Error('Wallet not found for this member profile.');
-    }
+if (!Number.isFinite(value) || value < 0) {
+  throw new Error(
+    'The balance function returned an unexpected result. No coins were changed.'
+  );
+}
 
-    bal = Math.max(0, Number(q.data.balance) || 0);
-  } catch (e) {
-    console.error('GURU COINS wallet lookup failed:', e);
-    $('app').innerHTML =
-      '<div class="card error"><b>Could not load your coin balance.</b><br>' +
-      esc(e.message || e) +
-      '</div>';
-    return;
-  }
+bal = value;
 
   $('app').innerHTML =
     '<div class="grid2">' +
