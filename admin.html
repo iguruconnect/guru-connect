@@ -244,6 +244,9 @@ function switchSection(name){
   const el=$('sec-'+name);if(el)el.classList.add('open');
   if(name==='learning'&&!lrrLoaded&&!lrrLoading)loadLearning();
   if(name==='coinhistory'&&!coinHistoryLoaded)loadCoinHistory();
+  // Load advertisements only after the staff session is authenticated, and
+  // refresh the list whenever the admin opens the Advertisement tab.
+  if(name==='advertisement')loadAdminAdvertisements();
 }
 document.querySelectorAll('.topbtn').forEach(b=>b.addEventListener('click',()=>switchSection(b.dataset.sec)));
 $('logout').onclick=async()=>{await sb.auth.signOut({scope:'local'});location.href='login.html?role=staff'};
@@ -1021,9 +1024,10 @@ $('adSave').onclick=async()=>{
   }catch(e){if(newlyUploadedPath){try{await sb.storage.from('gc-advertisements').remove([newlyUploadedPath])}catch(_){}}$('adStatus').textContent='Advertisement save failed: '+(e.message||e)}
   finally{b.disabled=false;b.textContent=editingAdvertisementId?'UPDATE EXISTING ADVERTISEMENT':'SAVE ADVERTISEMENT'}
 };
-loadAdminAdvertisements();
 
-staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit()}});
+// Do not query the admin-only advertisements table before authentication.
+// This avoids a stale error state when the Supabase session is still restoring.
+staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit();await loadAdminAdvertisements()}});
 </script></body></html>
 <style id="gc-admin-colorful-control-tiles-20261009">
 /* =========================================================
