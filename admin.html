@@ -249,7 +249,7 @@ function switchSection(name){
   if(name==='advertisement')loadAdminAdvertisements();
 }
 document.querySelectorAll('.topbtn').forEach(b=>b.addEventListener('click',()=>switchSection(b.dataset.sec)));
-$('logout').onclick=async()=>{await sb.auth.signOut({scope:'local'});location.href='login.html?role=staff'};
+$('logout').onclick=async()=>{try{await sb.auth.signOut({scope:'local'});}catch(e){console.warn('Sign-out cleanup:',e)}try{localStorage.removeItem('is_staff_logged');localStorage.removeItem('gc_staff_supabase_auth');localStorage.removeItem('active_user_role');localStorage.removeItem('active_user_id');localStorage.removeItem('active_user_email');}catch(e){}location.replace('index.html');};
 
 function adminWhatsAppUser(i){const u=users[i]||{};let phone=String(u.phone||'').replace(/\D/g,'');if(phone.startsWith('00'))phone=phone.slice(2);if(phone.length===11&&phone.startsWith('0'))phone=phone.slice(1);if(phone.length===10)phone='91'+phone;if(!phone){alert('This user has no registered phone/WhatsApp number.');return}const name=String(u.name||u.full_name||u.role||'GURU CONNECT member');const msg='Hello '+name+', I am contacting you from GURU CONNECT Admin regarding your account.';window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank','noopener,noreferrer')}
 function normalizeRpcUsers(rows){
