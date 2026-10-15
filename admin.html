@@ -152,7 +152,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
 
 <section class="section" id="sec-directories"><div class="secHead"><div><h2>👥 Tutor Directories | Student Directories</h2><p>Live Supabase directory. Search by full or partial Student/Tutor ID, Profile ID, Auth User ID, name, email or phone.</p></div><span class="pill" id="directoryCount">LIVE DIRECTORY</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="term" autocomplete="off" placeholder="Name, email, phone or Student/Tutor ID…"></div><div class="field"><label>Show</label><select id="roleFilter"><option value="">ALL STUDENTS + TUTORS</option><option value="student">STUDENTS ONLY</option><option value="tutor">TUTORS ONLY</option></select></div><button id="search" class="btn primary">🔎 FIND</button><button id="refresh" class="btn light">↻ REFRESH</button></div><div id="searchStatus" class="status"></div><div id="results" class="results"><div class="empty">Click FIND to load the live Student + Tutor directory.</div></div></div></section>
 
-<section class="section" id="sec-advertisement"><div class="secHead"><div><h2>📢 Advertisement Management</h2><p>Create/manage advertisements without leaving the admin dashboard.</p></div></div><div class="secBody"><div class="grid"><div class="field"><label>Advertisement title</label><input id="adTitle" placeholder="Advertisement title"></div><div class="field"><label>Advertiser</label><input id="adAdvertiser" placeholder="Institute / advertiser"></div><div class="field"><label>Placement</label><select id="adPlacement"><option value="all">All Sections</option><option value="tutor">Tutor Profiles</option><option value="student">Student Profiles</option><option value="lrr">Learning Requests</option></select></div><div class="field"><label>Advertisement Flyer</label><input id="adFile" type="file" accept="image/jpeg,image/png,image/webp"></div><div class="field"><label>Click URL</label><input id="adUrl" placeholder="https://..."></div><div class="field"><label>WhatsApp URL (optional)</label><input id="adWhatsapp" placeholder="https://wa.me/..."></div><div class="field"><label>Start</label><input id="adStart" type="datetime-local"></div><div class="field"><label>End</label><input id="adEnd" type="datetime-local"></div><div class="field"><label>Priority</label><input id="adPriority" type="number" value="0" min="0" max="999"></div></div><div class="actions"><button id="adSave" class="btn orange">SAVE ADVERTISEMENT</button></div><div id="adStatus" class="status">Advertisement controls are ready. If your existing advertisement table/RPC is enabled, this workspace can be wired to it without changing member data.</div><div class="dangerNote">Advertisements are stored in the Supabase <b>gc_advertisements</b> table and flyer images in the <b>gc-advertisements</b> storage bucket. The dashboard never uses a fake local save.</div></div></section>
+<section class="section" id="sec-advertisement"><div class="secHead"><div><h2>📢 Advertisement Management</h2><p>Create/manage advertisements without leaving the admin dashboard.</p></div></div><div class="secBody"><div class="grid"><div class="field"><label>Advertisement title</label><input id="adTitle" placeholder="Advertisement title"></div><div class="field"><label>Advertiser</label><input id="adAdvertiser" placeholder="Institute / advertiser"></div><div class="field"><label>Placement</label><select id="adPlacement"><option value="all">All Sections</option><option value="tutor">Tutor Profiles</option><option value="student">Student Profiles</option><option value="lrr">Learning Requests</option></select></div><div class="field"><label>Advertisement Flyer</label><input id="adFile" type="file" accept="image/jpeg,image/png,image/webp"></div><div class="field"><label>Click URL</label><input id="adUrl" placeholder="https://..."></div><div class="field"><label>WhatsApp URL (optional)</label><input id="adWhatsapp" placeholder="https://wa.me/..."></div><div class="field"><label>Start</label><input id="adStart" type="datetime-local"></div><div class="field"><label>End</label><input id="adEnd" type="datetime-local"></div><div class="field"><label>Priority</label><input id="adPriority" type="number" value="0" min="0" max="999"></div></div><div class="actions"><button id="adSave" class="btn orange">SAVE ADVERTISEMENT</button></div><div id="adStatus" class="status">Create a new advertisement or select any existing advertisement below to edit it. Expired and paused advertisements are included.</div><div class="dangerNote">Advertisements are stored in the Supabase <b>gc_advertisements</b> table and flyer images in the <b>gc-advertisements</b> storage bucket. Existing records are updated in place; editing does not create duplicates.</div><div class="actions"><button id="adRefresh" class="btn light" type="button">↻ REFRESH ALL ADVERTISEMENTS</button><span class="pill" id="adCount">0 ADVERTISEMENTS</span></div><div id="adminAdsList" class="results"><div class="empty">Loading all posted advertisements…</div></div></div></section>
 
 <section class="section" id="sec-receipt"><div class="secHead"><div><h2>🧾 Receipt Center</h2><p>Create a complete receipt directly from Admin. Select the recipient category, add services one by one, edit every amount, then generate/print the final receipt.</p></div></div><div class="secBody">
 <div class="grid">
@@ -953,29 +953,75 @@ $('create').onclick=async()=>{
   finally{b.disabled=false;b.textContent='CREATE ACCOUNT'}
 };
 
+let editingAdvertisementId=null;
+let currentAdminAds=[];
+function adDateValue(v){if(!v)return '';const d=new Date(v);if(Number.isNaN(d.getTime()))return '';const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())}
+function clearAdEditor(){editingAdvertisementId=null;['adTitle','adAdvertiser','adUrl','adWhatsapp','adStart','adEnd','adFile'].forEach(id=>$(id).value='');$('adPlacement').value='all';$('adPriority').value='0';$('adSave').textContent='SAVE ADVERTISEMENT';$('adStatus').textContent='Ready to create a new advertisement. Select an existing ad below to edit it.'}
+async function loadAdminAdvertisements(){
+  const box=$('adminAdsList');if(!box)return;
+  box.innerHTML='<div class="empty">Loading every advertisement from Supabase…</div>';
+  try{
+    const session=(await sb.auth.getSession()).data?.session;
+    if(!session?.user?.id)throw new Error('Admin session missing. Please login again.');
+    const q=await sb.from('gc_advertisements').select('*').order('created_at',{ascending:false});
+    if(q.error)throw q.error;
+    currentAdminAds=q.data||[];
+    $('adCount').textContent=currentAdminAds.length+' ADVERTISEMENTS';
+    if(!currentAdminAds.length){box.innerHTML='<div class="empty">No advertisements found in gc_advertisements.</div>';return}
+    const now=Date.now();
+    box.innerHTML=currentAdminAds.map((a,i)=>{
+      const end=a.end_at?new Date(a.end_at).getTime():null;
+      const start=a.start_at?new Date(a.start_at).getTime():null;
+      const state=!a.active?'PAUSED':(end&&end<now?'EXPIRED':(start&&start>now?'SCHEDULED':'ACTIVE'));
+      const color=state==='ACTIVE'?'#047857':state==='EXPIRED'?'#b91c1c':state==='PAUSED'?'#64748b':'#b45309';
+      return '<article class="user"><div class="userHead"><div class="identity" style="display:flex;gap:12px;min-width:0;align-items:flex-start"><img src="'+esc(a.image_url||'')+'" alt="" style="width:100px;height:82px;object-fit:contain;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px" onerror="this.style.display=\'none\'"><div><b>'+esc(a.title||'Untitled advertisement')+'</b><div class="muted">Advertiser: '+esc(a.advertiser_name||'—')+'<br>Placement: '+esc(String(a.placement||'all').toUpperCase())+'<br>Start: '+esc(a.start_at?new Date(a.start_at).toLocaleString():'—')+'<br>End / validity: '+esc(a.end_at?new Date(a.end_at).toLocaleString():'No end date')+'<br>Priority: '+esc(a.priority??0)+' · <b style="color:'+color+'">'+state+'</b></div></div></div><div class="actions" style="margin:0"><button type="button" class="btn primary" data-ad-edit="'+i+'">✏️ EDIT FULL AD</button><button type="button" class="btn '+(a.active?'orange':'green')+'" data-ad-toggle="'+i+'">'+(a.active?'PAUSE':'ACTIVATE')+'</button><button type="button" class="btn red" data-ad-delete="'+i+'">DELETE</button></div></div></article>';
+    }).join('');
+    box.querySelectorAll('[data-ad-edit]').forEach(b=>b.onclick=()=>{const a=currentAdminAds[+b.dataset.adEdit];editingAdvertisementId=a.id;$('adTitle').value=a.title||'';$('adAdvertiser').value=a.advertiser_name||'';$('adPlacement').value=a.placement||'all';$('adUrl').value=a.click_url||'';$('adWhatsapp').value=a.whatsapp_url||'';$('adStart').value=adDateValue(a.start_at);$('adEnd').value=adDateValue(a.end_at);$('adPriority').value=a.priority??0;$('adFile').value='';$('adSave').textContent='UPDATE EXISTING ADVERTISEMENT';$('adStatus').textContent='Editing "'+(a.title||'Advertisement')+'". Flyer upload is optional; leave it empty to keep the current image.';document.querySelector('#sec-advertisement .secHead').scrollIntoView({behavior:'smooth',block:'start'});$('adTitle').focus()});
+    box.querySelectorAll('[data-ad-toggle]').forEach(b=>b.onclick=async()=>{const a=currentAdminAds[+b.dataset.adToggle];b.disabled=true;try{const q=await sb.from('gc_advertisements').update({active:!a.active,updated_at:new Date().toISOString()}).eq('id',a.id);if(q.error)throw q.error;await loadAdminAdvertisements()}catch(e){$('adStatus').textContent='Status change failed: '+(e.message||e);b.disabled=false}});
+    box.querySelectorAll('[data-ad-delete]').forEach(b=>b.onclick=async()=>{const a=currentAdminAds[+b.dataset.adDelete];if(!confirm('Permanently delete "'+(a.title||'this advertisement')+'"? This removes the ad record from the website.'))return;b.disabled=true;try{if(a.storage_path){const rm=await sb.storage.from('gc-advertisements').remove([a.storage_path]);if(rm.error)console.warn('Old flyer cleanup:',rm.error.message)}const q=await sb.from('gc_advertisements').delete().eq('id',a.id);if(q.error)throw q.error;if(editingAdvertisementId===a.id)clearAdEditor();$('adStatus').textContent='Advertisement deleted.';await loadAdminAdvertisements()}catch(e){$('adStatus').textContent='Delete failed: '+(e.message||e);b.disabled=false}});
+  }catch(e){box.innerHTML='<div class="empty">Could not load advertisements: '+esc(e.message||e)+'</div>';$('adStatus').textContent='Advertisement list failed: '+(e.message||e)}
+}
+$('adRefresh').onclick=loadAdminAdvertisements;
 $('adSave').onclick=async()=>{
-  const b=$('adSave');b.disabled=true;b.textContent='SAVING…';$('adStatus').textContent='Uploading advertisement…';
+  const b=$('adSave');b.disabled=true;b.textContent=editingAdvertisementId?'UPDATING…':'SAVING…';$('adStatus').textContent=editingAdvertisementId?'Updating existing advertisement…':'Uploading advertisement…';
+  let newlyUploadedPath=null;
   try{
     const title=$('adTitle').value.trim(),advertiser=$('adAdvertiser').value.trim(),placement=$('adPlacement').value;
     const file=$('adFile').files[0],click=$('adUrl').value.trim(),wa=$('adWhatsapp').value.trim(),priority=Number($('adPriority').value||0);
     if(!title)throw new Error('Advertisement title is required.');
-    if(!file)throw new Error('Please select an advertisement flyer.');
-    if(file.size>5*1024*1024)throw new Error('Flyer must be 5 MB or smaller.');
-    if(!/^image\/(jpeg|png|webp)$/i.test(file.type))throw new Error('Only JPG, PNG or WEBP flyers are supported.');
+    if(!editingAdvertisementId&&!file)throw new Error('Please select an advertisement flyer.');
+    if(file&&file.size>5*1024*1024)throw new Error('Flyer must be 5 MB or smaller.');
+    if(file&&!/^image\/(jpeg|png|webp)$/i.test(file.type))throw new Error('Only JPG, PNG or WEBP flyers are supported.');
     const session=(await sb.auth.getSession()).data?.session;if(!session?.user?.id)throw new Error('Admin session missing. Please login again.');
-    const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-');
-    const path=`admin/${Date.now()}-${safe}`;
-    const up=await sb.storage.from('gc-advertisements').upload(path,file,{upsert:false,contentType:file.type});
-    if(up.error)throw up.error;
-    const pub=sb.storage.from('gc-advertisements').getPublicUrl(path);
-    const image_url=pub.data.publicUrl;
-    const ins=await sb.from('gc_advertisements').insert({title,advertiser_name:advertiser,placement,image_url,storage_path:path,click_url:click||null,whatsapp_url:wa||null,start_at:$('adStart').value?new Date($('adStart').value).toISOString():new Date().toISOString(),end_at:$('adEnd').value?new Date($('adEnd').value).toISOString():null,active:true,priority:Number.isFinite(priority)?priority:0,created_by:session.user.id}).select().single();
-    if(ins.error)throw ins.error;
-    $('adStatus').textContent='✓ Advertisement saved to Supabase and published to the selected placement.';
-    $('adTitle').value='';$('adAdvertiser').value='';$('adUrl').value='';$('adWhatsapp').value='';$('adFile').value='';$('adPriority').value='0';
-  }catch(e){$('adStatus').textContent='Advertisement save failed: '+(e.message||e)}
-  finally{b.disabled=false;b.textContent='SAVE ADVERTISEMENT'}
+    let old=null;
+    if(editingAdvertisementId){const q=await sb.from('gc_advertisements').select('*').eq('id',editingAdvertisementId).single();if(q.error)throw q.error;old=q.data}
+    let image_url=old?.image_url||null,storage_path=old?.storage_path||null;
+    if(file){
+      const safe=file.name.toLowerCase().replace(/[^a-z0-9._-]+/g,'-');
+      newlyUploadedPath='admin/'+Date.now()+'-'+safe;
+      const up=await sb.storage.from('gc-advertisements').upload(newlyUploadedPath,file,{upsert:false,contentType:file.type});
+      if(up.error)throw up.error;
+      image_url=sb.storage.from('gc-advertisements').getPublicUrl(newlyUploadedPath).data.publicUrl;
+      storage_path=newlyUploadedPath;
+    }
+    const row={title,advertiser_name:advertiser,placement,image_url,storage_path,click_url:click||null,whatsapp_url:wa||null,start_at:$('adStart').value?new Date($('adStart').value).toISOString():(old?.start_at||new Date().toISOString()),end_at:$('adEnd').value?new Date($('adEnd').value).toISOString():null,priority:Number.isFinite(priority)?priority:0,updated_at:new Date().toISOString()};
+    if(editingAdvertisementId){
+      row.active=old.active;
+      const upd=await sb.from('gc_advertisements').update(row).eq('id',editingAdvertisementId);
+      if(upd.error)throw upd.error;
+      if(file&&old.storage_path){const rm=await sb.storage.from('gc-advertisements').remove([old.storage_path]);if(rm.error)console.warn('Old flyer cleanup:',rm.error.message)}
+      $('adStatus').textContent='✓ Existing advertisement updated. No duplicate record was created.';
+    }else{
+      row.active=true;row.created_by=session.user.id;
+      const ins=await sb.from('gc_advertisements').insert(row).select().single();
+      if(ins.error)throw ins.error;
+      $('adStatus').textContent='✓ Advertisement created and published.';
+    }
+    clearAdEditor();await loadAdminAdvertisements();
+  }catch(e){if(newlyUploadedPath){try{await sb.storage.from('gc-advertisements').remove([newlyUploadedPath])}catch(_){}}$('adStatus').textContent='Advertisement save failed: '+(e.message||e)}
+  finally{b.disabled=false;b.textContent=editingAdvertisementId?'UPDATE EXISTING ADVERTISEMENT':'SAVE ADVERTISEMENT'}
 };
+loadAdminAdvertisements();
 
 staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit()}});
 </script></body></html>
