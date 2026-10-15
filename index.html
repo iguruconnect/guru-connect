@@ -13030,6 +13030,8 @@ function cardMeta(c){
     id
   );
 
+return { id: String(id || ''), role, walletId };
+
 }
 function publicIdBadge(c,pid){let h=c.querySelector('.gc-auth-public-id');if(!h){const host=c.querySelector('.gc-target-name,.gc-clean-name,.gc-beautiful-name,.gc-new-name,h3,h4');if(host){h=document.createElement('span');h.className='gc-auth-public-id';host.appendChild(h)}}if(h)h.textContent=pid}
 function labelOf(box){return (box.querySelector('b,small,strong')?.textContent||'').trim().replace(/^📍\s*/,'').toUpperCase()}
@@ -13071,7 +13073,6 @@ async function paintCards(){
       setBoxValue(b, 'COINS', map[m.walletId || m.id] ?? 0);
     }
   });
-}
 }
 function profileId(p){return String(p?.id||p?.userId||p?.user_id||'')}
 async function paintDashboard(p){
