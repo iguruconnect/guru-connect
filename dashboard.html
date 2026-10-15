@@ -340,27 +340,28 @@ const q = await safe(sb.rpc('gc_get_my_coin_balance'));
 
 if (q.error) throw q.error;
 
-const result = q.data;
-let value = null;
 
-if (typeof result === 'number' || typeof result === 'string') {
-  value = Number(result);
-} else if (Array.isArray(result) && result.length) {
-  const row = result[0];
-  value = Number(
-    row.balance ?? row.coins ?? row.gc_get_my_coin_balance
-  );
-} else if (result && typeof result === 'object') {
-  value = Number(
-    result.balance ??
-    result.coins ??
-    result.gc_get_my_coin_balance
+const result = q.data;
+
+if (!result || typeof result !== 'object') {
+  throw new Error(
+    'Balance function returned no valid wallet data.'
   );
 }
 
-if (!Number.isFinite(value) || value < 0) {
+if (result.error) {
+  throw new Error(String(result.error));
+}
+
+const value = Number(result.balance);
+
+if (
+  !Number.isFinite(value) ||
+  value < 0 ||
+  !result.profile_id
+) {
   throw new Error(
-    'The balance function returned an unexpected result. No coins were changed.'
+    'Wallet balance or profile ID is invalid.'
   );
 }
 
