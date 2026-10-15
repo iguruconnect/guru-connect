@@ -13303,7 +13303,158 @@ setInterval(repairCardCoins,3500);document.addEventListener('DOMContentLoaded',r
 #gcProfileCoinsCard .gc-pc-id{font-size:10px!important;font-weight:900!important;color:#475569!important;text-align:right!important;white-space:nowrap!important}
 @media(max-width:640px){#gcProfileCoinsCard{padding:13px!important;border-radius:16px!important}#gcProfileCoinsCard .gc-pc-coin{width:40px!important;height:40px!important;font-size:21px!important}#gcProfileCoinsCard .gc-pc-balance{font-size:19px!important}#gcProfileCoinsCard .gc-pc-id{font-size:8px!important}}
 </style>
+
 <script id="gc-profile-coins-visibility-fix-js">
+(function(){
+'use strict';
+
+function sb(){
+  return window.gcSupabase || window.GC_SUPABASE_CLIENT || null;
+}
+
+function activeProfile(){
+  try {
+    if(typeof getCurrentUserProfile === 'function'){
+      var p = getCurrentUserProfile();
+      if(p) return p;
+    }
+  } catch(e) {}
+  return window.__gcAuthProfile || null;
+}
+
+function roleOf(p){
+  return String(
+    p?.registrationRole ||
+    p?.role ||
+    localStorage.getItem('active_user_role') ||
+    'student'
+  ).toLowerCase();
+}
+
+function publicId(id,role){
+  try {
+    if(typeof window.GC_PUBLIC_ID === 'function')
+      return window.GC_PUBLIC_ID(id,role);
+  } catch(e) {}
+  return String(id || '');
+}
+
+async function getBalance(userId,role){
+  var s = sb();
+  if(!s || !userId) return null;
+
+  try {
+    var table = role === 'tutor'
+      ? 'tutor_profiles'
+      : 'student_profiles';
+
+    // Resolve the canonical student/tutor profile ID from the logged-in user ID.
+    var p = await s.from(table)
+      .select('id')
+      .eq('user_id',userId)
+      .maybeSingle();
+
+    if(p.error) throw p.error;
+
+    if(!p.data?.id){
+      console.warn('Canonical profile ID not found for coin balance.');
+      return null;
+    }
+
+    var canonicalId = String(p.data.id);
+
+    // Use the existing secure, read-only balance RPC.
+    var q = await s.rpc('gc_public_coin_balances',{
+      p_profile_ids:[canonicalId]
+    });
+
+    if(q.error) throw q.error;
+
+    var row = (q.data || []).find(
+      x => String(x.profile_id) === canonicalId
+    );
+
+    if(!row){
+      console.warn('No wallet returned for canonical profile ID:',canonicalId);
+      return null;
+    }
+
+    return Number(row.balance || 0);
+
+  } catch(e) {
+    console.error('Profile Coins balance lookup failed:',e);
+    return null;
+  }
+}
+
+async function paint(){
+  var host = document.getElementById('userDashboardContent');
+  var p = activeProfile();
+
+  if(!host || !p) return;
+
+  var role = roleOf(p);
+  var userId = String(p.user_id || p.userId || p.id || '');
+
+  if(!userId || !['tutor','student'].includes(role)) return;
+
+  var card = document.getElementById('gcProfileCoinsCard');
+
+  if(!card){
+    card = document.createElement('div');
+    card.id = 'gcProfileCoinsCard';
+    card.innerHTML =
+      '<div class="gc-pc-left">' +
+        '<div class="gc-pc-coin">🪙</div>' +
+        '<div>' +
+          '<div class="gc-pc-label">GURU COINS BALANCE</div>' +
+          '<div class="gc-pc-balance" id="gcProfileCoinsValue">Loading…</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="gc-pc-id"></div>';
+
+    host.appendChild(card);
+  }
+
+  var value = document.getElementById('gcProfileCoinsValue');
+  var idLabel = card.querySelector('.gc-pc-id');
+
+  if(value) value.textContent = 'Loading…';
+
+  var balance = await getBalance(userId,role);
+
+  if(balance === null){
+    if(value) value.textContent = 'Unable to load';
+    return;
+  }
+
+  if(value) value.textContent =
+    balance.toLocaleString('en-IN') + ' COINS';
+
+  if(idLabel) idLabel.textContent = publicId(userId,role);
+}
+
+function boot(){
+  setTimeout(paint,100);
+  setTimeout(paint,700);
+  setTimeout(paint,1800);
+}
+
+document.addEventListener('DOMContentLoaded',boot);
+window.addEventListener('load',boot);
+setInterval(paint,4000);
+
+if(document.body){
+  new MutationObserver(function(){
+    clearTimeout(window.__gcPcTimer);
+    window.__gcPcTimer = setTimeout(paint,180);
+  }).observe(document.body,{subtree:true,childList:true});
+}
+
+window.GC_PROFILE_COINS_REFRESH = paint;
+})();
+</script>
+
 (function(){
 'use strict';
 function sb(){return window.gcSupabase||window.GC_SUPABASE_CLIENT||null}
