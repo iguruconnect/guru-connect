@@ -329,65 +329,69 @@ async function downloadChatPDF(existingRows){
   const safeName=subject.replace(/[^a-z0-9]+/gi,'-').replace(/^-+|-+$/g,'').slice(0,50)||'learning-request';doc.save('GURU-CONNECT-'+safeName+'-chat.pdf');toast('PDF downloaded','The complete chat for this Learning Request has been saved.');
  }catch(e){console.error(e);toast('PDF failed',e.message||'Please try again.');}
 }
+
 async function accountView(){
   let bal = 0;
 
   try {
-    // profile.id is the canonical tutor_profiles/student_profiles ID
-    // returned by gc_get_my_member_profile().
-    
-const q = await safe(sb.rpc('gc_get_my_coin_balance'));
+    const q = await safe(sb.rpc('gc_get_my_coin_balance'));
 
-if (q.error) throw q.error;
+    if (q.error) throw q.error;
 
+    const result = q.data;
 
-const result = q.data;
+    if (!result || typeof result !== 'object') {
+      throw new Error('Balance function returned no valid wallet data.');
+    }
 
-if (!result || typeof result !== 'object') {
-  throw new Error(
-    'Balance function returned no valid wallet data.'
-  );
-}
+    if (result.error) {
+      throw new Error(String(result.error));
+    }
 
-if (result.error) {
-  throw new Error(String(result.error));
-}
+    const value = Number(result.balance);
 
-const value = Number(result.balance);
+    if (
+      !Number.isFinite(value) ||
+      value < 0 ||
+      !result.profile_id
+    ) {
+      throw new Error('Wallet balance or profile ID is invalid.');
+    }
 
-if (
-  !Number.isFinite(value) ||
-  value < 0 ||
-  !result.profile_id
-) {
-  throw new Error(
-    'Wallet balance or profile ID is invalid.'
-  );
-}
+    bal = value;
 
-bal = value;
-
-  $('app').innerHTML =
-    '<div class="grid2">' +
-      '<div class="card">' +
-        '<h2>🪙 MY GURU COINS</h2>' +
-        '<div class="balance">' +
-          bal.toLocaleString('en-IN') + ' 🪙' +
+    $('app').innerHTML =
+      '<div class="grid2">' +
+        '<div class="card">' +
+          '<h2>🪙 MY GURU COINS</h2>' +
+          '<div class="balance">' +
+            bal.toLocaleString('en-IN') + ' 🪙' +
+          '</div>' +
+          '<div class="small">Live wallet balance</div>' +
         '</div>' +
-        '<div class="small">Live wallet balance</div>' +
+        '<div class="card">' +
+          '<h2>🔐 PASSWORD RESET</h2>' +
+          '<p class="small">Reset your password securely using the email reset link.</p>' +
+          '<button type="button" class="btn" id="resetBtn">RESET PASSWORD BY EMAIL</button>' +
+        '</div>' +
       '</div>' +
       '<div class="card">' +
-        '<h2>🔐 PASSWORD RESET</h2>' +
-        '<p class="small">Reset your password securely using the email reset link.</p>' +
-        '<button type="button" class="btn" id="resetBtn">RESET PASSWORD BY EMAIL</button>' +
-      '</div>' +
-    '</div>' +
-    '<div class="card">' +
-      '<h2>💰 LEARNING REQUEST ESCROW</h2>' +
-      '<div class="success">100 coins are held when a Student posts an LR. They are credited to the Tutor only after completion, Student final remark, and Admin approval.</div>' +
-    '</div>';
+        '<h2>💰 LEARNING REQUEST ESCROW</h2>' +
+        '<div class="success">100 coins are held when a Student posts an LR. They are credited to the Tutor only after completion, Student final remark, and Admin approval.</div>' +
+      '</div>';
 
-  $('resetBtn').onclick = () => location.href = 'forgot-password.html';
+    $('resetBtn').onclick = () => location.href = 'forgot-password.html';
+
+  } catch (e) {
+    console.error('GURU COINS accountView error:', e);
+
+    $('app').innerHTML =
+      '<div class="card">' +
+        '<h2>🪙 GURU COINS</h2>' +
+        '<p>Unable to load your coin balance.</p>' +
+        '<p>Please refresh the dashboard or try logging in again.</p>' +
+      '</div>';
+  }
 }
 
 async function loadNotifications(initial){
