@@ -330,42 +330,63 @@ async function downloadChatPDF(existingRows){
  }catch(e){console.error(e);toast('PDF failed',e.message||'Please try again.');}
 }
 async function accountView(){
- let bal=0;
- try{
-  // Prefer the profile row belonging to the authenticated email, then the identity RPC profile.
-  // This avoids accidentally reading another duplicate-name profile's wallet.
-  const ids=[];
-  const addId=v=>{v=String(v||'').trim();if(v&&!ids.includes(v))ids.push(v)};
-  if(me?.email){
-   try{
-    const pr=await safe(sb.from('profiles').select('id,email,role').ilike('email',String(me.email)).limit(10));
-    if(!pr.error&&Array.isArray(pr.data)){
-     const exact=pr.data.filter(x=>String(x.email||'').toLowerCase()===String(me.email).toLowerCase());
-     const matchingRole=exact.find(x=>String(x.role||'').toLowerCase()===role);
-     addId((matchingRole||exact[0])?.id);
-    }
-   }catch(e){console.warn('GURU COINS email-to-profile lookup failed:',e?.message||e)}
-  }
-  addId(profile?.id);
-  addId(me?.id);
-  for(const walletId of ids){
-   try{
-   
-const q=await safe(sb.from('gc_coin_wallets').select('profile_id,balance').eq('profile_id',walletId).maybeSingle());
+  let bal = 0;
 
-    if(!q.error&&q.data){
-    
-bal=Math.max(0,Number(q.data.balance)||0);
+  try {
+    // profile.id is the canonical tutor_profiles/student_profiles ID
+    // returned by gc_get_my_member_profile().
+    const walletId = String(profile?.id || '').trim();
 
-     break;
+    if (!walletId) {
+      throw new Error('Member profile ID is missing. Please log in again.');
     }
-    if(q.error)console.warn('[GURU COINS] Wallet lookup failed for candidate profile',walletId,q.error.message);
-   }catch(e){console.warn('[GURU COINS] Wallet lookup failed:',e?.message||e)}
+
+    const q = await safe(
+      sb.from('gc_coin_wallets')
+        .select('profile_id,balance')
+        .eq('profile_id', walletId)
+        .maybeSingle()
+    );
+
+    if (q.error) throw q.error;
+
+    if (!q.data) {
+      throw new Error('Wallet not found for this member profile.');
+    }
+
+    bal = Math.max(0, Number(q.data.balance) || 0);
+  } catch (e) {
+    console.error('GURU COINS wallet lookup failed:', e);
+    $('app').innerHTML =
+      '<div class="card error"><b>Could not load your coin balance.</b><br>' +
+      esc(e.message || e) +
+      '</div>';
+    return;
   }
- }catch(e){console.warn('GURU COINS balance lookup failed:',e?.message||e)}
- $('app').innerHTML='<div class="grid2"><div class="card"><h2>🪙 MY GURU COINS</h2><div class="balance">'+bal.toLocaleString('en-IN')+' 🪙</div><div class="small">Live wallet balance</div></div><div class="card"><h2>🔐 PASSWORD RESET</h2><p class="small">Reset your password securely using the email reset link.</p><button type="button" class="btn" id="resetBtn">RESET PASSWORD BY EMAIL</button></div></div><div class="card"><h2>💰 LEARNING REQUEST ESCROW</h2><div class="success">100 coins are held when a Student posts an LR. They are credited to the Tutor only after completion, Student final remark, and Admin approval.</div></div>';
- $('resetBtn').onclick=()=>location.href='forgot-password.html';
+
+  $('app').innerHTML =
+    '<div class="grid2">' +
+      '<div class="card">' +
+        '<h2>🪙 MY GURU COINS</h2>' +
+        '<div class="balance">' +
+          bal.toLocaleString('en-IN') + ' 🪙' +
+        '</div>' +
+        '<div class="small">Live wallet balance</div>' +
+      '</div>' +
+      '<div class="card">' +
+        '<h2>🔐 PASSWORD RESET</h2>' +
+        '<p class="small">Reset your password securely using the email reset link.</p>' +
+        '<button type="button" class="btn" id="resetBtn">RESET PASSWORD BY EMAIL</button>' +
+      '</div>' +
+    '</div>' +
+    '<div class="card">' +
+      '<h2>💰 LEARNING REQUEST ESCROW</h2>' +
+      '<div class="success">100 coins are held when a Student posts an LR. They are credited to the Tutor only after completion, Student final remark, and Admin approval.</div>' +
+    '</div>';
+
+  $('resetBtn').onclick = () => location.href = 'forgot-password.html';
 }
+
 async function loadNotifications(initial){
  if(!sb||!pid())return;
  try{
