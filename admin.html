@@ -135,7 +135,43 @@ button,a,input,select,textarea{touch-action:manipulation;}
   .gcTableWrap{width:100%!important;overflow-x:auto!important;-webkit-overflow-scrolling:touch!important;}
 }
 </style>
-</head><body>
+
+<style id="gc-id-card-styles">
+#sec-idgeneration .idgen-layout{display:grid;grid-template-columns:minmax(280px,0.9fr) minmax(340px,1.1fr);gap:18px}
+#sec-idgeneration .idgen-panel{border:1px solid #dbe4f0;border-radius:16px;padding:16px;background:#fff;min-width:0}
+#sec-idgeneration .idgen-panel h3{margin:0 0 12px;color:#12315b;font-size:15px}
+#sec-idgeneration .idgen-formgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#sec-idgeneration .idgen-field{min-width:0}
+#sec-idgeneration .idgen-field.wide{grid-column:1/-1}
+#sec-idgeneration .idgen-field label{display:block;font-size:10px;font-weight:950;color:#475569;text-transform:uppercase;margin:0 0 6px}
+#sec-idgeneration .idgen-field input,#sec-idgeneration .idgen-field select,#sec-idgeneration .idgen-field textarea{width:100%;box-sizing:border-box;padding:10px 11px;border:1px solid #cbd5e1;border-radius:10px;font:600 12px Inter,Arial;background:#fff;color:#172033}
+#sec-idgeneration .idgen-field textarea{min-height:55px;resize:vertical}
+#sec-idgeneration .idgen-upload{border:2px dashed #9bb6dd;background:#f5f9ff;border-radius:14px;padding:14px}
+#sec-idgeneration .idgen-photo-preview{width:105px;height:125px;object-fit:cover;border:2px solid #d4dfef;border-radius:10px;background:#edf2f9;display:block;margin-top:10px}
+#sec-idgeneration .idgen-card{width:100%;max-width:560px;aspect-ratio:1.58/1;margin:0 auto;background:#fff;border-radius:17px;overflow:hidden;border:1px solid #cbd5e1;box-shadow:0 18px 42px rgba(15,45,90,.17);font-family:Arial,sans-serif;color:#172033;display:flex;flex-direction:column}
+#sec-idgeneration .idgen-cardhead{background:linear-gradient(115deg,#092b64,#155eef 72%,#06a6c8);color:#fff;padding:12px 15px;display:flex;align-items:center;gap:10px}
+#sec-idgeneration .idgen-book{width:39px;height:39px;flex:0 0 39px;border-radius:10px;background:#fff;color:#155eef;display:grid;place-items:center;font-size:24px}
+#sec-idgeneration .idgen-brand{font-size:19px;font-weight:900;letter-spacing:.2px;line-height:1.05}
+#sec-idgeneration .idgen-brand span{font-weight:400}
+#sec-idgeneration .idgen-tagline{font-size:8px;margin-top:4px;color:#e4efff}
+#sec-idgeneration .idgen-cardlabel{margin-left:auto;text-align:right;font-size:9px;font-weight:900;letter-spacing:1px;border:1px solid #ffffff75;padding:7px 8px;border-radius:8px}
+#sec-idgeneration .idgen-cardbody{padding:12px 14px 9px;display:grid;grid-template-columns:94px 1fr;gap:12px;flex:1;min-height:0}
+#sec-idgeneration .idgen-cardphoto{width:88px;height:105px;object-fit:cover;border-radius:7px;border:2px solid #d8e3f3;background:#eef3fa}
+#sec-idgeneration .idgen-cardname{font-size:16px;font-weight:900;color:#102e61;line-height:1.2;overflow-wrap:anywhere}
+#sec-idgeneration .idgen-tick{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;background:#1877f2;color:#fff;border-radius:50%;width:15px;height:15px;font-size:10px;margin-left:3px}
+#sec-idgeneration .idgen-idnumber{font-size:10px;font-weight:900;color:#155eef;margin-top:5px;letter-spacing:.3px}
+#sec-idgeneration .idgen-mini-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px 10px;margin-top:8px}
+#sec-idgeneration .idgen-mini-fields div{min-width:0;font-size:9px;line-height:1.25;overflow-wrap:anywhere}
+#sec-idgeneration .idgen-mini-fields b{display:block;font-size:7px;color:#64748b;letter-spacing:.6px;margin-bottom:2px}
+#sec-idgeneration .idgen-address{font-size:8px;color:#334155;margin-top:5px;line-height:1.3;overflow-wrap:anywhere}
+#sec-idgeneration .idgen-validity{background:#eaf2ff;color:#123b82;padding:6px 12px;font-size:8px;font-weight:900;display:flex;justify-content:space-between;gap:8px}
+#sec-idgeneration .idgen-cardfoot{background:#092b64;color:#fff;padding:7px 12px;display:flex;justify-content:space-between;gap:8px;font-size:7px;flex-wrap:wrap}
+#sec-idgeneration .idgen-cardfoot span{overflow-wrap:anywhere}
+#sec-idgeneration .idgen-preview-note{font-size:11px;color:#64748b;text-align:center;margin:10px 0 0}
+@media(max-width:900px){#sec-idgeneration .idgen-layout{grid-template-columns:1fr}}
+@media(max-width:560px){#sec-idgeneration .idgen-formgrid{grid-template-columns:1fr}#sec-idgeneration .idgen-field.wide{grid-column:auto}#sec-idgeneration .idgen-cardbody{grid-template-columns:76px 1fr;padding:9px;gap:8px}#sec-idgeneration .idgen-cardphoto{width:70px;height:88px}#sec-idgeneration .idgen-brand{font-size:15px}#sec-idgeneration .idgen-cardlabel{font-size:7px;padding:5px}#sec-idgeneration .idgen-cardhead{padding:9px}#sec-idgeneration .idgen-mini-fields{gap:4px 6px}}
+@media print{body.gc-print-id *{visibility:hidden!important}body.gc-print-id #gc-id-print-root,body.gc-print-id #gc-id-print-root *{visibility:visible!important}body.gc-print-id #gc-id-print-root{position:fixed;inset:0 auto auto 0;width:100%;padding:12mm;box-sizing:border-box;background:#fff}body.gc-print-id #gc-id-print-root .idgen-card{max-width:90mm;width:90mm;aspect-ratio:1.58/1;box-shadow:none;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+</style></head><body>
 <header class="head"><div class="headin"><div><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
 <main class="wrap"><div id="gate" class="gate">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
 <nav class="controlbar" aria-label="Admin sections">
@@ -147,6 +183,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
 <button class="topbtn" data-sec="password">🔐 <b>PASSWORD RESET</b><small>Find account and reset password</small></button>
 <button class="topbtn" data-sec="create">➕ <b>CREATE USER</b><small>Create Student or Tutor</small></button>
 <button class="topbtn" data-sec="advertisement">📢 <b>ADVERTISEMENT</b><small>Manage website advertisements</small></button>
+<button class="topbtn" data-sec="idgeneration">🪪 <b>GENERATE ID</b><small>Create Student / Tutor ID card</small></button>
 </nav>
 
 <section class="section" id="sec-directories"><div class="secHead"><div><h2>👥 Tutor Directories | Student Directories</h2><p>Live Supabase directory. Search by full or partial Student/Tutor ID, Profile ID, Auth User ID, name, email or phone.</p></div><span class="pill" id="directoryCount">LIVE DIRECTORY</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="term" autocomplete="off" placeholder="Name, email, phone or Student/Tutor ID…"></div><div class="field"><label>Show</label><select id="roleFilter"><option value="">ALL STUDENTS + TUTORS</option><option value="student">STUDENTS ONLY</option><option value="tutor">TUTORS ONLY</option></select></div><button id="search" class="btn primary">🔎 FIND</button><button id="refresh" class="btn light">↻ REFRESH</button></div><div id="searchStatus" class="status"></div><div id="results" class="results"><div class="empty">Click FIND to load the live Student + Tutor directory.</div></div></div></section>
@@ -187,6 +224,50 @@ button,a,input,select,textarea{touch-action:manipulation;}
 <div class="actions"><button id="generateReceipt" class="btn purple">🧾 GENERATE RECEIPT</button><button id="clearReceipt" class="btn light">CLEAR</button></div>
 <div id="receiptStatus" class="status">Add at least one service before generating the receipt.</div>
 </div></section>
+
+
+<section class="section" id="sec-idgeneration">
+ <div class="secHead"><div><h2>🪪 Student &amp; Tutor ID Card Generation</h2><p>Choose a registered member, upload their photograph, review editable details, then generate and print the ID card.</p></div><span class="pill">ADMIN CONTROLLED</span></div>
+ <div class="secBody">
+  <div class="notice">The member photograph must be uploaded by the admin for each ID card. It is used for this card preview/print and is not saved to the member profile by this tool.</div>
+  <div class="idgen-layout">
+   <div class="idgen-panel">
+    <h3>1. Select member and review details</h3>
+    <div class="idgen-formgrid">
+     <div class="idgen-field wide"><label for="idMemberSearch">Search by name or public Student/Tutor ID</label><input id="idMemberSearch" placeholder="e.g. GC-T-SSZ1F5 or member name" autocomplete="off"></div>
+     <div class="idgen-field wide"><label for="idMemberSelect">Matching registered members</label><select id="idMemberSelect"><option value="">Load or search for a member…</option></select></div>
+     <div class="idgen-field"><label for="idCategory">Category</label><select id="idCategory"><option value="student">Student</option><option value="tutor">Tutor</option></select></div>
+     <div class="idgen-field"><label for="idNumber">ID Number</label><input id="idNumber" placeholder="Public profile ID"></div>
+     <div class="idgen-field wide"><label for="idFullName">Full Name</label><input id="idFullName" placeholder="Full name"></div>
+     <div class="idgen-field"><label for="idLevel">Level</label><select id="idLevel"><option value="">Select level</option><option>Jr. College</option><option>Degree College</option><option>Other</option></select></div>
+     <div class="idgen-field"><label for="idCourse">Course</label><select id="idCourse"><option value="">Select course</option><option>XI</option><option>XII</option><option>FY</option><option>SY</option><option>TY</option><option>Other</option></select></div>
+     <div class="idgen-field"><label for="idStream">Stream</label><select id="idStream"><option value="">Select stream</option><option>ARTS</option><option>SCIENCE</option><option>COMMERCE</option><option>Other</option></select></div>
+     <div class="idgen-field"><label for="idMode">Mode</label><select id="idMode"><option value="">Select mode</option><option>Online</option><option>Offline</option><option>Online / Offline</option></select></div>
+     <div class="idgen-field wide"><label for="idSubject">Subject</label><input id="idSubject" placeholder="Subject(s)"></div>
+     <div class="idgen-field wide"><label for="idPlan">Plan</label><input id="idPlan" placeholder="Membership / service plan"></div>
+     <div class="idgen-field wide"><label for="idAddress">Residential Address</label><textarea id="idAddress" placeholder="Residential address"></textarea></div>
+     <div class="idgen-field wide"><label for="idMobile">Mobile Number</label><input id="idMobile" placeholder="Registered mobile number"></div>
+     <div class="idgen-field"><label for="idValidFrom">Valid from</label><input id="idValidFrom" type="date"></div>
+     <div class="idgen-field"><label for="idValidTo">Valid until</label><input id="idValidTo" type="date"></div>
+     <div class="idgen-field wide idgen-upload"><label for="idPhoto">Upload member photograph (required)</label><input id="idPhoto" type="file" accept="image/jpeg,image/png,image/webp" required><small>JPG, PNG or WEBP · Maximum 5 MB. The admin must upload the photo before generating.</small><img id="idPhotoPreview" class="idgen-photo-preview" alt="Uploaded member photograph preview" hidden></div>
+    </div>
+    <div class="actions"><button id="idGenerateBtn" class="btn primary">🪪 GENERATE ID</button><button id="idResetBtn" class="btn light">CLEAR FORM</button></div>
+    <div id="idGenStatus" class="status">Search for a member, confirm the details, and upload their photo.</div>
+   </div>
+   <div class="idgen-panel">
+    <h3>2. Live ID card preview</h3>
+    <div id="idCardPreview" class="idgen-card" aria-label="ID card preview">
+     <div class="idgen-cardhead"><div class="idgen-book">▤</div><div><div class="idgen-brand">GURU <span>CONNECT</span></div><div class="idgen-tagline">Connecting Mind - Creating Future...</div></div><div class="idgen-cardlabel">STUDENT / TUTOR<br>IDENTITY CARD</div></div>
+     <div class="idgen-cardbody"><img id="idCardPhoto" class="idgen-cardphoto" alt="Member photo preview"><div><div class="idgen-cardname"><span id="idCardName">Member Full Name</span><span id="idCardTick" class="idgen-tick" hidden>✓</span></div><div id="idCardCategory" class="idgen-idnumber">CATEGORY: STUDENT</div><div id="idCardNumber" class="idgen-idnumber">ID NO: —</div><div class="idgen-mini-fields"><div><b>LEVEL</b><span id="idCardLevel">—</span></div><div><b>COURSE</b><span id="idCardCourse">—</span></div><div><b>STREAM</b><span id="idCardStream">—</span></div><div><b>SUBJECT</b><span id="idCardSubject">—</span></div><div><b>PLAN</b><span id="idCardPlan">—</span></div><div><b>MODE</b><span id="idCardMode">—</span></div></div><div class="idgen-address"><b>ADDRESS:</b> <span id="idCardAddress">—</span><br><b>MOBILE:</b> <span id="idCardMobile">—</span></div></div></div>
+     <div class="idgen-validity"><span>VALIDITY</span><span id="idCardValidity">Select validity dates</span></div>
+     <div class="idgen-cardfoot"><span>◉ WhatsApp: +1 (555) 9565-917</span><span>✉ support@guruconnnect.in</span></div>
+    </div>
+    <p class="idgen-preview-note">Preview only until you click GENERATE ID. Generated cards can be printed or saved as PDF from the print dialog.</p>
+    <div class="actions"><button id="idPrintBtn" class="btn teal" disabled>🖨️ PRINT / SAVE AS PDF</button></div>
+   </div>
+  </div>
+ </div>
+</section>
 
 <section class="section open" id="sec-edit"><div class="secHead"><div><h2>✏️ Edit Student / Tutor</h2><p>Search a live account here. Edit the complete profile and delete it from the same editor.</p></div><span class="pill">PRIMARY ADMIN TOOL</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="editSearch" placeholder="Name, email, phone or User ID…" autocomplete="off"></div><div class="field"><label>Role</label><select id="editRole"><option value="">ALL</option><option value="student">STUDENT</option><option value="tutor">TUTOR</option></select></div><button id="editFind" class="btn primary">🔎 FIND</button><button id="editRefresh" class="btn light">↻ REFRESH</button></div><div id="editStatus" class="status"></div><div id="editResults" class="results"><div class="empty">Search for the Student/Tutor you want to edit.</div></div></div></section>
 
@@ -1144,6 +1225,126 @@ $('adSave').onclick=async()=>{
     clearAdEditor();await loadAdminAdvertisements();
   }catch(e){if(newlyUploadedPath){try{await sb.storage.from('gc-advertisements').remove([newlyUploadedPath])}catch(_){}}$('adStatus').textContent='Advertisement save failed: '+(e.message||e)}
   finally{b.disabled=false;b.textContent=editingAdvertisementId?'UPDATE EXISTING ADVERTISEMENT':'SAVE ADVERTISEMENT'}
+};
+
+
+/* GURU CONNECT ID CARD GENERATOR — admin uploaded photo is required */
+let gcIdPhotoData='';
+let gcIdGenerated=false;
+function gcIdValue(v){return String(v??'').trim()}
+function gcIdFirst(u,keys){
+  for(const k of keys){const v=u?.[k];if(v!==undefined&&v!==null&&String(v).trim()!=='')return v}
+  return '';
+}
+function gcIdPublicNumber(u){
+  // Prefer the same member ID already displayed in the admin directory cards.
+  return gcIdFirst(u,['member_id','student_id','tutor_id','short_id','public_id','registration_no','record_no','profile_id','user_id','id'])||'';
+}
+function gcIdFillSelect(){
+  const search=$('idMemberSearch').value.trim().toLowerCase();
+  const sel=$('idMemberSelect');
+  const prior=sel.value;
+  const list=users.filter(u=>!search||[
+    u.name,u.full_name,u.member_id,u.student_id,u.tutor_id,u.short_id,u.public_id,u.registration_no,u.record_no,u.profile_id,u.user_id,u.email,u.phone
+  ].some(v=>String(v??'').toLowerCase().includes(search)));
+  sel.innerHTML='<option value="">Select a matching Student/Tutor…</option>'+list.map(u=>{
+    const id=String(u.user_id||'');
+    return '<option value="'+esc(id)+'">'+esc(String(u.role||'').toUpperCase()+' · '+(u.name||u.full_name||'Unnamed member')+' · '+gcIdPublicNumber(u))+'</option>';
+  }).join('');
+  if(prior&&list.some(u=>String(u.user_id)===prior))sel.value=prior;
+  if(!users.length){sel.innerHTML='<option value="">No member data loaded. Refresh admin directory first.</option>'}
+}
+function gcIdSelectedUser(){return users.find(u=>String(u.user_id||'')===$('idMemberSelect').value)||null}
+function gcIdSetField(id,value){const el=$(id);if(el)el.value=String(value??'')}
+function gcIdSetSelect(id,value,aliases=[]){
+  const el=$(id);if(!el)return;
+  const raw=String(value??'').trim();
+  if(!raw){el.value='';return}
+  const opts=[...el.options];
+  const found=opts.find(o=>o.value.toLowerCase()===raw.toLowerCase()||o.text.toLowerCase()===raw.toLowerCase());
+  if(found){el.value=found.value;return}
+  const normalized=raw.toLowerCase();
+  const alias=opts.find(o=>aliases.some(a=>normalized.includes(a.toLowerCase())&&o.text.toLowerCase()===a.toLowerCase()));
+  if(alias){el.value=alias.value;return}
+  const other=opts.find(o=>o.text.toLowerCase()==='other');
+  if(other){el.value='Other';return}
+  const custom=document.createElement('option');custom.value=raw;custom.textContent=raw;el.appendChild(custom);el.value=raw;
+}
+function gcIdAutofill(){
+  const u=gcIdSelectedUser();
+  if(!u){$('idGenStatus').textContent='Select a registered member to auto-fill their details.';return}
+  gcIdSetSelect('idCategory',u.role==='tutor'?'tutor':'student');
+  gcIdSetField('idNumber',gcIdPublicNumber(u));
+  gcIdSetField('idFullName',gcIdFirst(u,['full_name','name','display_name']));
+  const level=gcIdFirst(u,['level','education_level','college_level','academic_level']);
+  const course=gcIdFirst(u,['course','class','year','grade']);
+  const stream=gcIdFirst(u,['stream','faculty']);
+  gcIdSetSelect('idLevel',level);
+  gcIdSetSelect('idCourse',course);
+  gcIdSetSelect('idStream',stream);
+  gcIdSetField('idSubject',gcIdFirst(u,['subject','subjects','teaching_subject','specialization','speciality']));
+  gcIdSetField('idPlan',gcIdFirst(u,['plan','plan_name','membership_plan','subscription_plan','service_plan'])||((u.role==='tutor'&&(u.public_verified_tick||u.verified))?'Verified Tutor':''));
+  gcIdSetSelect('idMode',gcIdFirst(u,['mode','teaching_mode','class_mode']));
+  gcIdSetField('idAddress',gcIdFirst(u,['residential_address','address','full_address','home_address','location']));
+  gcIdSetField('idMobile',gcIdFirst(u,['phone','mobile','mobile_number','contact_number']));
+  gcIdUpdatePreview();
+  $('idGenStatus').textContent='Member loaded. Review/edit the fields and upload a photograph before generating.';
+}
+function gcIdUpdatePreview(){
+  const u=gcIdSelectedUser();
+  const val=id=>gcIdValue($(id)?.value)||'—';
+  $('idCardName').textContent=val('idFullName');
+  $('idCardCategory').textContent='CATEGORY: '+val('idCategory').toUpperCase();
+  $('idCardNumber').textContent='ID NO: '+val('idNumber');
+  $('idCardLevel').textContent=val('idLevel');
+  $('idCardCourse').textContent=val('idCourse');
+  $('idCardStream').textContent=val('idStream');
+  $('idCardSubject').textContent=val('idSubject');
+  $('idCardPlan').textContent=val('idPlan');
+  $('idCardMode').textContent=val('idMode');
+  $('idCardAddress').textContent=val('idAddress');
+  $('idCardMobile').textContent=val('idMobile');
+  const tick=!!(u&&(u.public_verified_tick||u.verified));
+  $('idCardTick').hidden=!tick;
+  $('idCardValidity').textContent=($('idValidFrom').value||'—')+' – '+($('idValidTo').value||'—');
+  if(gcIdPhotoData)$('idCardPhoto').src=gcIdPhotoData;
+  $('idCardPhoto').style.visibility=gcIdPhotoData?'visible':'hidden';
+  gcIdGenerated=false;$('idPrintBtn').disabled=true;
+}
+$('idMemberSearch').addEventListener('input',gcIdFillSelect);
+$('idMemberSelect').addEventListener('change',gcIdAutofill);
+['idCategory','idNumber','idFullName','idLevel','idCourse','idStream','idMode','idSubject','idPlan','idAddress','idMobile','idValidFrom','idValidTo'].forEach(id=>$(id).addEventListener('input',gcIdUpdatePreview));
+$('idPhoto').addEventListener('change',()=>{
+  const f=$('idPhoto').files?.[0];gcIdPhotoData='';$('idPhotoPreview').hidden=true;
+  if(!f){gcIdUpdatePreview();return}
+  if(!/^image\/(jpeg|png|webp)$/i.test(f.type)){ $('idPhoto').value='';$('idGenStatus').textContent='Please upload a JPG, PNG or WEBP photograph.';gcIdUpdatePreview();return}
+  if(f.size>5*1024*1024){$('idPhoto').value='';$('idGenStatus').textContent='Photograph must be 5 MB or smaller.';gcIdUpdatePreview();return}
+  const reader=new FileReader();reader.onload=()=>{gcIdPhotoData=String(reader.result||'');$('idPhotoPreview').src=gcIdPhotoData;$('idPhotoPreview').hidden=false;gcIdUpdatePreview();$('idGenStatus').textContent='Photograph uploaded and ready for preview.'};reader.onerror=()=>{$('idGenStatus').textContent='Could not read this photograph. Please try another file.'};reader.readAsDataURL(f);
+});
+$('idGenerateBtn').onclick=()=>{
+  if(!gcIdSelectedUser()){ $('idGenStatus').textContent='Please select a registered Student or Tutor first.';return}
+  if(!gcIdPhotoData){$('idGenStatus').textContent='Photograph is required. Upload the member photograph before generating the ID.';$('idPhoto').focus();return}
+  if(!$('idFullName').value.trim()||!$('idNumber').value.trim()){$('idGenStatus').textContent='Full Name and ID Number are required.';return}
+  if($('idValidFrom').value&&$('idValidTo').value&&$('idValidTo').value<$('idValidFrom').value){$('idGenStatus').textContent='Validity end date cannot be earlier than the start date.';return}
+  gcIdUpdatePreview();gcIdGenerated=true;$('idPrintBtn').disabled=false;
+  $('idGenStatus').textContent='✓ ID card generated in preview. Check the details, then print or save as PDF.';
+};
+$('idResetBtn').onclick=()=>{
+  $('idMemberSearch').value='';$('idMemberSelect').value='';$('idPhoto').value='';gcIdPhotoData='';$('idPhotoPreview').hidden=true;$('idPhotoPreview').removeAttribute('src');$('idCardPhoto').removeAttribute('src');$('idCardPhoto').style.visibility='hidden';
+  ['idNumber','idFullName','idSubject','idPlan','idAddress','idMobile'].forEach(id=>gcIdSetField(id,''));
+  ['idLevel','idCourse','idStream','idMode'].forEach(id=>gcIdSetSelect(id,''));
+  const today=new Date();const next=new Date(today);next.setFullYear(next.getFullYear()+1);
+  const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  $('idValidFrom').value=fmt(today);$('idValidTo').value=fmt(next);
+  $('idGenStatus').textContent='Search for a member, confirm the details, and upload their photo.';gcIdFillSelect();gcIdUpdatePreview();
+};
+$('idPrintBtn').onclick=()=>{
+  if(!gcIdGenerated||!gcIdPhotoData){$('idGenStatus').textContent='Generate the card with a photograph before printing.';return}
+  const preview=$('idCardPreview');
+  const w=window.open('','_blank','noopener,noreferrer,width=1000,height=750');
+  if(!w){$('idGenStatus').textContent='Pop-up blocked. Allow pop-ups for this site, then click Print again.';return}
+  const html='<!doctype html><html><head><meta charset="utf-8"><title>GURU CONNECT ID Card</title><style>*{box-sizing:border-box}body{margin:0;padding:20mm;background:#fff;font-family:Arial,sans-serif}.idgen-card{width:90mm;aspect-ratio:1.58/1;overflow:hidden;border:1px solid #cbd5e1;border-radius:4mm;display:flex;flex-direction:column;color:#172033;print-color-adjust:exact;-webkit-print-color-adjust:exact}.idgen-cardhead{background:linear-gradient(115deg,#092b64,#155eef 72%,#06a6c8);color:#fff;padding:3mm 4mm;display:flex;align-items:center;gap:2mm}.idgen-book{width:10mm;height:10mm;flex:0 0 10mm;border-radius:2mm;background:#fff;color:#155eef;display:grid;place-items:center;font-size:18pt}.idgen-brand{font-size:15pt;font-weight:900;line-height:1.05}.idgen-brand span{font-weight:400}.idgen-tagline{font-size:6pt;margin-top:1mm;color:#e4efff}.idgen-cardlabel{margin-left:auto;text-align:right;font-size:6pt;font-weight:900;letter-spacing:.5px;border:1px solid #ffffff75;padding:1.5mm;border-radius:2mm}.idgen-cardbody{padding:3mm 3.5mm 2mm;display:grid;grid-template-columns:24mm 1fr;gap:3mm;flex:1;min-height:0}.idgen-cardphoto{width:22mm;height:27mm;object-fit:cover;border-radius:1.5mm;border:1px solid #d8e3f3;background:#eef3fa}.idgen-cardname{font-size:11pt;font-weight:900;color:#102e61;line-height:1.2;overflow-wrap:anywhere}.idgen-tick{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;background:#1877f2;color:#fff;border-radius:50%;width:4mm;height:4mm;font-size:7pt;margin-left:1mm}.idgen-idnumber{font-size:6.5pt;font-weight:900;color:#155eef;margin-top:1mm}.idgen-mini-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.2mm 2mm;margin-top:2mm}.idgen-mini-fields div{font-size:5.5pt;line-height:1.2;overflow-wrap:anywhere}.idgen-mini-fields b{display:block;font-size:4.5pt;color:#64748b;margin-bottom:.4mm}.idgen-address{font-size:5pt;color:#334155;margin-top:1mm;line-height:1.2;overflow-wrap:anywhere}.idgen-validity{background:#eaf2ff;color:#123b82;padding:1.5mm 3mm;font-size:5.5pt;font-weight:900;display:flex;justify-content:space-between;gap:2mm}.idgen-cardfoot{background:#092b64;color:#fff;padding:1.8mm 3mm;display:flex;justify-content:space-between;gap:2mm;font-size:5pt;flex-wrap:wrap}@page{size:auto;margin:0} @media print{body{padding:10mm}.idgen-card{break-inside:avoid}}</style></head><body>'+preview.outerHTML+'<script>window.onload=()=>setTimeout(()=>window.print(),350)<\/script></body></html>';
+  w.document.open();w.document.write(html);w.document.close();
 };
 
 // Do not query the admin-only advertisements table before authentication.
