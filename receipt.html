@@ -209,7 +209,7 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
  const dateText=value=>{if(!value)return '—';const d=new Date(value+'T12:00:00');return Number.isNaN(d.getTime())?value:d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});};
  const amount=n=>Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
  const now=new Date(),date=get('date')||now.toISOString().slice(0,10);
- put('receiptNo','GC-'+now.getFullYear()+'-'+String(now.getTime()).slice(-7));put('issueDate',dateText(date));put('paymentDate',dateText(date));
+ put('receiptNo',get('receiptNo')||('GC-'+now.getFullYear()+'-'+String(now.getTime()).slice(-7)));put('issueDate',dateText(date));put('paymentDate',dateText(date));
  put('customerName',get('name'));put('customerEmail',get('email'));put('customerPhone',get('phone'));put('customerCategory',get('category'));
  const category=get('category'),mode=get('mode')||'Self',collection=get('collectionType')||'Cash',online=collection==='Online UPI';
  put('customerRegNo',category==='Institution'?(get('name')||get('memberRegNo')):get('memberRegNo'));
