@@ -140,20 +140,28 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
   #receiptAdPanel.flyer-ready{padding:0!important}
 }
 
-/* Final closing layout: keep the thank-you message and QR side by side. */
-.closing{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:12px!important;text-align:center!important}
-.closing>div:first-child{display:grid!important;grid-template-columns:minmax(0,1fr) 190px!important;grid-template-rows:auto auto!important;align-items:center!important;column-gap:14px!important;row-gap:6px!important;width:100%!important;text-align:left!important}
-.closing .thankyou{grid-column:1!important;grid-row:1!important;text-align:left!important;margin:0!important;align-self:center!important}
-.closing .qr-section{grid-column:2!important;grid-row:1 / span 2!important;display:flex!important;justify-content:center!important;align-items:center!important;width:190px!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;break-inside:avoid!important;page-break-inside:avoid!important}
-.closing .qr-code{display:grid!important;place-items:center!important;width:190px!important;height:190px!important;flex:0 0 190px!important;margin:0!important;padding:10px!important;border:0!important;border-radius:0!important;background:#fff!important;box-sizing:border-box!important}
+/* Final closing layout: thank-you text, QR, and stamp/signature side by side. */
+.closing{display:grid!important;grid-template-columns:minmax(0,1fr) 160px minmax(180px,0.9fr)!important;align-items:center!important;justify-content:stretch!important;gap:12px!important;text-align:left!important}
+.closing-message{min-width:0!important;text-align:left!important}
+.closing .thankyou{text-align:left!important;margin:0 0 8px!important}
+.closing .support{text-align:left!important;margin:0!important}
+.closing .qr-section{display:flex!important;justify-content:center!important;align-items:center!important;width:160px!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;break-inside:avoid!important;page-break-inside:avoid!important}
+.closing .qr-code{display:grid!important;place-items:center!important;width:160px!important;height:160px!important;flex:0 0 160px!important;margin:0!important;padding:9px!important;border:0!important;border-radius:0!important;background:#fff!important;box-sizing:border-box!important}
 .closing .qr-code img{display:block!important;width:100%!important;height:100%!important;max-width:none!important;object-fit:contain!important;image-rendering:pixelated!important}
 .closing .qr-copy{display:none!important}
-.closing .support{grid-column:1!important;grid-row:2!important;text-align:left!important;margin:0!important}
-.closing .signature-seal{display:flex!important;justify-content:center!important;align-items:center!important;flex-wrap:wrap!important;width:100%!important;margin:0!important;gap:12px!important}
+.closing .signature-seal{display:flex!important;justify-content:center!important;align-items:center!important;flex-wrap:wrap!important;width:100%!important;min-width:0!important;margin:0!important;gap:8px!important}
+.closing .seal{max-width:100%!important}
 @media print{
- .closing .qr-section{display:flex!important;justify-content:center!important;align-items:center!important;width:190px!important;margin:0!important;padding:0!important;break-inside:avoid!important;page-break-inside:avoid!important}
- .closing .qr-code{width:190px!important;height:190px!important;flex:0 0 190px!important;padding:10px!important}
+ .closing{grid-template-columns:minmax(0,1fr) 160px minmax(180px,0.9fr)!important;gap:10px!important}
+ .closing .qr-section{display:flex!important;justify-content:center!important;align-items:center!important;width:160px!important;margin:0!important;padding:0!important;break-inside:avoid!important;page-break-inside:avoid!important}
+ .closing .qr-code{width:160px!important;height:160px!important;flex:0 0 160px!important;padding:9px!important}
  .closing .qr-code img{display:block!important;visibility:visible!important;opacity:1!important;width:100%!important;height:100%!important}
+}
+@media screen and (max-width:600px){
+ .closing{grid-template-columns:minmax(0,1fr) 130px!important}
+ .closing .qr-section{grid-column:2!important;grid-row:1 / span 2!important;width:130px!important}
+ .closing .qr-code{width:130px!important;height:130px!important;flex-basis:130px!important}
+ .closing .signature-seal{grid-column:1 / -1!important}
 }
 </style>
 </head>
@@ -232,15 +240,15 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
     <div class="ad-foot" id="receiptAdFoot">A brighter future begins with one step of learning.</div>
   </section></section>
   <section class="closing">
-    <div>
+    <div class="closing-message">
       <div class="thankyou">Thank you for your payment.</div>
-      <section class="qr-section" aria-label="Receipt details QR code"><div class="qr-code" id="receiptQr"></div></section>
       <div class="support">
         <strong>Please verify the receipt details and service charges.</strong><br>
         Support: <a href="mailto:support@guruconnnect.in">support@guruconnnect.in</a><br>
         <span>Connecting Mind - Creating Future...</span>
       </div>
     </div>
+    <section class="qr-section" aria-label="Receipt details QR code"><div class="qr-code" id="receiptQr"></div></section>
     <div class="signature-seal">
       <div class="seal" role="img" aria-label="GURU CONNECT logo in purple-blue rubber stamp ink">
         <span class="seal-dot left">✦</span>
