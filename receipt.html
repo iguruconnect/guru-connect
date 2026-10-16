@@ -201,8 +201,23 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-(function(){
- const q=new URLSearchParams(window.location.search);
+(async function(){
+ // A scanned digital receipt can carry a compressed copy of its own query data.
+ // This keeps the QR less dense and avoids scanner failures caused by long receipt/flyer URLs.
+ const rawQ=new URLSearchParams(window.location.search);
+ let q=rawQ;
+ if(rawQ.has('z')&&'DecompressionStream' in window){
+   try{
+     const packed=rawQ.get('z').replace(/-/g,'+').replace(/_/g,'/');
+     const bin=atob(packed+'='.repeat((4-packed.length%4)%4));
+     const bytes=Uint8Array.from(bin,c=>c.charCodeAt(0));
+     const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate'));
+     const json=await new Response(stream).text();
+     const data=JSON.parse(json);
+     q=new URLSearchParams();
+     Object.entries(data).forEach(([k,v])=>{if(v!==undefined&&v!==null&&String(v)!=='')q.set(k,String(v));});
+   }catch(e){console.warn('Compressed receipt link could not be decoded:',e);}
+ }
  const get=k=>(q.get(k)||'').trim();
  const previewMode=get('preview')==='1';
  if(previewMode){const badge=document.getElementById('previewModeLabel');if(badge)badge.style.display='inline-flex';document.title='PREVIEW — GURU CONNECT Receipt';}
@@ -221,18 +236,33 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
  const tbody=document.getElementById('items');let services=[];try{services=JSON.parse(get('services')||'[]');if(!Array.isArray(services))services=[];}catch(e){services=[];}
  if(tbody){tbody.innerHTML='';services.forEach((s,i)=>{const tr=document.createElement('tr');[String(i+1),String(s.name||'Service'),String(s.description||s.name||'GURU CONNECT service'),'1',amount(s.amount),amount(s.amount)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td);});tbody.appendChild(tr);});if(!services.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=6;td.textContent='No service items were supplied.';tr.appendChild(td);tbody.appendChild(tr);}}
  const total=services.reduce((sum,s)=>sum+Number(s.amount||0),0);put('count',services.length,'0');put('total',amount(get('total')||total),'0.00');
- // QR must open this exact digital receipt URL, preserving all receipt data and the advertisement.
+ // Encode a compressed copy of the receipt parameters in the QR. The scanned page
+ // decompresses it above, so the phone receives the same customer, payment and flyer data
+ // without a very dense QR made from a long URL.
  const qrHost=document.getElementById('receiptQr'),qrStatus=document.getElementById('qrStatus');
- const digitalReceiptUrl=window.location.href;
+ let digitalReceiptUrl=window.location.href;
+ try{
+   if('CompressionStream' in window){
+     const receiptData={};
+     q.forEach((v,k)=>{if(k!=='z'&&k!=='preview'&&k!=='back')receiptData[k]=v;});
+     const stream=new Blob([JSON.stringify(receiptData)]).stream().pipeThrough(new CompressionStream('deflate'));
+     const packed=new Uint8Array(await new Response(stream).arrayBuffer());
+     let binary='';for(let i=0;i<packed.length;i++)binary+=String.fromCharCode(packed[i]);
+     const token=btoa(binary).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'');
+     digitalReceiptUrl=window.location.origin+window.location.pathname+'?z='+token;
+   }
+ }catch(e){console.warn('Could not compress receipt QR URL; using the full receipt URL:',e);}
  if(qrHost){
    const renderReceiptQr=()=>{
      if(!window.QRCode)return false;
      try{
        qrHost.innerHTML='';
-       new QRCode(qrHost,{text:digitalReceiptUrl,width:210,height:210,colorDark:'#102b55',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.L});
-       if(qrStatus)qrStatus.textContent='QR ready • scan to open this digital receipt and its advertisement';
+       new QRCode(qrHost,{text:digitalReceiptUrl,width:420,height:420,colorDark:'#102b55',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+       const img=qrHost.querySelector('img');
+       if(img){img.alt='Scan to open this digital GURU CONNECT receipt';img.style.width='100%';img.style.height='100%';img.style.imageRendering='pixelated';}
+       if(qrStatus)qrStatus.textContent='QR ready • scan to open this digital receipt on a phone';
        return true;
-     }catch(e){return false;}
+     }catch(e){if(qrStatus)qrStatus.textContent='QR could not be generated. Reload this receipt and try again.';return false;}
    };
    const loadQrLibrary=(urls,index=0)=>{
      if(renderReceiptQr())return;
@@ -260,7 +290,7 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
      if(adImage){
        const link=document.getElementById('receiptAdLink'),img=document.getElementById('receiptAdImage'),fallback=document.getElementById('receiptAdDefault');
        img.onload=()=>{link.style.display='block';fallback.style.display='none';};
-       img.onerror=()=>{link.style.display='none';fallback.style.display='flex';console.warn('Receipt flyer image failed to load:',adImage);};
+       img.onerror=()=>{link.style.display='none';fallback.style.display='flex';const status=document.getElementById('receiptAdFoot');if(status)status.textContent='Advertiser flyer could not load. Check that the gc-advertisements storage bucket is public and the saved image URL is accessible.';console.warn('Receipt flyer image failed to load:',adImage);};
        img.src=adImage;img.alt=(adTitle||'Advertiser flyer')+' — '+(adAdvertiser||'GURU CONNECT advertiser');
        let safeClick='';try{const u=new URL(adClick||'');if(u.protocol==='https:'||u.protocol==='http:')safeClick=u.href;}catch(_){}link.href=safeClick||adImage;
        if(img.complete&&img.naturalWidth>0){link.style.display='block';fallback.style.display='none';}
