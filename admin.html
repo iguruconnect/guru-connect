@@ -1335,8 +1335,9 @@ $('idGenerateBtn').onclick=async()=>{
     const photoUrl=sb.storage.from('gc-advertisements').getPublicUrl(path).data.publicUrl;
     const u=gcIdSelectedUser();
     const payload={v:1,n:$('idFullName').value.trim(),c:$('idCategory').value,i:$('idNumber').value.trim(),l:$('idLevel').value,co:$('idCourse').value,st:$('idStream').value,su:$('idSubject').value.trim(),p:$('idPlan').value.trim(),m:$('idMode').value,a:$('idAddress').value.trim(),ph:$('idMobile').value.trim(),f:$('idValidFrom').value,t:$('idValidTo').value,ok:!!(u&&(u.public_verified_tick||u.verified||u.verified_tick||u.is_verified||u.isVerified||String(u.verification_status||'').toLowerCase()==='verified')),im:photoUrl};
-    const bytes=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
-    const digitalUrl='https://www.guruconnnect.in/digital-id.html?data='+encodeURIComponent(bytes);
+    const json=JSON.stringify(payload);let digitalUrl;
+    if('CompressionStream' in window){const packed=await new Response(new Blob([json]).stream().pipeThrough(new CompressionStream('deflate'))).arrayBuffer();const bytes=btoa(Array.from(new Uint8Array(packed),b=>String.fromCharCode(b)).join('')).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');digitalUrl='https://www.guruconnnect.in/digital-id.html?z='+bytes;}
+    else{const bytes=btoa(unescape(encodeURIComponent(json)));digitalUrl='https://www.guruconnnect.in/digital-id.html?data='+encodeURIComponent(bytes);}
     const qrBox=document.createElement('div');new QRCode(qrBox,{text:digitalUrl,width:360,height:360,correctLevel:QRCode.CorrectLevel.L});const qrCanvas=qrBox.querySelector('canvas');if(qrCanvas){$('idCardQr').src=qrCanvas.toDataURL('image/png')}else{const qrImg=qrBox.querySelector('img');if(!qrImg)throw new Error('QR generator did not produce an image. Please retry.');$('idCardQr').src=qrImg.src}
     $('idCardQrWrap').hidden=false;$('idCardQr').hidden=false;
     $('idCardQr').onerror=()=>{$('idGenStatus').textContent='Digital ID link is ready, but QR image service did not load. Please retry Generate ID.';};
