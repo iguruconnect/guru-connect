@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>GURU CONNECT Digital ID</title>
+<style>
+*{box-sizing:border-box}body{margin:0;padding:22px;background:#f1f5f9;color:#172033;font-family:Arial,Helvetica,sans-serif}.wrap{max-width:760px;margin:0 auto}.card{background:#fff;border:1px solid #d8e1ef;border-radius:18px;overflow:hidden;box-shadow:0 12px 36px #0f2d5a14}.stripe{height:7px;background:linear-gradient(90deg,#ef3340 0 18%,#ff9f1c 18% 36%,#ffd21f 36% 52%,#19b957 52% 69%,#08a8cf 69% 84%,#633eea 84% 100%)}header{display:flex;align-items:center;gap:16px;padding:20px;border-bottom:1px solid #e2e8f0}header img{width:76px;height:76px;object-fit:contain}h1{font-size:25px;line-height:1;margin:0;color:#e32636}h1 span{color:#155eef;font-weight:400}.slogan{color:#123b82;margin:8px 0 0;font-size:13px}.content{padding:22px}.identity{display:grid;grid-template-columns:170px minmax(0,1fr);gap:22px}.photo{width:160px;height:190px;object-fit:cover;border:2px solid #d8e3f3;border-radius:12px;background:#eef3fa}.badge{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;width:22px;height:22px;background:#00b83f;color:white;font-weight:900;font-size:15px;vertical-align:middle;margin-left:7px}.category{color:#155eef;font-size:13px;font-weight:700;margin-top:8px}.number{font-size:14px;color:#155eef;margin-top:7px;overflow-wrap:anywhere}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}.field{border-bottom:1px solid #e2e8f0;padding-bottom:8px;min-width:0}.field b{display:block;font-size:11px;letter-spacing:.5px;color:#64748b;margin-bottom:5px}.field span{font-size:14px;overflow-wrap:anywhere;white-space:pre-wrap}.full{grid-column:1/-1}.validity{margin-top:18px;padding:12px 14px;background:#eaf2ff;border-radius:9px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:#123b82;font-weight:700;font-size:13px}.foot{background:#092b64;color:white;padding:15px 20px;font-size:12px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap}.notice{font-size:12px;color:#64748b;margin:14px 2px 0;line-height:1.5}.error{padding:28px;text-align:center;color:#9f1239} @media(max-width:540px){body{padding:10px}.identity{grid-template-columns:100px minmax(0,1fr);gap:12px}.photo{width:96px;height:120px}header{padding:14px;gap:10px}header img{width:54px;height:54px}h1{font-size:21px}.content{padding:14px}.fields{gap:10px}.field span{font-size:13px}.full{grid-column:1/-1}}@media print{body{padding:0;background:white}.card{box-shadow:none;border-radius:0}.notice{display:none}}
+</style>
+</head>
+<body><main class="wrap"><div class="card"><div class="stripe"></div><header><img src="guru-connect-round-logo.png" alt="GURU CONNECT logo"><div><h1>GURU <span>CONNECT</span></h1><p class="slogan">Connecting Mind - Creating Future...</p></div></header><div id="content" class="content"><p>Loading Digital ID…</p></div><div class="foot"><span>GURU CONNECT Digital ID</span><span>Helpdesk: support@guruconnnect.in</span></div></div><p class="notice">This digital card displays the details encoded when the QR code was issued. If details change, the member should request an updated ID card and QR code from GURU CONNECT administration.</p></main>
+<script>
+(function(){
+const root=document.getElementById('content');
+const esc=v=>String(v==null||v===''?'—':v);
+const date=s=>{if(!s)return '—';const p=String(s).split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s};
+const field=(label,value,full)=>'<div class="field'+(full?' full':'')+'"><b>'+label+'</b><span>'+esc(value).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+'</span></div>';
+try{
+const encoded=new URLSearchParams(location.search).get('data');
+if(!encoded)throw new Error('This QR code does not contain a Digital ID. Please ask GURU CONNECT admin for a replacement card.');
+const raw=decodeURIComponent(escape(atob(encoded)));
+const d=JSON.parse(raw);
+if(!d.name||!d.idNumber||!d.photo)throw new Error('Digital ID information is incomplete. Please ask GURU CONNECT admin for a replacement card.');
+const safePhoto=String(d.photo);
+if(!/^https:\/\//i.test(safePhoto))throw new Error('The member photograph link is invalid.');
+root.innerHTML='<div class="identity"><div><img class="photo" src="" alt="Member photograph" id="memberPhoto"></div><div><h2 id="memberName" style="margin:0;color:#102e61;font-size:24px;overflow-wrap:anywhere"></h2><div class="category" id="category"></div><div class="number" id="number"></div><div id="verified"></div></div></div><div class="fields" id="fields"></div><div class="validity"><span>VALIDITY</span><span id="validity"></span></div>';
+document.getElementById('memberPhoto').src=safePhoto;
+document.getElementById('memberName').textContent=esc(d.name);
+document.getElementById('category').textContent='CATEGORY: '+String(d.category||'member').toUpperCase();
+document.getElementById('number').textContent='ID NO: '+esc(d.idNumber);
+if(d.verified)document.getElementById('verified').innerHTML='<span class="badge" aria-label="Verified">✓</span> <span style="font-size:12px;color:#008b32;font-weight:700">Verified</span>';
+document.getElementById('fields').innerHTML=field('LEVEL',d.level)+field('COURSE',d.course)+field('STREAM',d.stream)+field('SUBJECT',d.subject)+field('PLAN',d.plan)+field('MODE',d.mode)+field('RESIDENTIAL ADDRESS',d.address,true)+field('MOBILE NUMBER',d.mobile,true);
+document.getElementById('validity').textContent=date(d.validFrom)+' – '+date(d.validTo);
+}catch(e){root.innerHTML='<div class="error"><h2>Digital ID unavailable</h2><p></p></div>';root.querySelector('p').textContent=e.message||'Could not read this Digital ID.'}
+})();
+</script></body></html>
