@@ -943,6 +943,16 @@ $('saveReceiptAd').onclick=async()=>{
     const up=await sb.storage.from('gc-advertisements').upload(uploadedPath,prepared,{upsert:false,contentType:'image/jpeg',cacheControl:'3600'});
     if(up.error)throw up.error;
     const image_url=sb.storage.from('gc-advertisements').getPublicUrl(uploadedPath).data.publicUrl;
+    // Verify the uploaded file is actually readable before reporting success.
+    const signed=await sb.storage.from('gc-advertisements').createSignedUrl(uploadedPath,3600);
+    if(signed.error||!signed.data?.signedUrl)throw new Error('Flyer uploaded, but Supabase could not create a readable image link: '+(signed.error?.message||'no signed URL returned')+'. Check Storage policies for bucket gc-advertisements.');
+    await new Promise((resolve,reject)=>{
+      const check=new Image();
+      const timer=setTimeout(()=>reject(new Error('Flyer upload finished but the stored image did not load. Check the gc-advertisements Storage bucket and its read policy.')),12000);
+      check.onload=()=>{clearTimeout(timer);resolve();};
+      check.onerror=()=>{clearTimeout(timer);reject(new Error('Flyer was uploaded but could not be read back from Supabase Storage. Check bucket access policies.'));};
+      check.src=signed.data.signedUrl;
+    });
     const row={title,advertiser_name:advertiser,placement:'all',image_url,storage_path:uploadedPath,click_url:click||null,whatsapp_url:null,start_at:new Date().toISOString(),end_at:null,priority:999,active:true,created_by:session.user.id,updated_at:new Date().toISOString()};
     const ins=await sb.from('gc_advertisements').insert(row).select('id').single();
     if(ins.error)throw ins.error;
