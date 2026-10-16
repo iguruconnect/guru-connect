@@ -21,13 +21,13 @@ body{margin:0;padding:26px 14px;background:#edf2f8;color:var(--ink);font-family:
 .brandcopy{min-width:0}
 .brandname{font-size:30px;font-weight:900;letter-spacing:-1px;color:var(--red);margin:0;line-height:1.05;white-space:nowrap}.brandname span{color:var(--blue);font-weight:400;letter-spacing:-.7px}
 .tagline{font-size:12px;font-weight:600;color:#155eef;margin-top:7px;letter-spacing:.1px}
-.docmark{flex-shrink:0;text-align:right}
+.docmark{flex-shrink:0;text-align:right;display:flex;align-items:center;justify-content:flex-end}
 .docmark .eyebrow{font-size:10px;letter-spacing:2px;font-weight:900;color:var(--muted);text-transform:uppercase}
 .docmark h1{font-size:29px;line-height:1;margin:7px 0 9px;letter-spacing:1.4px;color:var(--navy)}
 .paid{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:var(--green-soft);color:var(--green);font-size:11px;font-weight:900;letter-spacing:.6px;border:1px solid #b8e7c9}
 .paid:before{content:"✓";display:grid;place-items:center;width:17px;height:17px;border-radius:50%;background:var(--green);color:#fff;font-size:11px}
 .content{padding:26px 34px 28px}
-.summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}\n.summary-card.receipt-number-card{display:flex;align-items:center;gap:12px;flex-wrap:wrap}\n.receipt-kind{font-size:11px;font-weight:900;color:var(--navy);letter-spacing:.3px;text-transform:uppercase}\n.receipt-number-card .label{margin:0;white-space:nowrap}\n.receipt-number-card .value{flex:1;min-width:100px}\n.summary-card.date-card{text-align:right}
 .summary-card{padding:14px 16px;background:linear-gradient(145deg,#fff,#f7f9ff);border:1px solid var(--line);border-top:5px solid var(--blue);border-radius:10px;min-width:0;box-shadow:0 5px 14px #1720330a}.summary-card:nth-child(1){border-top-color:#ff851b}.summary-card:nth-child(2){border-top-color:#27ae60}
 .summary-card .label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:7px}
 .summary-card .value{font-size:15px;color:var(--navy);font-weight:800;overflow-wrap:anywhere}
@@ -86,7 +86,7 @@ td:nth-child(2){font-weight:800;color:var(--navy)}
 .qr-section{display:flex;align-items:center;gap:16px;border:1px solid #dbe4f0;border-radius:14px;padding:14px 16px;margin:0 0 20px;background:linear-gradient(100deg,#f5f8ff,#fff)}.qr-code{width:210px;height:210px;flex:0 0 210px;display:grid;place-items:center;background:#fff;border:1px solid #dbe4f0;border-radius:8px;padding:6px}.qr-code img{display:block!important;width:100%!important;height:100%!important;max-width:100%;object-fit:contain;image-rendering:pixelated}.qr-code canvas{display:none!important}.qr-copy strong{display:block;color:#102b55;font-size:13px;margin-bottom:6px}.qr-copy p{margin:0;color:#52617a;font-size:10px;line-height:1.6}.qr-status{font-size:9px;color:#07864b;font-weight:800;margin-top:6px}.footer{padding:16px 24px;text-align:center;background:#f7f9fd;border-top:1px solid var(--line);color:#52617a;font-size:10px;line-height:1.8}
 .footer strong{color:var(--navy)}
 @media(max-width:650px){
-body{padding:8px 5px}.paper{border-radius:14px}.masthead{padding:20px 16px;gap:12px;align-items:flex-start}.brandlockup{gap:8px;display:flex;align-items:center}.brandlogo{width:48px;height:48px;max-width:48px}.brandname{font-size:21px;margin-top:2px}.tagline{font-size:9px;max-width:200px}.brand-art{padding:15px 14px;min-height:95px}.brand-art-copy strong{font-size:15px}.brand-art-kicker{font-size:7px;letter-spacing:1px}.brand-art-copy small{font-size:9px}.brand-art-icon{width:39px;height:39px;flex-basis:39px;font-size:21px;border-radius:12px}.docmark h1{font-size:22px}.docmark .eyebrow{font-size:8px;letter-spacing:1px}.paid{font-size:9px;padding:5px 7px}.content{padding:18px 12px 20px}.summary{gap:6px}.summary-card{padding:10px 8px;border-radius:10px}.summary-card .label{font-size:8px;letter-spacing:.4px}.summary-card .value{font-size:11px}.details{grid-template-columns:1fr;gap:12px}.rows{padding:5px 11px}.detailrow{grid-template-columns:minmax(95px,38%) 9px minmax(0,1fr);font-size:11px;padding:8px 0}.section-title{font-size:11px}.service-head{padding:12px}.service-head small{display:none}th{padding:9px 4px;font-size:8px}td{padding:10px 4px;font-size:9px}th:first-child,td:first-child{width:27px}th:nth-child(2),td:nth-child(2){width:24%}th:nth-child(4),td:nth-child(4){width:30px}th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){width:67px}.totals{padding:13px;width:100%}.closing{grid-template-columns:1fr;gap:20px}.signature-seal{justify-content:flex-start;gap:12px;margin-left:0}.seal{width:105px;height:105px;flex-basis:105px}.signature{width:125px;flex-basis:125px}.qr-section{align-items:flex-start;gap:11px;padding:11px}.qr-code{width:150px;height:150px;flex-basis:150px}.qr-copy strong{font-size:12px}.qr-copy p{font-size:9px}.receipt-ad-heading{align-items:flex-start;flex-direction:column;gap:4px}.receipt-ad-heading small{font-size:9px}.ad-panel{height:3in;min-height:230px}.ad-main{gap:10px;padding:12px 10px}.ad-icon{width:48px;height:48px;flex-basis:48px;font-size:25px;border-radius:14px}.ad-copy h2{font-size:18px}.ad-copy p{font-size:10px}.ad-copy span{font-size:9px}.ad-star{right:8px;font-size:22px}.footer{padding:13px 12px;font-size:9px}
+body{padding:8px 5px}.paper{border-radius:14px}.masthead{padding:20px 16px;gap:12px;align-items:flex-start}.brandlockup{gap:8px;display:flex;align-items:center}.brandlogo{width:48px;height:48px;max-width:48px}.brandname{font-size:21px;margin-top:2px}.tagline{font-size:9px;max-width:200px}.brand-art{padding:15px 14px;min-height:95px}.brand-art-copy strong{font-size:15px}.brand-art-kicker{font-size:7px;letter-spacing:1px}.brand-art-copy small{font-size:9px}.brand-art-icon{width:39px;height:39px;flex-basis:39px;font-size:21px;border-radius:12px}.docmark h1{font-size:22px}.docmark .eyebrow{font-size:8px;letter-spacing:1px}.paid{font-size:9px;padding:5px 7px}.content{padding:18px 12px 20px}.summary{gap:6px}.summary-card{padding:10px 8px;border-radius:10px}.summary-card .label{font-size:8px;letter-spacing:.4px}.summary-card .value{font-size:11px}.receipt-kind{font-size:9px}.summary-card.receipt-number-card{gap:6px}.summary-card.date-card{text-align:right}.details{grid-template-columns:1fr;gap:12px}.rows{padding:5px 11px}.detailrow{grid-template-columns:minmax(95px,38%) 9px minmax(0,1fr);font-size:11px;padding:8px 0}.section-title{font-size:11px}.service-head{padding:12px}.service-head small{display:none}th{padding:9px 4px;font-size:8px}td{padding:10px 4px;font-size:9px}th:first-child,td:first-child{width:27px}th:nth-child(2),td:nth-child(2){width:24%}th:nth-child(4),td:nth-child(4){width:30px}th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){width:67px}.totals{padding:13px;width:100%}.closing{grid-template-columns:1fr;gap:20px}.signature-seal{justify-content:flex-start;gap:12px;margin-left:0}.seal{width:105px;height:105px;flex-basis:105px}.signature{width:125px;flex-basis:125px}.qr-section{align-items:flex-start;gap:11px;padding:11px}.qr-code{width:150px;height:150px;flex-basis:150px}.qr-copy strong{font-size:12px}.qr-copy p{font-size:9px}.receipt-ad-heading{align-items:flex-start;flex-direction:column;gap:4px}.receipt-ad-heading small{font-size:9px}.ad-panel{height:3in;min-height:230px}.ad-main{gap:10px;padding:12px 10px}.ad-icon{width:48px;height:48px;flex-basis:48px;font-size:25px;border-radius:14px}.ad-copy h2{font-size:18px}.ad-copy p{font-size:10px}.ad-copy span{font-size:9px}.ad-star{right:8px;font-size:22px}.footer{padding:13px 12px;font-size:9px}
 }
 @media print{
 @page{size:A4 portrait;margin:9mm}
@@ -95,7 +95,7 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
 </style>
 </head>
 <body>
-<div class="actions"><span id="previewModeLabel" style="display:none;align-self:center;margin-right:auto;padding:10px 13px;border-radius:10px;background:#fff3cd;color:#7a4b00;font-weight:900;font-size:12px">PREVIEW ONLY — NOT FINAL</span><button type="button" onclick="window.print()">Print / Save as PDF</button></div>
+<div class="actions"><span id="previewModeLabel" style="display:none;align-self:center;margin-right:auto;padding:10px 13px;border-radius:10px;background:#fff3cd;color:#7a4b00;font-weight:900;font-size:12px">PREVIEW ONLY — NOT FINAL</span><button type="button" onclick="printReceipt()">Print / Save as PDF</button></div>
 <main class="paper">
 <div class="topline"></div>
 <header class="masthead">
@@ -106,11 +106,7 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
       <div class="tagline">Connecting Mind - Creating Future</div>
     </div>
   </div>
-  <div class="docmark">
-    <div class="eyebrow">Payment document</div>
-    <h1>RECEIPT</h1>
-    <span class="paid">PAYMENT RECEIVED</span>
-  </div>
+  <div class="docmark"><span class="paid">PAYMENT RECEIVED</span></div>
 </header>
 <div class="brand-art" aria-label="GURU CONNECT learning and teaching brand artwork">
   <div class="brand-art-orb orb-a"></div><div class="brand-art-orb orb-b"></div>
@@ -119,8 +115,8 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
 </div>
 <div class="content">
   <section class="summary" aria-label="Receipt summary">
-    <div class="summary-card"><div class="label">Receipt number</div><div class="value" id="receiptNo">—</div></div>
-    <div class="summary-card"><div class="label">Issue date</div><div class="value" id="issueDate">—</div></div>
+    <div class="summary-card receipt-number-card"><div class="receipt-kind">Payment Document — RECEIPT &amp; Payment Receipt</div><div class="label">Receipt No.</div><div class="value" id="receiptNo">—</div></div>
+    <div class="summary-card date-card"><div class="label">Date</div><div class="value" id="issueDate">—</div></div>
   </section>
   <section class="details">
     <div class="detail-card">
@@ -201,6 +197,18 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
+async function printReceipt(){
+  const img=document.getElementById("receiptAdImage");
+  const link=document.getElementById("receiptAdLink");
+  if(img && img.src && (!img.complete || !img.naturalWidth)){
+    const foot=document.getElementById("receiptAdFoot");
+    if(foot)foot.textContent="Preparing advertisement for print…";
+    await Promise.race([new Promise(resolve=>{img.addEventListener("load",resolve,{once:true});img.addEventListener("error",resolve,{once:true});}),new Promise(resolve=>setTimeout(resolve,8000))]);
+  }
+  if(img && img.complete && img.naturalWidth && link) link.style.display="block";
+  if(img && img.complete && img.naturalWidth && img.decode){try{await img.decode();}catch(_){}}
+  window.print();
+}
 (async function(){
  // A scanned digital receipt can carry a compressed copy of its own query data.
  // This keeps the QR less dense and avoids scanner failures caused by long receipt/flyer URLs.
