@@ -970,7 +970,8 @@ $('generateReceipt').onclick=()=>{
   if(mode==='Branch'&&!payload.branchName)return alert('Enter the branch name / location.');
   if(mode==='Authorized Person'&&!payload.authorizedRegNo)return alert('Enter the authorized person registration number.');
   if(!payload.generatedByName||!payload.generatedByRegNo||!payload.generatedByMobile)return alert('Enter the GURU CONNECT person who received the payment: name, registration number and mobile number. These details are required for every receipt.');
-  const p=new URLSearchParams({back:'admin.html',category:payload.category,name:payload.name,email:payload.email,phone:payload.phone,memberRegNo:payload.memberRegNo,date:payload.date,mode:payload.mode,collectionType:payload.collectionType,transactionNumber:payload.transactionNumber,branchName:payload.branchName,authorizedRegNo:payload.authorizedRegNo,generatedBy:payload.generatedBy,generatedByName:payload.generatedByName,generatedByRegNo:payload.generatedByRegNo,generatedByMobile:payload.generatedByMobile,services:JSON.stringify(payload.services),total:total.toFixed(2)});
+  const receiptNo='GC-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-7);
+  const p=new URLSearchParams({back:'admin.html',receiptNo,category:payload.category,name:payload.name,email:payload.email,phone:payload.phone,memberRegNo:payload.memberRegNo,date:payload.date,mode:payload.mode,collectionType:payload.collectionType,transactionNumber:payload.transactionNumber,branchName:payload.branchName,authorizedRegNo:payload.authorizedRegNo,generatedBy:payload.generatedBy,generatedByName:payload.generatedByName,generatedByRegNo:payload.generatedByRegNo,generatedByMobile:payload.generatedByMobile,services:JSON.stringify(payload.services),total:total.toFixed(2)});
   const w=window.open('receipt.html?'+p.toString(),'_blank','noopener,noreferrer');
   if(!w)alert('Please allow pop-ups for GURU CONNECT Admin.');
 };
