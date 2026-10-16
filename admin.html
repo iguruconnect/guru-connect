@@ -847,7 +847,7 @@ async function lookupReceiptMemberRegistration(){
   if(!target)return;
   if(category==='Institution'){target.value=name;return;}
   if(!['Student','Tutor'].includes(category)||!name){if(!name)target.value='';return;}
-  const norm=v=>String(v??'').trim().toLowerCase().replace(/\\s+/g,' ');
+  const norm=v=>String(v??'').trim().toLowerCase().replace(/\s+/g,' ');
   const fields=['registration_no','registration_number','registration_id','record_no','short_id','member_id','user_code','public_id','profile_id','id_card_no','id_card_number','id_number','gc_id','student_id','tutor_id'];
   try{
     const table=category==='Student'?'student_profiles':'tutor_profiles';
