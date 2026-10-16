@@ -284,7 +284,8 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
        const result=await client.from('gc_advertisements').select('*').eq('active',true).order('priority',{ascending:false}).order('created_at',{ascending:false}).limit(100);
        if(result.error)throw result.error;
        const now=Date.now();
-       const ad=(result.data||[]).find(x=>['receipt','all'].includes(String(x.placement||'all').toLowerCase())&&(!x.start_at||new Date(x.start_at).getTime()<=now)&&(!x.end_at||new Date(x.end_at).getTime()>=now)&&x.image_url);
+       const activeAds=(result.data||[]).filter(x=>['receipt','all'].includes(String(x.placement||'all').toLowerCase())&&(!x.start_at||new Date(x.start_at).getTime()<=now)&&(!x.end_at||new Date(x.end_at).getTime()>=now)&&x.image_url);
+       const ad=activeAds.find(x=>String(x.storage_path||'').startsWith('receipt/'))||activeAds[0];
        if(ad){adImage=String(ad.image_url||'');adTitle=String(ad.title||'');adAdvertiser=String(ad.advertiser_name||'');adClick=String(ad.click_url||'');}
      }
      if(adImage){
