@@ -741,24 +741,53 @@ function gcCoinReason(r){return String(r.reason||r.description||r.note||r.notes|
 function gcCoinLrr(r){return String(r.lrr_id||r.learning_request_id||r.request_id||r.reference||r.reference_no||r.transaction_reference||'—')}
 async function loadCoinHistory(force=false){
   if(coinHistoryLoaded&&!force){renderCoinHistory(gcCoinLedgerRows);return}
-  coinHistoryLoaded=true;$('coinHistoryStatus').textContent='Loading coin transactions…';
-  const host=$('coinHistoryResults');host.innerHTML='<div class="empty">Loading coin ledger records from Supabase…</div>';
+  coinHistoryLoaded=true;
+  $('coinHistoryStatus').textContent='Loading transactions from each registered member account…';
+  const host=$('coinHistoryResults');host.innerHTML='<div class="empty">Loading member coin ledgers…</div>';
   try{
-    let rows=[],from=0,step=500;
-    while(true){
-      const r=await sb.from('gc_coin_ledger').select('*').order('created_at',{ascending:false}).range(from,from+step-1);
-      if(r.error)throw r.error;
-      const batch=r.data||[];rows=rows.concat(batch);
-      if(batch.length<step)break;
-      from+=step;
+    // Use the same authenticated account RPC that already supplies the working
+    // per-member Coins panel. The direct gc_coin_ledger query can return zero
+    // rows when that table is not the source exposed to this admin session.
+    if(!Array.isArray(users)||!users.length)await loadLiveUsers();
+    const members=Array.isArray(users)?users.slice():[];
+    if(!members.length)throw new Error('No registered Student/Tutor profiles were loaded. Check Staff access and the live user directory first.');
+    const collected=[],failures=[];
+    const batchSize=8;
+    for(let i=0;i<members.length;i+=batchSize){
+      const batch=members.slice(i,i+batchSize);
+      const results=await Promise.all(batch.map(async u=>{
+        try{
+          const d=await accountRpc('get_account_overview',{user_id:String(u.user_id)});
+          return {u,rows:Array.isArray(d.coins)?d.coins:[],error:null};
+        }catch(e){return {u,rows:[],error:e}}
+      }));
+      results.forEach(({u,rows,error})=>{
+        if(error){failures.push({name:u.name||u.email||u.user_id,error});return}
+        rows.forEach(r=>collected.push(Object.assign({},r,{
+          user_id:r.user_id||u.user_id,
+          profile_id:r.profile_id||u.profile_id||'',
+          member_id:r.member_id||u.member_id||'',
+          name:r.name||r.full_name||r.user_name||u.name||u.full_name||'Registered member',
+          role:r.role||u.role||'',
+          email:r.email||u.email||'',
+          phone:r.phone||u.phone||''
+        })));
+      });
     }
-    gcCoinLedgerRows=rows;
-    $('coinHistoryStatus').textContent=rows.length+' coin ledger record(s) loaded.';
-    renderCoinHistory(rows);
+    // Deduplicate ledger entries returned through multiple member profiles.
+    const unique=new Map();
+    collected.forEach(r=>unique.set(String(r.id||[r.user_id,r.created_at,r.amount??r.coin_amount??r.change,r.reason??r.description].join('|')),r));
+    gcCoinLedgerRows=Array.from(unique.values()).sort((a,b)=>String(b.created_at||b.date||'').localeCompare(String(a.created_at||a.date||'')));
+    if(!gcCoinLedgerRows.length&&failures.length){
+      throw new Error('The admin account RPC failed for '+failures.length+' member account(s). First error: '+(failures[0].error?.message||failures[0].error||'unknown error'));
+    }
+    $('coinHistoryStatus').textContent=gcCoinLedgerRows.length+' transaction(s) loaded from '+members.length+' registered accounts.'+(failures.length?' '+failures.length+' account(s) could not be read.':'');
+    renderCoinHistory(gcCoinLedgerRows);
+    if(!gcCoinLedgerRows.length)$('coinHistoryResults').innerHTML='<div class="empty">The member account service returned no coin ledger entries. Open one known user’s account → Coins and check whether that panel shows their transactions.</div>';
   }catch(e){
     coinHistoryLoaded=false;
     $('coinHistoryStatus').textContent='Coin history could not be loaded: '+(e.message||e);
-    host.innerHTML='<div class="dangerNote">Could not read <b>gc_coin_ledger</b>. Check the table name, Admin RLS permissions and Supabase response. No transaction has been changed.</div>';
+    host.innerHTML='<div class="dangerNote">Could not load the member coin ledgers. '+esc(e.message||e)+'<br><br>This view now uses the same secure account RPC as the individual member Coins panel, rather than assuming that direct access to <b>gc_coin_ledger</b> is available.</div>';
   }
 }
 function gcCoinFilteredRows(rows){
