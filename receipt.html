@@ -228,7 +228,7 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
    try{
      if(!window.supabase?.createClient)return;
      const client=window.supabase.createClient('https://hzqqswrnawrfgufbxgay.supabase.co','sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',{auth:{persistSession:false,autoRefreshToken:false}});
-     const result=await client.from('gc_advertisements').select('title,advertiser_name,placement,image_url,click_url,start_at,end_at,active,priority').eq('active',true).order('priority',{ascending:false}).order('created_at',{ascending:false}).limit(30);
+     const result=await client.from('gc_advertisements').select('title,advertiser_name,placement,image_url,click_url,start_at,end_at,active,priority').eq('active',true).or('placement.eq.receipt,placement.eq.all').order('priority',{ascending:false}).order('created_at',{ascending:false}).limit(30);
      if(result.error)throw result.error;
      const now=Date.now();
      const ad=(result.data||[]).find(a=>(!a.start_at||new Date(a.start_at).getTime()<=now)&&(!a.end_at||new Date(a.end_at).getTime()>=now)&&a.image_url);
