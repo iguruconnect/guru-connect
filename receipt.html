@@ -227,7 +227,7 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
      if(!window.QRCode)return false;
      try{
        qrHost.innerHTML='';
-       new QRCode(qrHost,{text:digitalReceiptUrl,width:150,height:150,colorDark:'#102b55',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+       new QRCode(qrHost,{text:digitalReceiptUrl,width:150,height:150,colorDark:'#102b55',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.L});
        if(qrStatus)qrStatus.textContent='QR ready • scan to open this digital receipt and its advertisement';
        return true;
      }catch(e){return false;}
@@ -257,7 +257,7 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
        img.onload=()=>{link.style.display='block';fallback.style.display='none';};
        img.onerror=()=>{link.style.display='none';fallback.style.display='flex';const st=document.getElementById('qrStatus');if(st)st.textContent='Receipt QR is ready; flyer image could not load from storage.';};
        img.src=ad.image_url;img.alt=(ad.title||'Advertiser flyer')+' — '+(ad.advertiser_name||'GURU CONNECT advertiser');
-       link.href=(ad.click_url&&/^https?:\\/\\//i.test(ad.click_url))?ad.click_url:ad.image_url;
+       let safeClick='';try{const u=new URL(ad.click_url||'');if(u.protocol==='https:'||u.protocol==='http:')safeClick=u.href;}catch(_){}link.href=safeClick||ad.image_url;
        if(img.complete&&img.naturalWidth>0){link.style.display='block';fallback.style.display='none';}
        put('receiptAdRibbon',ad.advertiser_name||ad.title||'FEATURED ADVERTISEMENT','FEATURED ADVERTISEMENT');
        put('receiptAdFoot',ad.title||'Advertisement via GURU CONNECT','Advertisement via GURU CONNECT');
