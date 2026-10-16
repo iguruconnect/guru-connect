@@ -977,7 +977,8 @@ async function getReceiptFlyerParams(){
     const res=await sb.from('gc_advertisements').select('*').eq('active',true).order('priority',{ascending:false}).order('created_at',{ascending:false}).limit(100);
     if(res.error)throw res.error;
     const now=Date.now();
-    const ad=(res.data||[]).find(x=>['all','receipt'].includes(String(x.placement||'all').toLowerCase())&&(!x.start_at||new Date(x.start_at).getTime()<=now)&&(!x.end_at||new Date(x.end_at).getTime()>=now)&&x.image_url);
+    const eligible=(res.data||[]).filter(x=>['all','receipt'].includes(String(x.placement||'all').toLowerCase())&&(!x.start_at||new Date(x.start_at).getTime()<=now)&&(!x.end_at||new Date(x.end_at).getTime()>=now)&&x.image_url);
+    const ad=eligible.find(x=>String(x.storage_path||'').startsWith('receipt/'))||eligible[0];
     return ad?{receiptAdImageUrl:String(ad.image_url),receiptAdTitle:String(ad.title||''),receiptAdAdvertiser:String(ad.advertiser_name||''),receiptAdClickUrl:String(ad.click_url||'')}:{};
   }catch(e){console.warn('Could not attach receipt flyer to receipt URL:',e.message||e);return {};}
 }
