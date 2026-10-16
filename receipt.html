@@ -244,7 +244,10 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
  try{
    if('CompressionStream' in window){
      const receiptData={};
-     q.forEach((v,k)=>{if(k!=='z'&&k!=='preview'&&k!=='back')receiptData[k]=v;});
+     // Keep the QR payload compact: flyer/signed-storage URLs are long and make
+     // QR modules too dense to scan. The receipt page will load the active flyer separately.
+     const qrExcluded=new Set(['z','preview','back','receiptAdImageUrl','receiptAdClickUrl','receiptAdTitle','receiptAdAdvertiser']);
+     q.forEach((v,k)=>{if(!qrExcluded.has(k))receiptData[k]=v;});
      const stream=new Blob([JSON.stringify(receiptData)]).stream().pipeThrough(new CompressionStream('deflate'));
      const packed=new Uint8Array(await new Response(stream).arrayBuffer());
      let binary='';for(let i=0;i<packed.length;i++)binary+=String.fromCharCode(packed[i]);
@@ -278,7 +281,13 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
  // Prefer the flyer URL passed by the authenticated Receipt Center. This avoids anonymous table-read permission problems.
  (async()=>{
    try{
+     const panel=document.getElementById('receiptAdPanel'),fallback=document.getElementById('receiptAdDefault'),ribbon=document.getElementById('receiptAdRibbon'),foot=document.getElementById('receiptAdFoot');
      let adImage=get('receiptAdImageUrl'),adTitle=get('receiptAdTitle'),adAdvertiser=get('receiptAdAdvertiser'),adClick=get('receiptAdClickUrl');
+     // Force the receipt's built-in advertisement panel to remain visible even in print/PDF.
+     if(panel){panel.style.display='flex';panel.style.visibility='visible';panel.style.minHeight='250px';}
+     if(fallback){fallback.style.display='flex';fallback.style.visibility='visible';}
+     if(ribbon)ribbon.style.display='block';
+     if(foot)foot.style.display='block';
      if(!adImage&&window.supabase?.createClient){
        const client=window.supabase.createClient('https://hzqqswrnawrfgufbxgay.supabase.co','sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',{auth:{persistSession:false,autoRefreshToken:false}});
        const result=await client.from('gc_advertisements').select('*').eq('active',true).order('priority',{ascending:false}).order('created_at',{ascending:false}).limit(100);
@@ -291,13 +300,18 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
      if(adImage){
        const link=document.getElementById('receiptAdLink'),img=document.getElementById('receiptAdImage'),fallback=document.getElementById('receiptAdDefault');
        img.onload=()=>{link.style.display='block';fallback.style.display='none';};
-       img.onerror=()=>{link.style.display='none';fallback.style.display='flex';const status=document.getElementById('receiptAdFoot');if(status)status.textContent='Advertiser flyer could not load. Check that the gc-advertisements storage bucket is public and the saved image URL is accessible.';console.warn('Receipt flyer image failed to load:',adImage);};
+       img.onerror=()=>{link.style.display='none';fallback.style.display='flex';fallback.style.visibility='visible';const status=document.getElementById('receiptAdFoot');if(status)status.textContent='Flyer image could not load. Please re-save the flyer in Admin → Receipt Center and confirm the storage image URL is accessible.';console.warn('Receipt flyer image failed to load:',adImage);};
        img.src=adImage;img.alt=(adTitle||'Advertiser flyer')+' — '+(adAdvertiser||'GURU CONNECT advertiser');
        let safeClick='';try{const u=new URL(adClick||'');if(u.protocol==='https:'||u.protocol==='http:')safeClick=u.href;}catch(_){}link.href=safeClick||adImage;
        if(img.complete&&img.naturalWidth>0){link.style.display='block';fallback.style.display='none';}
        document.getElementById('receiptAdRibbon').textContent=adAdvertiser||adTitle||'FEATURED ADVERTISEMENT';
        document.getElementById('receiptAdFoot').textContent=adTitle||'Advertisement via GURU CONNECT';
-     }else{console.warn('No active receipt-compatible advertisement with an image URL was found.');}
+     }else{
+       if(fallback){fallback.style.display='flex';fallback.style.visibility='visible';}
+       if(ribbon)ribbon.textContent='ADVERTISEMENT • GURU CONNECT';
+       if(foot)foot.textContent='No active advertiser flyer was found. Save a flyer in Admin → Receipt Center.';
+       console.warn('No active receipt-compatible advertisement with an image URL was found.');
+     }
    }catch(e){console.warn('Receipt advertisement loading:',e.message||e);}
  })();
 })();
