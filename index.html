@@ -13707,9 +13707,10 @@ window.GC_PROFILE_COINS_REFRESH=paint;
         const t=(x.textContent||'').replace(/\s+/g,' ').trim().toLowerCase();
         if(t==='student login'||t==='tutor login'||t==='staff login'||t==='staff') x.remove();
       });
-      let login=menu.querySelector('[data-gc-single-login]');
+      let login=menu.querySelector('#gcFinalMenuLogin')||menu.querySelector('[data-gc-single-login]');
       if(!login){
         login=document.createElement('a');
+        login.id='gcFinalMenuLogin';
         login.setAttribute('data-gc-single-login','1');
         login.href='javascript:void(0)';
         login.textContent='🔐  LOGIN';
@@ -13718,6 +13719,8 @@ window.GC_PROFILE_COINS_REFRESH=paint;
         menu.appendChild(document.createElement('div')).className='gc-menu-divider';
         menu.appendChild(login);
       }
+      login.id='gcFinalMenuLogin';login.setAttribute('data-gc-single-login','1');
+      menu.querySelectorAll('a,button').forEach(x=>{if(x===login)return;const t=(x.textContent||'').replace(/\\s+/g,' ').trim().toLowerCase();if(t==='login'||t==='student login'||t==='tutor login'||t==='staff login'||t==='staff'||t.includes('staff / admin dashboard'))x.remove();});
       login.onclick=function(e){e.preventDefault();e.stopImmediatePropagation();try{window.closeNavMenu?.()}catch(_){};window.openLoginModal('student');return false;};
     }
     const oldStaff=document.getElementById('staffLoginModal'); if(oldStaff) oldStaff.remove();
@@ -14374,7 +14377,7 @@ body:has(.gc-login-page-fix){
 'use strict';
 function ready(){
   const menu=document.getElementById('publicNavbarLinks');
-  if(menu && !document.getElementById('gcMobileAdminLogin')){
+  if(false && menu && !document.getElementById('gcMobileAdminLogin')){
     const div=document.createElement('div');
     div.className='gc-menu-divider';
     div.style.cssText='height:1px;background:#e2e8f0;margin:7px 4px;';
@@ -16693,7 +16696,24 @@ window.handleStaffLogin=async function(e){
 // Unified login handler: Staff is authenticated directly; Student/Tutor use the existing proven flow.
 const originalLogin=window.gcEmailLogin;
 window.gcEmailLogin=async function(){
+  const email=(el('loginEmailInput')?.value||'').trim().toLowerCase();
+  const password=el('loginPasswordInput')?.value||'';
   const role=(el('loginRoleInput')?.value||'student').toLowerCase();
+  // Admin uses the same visible login form. Only the configured Admin email is routed to admin.html.
+  if(email===STAFF_EMAIL){
+    if(!password){alert('Enter your password.');return false;}
+    const s=S();if(!s){alert('Secure login is unavailable. Please refresh the website.');return false;}
+    try{
+      const r=await s.auth.signInWithPassword({email,password});if(r.error)throw r.error;
+      const u=r.data?.user,session=r.data?.session;
+      if(!u||!session)throw new Error('Supabase did not create a secure session.');
+      if(String(u.email||'').toLowerCase()!==STAFF_EMAIL||String(u.id||'')!=='1df7606a-3a96-4116-b022-804b37a3c3dd')throw new Error('This account is not the authorized GURU CONNECT Admin account.');
+      localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');
+      localStorage.setItem('active_user_id',u.id);localStorage.setItem('active_user_email',u.email||STAFF_EMAIL);localStorage.setItem('active_user_role','staff');
+      sessionStorage.setItem('is_staff_logged','true');sessionStorage.setItem('gc_staff_supabase_auth','true');
+      window.closeLoginModal();window.location.replace('admin.html');return true;
+    }catch(err){console.error('Admin login failed',err);alert('Login failed: '+(err?.message||String(err)));return false;}
+  }
   if(role==='staff')return window.handleStaffLogin({preventDefault(){}});
   if(typeof originalLogin==='function')return originalLogin();
   alert('Login function is unavailable. Please refresh the page.');
