@@ -141,7 +141,6 @@ button,a,input,select,textarea{touch-action:manipulation;}
 <nav class="controlbar" aria-label="Admin sections">
 <button class="topbtn priority active" data-sec="edit">✏️ <b>EDIT</b><small>Find, edit & delete Student/Tutor</small></button>
 <button class="topbtn priority" data-sec="coins">🪙 <b>COINS MANAGEMENT</b><small>Add/subtract coins + reason</small></button>
-<button class="topbtn priority" data-sec="coinhistory">📜 <b>COINS HISTORY</b><small>Every credit/debit + reason</small></button>
 <button class="topbtn priority" data-sec="learning">📚 <b>LRR</b><small>Learning Requirement Requests</small></button>
 <button class="topbtn priority" data-sec="receipt">🧾 <b>RECEIPT</b><small>Generate / print receipt</small></button>
 <button class="topbtn" data-sec="directories">👥 <b>DIRECTORIES</b><small>Live Student + Tutor list</small></button>
@@ -191,9 +190,16 @@ button,a,input,select,textarea{touch-action:manipulation;}
 
 <section class="section open" id="sec-edit"><div class="secHead"><div><h2>✏️ Edit Student / Tutor</h2><p>Search a live account here. Edit the complete profile and delete it from the same editor.</p></div><span class="pill">PRIMARY ADMIN TOOL</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="editSearch" placeholder="Name, email, phone or User ID…" autocomplete="off"></div><div class="field"><label>Role</label><select id="editRole"><option value="">ALL</option><option value="student">STUDENT</option><option value="tutor">TUTOR</option></select></div><button id="editFind" class="btn primary">🔎 FIND</button><button id="editRefresh" class="btn light">↻ REFRESH</button></div><div id="editStatus" class="status"></div><div id="editResults" class="results"><div class="empty">Search for the Student/Tutor you want to edit.</div></div></div></section>
 
-<section class="section" id="sec-coins"><div class="secHead"><div><h2>🪙 Coins Management</h2><p>Select a Student/Tutor, then add or subtract GURU COINS. A reason is mandatory and every change is logged.</p></div></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find member</label><input id="coinFindSearch" placeholder="Name, email, phone or User ID…"></div><button id="coinFind" class="btn primary">🔎 FIND MEMBER</button></div><div id="coinFindResults" class="results"></div><div class="grid" style="margin-top:14px"><div class="field"><label>Selected User ID</label><input id="coinUserId" readonly placeholder="Choose a member above"></div><div class="field"><label>Role</label><select id="coinRole"><option value="student">Student</option><option value="tutor">Tutor</option></select></div><div class="field"><label>Coins</label><input id="coinAmount" type="number" placeholder="e.g. 100"></div><div class="field"><label>Reason — required</label><input id="coinReason" placeholder="Why are coins being changed?"></div></div><div class="actions"><button id="coinAdd" class="btn green">＋ ADD COINS</button><button id="coinSubtract" class="btn red">− SUBTRACT COINS</button></div><div id="coinStatus" class="status"></div></div></section>
-
-<section class="section" id="sec-coinhistory"><div class="secHead"><div><h2>📜 Coins History</h2><p>Complete coin ledger with member, amount, direction, reason and date.</p></div><button id="loadCoinHistory" class="btn light">↻ REFRESH HISTORY</button></div><div class="secBody"><div class="quickSearch"><input id="coinHistorySearch" placeholder="Search by name, user ID, reason or reference…"><button id="coinHistoryFind" class="btn primary">FIND</button></div><div id="coinHistoryStatus" class="status"></div><div id="coinHistoryResults" class="results"><div class="empty">Loading coin history…</div></div></div></section>
+<section class="section" id="sec-coins"><div class="secHead"><div><h2>🪙 Coins Management</h2><p>Select a Student/Tutor, then add or subtract GURU COINS. A reason is mandatory and every change is logged.</p></div></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find member</label><input id="coinFindSearch" placeholder="Name, email, phone or User ID…"></div><button id="coinFind" class="btn primary">🔎 FIND MEMBER</button></div><div id="coinFindResults" class="results"></div><div class="grid" style="margin-top:14px"><div class="field"><label>Selected User ID</label><input id="coinUserId" readonly placeholder="Choose a member above"></div><div class="field"><label>Role</label><select id="coinRole"><option value="student">Student</option><option value="tutor">Tutor</option></select></div><div class="field"><label>Coins</label><input id="coinAmount" type="number" placeholder="e.g. 100"></div><div class="field"><label>Reason — required</label><input id="coinReason" placeholder="Why are coins being changed?"></div></div><div class="actions"><button id="coinAdd" class="btn green">＋ ADD COINS</button><button id="coinSubtract" class="btn red">− SUBTRACT COINS</button></div><div id="coinStatus" class="status"></div>
+<div class="gcBox" id="gcCoinHistoryIntegrated" style="margin-top:22px">
+  <div class="secHead" style="border:0;border-radius:12px;padding:12px 0;background:#fff">
+    <div><h2 style="font-size:18px">📜 Coins Transaction History</h2><p>Search any registered Student/Tutor and review their complete available coin ledger. Each entry includes Edit, Delete and a branded PDF statement.</p></div>
+    <div class="actions" style="margin:0"><button id="loadCoinHistory" class="btn light">↻ REFRESH HISTORY</button><button id="coinHistoryPdf" class="btn teal">⬇ DOWNLOAD PDF</button></div>
+  </div>
+  <div class="quickSearch"><input id="coinHistorySearch" placeholder="Search member name, email, phone, user ID, reason or LRR reference…"><button id="coinHistoryFind" class="btn primary">FIND TRANSACTIONS</button></div>
+  <div id="coinHistoryStatus" class="status">Search by a registered member's name to show their coin transactions.</div>
+  <div id="coinHistoryResults" class="results"><div class="empty">Click REFRESH HISTORY to load the coin ledger.</div></div>
+</div></div></section>
 
 <section class="section" id="sec-learning"><div class="secHead"><div><h2>📚 LRR — Learning Requirement Requests</h2><p>All Learning Requirement Requests load directly into this tab. Every request has Admin controls for tutor approval, rejection, return, coins and case chat.</p></div><div class="actions" style="margin:0"><span class="pill" id="lrrCount">0 REQUESTS</span><button id="loadLearning" class="btn light">↻ REFRESH LRR</button></div></div><div class="secBody"><div class="lrrControlNote"><b>LRR controls:</b> Approve to Tutor · Reject · Return to Student · Tutor Coins · Student Coins · Chat Student · Chat Tutor</div><div id="learningStatus" class="status"></div><div id="learningResults" class="results"><div class="empty">Loading Learning Requirement Requests…</div></div></div></section>
 
@@ -243,7 +249,7 @@ function switchSection(name){
   document.querySelectorAll('.topbtn').forEach(x=>x.classList.toggle('active',x.dataset.sec===name));
   const el=$('sec-'+name);if(el)el.classList.add('open');
   if(name==='learning'&&!lrrLoaded&&!lrrLoading)loadLearning();
-  if(name==='coinhistory'&&!coinHistoryLoaded)loadCoinHistory();
+  if(name==='coins'&&!coinHistoryLoaded)loadCoinHistory();
   // Load advertisements only after the staff session is authenticated, and
   // refresh the list whenever the admin opens the Advertisement tab.
   if(name==='advertisement')loadAdminAdvertisements();
@@ -717,18 +723,104 @@ $('coinFind').onclick=()=>{const q=$('coinFindSearch').value.trim().toLowerCase(
 async function adjustCoins(delta){try{const id=String($('coinUserId').value).trim(),role=$('coinRole').value,amount=Math.abs(Number($('coinAmount').value)),reason=$('coinReason').value.trim();if(!id)throw new Error('Select a Student/Tutor first.');if(!Number.isFinite(amount)||amount===0)throw new Error('Enter a non-zero coin amount.');if(!reason)throw new Error('Reason is required.');const r=await sb.rpc('gc_staff_adjust_coins',{p_profile_id:id,p_role:role,p_amount:delta*amount,p_reason:reason});if(r.error)throw r.error;$('coinStatus').textContent='✓ Coins updated and ledger entry created.';$('coinAmount').value='';$('coinReason').value='';coinHistoryLoaded=false;await loadLiveUsers()}catch(e){$('coinStatus').textContent='Coin update failed: '+(e.message||e)}}
 $('coinAdd').onclick=()=>adjustCoins(1);$('coinSubtract').onclick=()=>adjustCoins(-1);
 
-async function loadCoinHistory(){
-  if(coinHistoryLoaded)return;coinHistoryLoaded=true;$('coinHistoryStatus').textContent='Loading coin history…';
-  const host=$('coinHistoryResults');
-  try{
-    let r=await sb.from('gc_coin_ledger').select('*').order('created_at',{ascending:false}).limit(250);
-    if(r.error){coinHistoryLoaded=false;throw r.error}
-    const rows=r.data||[];$('coinHistoryStatus').textContent=rows.length+' ledger record(s).';
-    renderCoinHistory(rows);
-  }catch(e){$('coinHistoryStatus').textContent='Coin history could not be loaded: '+(e.message||e);host.innerHTML='<div class="dangerNote">The Coins Management RPC is installed, but the ledger table name/permissions are not available to this dashboard yet. Expected table: <b>gc_coin_ledger</b>.</div>'}
+let gcCoinLedgerRows=[];
+function gcCoinOwnerId(r){return String(r.user_id||r.profile_id||r.member_id||r.student_id||r.tutor_id||r.account_id||'')}
+function gcCoinMember(r){
+  const ids=[r.user_id,r.profile_id,r.member_id,r.student_id,r.tutor_id,r.account_id].filter(Boolean).map(String);
+  const u=(users||[]).find(x=>[x.user_id,x.profile_id,x.member_id].filter(Boolean).some(v=>ids.includes(String(v))));
+  return {name:r.name||r.full_name||r.user_name||u?.name||u?.full_name||'Registered member',role:r.role||u?.role||'',email:r.email||u?.email||'',phone:r.phone||u?.phone||'',user_id:gcCoinOwnerId(r)||u?.user_id||'',profile_id:r.profile_id||u?.profile_id||''};
 }
-function renderCoinHistory(rows){const q=($('coinHistorySearch').value||'').trim().toLowerCase();const list=(rows||[]).filter(r=>!q||Object.values(r).some(v=>String(v??'').toLowerCase().includes(q)));$('coinHistoryResults').innerHTML=list.length?list.map(r=>{const amt=Number(r.amount??r.coin_amount??r.change??0);const add=amt>=0;return `<div class="historyRow ${add?'add':'sub'}"><div>${esc(r.created_at||r.date||'—')}</div><div><b>${esc(r.name||r.full_name||r.user_name||r.user_id||r.profile_id||'Member')}</b><br><span class="muted">${esc(r.reason||r.description||'—')}</span></div><div class="amount">${add?'+':''}${esc(amt)}</div><div>${esc(r.role||'')} · ${esc(r.reference||r.lrr_id||r.request_id||'')}</div></div>`}).join(''):'<div class="empty">No coin history matches the search.</div>'}
-$('loadCoinHistory').onclick=async()=>{coinHistoryLoaded=false;await loadCoinHistory()};$('coinHistoryFind').onclick=async()=>{if(!coinHistoryLoaded)await loadCoinHistory();else{const r=await sb.from('gc_coin_ledger').select('*').order('created_at',{ascending:false}).limit(250);if(!r.error)renderCoinHistory(r.data||[])}};$('coinHistorySearch').addEventListener('keydown',e=>{if(e.key==='Enter')$('coinHistoryFind').click()});
+function gcCoinActor(r){
+  const raw=String(r.performed_by||r.created_by_role||r.actor||r.source||r.created_by||r.admin_email||r.admin_id||'').toLowerCase();
+  if(raw.includes('self')||raw.includes('member')||raw.includes('user'))return 'SELF';
+  if(raw.includes('admin')||raw.includes('staff')||raw.includes('service_role'))return 'ADMIN';
+  return r.admin_id||r.admin_email||r.created_by?'ADMIN':'ADMIN / SELF';
+}
+function gcCoinAmount(r){const v=Number(r.amount??r.coin_amount??r.change??r.coins??0);return Number.isFinite(v)?v:0}
+function gcCoinReason(r){return String(r.reason||r.description||r.note||r.notes||r.details||'—')}
+function gcCoinLrr(r){return String(r.lrr_id||r.learning_request_id||r.request_id||r.reference||r.reference_no||r.transaction_reference||'—')}
+async function loadCoinHistory(force=false){
+  if(coinHistoryLoaded&&!force){renderCoinHistory(gcCoinLedgerRows);return}
+  coinHistoryLoaded=true;$('coinHistoryStatus').textContent='Loading coin transactions…';
+  const host=$('coinHistoryResults');host.innerHTML='<div class="empty">Loading coin ledger records from Supabase…</div>';
+  try{
+    let rows=[],from=0,step=500;
+    while(true){
+      const r=await sb.from('gc_coin_ledger').select('*').order('created_at',{ascending:false}).range(from,from+step-1);
+      if(r.error)throw r.error;
+      const batch=r.data||[];rows=rows.concat(batch);
+      if(batch.length<step)break;
+      from+=step;
+      if(from>=20000)break;
+    }
+    gcCoinLedgerRows=rows;
+    $('coinHistoryStatus').textContent=rows.length+' coin ledger record(s) loaded.';
+    renderCoinHistory(rows);
+  }catch(e){
+    coinHistoryLoaded=false;
+    $('coinHistoryStatus').textContent='Coin history could not be loaded: '+(e.message||e);
+    host.innerHTML='<div class="dangerNote">Could not read <b>gc_coin_ledger</b>. Check the table name, Admin RLS permissions and Supabase response. No transaction has been changed.</div>';
+  }
+}
+function gcCoinFilteredRows(rows){
+  const q=($('coinHistorySearch').value||'').trim().toLowerCase();
+  return (rows||[]).map(r=>({r,member:gcCoinMember(r)})).filter(x=>{
+    if(!q)return true;
+    return [...Object.values(x.r),...Object.values(x.member),gcCoinReason(x.r),gcCoinLrr(x.r),gcCoinActor(x.r)].some(v=>String(v??'').toLowerCase().includes(q));
+  });
+}
+function renderCoinHistory(rows){
+  const list=gcCoinFilteredRows(rows);
+  $('coinHistoryStatus').textContent=list.length+' matching transaction(s) · '+(rows||[]).length+' total ledger record(s). Search by a registered member name to narrow the statement.';
+  $('coinHistoryResults').innerHTML=list.length?list.map(({r,member})=>{
+    const amt=gcCoinAmount(r),add=amt>=0,memberId=member.user_id||member.profile_id||gcCoinOwnerId(r);
+    return `<article class="user historyRow ${add?'add':'sub'}" style="grid-template-columns:minmax(125px,170px) minmax(220px,1fr) minmax(110px,150px) minmax(150px,220px);align-items:start">
+      <div><b>${esc(r.created_at||r.date||r.transaction_date||'—')}</b><div class="muted">ID: ${esc(r.id||'—')}</div></div>
+      <div><b>${esc(member.name)}</b> <span class="badge">${esc(String(member.role||r.role||'MEMBER').toUpperCase())}</span><div class="muted">${esc(member.email||'—')}<br>${esc(member.phone||'—')}<br>Credited to: ${esc(member.name)} · ${esc(memberId||'—')}</div><div class="muted">Reason / LRR details: ${esc(gcCoinReason(r))}<br>LRR / reference: ${esc(gcCoinLrr(r))}</div></div>
+      <div class="amount">${add?'＋ ADDED':'− SUBTRACTED'}<br><strong>${esc(Math.abs(amt))} GURU COINS</strong><div class="muted">By: ${esc(gcCoinActor(r))}</div></div>
+      <div><div class="muted">Transaction details: ${esc(r.transaction_type||r.type||r.action||'Coin ledger entry')}<br>Reference: ${esc(gcCoinLrr(r))}</div><div class="actions"><button class="btn primary" onclick="editGlobalCoinRecord('${esc(r.id||'')}')">✏️ EDIT</button><button class="btn red" onclick="deleteGlobalCoinRecord('${esc(r.id||'')}')">🗑️ DELETE</button></div></div>
+    </article>`;
+  }).join(''):'<div class="empty">No coin transactions match this search. Try the member’s full/partial name, email, phone, User ID or LRR reference.</div>';
+}
+$('loadCoinHistory').onclick=()=>loadCoinHistory(true);
+$('coinHistoryFind').onclick=()=>{if(!coinHistoryLoaded)loadCoinHistory(true);else renderCoinHistory(gcCoinLedgerRows)};
+$('coinHistorySearch').addEventListener('keydown',e=>{if(e.key==='Enter')$('coinHistoryFind').click()});
+window.editGlobalCoinRecord=async id=>{
+  const r=gcCoinLedgerRows.find(x=>String(x.id)===String(id));if(!r)return alert('Transaction not found. Refresh history and try again.');
+  const member=gcCoinMember(r),ownerId=member.user_id||member.profile_id||gcCoinOwnerId(r);
+  if(!ownerId)return alert('The transaction does not contain a member/user ID. It cannot be edited safely until the ledger row is linked to its member.');
+  const payload={id:String(id),user_id:String(ownerId)};
+  const editable=Object.keys(r).filter(k=>!['id','user_id','profile_id','member_id','student_id','tutor_id','account_id'].includes(k));
+  for(const k of editable){
+    const v=prompt(k.replace(/_/g,' ').toUpperCase()+':',r[k]===null?'':typeof r[k]==='object'?JSON.stringify(r[k]):String(r[k]??''));
+    if(v===null)return;
+    payload[k]=v===''?null:v;
+  }
+  try{
+    await accountRpc('update_coin_ledger',payload);
+    $('coinHistoryStatus').textContent='Transaction update submitted. Refreshing ledger…';
+    coinHistoryLoaded=false;await loadCoinHistory(true);
+  }catch(e){alert('Coin transaction edit failed: '+(e.message||e)+'\n\nThe secure gc_admin_account_action RPC must permit these transaction fields.')}
+};
+window.deleteGlobalCoinRecord=async id=>{
+  const r=gcCoinLedgerRows.find(x=>String(x.id)===String(id));if(!r)return alert('Transaction not found. Refresh history and try again.');
+  const member=gcCoinMember(r),ownerId=member.user_id||member.profile_id||gcCoinOwnerId(r);
+  if(!ownerId)return alert('The transaction has no linked member/user ID. It cannot be deleted safely.');
+  if(!confirm('Permanently delete this coin transaction for '+member.name+'? This changes the ledger history and cannot be undone.'))return;
+  try{
+    await accountRpc('delete_coin_ledger',{id:String(id),user_id:String(ownerId)});
+    coinHistoryLoaded=false;await loadCoinHistory(true);
+  }catch(e){alert('Coin transaction delete failed: '+(e.message||e))}
+};
+$('coinHistoryPdf').onclick=()=>{
+  const list=gcCoinFilteredRows(gcCoinLedgerRows);
+  if(!list.length)return alert('Load/search the coin history first. No transactions are available to export.');
+  const q=($('coinHistorySearch').value||'').trim();
+  const rows=list.map(({r,member})=>'<tr><td>'+esc(r.created_at||r.date||r.transaction_date||'—')+'</td><td>'+esc(gcCoinAmount(r)>=0?'ADDED':'SUBTRACTED')+'</td><td>'+esc(Math.abs(gcCoinAmount(r)))+'</td><td>'+esc(gcCoinActor(r))+'</td><td>'+esc(gcCoinReason(r))+'</td><td>'+esc(gcCoinLrr(r))+'</td><td>'+esc(member.name)+'<br>'+esc(member.role||'')+'<br>'+esc(member.user_id||member.profile_id||'—')+'</td></tr>').join('');
+  const w=window.open('','_blank');if(!w)return alert('Please allow pop-ups for this site to create the PDF statement.');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>GURU CONNECT Coin Transaction Statement</title><style>body{font:12px Arial,sans-serif;color:#172554;padding:22px}header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #155eef;padding-bottom:14px}header img{max-width:190px;max-height:72px;object-fit:contain}h1{font-size:22px;margin:0}p{margin:5px 0;color:#475569}.meta{margin:18px 0;padding:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px}table{border-collapse:collapse;width:100%;font-size:10px}th,td{border:1px solid #cbd5e1;padding:7px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf2ff}footer{margin-top:22px;border-top:1px solid #cbd5e1;padding-top:10px;font-weight:bold;color:#334155}@media print{button{display:none}body{padding:0}@page{size:A4 landscape;margin:12mm}}</style></head><body><header><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT logo"><div><h1>GURU CONNECT</h1><p>Connecting Mind - Creating Future...</p><p><b>COIN TRANSACTION STATEMENT</b></p></div></header><div class="meta"><b>Search / Member:</b> '+esc(q||'All available coin transactions')+'<br><b>Generated:</b> '+esc(new Date().toLocaleString())+'<br><b>Transactions:</b> '+list.length+'</div><table><thead><tr><th>Date of transaction</th><th>Direction</th><th>Coins</th><th>By whom</th><th>Reason / LRR details</th><th>LRR / reference</th><th>Credited to</th></tr></thead><tbody>'+rows+'</tbody></table><footer>Customer Care: support@guruconnnect.in · GURU CONNECT</footer><p>To save as PDF, choose “Save as PDF” in the print dialog.</p><script>window.onload=()=>setTimeout(()=>window.print(),350)<\/script></body></html>');
+  w.document.close();
+};
 
 async function lrrAction(id,action){
   const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(id));
