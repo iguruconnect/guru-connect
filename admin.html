@@ -256,7 +256,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
     <h3>2. Live ID card preview</h3>
     <div id="idCardPreview" class="idgen-card" aria-label="ID card preview">
      <div class="idgen-cardhead"><img class="idgen-logo" src="guru-connect-round-logo.png" alt="GURU CONNECT round logo with books and folded hands"><div class="idgen-brandcopy"><div class="idgen-wordmark"><span class="idgen-guru">GURU</span><span class="idgen-connect">CONNECT</span></div><div class="idgen-tagline">Connecting Mind - Creating Future...</div></div></div>
-     <div class="idgen-cardbody"><div class="idgen-photo-wrap"><img id="idCardPhoto" class="idgen-cardphoto" alt="Member photo preview"><img class="idgen-photo-seal" src="guru-connect-round-logo.png" alt="GURU CONNECT original brand seal stamp"></div><div><div class="idgen-cardname"><span id="idCardName">Member Full Name</span><span id="idCardTick" class="idgen-tick" hidden>✓</span></div><div id="idCardCategory" class="idgen-idnumber">CATEGORY: STUDENT</div><div id="idCardNumber" class="idgen-idnumber">ID NO: —</div><div class="idgen-mini-fields"><div><b>LEVEL</b><span id="idCardLevel">—</span></div><div><b>COURSE</b><span id="idCardCourse">—</span></div><div><b>STREAM</b><span id="idCardStream">—</span></div><div><b>SUBJECT</b><span id="idCardSubject">—</span></div><div><b>PLAN</b><span id="idCardPlan">—</span></div><div><b>MODE</b><span id="idCardMode">—</span></div></div><div class="idgen-address"><b>ADDRESS:</b> <span id="idCardAddress">—</span><br><b>MOBILE:</b> <span id="idCardMobile">—</span></div></div></div>
+     <div class="idgen-cardbody"><div class="idgen-leftcol"><div class="idgen-photo-wrap"><img id="idCardPhoto" class="idgen-cardphoto" alt="Member photo preview"><img class="idgen-photo-seal" src="guru-connect-round-logo.png" alt="GURU CONNECT original brand seal stamp"></div><div class="idgen-qrwrap" id="idCardQrWrap" hidden><img id="idCardQr" alt="QR code for digital GURU CONNECT ID" hidden><small>SCAN FOR DIGITAL ID</small></div></div><div><div class="idgen-cardname"><span id="idCardName">Member Full Name</span><span id="idCardTick" class="idgen-tick" hidden>✓</span></div><div id="idCardCategory" class="idgen-idnumber">CATEGORY: STUDENT</div><div id="idCardNumber" class="idgen-idnumber">ID NO: —</div><div class="idgen-mini-fields"><div><b>LEVEL</b><span id="idCardLevel">—</span></div><div><b>COURSE</b><span id="idCardCourse">—</span></div><div><b>STREAM</b><span id="idCardStream">—</span></div><div><b>SUBJECT</b><span id="idCardSubject">—</span></div><div><b>PLAN</b><span id="idCardPlan">—</span></div><div><b>MODE</b><span id="idCardMode">—</span></div></div><div class="idgen-address"><b>ADDRESS:</b> <span id="idCardAddress">—</span><br><b>MOBILE:</b> <span id="idCardMobile">—</span></div></div></div>
      <div class="idgen-validity"><span>VALIDITY</span><span id="idCardValidity">Select validity dates</span></div>
      <div class="idgen-cardfoot"><span>◉ WhatsApp: +1 (555) 9565-917</span><span>✉ support@guruconnnect.in</span></div>
     </div>
@@ -1337,7 +1337,7 @@ $('idGenerateBtn').onclick=async()=>{
     const bytes=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
     const digitalUrl='https://www.guruconnnect.in/digital-id.html?data='+encodeURIComponent(bytes);
     $('idCardQr').src='https://api.qrserver.com/v1/create-qr-code/?size=240x240&format=png&margin=4&data='+encodeURIComponent(digitalUrl);
-    $('idCardQr').hidden=false;
+    $('idCardQrWrap').hidden=false;$('idCardQr').hidden=false;
     $('idCardQr').onerror=()=>{$('idGenStatus').textContent='Digital ID link is ready, but QR image service did not load. Please retry Generate ID.';};
     $('idCardPhoto').src=photoUrl;
     gcIdUpdatePreview();gcIdGenerated=true;$('idPrintBtn').disabled=false;
@@ -1346,7 +1346,7 @@ $('idGenerateBtn').onclick=async()=>{
   finally{btn.disabled=false}
 };
 $('idResetBtn').onclick=()=>{
-  $('idMemberSearch').value='';$('idMemberSelect').value='';$('idPhoto').value='';gcIdPhotoData='';$('idPhotoPreview').hidden=true;$('idPhotoPreview').removeAttribute('src');$('idCardPhoto').removeAttribute('src');$('idCardPhoto').style.visibility='hidden';$('idCardQr').hidden=true;$('idCardQr').removeAttribute('src');
+  $('idMemberSearch').value='';$('idMemberSelect').value='';$('idPhoto').value='';gcIdPhotoData='';$('idPhotoPreview').hidden=true;$('idPhotoPreview').removeAttribute('src');$('idCardPhoto').removeAttribute('src');$('idCardPhoto').style.visibility='hidden';$('idCardQrWrap').hidden=true;$('idCardQr').hidden=true;$('idCardQr').removeAttribute('src');
   ['idNumber','idFullName','idSubject','idPlan','idAddress','idMobile'].forEach(id=>gcIdSetField(id,''));
   ['idLevel','idCourse','idStream','idMode'].forEach(id=>gcIdSetSelect(id,''));
   const today=new Date();const next=new Date(today);next.setFullYear(next.getFullYear()+1);
