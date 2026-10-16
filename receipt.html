@@ -92,6 +92,25 @@ body{padding:8px 5px}.paper{border-radius:14px}.masthead{padding:20px 16px;gap:1
 @page{size:A4 portrait;margin:9mm}
 body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width:none;border:0;border-radius:0;box-shadow:none}.masthead,.topline,.brand-art,.summary-card,.card-head,.service-head,thead,.totals,.footer,.paid,.ad-panel,.ad-ribbon,.ad-foot{-webkit-print-color-adjust:exact;print-color-adjust:exact}.masthead{padding:18px 22px}.content{padding:18px 22px}.summary{margin-bottom:16px}.details{margin-bottom:16px}.detailrow{padding:6px 0}.closing{padding-top:15px}.seal{opacity:1}.receipt-status-line .paid{background:#e8f8ee!important;color:#08783f!important;border-color:#79c99b!important}.receipt-ad-section{display:block!important;visibility:visible!important;opacity:1!important;break-inside:avoid!important;page-break-inside:avoid!important}.ad-panel{display:flex!important;flex-direction:column!important;position:relative!important;height:3in!important;min-height:3in!important;overflow:hidden!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.receipt-ad-link{display:none!important;position:relative!important;inset:auto!important;flex:1 1 auto!important;min-height:0!important;width:100%!important;height:auto!important;z-index:1!important;background:#fff!important;overflow:hidden!important}.ad-panel.flyer-ready .receipt-ad-link{display:block!important;visibility:visible!important;opacity:1!important}.ad-panel.flyer-ready #receiptAdDefault{display:none!important}.receipt-ad-image{display:block!important;visibility:visible!important;opacity:1!important;width:100%!important;height:100%!important;max-height:2.45in!important;object-fit:contain!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.qr-section{display:flex!important;visibility:visible!important;break-inside:avoid!important;page-break-inside:avoid!important}.qr-code{display:grid!important;visibility:visible!important;width:210px!important;height:210px!important;flex:0 0 210px!important}.qr-code img{display:block!important;visibility:visible!important;opacity:1!important}.qr-code canvas{display:none!important}a{color:inherit;text-decoration:none}
 }
+
+/* Receipt ad layout: clean flyer with advertiser and title below the image. */
+.receipt-ad-section .ad-panel{height:auto!important;min-height:250px;justify-content:flex-start!important;gap:0}
+.receipt-ad-section .receipt-ad-link{position:relative!important;inset:auto!important;display:none;flex:0 0 auto!important;width:100%!important;height:auto!important;min-height:0!important;z-index:1;background:#fff;overflow:hidden}
+.receipt-ad-section .receipt-ad-image{display:block;width:100%;height:auto!important;max-height:2.35in;object-fit:contain;background:#fff}
+.receipt-ad-section .ad-ribbon,.receipt-ad-section .ad-foot{position:relative!important;inset:auto!important;z-index:2;width:100%;flex:0 0 auto}
+.receipt-ad-section .ad-ribbon{letter-spacing:.3px;font-size:12px;line-height:1.4;padding:10px 14px;background:#102b55!important;color:#fff!important;text-shadow:none!important}
+.receipt-ad-section .ad-foot{font-size:11px;padding:8px 12px;background:#edf4ff!important;color:#102b55!important}
+.receipt-ad-section .ad-panel.flyer-ready .ad-main{display:none!important}
+.qr-code canvas{display:block!important;visibility:visible!important;max-width:100%;max-height:100%;width:100%;height:100%}
+.qr-code img{display:block!important;visibility:visible!important;opacity:1!important}
+@media print{
+ .receipt-ad-section .ad-panel{height:auto!important;min-height:0!important;overflow:visible!important}
+ .receipt-ad-section .receipt-ad-link{display:none!important;height:auto!important;max-height:2.35in!important}
+ .receipt-ad-section .ad-panel.flyer-ready .receipt-ad-link{display:block!important}
+ .receipt-ad-section .receipt-ad-image{height:auto!important;max-height:2.35in!important;object-fit:contain!important}
+ .receipt-ad-section .ad-ribbon,.receipt-ad-section .ad-foot{position:relative!important}
+ .qr-code canvas{display:block!important;visibility:visible!important}
+}
 </style>
 </head>
 <body>
@@ -296,10 +315,18 @@ async function printReceipt(){
      try{
        qrHost.innerHTML='';
        new QRCode(qrHost,{text:digitalReceiptUrl,width:420,height:420,colorDark:'#102b55',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
-       const img=qrHost.querySelector('img'),canvas=qrHost.querySelector('canvas');
-       if(img){img.alt='Scan to open this digital GURU CONNECT receipt';img.style.display='block';img.style.visibility='visible';img.style.width='100%';img.style.height='100%';img.style.imageRendering='pixelated';if(canvas)canvas.style.display='none';}
-       if(canvas){canvas.style.visibility='visible';canvas.style.maxWidth='100%';canvas.style.maxHeight='100%';if(!img||!img.getAttribute('src'))canvas.style.setProperty('display','block','important');else canvas.style.setProperty('display','none','important');}
-       if(qrStatus)qrStatus.textContent='QR ready • scan to open this digital receipt on a phone';
+       let img=qrHost.querySelector('img'),canvas=qrHost.querySelector('canvas');
+       // Convert the generated canvas into a stable PNG image so the QR appears in digital and print views.
+       if(canvas){
+         try{const png=canvas.toDataURL('image/png');if(!img){img=document.createElement('img');qrHost.appendChild(img);}img.src=png;}catch(_){}
+         canvas.style.setProperty('display','none','important');
+       }
+       if(img){
+         img.alt='Scan to open this digital GURU CONNECT receipt';
+         img.style.setProperty('display','block','important');img.style.setProperty('visibility','visible','important');img.style.setProperty('opacity','1','important');
+         img.style.width='100%';img.style.height='100%';img.style.objectFit='contain';img.style.imageRendering='pixelated';
+       }
+       if(qrStatus)qrStatus.textContent=(img&&img.getAttribute('src'))?'QR ready • scan to open this digital receipt on a phone':'QR generating…';
        return true;
      }catch(e){if(qrStatus)qrStatus.textContent='QR could not be generated. Reload this receipt and try again.';return false;}
    };
