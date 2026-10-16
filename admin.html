@@ -176,6 +176,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
 <button class="topbtn priority active" data-sec="edit">✏️ <b>EDIT</b><small>Find, edit & delete Student/Tutor</small></button>
 <button class="topbtn priority" data-sec="coins">🪙 <b>COINS MANAGEMENT</b><small>Add/subtract coins + reason</small></button>
 <button class="topbtn priority" data-sec="learning">📚 <b>LRR</b><small>Learning Requirement Requests</small></button>
+<button class="topbtn priority" data-sec="approval">✅ <b>COIN APPROVAL</b><small>Review completed LRRs and release/return held coins</small></button>
 <button class="topbtn priority" data-sec="receipt">🧾 <b>RECEIPT</b><small>Generate / print receipt</small></button>
 <button class="topbtn" data-sec="directories">👥 <b>DIRECTORIES</b><small>Live Student + Tutor list</small></button>
 <button class="topbtn" data-sec="password">🔐 <b>PASSWORD RESET</b><small>Find account and reset password</small></button>
@@ -280,6 +281,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
   <div id="coinHistoryResults" class="results"><div class="empty">Click REFRESH HISTORY to load the coin ledger.</div></div>
 </div></div></section>
 
+<section class="section" id="sec-approval"><div class="secHead"><div><h2>✅ LRR Coin Approval</h2><p>Review completed Learning Requirement Requests and decide whether held GURU COINS should be released to the Tutor or returned through the secure workflow.</p></div><div class="actions" style="margin:0"><span class="pill" id="approvalCount">0 PENDING</span><button id="refreshApprovals" class="btn light" type="button">↻ REFRESH APPROVALS</button></div></div><div class="secBody"><div class="lrrControlNote"><b>Approval safety:</b> Review the Student outcome and feedback before releasing coins. Decisions use the secure Supabase coin-decision function.</div><div id="approvalStatus" class="status"></div><div id="approvalResults" class="results"><div class="empty">Open this tab to load pending approvals.</div></div></div></section>
 <section class="section" id="sec-learning"><div class="secHead"><div><h2>📚 LRR — Learning Requirement Requests</h2><p>All Learning Requirement Requests load directly into this tab. Every request has Admin controls for tutor approval, rejection, return, coins and case chat.</p></div><div class="actions" style="margin:0"><span class="pill" id="lrrCount">0 REQUESTS</span><button id="loadLearning" class="btn light">↻ REFRESH LRR</button></div></div><div class="secBody"><div class="lrrControlNote"><b>LRR controls:</b> Approve to Tutor · Reject · Return to Student · Tutor Coins · Student Coins · Chat Student · Chat Tutor</div><div id="learningStatus" class="status"></div><div id="learningResults" class="results"><div class="empty">Loading Learning Requirement Requests…</div></div></div></section>
 
 <section class="section" id="sec-password"><div class="secHead"><div><h2>🔐 Password Reset</h2><p>Find a registered Student/Tutor and issue a new password through the secure admin function.</p></div></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Email or phone</label><input id="resetSearch" placeholder="Registered email or phone"></div><button id="resetFind" class="btn primary">FIND ACCOUNT</button></div><div id="resetResult" class="results"></div></div></section>
@@ -328,7 +330,7 @@ function switchSection(name){
   document.querySelectorAll('.section').forEach(x=>x.classList.remove('open'));
   document.querySelectorAll('.topbtn').forEach(x=>x.classList.toggle('active',x.dataset.sec===name));
   const el=$('sec-'+name);if(el)el.classList.add('open');
-  if(name==='learning'&&!lrrLoaded&&!lrrLoading)loadLearning();
+  if((name==='learning'||name==='approval')&&!lrrLoaded&&!lrrLoading)loadLearning();
   if(name==='coins'&&!coinHistoryLoaded)loadCoinHistory();
   // Load advertisements only after the staff session is authenticated, and
   // refresh the list whenever the admin opens the Advertisement tab.
@@ -934,15 +936,15 @@ $('coinHistoryPdf').onclick=()=>{
 async function lrrAction(id,action){
   const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(id));
   const reason=action==='reject'?'Rejected by Admin':action==='return'?'Returned to Student':'Approved to Tutor';
+  if(!row)return alert('LRR record is no longer loaded. Refresh the LRR tab.');
+  if(action==='approve')return window.lrrDecision(id,'APPROVE');
+  if(action==='return')return window.lrrDecision(id,'DENY');
   if(!confirm(reason+'?'))return;
   try{
-    let r=await sb.rpc('gc_admin_lrr_action',{p_request_id:String(id),p_action:action,p_reason:reason});
-    if(r.error&&/could not find the function|does not exist|schema cache/i.test(String(r.error.message||''))){
-      r=await sb.from('gc_learning_requests_v2').update({status:action==='approve'?'APPROVED':action==='reject'?'REJECTED':'RETURNED'}).eq('id',id)
-    }
+    const r=await sb.rpc('gc_admin_lrr_action',{p_request_id:String(id),p_action:action,p_reason:reason});
     if(r.error)throw r.error;
     lrrLoaded=false;await loadLearning()
-  }catch(e){alert('LRR action failed: '+(e.message||e))}
+  }catch(e){alert('LRR action failed: '+(e.message||e)+'\n\nNo direct status-only fallback was attempted, because it could leave held coins in the wrong wallet. Please ensure the secure gc_admin_lrr_action function is installed.')}
 }
 window.lrrAction=lrrAction;
 
@@ -1057,6 +1059,9 @@ function lrrPersonHtml(id,people,role,label,embeddedName){
   const name=String(embeddedName||hit?.name||'').trim() || (id?'Member':'Not assigned');
   return '<div class="metaBox"><b>'+label+'</b><strong style="display:block;font-size:13px;margin-bottom:4px">'+esc(name)+'</strong><span style="font-size:10px;color:#64748b;word-break:break-all">'+esc(id||'Not assigned')+'</span></div>';
 }
+$('refreshApprovals').onclick=()=>{lrrLoaded=false;loadLearning()};
+$('loadLearning').onclick=()=>{lrrLoaded=false;loadLearning()};
+
 async function loadLearning(){
   if(lrrLoading)return;lrrLoading=true;$('learningStatus').textContent=lrrLoaded?'Refreshing LRR…':'Loading LRR…';
   try{
@@ -1071,6 +1076,20 @@ async function loadLearning(){
     const rows=q.data||[];window.__adminLrrRows=rows;
     const people=await getLrrPeople(rows);
     $('lrrCount').textContent=rows.length+' REQUESTS';$('learningStatus').textContent=rows.length+' Learning Requirement Request(s).';
+    const pendingApprovals=rows.filter(r=>{
+      const st=String(r.status||'').toUpperCase();
+      const decision=String(r.admin_decision||r.admin_decision_status||'').toUpperCase();
+      const held=Number(r.held_coins??r.coins_held??r.held_amount??0);
+      return !decision && (['PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW'].includes(st) || (held>0 && ['TUTOR_COMPLETED','COMPLETED','COMPLETED_SATISFIED','COMPLETED_NOT_SATISFIED'].includes(st)));
+    });
+    $('approvalCount').textContent=pendingApprovals.length+' PENDING';
+    $('approvalStatus').textContent=pendingApprovals.length+' request(s) awaiting Admin coin decision.';
+    $('approvalResults').innerHTML=pendingApprovals.length?pendingApprovals.map(r=>{
+      const id=r.id||r.request_id||r.request_code;
+      const outcome=r.student_outcome||r.outcome||'Pending';
+      const held=Number(r.held_coins??r.coins_held??r.held_amount??r.coin_cost??0);
+      return '<article class="user"><div class="userHead"><div class="identity"><b>'+esc(r.request_code||id||'Learning Request')+'</b><span class="badge">'+esc(r.status||'PENDING REVIEW')+'</span><div class="muted">Created: '+esc(r.created_at||'—')+'</div></div><span class="pill">🪙 '+held+' COINS HELD / REQUESTED</span></div><div class="lrrMeta"><div class="metaBox"><b>Student</b>'+esc(r.student_name||r.student_full_name||'See LRR tab for full details')+'<div class="muted">'+esc(r.student_id||r.student_user_id||r.student_profile_id||'—')+'</div></div><div class="metaBox"><b>Tutor</b>'+esc(r.tutor_name||r.tutor_full_name||'See LRR tab for full details')+'<div class="muted">'+esc(r.tutor_id||r.tutor_user_id||r.tutor_profile_id||'—')+'</div></div><div class="metaBox"><b>Course / Subject</b>'+esc((r.course||'—')+' / '+(r.subject||'—'))+'</div><div class="metaBox"><b>Student outcome</b>'+esc(outcome)+'</div><div class="metaBox" style="grid-column:1/-1"><b>Student feedback</b>'+esc(r.student_feedback||r.student_remark||r.student_remarks||r.feedback||r.remark||'No written feedback recorded.')+'</div></div><div class="lrrActions"><button type="button" class="btn green decisionBtn" onclick="lrrDecision(\''+esc(id)+'\',\'APPROVE\')">💰 RELEASE COINS TO TUTOR</button><button type="button" class="btn red decisionBtn" onclick="lrrDecision(\''+esc(id)+'\',\'DENY\')">↩ DENY / RETURN COINS</button><button type="button" class="btn light" onclick="switchSection(\'learning\')">OPEN FULL LRR CASE</button></div></article>';
+    }).join(''):'<div class="empty">No Learning Requirement Requests are currently waiting for coin approval.</div>';
     const h=$('learningResults');
     h.innerHTML=rows.length?rows.map(r=>{
       const id=r.id||r.request_id||r.request_code,st=r.status||'OPEN';
@@ -1090,7 +1109,7 @@ async function loadLearning(){
         <div class="evidenceBox"><b>Tutor service status</b><span class="${tutorCompleted?'evidenceGood':'evidenceWarn'}">${tutorCompleted?'✓ Tutor marked/completed the service':'Pending tutor completion'}</span></div>
         <div class="evidenceBox"><b>Student feedback / remark</b>${esc(studentFeedback||'No written student feedback recorded.')}</div>
         <div class="evidenceBox"><b>Tutor feedback / completion note</b>${esc(tutorFeedback||'No separate tutor feedback recorded. Status is used as the completion evidence.')}</div>
-        <div class="evidenceBox"><b>Coins held with Admin</b><strong>🪙 ${Number(r.coins_held||0)}</strong></div>
+        <div class="evidenceBox"><b>Coins held with Admin</b><strong>🪙 ${Number(r.held_coins??r.coins_held??r.held_amount??0)}</strong></div>
         <div class="evidenceBox"><b>Learning deadline</b>${esc(r.learning_deadline||'Not set')}${r.learning_deadline?`<div class="lrrDeadlineBadge">⏳ Maximum service window: 20 days</div>`:''}</div>
         <div class="evidenceBox" style="grid-column:1/-1"><b>Admin decision / note</b>${esc(adminNote||'No Admin decision recorded yet.')}</div>
       </div>${canDecide?`<div class="lrrDecision">${satisfied?'✅ Student has confirmed SATISFIED. This is the strongest evidence for releasing the Tutor reward.':'⚠️ Final coin decision is pending. Chat with both parties before releasing/denying if the evidence is incomplete.'}</div>`:''}</div>
