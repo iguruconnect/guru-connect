@@ -943,10 +943,10 @@ $('saveReceiptAd').onclick=async()=>{
     const up=await sb.storage.from('gc-advertisements').upload(uploadedPath,prepared,{upsert:false,contentType:'image/jpeg',cacheControl:'3600'});
     if(up.error)throw up.error;
     const image_url=sb.storage.from('gc-advertisements').getPublicUrl(uploadedPath).data.publicUrl;
-    const row={title,advertiser_name:advertiser,placement:'receipt',image_url,storage_path:uploadedPath,click_url:click||null,whatsapp_url:null,start_at:new Date().toISOString(),end_at:null,priority:999,active:true,created_by:session.user.id,updated_at:new Date().toISOString()};
+    const row={title,advertiser_name:advertiser,placement:'all',image_url,storage_path:uploadedPath,click_url:click||null,whatsapp_url:null,start_at:new Date().toISOString(),end_at:null,priority:999,active:true,created_by:session.user.id,updated_at:new Date().toISOString()};
     const ins=await sb.from('gc_advertisements').insert(row).select('id').single();
     if(ins.error)throw ins.error;
-    // Keep one current receipt-specific flyer active; unrelated tutor/student/LRR ads remain untouched.
+    // Use the existing supported “all” placement so the receipt flyer works with the current ad schema.
     const old=await sb.from('gc_advertisements').update({active:false,updated_at:new Date().toISOString()}).eq('placement','receipt').eq('active',true).neq('id',ins.data.id);
     if(old.error)console.warn('Older receipt flyer could not be paused:',old.error.message);
     status.textContent='✓ Flyer uploaded and saved. It will be shown on newly generated receipts.';
