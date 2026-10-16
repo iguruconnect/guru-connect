@@ -248,7 +248,7 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
      const stream=new Blob([JSON.stringify(receiptData)]).stream().pipeThrough(new CompressionStream('deflate'));
      const packed=new Uint8Array(await new Response(stream).arrayBuffer());
      let binary='';for(let i=0;i<packed.length;i++)binary+=String.fromCharCode(packed[i]);
-     const token=btoa(binary).replace(/\\+/g,'-').replace(/\\//g,'_').replace(/=+$/,'');
+     const token=btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
      digitalReceiptUrl=window.location.origin+window.location.pathname+'?z='+token;
    }
  }catch(e){console.warn('Could not compress receipt QR URL; using the full receipt URL:',e);}
