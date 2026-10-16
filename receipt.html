@@ -139,6 +139,22 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
   #receiptAdPanel.flyer-ready,#receiptAdPanel.flyer-ready #receiptAdLink,#receiptAdPanel.flyer-ready #receiptAdImage{border:0!important;outline:0!important;box-shadow:none!important;border-radius:0!important;background:#fff!important}
   #receiptAdPanel.flyer-ready{padding:0!important}
 }
+
+/* Final closing layout: remove explanatory QR text and center a scanner-friendly QR between thank-you and stamp. */
+.closing{display:flex!important;flex-direction:column!important;align-items:center!important;gap:12px!important;text-align:center!important}
+.closing>div:first-child{width:100%!important;text-align:center!important}
+.closing .thankyou{text-align:center!important;margin:0 auto 4px!important}
+.closing .qr-section{display:flex!important;justify-content:center!important;align-items:center!important;width:100%!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;break-inside:avoid!important;page-break-inside:avoid!important}
+.closing .qr-code{display:grid!important;place-items:center!important;width:190px!important;height:190px!important;flex:0 0 190px!important;margin:0 auto!important;padding:10px!important;border:0!important;border-radius:0!important;background:#fff!important;box-sizing:border-box!important}
+.closing .qr-code img{display:block!important;width:100%!important;height:100%!important;max-width:none!important;object-fit:contain!important;image-rendering:pixelated!important}
+.closing .qr-copy{display:none!important}
+.closing .signature-seal{display:flex!important;justify-content:center!important;align-items:center!important;flex-wrap:wrap!important;width:100%!important;margin:0!important;gap:12px!important}
+@media print{
+ .closing .qr-section{display:flex!important;justify-content:center!important;align-items:center!important;width:100%!important;margin:0!important;padding:0!important;break-inside:avoid!important;page-break-inside:avoid!important}
+ .closing .qr-code{width:190px!important;height:190px!important;flex:0 0 190px!important;padding:10px!important}
+ .closing .qr-code img{display:block!important;visibility:visible!important;opacity:1!important;width:100%!important;height:100%!important}
+}
+
 </style>
 </head>
 <body>
@@ -218,7 +234,7 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
   <section class="closing">
     <div>
       <div class="thankyou">Thank you for your payment.</div>
-  <section class="qr-section" aria-label="Receipt details QR code"><div class="qr-code" id="receiptQr"></div><div class="qr-copy"><strong>SCAN TO VIEW RECEIPT DETAILS</strong><p>Scan this QR code to read the receipt number, customer and registration details, payment information, services and total amount.</p><div class="qr-status" id="qrStatus">Generating receipt QR…</div></div></section>
+      <section class="qr-section" aria-label="Receipt details QR code"><div class="qr-code" id="receiptQr"></div></section>
       <div class="support">
         <strong>Please verify the receipt details and service charges.</strong><br>
         Support: <a href="mailto:support@guruconnnect.in">support@guruconnnect.in</a><br>
@@ -368,7 +384,7 @@ async function printReceipt(){
      if(!window.QRCode)return false;
      try{
        qrHost.innerHTML='';
-       new QRCode(qrHost,{text:digitalReceiptUrl,width:420,height:420,colorDark:'#102b55',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+       new QRCode(qrHost,{text:digitalReceiptUrl,width:600,height:600,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.L});
        let img=qrHost.querySelector('img'),canvas=qrHost.querySelector('canvas');
        // Convert the generated canvas into a stable PNG image so the QR appears in digital and print views.
        if(canvas){
