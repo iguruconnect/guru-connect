@@ -1266,8 +1266,6 @@ function gcIdSetSelect(id,value,aliases=[]){
   const normalized=raw.toLowerCase();
   const alias=opts.find(o=>aliases.some(a=>normalized.includes(a.toLowerCase())&&o.text.toLowerCase()===a.toLowerCase()));
   if(alias){el.value=alias.value;return}
-  const other=opts.find(o=>o.text.toLowerCase()==='other');
-  if(other){el.value='Other';return}
   const custom=document.createElement('option');custom.value=raw;custom.textContent=raw;el.appendChild(custom);el.value=raw;
 }
 function gcIdAutofill(){
@@ -1341,7 +1339,7 @@ $('idResetBtn').onclick=()=>{
 $('idPrintBtn').onclick=()=>{
   if(!gcIdGenerated||!gcIdPhotoData){$('idGenStatus').textContent='Generate the card with a photograph before printing.';return}
   const preview=$('idCardPreview');
-  const w=window.open('','_blank','noopener,noreferrer,width=1000,height=750');
+  const w=window.open('','_blank','width=1000,height=750');
   if(!w){$('idGenStatus').textContent='Pop-up blocked. Allow pop-ups for this site, then click Print again.';return}
   const html='<!doctype html><html><head><meta charset="utf-8"><title>GURU CONNECT ID Card</title><style>*{box-sizing:border-box}body{margin:0;padding:20mm;background:#fff;font-family:Arial,sans-serif}.idgen-card{width:90mm;aspect-ratio:1.58/1;overflow:hidden;border:1px solid #cbd5e1;border-radius:4mm;display:flex;flex-direction:column;color:#172033;print-color-adjust:exact;-webkit-print-color-adjust:exact}.idgen-cardhead{background:linear-gradient(115deg,#092b64,#155eef 72%,#06a6c8);color:#fff;padding:3mm 4mm;display:flex;align-items:center;gap:2mm}.idgen-book{width:10mm;height:10mm;flex:0 0 10mm;border-radius:2mm;background:#fff;color:#155eef;display:grid;place-items:center;font-size:18pt}.idgen-brand{font-size:15pt;font-weight:900;line-height:1.05}.idgen-brand span{font-weight:400}.idgen-tagline{font-size:6pt;margin-top:1mm;color:#e4efff}.idgen-cardlabel{margin-left:auto;text-align:right;font-size:6pt;font-weight:900;letter-spacing:.5px;border:1px solid #ffffff75;padding:1.5mm;border-radius:2mm}.idgen-cardbody{padding:3mm 3.5mm 2mm;display:grid;grid-template-columns:24mm 1fr;gap:3mm;flex:1;min-height:0}.idgen-cardphoto{width:22mm;height:27mm;object-fit:cover;border-radius:1.5mm;border:1px solid #d8e3f3;background:#eef3fa}.idgen-cardname{font-size:11pt;font-weight:900;color:#102e61;line-height:1.2;overflow-wrap:anywhere}.idgen-tick{display:inline-flex;align-items:center;justify-content:center;vertical-align:middle;background:#1877f2;color:#fff;border-radius:50%;width:4mm;height:4mm;font-size:7pt;margin-left:1mm}.idgen-idnumber{font-size:6.5pt;font-weight:900;color:#155eef;margin-top:1mm}.idgen-mini-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.2mm 2mm;margin-top:2mm}.idgen-mini-fields div{font-size:5.5pt;line-height:1.2;overflow-wrap:anywhere}.idgen-mini-fields b{display:block;font-size:4.5pt;color:#64748b;margin-bottom:.4mm}.idgen-address{font-size:5pt;color:#334155;margin-top:1mm;line-height:1.2;overflow-wrap:anywhere}.idgen-validity{background:#eaf2ff;color:#123b82;padding:1.5mm 3mm;font-size:5.5pt;font-weight:900;display:flex;justify-content:space-between;gap:2mm}.idgen-cardfoot{background:#092b64;color:#fff;padding:1.8mm 3mm;display:flex;justify-content:space-between;gap:2mm;font-size:5pt;flex-wrap:wrap}@page{size:auto;margin:0} @media print{body{padding:10mm}.idgen-card{break-inside:avoid}}</style></head><body>'+preview.outerHTML+'<script>window.onload=()=>setTimeout(()=>window.print(),350)<\/script></body></html>';
   w.document.open();w.document.write(html);w.document.close();
