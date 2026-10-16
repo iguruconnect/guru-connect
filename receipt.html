@@ -1,215 +1,190 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+<meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>GURU CONNECT - Educational Services Receipt</title>
+<title>GURU CONNECT | Payment Receipt</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+:root{--navy:#102b55;--blue:#155eef;--blue2:#0b74de;--ink:#172033;--muted:#64748b;--line:#dbe4f0;--soft:#f5f8ff;--green:#07864b;--green-soft:#e9f8ef}
 *{box-sizing:border-box}
-:root{--blue:#0672df;--navy:#073f88;--line:#b9dcff;--pale:#eaf5ff}
-body{margin:0;padding:18px;background:#edf3fa;color:#10366e;font-family:"Nunito Sans",Arial,sans-serif}
-.actions{max-width:1024px;margin:0 auto 12px;text-align:right}
-button{background:#0672df;color:white;border:0;padding:11px 22px;border-radius:7px;font-weight:bold;cursor:pointer}
-.paper{max-width:1024px;margin:auto;background:white;box-shadow:0 4px 24px #12345618;overflow:hidden}
-.hero{display:flex;align-items:center;gap:18px;min-height:205px;padding:22px 24px;background:white;border-bottom:8px solid var(--blue);position:relative;overflow:hidden}
-.brandlogo{width:132px;height:132px;flex-shrink:0}
-.brand{position:relative;z-index:1}
-.brand h1{margin:0;white-space:nowrap;font-size:clamp(29px,4.5vw,54px);letter-spacing:-2px;line-height:1.05}
-.brand h1 b{color:#ed171b}.brand h1 span{color:#0875df;font-weight:300}
-.slogan{color:#0875df;font-size:clamp(13px,2vw,22px);font-weight:800;margin-top:8px}
-.students{position:absolute;right:0;top:0;width:45%;height:100%;object-fit:cover;object-position:center}
-.hero:after{content:"";position:absolute;right:33%;top:0;width:22%;height:100%;background:linear-gradient(90deg,white,transparent);z-index:0}
-.learn{position:absolute;right:12px;top:14px;z-index:2;color:white;text-align:right;font-size:24px;font-weight:900;font-style:italic;text-shadow:0 1px 5px #07529c}
-.content{padding:20px 34px 0}
-.top{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start;margin-bottom:15px}
-.receipttitle{display:flex;align-items:center;gap:14px}
-.docicon{width:80px;height:70px;border-radius:15px;background:#0874e3;display:grid;place-items:center;color:white;font-size:43px;flex-shrink:0}
-.receipttitle h2{font-size:38px;margin:0;color:var(--navy);line-height:1}
-.receipttitle p{font-size:17px;font-weight:bold;margin:5px 0}
-.meta{border:1px solid var(--line);border-radius:12px;padding:9px 15px;background:linear-gradient(110deg,#fff,#f0f7ff)}
-.metarow{display:grid;grid-template-columns:122px 12px 1fr;gap:5px;padding:3px 0;font-size:15px}
-.metarow strong{font-size:21px;color:var(--navy)}
-.paid{display:inline-block;background:#08a653;color:white;padding:3px 14px;border-radius:20px;font-size:13px;font-weight:900}
-.details{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin:12px 0 18px}
-.column:first-child{border-right:1px solid var(--line);padding-right:16px}
-.heading{padding:8px 11px;border-radius:7px;background:linear-gradient(90deg,#e1f0ff,#eaf5ff);font-size:21px;font-weight:900;color:#0647a4;margin-bottom:9px}
-.detailrow{display:grid;grid-template-columns:120px 12px 1fr;gap:5px;padding:6px 9px;font-size:16px;overflow-wrap:anywhere}
-.serviceheading{padding:10px 12px;border-radius:9px 9px 0 0;background:linear-gradient(90deg,#e6f3ff,#eff7ff);border:1px solid #d3e8ff;color:#101dff;font-size:20px;font-weight:900}
-table{width:100%;border-collapse:collapse;border:1px solid var(--line);font-size:14px}
-thead{background:#0670dc;color:white}
-th{padding:13px 8px;border:1px solid #4d9be9;text-align:center}
-td{padding:12px 10px;border:1px solid #c5e2ff;vertical-align:middle}
-tbody tr:nth-child(odd){background:#f3f9ff}
-td:first-child,td:nth-child(4),td:nth-child(5),td:nth-child(6){text-align:center}
-td:nth-child(2){font-weight:800}
-.totals{margin:12px 0 16px auto;width:min(100%,455px);padding:12px 20px;background:linear-gradient(110deg,#f1f8ff,#e4f1ff);border:1px solid #c4e1ff;border-radius:8px}
-.totalrow{display:grid;grid-template-columns:150px 12px 1fr;gap:8px;padding:5px;font-size:16px}
-.totalrow strong{color:var(--navy)}
-.totalrow.amount{font-size:25px;font-weight:900}
-.thanks{border-top:1px solid var(--line);display:grid;grid-template-columns:35% 65%;gap:20px;padding:18px 4px;align-items:center}
-.thankleft{display:flex;gap:12px;align-items:center;border-right:1px solid var(--line);padding:8px 14px 8px 0}
-.check{width:62px;height:62px;flex-shrink:0;background:#38b95e;color:white;border-radius:50%;display:grid;place-items:center;font-size:40px;font-weight:900}
-.thankscript{font-size:32px;font-family:"Brush Script MT",cursive;font-style:italic;font-weight:bold;color:#0872df;white-space:nowrap}
-.thankleft p{font-size:13px;font-weight:bold;margin:0}
-.note{font-size:13px;line-height:1.65}
-.note strong{font-size:17px}
-.note a{color:#006de5;font-weight:900;text-decoration:none}
-.featurestrip{position:relative;display:grid;grid-template-columns:repeat(5,1fr);padding:15px 155px 15px 25px;background:linear-gradient(90deg,#eff8ff,#f8fcff)}
-.feature{text-align:center;padding:0 6px;border-right:1px solid #a9d3ff;color:#073e88;font-size:14px;font-weight:800}
-.feature:last-of-type{border:0}
-.featureicon{width:53px;height:53px;border-radius:50%;margin:0 auto 7px;display:grid;place-items:center;background:#ff9d16;color:white;font-size:27px}
-.feature:nth-child(2) .featureicon{background:#1682f5}
-.feature:nth-child(3) .featureicon{background:#08a65b}
-.feature:nth-child(4) .featureicon{background:#eb1872}
-.feature:nth-child(5) .featureicon{background:#7726e8}
-.stamp{position:absolute;width:145px;height:145px;right:17px;bottom:19px;color:#0649b8;transform:rotate(-10deg)}
-.footer{background:linear-gradient(90deg,#0872df,#0060ce);color:white;text-align:center;padding:18px 12px;font-size:15px;font-weight:800}
-@media(max-width:680px){
-body{padding:5px}.hero{min-height:125px;padding:12px 8px;gap:8px}
-.brandlogo{width:70px;height:70px}.brand h1{font-size:clamp(19px,5vw,30px);letter-spacing:-1px}
-.slogan{font-size:10px;margin-top:5px}.students{width:39%;opacity:.85}.learn{font-size:12px;top:6px;right:4px}
-.content{padding:12px 9px 0}.top{grid-template-columns:1fr;gap:12px}
-.docicon{width:55px;height:55px;font-size:30px}.receipttitle h2{font-size:28px}.receipttitle p{font-size:12px}
-.metarow{grid-template-columns:103px 8px 1fr;font-size:13px}.metarow strong{font-size:17px}
-.details{grid-template-columns:1fr;gap:12px}.column:first-child{border-right:0;padding-right:0}
-.heading{font-size:17px}.detailrow{grid-template-columns:100px 8px 1fr;font-size:14px;padding:5px 3px}
-.serviceheading{font-size:17px}
-table{font-size:10px;table-layout:fixed;overflow-wrap:anywhere}
-th{padding:8px 2px}td{padding:7px 3px}
-th:nth-child(1){width:7%}th:nth-child(2){width:22%}th:nth-child(3){width:29%}th:nth-child(4){width:8%}th:nth-child(5),th:nth-child(6){width:17%}
-.totals{width:100%}.totalrow{grid-template-columns:135px 8px 1fr;font-size:13px}.totalrow.amount{font-size:20px}
-.thanks{grid-template-columns:1fr;gap:12px}.thankleft{border-right:0;border-bottom:1px solid var(--line);padding-bottom:14px}
-.thankscript{font-size:27px}.featurestrip{padding:12px 5px 102px}
-.feature{font-size:10px;padding:0 2px}.featureicon{width:35px;height:35px;font-size:18px}
-.stamp{width:100px;height:100px;right:calc(50% - 50px);bottom:8px}
+body{margin:0;padding:26px 14px;background:#edf2f8;color:var(--ink);font-family:Inter,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+.actions{width:min(920px,100%);margin:0 auto 14px;display:flex;justify-content:flex-end;gap:10px}
+.actions button{border:0;border-radius:12px;padding:12px 18px;background:var(--blue);color:#fff;font:800 13px Inter,Arial,sans-serif;box-shadow:0 7px 18px #155eef2b;cursor:pointer}
+.paper{width:min(920px,100%);margin:0 auto;background:#fff;border:1px solid #e0e7f0;border-radius:22px;overflow:hidden;box-shadow:0 24px 70px #152b4b17}
+.topline{height:7px;background:linear-gradient(90deg,#155eef 0%,#06a6c8 42%,#10a76b 72%,#f59e0b 100%)}
+.masthead{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:28px 34px 24px;border-bottom:1px solid var(--line)}
+.brandlockup{min-width:0;display:flex;align-items:center;gap:18px}
+.brandlogo{display:block;width:270px;max-width:100%;max-height:92px;height:auto;object-fit:contain;object-position:left center}
+.brandcopy{min-width:0}
+.brandname{font-size:25px;font-weight:900;letter-spacing:-.8px;color:var(--navy);margin:0}
+.tagline{font-size:13px;font-weight:700;color:#155eef;margin-top:5px;letter-spacing:.1px}
+.docmark{flex-shrink:0;text-align:right}
+.docmark .eyebrow{font-size:10px;letter-spacing:2px;font-weight:900;color:var(--muted);text-transform:uppercase}
+.docmark h1{font-size:30px;line-height:1;margin:7px 0 9px;letter-spacing:1px;color:var(--navy)}
+.paid{display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:var(--green-soft);color:var(--green);font-size:11px;font-weight:900;letter-spacing:.6px;border:1px solid #b8e7c9}
+.paid:before{content:"✓";display:grid;place-items:center;width:17px;height:17px;border-radius:50%;background:var(--green);color:#fff;font-size:11px}
+.content{padding:26px 34px 28px}
+.summary{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px}
+.summary-card{padding:14px 16px;background:var(--soft);border:1px solid var(--line);border-radius:14px;min-width:0}
+.summary-card .label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:800;margin-bottom:7px}
+.summary-card .value{font-size:15px;color:var(--navy);font-weight:800;overflow-wrap:anywhere}
+.section-title{display:flex;align-items:center;gap:10px;font-size:13px;text-transform:uppercase;letter-spacing:1px;font-weight:900;color:var(--navy);margin:0 0 13px}
+.section-title .symbol{width:28px;height:28px;display:grid;place-items:center;background:#eaf1ff;color:var(--blue);border-radius:9px;font-size:14px}
+.details{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:23px}
+.detail-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;min-width:0}
+.card-head{display:flex;align-items:center;gap:9px;padding:14px 16px;background:#f7f9fd;border-bottom:1px solid var(--line);font-size:13px;font-weight:900;color:var(--navy)}
+.card-head .mini{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:#e6eeff;color:var(--blue);font-size:13px}
+.rows{padding:7px 15px 10px}
+.detailrow{display:grid;grid-template-columns:minmax(96px,40%) 12px minmax(0,1fr);gap:5px;padding:9px 0;border-bottom:1px dashed #e5eaf2;font-size:11.5px;line-height:1.5}
+.detailrow:last-child{border-bottom:0}
+.detailrow span:first-child{color:var(--muted);font-weight:600}
+.detailrow span:last-child{color:var(--ink);font-weight:700;overflow-wrap:anywhere}
+.service-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-top:3px}
+.service-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:15px 17px;background:#f7f9fd;border-bottom:1px solid var(--line)}
+.service-head .section-title{margin:0}
+.service-head small{font-size:10px;color:var(--muted);font-weight:700}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+thead{background:var(--navy);color:white}
+th{padding:12px 10px;text-align:left;font-size:10px;letter-spacing:.35px;text-transform:uppercase;font-weight:800}
+td{padding:13px 10px;border-bottom:1px solid #e9eef5;font-size:11.5px;vertical-align:top;overflow-wrap:anywhere}
+tbody tr:nth-child(even){background:#fafcff}
+tbody tr:last-child td{border-bottom:0}
+th:first-child,td:first-child{width:48px;text-align:center}
+th:nth-child(2),td:nth-child(2){width:27%}
+th:nth-child(4),td:nth-child(4){width:54px;text-align:center}
+th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){width:105px;text-align:right}
+td:nth-child(2){font-weight:800;color:var(--navy)}
+.totals-wrap{display:flex;justify-content:flex-end;margin:16px 0 25px}
+.totals{width:min(360px,100%);border:1px solid #cbdaf6;border-radius:16px;padding:15px 18px;background:linear-gradient(135deg,#f5f8ff,#eef5ff)}
+.totalrow{display:flex;justify-content:space-between;gap:18px;padding:5px 0;font-size:11px;color:#52617a;font-weight:700}
+.totalrow strong{color:var(--navy);text-align:right}
+.totalrow.amount{border-top:1px solid #d6e2f8;margin-top:7px;padding-top:13px;font-size:14px;color:var(--navy)}
+.totalrow.amount strong{font-size:23px;color:var(--blue);letter-spacing:-.5px}
+.amountwords{font-size:10px;color:var(--muted);line-height:1.5;text-align:right;margin-top:3px}
+.closing{display:grid;grid-template-columns:minmax(0,1fr) 180px;align-items:center;gap:22px;padding:20px 0 4px;border-top:1px solid var(--line)}
+.thankyou{font-size:21px;letter-spacing:-.5px;font-weight:900;color:var(--navy);margin-bottom:6px}
+.thankyou span{color:var(--blue)}
+.support{font-size:11px;color:#52617a;line-height:1.8}
+.support strong{color:var(--navy)}
+.support a{color:var(--blue);font-weight:800;text-decoration:none}
+.signature-seal{display:flex;align-items:center;justify-content:center;gap:14px}
+.seal{width:118px;height:118px;flex-shrink:0;transform:rotate(-9deg);opacity:.94}
+.signature{min-width:0;text-align:center;width:145px}
+.signature .sigline{height:39px;border-bottom:1px solid #475569;margin-bottom:7px;position:relative}
+.signature .scribble{position:absolute;bottom:2px;left:50%;transform:translateX(-50%) rotate(-8deg);font-family:"Brush Script MT","Segoe Script",cursive;font-size:25px;color:#1e40af;white-space:nowrap}
+.signature strong{display:block;font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--navy)}
+.signature small{display:block;margin-top:4px;font-size:8px;color:var(--muted)}
+.footer{padding:16px 24px;text-align:center;background:#f7f9fd;border-top:1px solid var(--line);color:#52617a;font-size:10px;line-height:1.8}
+.footer strong{color:var(--navy)}
+@media(max-width:650px){
+body{padding:8px 5px}.paper{border-radius:14px}.masthead{padding:20px 16px;gap:12px;align-items:flex-start}.brandlockup{gap:0;display:block}.brandlogo{width:190px;max-height:64px}.brandname{font-size:18px;margin-top:6px}.tagline{font-size:10px;max-width:200px}.docmark h1{font-size:22px}.docmark .eyebrow{font-size:8px;letter-spacing:1px}.paid{font-size:9px;padding:5px 7px}.content{padding:18px 12px 20px}.summary{gap:6px}.summary-card{padding:10px 8px;border-radius:10px}.summary-card .label{font-size:8px;letter-spacing:.4px}.summary-card .value{font-size:11px}.details{grid-template-columns:1fr;gap:12px}.rows{padding:5px 11px}.detailrow{grid-template-columns:minmax(95px,38%) 9px minmax(0,1fr);font-size:11px;padding:8px 0}.section-title{font-size:11px}.service-head{padding:12px}.service-head small{display:none}th{padding:9px 4px;font-size:8px}td{padding:10px 4px;font-size:9px}th:first-child,td:first-child{width:27px}th:nth-child(2),td:nth-child(2){width:24%}th:nth-child(4),td:nth-child(4){width:30px}th:nth-child(5),td:nth-child(5),th:nth-child(6),td:nth-child(6){width:67px}.totals{padding:13px;width:100%}.closing{grid-template-columns:1fr;gap:20px}.signature-seal{justify-content:space-between}.seal{width:98px;height:98px}.signature{width:130px}.footer{padding:13px 12px;font-size:9px}
 }
 @media print{
-@page{size:A4 portrait;margin:7mm}
-body{padding:0;background:white}.actions{display:none}.paper{max-width:none;box-shadow:none}
-.hero,.footer,.paid,.featurestrip,thead,.docicon,.check,.totals,.stamp{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+@page{size:A4 portrait;margin:9mm}
+body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width:none;border:0;border-radius:0;box-shadow:none}.masthead,.summary-card,.card-head,.service-head,thead,.totals,.footer,.paid{-webkit-print-color-adjust:exact;print-color-adjust:exact}.masthead{padding:18px 22px}.content{padding:18px 22px}.summary{margin-bottom:16px}.details{margin-bottom:16px}.detailrow{padding:6px 0}.closing{padding-top:15px}.seal{opacity:1}a{color:inherit;text-decoration:none}
 }
 </style>
 </head>
 <body>
-<div class="actions"><button onclick="window.print()">Print / Save as PDF</button></div>
+<div class="actions"><button type="button" onclick="window.print()">Print / Save as PDF</button></div>
 <main class="paper">
-<header class="hero">
-<!-- Replace this illustrative SVG with the original transparent GURU CONNECT logo -->
-<svg class="brandlogo" viewBox="0 0 140 140" role="img" aria-label="GURU CONNECT educational logo">
-<defs><linearGradient id="ring" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffbd00"/><stop offset=".35" stop-color="#ef178d"/><stop offset=".58" stop-color="#0878f2"/><stop offset=".8" stop-color="#00a65a"/><stop offset="1" stop-color="#ffbd00"/></linearGradient></defs>
-<circle cx="70" cy="70" r="58" fill="white" stroke="url(#ring)" stroke-width="12"/>
-<circle cx="70" cy="70" r="45" fill="white" stroke="#0872df" stroke-width="1.5"/>
-<g fill="#ffb400"><circle cx="70" cy="10" r="9"/><circle cx="12" cy="70" r="9"/></g>
-<g fill="#0872df"><circle cx="128" cy="70" r="9"/></g><circle cx="70" cy="130" r="9" fill="#08a65b"/>
-<path d="M38 79Q53 70 69 84Q85 70 102 79L98 99Q82 91 69 103Q53 91 42 99Z" fill="#0872df"/>
-<path d="M43 79Q56 72 69 85Q83 72 97 79L94 92Q80 87 69 97Q56 87 46 92Z" fill="#fff"/>
-<path d="M69 84V97" stroke="#f0a900" stroke-width="2"/>
-<g stroke="#ffb400" stroke-width="2" stroke-linecap="round"><path d="M70 38V56M59 43L64 56M81 43L76 56M49 52L59 61M91 52L81 61"/></g>
-<text x="70" y="31" text-anchor="middle" font-size="9" font-weight="900" fill="#0649b8">GURU CONNECT</text>
-<text x="70" y="113" text-anchor="middle" font-size="7" font-weight="900" fill="#0649b8">LEARN • GROW</text>
-</svg>
-<div class="brand"><h1><b>GURU</b> <span>CONNECT</span></h1><div class="slogan">Connecting Mind - Creating Future</div></div>
-<img class="students" alt="Students learning together" src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1000&q=85">
-<div class="learn">Learn<br>Grow<br>Achieve</div>
+<div class="topline"></div>
+<header class="masthead">
+  <div class="brandlockup">
+    <img class="brandlogo" src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future">
+    <div class="brandcopy">
+      <p class="brandname">GURU CONNECT</p>
+      <div class="tagline">Connecting Mind - Creating Future...</div>
+    </div>
+  </div>
+  <div class="docmark">
+    <div class="eyebrow">Payment document</div>
+    <h1>RECEIPT</h1>
+    <span class="paid">PAYMENT RECEIVED</span>
+  </div>
 </header>
-
 <div class="content">
-<div class="top">
-<div class="receipttitle"><div class="docicon">▤</div><div><h2>RECEIPT</h2><p>GURU CONNECT – Educational Services</p></div></div>
-<div class="meta">
-<div class="metarow"><span>Receipt No.</span><span>:</span><strong id="receiptNo">—</strong></div>
-<div class="metarow"><span>Issue Date</span><span>:</span><span id="issueDate">—</span></div>
-<div class="metarow"><span>Payment Status</span><span>:</span><span><b class="paid" contenteditable="true">PAID</b></span></div>
+  <section class="summary" aria-label="Receipt summary">
+    <div class="summary-card"><div class="label">Receipt number</div><div class="value" id="receiptNo">—</div></div>
+    <div class="summary-card"><div class="label">Issue date</div><div class="value" id="issueDate">—</div></div>
+    <div class="summary-card"><div class="label">Currency</div><div class="value">INR · Indian Rupee</div></div>
+  </section>
+  <section class="details">
+    <div class="detail-card">
+      <div class="card-head"><span class="mini">01</span> CUSTOMER DETAILS</div>
+      <div class="rows">
+        <div class="detailrow"><span>Name / Institution</span><span>:</span><span id="customerName">—</span></div>
+        <div class="detailrow"><span>Email</span><span>:</span><span id="customerEmail">—</span></div>
+        <div class="detailrow"><span>Mobile</span><span>:</span><span id="customerPhone">—</span></div>
+        <div class="detailrow"><span>Member type</span><span>:</span><span id="customerCategory">—</span></div>
+        <div class="detailrow"><span>Registration No. / Institution</span><span>:</span><span id="customerRegNo">—</span></div>
+      </div>
+    </div>
+    <div class="detail-card">
+      <div class="card-head"><span class="mini">02</span> COLLECTION DETAILS</div>
+      <div class="rows">
+        <div class="detailrow"><span>Mode</span><span>:</span><span id="paymentMode">—</span></div>
+        <div class="detailrow"><span>Collection type</span><span>:</span><span id="collectionType">—</span></div>
+        <div class="detailrow" id="transactionIdRow" style="display:none"><span>Transaction Ref / UTR</span><span>:</span><span id="transactionId">—</span></div>
+        <div class="detailrow" id="branchNameRow" style="display:none"><span>Branch / Location</span><span>:</span><span id="branchName">—</span></div>
+        <div class="detailrow" id="authorizedRegNoRow" style="display:none"><span>Authorized Person Reg. No.</span><span>:</span><span id="authorizedRegNo">—</span></div>
+        <div class="detailrow"><span>Generated by</span><span>:</span><span id="generatedBy">—</span></div>
+        <div class="detailrow" id="generatedByNameRow" style="display:none"><span>Person name</span><span>:</span><span id="generatedByName">—</span></div>
+        <div class="detailrow" id="generatedByRegNoRow" style="display:none"><span>Registration No.</span><span>:</span><span id="generatedByRegNo">—</span></div>
+        <div class="detailrow" id="generatedByMobileRow" style="display:none"><span>Mobile number</span><span>:</span><span id="generatedByMobile">—</span></div>
+        <div class="detailrow"><span>Payment date</span><span>:</span><span id="paymentDate">—</span></div>
+      </div>
+    </div>
+  </section>
+  <section class="service-card">
+    <div class="service-head"><h2 class="section-title"><span class="symbol">03</span> SERVICE DETAILS</h2><small>Keep this receipt for your records</small></div>
+    <table>
+      <thead><tr><th>S.No.</th><th>Service / Package</th><th>Description</th><th>Qty</th><th>Unit price</th><th>Amount</th></tr></thead>
+      <tbody id="items"><tr><td colspan="6">Receipt service items will appear here.</td></tr></tbody>
+    </table>
+  </section>
+  <div class="totals-wrap">
+    <div class="totals">
+      <div class="totalrow"><span>Total items billed</span><strong id="count">0</strong></div>
+      <div class="totalrow"><span>Payment status</span><strong style="color:#07864b">PAID</strong></div>
+      <div class="totalrow amount"><span>Total amount</span><strong>₹ <span id="total">0.00</span></strong></div>
+      <div class="amountwords">All amounts are in Indian Rupees (INR).</div>
+    </div>
+  </div>
+  <section class="closing">
+    <div>
+      <div class="thankyou">Thank you for choosing <span>GURU CONNECT.</span></div>
+      <div class="support">
+        <strong>Please verify the receipt details and service charges.</strong><br>
+        Support: <a href="mailto:support@guruconnnect.in">support@guruconnnect.in</a><br>
+        <span>Connecting Mind - Creating Future...</span>
+      </div>
+    </div>
+    <div class="signature-seal">
+      <svg class="seal" viewBox="0 0 180 180" role="img" aria-label="GURU CONNECT payment received stamp">
+        <defs><path id="sealTop" d="M 25 91 A 65 65 0 0 1 155 91"/><path id="sealBottom" d="M 22 99 A 68 68 0 0 0 158 99"/></defs>
+        <circle cx="90" cy="90" r="81" fill="#fff" stroke="#155eef" stroke-width="3"/>
+        <circle cx="90" cy="90" r="73" fill="none" stroke="#155eef" stroke-width="1.5"/>
+        <circle cx="90" cy="90" r="48" fill="#f4f7ff" stroke="#155eef" stroke-width="1.5"/>
+        <text fill="#155eef" font-size="13" font-weight="900" letter-spacing=".5"><textPath href="#sealTop" startOffset="50%" text-anchor="middle">GURU CONNECT</textPath></text>
+        <text fill="#155eef" font-size="8.5" font-weight="900"><textPath href="#sealBottom" startOffset="50%" text-anchor="middle">CONNECTING MIND • CREATING FUTURE</textPath></text>
+        <path d="M66 91L82 106L114 72" fill="none" stroke="#07864b" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="90" y="125" text-anchor="middle" fill="#155eef" font-size="10" font-weight="900" letter-spacing=".6">PAYMENT RECEIVED</text>
+        <circle cx="28" cy="91" r="3" fill="#155eef"/><circle cx="152" cy="91" r="3" fill="#155eef"/>
+      </svg>
+      <div class="signature">
+        <div class="sigline"><span class="scribble">Authorized</span></div>
+        <strong>Authorized Signature</strong>
+        <small>For GURU CONNECT</small>
+      </div>
+    </div>
+  </section>
 </div>
-</div>
-
-<div class="details">
-<section class="column">
-<div class="heading">▣ &nbsp; Customer Details</div>
-<div class="detailrow"><span>Name</span><span>:</span><span id="customerName">—</span></div>
-<div class="detailrow"><span>Email</span><span>:</span><span id="customerEmail">—</span></div>
-<div class="detailrow"><span>Mobile</span><span>:</span><span id="customerPhone">—</span></div>
-<div class="detailrow"><span>User Type</span><span>:</span><span id="customerCategory">—</span></div>
-<div class="detailrow"><span>Registration Number / Institution</span><span>:</span><span id="customerRegNo">—</span></div>
-</section>
-<section class="column">
-<div class="heading">▤ &nbsp; Payment Details</div>
-<div class="detailrow"><span>Mode</span><span>:</span><span id="paymentMode">—</span></div>
-<div class="detailrow"><span>Collection Type</span><span>:</span><span id="collectionType">—</span></div>
-<div class="detailrow" id="transactionIdRow" style="display:none"><span>Transaction Ref Number / UTR</span><span>:</span><span id="transactionId">—</span></div>
-<div class="detailrow" id="branchNameRow" style="display:none"><span>Branch Name / Location</span><span>:</span><span id="branchName">—</span></div>
-<div class="detailrow" id="authorizedRegNoRow" style="display:none"><span>Authorized Person Registration Number</span><span>:</span><span id="authorizedRegNo">—</span></div>
-<div class="detailrow"><span>Generated By</span><span>:</span><span id="generatedBy">—</span></div>
-<div class="detailrow" id="generatedByNameRow" style="display:none"><span>Person Name</span><span>:</span><span id="generatedByName">—</span></div>
-<div class="detailrow" id="generatedByRegNoRow" style="display:none"><span>Registration Number</span><span>:</span><span id="generatedByRegNo">—</span></div>
-<div class="detailrow" id="generatedByMobileRow" style="display:none"><span>Mobile Number</span><span>:</span><span id="generatedByMobile">—</span></div>
-<div class="detailrow"><span>Payment Date</span><span>:</span><span id="paymentDate">—</span></div>
-<div class="detailrow"><span>Currency</span><span>:</span><span>INR</span></div>
-</section>
-</div>
-
-<div class="serviceheading">▣ &nbsp; Service Details</div>
-<table>
-<thead><tr><th>S.No</th><th>Service / Package</th><th>Description</th><th>Qty</th><th>Unit Price (₹)</th><th>Amount (₹)</th></tr></thead>
-<tbody id="items"><tr><td colspan="6">Receipt service items will appear here.</td></tr></tbody>
-</table>
-
-<div class="totals">
-<div class="totalrow"><span>Total Items Billed</span><span>:</span><strong id="count">0</strong></div>
-<div class="totalrow amount"><span>Total Amount (₹)</span><span>:</span><strong><span id="total">0.00</span></strong></div>
-</div>
-
-<div class="thanks">
-<div class="thankleft"><div class="check">✓</div><div><div class="thankscript">Thank You!</div><p>for choosing GURU CONNECT</p></div></div>
-<div class="note"><strong>● &nbsp; Note:</strong><br>
-Please check the details in the receipt and the Service details<br>
-and the fees charged for the same.<br>
-For More details mail us at :
-<a href="mailto:support@guruconnnect.in">support@guruconnnect.in</a> |
-<br>WhatsApp us at <a href="https://wa.me/15559565917">+1 (555) 9565 - 917</a>
-</div>
-</div>
-</div>
-
-<section class="featurestrip">
-<div class="feature"><div class="featureicon">⌑</div>Find<br>Tutors</div>
-<div class="feature"><div class="featureicon">♟</div>Connect<br>with Students</div>
-<div class="feature"><div class="featureicon">▣</div>Share<br>Knowledge</div>
-<div class="feature"><div class="featureicon">▥</div>Build<br>Skills</div>
-<div class="feature"><div class="featureicon">♧</div>Grow<br>Together</div>
-
-<!-- Circular vector seal: replace centre emblem with the official brand logo for an exact match -->
-<svg class="stamp" viewBox="0 0 180 180" role="img" aria-label="GURU CONNECT circular seal">
-<defs><path id="topArc" d="M 25 91 A 65 65 0 0 1 155 91"/><path id="bottomArc" d="M 20 99 A 70 70 0 0 0 160 99"/></defs>
-<circle cx="90" cy="90" r="81" fill="#fff" stroke="#0649b8" stroke-width="3"/>
-<circle cx="90" cy="90" r="74" fill="none" stroke="#0649b8" stroke-width="1.5"/>
-<circle cx="90" cy="90" r="48" fill="#f3f8ff" stroke="#0649b8" stroke-width="1.5"/>
-<text fill="#0649b8" font-size="13" font-weight="900" letter-spacing=".5"><textPath href="#topArc" startOffset="50%" text-anchor="middle">GURU CONNECT</textPath></text>
-<text fill="#0649b8" font-size="8" font-weight="900"><textPath href="#bottomArc" startOffset="50%" text-anchor="middle">CONNECTING MIND • CREATING FUTURE</textPath></text>
-<g fill="#0649b8"><circle cx="90" cy="61" r="9"/><path d="M73 82Q74 66 90 69Q106 66 107 82Z"/><path d="M57 110Q59 93 73 97L83 110Z"/><path d="M97 110L107 97Q121 93 123 110Z"/><path d="M68 116L90 103L112 116L90 130Z" fill="white" stroke="#0649b8" stroke-width="2"/></g>
-<path d="M90 103V130" stroke="#0649b8" stroke-width="2"/>
-<text x="33" y="96" fill="#0649b8" font-size="15">★</text><text x="130" y="96" fill="#0649b8" font-size="15">★</text>
-<text x="90" y="146" text-anchor="middle" fill="#0649b8" font-size="9" font-weight="900">✦ OFFICIAL SEAL ✦</text>
-</svg>
-</section>
-<footer class="footer">━━━━━━━━　 GURU CONNECT &nbsp; | &nbsp; Connecting Mind - Creating Future　 ━━━━━━━━</footer>
+<footer class="footer"><strong>GURU CONNECT</strong> &nbsp; · &nbsp; Connecting Mind - Creating Future...<br>Customer support: support@guruconnnect.in &nbsp; | &nbsp; This receipt is computer generated.</footer>
 </main>
-<script>
-function updateTotal(){
- const rows=[...document.querySelectorAll("#items tr")];
- let sum=0;
- rows.forEach(row=>{
-   const cells=row.querySelectorAll("td");
-   const n=parseFloat(cells[5].textContent.replace(/,/g,"").replace(/[^\d.-]/g,""));
-   if(Number.isFinite(n))sum+=n;
- });
- document.getElementById("count").textContent=rows.length;
- document.getElementById("total").textContent=sum.toLocaleString("en-IN",{minimumFractionDigits:2,maximumFractionDigits:2});
-}
-document.getElementById("items").addEventListener("input",updateTotal);
-</script>
-
 <script>
 (function(){
  const q=new URLSearchParams(window.location.search);
@@ -229,9 +204,7 @@ document.getElementById("items").addEventListener("input",updateTotal);
  const tbody=document.getElementById('items');let services=[];try{services=JSON.parse(get('services')||'[]');if(!Array.isArray(services))services=[];}catch(e){services=[];}
  if(tbody){tbody.innerHTML='';services.forEach((s,i)=>{const tr=document.createElement('tr');[String(i+1),String(s.name||'Service'),String(s.description||s.name||'GURU CONNECT service'),'1',amount(s.amount),amount(s.amount)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td);});tbody.appendChild(tr);});if(!services.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=6;td.textContent='No service items were supplied.';tr.appendChild(td);tbody.appendChild(tr);}}
  const total=services.reduce((sum,s)=>sum+Number(s.amount||0),0);put('count',services.length,'0');put('total',amount(get('total')||total),'0.00');
- const paid=document.querySelector('.paid');if(paid)paid.textContent='PAID';
 })();
 </script>
-
 </body>
 </html>
