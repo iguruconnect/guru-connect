@@ -1466,28 +1466,23 @@ staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';s
   overflow:hidden!important;
   text-shadow:0 1px 2px rgba(0,0,0,.14)!important;
 }
-.controlbar .topbtn:after{
-  content:"";
-  position:absolute;
-  width:110px;height:110px;
-  border-radius:50%;
-  right:-35px;top:-48px;
-  background:rgba(255,255,255,.16);
-  pointer-events:none;
-}
+/* Solid single-colour tiles: no gradient or decorative colour overlay */
+.controlbar .topbtn:after{content:none!important;}
 .controlbar .topbtn b,.controlbar .topbtn small{position:relative;z-index:1;color:#fff!important;}
-.controlbar .topbtn small{opacity:.94!important;}
+.controlbar .topbtn small{opacity:1!important;}
 
-/* Homepage-inspired palette */
-.controlbar .topbtn:nth-child(1){background:linear-gradient(135deg,#ff334e,#ef233c)!important;}
-.controlbar .topbtn:nth-child(2){background:linear-gradient(135deg,#19b957,#08a8cf)!important;}
-.controlbar .topbtn:nth-child(3){background:linear-gradient(135deg,#1264d8,#633eea)!important;}
-.controlbar .topbtn:nth-child(4){background:linear-gradient(135deg,#ff8a00,#ffd21a)!important;}
-.controlbar .topbtn:nth-child(5){background:linear-gradient(135deg,#0877e8,#1264d8)!important;}
-.controlbar .topbtn:nth-child(6){background:linear-gradient(135deg,#06a6d8,#19b957)!important;}
-.controlbar .topbtn:nth-child(7){background:linear-gradient(135deg,#7c3aed,#d51bd6)!important;}
-.controlbar .topbtn:nth-child(8){background:linear-gradient(135deg,#ef7d00,#ef233c)!important;}
-.controlbar .topbtn:nth-child(9){background:linear-gradient(135deg,#0891b2,#06b6d4)!important;}
+/* Distinct solid colours for every dashboard tile */
+.controlbar .topbtn:nth-child(1){background:#e53945!important;}
+.controlbar .topbtn:nth-child(2){background:#25D366!important;}
+.controlbar .topbtn:nth-child(3){background:#2563eb!important;}
+.controlbar .topbtn:nth-child(4){background:#f59e0b!important;}
+.controlbar .topbtn:nth-child(5){background:#0d6efd!important;}
+.controlbar .topbtn:nth-child(6){background:#0891b2!important;}
+.controlbar .topbtn:nth-child(7){background:#7c3aed!important;}
+.controlbar .topbtn:nth-child(8){background:#ea580c!important;}
+.controlbar .topbtn:nth-child(9){background:#0e7490!important;}
+.controlbar .topbtn:nth-child(10){background:#ea580c!important;}
+.controlbar .topbtn:nth-child(11){background:#7c3aed!important;}
 
 .controlbar .topbtn:hover,
 .controlbar .topbtn.active{
