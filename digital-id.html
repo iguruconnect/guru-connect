@@ -21,17 +21,18 @@ const encoded=new URLSearchParams(location.search).get('data');
 if(!encoded)throw new Error('This QR code does not contain a Digital ID. Please ask GURU CONNECT admin for a replacement card.');
 const raw=decodeURIComponent(escape(atob(encoded)));
 const d=JSON.parse(raw);
-if(!d.name||!d.idNumber||!d.photo)throw new Error('Digital ID information is incomplete. Please ask GURU CONNECT admin for a replacement card.');
-const safePhoto=String(d.photo);
+const card={brand:d.brand||'GURU CONNECT',slogan:d.slogan||'Connecting Mind - Creating Future...',name:d.name||d.n,category:d.category||d.c,idNumber:d.idNumber||d.i,level:d.level||d.l,course:d.course||d.co,stream:d.stream||d.st,subject:d.subject||d.su,plan:d.plan||d.p,mode:d.mode||d.m,address:d.address||d.a,mobile:d.mobile||d.ph,validFrom:d.validFrom||d.f,validTo:d.validTo||d.t,verified:d.verified??d.ok,photo:d.photo||d.im};
+if(!card.name||!card.idNumber||!card.photo)throw new Error('Digital ID information is incomplete. Please ask GURU CONNECT admin for a replacement card.');
+const safePhoto=String(card.photo);
 if(!/^https:\/\//i.test(safePhoto))throw new Error('The member photograph link is invalid.');
 root.innerHTML='<div class="identity"><div><img class="photo" src="" alt="Member photograph" id="memberPhoto"></div><div><h2 id="memberName" style="margin:0;color:#102e61;font-size:24px;overflow-wrap:anywhere"></h2><div class="category" id="category"></div><div class="number" id="number"></div><div id="verified"></div></div></div><div class="fields" id="fields"></div><div class="validity"><span>VALIDITY</span><span id="validity"></span></div>';
 document.getElementById('memberPhoto').src=safePhoto;
-document.getElementById('memberName').textContent=esc(d.name);
-document.getElementById('category').textContent='CATEGORY: '+String(d.category||'member').toUpperCase();
-document.getElementById('number').textContent='ID NO: '+esc(d.idNumber);
-if(d.verified)document.getElementById('verified').innerHTML='<span class="badge" aria-label="Verified">✓</span> <span style="font-size:12px;color:#008b32;font-weight:700">Verified</span>';
-document.getElementById('fields').innerHTML=field('LEVEL',d.level)+field('COURSE',d.course)+field('STREAM',d.stream)+field('SUBJECT',d.subject)+field('PLAN',d.plan)+field('MODE',d.mode)+field('RESIDENTIAL ADDRESS',d.address,true)+field('MOBILE NUMBER',d.mobile,true);
-document.getElementById('validity').textContent=date(d.validFrom)+' – '+date(d.validTo);
+document.getElementById('memberName').textContent=esc(card.name);
+document.getElementById('category').textContent='CATEGORY: '+String(card.category||'member').toUpperCase();
+document.getElementById('number').textContent='ID NO: '+esc(card.idNumber);
+if(card.verified)document.getElementById('verified').innerHTML='<span class="badge" aria-label="Verified">✓</span> <span style="font-size:12px;color:#008b32;font-weight:700">Verified</span>';
+document.getElementById('fields').innerHTML=field('LEVEL',card.level)+field('COURSE',card.course)+field('STREAM',card.stream)+field('SUBJECT',card.subject)+field('PLAN',card.plan)+field('MODE',card.mode)+field('RESIDENTIAL ADDRESS',card.address,true)+field('MOBILE NUMBER',card.mobile,true);
+document.getElementById('validity').textContent=date(card.validFrom)+' – '+date(card.validTo);
 }catch(e){root.innerHTML='<div class="error"><h2>Digital ID unavailable</h2><p></p></div>';root.querySelector('p').textContent=e.message||'Could not read this Digital ID.'}
 })();
 </script></body></html>
