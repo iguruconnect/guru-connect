@@ -234,7 +234,7 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
      if(ad){
        const link=document.getElementById('receiptAdLink'),img=document.getElementById('receiptAdImage'),fallback=document.getElementById('receiptAdDefault');
        img.src=ad.image_url;img.alt=(ad.title||'Advertiser flyer')+' — '+(ad.advertiser_name||'GURU CONNECT advertiser');
-       link.href=/^https?:\\/\\//i.test(ad.click_url||'')?ad.click_url:ad.image_url;
+       link.href=(ad.click_url&&ad.click_url.startsWith('http'))?ad.click_url:ad.image_url;
        link.style.display='block';fallback.style.display='none';
        put('receiptAdRibbon',ad.advertiser_name||ad.title||'FEATURED ADVERTISEMENT','FEATURED ADVERTISEMENT');
        put('receiptAdFoot',ad.title||'Advertisement via GURU CONNECT','Advertisement via GURU CONNECT');
