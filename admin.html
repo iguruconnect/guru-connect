@@ -286,7 +286,8 @@ button,a,input,select,textarea{touch-action:manipulation;}
 
 <section class="section" id="sec-create"><div class="secHead"><div><h2>➕ Create User</h2><p>Create a new Student or Tutor account through the existing secure admin function.</p></div></div><div class="secBody"><div class="grid"><div class="field"><label>Role</label><select id="newRole"><option value="student">Student</option><option value="tutor">Tutor</option></select></div><div class="field"><label>Name</label><input id="newName"></div><div class="field"><label>Email</label><input id="newEmail" type="email"></div><div class="field"><label>Phone</label><input id="newPhone"></div><div class="field"><label>Password</label><input id="newPass" type="password" minlength="8"></div></div><div class="actions"><button id="create" class="btn green">CREATE ACCOUNT</button></div><div id="createStatus" class="status"></div></div></section>
 </section></main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><script>
 const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',FN=U+'/functions/v1/admin-user-actions';
 const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
@@ -1336,7 +1337,7 @@ $('idGenerateBtn').onclick=async()=>{
     const payload={brand:'GURU CONNECT',slogan:'Connecting Mind - Creating Future...',name:$('idFullName').value.trim(),category:$('idCategory').value, idNumber:$('idNumber').value.trim(),level:$('idLevel').value,course:$('idCourse').value,stream:$('idStream').value,subject:$('idSubject').value.trim(),plan:$('idPlan').value.trim(),mode:$('idMode').value,address:$('idAddress').value.trim(),mobile:$('idMobile').value.trim(),validFrom:$('idValidFrom').value,validTo:$('idValidTo').value,verified:!!(u&&(u.public_verified_tick||u.verified||u.verified_tick||u.is_verified||u.isVerified||String(u.verification_status||'').toLowerCase()==='verified')),photo:photoUrl};
     const bytes=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
     const digitalUrl='https://www.guruconnnect.in/digital-id.html?data='+encodeURIComponent(bytes);
-    $('idCardQr').src='https://api.qrserver.com/v1/create-qr-code/?size=240x240&format=png&margin=4&data='+encodeURIComponent(digitalUrl);
+    const qrBox=document.createElement('div');new QRCode(qrBox,{text:digitalUrl,width:240,height:240,correctLevel:QRCode.CorrectLevel.M});const qrCanvas=qrBox.querySelector('canvas');if(qrCanvas){$('idCardQr').src=qrCanvas.toDataURL('image/png')}else{const qrImg=qrBox.querySelector('img');if(!qrImg)throw new Error('QR generator did not produce an image. Please retry.');$('idCardQr').src=qrImg.src}
     $('idCardQrWrap').hidden=false;$('idCardQr').hidden=false;
     $('idCardQr').onerror=()=>{$('idGenStatus').textContent='Digital ID link is ready, but QR image service did not load. Please retry Generate ID.';};
     $('idCardPhoto').src=photoUrl;
