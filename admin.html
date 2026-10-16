@@ -174,6 +174,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
 <main class="wrap"><div id="gate" class="gate">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
 <nav class="controlbar" aria-label="Admin sections">
 <button class="topbtn priority active" data-sec="edit">✏️ <b>EDIT</b><small>Find, edit & delete Student/Tutor</small></button>
+<button class="topbtn priority" data-sec="registrationapproval">🛡️ <b>REGISTRATION APPROVAL</b><small>Approve Student & Tutor registrations</small></button>
 <button class="topbtn priority" data-sec="coins">🪙 <b>COINS MANAGEMENT</b><small>Add/subtract coins + reason</small></button>
 <button class="topbtn priority" data-sec="learning">📚 <b>LRR</b><small>Learning Requirement Requests</small></button>
 <button class="topbtn priority" data-sec="approval">✅ <b>COIN APPROVAL</b><small>Review completed LRRs and release/return held coins</small></button>
@@ -282,6 +283,8 @@ button,a,input,select,textarea{touch-action:manipulation;}
 </div></div></section>
 
 <section class="section" id="sec-approval"><div class="secHead"><div><h2>✅ LRR Coin Approval</h2><p>Review completed Learning Requirement Requests and decide whether held GURU COINS should be released to the Tutor or returned through the secure workflow.</p></div><div class="actions" style="margin:0"><span class="pill" id="approvalCount">0 PENDING</span><button id="refreshApprovals" class="btn light" type="button">↻ REFRESH APPROVALS</button></div></div><div class="secBody"><div class="lrrControlNote"><b>Approval safety:</b> Review the Student outcome and feedback before releasing coins. Decisions use the secure Supabase coin-decision function.</div><div id="approvalStatus" class="status"></div><div id="approvalResults" class="results"><div class="empty">Open this tab to load pending approvals.</div></div></div></section>
+<section class="section" id="sec-registrationapproval"><div class="secHead"><div><h2>🛡️ Student &amp; Tutor Registration Approval</h2><p>Review new verified-email registrations. Tutors require approval. Students without Helpline can register with limited status until Admin approval for full features.</p></div><div class="actions" style="margin:0"><span class="pill" id="registrationApprovalCount">0 PENDING</span><button id="refreshRegistrationApprovals" class="btn light" type="button">↻ REFRESH</button></div></div><div class="secBody"><div class="lrrControlNote"><b>Approval policy:</b> Tutor profiles remain unapproved until Admin action. Students who choose Helpline require approval; students without Helpline are registered in limited status and require Admin approval for additional/full features. Email OTP remains mandatory.</div><div id="registrationApprovalStatus" class="status"></div><div id="registrationApprovalResults" class="results"><div class="empty">Open this tab to load pending registrations.</div></div></div></section>
+
 <section class="section" id="sec-learning"><div class="secHead"><div><h2>📚 LRR — Learning Requirement Requests</h2><p>All Learning Requirement Requests load directly into this tab. Every request has Admin controls for tutor approval, rejection, return, coins and case chat.</p></div><div class="actions" style="margin:0"><span class="pill" id="lrrCount">0 REQUESTS</span><button id="loadLearning" class="btn light">↻ REFRESH LRR</button></div></div><div class="secBody"><div class="lrrControlNote"><b>LRR controls:</b> Approve to Tutor · Reject · Return to Student · Tutor Coins · Student Coins · Chat Student · Chat Tutor</div><div id="learningStatus" class="status"></div><div id="learningResults" class="results"><div class="empty">Loading Learning Requirement Requests…</div></div></div></section>
 
 <section class="section" id="sec-password"><div class="secHead"><div><h2>🔐 Password Reset</h2><p>Find a registered Student/Tutor and issue a new password through the secure admin function.</p></div></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Email or phone</label><input id="resetSearch" placeholder="Registered email or phone"></div><button id="resetFind" class="btn primary">FIND ACCOUNT</button></div><div id="resetResult" class="results"></div></div></section>
@@ -324,12 +327,69 @@ async function staffCheck(){
 let users=[];
 let activeSection='edit';
 let lrrLoaded=false,lrrLoading=false,coinHistoryLoaded=false;
+
+async function loadRegistrationApprovals(){
+  const status=$('registrationApprovalStatus'),out=$('registrationApprovalResults'),count=$('registrationApprovalCount');
+  if(!status||!out||!count)return;
+  status.textContent='Loading Student and Tutor registration approvals…';out.innerHTML='';
+  try{
+    const [pr,st,tr]=await Promise.all([
+      sb.from('profiles').select('*').order('created_at',{ascending:false}),
+      sb.from('student_profiles').select('*').order('created_at',{ascending:false}),
+      sb.from('tutor_profiles').select('*').order('created_at',{ascending:false})
+    ]);
+    const err=[pr.error,st.error,tr.error].find(Boolean);if(err)throw err;
+    const profiles=pr.data||[],students=st.data||[],tutors=tr.data||[];
+    const studentMap=new Map(students.map(x=>[String(x.user_id||x.auth_user_id||''),x]));
+    const tutorMap=new Map(tutors.map(x=>[String(x.user_id||x.auth_user_id||''),x]));
+    const pending=profiles.filter(p=>{
+      const role=String(p.role||'').toLowerCase();if(!['student','tutor'].includes(role))return false;
+      const detail=(role==='student'?studentMap:tutorMap).get(String(p.id))||{};
+      const state=String(p.registration_approval_status||detail.registration_approval_status||'').toUpperCase();
+      return state && state!=='APPROVED';
+    });
+    count.textContent=pending.length+' NEED REVIEW';
+    if(!pending.length){out.innerHTML='<div class="empty">No pending registration approvals. New registrations will appear here after the approval-status SQL migration is applied.</div>';status.textContent='Registration approval list refreshed.';return;}
+    out.innerHTML=pending.map(p=>{
+      const role=String(p.role||'').toLowerCase(),detail=(role==='student'?studentMap:tutorMap).get(String(p.id))||{};
+      const state=String(p.registration_approval_status||detail.registration_approval_status||'PENDING_ADMIN_APPROVAL').toUpperCase();
+      const helpline=String(detail.helpline_service_choice||'').toLowerCase();
+      const plan=detail.helpline_plan||detail.helpline_status||'Not selected';
+      const amount=detail.helpline_amount;
+      const mode=detail.helpline_payment_mode||'Not reported';
+      const cashTo=detail.helpline_paid_to_type||'';
+      const cashPerson=detail.helpline_paid_to_name||'';
+      const branch=detail.helpline_branch_name||'';
+      const regNo=detail.helpline_paid_to_registration_no||'';
+      const receipt=detail.helpline_receipt_number||'';
+      const utr=detail.helpline_payment_reference||'';
+      const escv=v=>esc(String(v==null||v===''?'—':v));
+      return '<article class="user"><div class="userHead"><div class="identity"><b>'+escv(p.full_name||detail.name||detail.full_name||'New member')+'</b><span class="badge">'+escv(role.toUpperCase())+'</span><div class="muted">Email: '+escv(p.email||detail.email)+'<br>Phone: '+escv(p.phone||detail.phone)+'<br>Auth User ID: '+escv(p.id)+'<br>Approval Status: <b>'+escv(state)+'</b><br>Registration No: '+escv(p.registration_no||detail.record_no)+'<br>Helpline: '+escv(helpline||'not applicable')+(role==='student'?'<br>Plan: '+escv(plan)+' · Amount: ₹'+escv(amount)+'<br>Payment mode: '+escv(mode)+(mode==='cash'?'<br>Cash paid to: '+escv(cashTo)+' · Branch: '+escv(branch)+' · Recipient: '+escv(cashPerson)+' · Recipient Reg. No.: '+escv(regNo)+' · Receipt No.: '+escv(receipt):'<br>UPI UTR: '+escv(utr)):'')+'</div></div><div class="actions"><button class="btn green" onclick="decideRegistrationApproval('+JSON.stringify(String(p.id))+',true)">✓ APPROVE REGISTRATION</button><button class="btn red" onclick="decideRegistrationApproval('+JSON.stringify(String(p.id))+',false)">✕ REJECT</button></div></div></article>';
+    }).join('');
+    status.textContent='Loaded '+pending.length+' registration(s) requiring review.';
+  }catch(e){status.textContent='Could not load registration approvals: '+(e.message||e);out.innerHTML='<div class="empty">Check the approval SQL migration and Admin permissions, then refresh.</div>';count.textContent='LOAD ERROR';}
+}
+async function decideRegistrationApproval(userId,approved){
+  const action=approved?'APPROVE':'REJECT';
+  if(!confirm(action+' this Student/Tutor registration?'))return;
+  const status=$('registrationApprovalStatus');
+  try{
+    status.textContent=action+' registration…';
+    const r=await sb.rpc('gc_admin_set_registration_approval',{p_user_id:String(userId),p_approved:!!approved,p_note:approved?'Approved by Admin':'Rejected by Admin'});
+    if(r.error)throw r.error;
+    status.textContent='Registration '+(approved?'approved':'rejected')+'. Refreshing list…';
+    await loadRegistrationApprovals();
+  }catch(e){status.textContent='Registration decision failed: '+(e.message||e)+' — ensure the registration approval SQL migration has been run in Supabase.';}
+}
+$('refreshRegistrationApprovals')?.addEventListener('click',loadRegistrationApprovals);
+
 function switchSection(name){
   if(!name||activeSection===name)return;
   activeSection=name;
   document.querySelectorAll('.section').forEach(x=>x.classList.remove('open'));
   document.querySelectorAll('.topbtn').forEach(x=>x.classList.toggle('active',x.dataset.sec===name));
   const el=$('sec-'+name);if(el)el.classList.add('open');
+  if(name==='registrationapproval')loadRegistrationApprovals();
   if((name==='learning'||name==='approval')&&!lrrLoaded&&!lrrLoading)loadLearning();
   if(name==='coins'&&!coinHistoryLoaded)loadCoinHistory();
   // Load advertisements only after the staff session is authenticated, and
