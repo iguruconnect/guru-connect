@@ -113,6 +113,21 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
  .receipt-ad-section .ad-ribbon,.receipt-ad-section .ad-foot{position:relative!important}
  .qr-code canvas{display:none!important;visibility:hidden!important}
 }
+
+/* Final receipt-flyer overrides: dedicated image area, no ribbon over the flyer. */
+#receiptAdPanel.flyer-ready #receiptAdLink{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;inset:auto!important;width:100%!important;height:auto!important;max-height:none!important;flex:0 0 auto!important;overflow:visible!important;z-index:2!important;background:#fff!important}
+#receiptAdPanel.flyer-ready #receiptAdImage{display:block!important;visibility:visible!important;opacity:1!important;width:100%!important;height:auto!important;max-height:2.35in!important;object-fit:contain!important;background:#fff!important}
+#receiptAdPanel.flyer-ready #receiptAdDefault{display:none!important}
+#receiptAdPanel.flyer-ready #receiptAdRibbon{display:none!important}
+#receiptAdPanel.flyer-ready #receiptAdFoot{display:block!important;position:relative!important;width:100%!important;flex:0 0 auto!important;text-align:center!important;overflow-wrap:anywhere!important}
+@media print{
+  .receipt-ad-section{display:block!important;visibility:visible!important;opacity:1!important;break-inside:avoid!important;page-break-inside:avoid!important}
+  #receiptAdPanel.flyer-ready{display:flex!important;flex-direction:column!important;justify-content:flex-start!important;align-items:stretch!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;break-inside:avoid!important;page-break-inside:avoid!important}
+  #receiptAdPanel.flyer-ready #receiptAdLink{display:block!important;visibility:visible!important;opacity:1!important;position:relative!important;width:100%!important;height:auto!important;max-height:none!important;overflow:visible!important;break-inside:avoid!important;page-break-inside:avoid!important}
+  #receiptAdPanel.flyer-ready #receiptAdImage{display:block!important;visibility:visible!important;opacity:1!important;width:100%!important;height:auto!important;max-height:2.35in!important;object-fit:contain!important}
+  #receiptAdPanel.flyer-ready #receiptAdRibbon{display:none!important}
+  #receiptAdPanel.flyer-ready #receiptAdFoot{display:block!important;visibility:visible!important;opacity:1!important}
+}
 </style>
 </head>
 <body>
@@ -219,42 +234,68 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 async function printReceipt(){
-  // Wait for the advertisement lookup and flyer image before opening the print dialog.
+  // Resolve the active flyer first, then force the flyer into a dedicated print-safe layout.
   if(window.receiptAdReady){
-    await Promise.race([window.receiptAdReady,new Promise(resolve=>setTimeout(resolve,12000))]);
+    await Promise.race([window.receiptAdReady,new Promise(resolve=>setTimeout(resolve,15000))]);
   }
   const img=document.getElementById("receiptAdImage");
   const link=document.getElementById("receiptAdLink");
+  const panel=document.getElementById("receiptAdPanel");
+  const fallback=document.getElementById("receiptAdDefault");
+  const foot=document.getElementById("receiptAdFoot");
   if(img && img.src && (!img.complete || !img.naturalWidth)){
-    const foot=document.getElementById("receiptAdFoot");
     if(foot)foot.textContent="Preparing advertisement for print…";
-    await Promise.race([new Promise(resolve=>{img.addEventListener("load",resolve,{once:true});img.addEventListener("error",resolve,{once:true});}),new Promise(resolve=>setTimeout(resolve,8000))]);
+    await Promise.race([
+      new Promise(resolve=>{
+        img.addEventListener("load",resolve,{once:true});
+        img.addEventListener("error",resolve,{once:true});
+      }),
+      new Promise(resolve=>setTimeout(resolve,10000))
+    ]);
   }
-  const adPanel=document.getElementById("receiptAdPanel");
-  if(img && img.complete && img.naturalWidth && link){
-    link.style.display="block";
-    link.style.visibility="visible";
-    if(adPanel)adPanel.classList.add("flyer-ready");
-    const fallback=document.getElementById("receiptAdDefault");
-    if(fallback)fallback.style.display="none";
+  const flyerReady=!!(img && img.complete && img.naturalWidth>0 && link);
+  if(flyerReady){
+    if(panel)panel.classList.add("flyer-ready");
+    link.style.setProperty("display","block","important");
+    link.style.setProperty("visibility","visible","important");
+    link.style.setProperty("opacity","1","important");
+    link.style.setProperty("position","relative","important");
+    link.style.setProperty("width","100%","important");
+    link.style.setProperty("height","auto","important");
+    img.style.setProperty("display","block","important");
+    img.style.setProperty("visibility","visible","important");
+    img.style.setProperty("opacity","1","important");
+    img.style.setProperty("width","100%","important");
+    img.style.setProperty("height","auto","important");
+    img.style.setProperty("max-height","2.35in","important");
+    img.style.setProperty("object-fit","contain","important");
+    if(fallback)fallback.style.setProperty("display","none","important");
+    if(img.decode){try{await img.decode();}catch(_){}}
   }else{
-    if(adPanel)adPanel.classList.remove("flyer-ready");
-    if(link)link.style.display="none";
+    if(panel)panel.classList.remove("flyer-ready");
+    if(link)link.style.setProperty("display","none","important");
+    if(fallback)fallback.style.setProperty("display","flex","important");
+    if(foot)foot.textContent="Flyer could not load. Check Admin → Receipt Center and the saved flyer URL.";
   }
-  if(img && img.complete && img.naturalWidth && img.decode){try{await img.decode();}catch(_){}}
-  // Give the browser one rendering frame after applying print-specific flyer styles.
-  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+  // Prevent the browser from splitting the flyer itself between PDF pages.
+  const section=document.querySelector(".receipt-ad-section");
+  if(section) section.style.setProperty("break-inside","avoid","important");
+  if(panel) panel.style.setProperty("break-inside","avoid","important");
+  // Ensure exactly one QR image is printed.
   const qr=document.getElementById("receiptQr");
   if(qr){
     const qrImg=qr.querySelector("img"),qrCanvas=qr.querySelector("canvas");
     if(qrImg&&qrImg.getAttribute("src")){
-      qrImg.style.display="block";qrImg.style.visibility="visible";
+      qrImg.style.setProperty("display","block","important");
+      qrImg.style.setProperty("visibility","visible","important");
       if(qrCanvas)qrCanvas.style.setProperty("display","none","important");
     }else if(qrCanvas){
-      qrCanvas.style.setProperty("display","none","important");qrCanvas.style.visibility="hidden";
-      if(qrImg)qrImg.style.display="none";
+      qrCanvas.style.setProperty("display","none","important");
+      qrCanvas.style.setProperty("visibility","hidden","important");
+      if(qrImg)qrImg.style.setProperty("display","none","important");
     }
   }
+  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
   window.print();
 }
 (async function(){
