@@ -242,7 +242,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
   <div class="actions"><button id="saveReceiptAd" type="button" class="btn orange">⬆ SAVE FLYER FOR RECEIPTS</button><button id="clearReceiptAd" type="button" class="btn light">CLEAR FLYER FORM</button></div>
   <div id="receiptAdStatus" class="status">No new receipt flyer selected. Uploading a flyer here does not change receipt customer or payment details.</div>
 </div>
-<div class="actions"><button id="generateReceipt" class="btn purple">🧾 GENERATE RECEIPT</button><button id="clearReceipt" class="btn light">CLEAR</button></div>
+<div class="actions"><button id="previewReceipt" type="button" class="btn teal">👁 PREVIEW RECEIPT</button><button id="generateReceipt" class="btn purple">🧾 GENERATE RECEIPT</button><button id="clearReceipt" class="btn light">CLEAR</button></div>
 <div id="receiptStatus" class="status">Add at least one service before generating the receipt.</div>
 </div></section>
 
@@ -960,20 +960,48 @@ $('saveReceiptAd').onclick=async()=>{
   }finally{b.disabled=false;b.textContent='⬆ SAVE FLYER FOR RECEIPTS';}
 }
 
-$('generateReceipt').onclick=()=>{
-  if(!receiptServices.length)return alert('Add at least one service.');
+function buildReceiptPayload(){
+  if(!receiptServices.length)throw new Error('Add at least one service.');
   const total=receiptServices.reduce((n,x)=>n+Number(x.amount||0),0);
   const mode=$('receiptMode').value,collectionType=$('receiptCollectionType').value,online=collectionType==='Online UPI';
-  const payload={category:$('receiptCategory').value,name:$('receiptName').value.trim(),email:$('receiptEmail').value.trim(),phone:$('receiptPhone').value.trim(),memberRegNo:$('receiptMemberRegNo').value.trim(),date:$('receiptDate').value||new Date().toISOString().slice(0,10),mode,collectionType,transactionNumber:online?$('receiptTransactionRef').value.trim():'',branchName:mode==='Branch'?$ ('receiptBranchName').value.trim():'',authorizedRegNo:mode==='Authorized Person'?$ ('receiptAuthorizedRegNo').value.trim():'',generatedBy:$('receiptGeneratedBy').value,generatedByName:$('receiptGeneratedByName').value.trim(),generatedByRegNo:$('receiptGeneratedByRegNo').value.trim(),generatedByMobile:$('receiptGeneratedByMobile').value.trim(),services:receiptServices,total};
-  if(!payload.name)return alert('Enter the recipient name.');
-  if(online&&!payload.transactionNumber)return alert('Enter the transaction reference number / UTR for Online UPI.');
-  if(mode==='Branch'&&!payload.branchName)return alert('Enter the branch name / location.');
-  if(mode==='Authorized Person'&&!payload.authorizedRegNo)return alert('Enter the authorized person registration number.');
-  if(!payload.generatedByName||!payload.generatedByRegNo||!payload.generatedByMobile)return alert('Enter the GURU CONNECT person who received the payment: name, registration number and mobile number. These details are required for every receipt.');
-  const receiptNo='GC-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-7);
-  const p=new URLSearchParams({back:'admin.html',receiptNo,category:payload.category,name:payload.name,email:payload.email,phone:payload.phone,memberRegNo:payload.memberRegNo,date:payload.date,mode:payload.mode,collectionType:payload.collectionType,transactionNumber:payload.transactionNumber,branchName:payload.branchName,authorizedRegNo:payload.authorizedRegNo,generatedBy:payload.generatedBy,generatedByName:payload.generatedByName,generatedByRegNo:payload.generatedByRegNo,generatedByMobile:payload.generatedByMobile,services:JSON.stringify(payload.services),total:total.toFixed(2)});
-  const w=window.open('receipt.html?'+p.toString(),'_blank','noopener,noreferrer');
-  if(!w)alert('Please allow pop-ups for GURU CONNECT Admin.');
+  const payload={category:$('receiptCategory').value,name:$('receiptName').value.trim(),email:$('receiptEmail').value.trim(),phone:$('receiptPhone').value.trim(),memberRegNo:$('receiptMemberRegNo').value.trim(),date:$('receiptDate').value||new Date().toISOString().slice(0,10),mode,collectionType,transactionNumber:online?$('receiptTransactionRef').value.trim():'',branchName:mode==='Branch' ? $('receiptBranchName').value.trim():'',authorizedRegNo:mode==='Authorized Person' ? $('receiptAuthorizedRegNo').value.trim():'',generatedBy:$('receiptGeneratedBy').value,generatedByName:$('receiptGeneratedByName').value.trim(),generatedByRegNo:$('receiptGeneratedByRegNo').value.trim(),generatedByMobile:$('receiptGeneratedByMobile').value.trim(),services:receiptServices.map(x=>({name:String(x.name||''),amount:Number(x.amount||0)})),total};
+  if(!payload.name)throw new Error('Enter the recipient name.');
+  if(online&&!payload.transactionNumber)throw new Error('Enter the transaction reference number / UTR for Online UPI.');
+  if(mode==='Branch'&&!payload.branchName)throw new Error('Enter the branch name / location.');
+  if(mode==='Authorized Person'&&!payload.authorizedRegNo)throw new Error('Enter the authorized person registration number.');
+  if(!payload.generatedByName||!payload.generatedByRegNo||!payload.generatedByMobile)throw new Error('Enter the GURU CONNECT person who received the payment: name, registration number and mobile number. These details are required for every receipt.');
+  return payload;
+}
+async function getReceiptFlyerParams(){
+  try{
+    const res=await sb.from('gc_advertisements').select('*').eq('active',true).order('priority',{ascending:false}).order('created_at',{ascending:false}).limit(100);
+    if(res.error)throw res.error;
+    const now=Date.now();
+    const ad=(res.data||[]).find(x=>['all','receipt'].includes(String(x.placement||'all').toLowerCase())&&(!x.start_at||new Date(x.start_at).getTime()<=now)&&(!x.end_at||new Date(x.end_at).getTime()>=now)&&x.image_url);
+    return ad?{receiptAdImageUrl:String(ad.image_url),receiptAdTitle:String(ad.title||''),receiptAdAdvertiser:String(ad.advertiser_name||''),receiptAdClickUrl:String(ad.click_url||'')}:{};
+  }catch(e){console.warn('Could not attach receipt flyer to receipt URL:',e.message||e);return {};}
+}
+async function makeReceiptUrl(payload,preview,receiptNo){
+  const data={back:'admin.html',receiptNo,preview:preview?'1':'0',category:payload.category,name:payload.name,email:payload.email,phone:payload.phone,memberRegNo:payload.memberRegNo,date:payload.date,mode:payload.mode,collectionType:payload.collectionType,transactionNumber:payload.transactionNumber,branchName:payload.branchName,authorizedRegNo:payload.authorizedRegNo,generatedBy:payload.generatedBy,generatedByName:payload.generatedByName,generatedByRegNo:payload.generatedByRegNo,generatedByMobile:payload.generatedByMobile,services:JSON.stringify(payload.services),total:payload.total.toFixed(2)};
+  const p=new URLSearchParams(data),ad=await getReceiptFlyerParams();
+  Object.entries(ad).forEach(([k,v])=>{if(v)p.set(k,v)});
+  return 'receipt.html?'+p.toString();
+}
+$('previewReceipt').onclick=async()=>{
+  let payload;try{payload=buildReceiptPayload();}catch(e){alert(e.message);return;}
+  const w=window.open('about:blank','_blank');if(!w){alert('Please allow pop-ups for GURU CONNECT Admin to open the receipt preview.');return;}
+  const b=$('previewReceipt');b.disabled=true;b.textContent='OPENING PREVIEW…';
+  try{w.location.href=await makeReceiptUrl(payload,true,'PREVIEW-'+String(Date.now()).slice(-6));}
+  catch(e){w.close();alert('Could not open receipt preview: '+(e.message||e));}
+  finally{b.disabled=false;b.textContent='👁 PREVIEW RECEIPT';}
+};
+$('generateReceipt').onclick=async()=>{
+  let payload;try{payload=buildReceiptPayload();}catch(e){alert(e.message);return;}
+  const w=window.open('about:blank','_blank');if(!w){alert('Please allow pop-ups for GURU CONNECT Admin.');return;}
+  const b=$('generateReceipt');b.disabled=true;b.textContent='PREPARING RECEIPT…';
+  try{const receiptNo='GC-'+new Date().getFullYear()+'-'+String(Date.now()).slice(-7);w.location.href=await makeReceiptUrl(payload,false,receiptNo);}
+  catch(e){w.close();alert('Could not generate receipt: '+(e.message||e));}
+  finally{b.disabled=false;b.textContent='🧾 GENERATE RECEIPT';}
 };
 $('clearReceipt').onclick=()=>{
   receiptServices=[];$('receiptName').value='';$('receiptMemberRegNo').value='';$('receiptEmail').value='';$('receiptPhone').value='';
