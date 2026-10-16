@@ -128,6 +128,17 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
   #receiptAdPanel.flyer-ready #receiptAdRibbon{display:none!important}
   #receiptAdPanel.flyer-ready #receiptAdFoot{display:block!important;visibility:visible!important;opacity:1!important}
 }
+
+/* Clean flyer frame: remove blue border, rounded clipping and colored panel behind ad. */
+#receiptAdPanel{border:0!important;outline:0!important;box-shadow:none!important;border-radius:0!important;background:#fff!important;padding:0!important}
+#receiptAdPanel.flyer-ready{border:0!important;outline:0!important;box-shadow:none!important;border-radius:0!important;background:#fff!important;overflow:visible!important}
+#receiptAdPanel.flyer-ready #receiptAdLink{border:0!important;outline:0!important;box-shadow:none!important;border-radius:0!important;background:#fff!important;padding:0!important;margin:0!important}
+#receiptAdPanel.flyer-ready #receiptAdImage{border:0!important;outline:0!important;box-shadow:none!important;border-radius:0!important;background:#fff!important}
+#receiptAdPanel.flyer-ready #receiptAdFoot{border:0!important;box-shadow:none!important;border-radius:0!important;margin:0!important;background:#fff!important;color:#102b55!important}
+@media print{
+  #receiptAdPanel.flyer-ready,#receiptAdPanel.flyer-ready #receiptAdLink,#receiptAdPanel.flyer-ready #receiptAdImage{border:0!important;outline:0!important;box-shadow:none!important;border-radius:0!important;background:#fff!important}
+  #receiptAdPanel.flyer-ready{padding:0!important}
+}
 </style>
 </head>
 <body>
