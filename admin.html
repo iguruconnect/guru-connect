@@ -236,7 +236,7 @@ async function api(action,payload={}){
 }
 async function staffCheck(){
   const s=await sb.auth.getSession(),u=s.data?.session?.user;
-  if(!u||String(u.email||'').toLowerCase()!=='guruconnect.in@gmail.com'){location.href='login.html?role=staff';return false}
+  if(!u||String(u.email||'').toLowerCase()!=='guruconnect.in@gmail.com'||String(u.id||'')!=='1df7606a-3a96-4116-b022-804b37a3c3dd'){location.replace('./index.html?open_login=1&ts='+Date.now());return false}
   $('gate').style.display='none';$('app').style.display='block';return true;
 }
 let users=[];
