@@ -95,21 +95,23 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
 
 /* Receipt ad layout: clean flyer with advertiser and title below the image. */
 .receipt-ad-section .ad-panel{height:auto!important;min-height:250px;justify-content:flex-start!important;gap:0}
-.receipt-ad-section .receipt-ad-link{position:relative!important;inset:auto!important;display:none;flex:0 0 auto!important;width:100%!important;height:auto!important;min-height:0!important;z-index:1;background:#fff;overflow:hidden}
+.receipt-ad-section .receipt-ad-link{position:relative!important;inset:auto!important;display:none!important;flex:0 0 auto!important;width:100%!important;height:auto!important;min-height:0!important;z-index:1;background:#fff;overflow:hidden}
+.receipt-ad-section .ad-panel.flyer-ready .receipt-ad-link{display:block!important;visibility:visible!important;opacity:1!important}
 .receipt-ad-section .receipt-ad-image{display:block;width:100%;height:auto!important;max-height:2.35in;object-fit:contain;background:#fff}
 .receipt-ad-section .ad-ribbon,.receipt-ad-section .ad-foot{position:relative!important;inset:auto!important;z-index:2;width:100%;flex:0 0 auto}
 .receipt-ad-section .ad-ribbon{letter-spacing:.3px;font-size:12px;line-height:1.4;padding:10px 14px;background:#102b55!important;color:#fff!important;text-shadow:none!important}
 .receipt-ad-section .ad-foot{font-size:11px;padding:8px 12px;background:#edf4ff!important;color:#102b55!important}
 .receipt-ad-section .ad-panel.flyer-ready .ad-main{display:none!important}
-.qr-code canvas{display:block!important;visibility:visible!important;max-width:100%;max-height:100%;width:100%;height:100%}
+.qr-code canvas{display:none!important;visibility:hidden!important}
 .qr-code img{display:block!important;visibility:visible!important;opacity:1!important}
 @media print{
  .receipt-ad-section .ad-panel{height:auto!important;min-height:0!important;overflow:visible!important}
  .receipt-ad-section .receipt-ad-link{display:none!important;height:auto!important;max-height:2.35in!important}
+ .receipt-ad-section .ad-panel.flyer-ready .receipt-ad-link{display:block!important;visibility:visible!important;opacity:1!important}
  .receipt-ad-section .ad-panel.flyer-ready .receipt-ad-link{display:block!important}
  .receipt-ad-section .receipt-ad-image{height:auto!important;max-height:2.35in!important;object-fit:contain!important}
  .receipt-ad-section .ad-ribbon,.receipt-ad-section .ad-foot{position:relative!important}
- .qr-code canvas{display:block!important;visibility:visible!important}
+ .qr-code canvas{display:none!important;visibility:hidden!important}
 }
 </style>
 </head>
@@ -247,9 +249,9 @@ async function printReceipt(){
     const qrImg=qr.querySelector("img"),qrCanvas=qr.querySelector("canvas");
     if(qrImg&&qrImg.getAttribute("src")){
       qrImg.style.display="block";qrImg.style.visibility="visible";
-      if(qrCanvas)qrCanvas.style.display="none";
+      if(qrCanvas)qrCanvas.style.setProperty("display","none","important");
     }else if(qrCanvas){
-      qrCanvas.style.display="block";qrCanvas.style.visibility="visible";
+      qrCanvas.style.setProperty("display","none","important");qrCanvas.style.visibility="hidden";
       if(qrImg)qrImg.style.display="none";
     }
   }
@@ -362,11 +364,11 @@ async function printReceipt(){
      }
      if(adImage){
        const link=document.getElementById('receiptAdLink'),img=document.getElementById('receiptAdImage'),fallback=document.getElementById('receiptAdDefault');
-       img.onload=()=>{link.style.display='block';fallback.style.display='none';};
-       img.onerror=()=>{link.style.display='none';fallback.style.display='flex';fallback.style.visibility='visible';const status=document.getElementById('receiptAdFoot');if(status)status.textContent='Flyer image could not load. Please re-save the flyer in Admin → Receipt Center and confirm the storage image URL is accessible.';console.warn('Receipt flyer image failed to load:',adImage);};
+       img.onload=()=>{link.style.display='block';link.style.visibility='visible';if(panel)panel.classList.add('flyer-ready');fallback.style.display='none';};
+       img.onerror=()=>{link.style.display='none';if(panel)panel.classList.remove('flyer-ready');fallback.style.display='flex';fallback.style.visibility='visible';const status=document.getElementById('receiptAdFoot');if(status)status.textContent='Flyer image could not load. Please re-save the flyer in Admin → Receipt Center and confirm the storage image URL is accessible.';console.warn('Receipt flyer image failed to load:',adImage);};
        img.src=adImage;img.alt=(adTitle||'Advertiser flyer')+' — '+(adAdvertiser||'GURU CONNECT advertiser');
        let safeClick='';try{const u=new URL(adClick||'');if(u.protocol==='https:'||u.protocol==='http:')safeClick=u.href;}catch(_){}link.href=safeClick||adImage;
-       if(img.complete&&img.naturalWidth>0){link.style.display='block';fallback.style.display='none';}
+       if(img.complete&&img.naturalWidth>0){link.style.display='block';link.style.visibility='visible';if(panel)panel.classList.add('flyer-ready');fallback.style.display='none';}
        document.getElementById('receiptAdRibbon').textContent=adAdvertiser||adTitle||'FEATURED ADVERTISEMENT';
        document.getElementById('receiptAdFoot').textContent=adTitle||'Advertisement via GURU CONNECT';
      }else{
