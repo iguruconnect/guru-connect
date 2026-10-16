@@ -5919,7 +5919,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
       <select class="w-full border rounded-xl p-3.5 text-sm font-bold bg-white" id="loginRoleInput">
         <option value="student">I am a Student</option>
         <option value="tutor">I am a Tutor</option>
-        <option value="staff">I am Staff / Admin</option>
+        
       </select>
       <input autocomplete="email" class="w-full border rounded-xl p-3.5 text-sm font-bold" id="loginEmailInput" placeholder="Registered email address" type="email"/>
       <input autocomplete="current-password" class="w-full border rounded-xl p-3.5 text-sm font-bold" id="loginPasswordInput" placeholder="Password" type="password"/>
@@ -16647,9 +16647,9 @@ const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
 const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
 function S(){return window.gcSupabase || (window.supabase&&window.supabase.createClient?window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY):null)}
 function el(id){return document.getElementById(id)}
-function setRole(role){const r=el('loginRoleInput');if(r)r.value=role;const t=el('gcUnifiedLoginTitle');if(t)t.textContent=role==='staff'?'Staff / Admin Login':'GURU CONNECT LOGIN';const e=el('loginEmailInput');if(e){e.placeholder=role==='staff'?'Staff/Admin email':'your@email.com';}const f=el('gcStaffHint');if(f)f.style.display=role==='staff'?'block':'none';}
+function setRole(role){role=String(role||'student').toLowerCase();if(!['student','tutor'].includes(role))role='student';const r=el('loginRoleInput');if(r)r.value=role;const t=el('gcUnifiedLoginTitle');if(t)t.textContent='GURU CONNECT LOGIN';const e=el('loginEmailInput');if(e)e.placeholder='Registered email address';const f=el('gcStaffHint');if(f)f.style.display='none';}
 window.openLoginModal=function(role){
-  role=String(role||'student').toLowerCase(); if(!['student','tutor','staff'].includes(role))role='student';
+  role=String(role||'student').toLowerCase(); if(!['student','tutor'].includes(role))role='student';
   setRole(role);
   document.body.classList.remove('gc-staff-login-open');
   const m=el('loginModal');if(m){m.classList.remove('hidden');m.style.display='flex';m.setAttribute('aria-hidden','false');}
@@ -16714,7 +16714,7 @@ window.gcEmailLogin=async function(){
       window.closeLoginModal();window.location.replace('admin.html');return true;
     }catch(err){console.error('Admin login failed',err);alert('Login failed: '+(err?.message||String(err)));return false;}
   }
-  if(role==='staff')return window.handleStaffLogin({preventDefault(){}});
+  if(role==='staff'){const roleInput=el('loginRoleInput');if(roleInput)roleInput.value='student';}
   if(typeof originalLogin==='function')return originalLogin();
   alert('Login function is unavailable. Please refresh the page.');
 };
