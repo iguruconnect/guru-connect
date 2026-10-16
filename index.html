@@ -16482,7 +16482,9 @@ window.gcEmailLogin=async function(){
   const p=q.data;
   localStorage.setItem('active_user_name',p.name||email.split('@')[0]);localStorage.setItem('active_user_email',email);localStorage.setItem('active_user_phone',p.phone||'');localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_profile_id',String(p.id));localStorage.setItem('active_user_id',String(u.id));
   window.__gcLoggedInProfile=p;try{updateAuthBadge?.()}catch(_){};try{closeLoginModal?.()}catch(_){}
-  window.location.assign('dashboard.html?login=success&t='+Date.now());
+  // Clear the previous dashboard logout marker only after Supabase authentication and profile validation succeed.
+  try{sessionStorage.removeItem('gc_logged_out')}catch(_){}
+  window.location.replace('dashboard.html?login=success&t='+Date.now());
  }catch(e){console.error(e);alert('Login failed: '+(e.message||String(e)));}
 };
 async function staffSession(){
