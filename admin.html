@@ -979,7 +979,18 @@ async function getReceiptFlyerParams(){
     const now=Date.now();
     const eligible=(res.data||[]).filter(x=>['all','receipt'].includes(String(x.placement||'all').toLowerCase())&&(!x.start_at||new Date(x.start_at).getTime()<=now)&&(!x.end_at||new Date(x.end_at).getTime()>=now)&&x.image_url);
     const ad=eligible.find(x=>String(x.storage_path||'').startsWith('receipt/'))||eligible[0];
-    return ad?{receiptAdImageUrl:String(ad.image_url),receiptAdTitle:String(ad.title||''),receiptAdAdvertiser:String(ad.advertiser_name||''),receiptAdClickUrl:String(ad.click_url||'')}:{};
+    if(!ad)return {};
+    let imageUrl=String(ad.image_url||'');
+    // A public URL alone does not work when the Storage bucket is private. Create a
+    // long-lived signed image URL from the authenticated admin session as a fallback.
+    if(ad.storage_path){
+      try{
+        const signed=await sb.storage.from('gc-advertisements').createSignedUrl(String(ad.storage_path),31536000);
+        if(!signed.error&&signed.data?.signedUrl)imageUrl=signed.data.signedUrl;
+        else console.warn('Could not sign receipt flyer URL; using stored public URL:',signed.error?.message||'No signed URL returned');
+      }catch(e){console.warn('Could not sign receipt flyer URL; using stored public URL:',e.message||e);}
+    }
+    return {receiptAdImageUrl:imageUrl,receiptAdTitle:String(ad.title||''),receiptAdAdvertiser:String(ad.advertiser_name||''),receiptAdClickUrl:String(ad.click_url||'')};
   }catch(e){console.warn('Could not attach receipt flyer to receipt URL:',e.message||e);return {};}
 }
 async function makeReceiptUrl(payload,preview,receiptNo){
