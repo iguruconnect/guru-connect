@@ -1487,7 +1487,7 @@ $('adSave').onclick=async()=>{
       image_url=sb.storage.from('gc-advertisements').getPublicUrl(newlyUploadedPath).data.publicUrl;
       storage_path=newlyUploadedPath;
     }
-    const row={title,advertiser_name:advertiser,placement,image_url,storage_path,click_url:click||null,whatsapp_url:wa||null,start_at:$('adStart').value?new Date($('adStart').value).toISOString():(old?.start_at||new Date().toISOString()),end_at:$('adEnd').value?new Date($('adEnd').value).toISOString():null,priority:Number.isFinite(priority)?priority:0,updated_at:new Date().toISOString()};
+    const row={title,advertiser_name:advertiser,placement,image_url,storage_path,click_url:click||'',whatsapp_url:wa||null,start_at:$('adStart').value?new Date($('adStart').value).toISOString():(old?.start_at||new Date().toISOString()),end_at:$('adEnd').value?new Date($('adEnd').value).toISOString():null,priority:Number.isFinite(priority)?priority:0,updated_at:new Date().toISOString()};
     if(editingAdvertisementId){
       row.active=old.active;
       const upd=await sb.from('gc_advertisements').update(row).eq('id',editingAdvertisementId);
