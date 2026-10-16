@@ -231,6 +231,17 @@ button,a,input,select,textarea{touch-action:manipulation;}
 <div id="receiptServices" class="receiptServices"></div>
 <div class="receiptTotal"><span>TOTAL AMOUNT</span><strong>₹ <span id="receiptTotal">0.00</span></strong></div>
 </div>
+<div class="receiptServiceBox" id="receiptAdvertisementBox" style="background:#eff6ff;border:2px solid #93c5fd">
+  <div class="receiptServiceHead"><div><h3>📢 Advertisement for Receipt</h3><p>Upload a flyer here. The saved flyer will appear on receipts generated from this dashboard.</p></div><span class="pill">RECEIPT FLYER</span></div>
+  <div class="grid" style="margin-top:14px">
+    <div class="field"><label for="receiptAdTitle">Advertisement title</label><input id="receiptAdTitle" placeholder="e.g. Admissions Open 2026"></div>
+    <div class="field"><label for="receiptAdAdvertiser">Advertiser / Institution</label><input id="receiptAdAdvertiser" placeholder="Advertiser or institution name"></div>
+    <div class="field ad-flyer-field" style="grid-column:1/-1"><label for="receiptAdFlyer">CHOOSE FLYER IMAGE</label><input id="receiptAdFlyer" type="file" accept="image/*" aria-label="Choose flyer image for receipt"><small class="ad-flyer-help">Choose a JPG, PNG, WEBP or another browser-readable image. Large images will be resized/compressed automatically before upload. Recommended: a clear landscape flyer.</small><div id="receiptAdPreviewWrap" style="display:none;margin-top:10px"><img id="receiptAdPreview" alt="Flyer preview" style="max-width:100%;max-height:220px;object-fit:contain;background:white;border:1px solid #cbd5e1;border-radius:10px;padding:5px"></div></div>
+    <div class="field"><label for="receiptAdClickUrl">Flyer click URL (optional)</label><input id="receiptAdClickUrl" type="url" placeholder="https://..."></div>
+  </div>
+  <div class="actions"><button id="saveReceiptAd" type="button" class="btn orange">⬆ SAVE FLYER FOR RECEIPTS</button><button id="clearReceiptAd" type="button" class="btn light">CLEAR FLYER FORM</button></div>
+  <div id="receiptAdStatus" class="status">No new receipt flyer selected. Uploading a flyer here does not change receipt customer or payment details.</div>
+</div>
 <div class="actions"><button id="generateReceipt" class="btn purple">🧾 GENERATE RECEIPT</button><button id="clearReceipt" class="btn light">CLEAR</button></div>
 <div id="receiptStatus" class="status">Add at least one service before generating the receipt.</div>
 </div></section>
@@ -881,6 +892,72 @@ $('receiptName').addEventListener('input',scheduleReceiptMemberLookup);
 $('receiptName').addEventListener('change',lookupReceiptMemberRegistration);
 $('receiptName').addEventListener('blur',lookupReceiptMemberRegistration);
 $('receiptCategory').addEventListener('change',()=>{if($('receiptCategory').value==='Institution')$('receiptMemberRegNo').value=$('receiptName').value.trim();else lookupReceiptMemberRegistration();});
+
+// RECEIPT ADVERTISEMENT UPLOAD — resize large images in-browser to avoid common upload limits.
+let receiptAdPreviewObjectUrl='';
+$('receiptAdFlyer').addEventListener('change',()=>{
+  const f=$('receiptAdFlyer').files?.[0],wrap=$('receiptAdPreviewWrap'),img=$('receiptAdPreview');
+  if(receiptAdPreviewObjectUrl){URL.revokeObjectURL(receiptAdPreviewObjectUrl);receiptAdPreviewObjectUrl='';}
+  if(!f){wrap.style.display='none';return;}
+  if(!f.type.startsWith('image/')){$('receiptAdStatus').textContent='Please choose an image file for the receipt flyer.';$('receiptAdFlyer').value='';wrap.style.display='none';return;}
+  receiptAdPreviewObjectUrl=URL.createObjectURL(f);img.src=receiptAdPreviewObjectUrl;wrap.style.display='block';
+  $('receiptAdStatus').textContent='Selected: '+f.name+' ('+(f.size/1024/1024).toFixed(2)+' MB). Large images will be compressed before upload.';
+});
+$('clearReceiptAd').onclick=()=>{
+  $('receiptAdFlyer').value='';$('receiptAdTitle').value='';$('receiptAdAdvertiser').value='';$('receiptAdClickUrl').value='';
+  $('receiptAdPreviewWrap').style.display='none';$('receiptAdStatus').textContent='Flyer form cleared. The currently published receipt flyer is unchanged.';
+  if(receiptAdPreviewObjectUrl){URL.revokeObjectURL(receiptAdPreviewObjectUrl);receiptAdPreviewObjectUrl='';}
+};
+async function gcPrepareReceiptFlyer(file){
+  const img=new Image(),url=URL.createObjectURL(file);
+  try{
+    await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(new Error('This image could not be opened. Please choose a JPG, PNG or WEBP image.'));img.src=url;});
+    const max=1800,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
+    const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));
+    const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Image compression is not supported in this browser.');
+    ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    let blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',0.84));
+    if(!blob)throw new Error('Could not prepare this image for upload.');
+    if(blob.size>2*1024*1024)blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',0.68));
+    if(!blob)throw new Error('Could not compress this image.');
+    if(blob.size>2*1024*1024)throw new Error('This image is still too large after compression. Please choose a smaller image.');
+    return new File([blob],'receipt-flyer-'+Date.now()+'.jpg',{type:'image/jpeg'});
+  }finally{URL.revokeObjectURL(url);}
+}
+$('saveReceiptAd').onclick=async()=>{
+  const b=$('saveReceiptAd'),status=$('receiptAdStatus'),file=$('receiptAdFlyer').files?.[0];
+  b.disabled=true;b.textContent='UPLOADING FLYER…';status.textContent='Preparing image and uploading flyer to secure website storage…';
+  let uploadedPath='';
+  try{
+    const session=(await sb.auth.getSession()).data?.session;
+    if(!session?.user?.id)throw new Error('Your admin/staff session is not active. Please sign in again.');
+    if(!file)throw new Error('Please choose a flyer image first.');
+    const prepared=await gcPrepareReceiptFlyer(file);
+    const title=$('receiptAdTitle').value.trim()||'GURU CONNECT Receipt Advertisement';
+    const advertiser=$('receiptAdAdvertiser').value.trim()||'GURU CONNECT';
+    const click=$('receiptAdClickUrl').value.trim();
+    if(click&&!/^https?:\/\//i.test(click))throw new Error('The click URL must start with https:// or http://.');
+    uploadedPath='receipt/'+Date.now()+'-receipt-flyer.jpg';
+    const up=await sb.storage.from('gc-advertisements').upload(uploadedPath,prepared,{upsert:false,contentType:'image/jpeg',cacheControl:'3600'});
+    if(up.error)throw up.error;
+    const image_url=sb.storage.from('gc-advertisements').getPublicUrl(uploadedPath).data.publicUrl;
+    const row={title,advertiser_name:advertiser,placement:'receipt',image_url,storage_path:uploadedPath,click_url:click||null,whatsapp_url:null,start_at:new Date().toISOString(),end_at:null,priority:999,active:true,created_by:session.user.id,updated_at:new Date().toISOString()};
+    const ins=await sb.from('gc_advertisements').insert(row).select('id').single();
+    if(ins.error)throw ins.error;
+    // Keep one current receipt-specific flyer active; unrelated tutor/student/LRR ads remain untouched.
+    const old=await sb.from('gc_advertisements').update({active:false,updated_at:new Date().toISOString()}).eq('placement','receipt').eq('active',true).neq('id',ins.data.id);
+    if(old.error)console.warn('Older receipt flyer could not be paused:',old.error.message);
+    status.textContent='✓ Flyer uploaded and saved. It will be shown on newly generated receipts.';
+    $('receiptAdFlyer').value='';$('receiptAdPreviewWrap').style.display='none';
+    if(receiptAdPreviewObjectUrl){URL.revokeObjectURL(receiptAdPreviewObjectUrl);receiptAdPreviewObjectUrl='';}
+    if($('adStatus'))$('adStatus').textContent='Receipt flyer saved from Receipt Center.';
+    if(typeof loadAdminAdvertisements==='function')loadAdminAdvertisements();
+  }catch(e){
+    if(uploadedPath){try{await sb.storage.from('gc-advertisements').remove([uploadedPath]);}catch(_){}}
+    status.textContent='Flyer upload failed: '+(e.message||e)+'. If this is a storage-policy/size error, the Supabase bucket limit or upload permission needs adjustment.';
+  }finally{b.disabled=false;b.textContent='⬆ SAVE FLYER FOR RECEIPTS';}
+}
+
 $('generateReceipt').onclick=()=>{
   if(!receiptServices.length)return alert('Add at least one service.');
   const total=receiptServices.reduce((n,x)=>n+Number(x.amount||0),0);
