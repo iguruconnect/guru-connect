@@ -219,24 +219,46 @@ body{padding:0;background:#fff}.actions{display:none}.paper{width:100%;max-width
  const tbody=document.getElementById('items');let services=[];try{services=JSON.parse(get('services')||'[]');if(!Array.isArray(services))services=[];}catch(e){services=[];}
  if(tbody){tbody.innerHTML='';services.forEach((s,i)=>{const tr=document.createElement('tr');[String(i+1),String(s.name||'Service'),String(s.description||s.name||'GURU CONNECT service'),'1',amount(s.amount),amount(s.amount)].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td);});tbody.appendChild(tr);});if(!services.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=6;td.textContent='No service items were supplied.';tr.appendChild(td);tbody.appendChild(tr);}}
  const total=services.reduce((sum,s)=>sum+Number(s.amount||0),0);put('count',services.length,'0');put('total',amount(get('total')||total),'0.00');
- const qrPayload=['GURU CONNECT PAYMENT RECEIPT','Receipt No: '+document.getElementById('receiptNo').textContent,'Issue date: '+document.getElementById('issueDate').textContent,'Customer: '+document.getElementById('customerName').textContent,'Email: '+document.getElementById('customerEmail').textContent,'Mobile: '+document.getElementById('customerPhone').textContent,'Member type: '+document.getElementById('customerCategory').textContent,'Registration No: '+document.getElementById('customerRegNo').textContent,'Payment mode: '+document.getElementById('paymentMode').textContent,'Collection type: '+document.getElementById('collectionType').textContent,'Transaction ref: '+document.getElementById('transactionId').textContent,'Services: '+(services.map(s=>(s.name||'Service')+' INR '+amount(s.amount)).join('; ')||'None'),'Total INR: '+amount(get('total')||total),'Support: support@guruconnnect.in'].join('\\n');
+ // QR must open this exact digital receipt URL, preserving all receipt data and the advertisement.
  const qrHost=document.getElementById('receiptQr'),qrStatus=document.getElementById('qrStatus');
- if(qrHost){const qrScript=document.createElement('script');qrScript.src='https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js';qrScript.onload=()=>{try{new QRCode(qrHost,{text:qrPayload,width:100,height:100,colorDark:'#102b55',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});if(qrStatus)qrStatus.textContent='QR generated • receipt details encoded';}catch(e){if(qrStatus)qrStatus.textContent='QR generation failed in this browser.';}};qrScript.onerror=()=>{if(qrStatus)qrStatus.textContent='QR library could not load. Check internet and reload.';};document.head.appendChild(qrScript);}
+ const digitalReceiptUrl=window.location.href;
+ if(qrHost){
+   const renderReceiptQr=()=>{
+     if(!window.QRCode)return false;
+     try{
+       qrHost.innerHTML='';
+       new QRCode(qrHost,{text:digitalReceiptUrl,width:150,height:150,colorDark:'#102b55',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+       if(qrStatus)qrStatus.textContent='QR ready • scan to open this digital receipt and its advertisement';
+       return true;
+     }catch(e){return false;}
+   };
+   const loadQrLibrary=(urls,index=0)=>{
+     if(renderReceiptQr())return;
+     if(index>=urls.length){
+       if(qrStatus)qrStatus.textContent='Could not load QR generator. Please check internet and reload.';
+       return;
+     }
+     const script=document.createElement('script');script.src=urls[index];script.onload=()=>{if(!renderReceiptQr())loadQrLibrary(urls,index+1);};script.onerror=()=>loadQrLibrary(urls,index+1);document.head.appendChild(script);
+   };
+   loadQrLibrary(['https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js','https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js']);
+ }
 
  // Show live, active advertisements from the existing Supabase ad manager. House ad stays visible if none are eligible.
  (async()=>{
    try{
      if(!window.supabase?.createClient)return;
      const client=window.supabase.createClient('https://hzqqswrnawrfgufbxgay.supabase.co','sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',{auth:{persistSession:false,autoRefreshToken:false}});
-     const result=await client.from('gc_advertisements').select('title,advertiser_name,placement,image_url,click_url,start_at,end_at,active,priority').eq('active',true).or('placement.eq.receipt,placement.eq.all').order('priority',{ascending:false}).order('created_at',{ascending:false}).limit(30);
+     const result=await client.from('gc_advertisements').select('title,advertiser_name,placement,image_url,click_url,start_at,end_at,active,priority,created_at').eq('active',true).order('priority',{ascending:false}).order('created_at',{ascending:false}).limit(100);
      if(result.error)throw result.error;
      const now=Date.now();
-     const ad=(result.data||[]).find(a=>(!a.start_at||new Date(a.start_at).getTime()<=now)&&(!a.end_at||new Date(a.end_at).getTime()>=now)&&a.image_url);
+     const ad=(result.data||[]).find(a=>['receipt','all'].includes(String(a.placement||'all').toLowerCase())&&(!a.start_at||new Date(a.start_at).getTime()<=now)&&(!a.end_at||new Date(a.end_at).getTime()>=now)&&a.image_url);
      if(ad){
        const link=document.getElementById('receiptAdLink'),img=document.getElementById('receiptAdImage'),fallback=document.getElementById('receiptAdDefault');
+       img.onload=()=>{link.style.display='block';fallback.style.display='none';};
+       img.onerror=()=>{link.style.display='none';fallback.style.display='flex';const st=document.getElementById('qrStatus');if(st)st.textContent='Receipt QR is ready; flyer image could not load from storage.';};
        img.src=ad.image_url;img.alt=(ad.title||'Advertiser flyer')+' — '+(ad.advertiser_name||'GURU CONNECT advertiser');
-       link.href=(ad.click_url&&ad.click_url.startsWith('http'))?ad.click_url:ad.image_url;
-       link.style.display='block';fallback.style.display='none';
+       link.href=(ad.click_url&&/^https?:\\/\\//i.test(ad.click_url))?ad.click_url:ad.image_url;
+       if(img.complete&&img.naturalWidth>0){link.style.display='block';fallback.style.display='none';}
        put('receiptAdRibbon',ad.advertiser_name||ad.title||'FEATURED ADVERTISEMENT','FEATURED ADVERTISEMENT');
        put('receiptAdFoot',ad.title||'Advertisement via GURU CONNECT','Advertisement via GURU CONNECT');
        document.getElementById('receiptAdRibbon').textContent=ad.advertiser_name||ad.title||'FEATURED ADVERTISEMENT';
