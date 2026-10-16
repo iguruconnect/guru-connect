@@ -16,10 +16,12 @@ const root=document.getElementById('content');
 const esc=v=>String(v==null||v===''?'—':v);
 const date=s=>{if(!s)return '—';const p=String(s).split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s};
 const field=(label,value,full)=>'<div class="field'+(full?' full':'')+'"><b>'+label+'</b><span>'+esc(value).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+'</span></div>';
-try{
-const encoded=new URLSearchParams(location.search).get('data');
-if(!encoded)throw new Error('This QR code does not contain a Digital ID. Please ask GURU CONNECT admin for a replacement card.');
-const raw=decodeURIComponent(escape(atob(encoded)));
+ (async()=>{try{
+const params=new URLSearchParams(location.search);let raw;
+const zipped=params.get('z');const encoded=params.get('data');
+if(zipped){if(!('DecompressionStream' in window))throw new Error('This phone browser cannot open the compressed ID QR. Please use an updated Chrome browser.');const b64=zipped.replace(/-/g,'+').replace(/_/g,'/');const packed=Uint8Array.from(atob(b64+'='.repeat((4-b64.length%4)%4)),c=>c.charCodeAt(0));raw=await new Response(new Blob([packed]).stream().pipeThrough(new DecompressionStream('deflate'))).text();}
+else if(encoded){raw=decodeURIComponent(escape(atob(encoded)));}
+else throw new Error('This QR code does not contain a Digital ID. Please ask GURU CONNECT admin for a replacement card.');
 const d=JSON.parse(raw);
 const card={brand:d.brand||'GURU CONNECT',slogan:d.slogan||'Connecting Mind - Creating Future...',name:d.name||d.n,category:d.category||d.c,idNumber:d.idNumber||d.i,level:d.level||d.l,course:d.course||d.co,stream:d.stream||d.st,subject:d.subject||d.su,plan:d.plan||d.p,mode:d.mode||d.m,address:d.address||d.a,mobile:d.mobile||d.ph,validFrom:d.validFrom||d.f,validTo:d.validTo||d.t,verified:d.verified??d.ok,photo:d.photo||d.im};
 if(!card.name||!card.idNumber||!card.photo)throw new Error('Digital ID information is incomplete. Please ask GURU CONNECT admin for a replacement card.');
@@ -33,6 +35,6 @@ document.getElementById('number').textContent='ID NO: '+esc(card.idNumber);
 if(card.verified)document.getElementById('verified').innerHTML='<span class="badge" aria-label="Verified">✓</span> <span style="font-size:12px;color:#008b32;font-weight:700">Verified</span>';
 document.getElementById('fields').innerHTML=field('LEVEL',card.level)+field('COURSE',card.course)+field('STREAM',card.stream)+field('SUBJECT',card.subject)+field('PLAN',card.plan)+field('MODE',card.mode)+field('RESIDENTIAL ADDRESS',card.address,true)+field('MOBILE NUMBER',card.mobile,true);
 document.getElementById('validity').textContent=date(card.validFrom)+' – '+date(card.validTo);
-}catch(e){root.innerHTML='<div class="error"><h2>Digital ID unavailable</h2><p></p></div>';root.querySelector('p').textContent=e.message||'Could not read this Digital ID.'}
+}catch(e){root.innerHTML='<div class="error"><h2>Digital ID unavailable</h2><p></p></div>';root.querySelector('p').textContent=e.message||'Could not read this Digital ID.'}})();
 })();
 </script></body></html>
