@@ -411,7 +411,7 @@ async function printReceipt(){
        let safeClick='';try{const u=new URL(adClick||'');if(u.protocol==='https:'||u.protocol==='http:')safeClick=u.href;}catch(_){}link.href=safeClick||adImage;
        if(img.complete&&img.naturalWidth>0){link.style.display='block';link.style.visibility='visible';if(panel)panel.classList.add('flyer-ready');fallback.style.display='none';}
        document.getElementById('receiptAdRibbon').textContent=adAdvertiser||adTitle||'FEATURED ADVERTISEMENT';
-       document.getElementById('receiptAdFoot').textContent=adTitle||'Advertisement via GURU CONNECT';
+       document.getElementById('receiptAdFoot').textContent=[adTitle,adAdvertiser].filter(Boolean).join(' • ')||'Advertisement via GURU CONNECT';
      }else{
        if(fallback){fallback.style.display='flex';fallback.style.visibility='visible';}
        if(ribbon)ribbon.textContent='ADVERTISEMENT • GURU CONNECT';
