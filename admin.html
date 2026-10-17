@@ -1442,15 +1442,15 @@ function adDateValue(v){if(!v)return '';const d=new Date(v);if(Number.isNaN(d.ge
 function clearAdEditor(){editingAdvertisementId=null;['adTitle','adAdvertiser','adUrl','adWhatsapp','adStart','adEnd','adFile'].forEach(id=>$(id).value='');$('adPlacement').value='all';$('adPriority').value='0';$('adSave').textContent='SAVE ADVERTISEMENT';$('adStatus').textContent='Ready to create a new advertisement. Select an existing ad below to edit it.'}
 async function loadAdminAdvertisements(){
   const box=$('adminAdsList');if(!box)return;
-  box.innerHTML='<div class="empty">Loading every advertisement from Supabase…</div>';
+  box.innerHTML='<div class="empty">Loading public directory advertisements from Supabase…</div>';
   try{
     const session=(await sb.auth.getSession()).data?.session;
     if(!session?.user?.id)throw new Error('Admin session missing. Please login again.');
     const q=await sb.from('gc_advertisements').select('*').order('created_at',{ascending:false});
     if(q.error)throw q.error;
-    currentAdminAds=q.data||[];
+    currentAdminAds=(q.data||[]).filter(a=>String(a.placement||'').toLowerCase()!=='receipt'&&!String(a.storage_path||'').startsWith('receipt/'));
     $('adCount').textContent=currentAdminAds.length+' ADVERTISEMENTS';
-    if(!currentAdminAds.length){box.innerHTML='<div class="empty">No advertisements found in gc_advertisements.</div>';return}
+    if(!currentAdminAds.length){box.innerHTML='<div class="empty">No public directory advertisements found.</div>';return}
     const now=Date.now();
     box.innerHTML=currentAdminAds.map((a,i)=>{
       const end=a.end_at?new Date(a.end_at).getTime():null;
