@@ -908,25 +908,95 @@ $('clearReceiptAd').onclick=()=>{
   $('receiptAdPreviewWrap').style.display='none';$('receiptAdStatus').textContent='Flyer form cleared. The currently published receipt flyer is unchanged.';
   if(receiptAdPreviewObjectUrl){URL.revokeObjectURL(receiptAdPreviewObjectUrl);receiptAdPreviewObjectUrl='';}
 };
-async function gcPrepareReceiptFlyer(file){
-  const img=new Image(),url=URL.createObjectURL(file);
-  try{
-    await new Promise((resolve,reject)=>{img.onload=resolve;img.onerror=()=>reject(new Error('This image could not be opened. Please choose a JPG, PNG or WEBP image.'));img.src=url;});
-    const max=1400,scale=Math.min(1,max/Math.max(img.naturalWidth,img.naturalHeight));
-    const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(img.naturalWidth*scale));canvas.height=Math.max(1,Math.round(img.naturalHeight*scale));
-    const ctx=canvas.getContext('2d');if(!ctx)throw new Error('Image compression is not supported in this browser.');
-    ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);
-    let blob=null;
-    for(const quality of [0.82,0.68,0.54,0.42]){
-      blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',quality));
-      if(blob&&blob.size<=900*1024)break;
+
+async function gcPrepareReceiptFlyer(file) {
+  let bitmap = null;
+  let objectUrl = '';
+
+  try {
+    let source;
+    let width;
+    let height;
+
+    // First try the browser's bitmap decoder.
+    if (typeof createImageBitmap === 'function') {
+      try {
+        bitmap = await createImageBitmap(file);
+        source = bitmap;
+        width = bitmap.width;
+        height = bitmap.height;
+      } catch (_) {
+        bitmap = null;
+      }
     }
-    if(!blob)throw new Error('Could not compress this image.');
-    if(blob.size>1024*1024)throw new Error('This image is still too large after compression. Please choose a smaller image.');
-    return new File([blob],'receipt-flyer-'+Date.now()+'.jpg',{type:'image/jpeg'});
-  }finally{URL.revokeObjectURL(url);}
+
+    // Fallback for browsers/files that need the Image decoder.
+    if (!source) {
+      objectUrl = URL.createObjectURL(file);
+      const img = new Image();
+
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = () => reject(new Error(
+          'The selected file could not be decoded by this browser. Please try saving it as a standard JPG or PNG image and select it again.'
+        ));
+        img.src = objectUrl;
+      });
+
+      source = img;
+      width = img.naturalWidth;
+      height = img.naturalHeight;
+    }
+
+    if (!width || !height) {
+      throw new Error('The selected image has invalid dimensions. Please choose another image.');
+    }
+
+    const max = 1400;
+    const scale = Math.min(1, max / Math.max(width, height));
+    const canvas = document.createElement('canvas');
+
+    canvas.width = Math.max(1, Math.round(width * scale));
+    canvas.height = Math.max(1, Math.round(height * scale));
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) {
+      throw new Error('Image compression is not supported in this browser.');
+    }
+
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+
+    let blob = null;
+
+    for (const quality of [0.82, 0.68, 0.54, 0.42]) {
+      blob = await new Promise(resolve =>
+        canvas.toBlob(resolve, 'image/jpeg', quality)
+      );
+
+      if (blob && blob.size <= 900 * 1024) break;
+    }
+
+    if (!blob) {
+      throw new Error('The browser could not compress this image. Please try another JPG or PNG.');
+    }
+
+    if (blob.size > 1024 * 1024) {
+      throw new Error('The compressed image is still too large. Please choose a smaller image.');
+    }
+
+    return new File(
+      [blob],
+      'receipt-flyer-' + Date.now() + '.jpg',
+      { type: 'image/jpeg' }
+    );
+  } finally {
+    if (bitmap) bitmap.close();
+    if (objectUrl) URL.revokeObjectURL(objectUrl);
+  }
 }
-$('saveReceiptAd').onclick=async()=>{
+
   const b=$('saveReceiptAd'),status=$('receiptAdStatus'),file=$('receiptAdFlyer').files?.[0];
   b.disabled=true;b.textContent='UPLOADING FLYER…';status.textContent='Preparing image and uploading flyer to secure website storage…';
   let uploadedPath='';
