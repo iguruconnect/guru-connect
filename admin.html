@@ -959,6 +959,8 @@ $('saveReceiptAd').onclick=async()=>{
     // Receipt flyers use their own placement and receipt/ storage path; they must not appear in public directory ad slots.
     const old=await sb.from('gc_advertisements').update({active:false,updated_at:new Date().toISOString()}).eq('placement','receipt').eq('active',true).neq('id',ins.data.id);
     if(old.error)console.warn('Older receipt flyer could not be paused:',old.error.message);
+    const oldReceiptPaths=await sb.from('gc_advertisements').update({active:false,updated_at:new Date().toISOString()}).like('storage_path','receipt/%').eq('active',true).neq('id',ins.data.id);
+    if(oldReceiptPaths.error)console.warn('Older receipt-path flyers could not be paused:',oldReceiptPaths.error.message);
     status.textContent='✓ Flyer uploaded and saved. It will be shown on newly generated receipts.';
     $('receiptAdFlyer').value='';$('receiptAdPreviewWrap').style.display='none';
     if(receiptAdPreviewObjectUrl){URL.revokeObjectURL(receiptAdPreviewObjectUrl);receiptAdPreviewObjectUrl='';}
