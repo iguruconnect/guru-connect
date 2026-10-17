@@ -376,16 +376,16 @@ async function printReceipt(){
  try{
    if('CompressionStream' in window){
      const receiptData={};
-     // Keep the QR payload compact: flyer/signed-storage URLs are long and make
-     // QR modules too dense to scan. The receipt page will load the active flyer separately.
+     // Keep the QR compact; the receipt page reconstructs its data from this compressed token.
      const qrExcluded=new Set(['z','preview','back','receiptAdImageUrl','receiptAdClickUrl','receiptAdTitle','receiptAdAdvertiser']);
      q.forEach((v,k)=>{if(!qrExcluded.has(k))receiptData[k]=v;});
      const stream=new Blob([JSON.stringify(receiptData)]).stream().pipeThrough(new CompressionStream('deflate'));
      const packed=new Uint8Array(await new Response(stream).arrayBuffer());
-     let binary='';for(let i=0;i<packed.length;i++)binary+=Stringlace(/=+$/,'');
+     let binary='';
+     for(let i=0;i<packed.length;i++) binary+=String.fromCharCode(packed[i]);
+     const token=btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
      digitalReceiptUrl=window.location.origin+window.location.pathname+'?z='+token;
-   }.fromCharCode(packed[i]);
-     const token=btoa(binary).replace(/\+/g,'-').replace(/\//g,'_').rep
+   }
  }catch(e){console.warn('Could not compress receipt QR URL; using the full receipt URL:',e);}
  if(qrHost){
    const renderReceiptQr=()=>{
