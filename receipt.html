@@ -404,7 +404,7 @@ async function printReceipt(){
  const amount=n=>Number(n||0).toLocaleString('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2});
  const now=new Date(),date=get('date')||now.toISOString().slice(0,10);
  put('receiptNo',get('receiptNo')||('GC-'+now.getFullYear()+'-'+String(now.getTime()).slice(-7)));put('issueDate',dateText(date));put('paymentDate',dateText(date));
- put('customerName',get('name'));put('receiptQrUserName',get('name'),'Receipt owner');put('customerEmail',get('email'));put('customerPhone',get('phone'));put('customerCategory',get('category'));
+ put('customerName',get('name'));const qrShortName=get('shortName')||get('short_name')||get('name');const qrGcId=get('gcId')||get('gc_id')||get('memberRegNo')||get('member_id')||get('shortId')||get('short_id');put('receiptQrUserName',[qrShortName,qrGcId?'GC ID: '+qrGcId:''].filter(Boolean).join(' · '),'Receipt owner');put('customerEmail',get('email'));put('customerPhone',get('phone'));put('customerCategory',get('category'));
  const category=get('category'),mode=get('mode')||'Self',collection=get('collectionType')||'Cash',online=collection==='Online UPI';
  put('customerRegNo',category==='Institution'?(get('name')||get('memberRegNo')):get('memberRegNo'));
  put('paymentMode',mode);put('collectionType',collection);put('transactionId',get('transactionNumber'),'Not provided');show('transactionIdRow',online);show('branchNameRow',mode==='Branch');put('branchName',get('branchName'));
