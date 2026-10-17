@@ -22,13 +22,13 @@
   }
   async function fetchAds(){
     const now=new Date().toISOString();
-    const url=SUPABASE_URL+'/rest/v1/gc_advertisements?select=id,title,advertiser_name,image_url,click_url,whatsapp_url,placement,start_at,end_at,priority&active=eq.true&order=priority.desc,created_at.desc';
+    const url=SUPABASE_URL+'/rest/v1/gc_advertisements?select=id,title,advertiser_name,image_url,storage_path,click_url,whatsapp_url,placement,start_at,end_at,priority&active=eq.true&order=priority.desc,created_at.desc';
     const r=await fetch(url,{headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,Accept:'application/json'},cache:'no-store'});
     if(!r.ok) throw new Error(await r.text()||('HTTP '+r.status));
     const rows=await r.json();
-    return (Array.isArray(rows)?rows:[]).filter(a=>{
+    return (Array.isArray(rows)?rows:[]).filter(a=>!String(a.storage_path||'').startsWith('receipt/')).filter(a=>{
       const s=a.start_at?new Date(a.start_at):null,e=a.end_at?new Date(a.end_at):null,n=new Date(now);
-      return (!s||s<=n)&&(!e||e>=n);
+      return (!s||s<=n)&&(!e||e>=n)&&String(a.placement||'').toLowerCase()!=='receipt';
     });
   }
   function matches(a,place){return a.placement==='all'||a.placement===place;}
