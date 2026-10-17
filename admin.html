@@ -953,10 +953,10 @@ $('saveReceiptAd').onclick=async()=>{
       check.onerror=()=>{clearTimeout(timer);reject(new Error('Flyer was uploaded but could not be read back from Supabase Storage. Check bucket access policies.'));};
       check.src=signed.data.signedUrl;
     });
-    const row={title,advertiser_name:advertiser,placement:'all',image_url,storage_path:uploadedPath,click_url:click||null,whatsapp_url:null,start_at:new Date().toISOString(),end_at:null,priority:999,active:true,created_by:session.user.id,updated_at:new Date().toISOString()};
+    const row={title,advertiser_name:advertiser,placement:'receipt',image_url,storage_path:uploadedPath,click_url:click||null,whatsapp_url:null,start_at:new Date().toISOString(),end_at:null,priority:999,active:true,created_by:session.user.id,updated_at:new Date().toISOString()};
     const ins=await sb.from('gc_advertisements').insert(row).select('id').single();
     if(ins.error)throw ins.error;
-    // Use the existing supported “all” placement so the receipt flyer works with the current ad schema.
+    // Receipt flyers use their own placement and receipt/ storage path; they must not appear in public directory ad slots.
     const old=await sb.from('gc_advertisements').update({active:false,updated_at:new Date().toISOString()}).eq('placement','receipt').eq('active',true).neq('id',ins.data.id);
     if(old.error)console.warn('Older receipt flyer could not be paused:',old.error.message);
     status.textContent='✓ Flyer uploaded and saved. It will be shown on newly generated receipts.';
@@ -987,8 +987,8 @@ async function getReceiptFlyerParams(){
     const res=await sb.from('gc_advertisements').select('*').eq('active',true).order('priority',{ascending:false}).order('created_at',{ascending:false}).limit(100);
     if(res.error)throw res.error;
     const now=Date.now();
-    const eligible=(res.data||[]).filter(x=>['all','receipt'].includes(String(x.placement||'all').toLowerCase())&&(!x.start_at||new Date(x.start_at).getTime()<=now)&&(!x.end_at||new Date(x.end_at).getTime()>=now)&&x.image_url);
-    const ad=eligible.find(x=>String(x.storage_path||'').startsWith('receipt/'))||eligible[0];
+    const eligible=(res.data||[]).filter(x=>(String(x.placement||'').toLowerCase()==='receipt'||String(x.storage_path||'').startsWith('receipt/'))&&(!x.start_at||new Date(x.start_at).getTime()<=now)&&(!x.end_at||new Date(x.end_at).getTime()>=now)&&x.image_url);
+    const ad=eligible[0];
     if(!ad)return {};
     let imageUrl=String(ad.image_url||'');
     // A public URL alone does not work when the Storage bucket is private. Create a
