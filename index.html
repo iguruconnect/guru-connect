@@ -16556,24 +16556,35 @@ window.GC_UNIFIED_LOGIN_READY=true;
   #publicWebsiteContent > section.gc-approved-hero#home { background-image:none !important; aspect-ratio:auto !important; }
   #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image { display:block !important; visibility:visible !important; opacity:1 !important; }
 }
-</style>
 
-<!-- GURU CONNECT: MOBILE HERO IMAGE FIX -->
-<style id="gc-mobile-image-hero">
-@media screen and (max-width: 640px) {
-  #publicWebsiteContent > .gc-approved-hero#home {
+<!-- GURU CONNECT MOBILE HERO: FINAL FIX -->
+<style id="gc-mobile-hero-final-20261018">
+@media screen and (max-width: 760px) {
+
+  .gc-image-hero {
+    display: block !important;
     width: 100% !important;
     height: auto !important;
     min-height: 0 !important;
     aspect-ratio: 3 / 2 !important;
+    margin: 0 !important;
+    padding: 0 !important;
     overflow: hidden !important;
+    line-height: 0 !important;
+    background-color: #0645b4 !important;
     background-image: url("./mobile-hero.png") !important;
     background-repeat: no-repeat !important;
     background-position: center center !important;
     background-size: 100% 100% !important;
   }
 
-  #publicWebsiteContent > .gc-approved-hero#home > .gc-approved-hero-image {
+  .gc-image-hero-inner {
+    display: none !important;
+  }
+
+  .gc-image-hero::before,
+  .gc-image-hero::after {
+    content: none !important;
     display: none !important;
   }
 }
