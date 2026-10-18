@@ -16558,38 +16558,25 @@ window.GC_UNIFIED_LOGIN_READY=true;
 }
 </style>
 
-<!-- GURU CONNECT: MOBILE-ONLY HERO IMAGE -->
+<!-- GURU CONNECT: MOBILE HERO IMAGE FIX -->
 <style id="gc-mobile-image-hero">
-  @media screen and (max-width: 640px) {
-    .gc-beautiful-hero {
-      background-image: url("./mobile-hero.png") !important;
-      background-repeat: no-repeat !important;
-      background-position: center center !important;
-      background-size: 100% 100% !important;
-      width: 100% !important;
-      height: auto !important;
-      min-height: 0 !important;
-      aspect-ratio: 3 / 2 !important;
-      padding: 0 !important;
-      margin: 0 !important;
-      overflow: hidden !important;
-    }
-
-    .gc-beautiful-hero-inner {
-      display: none !important;
-    }
-
-    .gc-beautiful-hero::before,
-    .gc-beautiful-hero::after {
-      display: none !important;
-      content: none !important;
-    }
-
-    .gc-hero-art-wrap,
-    .gc-brand-hero-art {
-      display: none !important;
-    }
+@media screen and (max-width: 640px) {
+  #publicWebsiteContent > .gc-approved-hero#home {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    aspect-ratio: 3 / 2 !important;
+    overflow: hidden !important;
+    background-image: url("./mobile-hero.png") !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    background-size: 100% 100% !important;
   }
+
+  #publicWebsiteContent > .gc-approved-hero#home > .gc-approved-hero-image {
+    display: none !important;
+  }
+}
 </style>
 
 </body>
