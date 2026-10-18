@@ -16533,5 +16533,32 @@ window.GC_UNIFIED_LOGIN_READY=true;
 })();
 </script>
 
+
+<style id="gc-exact-user-mobile-banner-fix">
+/* User-approved exact image: desktop keeps its existing landscape banner.
+   Mobile uses the exact supplied vertical image without regenerating/cropping it. */
+@media screen and (max-width: 600px) {
+  .gc-beautiful-hero {
+    background-image: url("guru-connect-mobile-hero.png") !important;
+    background-repeat: no-repeat !important;
+    background-position: center top !important;
+    background-size: 100% 100% !important;
+    width: 100% !important;
+    height: 150vw !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+  .gc-beautiful-hero-inner {
+    height: 150vw !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    padding: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
+</style>
 </body>
 </html>
