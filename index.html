@@ -16534,30 +16534,27 @@ window.GC_UNIFIED_LOGIN_READY=true;
 </script>
 
 
-<style id="gc-exact-user-mobile-banner-fix">
-/* User-approved exact image: desktop keeps its existing landscape banner.
-   Mobile uses the exact supplied vertical image without regenerating/cropping it. */
-@media screen and (max-width: 600px) {
-  .gc-beautiful-hero {
-    background-image: url("guru-connect-mobile-hero.png") !important;
-    background-repeat: no-repeat !important;
-    background-position: center top !important;
-    background-size: 100% 100% !important;
-    width: 100% !important;
-    height: 150vw !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    padding: 0 !important;
-    overflow: hidden !important;
+
+
+<style id="gc-exact-user-mobile-banner-fix-2">
+/* Exact user-supplied portrait banner: mobile only. Desktop keeps the existing landscape hero. */
+@media screen and (max-width: 640px) {
+  #publicWebsiteContent > section.gc-approved-hero#home {
+    display:block !important; width:100% !important; max-width:none !important;
+    height:auto !important; min-height:0 !important; max-height:none !important;
+    aspect-ratio: 2 / 3 !important; overflow:hidden !important;
+    background-image:url("guru-connect-mobile-hero.png") !important;
+    background-repeat:no-repeat !important; background-position:center top !important;
+    background-size:100% 100% !important; margin:0 !important; padding:0 !important;
   }
-  .gc-beautiful-hero-inner {
-    height: 150vw !important;
-    min-height: 0 !important;
-    max-height: none !important;
-    padding: 0 !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
+  #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image {
+    display:none !important; visibility:hidden !important; width:100% !important;
+    height:100% !important; max-height:none !important; opacity:0 !important;
   }
+}
+@media screen and (min-width: 641px) {
+  #publicWebsiteContent > section.gc-approved-hero#home { background-image:none !important; aspect-ratio:auto !important; }
+  #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image { display:block !important; visibility:visible !important; opacity:1 !important; }
 }
 </style>
 </body>
