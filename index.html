@@ -16538,24 +16538,28 @@ window.GC_UNIFIED_LOGIN_READY=true;
 
 <!-- GURU CONNECT MOBILE HERO FIX: use the actual hero section and exact GitHub filename -->
 <style id="gc-mobile-hero-path-fix">
+/* Mobile-only square hero artwork. Keep the existing official artwork and branding. */
 @media screen and (max-width: 640px) {
   #publicWebsiteContent > section.gc-approved-hero#home {
     display: block !important;
     position: relative !important;
-    width: 100% !important;
-    max-width: 100% !important;
+    width: calc(100% - 24px) !important;
+    max-width: 800px !important;
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
-    aspect-ratio: 3 / 2 !important;
+    aspect-ratio: 1 / 1 !important;
     overflow: hidden !important;
-    margin: 0 !important;
+    margin: 12px auto !important;
     padding: 0 !important;
-    background-color: #0645b4 !important;
+    background-color: transparent !important;
     background-image: url("./mobile-hero.png") !important;
     background-repeat: no-repeat !important;
     background-position: center center !important;
-    background-size: 100% 100% !important;
+    background-size: contain !important;
+    border: 0 !important;
+    border-radius: 24px !important;
+    box-shadow: none !important;
   }
   #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image {
     display: none !important;
@@ -16565,8 +16569,11 @@ window.GC_UNIFIED_LOGIN_READY=true;
 }
 @media screen and (min-width: 641px) {
   #publicWebsiteContent > section.gc-approved-hero#home {
+    width: 100% !important;
+    margin: 0 !important;
     background-image: none !important;
     aspect-ratio: auto !important;
+    border-radius: 0 !important;
   }
   #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image {
     display: block !important;
