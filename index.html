@@ -4856,29 +4856,57 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
   @media(max-width:640px){ #publicWebsiteContent > .gc-approved-hero#home > .gc-approved-hero-image { width:100% !important; height:auto !important; } }
 </style>
 
-<style id="gc-header-tagline-one-line-fix">
-/* Keep the GURU CONNECT tagline on one line without changing other page sections. */
+<style id="gc-header-tagline-one-line-fix-v2">
+/* Header-only fix: keep the logo image at its proper proportions and keep the tagline on one line. */
+.gc-approved-lockup .gc-approved-logo{
+  flex:0 0 auto!important;
+  flex-shrink:0!important;
+  object-fit:contain!important;
+}
 .gc-approved-brand-copy{
   min-width:0!important;
-  flex-shrink:1!important;
+  flex:1 1 auto!important;
 }
 .gc-approved-brand-copy .gc-final-brand-slogan{
   display:block!important;
   white-space:nowrap!important;
   overflow:visible!important;
   text-overflow:clip!important;
-  font-size:clamp(8px, .95vw, 12px)!important;
+  font-size:clamp(7px, .95vw, 12px)!important;
   line-height:1.2!important;
   letter-spacing:0!important;
 }
 @media(max-width:760px){
+  .gc-approved-lockup .gc-approved-logo{
+    flex:0 0 54px!important;
+    width:54px!important;
+    height:54px!important;
+    max-width:54px!important;
+  }
   .gc-approved-brand-copy .gc-final-brand-slogan{
-    font-size:8px!important;
+    font-size:9px!important;
   }
 }
-@media(max-width:390px){
+@media(max-width:520px){
+  .gc-approved-lockup .gc-approved-logo{
+    flex:0 0 43px!important;
+    width:43px!important;
+    height:43px!important;
+    max-width:43px!important;
+  }
   .gc-approved-brand-copy .gc-final-brand-slogan{
     font-size:7px!important;
+  }
+}
+/* Preserve the homepage hero artwork's natural aspect ratio on mobile. */
+@media(max-width:640px){
+  #publicWebsiteContent > .gc-approved-hero#home > .gc-approved-hero-image{
+    display:block!important;
+    width:100%!important;
+    height:auto!important;
+    max-width:none!important;
+    object-fit:contain!important;
+    transform:none!important;
   }
 }
 </style>
