@@ -4855,6 +4855,34 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
   #publicWebsiteContent > .gc-approved-hero#home > .gc-approved-hero-image { display:block !important; width:100% !important; height:auto !important; max-width:none !important; max-height:none !important; object-fit:contain !important; object-position:center !important; margin:0 !important; padding:0 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; opacity:1 !important; filter:none !important; transform:none !important; }
   @media(max-width:640px){ #publicWebsiteContent > .gc-approved-hero#home > .gc-approved-hero-image { width:100% !important; height:auto !important; } }
 </style>
+
+<style id="gc-header-tagline-one-line-fix">
+/* Keep the GURU CONNECT tagline on one line without changing other page sections. */
+.gc-approved-brand-copy{
+  min-width:0!important;
+  flex-shrink:1!important;
+}
+.gc-approved-brand-copy .gc-final-brand-slogan{
+  display:block!important;
+  white-space:nowrap!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  font-size:clamp(8px, .95vw, 12px)!important;
+  line-height:1.2!important;
+  letter-spacing:0!important;
+}
+@media(max-width:760px){
+  .gc-approved-brand-copy .gc-final-brand-slogan{
+    font-size:8px!important;
+  }
+}
+@media(max-width:390px){
+  .gc-approved-brand-copy .gc-final-brand-slogan{
+    font-size:7px!important;
+  }
+}
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -16538,28 +16566,24 @@ window.GC_UNIFIED_LOGIN_READY=true;
 
 <!-- GURU CONNECT MOBILE HERO FIX: use the actual hero section and exact GitHub filename -->
 <style id="gc-mobile-hero-path-fix">
-/* Mobile-only square hero artwork. Keep the existing official artwork and branding. */
 @media screen and (max-width: 640px) {
   #publicWebsiteContent > section.gc-approved-hero#home {
     display: block !important;
     position: relative !important;
-    width: calc(100% - 24px) !important;
-    max-width: 800px !important;
+    width: 100% !important;
+    max-width: 100% !important;
     height: auto !important;
     min-height: 0 !important;
     max-height: none !important;
-    aspect-ratio: 1 / 1 !important;
+    aspect-ratio: 3 / 2 !important;
     overflow: hidden !important;
-    margin: 12px auto !important;
+    margin: 0 !important;
     padding: 0 !important;
-    background-color: transparent !important;
+    background-color: #0645b4 !important;
     background-image: url("./mobile-hero.png") !important;
     background-repeat: no-repeat !important;
     background-position: center center !important;
-    background-size: contain !important;
-    border: 0 !important;
-    border-radius: 24px !important;
-    box-shadow: none !important;
+    background-size: 100% 100% !important;
   }
   #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image {
     display: none !important;
@@ -16569,11 +16593,8 @@ window.GC_UNIFIED_LOGIN_READY=true;
 }
 @media screen and (min-width: 641px) {
   #publicWebsiteContent > section.gc-approved-hero#home {
-    width: 100% !important;
-    margin: 0 !important;
     background-image: none !important;
     aspect-ratio: auto !important;
-    border-radius: 0 !important;
   }
   #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image {
     display: block !important;
