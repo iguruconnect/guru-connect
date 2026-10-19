@@ -4855,62 +4855,6 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
   #publicWebsiteContent > .gc-approved-hero#home > .gc-approved-hero-image { display:block !important; width:100% !important; height:auto !important; max-width:none !important; max-height:none !important; object-fit:contain !important; object-position:center !important; margin:0 !important; padding:0 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; opacity:1 !important; filter:none !important; transform:none !important; }
   @media(max-width:640px){ #publicWebsiteContent > .gc-approved-hero#home > .gc-approved-hero-image { width:100% !important; height:auto !important; } }
 </style>
-
-<style id="gc-header-tagline-one-line-fix-v2">
-/* Header-only fix: keep the logo image at its proper proportions and keep the tagline on one line. */
-.gc-approved-lockup .gc-approved-logo{
-  flex:0 0 auto!important;
-  flex-shrink:0!important;
-  object-fit:contain!important;
-}
-.gc-approved-brand-copy{
-  min-width:0!important;
-  flex:1 1 auto!important;
-}
-.gc-approved-brand-copy .gc-final-brand-slogan{
-  display:block!important;
-  white-space:nowrap!important;
-  overflow:visible!important;
-  text-overflow:clip!important;
-  font-size:clamp(7px, .95vw, 12px)!important;
-  line-height:1.2!important;
-  letter-spacing:0!important;
-}
-@media(max-width:760px){
-  .gc-approved-lockup .gc-approved-logo{
-    flex:0 0 54px!important;
-    width:54px!important;
-    height:54px!important;
-    max-width:54px!important;
-  }
-  .gc-approved-brand-copy .gc-final-brand-slogan{
-    font-size:9px!important;
-  }
-}
-@media(max-width:520px){
-  .gc-approved-lockup .gc-approved-logo{
-    flex:0 0 43px!important;
-    width:43px!important;
-    height:43px!important;
-    max-width:43px!important;
-  }
-  .gc-approved-brand-copy .gc-final-brand-slogan{
-    font-size:7px!important;
-  }
-}
-/* Preserve the homepage hero artwork's natural aspect ratio on mobile. */
-@media(max-width:640px){
-  #publicWebsiteContent > .gc-approved-hero#home > .gc-approved-hero-image{
-    display:block!important;
-    width:100%!important;
-    height:auto!important;
-    max-width:none!important;
-    object-fit:contain!important;
-    transform:none!important;
-  }
-}
-</style>
-
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -16622,6 +16566,54 @@ window.GC_UNIFIED_LOGIN_READY=true;
 @media screen and (min-width: 641px) {
   #publicWebsiteContent > section.gc-approved-hero#home {
     background-image: none !important;
+    aspect-ratio: auto !important;
+  }
+  #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+}
+</style>
+
+
+<style id="gc-mobile-hero-square-rounded-final">
+/* Mobile-only hero artwork: square, crisp, and softly rounded. Desktop hero remains unchanged. */
+@media screen and (max-width: 640px) {
+  #publicWebsiteContent > section.gc-approved-hero#home {
+    display: block !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+    width: calc(100% - 16px) !important;
+    max-width: calc(100% - 16px) !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    aspect-ratio: 1 / 1 !important;
+    overflow: hidden !important;
+    margin: 8px auto !important;
+    padding: 0 !important;
+    border-radius: 20px !important;
+    background-color: #fff !important;
+    background-image: url("./mobile-hero.png") !important;
+    background-repeat: no-repeat !important;
+    background-position: center center !important;
+    background-size: 100% 100% !important;
+    image-rendering: auto !important;
+  }
+  #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+}
+@media screen and (min-width: 641px) {
+  #publicWebsiteContent > section.gc-approved-hero#home {
+    background-image: none !important;
+    border-radius: initial !important;
+    width: auto !important;
+    max-width: none !important;
+    margin: initial !important;
     aspect-ratio: auto !important;
   }
   #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image {
