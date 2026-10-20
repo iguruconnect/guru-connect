@@ -683,20 +683,49 @@ async function loadAccountCoins(){
   const u=accountUser();
   if(!u)return;
   const p=$('gcPane-coins');
-  p.innerHTML='<div class="empty">Loading complete coin ledger…</div>';
+  p.innerHTML='<div class="empty">Loading live wallet balance and complete coin ledger…</div>';
   try{
     const d=await accountRpc('get_account_overview',{user_id:u.user_id});
     const rows=d.coins||[];
-    const balance=Number(d.wallet?.balance??d.account?.coin_balance??0);
-    const held=Number(d.wallet?.held_balance??0);
+    let wallet=d.wallet||{};
+    // Resolve the canonical profiles.id first. Some tutor/student profile rows
+    // have their own row ID, while gc_coin_wallets.profile_id is keyed to the
+    // member's canonical profile ID. Never change wallet or ledger data here.
+    const candidates=[];
+    const addId=v=>{if(v!==undefined&&v!==null&&String(v).trim()&&!candidates.includes(String(v)))candidates.push(String(v))};
+    try{
+      if(u.email){
+        let pq=await sb.from('profiles').select('id,role,email').ilike('email',String(u.email).trim()).limit(10);
+        if(!pq.error){
+          const exact=(pq.data||[]).find(x=>String(x.role||'').toLowerCase()===String(u.role||'').toLowerCase())||(pq.data||[])[0];
+          if(exact)addId(exact.id);
+        }
+      }
+    }catch(_){}
+    addId(u.profile_id);addId(u.user_id);addId(u.auth_user_id);addId(u.id);
+    try{
+      if(candidates.length){
+        const wq=await sb.from('gc_coin_wallets').select('profile_id,profile_role,auth_user_id,role,balance,held_balance').in('profile_id',candidates);
+        if(!wq.error&&Array.isArray(wq.data)){
+          const matched=wq.data.find(w=>{
+            const wr=String(w.profile_role||w.role||'').toLowerCase();
+            return candidates.includes(String(w.profile_id))&&(!wr||wr===String(u.role||'').toLowerCase());
+          })||wq.data.find(w=>candidates.includes(String(w.profile_id)));
+          if(matched)wallet=matched;
+        }
+      }
+    }catch(_){}
+    const balance=Number(wallet.balance??wallet.coins??wallet.available_coins??d.account?.coin_balance??0);
+    const held=Number(wallet.held_balance??0);
     const cols=rows.length?Object.keys(rows[0]):[];
     p.innerHTML=`
       <div class="gcAcctGrid">
-        <div class="gcStat"><b>Available Guru Coins</b><strong class="gcBlue">🪙 ${balance}</strong></div>
-        <div class="gcStat"><b>Held Guru Coins</b><strong class="gcOrange">🪙 ${held}</strong></div>
+        <div class="gcStat"><b>Available Guru Coins</b><strong class="gcBlue">🪙 ${balance.toLocaleString('en-IN')}</strong></div>
+        <div class="gcStat"><b>Held Guru Coins</b><strong class="gcOrange">🪙 ${held.toLocaleString('en-IN')}</strong></div>
         <div class="gcStat"><b>Ledger Records</b><strong>${rows.length}</strong></div>
         <div class="gcStat"><b>Last Entry</b><strong>${esc(rows[0]?.created_at||'—')}</strong></div>
       </div>
+      <div class="gcAccountNotice">Wallet balance is read from the live <b>gc_coin_wallets</b> record when available; the ledger below shows the transaction history. Viewing this panel does not add, subtract, or edit coins.</div>
       <div class="gcBox">
         <h3>🪙 Complete Coin Ledger — ${rows.length} Record(s)</h3>
         <div class="gcTableWrap"><table class="gcTable">
