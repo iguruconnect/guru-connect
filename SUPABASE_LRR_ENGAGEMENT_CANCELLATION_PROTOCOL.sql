@@ -129,9 +129,75 @@ begin
 end;
 $$;
 
+create or replace function public.gc_get_lrr_contact_number(p_request_id text)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $
+declare
+  v_member record;
+  v_lrr record;
+  v_target_id text;
+  v_target_role text;
+  v_contact record;
+begin
+  if auth.uid() is null then raise exception 'Please sign in again.'; end if;
+
+  select id, role into v_member
+  from public.profiles
+  where user_id = auth.uid()
+    and lower(coalesce(role,'')) in ('student','tutor')
+  limit 1;
+  if v_member.id is null then raise exception 'A registered Student or Tutor profile is required.'; end if;
+
+  select * into v_lrr
+  from public.gc_learning_requests_v2
+  where id::text = p_request_id;
+
+  if v_lrr.id is null then raise exception 'Learning Request not found.'; end if;
+  if upper(coalesce(v_lrr.status,'')) not in
+     ('ACCEPTED','TUTOR_ACCEPTED','IN_PROGRESS','TUTOR_COMPLETED','PENDING_ADMIN_APPROVAL','PENDING_ADMIN_REVIEW','COMPLETED')
+     or coalesce(v_lrr.gc_cancellation_status,'NONE') = 'PENDING_ADMIN_REVIEW' then
+    raise exception 'Contact numbers are available only for an active accepted engagement.';
+  end if;
+
+  if lower(v_member.role) = 'student' then
+    if coalesce(v_lrr.student_id::text,'') <> v_member.id::text then
+      raise exception 'Only the Student and assigned Tutor can view these contact numbers.';
+    end if;
+    v_target_id := v_lrr.tutor_id::text;
+    v_target_role := 'tutor';
+  else
+    if coalesce(v_lrr.tutor_id::text,'') <> v_member.id::text then
+      raise exception 'Only the Student and assigned Tutor can view these contact numbers.';
+    end if;
+    v_target_id := v_lrr.student_id::text;
+    v_target_role := 'student';
+  end if;
+
+  select phone, full_name into v_contact
+  from public.profiles
+  where id::text = v_target_id
+  limit 1;
+
+  if v_contact.phone is null or length(trim(v_contact.phone::text)) = 0 then
+    raise exception 'The other member has no registered contact number on the main profile.';
+  end if;
+
+  return jsonb_build_object(
+    'phone', v_contact.phone,
+    'name', coalesce(v_contact.full_name, initcap(v_target_role)),
+    'role', v_target_role
+  );
+end;
+$;
+
 revoke all on function public.gc_mark_lrr_lecture_started(text) from public;
 revoke all on function public.gc_request_lrr_cancellation(text,text) from public;
+revoke all on function public.gc_get_lrr_contact_number(text) from public;
 grant execute on function public.gc_mark_lrr_lecture_started(text) to authenticated;
 grant execute on function public.gc_request_lrr_cancellation(text,text) to authenticated;
+grant execute on function public.gc_get_lrr_contact_number(text) to authenticated;
 
 commit;
