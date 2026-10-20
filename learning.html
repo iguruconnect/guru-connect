@@ -383,7 +383,7 @@ function card(r){
   box('🪙','REWARD',Number(r.coins_held||100)+' GURU COINS')+box('🕒','POSTED',fmt(r.created_at))+
   '</div><div class="need lrr-need"><b>📝 LEARNING REQUIREMENT</b>'+esc(r.issue||r.problem||'Student has not added a detailed issue.')+'</div>'+
   '<div class="lrr-lifecycle"><b>LRR STATUS:</b> <span class="'+state.cls+'">'+esc(state.label)+'</span><br><span class="muted">A pending tutor request does not close this LRR. Only an accepted tutor locks it. Unattended LRRs expire after 20 days.</span></div>'+
-  '<div class="actions lrr-actions"><button class="more" data-id="'+esc(r.id||'')+'">MORE <span>👤</span></button>'+action+'<button type="button" class="disabled-action" data-admin-whatsapp="1">💬 WHATSAPP ADMIN</button></div></article>';
+  '<div class="actions lrr-actions"><button class="more" data-id="'+esc(r.id||'')+'">MORE <span>👤</span></button>'+action+'<button type="button" class="connect" data-admin-whatsapp="1">💬 WHATSAPP ADMIN</button></div></article>';
 }
 function box(i,b,v){return '<div class="box lrr-info-box"><span class="ico lrr-info-icon">'+i+'</span><div><b>'+b+'</b><span title="'+esc(v)+'">'+esc(v)+'</span></div></div>'}
 function render(){
