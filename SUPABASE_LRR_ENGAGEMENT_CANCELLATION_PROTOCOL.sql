@@ -134,7 +134,7 @@ returns jsonb
 language plpgsql
 security definer
 set search_path = public
-as $
+as $$
 declare
   v_member record;
   v_lrr record;
@@ -191,7 +191,7 @@ begin
     'role', v_target_role
   );
 end;
-$;
+$$;
 
 revoke all on function public.gc_mark_lrr_lecture_started(text) from public;
 revoke all on function public.gc_request_lrr_cancellation(text,text) from public;
