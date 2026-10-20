@@ -235,15 +235,14 @@ async function connectionsView(){
  document.querySelectorAll('[data-conn]').forEach(b=>b.onclick=async()=>{try{b.disabled=true;const fn=b.dataset.conn==='accept'?'gc_student_accept_learning_connection':'gc_student_reject_learning_connection';const r=await safe(sb.rpc(fn,{p_connection_id:b.dataset.id}));if(r.error)throw r.error;toast(b.dataset.conn==='accept'?'Connection accepted':'Connection rejected',b.dataset.conn==='accept'?'The Tutor has been notified. Private chat is now active.':'The Tutor has been notified.');await loadNotifications(false);await connectionsView();await requestsView()}catch(e){msg(e.message||String(e))}finally{b.disabled=false}});
  document.querySelectorAll('[data-open-chat]').forEach(b=>b.onclick=async()=>{try{b.disabled=true;await openChat(b.dataset.openChat)}catch(e){msg(e.message||String(e))}finally{b.disabled=false}});document.querySelectorAll('[data-open-whatsapp]').forEach(b=>b.onclick=async()=>{try{b.disabled=true;await openWhatsAppForStudent(b.dataset.openWhatsapp)}catch(e){msg(e.message||String(e))}finally{b.disabled=false}});updateBadges();
 }
-async function getLrrWhatsAppContact(requestId){
-  // Prefer the server-side contact resolver so the student's browser never
-  // needs to know the tutor's profile-table structure.
+async function getLrrWhatsAppContact(requestId,targetRole){
+  // The RPC resolves the saved WhatsApp number for the requested member role.
   try{
-    const q=await safe(sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(requestId),p_target_role:'tutor'}));
+    const q=await safe(sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(requestId),p_target_role:targetRole}));
     if(!q.error){
       const d=Array.isArray(q.data)?q.data[0]:q.data;
       const phone=d?.whatsapp_number||d?.whatsapp_phone||d?.phone||d?.mobile||d?.mobile_number||d?.contact_number||'';
-      const name=d?.name||d?.full_name||d?.tutor_name||'Tutor';
+      const name=d?.name||d?.full_name||(targetRole==='tutor'?d?.tutor_name:d?.student_name)||(targetRole==='tutor'?'Tutor':'Student');
       if(phone)return {phone,name};
     }
   }catch(_){ }
@@ -253,35 +252,35 @@ function normalizeWhatsAppNumber(v){
   let n=String(v||'').trim().replace(/[^0-9+]/g,'');
   if(n.startsWith('00'))n=n.slice(2);
   if(n.startsWith('+'))n=n.slice(1);
-  // Indian numbers are commonly stored as 10 digits in the profile.
-  if(/^\d{10}$/.test(n))n='91'+n;
+  if(/^\\d{10}$/.test(n))n='91'+n;
   return n;
 }
 async function openWhatsAppForStudent(requestId){
   const popup=window.open('about:blank','gcWhatsApp','width=520,height=720');
   try{
+    const myRole=String(role||'').toLowerCase();
+    if(!['student','tutor'].includes(myRole))throw new Error('WhatsApp Learning Request chat is available to Students and Tutors.');
+    const otherRole=myRole==='student'?'tutor':'student';
     const conn=await safe(sb.from('gc_learning_request_connections')
       .select('id,request_id,student_id,tutor_id,status,created_at')
       .eq('request_id',String(requestId))
       .order('created_at',{ascending:false}).limit(20));
     if(conn.error)throw conn.error;
-    // Use the actual authenticated student's profile UUID. pid() belongs to
-    // the member-profile layer and is not guaranteed to equal student_profiles.id.
-    const me=await safe(sb.auth.getUser());
-    if(me.error)throw me.error;
-    const authUserId=me.data?.user?.id;
-    if(!authUserId)throw new Error('Your login session has expired. Please sign in again.');
-    const studentProfile=await safe(sb.from('student_profiles').select('id').eq('user_id',authUserId).maybeSingle());
-    if(studentProfile.error)throw studentProfile.error;
-    const actualStudentId=studentProfile.data?.id;
-    if(!actualStudentId)throw new Error('Registered Student profile could not be found.');
-    const accepted=(conn.data||[]).find(x=>['ACCEPTED','APPROVED','CONNECTED'].includes(String(x.status||'').toUpperCase()) && String(x.student_id)===String(actualStudentId));
-    if(!accepted)throw new Error('WhatsApp chat can begin only after the Tutor accepts the connection request.');
-    const contact=await getLrrWhatsAppContact(requestId);
-    if(!contact?.phone)throw new Error('No WhatsApp number is saved for this Tutor. Please ask the Tutor to update the registered mobile/WhatsApp number in the Tutor profile.');
+    // Use the same member profile ID as the dashboard and connection list.
+    // Do not re-query student_profiles by auth UUID: some valid legacy profiles
+    // are resolved by gc_get_my_member_profile() and may not match that lookup.
+    const actualMemberId=pid();
+    if(!actualMemberId)throw new Error('Your registered '+myRole+' profile could not be identified. Please sign in again or contact GURU CONNECT Admin.');
+    const accepted=(conn.data||[]).find(x=>{
+      if(!['ACCEPTED','APPROVED','CONNECTED'].includes(String(x.status||'').toUpperCase()))return false;
+      return myRole==='student'?String(x.student_id)===String(actualMemberId):String(x.tutor_id)===String(actualMemberId);
+    });
+    if(!accepted)throw new Error('WhatsApp chat can begin only after the Student accepts the Tutor connection request.');
+    const contact=await getLrrWhatsAppContact(requestId,otherRole);
+    if(!contact?.phone)throw new Error('The saved WhatsApp contact could not be resolved for this '+(otherRole==='tutor'?'Tutor':'Student')+'. The number may already exist in the profile; please contact Admin to check the contact lookup function.');
     const phone=normalizeWhatsAppNumber(contact.phone);
-    if(!/^\d{10,15}$/.test(phone))throw new Error('The Tutor WhatsApp number is invalid. Please ask the Tutor to update it in the profile.');
-    const text=encodeURIComponent('Hello '+String(contact.name||'Tutor')+', I am contacting you through GURU CONNECT regarding our accepted learning connection.');
+    if(!/^\\d{10,15}$/.test(phone))throw new Error('The saved WhatsApp number is not in a valid international format. Please ask Admin to check the existing profile number.');
+    const text=encodeURIComponent('Hello '+String(contact.name||(otherRole==='tutor'?'Tutor':'Student'))+', I am contacting you through GURU CONNECT regarding our accepted learning connection.');
     const appUrl='https://wa.me/'+phone+'?text='+text;
     if(popup&&!popup.closed){popup.location.href=appUrl;setTimeout(()=>{try{if(!popup.closed)popup.location.href='https://web.whatsapp.com/send?phone='+phone+'&text='+text}catch(_){ }},900)}
     else window.location.href=appUrl;
