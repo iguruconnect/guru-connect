@@ -126,7 +126,7 @@ async function init(){
 }
 function bind(){
  $('kingdomBtn').onclick=()=>{tab='requests';render();window.scrollTo({top:0,behavior:'smooth'})};
- $('whatsappAdminBtn').onclick=()=>{const text=encodeURIComponent('Hello GURU CONNECT Admin, I need assistance.');window.open('https://wa.me/15559565917?text='+text,'_blank','noopener,noreferrer')};
+ $('whatsappAdminBtn').onclick=()=>{const text=encodeURIComponent('Hello GURU CONNECT Admin, I need assistance.');const url='https://wa.me/15559565917?text='+text;const win=window.open(url,'_blank');if(!win||win.closed){window.location.href=url}};
  $('websiteBtn').onclick=()=>location.href='index.html';
  $('logoutBtn').onclick=logout;
  $('notifBtn').onclick=()=>{const p=$('notifPanel');p.classList.toggle('open');if(p.classList.contains('open'))loadNotifications(false)};
