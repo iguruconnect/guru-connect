@@ -333,14 +333,48 @@ async function downloadChatPDF(existingRows){
 
 async function accountView(){
   try {
-    const q = await safe(sb.rpc('gc_get_my_coin_balance'));
-    if (q.error) throw q.error;
+    // Resolve the canonical public.profiles.id first. Wallets use that ID
+    // as gc_coin_wallets.profile_id; auth_user_id may legitimately be NULL.
+    let wallet = null;
+    const email = String(me?.email || profile?.email || '').trim();
+    const expectedRole = String(role || '').toLowerCase();
 
-    const result = q.data;
+    if (email && ['student','tutor'].includes(expectedRole)) {
+      const pq = await safe(sb.from('profiles')
+        .select('id,email,role')
+        .ilike('email', email)
+        .limit(10));
+      if (!pq.error && Array.isArray(pq.data)) {
+        const canonical = pq.data.find(x =>
+          String(x.role || '').toLowerCase() === expectedRole &&
+          String(x.email || '').toLowerCase() === email.toLowerCase()
+        );
+        if (canonical?.id) {
+          const wq = await safe(sb.from('gc_coin_wallets')
+            .select('profile_id,role,balance,held_balance')
+            .eq('profile_id', String(canonical.id))
+            .limit(1));
+          if (!wq.error && Array.isArray(wq.data)) {
+            wallet = wq.data.find(w =>
+              !w.role || String(w.role).toLowerCase() === expectedRole
+            ) || null;
+          }
+        }
+      }
+    }
+
+    // Keep the existing secure RPC as fallback if direct wallet reading is
+    // blocked by RLS or the canonical profile cannot be resolved.
+    let result = wallet;
+    if (!result) {
+      const q = await safe(sb.rpc('gc_get_my_coin_balance'));
+      if (q.error) throw q.error;
+      result = q.data;
+    }
     const bal = Number(result?.balance);
 
-    if (!Number.isFinite(bal) || bal < 0 || !result?.profile_id) {
-      throw new Error('Wallet balance or profile ID is invalid.');
+    if (!Number.isFinite(bal) || bal < 0) {
+      throw new Error('Wallet balance is unavailable or invalid.');
     }
 
     $('app').innerHTML =
