@@ -240,9 +240,9 @@ async function connectionsView(){
  document.querySelectorAll('[data-open-chat]').forEach(b=>b.onclick=async()=>{try{b.disabled=true;await openChat(b.dataset.openChat)}catch(e){msg(e.message||String(e))}finally{b.disabled=false}});document.querySelectorAll('[data-open-whatsapp]').forEach(b=>b.onclick=async()=>{try{b.disabled=true;await openWhatsAppForStudent(b.dataset.openWhatsapp)}catch(e){msg(e.message||String(e))}finally{b.disabled=false}});updateBadges();
 }
 async function getLrrWhatsAppContact(requestId,targetRole){
-  // The RPC resolves the saved WhatsApp number for the requested member role.
+  // Server-side authorization verifies the accepted LRR and returns only the other member's contact.
   try{
-    const q=await safe(sb.rpc('gc_get_whatsapp_contact',{p_request_id:String(requestId),p_target_role:targetRole}));
+    const q=await safe(sb.rpc('gc_get_lrr_contact_number',{p_request_id:String(requestId)}));
     if(!q.error){
       const d=Array.isArray(q.data)?q.data[0]:q.data;
       const phone=d?.whatsapp_number||d?.whatsapp_phone||d?.phone||d?.mobile||d?.mobile_number||d?.contact_number||'';
