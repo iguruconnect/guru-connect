@@ -1372,6 +1372,9 @@ async function loadLearning(){
         <div class="evidenceBox"><b>Student feedback / remark</b>${esc(studentFeedback||'No written student feedback recorded.')}</div>
         <div class="evidenceBox"><b>Tutor feedback / completion note</b>${esc(tutorFeedback||'No separate tutor feedback recorded. Status is used as the completion evidence.')}</div>
         <div class="evidenceBox"><b>Coins held with Admin</b><strong>🪙 ${Number(r.held_coins??r.coins_held??r.held_amount??0)}</strong></div>
+        <div class="evidenceBox"><b>Engagement / lecture status</b>${r.gc_lectures_started?`First lecture recorded: ${esc(r.gc_lectures_started_at||"time not recorded")}`:"First lecture not recorded"}</div>
+        <div class="evidenceBox"><b>Cancellation status</b>${esc(r.gc_cancellation_status||"NONE")}</div>
+        <div class="evidenceBox" style="grid-column:1/-1"><b>Cancellation requested by / reason</b>${esc([r.gc_cancellation_requested_role,r.gc_cancellation_reason].filter(Boolean).join(" — ")||"No cancellation request recorded.")}<div class="muted">${esc(r.gc_cancellation_requested_at||"")}</div></div>
         <div class="evidenceBox"><b>Learning deadline</b>${esc(r.learning_deadline||'Not set')}${r.learning_deadline?`<div class="lrrDeadlineBadge">⏳ Maximum service window: 20 days</div>`:''}</div>
         <div class="evidenceBox" style="grid-column:1/-1"><b>Admin decision / note</b>${esc(adminNote||'No Admin decision recorded yet.')}</div>
       </div>${canDecide?`<div class="lrrDecision">${satisfied?'✅ Student has confirmed SATISFIED. This is the strongest evidence for releasing the Tutor reward.':'⚠️ Final coin decision is pending. Chat with both parties before releasing/denying if the evidence is incomplete.'}</div>`:''}</div>
