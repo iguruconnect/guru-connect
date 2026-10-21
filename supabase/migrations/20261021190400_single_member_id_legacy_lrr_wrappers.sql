@@ -1,11 +1,8 @@
 -- GURU CONNECT: compatibility wrappers for legacy Learning Request posting RPCs
--- Purpose: keep older pages working while ensuring all new requests use auth.uid()
--- through gc_post_my_learning_request. This script does NOT move coins or alter
--- existing requests. Run in Supabase SQL Editor only after reviewing the function
--- signatures in the live project.
---
--- IMPORTANT: gc_learning_requests_v2 is a VIEW. These wrappers deliberately call
--- gc_post_my_learning_request, which writes to the base gc_learning_requests table.
+-- Route legacy calls through auth.uid()-based canonical posting.
+-- Does not transfer coins or alter existing Learning Requests.
+-- gc_learning_requests_v2 is a VIEW; canonical posting writes to the base table.
+-- Preserve the original return types: UUID overload JSONB, text overload TEXT.
 
 BEGIN;
 
@@ -23,12 +20,7 @@ SECURITY DEFINER
 SET search_path TO 'public'
 AS $function$
   SELECT public.gc_post_my_learning_request(
-    p_course,
-    p_stream,
-    p_subject,
-    p_topic,
-    'Online',
-    p_problem
+    p_course, p_stream, p_subject, p_topic, 'Online', p_problem
   );
 $function$;
 
@@ -40,24 +32,19 @@ CREATE OR REPLACE FUNCTION public.gc_post_learning_request(
   p_topic text,
   p_problem text
 )
-RETURNS jsonb
+RETURNS text
 LANGUAGE sql
 SECURITY DEFINER
 SET search_path TO 'public'
 AS $function$
   SELECT public.gc_post_my_learning_request(
-    p_course,
-    p_stream,
-    p_subject,
-    p_topic,
-    'Online',
-    p_problem
-  );
+    p_course, p_stream, p_subject, p_topic, 'Online', p_problem
+  )::text;
 $function$;
 
 COMMIT;
 
--- Post-deployment verification (read-only):
+-- Read-only verification after deployment:
 -- SELECT p.proname, pg_get_function_identity_arguments(p.oid) AS arguments,
 --        pg_get_function_result(p.oid) AS result
 -- FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
@@ -65,6 +52,4 @@ COMMIT;
 --   AND p.proname IN ('gc_post_learning_request','gc_post_my_learning_request')
 -- ORDER BY p.proname, arguments;
 --
--- Do not treat this wrapper migration as completion of the full single-ID
--- migration. Connection, completion/outcome, notifications, and payout paths
--- still require separate verified alignment.
+-- This wrapper migration alone does not complete the full single-ID migration.
