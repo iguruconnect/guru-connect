@@ -4,7 +4,7 @@
 -- gc_learning_requests_v2 is a VIEW; canonical posting writes to the base table.
 -- Preserve the original return types: UUID overload JSONB, text overload TEXT.
 
-BEGIN;
+BEGIN; 
 
 CREATE OR REPLACE FUNCTION public.gc_post_learning_request(
   p_course text,
