@@ -331,52 +331,14 @@ async function downloadChatPDF(existingRows){
 }
 
 
-async function accountView(){
+
+async function accountView() {
   try {
-    // Resolve the canonical public.profiles.id first. Wallets use that ID
-    // as gc_coin_wallets.profile_id; auth_user_id may legitimately be NULL.
-    let wallet = null;
-    const email = String(me?.email || profile?.email || '').trim();
-    const expectedRole = String(role || '').toLowerCase();
+    $('app').innerHTML =
+      '<div class="card"><p>Loading your Guru Coins...</p></div>';
 
-    if (email && ['student','tutor'].includes(expectedRole)) {
-      const pq = await safe(sb.from('profiles')
-        .select('id,email,role')
-        .ilike('email', email)
-        .limit(10));
-      if (!pq.error && Array.isArray(pq.data)) {
-        const canonical = pq.data.find(x =>
-          String(x.role || '').toLowerCase() === expectedRole &&
-          String(x.email || '').toLowerCase() === email.toLowerCase()
-        );
-        if (canonical?.id) {
-          const wq = await safe(sb.from('gc_coin_wallets')
-            .select('profile_id,role,balance,held_balance')
-            .eq('profile_id', String(canonical.id))
-            .limit(1));
-          if (!wq.error && Array.isArray(wq.data)) {
-            wallet = wq.data.find(w =>
-              !w.role || String(w.role).toLowerCase() === expectedRole
-            ) || null;
-          }
-        }
-      }
-    }
-
-    // Keep the existing secure RPC as fallback if direct wallet reading is
-    // blocked by RLS or the canonical profile cannot be resolved.
-    let result = wallet;
-    if (!result) {
-      const q = await safe(sb.rpc('gc_get_my_coin_balance'));
-      if (q.error) throw q.error;
-      result = q.data;
-    }
-
-async function accountView(){
-  try {
-    // Use the database function to select the correct existing wallet.
-    // Do not read the canonical wallet directly or combine balances.
     const q = await safe(sb.rpc('gc_get_my_coin_balance'));
+
     if (q.error) throw q.error;
 
     const result = q.data;
@@ -386,30 +348,33 @@ async function accountView(){
       throw new Error('Wallet balance is unavailable or invalid.');
     }
 
-
-    if (!Number.isFinite(bal) || bal < 0) {
-      throw new Error('Wallet balance is unavailable or invalid.');
-    }
-
     $('app').innerHTML =
       '<div class="grid2">' +
         '<div class="card">' +
           '<h2>🪙 MY GURU COINS</h2>' +
-          '<div class="balance">' + bal.toLocaleString('en-IN') + ' 🪙</div>' +
+          '<div class="balance">' +
+            bal.toLocaleString('en-IN') + ' 🪙' +
+          '</div>' +
           '<div class="small">Live wallet balance</div>' +
         '</div>' +
         '<div class="card">' +
           '<h2>🔐 PASSWORD RESET</h2>' +
           '<p class="small">Reset your password securely using the email reset link.</p>' +
-          '<button type="button" class="btn" id="resetBtn">RESET PASSWORD BY EMAIL</button>' +
+          '<button type="button" class="btn" id="resetBtn">' +
+            'RESET PASSWORD BY EMAIL' +
+          '</button>' +
         '</div>' +
       '</div>' +
       '<div class="card">' +
         '<h2>📒 GURU COINS TRANSACTION HISTORY</h2>' +
         '<p class="small">Check when coins were credited, deducted, or held, with the recorded reason and Learning Request reference.</p>' +
         '<div class="row">' +
-          '<button type="button" class="btn green" id="openCoinStatementBtn">OPEN COIN STATEMENT</button>' +
-          '<button type="button" class="btn" id="downloadCoinStatementBtn">DOWNLOAD COIN STATEMENT PDF</button>' +
+          '<button type="button" class="btn green" id="openCoinStatementBtn">' +
+            'OPEN COIN STATEMENT' +
+          '</button>' +
+          '<button type="button" class="btn" id="downloadCoinStatementBtn">' +
+            'DOWNLOAD COIN STATEMENT PDF' +
+          '</button>' +
         '</div>' +
         '<div id="coinStatementPanel" style="display:none;margin-top:15px"></div>' +
       '</div>' +
@@ -418,31 +383,39 @@ async function accountView(){
         '<div class="success">100 coins are held when a Student posts an LR. They are credited to the Tutor only after completion, Student final remark, and Admin approval.</div>' +
       '</div>';
 
-    $('resetBtn').onclick = () => location.href = 'forgot-password.html';
+    $('resetBtn').onclick = () => {
+      location.href = 'forgot-password.html';
+    };
 
     $('openCoinStatementBtn').onclick = async () => {
       const panel = $('coinStatementPanel');
+
       if (panel.style.display !== 'none') {
         panel.style.display = 'none';
         return;
       }
+
       panel.style.display = 'block';
       await loadCoinStatement(0);
     };
 
-    $('downloadCoinStatementBtn').onclick = downloadCoinStatementPDF;
+    $('downloadCoinStatementBtn').onclick =
+      downloadCoinStatementPDF;
 
   } catch (e) {
     console.error('GURU COINS accountView error:', e);
+
     $('app').innerHTML =
       '<div class="card error">' +
         '<h2>GURU COINS</h2>' +
         '<p>Unable to load your coin balance.</p>' +
         '<p>Please refresh the dashboard or try logging in again.</p>' +
+        '<p class="small">Error: ' +
+          String(e?.message || e).replace(/[&<>"]/g, '') +
+        '</p>' +
       '</div>';
   }
 }
-
 let gcCoinStatementRows = [];
 let gcCoinStatementTotal = 0;
 let gcCoinStatementOffset = 0;
