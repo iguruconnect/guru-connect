@@ -388,7 +388,7 @@ async function downloadChatPDF(existingRows){
 
 
 
-window.showSectionHistory = async function(kind){
+async function showSectionHistory(kind){
  const prior=document.getElementById('gcSectionHistory');if(prior)prior.remove();
  let rows=[];
  if(kind==='lrr'){
@@ -409,7 +409,6 @@ window.showSectionHistory = async function(kind){
  document.body.appendChild(modal);modal.querySelector('#gcSectionHistoryClose').onclick=()=>modal.remove();
  modal.querySelectorAll('[data-open-history-detail]').forEach(b=>b.onclick=async()=>{try{await showRecordHistory(b.dataset.kind,b.dataset.id,b.dataset.requestId);modal.remove()}catch(e){msg(e.message||String(e))}});
 }
-};
 async function showRecordHistory(kind,id,requestId){
  const prior=document.getElementById('gcRecordHistory');if(prior)prior.remove();
  let record=null,connection=null,events=[];
@@ -718,7 +717,8 @@ function browserNotify(title,body){try{if('Notification' in window&&Notification
 }
 async function logout(){if(window.__gcLoggingOut)return;window.__gcLoggingOut=true;const b=$('logoutBtn');if(b){b.disabled=true;b.textContent='LOGGING OUT…'}sessionStorage.setItem('gc_logged_out','1');clearInterval(notificationTimer);try{if(realtimeChannel)await sb?.removeChannel(realtimeChannel)}catch(_){}['active_user_role','active_user_profile_id','active_user_id','active_user_name','active_user_email'].forEach(k=>localStorage.removeItem(k));const target=new URL('index.html',window.location.href).href;try{await Promise.race([sb?.auth.signOut({scope:'global'}),new Promise(r=>setTimeout(r,1200))])}catch(_){}window.location.replace(target)}
 document.addEventListener('click',e=>{const b=e.target.closest?.('#postBtn');if(!b||b.dataset.gcPostingBound==='1')return;if(typeof postRequest==='function'){e.preventDefault();e.stopImmediatePropagation();postRequest()}},true);
-window.addEventListener('error',e=>msg('Page error: '+(e.message||'Unknown JavaScript error')));window.addEventListener('unhandledrejection',e=>msg('System error: '+(e.reason?.message||e.reason||'Unknown error')));window.addEventListener('load',init);
+window.addEventListener('error',e=>msg('Page error: '+(e.message||'Unknown JavaScript error')));window.addEventListener('unhandledrejection',e=>msg('System error: '+(e.reason?.message||e.reason||'Unknown error')));window.showSectionHistory=showSectionHistory;
+window.addEventListener('load',init);
 })();
 </script>
 <style id="gc-branded-popup-style">
