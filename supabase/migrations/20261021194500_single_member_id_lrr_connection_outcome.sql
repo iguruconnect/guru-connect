@@ -111,7 +111,7 @@ BEGIN
     END IF;
 
     IF coalesce(v_request.status, 'OPEN')
-       NOT IN ('OPEN', 'PENDING_STUDENT_CONNECTION') THEN
+       NOT IN ('OPEN', 'TUTOR_ACCEPTED', 'PENDING_STUDENT_CONNECTION') THEN
         RAISE EXCEPTION
             'This Learning Request is not available for a new connection request.';
     END IF;
@@ -136,11 +136,20 @@ BEGIN
                   responded_at = NULL
     RETURNING * INTO v_conn;
 
+    -- Claim an open request for this tutor, or advance an already accepted
+    -- request to the student-connection stage. Never overwrite another tutor.
     UPDATE public.gc_learning_requests
-    SET status = 'PENDING_STUDENT_CONNECTION'
+    SET tutor_id = coalesce(tutor_id, v_tutor.id::text),
+        status = 'PENDING_STUDENT_CONNECTION'
     WHERE id = v_request.id
-      AND tutor_id IS NULL
-      AND coalesce(status, 'OPEN') = 'OPEN';
+      AND (tutor_id IS NULL OR tutor_id = v_tutor.id::text)
+      AND coalesce(status, 'OPEN') IN
+          ('OPEN', 'TUTOR_ACCEPTED', 'PENDING_STUDENT_CONNECTION');
+
+    IF NOT FOUND THEN
+        RAISE EXCEPTION
+            'Request changed while creating the connection. Please refresh and retry.';
+    END IF;
 
     v_subject := coalesce(nullif(trim(v_request.subject), ''), 'Learning Request');
 
