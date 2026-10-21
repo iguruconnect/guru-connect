@@ -170,12 +170,14 @@ async function postRequest(){
 
   // This is the authoritative LRR posting RPC used by the original GURU CONNECT build.
   // It performs the 100-coin escrow server-side; the browser never edits the wallet.
-  const r=await safe(sb.rpc('gc_post_learning_request',{
-    p_subject:subject,
-    p_mode:mode,
-    p_topic:topic,
-    p_stream:stream,
+  // Use the canonical-ID posting RPC; the server resolves auth.uid(), checks the canonical wallet,
+  // and places the 100-coin hold atomically. Keep the parameter names aligned with its SQL signature.
+  const r=await safe(sb.rpc('gc_post_my_learning_request',{
     p_course:course,
+    p_stream:stream,
+    p_subject:subject,
+    p_topic:topic,
+    p_mode:mode,
     p_issue:issue
   }));
   if(r.error) throw r.error;
