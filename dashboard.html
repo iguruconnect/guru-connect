@@ -258,10 +258,10 @@ async function getLrrWhatsAppContact(requestId,targetRole){
   if(targetRole!==expected)throw new Error('Contact role does not match this connection.');
   const id=String(expected==='tutor'?r.data.tutor_id||'':r.data.student_id||'');
   const table=expected==='tutor'?'tutor_profiles':'student_profiles';
-  const p=await safe(sb.from(table).select('id,user_id,phone,name').or('id.eq.'+id+',user_id.eq.'+id).limit(1).maybeSingle());
+  const p=await safe(sb.from(table).select('id,user_id,name').or('id.eq.'+id+',user_id.eq.'+id).limit(1).maybeSingle());
   if(p.error)throw p.error;
-  let phone=p.data?.phone||'',name=p.data?.name||'';
-  if(!phone){const canonical=String(p.data?.user_id||id);const cp=await safe(sb.from('profiles').select('phone,full_name').eq('id',canonical).maybeSingle());if(cp.error)throw cp.error;phone=cp.data?.phone||'';name=name||cp.data?.full_name||'';}
+  const canonical=String(p.data?.user_id||id);let phone='',name=p.data?.name||'';
+  const cp=await safe(sb.from('profiles').select('phone,full_name').eq('id',canonical).maybeSingle());if(cp.error)throw cp.error;phone=cp.data?.phone||'';name=name||cp.data?.full_name||'';
   if(!phone)throw new Error('No WhatsApp number is saved for this member. Please contact Admin.');
   return {phone,name:name||expected};
 }
