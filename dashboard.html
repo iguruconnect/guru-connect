@@ -371,7 +371,21 @@ async function accountView(){
       if (q.error) throw q.error;
       result = q.data;
     }
+
+async function accountView(){
+  try {
+    // Use the database function to select the correct existing wallet.
+    // Do not read the canonical wallet directly or combine balances.
+    const q = await safe(sb.rpc('gc_get_my_coin_balance'));
+    if (q.error) throw q.error;
+
+    const result = q.data;
     const bal = Number(result?.balance);
+
+    if (!Number.isFinite(bal) || bal < 0) {
+      throw new Error('Wallet balance is unavailable or invalid.');
+    }
+
 
     if (!Number.isFinite(bal) || bal < 0) {
       throw new Error('Wallet balance is unavailable or invalid.');
