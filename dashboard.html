@@ -222,7 +222,7 @@ async function getMemberDisplayNames(ids){
 }
 async function getRequests(){const q=await safe(sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(500));if(q.error)throw q.error;return q.data||[]}
 async function requestsView(){
- let rows=await getRequests();
+ let rows=(await getRequests()).filter(r=>String(r.status||'').toUpperCase()!=='DELETED');
  const nameIds=rows.flatMap(r=>[r.student_id,r.student_member_id,r.tutor_id,r.tutor_member_id,r.student_public_id,r.tutor_public_id]);
  const memberNames=await getMemberDisplayNames(nameIds);
  rows.forEach(r=>{
@@ -245,7 +245,9 @@ function canDeleteLrr(r){
  const st=String(r?.status||'').toUpperCase();
  const terminal=['CANCELLED','CANCELED','COMPLETED','SOLVED','APPROVED','ADMIN_APPROVED','EXPIRED','REJECTED','REJECTED_BY_ADMIN','ADMIN_DENIED','RETURNED_TO_STUDENT'];
  const dispute=String(r?.gc_cancellation_status||'').toUpperCase()==='PENDING_ADMIN_REVIEW'||/DISPUT|PENDING_ADMIN|ADMIN_REVIEW|UNDER_REVIEW/.test(st);
- return terminal.includes(st)&&!dispute&&r?.tutor_completed_at==null&&!(r?.student_outcome&&String(r.student_outcome).toUpperCase()==='NOT_SATISFIED'&&!r?.admin_decision);
+ const adminDecision=String(r?.admin_decision||r?.admin_status||'').trim();
+ const completed=['COMPLETED','SOLVED','APPROVED','ADMIN_APPROVED'].includes(st);
+ return terminal.includes(st)&&!dispute&&(!completed||!!adminDecision||st==='ADMIN_APPROVED')&&!(r?.student_outcome&&String(r.student_outcome).toUpperCase()==='NOT_SATISFIED'&&!adminDecision);
 }
 function canDeleteConnection(c,r){
  const cs=String(c?.status||'').toUpperCase(), rs=String(r?.status||'').toUpperCase();
@@ -264,7 +266,7 @@ async function outcomeReq(id,outcome){const r=await safe(sb.rpc('gc_student_lear
 async function connectionsView(){
   const q=await safe(sb.from('gc_learning_request_connections').select('*').order('created_at',{ascending:false}).limit(300));
   if(q.error)throw new Error(q.error.message+' — Run the supplied SUPABASE_CHAT_NOTIFICATIONS_FINAL.sql in Supabase SQL Editor.');
-  const rows=(q.data||[]).filter(x=>role==='student'?matchesCurrentMember(x.student_id)||matchesCurrentMember(x.student_member_id)||matchesCurrentMember(x.student_public_id):matchesCurrentMember(x.tutor_id)||matchesCurrentMember(x.tutor_member_id)||matchesCurrentMember(x.tutor_public_id));
+  const rows=(q.data||[]).filter(x=>!x.deleted_at&&(role==='student'?matchesCurrentMember(x.student_id)||matchesCurrentMember(x.student_member_id)||matchesCurrentMember(x.student_public_id):matchesCurrentMember(x.tutor_id)||matchesCurrentMember(x.tutor_member_id)||matchesCurrentMember(x.tutor_public_id)));
   const connectionNames=await getMemberDisplayNames(rows.flatMap(x=>[x.student_id,x.student_member_id,x.tutor_id,x.tutor_member_id]));
   const ids=rows.map(x=>x.request_id);const rq=ids.length?await safe(sb.from('gc_learning_requests_v2').select('*').in('id',ids)):({data:[],error:null});if(rq.error)throw rq.error;const map=new Map((rq.data||[]).map(x=>[String(x.id),x]));
   const otherIds=[...new Set(rows.map(c=>String(role==='student'?c.tutor_id:c.student_id||'')).filter(Boolean))];
