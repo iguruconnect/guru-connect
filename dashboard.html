@@ -388,7 +388,7 @@ async function downloadChatPDF(existingRows){
 
 
 
-async function showSectionHistory(kind){
+window.showSectionHistory = async function(kind){
  const prior=document.getElementById('gcSectionHistory');if(prior)prior.remove();
  let rows=[];
  if(kind==='lrr'){
@@ -409,6 +409,7 @@ async function showSectionHistory(kind){
  document.body.appendChild(modal);modal.querySelector('#gcSectionHistoryClose').onclick=()=>modal.remove();
  modal.querySelectorAll('[data-open-history-detail]').forEach(b=>b.onclick=async()=>{try{await showRecordHistory(b.dataset.kind,b.dataset.id,b.dataset.requestId);modal.remove()}catch(e){msg(e.message||String(e))}});
 }
+};
 async function showRecordHistory(kind,id,requestId){
  const prior=document.getElementById('gcRecordHistory');if(prior)prior.remove();
  let record=null,connection=null,events=[];
