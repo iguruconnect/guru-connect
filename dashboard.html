@@ -252,9 +252,14 @@ function canDeleteLrr(r){
 function canDeleteConnection(c,r){
  const cs=String(c?.status||'').toUpperCase(), rs=String(r?.status||'').toUpperCase();
  const terminalConnection=['REJECTED','DECLINED','CANCELLED','CANCELED','EXPIRED','COMPLETED','CLOSED'];
- const terminalRequest=['CANCELLED','CANCELED','COMPLETED','SOLVED','APPROVED','ADMIN_APPROVED','EXPIRED','REJECTED','REJECTED_BY_ADMIN','ADMIN_DENIED','RETURNED_TO_STUDENT'];
+ const terminalRequest=['CANCELLED','CANCELED','COMPLETED','SOLVED','APPROVED','ADMIN_APPROVED','EXPIRED','REJECTED','REJECTED_BY_ADMIN','ADMIN_DENIED','RETURNED_TO_STUDENT','DELETED'];
  const dispute=String(r?.gc_cancellation_status||'').toUpperCase()==='PENDING_ADMIN_REVIEW'||/DISPUT|PENDING_ADMIN|ADMIN_REVIEW|UNDER_REVIEW/.test(rs);
- return !dispute&&(terminalConnection.includes(cs)||terminalRequest.includes(rs))&&!['PENDING_STUDENT','PENDING_TUTOR','PENDING','REQUESTED','ACCEPTED','APPROVED','CONNECTED','TUTOR_ACCEPTED','IN_PROGRESS'].includes(cs)&&!(r?.tutor_completed_at!=null&&!r?.admin_decision);
+ const requestClosed=terminalRequest.includes(rs);
+ const adminDecision=String(r?.admin_decision||r?.admin_status||'').trim();
+ if(dispute|| (['COMPLETED','SOLVED','APPROVED'].includes(rs)&&!adminDecision&&rs!=='ADMIN_APPROVED'))return false;
+ if(r?.student_outcome&&String(r.student_outcome).toUpperCase()==='NOT_SATISFIED'&&!adminDecision)return false;
+ if(r?.tutor_completed_at!=null&&!adminDecision&&!['ADMIN_APPROVED','ADMIN_DENIED','RETURNED_TO_STUDENT','CANCELLED','CANCELED','REJECTED','REJECTED_BY_ADMIN','DELETED'].includes(rs))return false;
+ return terminalConnection.includes(cs)||requestClosed;
 }
 function statusClass(s){s=String(s||'');if(s==='OPEN')return'open';if(/PENDING|REQUEST/i.test(s))return'pending';if(/COMPLETED|APPROVED/i.test(s))return'done';return''}
 function requestTopicMeta(r){const raw=String(r.topic||'');const m=raw.match(/^Chapter:\s*([\s\S]*?)\nTopic:\s*([\s\S]*?)(?:\nLearning Mode:\s*(.*))?$/i);if(m)return{chapter:m[1].trim(),topic:m[2].trim(),mode:(m[3]||'').trim().replaceAll('_',' ')};return{chapter:'',topic:raw,mode:String(r.learning_mode||'').replaceAll('_',' ')};}
