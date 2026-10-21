@@ -115,12 +115,16 @@ function toast(title,body){$('toastTitle').textContent=title;$('toastBody').text
 function roleProfileIds(){return pid()}
 async function init(){
  try{
+  $('who').textContent='Loading dashboard: checking session…';
   if(sessionStorage.getItem('gc_logged_out')==='1'){sessionStorage.removeItem('gc_logged_out');try{await sb?.auth?.signOut({scope:'local'})}catch(_){}window.location.replace('index.html');return}
 
+  $('who').textContent='Loading dashboard: connecting to Supabase…';
   if(!window.supabase?.createClient)throw new Error('Supabase library did not load. Please check internet/CDN access.');
   sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+  $('who').textContent='Loading dashboard: checking login…';
   const s=await safe(sb.auth.getSession());me=s.data.session?.user;
   if(!me){$('who').textContent='Not logged in';msg('Your login session is missing. Please login again from the website.');setTimeout(()=>location.href='index.html',1800);return}
+  $('who').textContent='Loading dashboard: checking Student/Tutor profile…';
   const ident=await safe(sb.rpc('gc_get_my_member_profile'));
   if(ident.error)throw ident.error;
   role=String(ident.data?.role||'').toLowerCase();profile=ident.data?.profile||null;
@@ -128,6 +132,7 @@ async function init(){
   if(String(profile.user_id||'')!==String(me.id))throw new Error('Member identity mismatch. Please contact Admin.');
   localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_profile_id',profile.id);localStorage.setItem('active_user_id',me.id);localStorage.setItem('active_user_name',profile.name||profile.full_name||me.email?.split('@')[0]||'User');
   $('who').textContent=(role==='student'?'STUDENT':'TUTOR')+' • '+(profile.name||profile.full_name||me.email||'');
+  $('who').textContent='Loading dashboard: preparing your requests…';
   bind();await loadNotifications(true);startNotificationWatch();render();
  }catch(e){msg(e.message||e)}
 }
