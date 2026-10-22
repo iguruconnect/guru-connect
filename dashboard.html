@@ -214,12 +214,15 @@ async function postRequest(){
 async function getMemberDisplayNames(ids){
  const keys=[...new Set((ids||[]).filter(Boolean).map(String))],names=new Map(),canonical=new Map();
  if(!keys.length)return names;
- for(const table of ['student_profiles','tutor_profiles']){
-  for(const col of ['id','user_id']){
-   try{const q=await safe(sb.from(table).select('*').in(col,keys));if(!q.error)(q.data||[]).forEach(p=>{const n=p.full_name||p.name||p.display_name||p.student_name||p.tutor_name||[p.first_name,p.middle_name,p.last_name].filter(Boolean).join(' ');if(n){names.set(String(p.id),String(n));if(p.user_id)names.set(String(p.user_id),String(n));}})}catch(_){}
-  }
- }
- try{const m=await safe(sb.from('gc_member_id_map').select('detail_profile_id,member_id,email'));if(!m.error)(m.data||[]).forEach(x=>{canonical.set(String(x.detail_profile_id),String(x.member_id));if(x.email&&!names.has(String(x.member_id)))names.set(String(x.member_id),String(x.email).split('@')[0]);});}catch(_){}
+ const lookups=await Promise.all([
+  safe(sb.from('student_profiles').select('*').in('id',keys)),
+  safe(sb.from('student_profiles').select('*').in('user_id',keys)),
+  safe(sb.from('tutor_profiles').select('*').in('id',keys)),
+  safe(sb.from('tutor_profiles').select('*').in('user_id',keys)),
+  safe(sb.from('gc_member_id_map').select('detail_profile_id,member_id,email'))
+ ]);
+ for(let i=0;i<4;i++){const q=lookups[i];if(!q.error)(q.data||[]).forEach(p=>{const n=p.full_name||p.name||p.display_name||p.student_name||p.tutor_name||[p.first_name,p.middle_name,p.last_name].filter(Boolean).join(' ');if(n){names.set(String(p.id),String(n));if(p.user_id)names.set(String(p.user_id),String(n));}})}
+ const m=lookups[4];if(!m.error)(m.data||[]).forEach(x=>{canonical.set(String(x.detail_profile_id),String(x.member_id));if(x.email&&!names.has(String(x.member_id)))names.set(String(x.member_id),String(x.email).split('@')[0]);});
  const canonicalIds=[...new Set([...keys,...[...canonical.entries()].filter(([k])=>keys.includes(k)).map(([,v])=>v)])];
  try{const p=await safe(sb.from('profiles').select('*').in('id',canonicalIds));if(!p.error)(p.data||[]).forEach(x=>{const n=x.full_name||x.name||x.display_name||x.email?.split('@')[0];if(n){names.set(String(x.id),String(n));for(const [detail,member] of canonical)if(member===String(x.id))names.set(detail,String(n));}})}catch(_){}
  for(const id of keys){const member=canonical.get(id);if(member&&names.has(member))names.set(id,names.get(member));}
@@ -401,8 +404,14 @@ async function openCentralHistory(kind){
  $('gcCentralHistoryBack').onclick=()=>{tab=priorTab;render()};
  try{
   let requests=[],connections=[],actions=[];
-  const rq=await safe(sb.from('gc_learning_requests').select('*').order('created_at',{ascending:false}).limit(500));
-  if(!rq.error)requests=(rq.data||[]).filter(r=>requestBelongsTo(r,role==='student'?'student':'tutor'));
+  try{requests=await getRequests()}catch(_){}
+  const baseQ=await safe(sb.from('gc_learning_requests').select('*').order('created_at',{ascending:false}).limit(500));
+  if(!baseQ.error){
+   const merged=new Map(requests.map(r=>[String(r.id||''),r]));
+   (baseQ.data||[]).forEach(r=>{const k=String(r.id||'');if(k)merged.set(k,{...(merged.get(k)||{}),...r})});
+   requests=[...merged.values()];
+  }
+  requests=requests.filter(r=>requestBelongsTo(r,role==='student'?'student':'tutor')||String(r.studentId||r.student_user_id||'')===String(me?.id||'')||String(r.tutorId||r.tutor_user_id||'')===String(me?.id||''));
   const cq=await safe(sb.from('gc_learning_request_connections').select('*').order('created_at',{ascending:false}).limit(500));
   if(!cq.error)connections=(cq.data||[]).filter(c=>role==='student'?(matchesCurrentMember(c.student_id)||matchesCurrentMember(c.student_member_id)||matchesCurrentMember(c.student_public_id)):(matchesCurrentMember(c.tutor_id)||matchesCurrentMember(c.tutor_member_id)||matchesCurrentMember(c.tutor_public_id)));
   const allowedIds=new Set(requests.map(r=>String(r.id||'')));
