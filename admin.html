@@ -1345,18 +1345,19 @@ async function getLrrPeople(rows){
   };
   // Admin can normally read these profile tables. We map BOTH profile UUID and
   // Auth/User UUID so the name is still found regardless of which UUID the LRR stores.
-  for(const [table,role,cols] of [
-    ['profiles','', 'id,user_id,full_name,name,display_name'],
-    ['student_profiles','student','id,user_id,name,full_name,display_name'],
-    ['tutor_profiles','tutor','id,user_id,name,full_name,display_name']
-  ]){
-    try{
-      const q=await sb.from(table).select(cols);
-      if(!q.error)(q.data||[]).forEach(x=>{
-        if(!ids.size || ids.has(String(x.id)) || ids.has(String(x.user_id))) add(x,role||String(x.role||''));
-      });
-    }catch(_){ }
-  }
+  const wanted=[...ids];
+  const specs=[
+    ['profiles','', 'id,user_id,full_name,name,display_name','id'],
+    ['student_profiles','student','id,user_id,name,full_name,display_name','id'],
+    ['student_profiles','student','id,user_id,name,full_name,display_name','user_id'],
+    ['tutor_profiles','tutor','id,user_id,name,full_name,display_name','id'],
+    ['tutor_profiles','tutor','id,user_id,name,full_name,display_name','user_id']
+  ];
+  const results=await Promise.all(specs.map(async ([table,role,cols,col])=>{
+    if(!wanted.length)return {table,role,data:[]};
+    try{const q=await sb.from(table).select(cols).in(col,wanted);return {table,role,data:q.error?[]:(q.data||[])};}catch(_){return {table,role,data:[]};}
+  }));
+  results.forEach(result=>result.data.forEach(x=>add(x,result.role||String(x.role||''))));
   return map;
 }
 function lrrPersonHtml(id,people,role,label,embeddedName){
