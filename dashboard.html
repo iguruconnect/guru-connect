@@ -407,6 +407,13 @@ async function openCentralHistory(kind){
  }
  const requestIds=[...new Set([...(isLrr?requests.map(r=>String(r.id||'')):connections.map(c=>String(c.request_id||'')))].filter(Boolean))];
  if(requestIds.length){const aq=await safe(sb.from('gc_learning_actions').select('*').in('request_id',requestIds).order('created_at',{ascending:false}).limit(1000));if(!aq.error)events=aq.data||[];}
+ const coinEvents=[];
+ if(requestIds.length){
+  const l1=await safe(sb.from('gc_coin_ledger').select('*').in('request_id',requestIds).order('created_at',{ascending:false}).limit(500));
+  if(!l1.error)coinEvents.push(...(l1.data||[]));
+  const uuidIds=requestIds.filter(x=>/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(x));
+  if(uuidIds.length){const l2=await safe(sb.from('gc_coin_ledger').select('*').in('learning_request_id',uuidIds).order('created_at',{ascending:false}).limit(500));if(!l2.error)coinEvents.push(...(l2.data||[]));}
+ }
  const reqMap=new Map(requests.map(r=>[String(r.id),r]));
  const items=[];
  const add=(at,label,name,subject,id,status)=>{if(at||label)items.push({at:at||null,label,name:name||'Name not available',subject:subject||'Learning Request',id:id||'—',status:status||'—'});};
@@ -438,6 +445,18 @@ async function openCentralHistory(kind){
   const r=reqMap.get(String(e.request_id||''))||{};
   const name=role==='student'?(r.student_name||r.student_full_name):(r.tutor_name||r.tutor_full_name);
   add(e.created_at||e.occurred_at,String(e.action||e.action_type||e.event_type||e.type||e.description||'Recorded activity')+(e.note||e.message?' — '+String(e.note||e.message):''),name,r.subject||'Learning Request',r.request_code||e.request_id,e.status||r.status);
+ });
+ const seenCoins=new Set();
+ coinEvents.forEach(e=>{
+  const key=String(e.id||'')+'|'+String(e.created_at||'');
+  if(seenCoins.has(key))return;seenCoins.add(key);
+  const rid=String(e.request_id||e.learning_request_id||'');
+  const r=reqMap.get(rid)||{};
+  const action=e.transaction_type||e.action||e.entry_type||e.reason||e.event_type||'Coin ledger entry';
+  const amount=e.amount??e.coins??e.coin_amount??e.delta;
+  const detail=String(action)+(amount!==undefined&&amount!==null?' • Coins: '+String(amount):'')+(e.note||e.description?' — '+String(e.note||e.description):'');
+  const name=role==='student'?(r.student_name||r.student_full_name):(r.tutor_name||r.tutor_full_name);
+  add(e.created_at||e.occurred_at,'COIN TRANSACTION: '+detail,name,r.subject||'Learning Request',r.request_code||rid,r.status||'Recorded');
  });
  items.sort((a,b)=>new Date(b.at||0)-new Date(a.at||0));
  const body=items.length?items.map(e=>'<div class="note" style="margin:8px 0"><div style="display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap"><b>'+esc(e.label)+'</b><span class="small">'+esc(e.at?fmt(e.at):'Time not recorded')+'</span></div><div class="small"><b>Name:</b> '+esc(e.name)+' • <b>Request:</b> '+esc(e.subject)+' • <b>ID:</b> '+esc(e.id)+' • <b>Status:</b> '+esc(String(e.status).replaceAll('_',' '))+'</div></div>').join(''):'<div class="note">No historical records were found for this section.</div>';
