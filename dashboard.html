@@ -133,7 +133,7 @@ async function init(){
   localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_profile_id',profile.id);localStorage.setItem('active_user_id',me.id);localStorage.setItem('active_user_name',profile.name||profile.full_name||me.email?.split('@')[0]||'User');
   $('who').textContent=(role==='student'?'STUDENT':'TUTOR')+' • '+(profile.name||profile.full_name||me.email||'');
   $('who').textContent='Loading dashboard: preparing your requests…';
-  bind();await loadNotifications(true);startNotificationWatch();render();
+  bind();render();startNotificationWatch();loadNotifications(true).catch(e=>console.warn('Notification load deferred:',e));
  }catch(e){msg(e.message||e)}
 }
 function bind(){
@@ -394,107 +394,58 @@ async function downloadChatPDF(existingRows){
 
 
 async function openCentralHistory(kind){
- const old=document.getElementById('gcCentralHistory');if(old)old.remove();
- const isLrr=kind==='lrr';let requests=[],connections=[],events=[];
- if(isLrr){
-  requests=(await getRequests()).filter(r=>role==='student'?requestBelongsTo(r,'student'):requestBelongsTo(r,'tutor'));
- }else{
-  const q=await safe(sb.from('gc_learning_request_connections').select('*').order('created_at',{ascending:false}).limit(500));
-  if(q.error)throw new Error(q.error.message||'Connection history could not be loaded.');
-  connections=(q.data||[]).filter(c=>role==='student'?(matchesCurrentMember(c.student_id)||matchesCurrentMember(c.student_member_id)||matchesCurrentMember(c.student_public_id)):(matchesCurrentMember(c.tutor_id)||matchesCurrentMember(c.tutor_member_id)||matchesCurrentMember(c.tutor_public_id)));
-  const ids=[...new Set(connections.map(c=>String(c.request_id||'')).filter(Boolean))];
-  if(ids.length){const rq=await safe(sb.from('gc_learning_requests').select('*').in('id',ids));if(!rq.error)requests=rq.data||[];}
- }
- const requestIds=[...new Set([...(isLrr?requests.map(r=>String(r.id||'')):connections.map(c=>String(c.request_id||'')))].filter(Boolean))];
- if(requestIds.length){const aq=await safe(sb.from('gc_learning_actions').select('*').in('request_id',requestIds).order('created_at',{ascending:false}).limit(1000));if(!aq.error)events=aq.data||[];}
- const coinEvents=[];
- if(requestIds.length){
-  const l1=await safe(sb.from('gc_coin_ledger').select('*').in('request_id',requestIds).order('created_at',{ascending:false}).limit(500));
-  if(!l1.error)coinEvents.push(...(l1.data||[]));
-  const uuidIds=requestIds.filter(x=>/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(x));
-  if(uuidIds.length){const l2=await safe(sb.from('gc_coin_ledger').select('*').in('learning_request_id',uuidIds).order('created_at',{ascending:false}).limit(500));if(!l2.error)coinEvents.push(...(l2.data||[]));}
- }
- const reqMap=new Map(requests.map(r=>[String(r.id),r]));
- const items=[];
- const add=(at,label,name,subject,id,status)=>{if(at||label)items.push({at:at||null,label,name:name||'Name not available',subject:subject||'Learning Request',id:id||'—',status:status||'—'});};
- if(isLrr){
-  requests.forEach(r=>{
-   const name=role==='student'?(r.student_display_name||r.student_name||r.student_full_name):(r.tutor_display_name||r.tutor_name||r.tutor_full_name);
-   const subject=r.subject||'Learning Request',id=r.request_code||r.id,status=r.status||'Unknown';
-   add(r.created_at,'Learning Request created',name,subject,id,status);
-   add(r.cancelled_at,'Request cancelled'+(r.cancellation_reason?' — '+r.cancellation_reason:''),name,subject,id,status);
-   add(r.tutor_completed_at,'Tutor marked work completed',name,subject,id,status);
-   add(r.student_outcome_at||r.outcome_at,'Student outcome: '+(r.student_outcome||'submitted'),name,subject,id,status);
-   add(r.admin_decided_at||r.admin_reviewed_at||r.decision_at,'Admin decision: '+(r.admin_decision||r.admin_status||'recorded'),name,subject,id,status);
-   add(r.deleted_at,'Record hidden from dashboard',name,subject,id,status);
-  });
- }else{
-  connections.forEach(c=>{
-   const r=reqMap.get(String(c.request_id||''))||{};
-   const name=role==='student'?(c.tutor_name||c.tutor_display_name||r.tutor_name||r.tutor_full_name):(c.student_name||c.student_display_name||r.student_name||r.student_full_name);
-   const subject=r.subject||'Learning Request',id=r.request_code||c.request_id||c.id,status=c.status||r.status||'Unknown';
-   add(c.created_at,'Connection request created',name,subject,id,status);
-   add(c.responded_at,'Connection response: '+(c.status||'recorded'),name,subject,id,status);
-   add(c.deleted_at,'Connection hidden from dashboard',name,subject,id,status);
-   if(r.cancelled_at)add(r.cancelled_at,'Learning Request cancelled'+(r.cancellation_reason?' — '+r.cancellation_reason:''),name,subject,id,status);
-   if(r.tutor_completed_at)add(r.tutor_completed_at,'Tutor marked work completed',name,subject,id,status);
-   if(r.admin_decided_at||r.admin_reviewed_at||r.decision_at)add(r.admin_decided_at||r.admin_reviewed_at||r.decision_at,'Admin decision: '+(r.admin_decision||r.admin_status||'recorded'),name,subject,id,status);
-  });
- }
- events.forEach(e=>{
-  const r=reqMap.get(String(e.request_id||''))||{};
-  const name=role==='student'?(r.student_name||r.student_full_name):(r.tutor_name||r.tutor_full_name);
-  add(e.created_at||e.occurred_at,String(e.action||e.action_type||e.event_type||e.type||e.description||'Recorded activity')+(e.note||e.message?' — '+String(e.note||e.message):''),name,r.subject||'Learning Request',r.request_code||e.request_id,e.status||r.status);
- });
- const seenCoins=new Set();
- coinEvents.forEach(e=>{
-  const key=String(e.id||'')+'|'+String(e.created_at||'');
-  if(seenCoins.has(key))return;seenCoins.add(key);
-  const rid=String(e.request_id||e.learning_request_id||'');
-  const r=reqMap.get(rid)||{};
-  const action=e.transaction_type||e.action||e.entry_type||e.reason||e.event_type||'Coin ledger entry';
-  const amount=e.amount??e.coins??e.coin_amount??e.delta;
-  const detail=String(action)+(amount!==undefined&&amount!==null?' • Coins: '+String(amount):'')+(e.note||e.description?' — '+String(e.note||e.description):'');
-  const name=role==='student'?(r.student_name||r.student_full_name):(r.tutor_name||r.tutor_full_name);
-  add(e.created_at||e.occurred_at,'COIN TRANSACTION: '+detail,name,r.subject||'Learning Request',r.request_code||rid,r.status||'Recorded');
- });
- items.sort((a,b)=>new Date(b.at||0)-new Date(a.at||0));
- const body=items.length?items.map(e=>'<div class="note" style="margin:8px 0"><div style="display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap"><b>'+esc(e.label)+'</b><span class="small">'+esc(e.at?fmt(e.at):'Time not recorded')+'</span></div><div class="small"><b>Name:</b> '+esc(e.name)+' • <b>Request:</b> '+esc(e.subject)+' • <b>ID:</b> '+esc(e.id)+' • <b>Status:</b> '+esc(String(e.status).replaceAll('_',' '))+'</div></div>').join(''):'<div class="note">No historical records were found for this section.</div>';
- const title=isLrr?'COMPLETE LRR TRANSACTION HISTORY':'COMPLETE CONNECTION TRANSACTION HISTORY';
- document.body.insertAdjacentHTML('beforeend','<div id="gcCentralHistory" class="gc-chat-overlay" style="z-index:10000"><div class="gc-chat-window" role="dialog" aria-modal="true" aria-label="'+title+'"><div class="gc-chat-top"><div class="gc-chat-person"><strong>📜 '+title+'</strong><span>Sorted newest first • recorded dates, names, status and actions</span></div><button type="button" class="gc-chat-tool" id="gcCentralHistoryClose">CLOSE ✕</button></div><div class="gc-chat-messages">'+body+'</div></div></div>');
- document.getElementById('gcCentralHistoryClose').onclick=()=>document.getElementById('gcCentralHistory')?.remove();
- document.getElementById('gcCentralHistory').onclick=e=>{if(e.target.id==='gcCentralHistory')e.currentTarget.remove()};
-}
-
-async function openCentralHistory(kind){
- const old=document.getElementById('gcCentralHistory');if(old)old.remove();
  const isLrr=String(kind||'').toLowerCase()==='lrr';
- let rows=[];
- if(isLrr){
-  const q=await safe(sb.from('gc_learning_requests').select('*').order('created_at',{ascending:false}).limit(500));if(q.error)throw q.error;
-  rows=(q.data||[]).filter(r=>requestBelongsTo(r,role==='student'?'student':'tutor'));
- }else{
-  const q=await safe(sb.from('gc_learning_request_connections').select('*').order('created_at',{ascending:false}).limit(500));if(q.error)throw q.error;
-  rows=(q.data||[]).filter(c=>role==='student'?(matchesCurrentMember(c.student_id)||matchesCurrentMember(c.student_member_id)||matchesCurrentMember(c.student_public_id)):(matchesCurrentMember(c.tutor_id)||matchesCurrentMember(c.tutor_member_id)||matchesCurrentMember(c.tutor_public_id)));
- }
- const title=isLrr?'LEARNING REQUEST HISTORY':'CONNECTION REQUEST HISTORY';
- const list=rows.length?rows.map(r=>{
-  const raw=String(r.status||'UNKNOWN').toUpperCase();
-  const outcome=String(r.student_outcome||r.outcome||'').toUpperCase();
-  const status=(r.deleted_at||raw==='DELETED')?'REMOVED • '+raw.replaceAll('_',' '):raw.replaceAll('_',' ');
-  const stamp=r.created_at?fmt(r.created_at):'Date/time not recorded';
-  const subject=isLrr?(r.subject||r.request_code||'Learning Request'):(r.request_id||'Connection Request');
-  const detailId=String(r.id||'');
-  return '<div class="note" style="margin:8px 0"><div style="display:flex;gap:10px;justify-content:space-between;flex-wrap:wrap"><b>'+esc(subject)+'</b><b>'+esc(status)+'</b></div><div class="small">Date & time: '+esc(stamp)+(outcome?' • Outcome: '+esc(outcome.replaceAll('_',' ')):'')+'</div><div class="small">Record ID: '+esc(isLrr?detailId:(r.request_id||detailId))+'</div><button type="button" class="btn gray" data-central-history-detail="1" data-kind="'+(isLrr?'lrr':'connection')+'" data-id="'+esc(detailId)+'" data-request-id="'+esc(isLrr?detailId:(r.request_id||''))+'">VIEW TIMELINE</button></div>';
- }).join(''):'<div class="empty">No stored history records were found for this account.</div>';
- const modal=document.createElement('div');modal.id='gcCentralHistory';modal.className='gc-chat-overlay';modal.style.zIndex='10001';
- modal.innerHTML='<div class="gc-chat-window" role="dialog" aria-modal="true" aria-label="'+title+'"><div class="gc-chat-top"><div class="gc-chat-person"><strong>📜 '+title+'</strong><span>Stored records, status and date/time</span></div><button type="button" class="gc-chat-tool" id="gcCentralHistoryClose">CLOSE ✕</button></div><div class="gc-chat-messages">'+list+'</div></div>';
- document.body.appendChild(modal);
- modal.querySelector('#gcCentralHistoryClose').onclick=()=>modal.remove();
- modal.onclick=e=>{if(e.target===modal)modal.remove()};
- modal.querySelectorAll('[data-central-history-detail]').forEach(b=>b.onclick=async()=>{try{await showRecordHistory(b.dataset.kind,b.dataset.id,b.dataset.requestId)}catch(e){msg(e.message||String(e))}});
+ const app=$('app');if(!app)throw new Error('Dashboard content area is missing.');
+ const priorTab=tab;
+ app.innerHTML='<section style="background:#fff;color:#111827;min-height:70vh;padding:22px;border:1px solid #e5e7eb;border-radius:14px"><div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap"><div><h2 style="margin:0;color:#111827">'+(isLrr?'LEARNING REQUEST HISTORY':'CONNECTION REQUEST HISTORY')+'</h2><p style="margin:8px 0;color:#4b5563">Date and time • Name • Request ID • Current status • Outcome</p></div><button id="gcCentralHistoryBack" type="button" class="btn gray">← BACK TO DASHBOARD</button></div><div id="gcCentralHistoryBody" style="margin-top:18px;color:#111827">Loading saved history…</div></section>';
+ $('gcCentralHistoryBack').onclick=()=>{tab=priorTab;render()};
+ try{
+  let requests=[],connections=[],actions=[];
+  const rq=await safe(sb.from('gc_learning_requests').select('*').order('created_at',{ascending:false}).limit(500));
+  if(!rq.error)requests=(rq.data||[]).filter(r=>requestBelongsTo(r,role==='student'?'student':'tutor'));
+  const cq=await safe(sb.from('gc_learning_request_connections').select('*').order('created_at',{ascending:false}).limit(500));
+  if(!cq.error)connections=(cq.data||[]).filter(c=>role==='student'?(matchesCurrentMember(c.student_id)||matchesCurrentMember(c.student_member_id)||matchesCurrentMember(c.student_public_id)):(matchesCurrentMember(c.tutor_id)||matchesCurrentMember(c.tutor_member_id)||matchesCurrentMember(c.tutor_public_id)));
+  const allowedIds=new Set(requests.map(r=>String(r.id||'')));
+  const relevantConnections=connections.filter(c=>!isLrr||allowedIds.has(String(c.request_id||'')));
+  const ids=[...new Set((isLrr?requests.map(r=>String(r.id||'')):relevantConnections.map(c=>String(c.request_id||''))).filter(Boolean))];
+  if(ids.length){const aq=await safe(sb.from('gc_learning_actions').select('*').in('request_id',ids).order('created_at',{ascending:false}).limit(500));if(!aq.error)actions=aq.data||[];}
+  const reqMap=new Map(requests.map(r=>[String(r.id||''),r]));
+  const events=[];
+  const add=(at,label,name,subject,id,status,outcome)=>events.push({at:at||'',label,name:name||'Name not available',subject:subject||'Learning Request',id:id||'—',status:status||'Unknown',outcome:outcome||''});
+  if(isLrr){
+   requests.forEach(r=>{
+    const name=role==='student'?(r.student_display_name||r.student_name||r.student_full_name||profile?.name):(r.tutor_display_name||r.tutor_name||r.tutor_full_name||profile?.name);
+    const subject=r.subject||'Learning Request',id=r.request_code||r.id,status=String(r.status||'UNKNOWN').replaceAll('_',' '),outcome=String(r.student_outcome||r.outcome||'').replaceAll('_',' ');
+    add(r.created_at,'LRR created',name,subject,id,status,outcome);
+    add(r.cancelled_at,'LRR cancelled'+(r.cancellation_reason?' — '+r.cancellation_reason:''),name,subject,id,status,'CANCELLED');
+    add(r.tutor_completed_at,'Tutor marked completed',name,subject,id,status,outcome);
+    add(r.student_outcome_at||r.outcome_at,'Student outcome recorded',name,subject,id,status,outcome);
+    add(r.admin_decided_at||r.admin_reviewed_at||r.decision_at,'Admin decision: '+(r.admin_decision||r.admin_status||'recorded'),name,subject,id,status,outcome);
+    add(r.deleted_at,'Removed from active dashboard',name,subject,id,status,outcome);
+   });
+  }else{
+   relevantConnections.forEach(c=>{
+    const r=reqMap.get(String(c.request_id||''))||{};
+    const name=role==='student'?(c.tutor_name||c.tutor_display_name||r.tutor_name||r.tutor_full_name):(c.student_name||c.student_display_name||r.student_name||r.student_full_name);
+    const subject=r.subject||'Learning Request',id=r.request_code||c.request_id||c.id;
+    add(c.created_at,'Connection request created',name,subject,id,String(c.status||'UNKNOWN').replaceAll('_',' '),String(r.student_outcome||r.outcome||'').replaceAll('_',' '));
+    add(c.responded_at,'Connection response recorded',name,subject,id,String(c.status||'UNKNOWN').replaceAll('_',' '),String(r.student_outcome||r.outcome||'').replaceAll('_',' '));
+    add(c.deleted_at,'Connection removed from active dashboard',name,subject,id,String(c.status||'UNKNOWN').replaceAll('_',' '),String(r.student_outcome||r.outcome||'').replaceAll('_',' '));
+   });
+  }
+  actions.forEach(e=>{
+   const r=reqMap.get(String(e.request_id||''))||{};
+   const name=role==='student'?(r.student_name||r.student_full_name||profile?.name):(r.tutor_name||r.tutor_full_name||profile?.name);
+   add(e.created_at||e.occurred_at,String(e.action||e.action_type||e.event_type||e.type||e.description||'Recorded activity')+(e.note||e.message?' — '+String(e.note||e.message):''),name,r.subject||'Learning Request',r.request_code||e.request_id,String(e.status||r.status||'Unknown').replaceAll('_',' '),String(r.student_outcome||r.outcome||'').replaceAll('_',' '));
+  });
+  events.sort((a,b)=>new Date(b.at||0)-new Date(a.at||0));
+  const body=$('gcCentralHistoryBody');
+  if(!body)return;
+  body.innerHTML=events.length?'<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;background:#fff;color:#111827;font-size:14px"><thead><tr style="text-align:left;background:#f3f4f6"><th style="padding:11px;border-bottom:1px solid #d1d5db">Date & Time</th><th style="padding:11px;border-bottom:1px solid #d1d5db">Name / Activity</th><th style="padding:11px;border-bottom:1px solid #d1d5db">Request</th><th style="padding:11px;border-bottom:1px solid #d1d5db">Status</th><th style="padding:11px;border-bottom:1px solid #d1d5db">Outcome</th></tr></thead><tbody>'+events.map(e=>'<tr><td style="padding:11px;border-bottom:1px solid #e5e7eb;white-space:nowrap">'+esc(e.at?fmt(e.at):'Time not recorded')+'</td><td style="padding:11px;border-bottom:1px solid #e5e7eb">'+esc(e.name)+'<div style="color:#6b7280;font-size:12px">'+esc(e.label)+'</div></td><td style="padding:11px;border-bottom:1px solid #e5e7eb">'+esc(e.subject)+'<div style="color:#6b7280;font-size:12px">'+esc(e.id)+'</div></td><td style="padding:11px;border-bottom:1px solid #e5e7eb">'+esc(e.status)+'</td><td style="padding:11px;border-bottom:1px solid #e5e7eb">'+esc(e.outcome||'—')+'</td></tr>').join('')+'</tbody></table></div>':'<div style="padding:20px;border:1px solid #e5e7eb;border-radius:10px;background:#fff">No history records were found in the saved records available to this account.</div>';
+ }catch(e){const body=$('gcCentralHistoryBody');if(body)body.innerHTML='<div style="padding:16px;background:#fff1f2;color:#991b1b;border:1px solid #fecdd3;border-radius:10px">History could not be loaded: '+esc(e.message||String(e))+'</div>';}
 }
 window.openCentralHistory=openCentralHistory;
+
 async function showRecordHistory(kind,id,requestId){
  const prior=document.getElementById('gcRecordHistory');if(prior)prior.remove();
  let record=null,connection=null,events=[];
