@@ -411,6 +411,7 @@ async function openCentralHistory(kind){
    (baseQ.data||[]).forEach(r=>{const k=String(r.id||'');if(k)merged.set(k,{...(merged.get(k)||{}),...r})});
    requests=[...merged.values()];
   }
+  const allRequestsForHistory=requests.slice();
   requests=requests.filter(r=>requestBelongsTo(r,role==='student'?'student':'tutor')||String(r.studentId||r.student_user_id||'')===String(me?.id||'')||String(r.tutorId||r.tutor_user_id||'')===String(me?.id||''));
   const cq=await safe(sb.from('gc_learning_request_connections').select('*').order('created_at',{ascending:false}).limit(500));
   if(!cq.error)connections=(cq.data||[]).filter(c=>role==='student'?(matchesCurrentMember(c.student_id)||matchesCurrentMember(c.student_member_id)||matchesCurrentMember(c.student_public_id)):(matchesCurrentMember(c.tutor_id)||matchesCurrentMember(c.tutor_member_id)||matchesCurrentMember(c.tutor_public_id)));
@@ -418,7 +419,7 @@ async function openCentralHistory(kind){
   const relevantConnections=connections.filter(c=>!isLrr||allowedIds.has(String(c.request_id||'')));
   const ids=[...new Set((isLrr?requests.map(r=>String(r.id||'')):relevantConnections.map(c=>String(c.request_id||''))).filter(Boolean))];
   if(ids.length){const aq=await safe(sb.from('gc_learning_actions').select('*').in('request_id',ids).order('created_at',{ascending:false}).limit(500));if(!aq.error)actions=aq.data||[];}
-  const reqMap=new Map(requests.map(r=>[String(r.id||''),r]));
+  const reqMap=new Map((isLrr?requests:allRequestsForHistory).map(r=>[String(r.id||''),r]));
   const events=[];
   const add=(at,label,name,subject,id,status,outcome)=>events.push({at:at||'',label,name:name||'Name not available',subject:subject||'Learning Request',id:id||'—',status:status||'Unknown',outcome:outcome||''});
   if(isLrr){
