@@ -406,6 +406,31 @@ async function decideRegistrationApproval(userId,approved){
     status.textContent=action+' registration…';
     const r=await sb.rpc('gc_admin_set_registration_approval',{p_user_id:String(userId),p_approved:!!approved,p_note:approved?'Approved by Admin':'Rejected by Admin'});
     if(r.error)throw r.error;
+    const prof=await sb.from('profiles').select('role').eq('id',String(userId)).maybeSingle();
+    if(prof.error)throw prof.error;
+    if(String(prof.data?.role||'').toLowerCase()==='tutor'){
+      const q=await sb.from('tutor_profiles').select('*').eq('user_id',String(userId)).maybeSingle();
+      if(q.error)throw q.error;
+      if(q.data){
+        const now=new Date(),detail=q.data,free=String(detail.membership_type||'free').toLowerCase()!=='premium';
+        const months=Math.max(1,Math.min(24,Number(detail.membership_months)||1));
+        const verified=!!detail.verified_badge_enabled&&Number(detail.verified_badge_months)>0;
+        const patch=approved ? (free ? {
+          membership_type:'free',membership_status:'FREE_TRIAL',membership_started_at:now.toISOString(),
+          membership_review_due_at:new Date(now.getTime()+60*86400000).toISOString(),
+          membership_expires_at:new Date(now.getTime()+60*86400000).toISOString(),
+          profile_hidden:false,profile_hidden_reason:null,registration_approved:true
+        } : {
+          membership_type:'premium',membership_status:'PREMIUM_ACTIVE',membership_started_at:now.toISOString(),
+          membership_expires_at:new Date(now.getTime()+months*30*86400000).toISOString(),
+          membership_review_due_at:null,paid_status:'PAID',profile_hidden:false,profile_hidden_reason:null,registration_approved:true,
+          verified:verified,verified_badge_started_at:verified?now.toISOString():null,
+          verified_badge_expires_at:verified?new Date(now.getTime()+Math.max(1,Math.min(24,Number(detail.verified_badge_months)||1))*30*86400000).toISOString():null
+        }) : {membership_status:'REJECTED',registration_approved:false,verified:false};
+        const upd=await sb.from('tutor_profiles').update(patch).eq('user_id',String(userId));
+        if(upd.error)throw upd.error;
+      }
+    }
     status.textContent='Registration '+(approved?'approved':'rejected')+'. Refreshing list…';
     await loadRegistrationApprovals();
   }catch(e){status.textContent='Registration decision failed: '+(e.message||e)+' — ensure the registration approval SQL migration has been run in Supabase.';}
