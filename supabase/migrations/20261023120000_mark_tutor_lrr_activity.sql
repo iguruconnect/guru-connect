@@ -25,9 +25,7 @@ begin
   if v_tutor_key is not null
      and v_status not in ('', 'OPEN', 'CANCELLED', 'CANCELED', 'REJECTED', 'DECLINED', 'EXPIRED') then
     update public.tutor_profiles tp
-       set free_last_qualifying_activity_at = now(),
-           profile_hidden = false,
-           profile_hidden_reason = null
+       set free_last_qualifying_activity_at = now()
      where tp.id::text = v_tutor_key
         or tp.user_id::text = v_tutor_key;
   end if;
