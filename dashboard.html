@@ -496,6 +496,7 @@ async function accountView() {
     }
 
     $('app').innerHTML =
+      (role==='tutor' ? (function(){const fmt=v=>{if(!v)return 'Not set';const d=new Date(v);return Number.isNaN(d.getTime())?'Not set':d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})};const type=String(profile?.membership_type||'free').toUpperCase();const state=String(profile?.membership_status||'FREE_TRIAL').replaceAll('_',' ');const expiry=profile?.membership_expires_at||profile?.membership_review_due_at;const badgeExpiry=profile?.verified_badge_expires_at;return '<div class="card"><h2>📅 PROFILE EXPIRY DATE</h2><div class="balance" style="font-size:20px">'+esc(fmt(expiry))+'</div><p class="small">Membership: <b>'+esc(type)+'</b> · Status: <b>'+esc(state)+'</b></p><p class="small">Verified Tick Validity: <b>'+esc(fmt(badgeExpiry))+'</b></p>'+(profile?.profile_hidden?'<div class="error">PROFILE HIDDEN — '+esc(profile?.profile_hidden_reason||'Contact Admin')+'</div>':(type==='FREE'&&profile?.membership_review_due_at?'<div class="note">Free membership review due: '+esc(fmt(profile.membership_review_due_at))+'. Admin may promote the profile or require Premium membership.</div>':''))+'</div>'})() : '') +
       '<div class="grid2">' +
         '<div class="card">' +
           '<h2>🪙 MY GURU COINS</h2>' +
