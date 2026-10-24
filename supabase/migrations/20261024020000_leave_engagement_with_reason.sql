@@ -72,14 +72,27 @@ BEGIN
      AND (v_conn.student_id = v_student_id OR v_conn.student_member_id = v_uid) THEN
     v_actor_role := 'student';
     v_actor_name := v_student_name;
-    v_recipient := v_tutor_user_id;
   ELSIF v_tutor_id IS NOT NULL
      AND (v_conn.tutor_id = v_tutor_id OR v_conn.tutor_member_id = v_uid) THEN
     v_actor_role := 'tutor';
     v_actor_name := v_tutor_name;
-    v_recipient := v_student_user_id;
   ELSE
     RAISE EXCEPTION 'Only the Student or Tutor in this engagement can leave it.';
+  END IF;
+
+  -- Resolve both participants from this connection, not from the actor's login.
+  SELECT sp.user_id INTO v_student_user_id
+  FROM public.student_profiles sp
+  WHERE sp.id = v_conn.student_id
+  LIMIT 1;
+  SELECT tp.user_id INTO v_tutor_user_id
+  FROM public.tutor_profiles tp
+  WHERE tp.id = v_conn.tutor_id
+  LIMIT 1;
+  v_recipient := CASE WHEN v_actor_role = 'student'
+                      THEN v_tutor_user_id ELSE v_student_user_id END;
+  IF v_recipient IS NULL THEN
+    RAISE EXCEPTION 'The other participant account mapping is missing; no changes were made.';
   END IF;
 
   IF upper(coalesce(v_conn.status, '')) NOT IN
