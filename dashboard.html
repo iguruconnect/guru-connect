@@ -246,7 +246,12 @@ async function requestsView(){
    return requestBelongsTo(r,'tutor')||(!assigned&&['OPEN','PENDING_STUDENT_CONNECTION','PENDING_TUTOR_CONNECTION'].includes(st));
   });
  }
-  const requestIds=rows.map(r=>String(r.id||'')).filter(Boolean);\n  const connectionRows=[];\n  if(requestIds.length){const cq=await safe(sb.from('gc_learning_request_connections').select('*').in('request_id',requestIds).order('created_at',{ascending:false}).limit(1000));if(cq.error)throw cq.error;connectionRows.push(...(cq.data||[]));}\n  const connectionsByRequest=new Map();connectionRows.forEach(c=>{const k=String(c.request_id);if(!connectionsByRequest.has(k))connectionsByRequest.set(k,[]);connectionsByRequest.get(k).push(c)});\n  rows.forEach(r=>{r._connections=connectionsByRequest.get(String(r.id))||[]});\n $('app').innerHTML='<div class="card"><div class="row" style="align-items:center;justify-content:space-between"><div><h2>📜 LRR HISTORY</h2><div class="small">One complete date-and-time-wise record of your Learning Requests and their recorded actions.</div></div><button type="button" class="btn gray" onclick="openCentralHistory(\'lrr\')">OPEN LRR HISTORY</button></div></div>'+(rows.length?rows.map(card).join(''):'<div class="card empty">📚 No Learning Requests found.<br><span class="small">If you have just posted or received a request, refresh once. Your request is searched using both your profile ID and your Supabase login ID.</span></div>');
+  const requestIds=rows.map(r=>String(r.id||'')).filter(Boolean);
+  const connectionRows=[];
+  if(requestIds.length){const cq=await safe(sb.from('gc_learning_request_connections').select('*').in('request_id',requestIds).order('created_at',{ascending:false}).limit(1000));if(cq.error)throw cq.error;connectionRows.push(...(cq.data||[]));}
+  const connectionsByRequest=new Map();connectionRows.forEach(c=>{const k=String(c.request_id);if(!connectionsByRequest.has(k))connectionsByRequest.set(k,[]);connectionsByRequest.get(k).push(c)});
+  rows.forEach(r=>{r._connections=connectionsByRequest.get(String(r.id))||[]});
+ $('app').innerHTML='<div class="card"><div class="row" style="align-items:center;justify-content:space-between"><div><h2>📜 LRR HISTORY</h2><div class="small">One complete date-and-time-wise record of your Learning Requests and their recorded actions.</div></div><button type="button" class="btn gray" onclick="openCentralHistory(\'lrr\')">OPEN LRR HISTORY</button></div></div>'+(rows.length?rows.map(card).join(''):'<div class="card empty">📚 No Learning Requests found.<br><span class="small">If you have just posted or received a request, refresh once. Your request is searched using both your profile ID and your Supabase login ID.</span></div>');
  wireCards();
 }
 function canDeleteLrr(r){
