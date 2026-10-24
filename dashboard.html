@@ -289,7 +289,7 @@ async function openLeaveEngagement(id,isLrr){
   const btn=overlay.querySelector('#gcLeaveConfirm'),reason=overlay.querySelector('#gcLeaveReason').value.trim(),err=overlay.querySelector('#gcLeaveError');
   if(reason.length<5){err.textContent='Please enter a reason of at least 5 characters.';return}
   btn.disabled=true;btn.textContent='PROCESSING…';err.textContent='';
-  try{const q=await safe(sb.rpc('gc_leave_learning_engagement',{p_connection_id:connectionId,p_reason:reason}));if(q.error)throw q.error;close();msg('Engagement left successfully. The other participant has been notified with your reason. The LRR will reopen only if it is still within its original 20-day validity.','success');await loadNotifications(false);await requestsView();await connectionsView()}
+  try{const q=await safe(sb.rpc('gc_leave_learning_engagement',{p_connection_id:connectionId,p_reason:reason}));if(q.error)throw q.error;close();msg('Engagement left successfully. The other participant has been notified with your reason. The LRR will reopen only if it is still within its original 20-day validity.','success');await loadNotifications(false);await requestsView();if(!isLrr)await connectionsView()}
   catch(e){err.textContent=e.message||String(e);btn.disabled=false;btn.textContent='CONFIRM LEAVE ENGAGEMENT'}
  };
  overlay.querySelector('#gcLeaveReason').focus();
