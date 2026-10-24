@@ -466,6 +466,15 @@ async function openCentralHistory(kind){
     add(c.deleted_at,'Connection removed from active dashboard',name,subject,id,String(c.status||'UNKNOWN').replaceAll('_',' '),String(r.student_outcome||r.outcome||'').replaceAll('_',' '));
    });
   }
+  if(isLrr){
+   relevantConnections.filter(c=>c.left_at).forEach(c=>{
+    const r=reqMap.get(String(c.request_id||''))||{};
+    const actorRole=String(c.left_by_role||'participant').toLowerCase();
+    const name=actorRole===role?(profile?.name||profile?.full_name||'You'):(role==='student'?(c.tutor_name||c.tutor_display_name||r.tutor_name||r.tutor_full_name):(c.student_name||c.student_display_name||r.student_name||r.student_full_name));
+    const subject=r.subject||'Learning Request',id=r.request_code||c.request_id||c.id;
+    add(c.left_at,(actorRole==='student'?'Student':actorRole==='tutor'?'Tutor':'Participant')+' left engagement'+(c.left_reason?' — Reason: '+c.left_reason:''),name,subject,id,String(c.status||'LEFT_ENGAGEMENT').replaceAll('_',' '),String(r.student_outcome||r.outcome||'').replaceAll('_',' '));
+   });
+  }
   actions.forEach(e=>{
    const r=reqMap.get(String(e.request_id||''))||{};
    const name=role==='student'?(r.student_name||r.student_full_name||profile?.name):(r.tutor_name||r.tutor_full_name||profile?.name);
