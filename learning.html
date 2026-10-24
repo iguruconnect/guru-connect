@@ -340,8 +340,8 @@ function rows(){
 function requestState(r){
   const s=String(r.status||'').toUpperCase().replace(/\s+/g,'_');
   const tutor=String(r.tutor_name||r.tutor_full_name||r.tutorName||'').trim();
-  const connected=!!(r.tutor_id||r.connected_tutor_id||r.connection_id||r.accepted_tutor_id) ||
-    /CONNECTED|IN_PROGRESS|REPORT|COMPLETED|ADMIN_REVIEW/.test(s);
+  const activeTutorStatus=/^(TUTOR_ACCEPTED|ACCEPTED|CONNECTED|IN_PROGRESS|TUTOR_COMPLETED|PENDING_ADMIN_APPROVAL|PENDING_ADMIN_REVIEW)$/.test(s);
+  const connected=activeTutorStatus && !!(r.tutor_id||r.connected_tutor_id||r.accepted_tutor_id);
   const pending=!connected && (
     !!(r.connection_request_id||r.pending_connection_id||r.pending_tutor_id||r.connection_pending===true) ||
     /REQUESTED|PENDING_CONNECTION|CONNECTION_PENDING/.test(s)
