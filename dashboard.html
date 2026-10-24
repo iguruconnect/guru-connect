@@ -232,8 +232,16 @@ async function getMemberDisplayNames(ids){
 async function getRequests(){const q=await safe(sb.from('gc_learning_requests_v2').select('*').order('created_at',{ascending:false}).limit(500));if(q.error)throw q.error;return q.data||[]}
 async function requestsView(){
  let rows=(await getRequests()).filter(r=>String(r.status||'').toUpperCase()!=='DELETED');
+ // Load connection history before filtering by owner. A legacy LRR may carry an older student ID,
+ // while its connection row has the participant ID needed to show pending ACCEPT/REJECT actions.
+ const allRequestIds=rows.map(r=>String(r.id||'')).filter(Boolean);
+ const connectionRows=[];
+ if(allRequestIds.length){const cq=await safe(sb.from('gc_learning_request_connections').select('*').in('request_id',allRequestIds).order('created_at',{ascending:false}).limit(1500));if(cq.error)throw cq.error;connectionRows.push(...(cq.data||[]));}
+ const connectionsByRequest=new Map();connectionRows.forEach(c=>{const k=String(c.request_id);if(!connectionsByRequest.has(k))connectionsByRequest.set(k,[]);connectionsByRequest.get(k).push(c)});
+ rows.forEach(r=>{r._connections=connectionsByRequest.get(String(r.id))||[]});
  if(role==='student'){
-  rows=rows.filter(r=>requestBelongsTo(r,'student')||String(r.studentId||'')===String(me?.id||''));
+  rows=rows.filter(r=>requestBelongsTo(r,'student')||String(r.studentId||'')===String(me?.id||'')||
+   (r._connections||[]).some(c=>[c.student_id,c.student_member_id,c.student_public_id].some(matchesCurrentMember)));
  }else{
   rows=rows.filter(r=>{
    const st=String(r.status||'OPEN');
@@ -241,11 +249,6 @@ async function requestsView(){
    return requestBelongsTo(r,'tutor')||(!assigned&&['OPEN','PENDING_STUDENT_CONNECTION','PENDING_TUTOR_CONNECTION'].includes(st));
   });
  }
-  const requestIds=rows.map(r=>String(r.id||'')).filter(Boolean);
-  const connectionRows=[];
-  if(requestIds.length){const cq=await safe(sb.from('gc_learning_request_connections').select('*').in('request_id',requestIds).order('created_at',{ascending:false}).limit(1000));if(cq.error)throw cq.error;connectionRows.push(...(cq.data||[]));}
-  const connectionsByRequest=new Map();connectionRows.forEach(c=>{const k=String(c.request_id);if(!connectionsByRequest.has(k))connectionsByRequest.set(k,[]);connectionsByRequest.get(k).push(c)});
-  rows.forEach(r=>{r._connections=connectionsByRequest.get(String(r.id))||[]});
   // Resolve names after connections are loaded; legacy participant IDs can exist only on connection rows.
   const nameIds=rows.flatMap(r=>[r.student_id,r.student_member_id,r.tutor_id,r.tutor_member_id,r.student_public_id,r.tutor_public_id,...(r._connections||[]).flatMap(c=>[c.student_id,c.student_member_id,c.tutor_id,c.tutor_member_id,c.student_profile_id,c.tutor_profile_id])]);
   const memberNames=await getMemberDisplayNames(nameIds);
