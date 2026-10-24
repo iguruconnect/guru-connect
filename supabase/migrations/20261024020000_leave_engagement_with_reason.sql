@@ -69,11 +69,11 @@ BEGIN
   END IF;
 
   IF v_student_id IS NOT NULL
-     AND (v_conn.student_id = v_student_id OR v_conn.student_member_id = v_uid) THEN
+     AND (v_conn.student_id = v_student_id OR v_conn.student_member_id::text = v_uid::text) THEN
     v_actor_role := 'student';
     v_actor_name := v_student_name;
   ELSIF v_tutor_id IS NOT NULL
-     AND (v_conn.tutor_id = v_tutor_id OR v_conn.tutor_member_id = v_uid) THEN
+     AND (v_conn.tutor_id = v_tutor_id OR v_conn.tutor_member_id::text = v_uid::text) THEN
     v_actor_role := 'tutor';
     v_actor_name := v_tutor_name;
   ELSE
