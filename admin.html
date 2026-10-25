@@ -171,7 +171,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
 @media print{body.gc-print-id *{visibility:hidden!important}body.gc-print-id #gc-id-print-root,body.gc-print-id #gc-id-print-root *{visibility:visible!important}body.gc-print-id #gc-id-print-root{position:fixed;inset:0 auto auto 0;width:100%;padding:12mm;box-sizing:border-box;background:#fff}body.gc-print-id #gc-id-print-root .idgen-card{max-width:none;width:100mm;height:76mm;min-height:76mm;aspect-ratio:auto;overflow:visible;box-shadow:none;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 </style></head><body>
 <header class="head"><div class="headin"><div><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
-<main class="wrap"><div id="gate" class="gate">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
+<main class="wrap"><div id="gate" class="gate">Admin build 794df163 loaded — starting session check…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
 <nav class="controlbar" aria-label="Admin sections">
 <button class="topbtn priority active" data-sec="edit">✏️ <b>EDIT</b><small>Find, edit & delete Student/Tutor</small></button>
 <button class="topbtn priority" data-sec="registrationapproval">🛡️ <b>REGISTRATION APPROVAL</b><small>Approve Student & Tutor registrations</small></button>
@@ -342,7 +342,7 @@ async function api(action,payload={}){
 }
 async function staffCheck(){
   const gate=$('gate');
-  gate.textContent='Checking Staff/Admin session… (waiting for Supabase)';
+  gate.textContent='Admin script running — checking Supabase session…';
   let s;
   try{
     s=await Promise.race([sb.auth.getSession(),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Supabase session check timed out after 8 seconds. Please clear site data for www.guruconnnect.in, then reload. If this message remains, the Supabase client/network is not completing session recovery.')),8000))]);
