@@ -169,61 +169,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
 @media(max-width:900px){#sec-idgeneration .idgen-layout{grid-template-columns:1fr}}
 @media(max-width:560px){#sec-idgeneration .idgen-formgrid{grid-template-columns:1fr}#sec-idgeneration .idgen-field.wide{grid-column:auto}#sec-idgeneration .idgen-cardbody{grid-template-columns:92px minmax(0,1fr);padding:9px;gap:8px}#sec-idgeneration .idgen-leftcol{gap:6px}#sec-idgeneration .idgen-photo-wrap{width:82px;height:98px}#sec-idgeneration .idgen-qrwrap img{width:78px;height:78px}#sec-idgeneration .idgen-qrwrap small{font-size:6px}#sec-idgeneration .idgen-photo-wrap{width:70px;height:88px}#sec-idgeneration .idgen-cardphoto{width:82px;height:98px}#sec-idgeneration .idgen-photo-seal{width:38px;height:38px;right:2px;bottom:2px}#sec-idgeneration .idgen-logo{flex-basis:54px;width:54px;max-width:23%;height:54px}#sec-idgeneration .idgen-wordmark{gap:3px;letter-spacing:-.4px}#sec-idgeneration .idgen-guru{font-size:23px}#sec-idgeneration .idgen-connect{font-size:19px;letter-spacing:-.5px}#sec-idgeneration .idgen-tagline{font-size:10px}#sec-idgeneration .idgen-cardhead{padding:7px 9px;gap:7px;min-height:75px}#sec-idgeneration .idgen-tick{width:17px;height:17px;font-size:12px}#sec-idgeneration .idgen-cardfoot{padding:9px;font-size:10px}#sec-idgeneration .idgen-mini-fields{gap:4px 6px}}
 @media print{body.gc-print-id *{visibility:hidden!important}body.gc-print-id #gc-id-print-root,body.gc-print-id #gc-id-print-root *{visibility:visible!important}body.gc-print-id #gc-id-print-root{position:fixed;inset:0 auto auto 0;width:100%;padding:12mm;box-sizing:border-box;background:#fff}body.gc-print-id #gc-id-print-root .idgen-card{max-width:none;width:100mm;height:76mm;min-height:76mm;aspect-ratio:auto;overflow:visible;box-shadow:none;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
-</style><style id="gc-admin-colorful-control-tiles-20261009">
-/* =========================================================
-   GURU CONNECT ADMIN — COLORFUL CONTROL TILES
-   Each main dashboard tile gets a distinct brand color while
-   preserving all existing actions/functionality.
-   ========================================================= */
-.controlbar .topbtn{
-  color:#fff!important;
-  border:0!important;
-  min-height:86px!important;
-  border-radius:16px!important;
-  padding:13px 12px!important;
-  box-shadow:0 10px 24px rgba(15,45,90,.13)!important;
-  position:relative!important;
-  overflow:hidden!important;
-  text-shadow:0 1px 2px rgba(0,0,0,.14)!important;
-}
-/* Solid single-colour tiles: no gradient or decorative colour overlay */
-.controlbar .topbtn:after{content:none!important;}
-.controlbar .topbtn b,.controlbar .topbtn small{position:relative;z-index:1;color:#fff!important;}
-.controlbar .topbtn small{opacity:1!important;}
-
-/* Distinct solid colours for every dashboard tile */
-.controlbar .topbtn:nth-child(1){background:#e53945!important;}
-.controlbar .topbtn:nth-child(2){background:#25D366!important;}
-.controlbar .topbtn:nth-child(3){background:#2563eb!important;}
-.controlbar .topbtn:nth-child(4){background:#f59e0b!important;}
-.controlbar .topbtn:nth-child(5){background:#0d6efd!important;}
-.controlbar .topbtn:nth-child(6){background:#0891b2!important;}
-.controlbar .topbtn:nth-child(7){background:#7c3aed!important;}
-.controlbar .topbtn:nth-child(8){background:#ea580c!important;}
-.controlbar .topbtn:nth-child(9){background:#0e7490!important;}
-.controlbar .topbtn:nth-child(10){background:#ea580c!important;}
-.controlbar .topbtn:nth-child(11){background:#7c3aed!important;}
-
-.controlbar .topbtn:hover,
-.controlbar .topbtn.active{
-  color:#fff!important;
-  border:0!important;
-  transform:translateY(-2px)!important;
-  filter:saturate(1.08) brightness(1.03)!important;
-  box-shadow:0 14px 30px rgba(15,45,90,.19)!important;
-}
-.controlbar .topbtn.active:before{
-  content:"";
-  position:absolute;
-  inset:0;
-  border:3px solid rgba(255,255,255,.82);
-  border-radius:16px;
-  pointer-events:none;
-}
-@media(max-width:900px){.controlbar .topbtn{min-height:82px!important;}}
-@media(max-width:600px){.controlbar .topbtn{min-height:76px!important;}}
-</style>
-</head><body>
+</style></head><body>
 <header class="head"><div class="headin"><div><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
 <main class="wrap"><div id="gate" class="gate">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
 <nav class="controlbar" aria-label="Admin sections">
@@ -369,7 +315,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><script>
 const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',FN=U+'/functions/v1/admin-user-actions';
-const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,lock:async(_name,_acquireTimeout,fn)=>await fn()}});
+const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function deleteUserViaAdminFunction(userId,role){
@@ -395,24 +341,9 @@ async function api(action,payload={}){
   return d;
 }
 async function staffCheck(){
-  const gate=$('gate');
-  try{
-    gate.textContent='Checking Staff/Admin session…';
-    const s=await Promise.race([
-      sb.auth.getSession(),
-      new Promise((_,reject)=>setTimeout(()=>reject(new Error('Supabase session check timed out after 8 seconds.')),8000))
-    ]);
-    const u=s.data?.session?.user;
-    if(s.error)throw s.error;
-    if(!u||String(u.email||'').toLowerCase()!=='guruconnect.in@gmail.com'||String(u.id||'')!=='1df7606a-3a96-4116-b022-804b37a3c3dd'){
-      location.replace('./index.html?open_login=1&ts='+Date.now());return false;
-    }
-    gate.style.display='none';$('app').style.display='block';return true;
-  }catch(e){
-    gate.textContent='Admin session check failed: '+(e?.message||String(e))+' Please refresh once. If this message remains, contact support.';
-    console.error('GURU CONNECT admin staffCheck failed:',e);
-    return false;
-  }
+  const s=await sb.auth.getSession(),u=s.data?.session?.user;
+  if(!u||String(u.email||'').toLowerCase()!=='guruconnect.in@gmail.com'||String(u.id||'')!=='1df7606a-3a96-4116-b022-804b37a3c3dd'){location.replace('./index.html?open_login=1&ts='+Date.now());return false}
+  $('gate').style.display='none';$('app').style.display='block';return true;
 }
 let users=[];
 let activeSection='edit';
@@ -1303,7 +1234,7 @@ $('coinHistoryPdf').onclick=()=>{
 @media(prefers-reduced-motion:reduce){#gc-admin-alert-overlay{animation:none}}
 </style>
 <div id="gc-admin-alert-overlay" role="presentation"><section id="gc-admin-alert-card" role="alertdialog" aria-modal="true" aria-labelledby="gc-admin-alert-title" aria-describedby="gc-admin-alert-message"><div id="gc-admin-alert-head"><div id="gc-admin-alert-mark">🔔</div><div id="gc-admin-alert-brand">GURU CONNECT</div><div style="font-size:10px;letter-spacing:2px;color:#0f766e;font-weight:800;margin-top:3px">ADMIN CONTROL CENTER</div></div><h2 id="gc-admin-alert-title">Notice</h2><p id="gc-admin-alert-message"></p><button id="gc-admin-alert-ok" type="button">CONTINUE</button></section></div>
-<script id="gc-admin-alert-script">(()=>{if(window.__gcAdminAlertInstalled)return;window.__gcAdminAlertInstalled=true;const overlay=document.getElementById('gc-admin-alert-overlay');if(!overlay)return;const title=overlay.querySelector('#gc-admin-alert-title'),message=overlay.querySelector('#gc-admin-alert-message'),ok=overlay.querySelector('#gc-admin-alert-ok');let queue=[],busy=false;function beep(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=window.__gcAdminAudio||(window.__gcAdminAudio=new C());if(c.state==='suspended')c.resume();const t=c.currentTime;[0,.22].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=i?880:660;g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(.12,t+d+.025);g.gain.exponentialRampToValueAtTime(.0001,t+d+.16);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+.17)})}catch(_){}}function render(){if(!queue.length){overlay.classList.remove('gc-open');busy=false;return}busy=true;const a=queue[0];title.textContent=a.title;message.textContent=a.message;overlay.classList.add('gc-open');beep();ok.focus()}function close(){queue.shift();render()}ok.addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('gc-open')){e.preventDefault();close()}});const nativeAlert=window.alert.bind(window);window.alert=function(value){const text=String(value??'');const low=text.toLowerCase();queue.push({title:/fail|error|unable|could not|not saved|denied|invalid|missing/.test(low)?'Action Needs Attention':/success|updated|approved|deleted|saved|sent/.test(low)?'Action Completed':'GURU CONNECT Notice',message:text});if(!busy)render()};})();<\/script>
+<script id="gc-admin-alert-script">(()=>{if(window.__gcAdminAlertInstalled)return;window.__gcAdminAlertInstalled=true;const overlay=document.getElementById('gc-admin-alert-overlay');if(!overlay)return;const title=overlay.querySelector('#gc-admin-alert-title'),message=overlay.querySelector('#gc-admin-alert-message'),ok=overlay.querySelector('#gc-admin-alert-ok');let queue=[],busy=false;function beep(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=window.__gcAdminAudio||(window.__gcAdminAudio=new C());if(c.state==='suspended')c.resume();const t=c.currentTime;[0,.22].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=i?880:660;g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(.12,t+d+.025);g.gain.exponentialRampToValueAtTime(.0001,t+d+.16);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+.17)})}catch(_){}}function render(){if(!queue.length){overlay.classList.remove('gc-open');busy=false;return}busy=true;const a=queue[0];title.textContent=a.title;message.textContent=a.message;overlay.classList.add('gc-open');beep();ok.focus()}function close(){queue.shift();render()}ok.addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('gc-open')){e.preventDefault();close()}});const nativeAlert=window.alert.bind(window);window.alert=function(value){const text=String(value??'');const low=text.toLowerCase();queue.push({title:/fail|error|unable|could not|not saved|denied|invalid|missing/.test(low)?'Action Needs Attention':/success|updated|approved|deleted|saved|sent/.test(low)?'Action Completed':'GURU CONNECT Notice',message:text});if(!busy)render()};})();</script>
 </body></html>');
   w.document.close();
 };
@@ -1803,5 +1734,59 @@ $('idPrintBtn').onclick=()=>{
 
 // Do not query the admin-only advertisements table before authentication.
 // This avoids a stale error state when the Supabase session is still restoring.
-staffCheck().then(async ok=>{if(ok){try{await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit();await loadAdminAdvertisements()}catch(e){console.error('Admin dashboard initialization failed:',e);const gate=$('gate');gate.style.display='block';gate.textContent='Admin signed in, but dashboard data failed to load: '+(e?.message||String(e));}}}).catch(e=>{console.error('Admin startup failed:',e);const gate=$('gate');gate.style.display='block';gate.textContent='Admin startup failed: '+(e?.message||String(e));});
+staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit();await loadAdminAdvertisements()}});
 </script></body></html>
+<style id="gc-admin-colorful-control-tiles-20261009">
+/* =========================================================
+   GURU CONNECT ADMIN — COLORFUL CONTROL TILES
+   Each main dashboard tile gets a distinct brand color while
+   preserving all existing actions/functionality.
+   ========================================================= */
+.controlbar .topbtn{
+  color:#fff!important;
+  border:0!important;
+  min-height:86px!important;
+  border-radius:16px!important;
+  padding:13px 12px!important;
+  box-shadow:0 10px 24px rgba(15,45,90,.13)!important;
+  position:relative!important;
+  overflow:hidden!important;
+  text-shadow:0 1px 2px rgba(0,0,0,.14)!important;
+}
+/* Solid single-colour tiles: no gradient or decorative colour overlay */
+.controlbar .topbtn:after{content:none!important;}
+.controlbar .topbtn b,.controlbar .topbtn small{position:relative;z-index:1;color:#fff!important;}
+.controlbar .topbtn small{opacity:1!important;}
+
+/* Distinct solid colours for every dashboard tile */
+.controlbar .topbtn:nth-child(1){background:#e53945!important;}
+.controlbar .topbtn:nth-child(2){background:#25D366!important;}
+.controlbar .topbtn:nth-child(3){background:#2563eb!important;}
+.controlbar .topbtn:nth-child(4){background:#f59e0b!important;}
+.controlbar .topbtn:nth-child(5){background:#0d6efd!important;}
+.controlbar .topbtn:nth-child(6){background:#0891b2!important;}
+.controlbar .topbtn:nth-child(7){background:#7c3aed!important;}
+.controlbar .topbtn:nth-child(8){background:#ea580c!important;}
+.controlbar .topbtn:nth-child(9){background:#0e7490!important;}
+.controlbar .topbtn:nth-child(10){background:#ea580c!important;}
+.controlbar .topbtn:nth-child(11){background:#7c3aed!important;}
+
+.controlbar .topbtn:hover,
+.controlbar .topbtn.active{
+  color:#fff!important;
+  border:0!important;
+  transform:translateY(-2px)!important;
+  filter:saturate(1.08) brightness(1.03)!important;
+  box-shadow:0 14px 30px rgba(15,45,90,.19)!important;
+}
+.controlbar .topbtn.active:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border:3px solid rgba(255,255,255,.82);
+  border-radius:16px;
+  pointer-events:none;
+}
+@media(max-width:900px){.controlbar .topbtn{min-height:82px!important;}}
+@media(max-width:600px){.controlbar .topbtn{min-height:76px!important;}}
+</style>
