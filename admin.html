@@ -315,7 +315,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><script>
 const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',FN=U+'/functions/v1/admin-user-actions';
-const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,lock:async(_name,_timeout,fn)=>await fn()}});
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function deleteUserViaAdminFunction(userId,role){
@@ -341,10 +341,21 @@ async function api(action,payload={}){
   return d;
 }
 async function staffCheck(){
-  const s=await sb.auth.getSession(),u=s.data?.session?.user;
+  const gate=$('gate');
+  gate.textContent='Checking Staff/Admin session… (waiting for Supabase)';
+  let s;
+  try{
+    s=await Promise.race([sb.auth.getSession(),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Supabase session check timed out after 8 seconds. Please clear site data for www.guruconnnect.in, then reload. If this message remains, the Supabase client/network is not completing session recovery.')),8000))]);
+  }catch(e){
+    gate.textContent='Admin login could not finish: '+String(e?.message||e)+'. Please refresh once. If it repeats, tell support the exact message.';
+    console.error('GURU CONNECT admin staffCheck failed:',e);
+    return false;
+  }
+  const u=s.data?.session?.user;
   if(!u||String(u.email||'').toLowerCase()!=='guruconnect.in@gmail.com'||String(u.id||'')!=='1df7606a-3a96-4116-b022-804b37a3c3dd'){location.replace('./index.html?open_login=1&ts='+Date.now());return false}
-  $('gate').style.display='none';$('app').style.display='block';return true;
+  gate.style.display='none';$('app').style.display='block';return true;
 }
+window.addEventListener('error',e=>{const g=$('gate');if(g&&g.style.display!=='none'&&/supabase/i.test(String(e.message||'')))g.textContent='Admin page could not load the Supabase client. Refresh the page; if it repeats, the browser/network is blocking the Supabase script.'});
 let users=[];
 let activeSection='edit';
 let lrrLoaded=false,lrrLoading=false,coinHistoryLoaded=false;
