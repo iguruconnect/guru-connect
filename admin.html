@@ -395,9 +395,24 @@ async function api(action,payload={}){
   return d;
 }
 async function staffCheck(){
-  const s=await sb.auth.getSession(),u=s.data?.session?.user;
-  if(!u||String(u.email||'').toLowerCase()!=='guruconnect.in@gmail.com'||String(u.id||'')!=='1df7606a-3a96-4116-b022-804b37a3c3dd'){location.replace('./index.html?open_login=1&ts='+Date.now());return false}
-  $('gate').style.display='none';$('app').style.display='block';return true;
+  const gate=$('gate');
+  try{
+    gate.textContent='Checking Staff/Admin session…';
+    const s=await Promise.race([
+      sb.auth.getSession(),
+      new Promise((_,reject)=>setTimeout(()=>reject(new Error('Supabase session check timed out after 8 seconds.')),8000))
+    ]);
+    const u=s.data?.session?.user;
+    if(s.error)throw s.error;
+    if(!u||String(u.email||'').toLowerCase()!=='guruconnect.in@gmail.com'||String(u.id||'')!=='1df7606a-3a96-4116-b022-804b37a3c3dd'){
+      location.replace('./index.html?open_login=1&ts='+Date.now());return false;
+    }
+    gate.style.display='none';$('app').style.display='block';return true;
+  }catch(e){
+    gate.textContent='Admin session check failed: '+(e?.message||String(e))+' Please refresh once. If this message remains, contact support.';
+    console.error('GURU CONNECT admin staffCheck failed:',e);
+    return false;
+  }
 }
 let users=[];
 let activeSection='edit';
@@ -1788,5 +1803,5 @@ $('idPrintBtn').onclick=()=>{
 
 // Do not query the admin-only advertisements table before authentication.
 // This avoids a stale error state when the Supabase session is still restoring.
-staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit();await loadAdminAdvertisements()}});
+staffCheck().then(async ok=>{if(ok){try{await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit();await loadAdminAdvertisements()}catch(e){console.error('Admin dashboard initialization failed:',e);const gate=$('gate');gate.style.display='block';gate.textContent='Admin signed in, but dashboard data failed to load: '+(e?.message||String(e));}}}).catch(e=>{console.error('Admin startup failed:',e);const gate=$('gate');gate.style.display='block';gate.textContent='Admin startup failed: '+(e?.message||String(e));});
 </script></body></html>
