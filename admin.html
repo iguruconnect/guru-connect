@@ -738,14 +738,29 @@ async function loadAccountCoins(){
     addId(u.profile_id);addId(u.user_id);addId(u.auth_user_id);addId(u.id);
     try{
       if(candidates.length){
-        const wq=await sb.from('gc_coin_wallets').select('profile_id,auth_user_id,role,balance,held_balance').in('profile_id',candidates);
-        if(!wq.error&&Array.isArray(wq.data)){
-          const matched=wq.data.find(w=>{
-            const wr=String(w.profile_role||w.role||'').toLowerCase();
-            return candidates.includes(String(w.profile_id))&&(!wr||wr===String(u.role||'').toLowerCase());
-          })||wq.data.find(w=>candidates.includes(String(w.profile_id)));
-          if(matched)wallet=matched;
+        // Check both wallet identity columns. In the canonical-ID migration,
+        // some wallets are keyed by profiles.id and others can be found by auth_user_id.
+        const checks=await Promise.all([
+          sb.from('gc_coin_wallets').select('*').in('profile_id',candidates),
+          sb.from('gc_coin_wallets').select('*').in('auth_user_id',candidates)
+        ]);
+        const walletRows=[];
+        for(const q of checks){
+          if(!q.error&&Array.isArray(q.data)){
+            for(const w of q.data){
+              if(!walletRows.some(x=>String(x.profile_id)===String(w.profile_id)&&String(x.auth_user_id||'')===String(w.auth_user_id||'')))walletRows.push(w);
+            }
+          }
         }
+        const role=String(u.role||'').toLowerCase();
+        const canonical=String(candidates[0]||'');
+        const matched=
+          walletRows.find(w=>String(w.profile_id||'')===canonical&&String(w.role||w.profile_role||'').toLowerCase()===role)||
+          walletRows.find(w=>String(w.auth_user_id||'')===String(u.user_id||'')&&String(w.role||w.profile_role||'').toLowerCase()===role)||
+          walletRows.find(w=>candidates.includes(String(w.profile_id||''))&&String(w.role||w.profile_role||'').toLowerCase()===role)||
+          walletRows.find(w=>candidates.includes(String(w.auth_user_id||'')))||
+          walletRows.find(w=>candidates.includes(String(w.profile_id||'')));
+        if(matched)wallet=matched;
       }
     }catch(_){}
     const balance=Number(wallet.balance??wallet.coins??wallet.available_coins??d.account?.coin_balance??0);
