@@ -171,7 +171,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
 @media print{body.gc-print-id *{visibility:hidden!important}body.gc-print-id #gc-id-print-root,body.gc-print-id #gc-id-print-root *{visibility:visible!important}body.gc-print-id #gc-id-print-root{position:fixed;inset:0 auto auto 0;width:100%;padding:12mm;box-sizing:border-box;background:#fff}body.gc-print-id #gc-id-print-root .idgen-card{max-width:none;width:100mm;height:76mm;min-height:76mm;aspect-ratio:auto;overflow:visible;box-shadow:none;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 </style></head><body>
 <header class="head"><div class="headin"><div><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
-<main class="wrap"><div id="gate" class="gate">Admin build 794df163 loaded — starting session check…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
+<main class="wrap"><div id="gate" class="gate">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
 <nav class="controlbar" aria-label="Admin sections">
 <button class="topbtn priority active" data-sec="edit">✏️ <b>EDIT</b><small>Find, edit & delete Student/Tutor</small></button>
 <button class="topbtn priority" data-sec="registrationapproval">🛡️ <b>REGISTRATION APPROVAL</b><small>Approve Student & Tutor registrations</small></button>
@@ -312,10 +312,10 @@ button,a,input,select,textarea{touch-action:manipulation;}
 
 <section class="section" id="sec-create"><div class="secHead"><div><h2>➕ Create User</h2><p>Create a new Student or Tutor account through the existing secure admin function.</p></div></div><div class="secBody"><div class="grid"><div class="field"><label>Role</label><select id="newRole"><option value="student">Student</option><option value="tutor">Tutor</option></select></div><div class="field"><label>Name</label><input id="newName"></div><div class="field"><label>Email</label><input id="newEmail" type="email"></div><div class="field"><label>Phone</label><input id="newPhone"></div><div class="field"><label>Password</label><input id="newPass" type="password" minlength="8"></div></div><div class="actions"><button id="create" class="btn green">CREATE ACCOUNT</button></div><div id="createStatus" class="status"></div></div></section>
 </section></main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" onerror="this.onerror=null;this.src='https://unpkg.com/@supabase/supabase-js@2';"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><script>
 const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',FN=U+'/functions/v1/admin-user-actions';
-const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,lock:async(_name,_timeout,fn)=>await fn()}});
+const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function deleteUserViaAdminFunction(userId,role){
@@ -341,21 +341,10 @@ async function api(action,payload={}){
   return d;
 }
 async function staffCheck(){
-  const gate=$('gate');
-  gate.textContent='Admin script running — checking Supabase session…';
-  let s;
-  try{
-    s=await Promise.race([sb.auth.getSession(),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Supabase session check timed out after 8 seconds. Please clear site data for www.guruconnnect.in, then reload. If this message remains, the Supabase client/network is not completing session recovery.')),8000))]);
-  }catch(e){
-    gate.textContent='Admin login could not finish: '+String(e?.message||e)+'. Please refresh once. If it repeats, tell support the exact message.';
-    console.error('GURU CONNECT admin staffCheck failed:',e);
-    return false;
-  }
-  const u=s.data?.session?.user;
+  const s=await sb.auth.getSession(),u=s.data?.session?.user;
   if(!u||String(u.email||'').toLowerCase()!=='guruconnect.in@gmail.com'||String(u.id||'')!=='1df7606a-3a96-4116-b022-804b37a3c3dd'){location.replace('./index.html?open_login=1&ts='+Date.now());return false}
-  gate.style.display='none';$('app').style.display='block';return true;
+  $('gate').style.display='none';$('app').style.display='block';return true;
 }
-window.addEventListener('error',e=>{const g=$('gate');if(g&&g.style.display!=='none'&&/supabase/i.test(String(e.message||'')))g.textContent='Admin page could not load the Supabase client. Refresh the page; if it repeats, the browser/network is blocking the Supabase script.'});
 let users=[];
 let activeSection='edit';
 let lrrLoaded=false,lrrLoading=false,coinHistoryLoaded=false;
@@ -1245,7 +1234,7 @@ $('coinHistoryPdf').onclick=()=>{
 @media(prefers-reduced-motion:reduce){#gc-admin-alert-overlay{animation:none}}
 </style>
 <div id="gc-admin-alert-overlay" role="presentation"><section id="gc-admin-alert-card" role="alertdialog" aria-modal="true" aria-labelledby="gc-admin-alert-title" aria-describedby="gc-admin-alert-message"><div id="gc-admin-alert-head"><div id="gc-admin-alert-mark">🔔</div><div id="gc-admin-alert-brand">GURU CONNECT</div><div style="font-size:10px;letter-spacing:2px;color:#0f766e;font-weight:800;margin-top:3px">ADMIN CONTROL CENTER</div></div><h2 id="gc-admin-alert-title">Notice</h2><p id="gc-admin-alert-message"></p><button id="gc-admin-alert-ok" type="button">CONTINUE</button></section></div>
-<script id="gc-admin-alert-script">(()=>{if(window.__gcAdminAlertInstalled)return;window.__gcAdminAlertInstalled=true;const overlay=document.getElementById('gc-admin-alert-overlay');if(!overlay)return;const title=overlay.querySelector('#gc-admin-alert-title'),message=overlay.querySelector('#gc-admin-alert-message'),ok=overlay.querySelector('#gc-admin-alert-ok');let queue=[],busy=false;function beep(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=window.__gcAdminAudio||(window.__gcAdminAudio=new C());if(c.state==='suspended')c.resume();const t=c.currentTime;[0,.22].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=i?880:660;g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(.12,t+d+.025);g.gain.exponentialRampToValueAtTime(.0001,t+d+.16);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+.17)})}catch(_){}}function render(){if(!queue.length){overlay.classList.remove('gc-open');busy=false;return}busy=true;const a=queue[0];title.textContent=a.title;message.textContent=a.message;overlay.classList.add('gc-open');beep();ok.focus()}function close(){queue.shift();render()}ok.addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('gc-open')){e.preventDefault();close()}});const nativeAlert=window.alert.bind(window);window.alert=function(value){const text=String(value??'');const low=text.toLowerCase();queue.push({title:/fail|error|unable|could not|not saved|denied|invalid|missing/.test(low)?'Action Needs Attention':/success|updated|approved|deleted|saved|sent/.test(low)?'Action Completed':'GURU CONNECT Notice',message:text});if(!busy)render()};})();<\/script>
+<script id="gc-admin-alert-script">(()=>{if(window.__gcAdminAlertInstalled)return;window.__gcAdminAlertInstalled=true;const overlay=document.getElementById('gc-admin-alert-overlay');if(!overlay)return;const title=overlay.querySelector('#gc-admin-alert-title'),message=overlay.querySelector('#gc-admin-alert-message'),ok=overlay.querySelector('#gc-admin-alert-ok');let queue=[],busy=false;function beep(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=window.__gcAdminAudio||(window.__gcAdminAudio=new C());if(c.state==='suspended')c.resume();const t=c.currentTime;[0,.22].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=i?880:660;g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(.12,t+d+.025);g.gain.exponentialRampToValueAtTime(.0001,t+d+.16);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+.17)})}catch(_){}}function render(){if(!queue.length){overlay.classList.remove('gc-open');busy=false;return}busy=true;const a=queue[0];title.textContent=a.title;message.textContent=a.message;overlay.classList.add('gc-open');beep();ok.focus()}function close(){queue.shift();render()}ok.addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('gc-open')){e.preventDefault();close()}});const nativeAlert=window.alert.bind(window);window.alert=function(value){const text=String(value??'');const low=text.toLowerCase();queue.push({title:/fail|error|unable|could not|not saved|denied|invalid|missing/.test(low)?'Action Needs Attention':/success|updated|approved|deleted|saved|sent/.test(low)?'Action Completed':'GURU CONNECT Notice',message:text});if(!busy)render()};})();</script>
 </body></html>');
   w.document.close();
 };
