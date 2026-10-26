@@ -314,6 +314,22 @@ button,a,input,select,textarea{touch-action:manipulation;}
 </section></main>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><script>
+(function(){
+  var gate=document.getElementById('gate');
+  if(gate)gate.textContent='Admin script reached browser — checking login setup…';
+  window.addEventListener('error',function(e){
+    if(gate)gate.textContent='Admin script error: '+(e.message||'script failed to run')+(e.lineno?' (line '+e.lineno+')':'');
+  });
+  window.addEventListener('unhandledrejection',function(e){
+    if(gate)gate.textContent='Admin login error: '+String(e.reason&&e.reason.message||e.reason||'unknown error');
+  });
+  setTimeout(function(){
+    if(gate&&gate.style.display!=='none'&&gate.textContent==='Admin script reached browser — checking login setup…'){
+      gate.textContent='Admin script started but login check did not finish. Please report this exact message.';
+    }
+  },5000);
+})();
+</script><script>
 const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',FN=U+'/functions/v1/admin-user-actions';
 if(!window.supabase||typeof window.supabase.createClient!=='function'){const g=document.getElementById('gate');if(g)g.textContent='Admin login library failed to load. Please refresh this page; if this message remains, the website cannot reach the login service.';throw new Error('Supabase login library did not load');}const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
