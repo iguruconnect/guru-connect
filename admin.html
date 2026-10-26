@@ -772,19 +772,21 @@ async function loadAccountCoins(){
         if(matched)wallet=matched;
       }
     }catch(e){walletLookupErrors.push(e.message||String(e))}
-    const balanceValue=wallet.balance??wallet.coins??wallet.available_coins??wallet.coin_balance??d.account?.coin_balance;
-    const balance=Number(balanceValue??0);
-    const held=Number(wallet.held_balance??wallet.held_coins??0);
+    const balanceValue=wallet.balance??wallet.coins??wallet.available_coins??wallet.coin_balance;
+    const hasMatchedWallet=balanceValue!==undefined&&balanceValue!==null;
+    const balance=hasMatchedWallet?Number(balanceValue):null;
+    const heldValue=wallet.held_balance??wallet.held_coins;
+    const held=heldValue===undefined||heldValue===null?null:Number(heldValue);
     const cols=rows.length?Object.keys(rows[0]):[];
     p.innerHTML=`
       <div class="gcAcctGrid">
-        <div class="gcStat"><b>Available Guru Coins</b><strong class="gcBlue">🪙 ${balance.toLocaleString('en-IN')}</strong></div>
-        <div class="gcStat"><b>Held Guru Coins</b><strong class="gcOrange">🪙 ${held.toLocaleString('en-IN')}</strong></div>
+        <div class="gcStat"><b>Available Guru Coins</b><strong class="gcBlue">${hasMatchedWallet?'🪙 '+balance.toLocaleString('en-IN'):'NOT FOUND'}</strong></div>
+        <div class="gcStat"><b>Held Guru Coins</b><strong class="gcOrange">${held===null?'NOT FOUND':'🪙 '+held.toLocaleString('en-IN')}</strong></div>
         <div class="gcStat"><b>Ledger Records</b><strong>${rows.length}</strong></div>
         <div class="gcStat"><b>Last Entry</b><strong>${esc(rows[0]?.created_at||'—')}</strong></div>
       </div>
-      <div class="gcAccountNotice">Wallet lookup now prioritizes the selected member's canonical ID and uses legacy member IDs only as fallback. Viewing this panel does not add, subtract, or edit coins.</div>
-      ${balanceValue===undefined||balanceValue===null?'<div class="dangerNote">The wallet balance was not returned for this member. This indicates a lookup/permission or wallet-ID mismatch; it does not prove the member has zero coins.'+(walletLookupErrors.length?'<br><br>'+esc([...new Set(walletLookupErrors)].join(' | ')):'')+'</div>':''}
+      <div class="gcAccountNotice">Wallet balances are shown only when a wallet record is actually found. Viewing this panel does not add, subtract, or edit coins.</div>
+      ${!hasMatchedWallet?'<div class="dangerNote"><b>Wallet record not found.</b> This is a lookup/permission or wallet-ID mismatch; it does not mean the member has zero coins. '+(walletLookupErrors.length?'<br><br>'+esc([...new Set(walletLookupErrors)].join(' | ')):'')+'<br><br>The account overview RPC returned '+(d.wallet?'a wallet field without a recognized balance':'no wallet field')+'. Ledger rows returned: '+rows.length+'.</div>':''}
       <div class="gcBox">
         <h3>🪙 Complete Coin Ledger — ${rows.length} Record(s)</h3>
         <div class="gcTableWrap"><table class="gcTable">
