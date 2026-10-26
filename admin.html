@@ -726,45 +726,55 @@ async function loadAccountCoins(){
     // member's canonical profile ID. Never change wallet or ledger data here.
     const candidates=[];
     const addId=v=>{if(v!==undefined&&v!==null&&String(v).trim()&&!candidates.includes(String(v)))candidates.push(String(v))};
+    // The selected account's canonical/auth ID must win over email matches,
+    // because duplicate profile rows can share an email.
+    addId(u.user_id);addId(u.auth_user_id);addId(u.profile_id);addId(u.id);
+    addId(u.member_id);addId(u.student_id);addId(u.tutor_id);
     try{
+      if(u.user_id){
+        const pq=await sb.from('profiles').select('id,role,email').eq('id',String(u.user_id)).limit(1);
+        if(!pq.error&&pq.data?.[0])addId(pq.data[0].id);
+      }
       if(u.email){
-        let pq=await sb.from('profiles').select('id,role,email').ilike('email',String(u.email).trim()).limit(10);
+        const pq=await sb.from('profiles').select('id,role,email').ilike('email',String(u.email).trim()).limit(10);
         if(!pq.error){
-          const exact=(pq.data||[]).find(x=>String(x.role||'').toLowerCase()===String(u.role||'').toLowerCase())||(pq.data||[])[0];
+          const exact=(pq.data||[]).find(x=>String(x.role||'').toLowerCase()===String(u.role||'').toLowerCase()&&String(x.email||'').toLowerCase()===String(u.email||'').toLowerCase());
           if(exact)addId(exact.id);
         }
       }
     }catch(_){}
-    addId(u.profile_id);addId(u.user_id);addId(u.auth_user_id);addId(u.id);
+    let walletLookupErrors=[];
     try{
       if(candidates.length){
-        // Check both wallet identity columns. In the canonical-ID migration,
-        // some wallets are keyed by profiles.id and others can be found by auth_user_id.
         const checks=await Promise.all([
           sb.from('gc_coin_wallets').select('*').in('profile_id',candidates),
           sb.from('gc_coin_wallets').select('*').in('auth_user_id',candidates)
         ]);
         const walletRows=[];
         for(const q of checks){
-          if(!q.error&&Array.isArray(q.data)){
+          if(q.error){walletLookupErrors.push(q.error.message||String(q.error));continue}
+          if(Array.isArray(q.data)){
             for(const w of q.data){
               if(!walletRows.some(x=>String(x.profile_id)===String(w.profile_id)&&String(x.auth_user_id||'')===String(w.auth_user_id||'')))walletRows.push(w);
             }
           }
         }
         const role=String(u.role||'').toLowerCase();
-        const canonical=String(candidates[0]||'');
+        const chosenId=String(u.user_id||u.auth_user_id||u.profile_id||'');
         const matched=
-          walletRows.find(w=>String(w.profile_id||'')===canonical&&String(w.role||w.profile_role||'').toLowerCase()===role)||
+          walletRows.find(w=>String(w.profile_id||'')===chosenId&&String(w.role||w.profile_role||'').toLowerCase()===role)||
+          walletRows.find(w=>String(w.auth_user_id||'')===chosenId&&String(w.role||w.profile_role||'').toLowerCase()===role)||
+          walletRows.find(w=>String(w.profile_id||'')===String(u.profile_id||'')&&String(w.role||w.profile_role||'').toLowerCase()===role)||
           walletRows.find(w=>String(w.auth_user_id||'')===String(u.user_id||'')&&String(w.role||w.profile_role||'').toLowerCase()===role)||
           walletRows.find(w=>candidates.includes(String(w.profile_id||''))&&String(w.role||w.profile_role||'').toLowerCase()===role)||
           walletRows.find(w=>candidates.includes(String(w.auth_user_id||'')))||
           walletRows.find(w=>candidates.includes(String(w.profile_id||'')));
         if(matched)wallet=matched;
       }
-    }catch(_){}
-    const balance=Number(wallet.balance??wallet.coins??wallet.available_coins??d.account?.coin_balance??0);
-    const held=Number(wallet.held_balance??0);
+    }catch(e){walletLookupErrors.push(e.message||String(e))}
+    const balanceValue=wallet.balance??wallet.coins??wallet.available_coins??wallet.coin_balance??d.account?.coin_balance;
+    const balance=Number(balanceValue??0);
+    const held=Number(wallet.held_balance??wallet.held_coins??0);
     const cols=rows.length?Object.keys(rows[0]):[];
     p.innerHTML=`
       <div class="gcAcctGrid">
@@ -773,7 +783,8 @@ async function loadAccountCoins(){
         <div class="gcStat"><b>Ledger Records</b><strong>${rows.length}</strong></div>
         <div class="gcStat"><b>Last Entry</b><strong>${esc(rows[0]?.created_at||'—')}</strong></div>
       </div>
-      <div class="gcAccountNotice">Wallet balance is read from the live <b>gc_coin_wallets</b> record when available; the ledger below shows the transaction history. Viewing this panel does not add, subtract, or edit coins.</div>
+      <div class="gcAccountNotice">Wallet lookup now prioritizes the selected member's canonical ID and uses legacy member IDs only as fallback. Viewing this panel does not add, subtract, or edit coins.</div>
+      ${balanceValue===undefined||balanceValue===null?'<div class="dangerNote">The wallet balance was not returned for this member. This indicates a lookup/permission or wallet-ID mismatch; it does not prove the member has zero coins.'+(walletLookupErrors.length?'<br><br>'+esc([...new Set(walletLookupErrors)].join(' | ')):'')+'</div>':''}
       <div class="gcBox">
         <h3>🪙 Complete Coin Ledger — ${rows.length} Record(s)</h3>
         <div class="gcTableWrap"><table class="gcTable">
