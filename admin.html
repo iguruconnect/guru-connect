@@ -1235,7 +1235,7 @@ window.editGlobalCoinRecord=async id=>{
     await accountRpc('update_coin_ledger',payload);
     $('coinHistoryStatus').textContent='Transaction update submitted. Refreshing ledger…';
     coinHistoryLoaded=false;await loadCoinHistory(true);
-  }catch(e){alert('Coin transaction edit failed: '+(e.message||e)+'\n\nThe secure gc_admin_account_action RPC must permit these transaction fields.')}
+  }catch(e){alert('Coin transaction edit failed: '+String(e&&e.message||e)+'. The secure gc_admin_account_action RPC must permit these transaction fields.')}
 };
 window.deleteGlobalCoinRecord=async id=>{
   const r=gcCoinLedgerRows.find(x=>String(x.id)===String(id));if(!r)return alert('Transaction not found. Refresh history and try again.');
