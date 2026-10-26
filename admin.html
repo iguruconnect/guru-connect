@@ -1782,6 +1782,7 @@ $('idPrintBtn').onclick=()=>{
 // This avoids a stale error state when the Supabase session is still restoring.
 staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit();await loadAdminAdvertisements()}});
 </script>
+<style>
 #gc-admin-alert-overlay{position:fixed;inset:0;background:rgba(7,18,38,.68);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;z-index:2147483647;padding:18px;font-family:Arial,sans-serif}
 #gc-admin-alert-overlay.gc-open{display:flex;animation:gcAdminFade .18s ease-out}
 #gc-admin-alert-card{width:min(420px,100%);background:#fff;border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.3);overflow:hidden;text-align:center;border:1px solid #dbeafe}
@@ -1796,7 +1797,6 @@ staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';s
 </style>
 <div id="gc-admin-alert-overlay" role="presentation"><section id="gc-admin-alert-card" role="alertdialog" aria-modal="true" aria-labelledby="gc-admin-alert-title" aria-describedby="gc-admin-alert-message"><div id="gc-admin-alert-head"><div id="gc-admin-alert-mark">🔔</div><div id="gc-admin-alert-brand">GURU CONNECT</div><div style="font-size:10px;letter-spacing:2px;color:#0f766e;font-weight:800;margin-top:3px">ADMIN CONTROL CENTER</div></div><h2 id="gc-admin-alert-title">Notice</h2><p id="gc-admin-alert-message"></p><button id="gc-admin-alert-ok" type="button">CONTINUE</button></section></div>
 <script id="gc-admin-alert-script">(()=>{if(window.__gcAdminAlertInstalled)return;window.__gcAdminAlertInstalled=true;const overlay=document.getElementById('gc-admin-alert-overlay');if(!overlay)return;const title=overlay.querySelector('#gc-admin-alert-title'),message=overlay.querySelector('#gc-admin-alert-message'),ok=overlay.querySelector('#gc-admin-alert-ok');let queue=[],busy=false;function beep(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=window.__gcAdminAudio||(window.__gcAdminAudio=new C());if(c.state==='suspended')c.resume();const t=c.currentTime;[0,.22].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=i?880:660;g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(.12,t+d+.025);g.gain.exponentialRampToValueAtTime(.0001,t+d+.16);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+.17)})}catch(_){}}function render(){if(!queue.length){overlay.classList.remove('gc-open');busy=false;return}busy=true;const a=queue[0];title.textContent=a.title;message.textContent=a.message;overlay.classList.add('gc-open');beep();ok.focus()}function close(){queue.shift();render()}ok.addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('gc-open')){e.preventDefault();close()}});const nativeAlert=window.alert.bind(window);window.alert=function(value){const text=String(value??'');const low=text.toLowerCase();queue.push({title:/fail|error|unable|could not|not saved|denied|invalid|missing/.test(low)?'Action Needs Attention':/success|updated|approved|deleted|saved|sent/.test(low)?'Action Completed':'GURU CONNECT Notice',message:text});if(!busy)render()};})();</script>
-</body></html>
 <style id="gc-admin-colorful-control-tiles-20261009">
 /* =========================================================
    GURU CONNECT ADMIN — COLORFUL CONTROL TILES
@@ -1851,3 +1851,5 @@ staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';s
 @media(max-width:900px){.controlbar .topbtn{min-height:82px!important;}}
 @media(max-width:600px){.controlbar .topbtn{min-height:76px!important;}}
 </style>
+</body></html>
+
