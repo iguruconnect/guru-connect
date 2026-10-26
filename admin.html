@@ -1780,7 +1780,12 @@ $('idPrintBtn').onclick=()=>{
 
 // Do not query the admin-only advertisements table before authentication.
 // This avoids a stale error state when the Supabase session is still restoring.
-staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit();await loadAdminAdvertisements()}});
+staffCheck().then(ok=>{if(ok){
+  /* Show the authenticated Admin dashboard immediately. Load data in the background so a slow directory or advertisement query cannot hold up the dashboard. */
+  activeSection='edit';switchSection('edit');
+  loadLiveUsers().then(()=>{findForEdit()}).catch(e=>{const s=$('searchStatus');if(s)s.textContent='Directory will be available after refresh: '+(e?.message||e)});
+  loadAdminAdvertisements().catch(e=>{const s=$('adStatus');if(s)s.textContent='Advertisements could not load yet: '+(e?.message||e)});
+}});
 </script>
 <style>
 #gc-admin-alert-overlay{position:fixed;inset:0;background:rgba(7,18,38,.68);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;z-index:2147483647;padding:18px;font-family:Arial,sans-serif}
