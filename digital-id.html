@@ -82,7 +82,54 @@ const statusNode=document.getElementById('verified');
 let secondsLeft=300;const timerBox=document.getElementById('liveTimer'),timerText=document.getElementById('countdown');
 const timerInterval=setInterval(()=>{secondsLeft=Math.max(0,secondsLeft-1);timerText.textContent=String(Math.floor(secondsLeft/60)).padStart(2,'0')+':'+String(secondsLeft%60).padStart(2,'0');if(secondsLeft===0){clearInterval(timerInterval);timerBox.classList.add('expired');timerBox.querySelector('span').textContent='SESSION EXPIRED';}},1000);
 const expired=!!(card.validTo && new Date(card.validTo+'T23:59:59')<new Date());
-if(!card.userId&&String(card.category||'').toLowerCase()==='staff'){if(expired){statusNode.textContent='✕ EXPIRED — NOT VALID';statusNode.style.color='#b42318'}else{statusNode.textContent='✓ LIVE DIGITAL ID RECORD FOUND · STAFF ID ISSUED BY GURU CONNECT';statusNode.style.color='#155eef'}}else if(!card.userId){
+if(!card.userId&&String(card.category||'').toLowerCase()==='staff'){
+ // Staff verification must check the current staff-directory record on every scan.
+ // Never treat the saved card JSON alone as proof that the staff member is active.
+ try{
+  const apiKey='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+  const storageBase='https://hzqqswrnawrfgufbxgay.supabase.co/storage/v1/';
+  const staffId=String(card.idNumber||'').trim();
+  if(!staffId)throw new Error('Staff ID missing');
+  const listResponse=await fetch(storageBase+'object/list/gc-advertisements',{
+   method:'POST',cache:'no-store',
+   headers:{apikey:apiKey,'Content-Type':'application/json'},
+   body:JSON.stringify({prefix:'staff-directory/',limit:1000,offset:0})
+  });
+  if(!listResponse.ok)throw new Error('Live staff directory unavailable');
+  const entries=await listResponse.json();
+  const staffFiles=(Array.isArray(entries)?entries:[]).filter(x=>x.name&&String(x.name).toLowerCase().endsWith('.json'));
+  let liveRecord=null;
+  for(const entry of staffFiles){
+   const fileResponse=await fetch(storageBase+'object/public/gc-advertisements/staff-directory/'+encodeURIComponent(entry.name),{cache:'no-store',headers:{apikey:apiKey}});
+   if(!fileResponse.ok)continue;
+   let candidate;try{candidate=await fileResponse.json()}catch(_){continue}
+   if(String(candidate.staffId||'').trim()===staffId){liveRecord=candidate;break}
+  }
+  if(!liveRecord){
+   statusNode.textContent='✕ NOT VERIFIED — staff record not found in the live directory';
+   statusNode.style.color='#b42318';
+  }else{
+   const liveState=String(liveRecord.status||'').trim().toLowerCase();
+   const liveName=String(liveRecord.name||'').trim();
+   const inactiveStaffStates=['revoked','suspended','rejected','disabled','deleted','inactive','blocked','deactivated','terminated'];
+   const nameMatches=liveName.toLowerCase()===String(card.name||'').trim().toLowerCase();
+   if(expired){
+    statusNode.textContent='✕ EXPIRED — NOT VALID';statusNode.style.color='#b42318';
+   }else if(!nameMatches){
+    statusNode.textContent='✕ NOT VERIFIED — ID details do not match the live staff record';statusNode.style.color='#b42318';
+   }else if(inactiveStaffStates.includes(liveState)){
+    statusNode.textContent='✕ NOT AUTHORISED — staff status is '+liveState.toUpperCase();statusNode.style.color='#b42318';
+   }else if(liveState!=='active'){
+    statusNode.textContent='⚠ NOT VERIFIED — staff authorisation status is unclear';statusNode.style.color='#9a3412';
+   }else{
+    statusNode.textContent='✓ LIVE VERIFIED — ACTIVE GURU CONNECT STAFF';statusNode.style.color='#067647';
+   }
+  }
+ }catch(_){
+  statusNode.textContent='⚠ LIVE VERIFICATION UNAVAILABLE — do not rely on this ID until online status can be confirmed';
+  statusNode.style.color='#9a3412';
+ }
+}else if(!card.userId){
  statusNode.textContent='⚠ LIVE VERIFICATION UNAVAILABLE — ask admin to generate a new card';
  statusNode.style.color='#9a3412';
 }else{
