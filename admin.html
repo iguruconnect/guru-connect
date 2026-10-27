@@ -1746,6 +1746,29 @@ $('idPhoto').addEventListener('change',()=>{
   if(f.size>5*1024*1024){$('idPhoto').value='';$('idGenStatus').textContent='Photograph must be 5 MB or smaller.';gcIdUpdatePreview();return}
   const reader=new FileReader();reader.onload=()=>{gcIdPhotoData=String(reader.result||'');$('idPhotoPreview').src=gcIdPhotoData;$('idPhotoPreview').hidden=false;gcIdUpdatePreview();$('idGenStatus').textContent='Photograph uploaded and ready for preview.'};reader.onerror=()=>{$('idGenStatus').textContent='Could not read this photograph. Please try another file.'};reader.readAsDataURL(f);
 });
+async function gcIdUploadWithFreshSession(path,body,options){
+  // Refresh the signed-in admin JWT before storage writes. Supabase Storage
+  // rejects an expired JWT with an "exp claim timestamp check failed" error.
+  let sessionResult=await sb.auth.getSession();
+  if(sessionResult.error)throw sessionResult.error;
+  let session=sessionResult.data?.session;
+  const expiry=session?.expires_at||0;
+  if(!session||expiry<=Math.floor(Date.now()/1000)+90){
+    const refreshed=await sb.auth.refreshSession();
+    if(refreshed.error||!refreshed.data?.session){
+      throw new Error('Your admin login has expired. Please log out, sign in again, and generate the ID card.');
+    }
+  }
+  let result=await sb.storage.from('gc-advertisements').upload(path,body,options);
+  if(result.error&&/exp.*claim|jwt.*expired|token.*expired|invalid jwt/i.test(result.error.message||'')){
+    const refreshed=await sb.auth.refreshSession();
+    if(refreshed.error||!refreshed.data?.session){
+      throw new Error('Admin upload session expired and could not be refreshed. Please log out, sign in again, and generate the ID card.');
+    }
+    result=await sb.storage.from('gc-advertisements').upload(path,body,options);
+  }
+  return result;
+}
 $('idGenerateBtn').onclick=async()=>{
   if(!gcIdSelectedUser()){ $('idGenStatus').textContent='Please select a registered Student or Tutor first.';return}
   if(!gcIdPhotoData){$('idGenStatus').textContent='Photograph is required. Upload the member photograph before generating the ID.';$('idPhoto').focus();return}
@@ -1757,7 +1780,7 @@ $('idGenerateBtn').onclick=async()=>{
     const safeId=String($('idNumber').value).trim().replace(/[^a-z0-9_-]/gi,'-');
     const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
     const path='id-cards/'+safeId+'-'+Date.now()+'.'+ext;
-    const up=await sb.storage.from('gc-advertisements').upload(path,file,{upsert:false,contentType:file.type||'image/jpeg',cacheControl:'3600'});
+    const up=await gcIdUploadWithFreshSession(path,file,{upsert:false,contentType:file.type||'image/jpeg',cacheControl:'3600'});
     if(up.error)throw new Error('Could not save the ID photograph online: '+up.error.message);
     const photoUrl=sb.storage.from('gc-advertisements').getPublicUrl(path).data.publicUrl;
     const u=gcIdSelectedUser();
@@ -1767,7 +1790,7 @@ $('idGenerateBtn').onclick=async()=>{
     // This avoids a very dense QR containing the full photo URL and member details.
     const token=(window.crypto&&typeof crypto.randomUUID==='function')?crypto.randomUUID():Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
     const cardPath='digital-id-cards/'+token+'.json';
-    const cardUpload=await sb.storage.from('gc-advertisements').upload(cardPath,new Blob([json],{type:'application/json'}),{upsert:false,contentType:'application/json',cacheControl:'3600'});
+    const cardUpload=await gcIdUploadWithFreshSession(cardPath,new Blob([json],{type:'application/json'}),{upsert:false,contentType:'application/json',cacheControl:'3600'});
     if(cardUpload.error)throw new Error('Could not save the digital ID details for QR scanning: '+cardUpload.error.message);
     const digitalUrl='https://guruconnnect.in/digital-id.html?id='+encodeURIComponent(token);
     const qrBox=document.createElement('div');new QRCode(qrBox,{text:digitalUrl,width:1200,height:1200,correctLevel:QRCode.CorrectLevel.L});const qrCanvas=qrBox.querySelector('canvas');if(qrCanvas){const padded=document.createElement('canvas');padded.width=1440;padded.height=1440;const ctx=padded.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,1440,1440);ctx.imageSmoothingEnabled=false;ctx.drawImage(qrCanvas,120,120,1200,1200);$('idCardQr').src=padded.toDataURL('image/png')}else{const qrImg=qrBox.querySelector('img');if(!qrImg)throw new Error('QR generator did not produce an image. Please retry.');$('idCardQr').src=qrImg.src}
