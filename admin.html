@@ -548,11 +548,14 @@ async function loadLiveUsers(){
       }
     }catch(_){}
     renderUsers();
+    // Refresh the Digital ID selector whenever the shared live directory finishes loading.
+    if(typeof gcIdFillSelect==='function')gcIdFillSelect();
     $('searchStatus').textContent=users.length?users.length+' live Student/Tutor profile(s) loaded from Supabase.':'No Student/Tutor profile records are currently visible to this Staff session.';
     $('directoryCount').textContent=users.length+' LIVE PROFILES';
   }catch(e){
-    $('searchStatus').textContent='Directory load failed: '+(e.message||e);
-    $('results').innerHTML='<div class="empty">The live directory could not be read. Check Staff/Admin authorization and the profiles/student_profiles/tutor_profiles tables.</div>';
+    $('searchStatus').textContent='Directory load failed: '+(e.message||e)+' — retry Refresh Directory.';
+    $('results').innerHTML='<div class="empty">The live directory could not be read. Your member records have not been changed. Check the error above, then retry.</div>';
+    if(typeof gcIdFillSelect==='function')gcIdFillSelect();
   }
 }
 
@@ -1663,8 +1666,11 @@ function gcIdFirst(u,keys){
   return '';
 }
 function gcIdPublicNumber(u){
-  // Prefer the same member ID already displayed in the admin directory cards.
-  return gcIdFirst(u,['member_id','student_id','tutor_id','short_id','public_id','registration_no','record_no','profile_id','user_id','id'])||'';
+  // Never print an internal UUID as the public card number.
+  const candidate=gcIdFirst(u,['public_id','registration_no','record_no','member_id','student_id','tutor_id','short_id']);
+  if(candidate && !/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(String(candidate)))return String(candidate);
+  const stable=String(u?.user_id||u?.profile_id||u?.id||'').replace(/[^a-z0-9]/gi,'').toUpperCase();
+  return stable?'GC-'+stable.slice(-8):'';
 }
 function gcIdFillSelect(){
   const search=$('idMemberSearch').value.trim().toLowerCase();
@@ -1761,7 +1767,7 @@ $('idGenerateBtn').onclick=async()=>{
     if(up.error)throw new Error('Could not save the ID photograph online: '+up.error.message);
     const photoUrl=sb.storage.from('gc-advertisements').getPublicUrl(path).data.publicUrl;
     const u=gcIdSelectedUser();
-    const payload={v:1,n:$('idFullName').value.trim(),c:$('idCategory').value,i:$('idNumber').value.trim(),l:$('idLevel').value,co:$('idCourse').value,st:$('idStream').value,su:$('idSubject').value.trim(),p:$('idPlan').value.trim(),m:$('idMode').value,a:$('idAddress').value.trim(),ph:$('idMobile').value.trim(),f:$('idValidFrom').value,t:$('idValidTo').value,ok:!!(u&&(u.public_verified_tick||u.verified||u.verified_tick||u.is_verified||u.isVerified||String(u.verification_status||'').toLowerCase()==='verified')),im:photoUrl};
+    const payload={v:1,userId:String(u?.user_id||''),n:$('idFullName').value.trim(),c:$('idCategory').value,i:$('idNumber').value.trim(),l:$('idLevel').value,co:$('idCourse').value,st:$('idStream').value,su:$('idSubject').value.trim(),p:$('idPlan').value.trim(),m:$('idMode').value,a:$('idAddress').value.trim(),ph:$('idMobile').value.trim(),f:$('idValidFrom').value,t:$('idValidTo').value,ok:!!(u&&(u.public_verified_tick||u.verified||u.verified_tick||u.is_verified||u.isVerified||String(u.verification_status||'').toLowerCase()==='verified')),im:photoUrl};
     const json=JSON.stringify(payload);
     // Store the card data once and put only a short random token in the QR.
     // This avoids a very dense QR containing the full photo URL and member details.
