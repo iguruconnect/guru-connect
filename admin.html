@@ -1843,7 +1843,7 @@ const uniqueRecords=[];const seenMembers=new Set();let hiddenDuplicateCount=0;
 records.sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
 for(const r of records){
  const d=r.data||{},category=String(d.c||d.category||'').toLowerCase();
- const identity=category==='staff'?String(d.staffProfileId||d.i||d.idNumber||'').trim().toLowerCase():String(d.userId||d.user_id||'').trim().toLowerCase();
+ const identity=category==='staff'?String(d.staffProfileId||d.i||d.idNumber||'').trim().toLowerCase():String(d.userId||d.user_id||d.i||d.idNumber||'').trim().toLowerCase();
  const key=identity?category+':'+identity:category+':id:'+String(r.token||r.file?.name||'');
  if(seenMembers.has(key)){hiddenDuplicateCount++;continue}
  seenMembers.add(key);uniqueRecords.push(r);
