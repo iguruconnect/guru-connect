@@ -23,7 +23,7 @@ header img{width:68px;height:68px;object-fit:contain;flex:0 0 auto}
 .badge{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;width:21px;height:21px;background:#00b83f;color:white;font-weight:900;font-size:14px;vertical-align:middle;margin-left:5px}
 .category{color:#155eef;font-size:12px;font-weight:800;margin-top:9px;overflow-wrap:anywhere}
 .number{font-size:13px;color:#155eef;margin-top:7px;font-weight:800;overflow-wrap:anywhere}
-.verified{font-size:12px;color:#008b32;font-weight:800;margin-top:6px}
+.verified{font-size:12px;color:#008b32;font-weight:800;margin-top:6px}.live-timer{margin-top:14px;padding:12px 14px;border-radius:10px;background:#ecfdf3;border:1px solid #a7f3d0;color:#067647;display:flex;align-items:center;justify-content:space-between;gap:10px;font-weight:800;font-size:12px}.live-timer strong{font-size:20px;font-variant-numeric:tabular-nums;letter-spacing:1px}.live-timer.expired{background:#fff1f2;border-color:#fecdd3;color:#b42318}
 .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}
 .field{border-bottom:1px solid #e2e8f0;padding-bottom:8px;min-width:0}
 .field b{display:block;font-size:10px;letter-spacing:.5px;color:#64748b;margin-bottom:5px}
@@ -68,7 +68,7 @@ const d=JSON.parse(raw);
 const card={userId:d.userId||d.user_id||'',name:d.name||d.n,category:d.category||d.c,idNumber:d.idNumber||d.i,level:d.level||d.l,course:d.course||d.co,stream:d.stream||d.st,subject:d.subject||d.su,plan:d.plan||d.p,mode:d.mode||d.m,address:d.address||d.a,mobile:d.mobile||d.ph,validFrom:d.validFrom||d.f,validTo:d.validTo||d.t,verified:d.verified??d.ok,photo:d.photo||d.im};
 if(!card.name||!card.idNumber||!card.photo)throw new Error('Digital ID information is incomplete. Please ask GURU CONNECT admin for a replacement card.');
 if(!/^https:\/\//i.test(String(card.photo)))throw new Error('The member photograph link is invalid.');
-root.innerHTML='<div class="identity"><img class="photo" id="memberPhoto" src="" alt="Member photograph"><section class="membercopy"><h2 class="membername" id="memberName"></h2><div class="category" id="category"></div><div class="number" id="number"></div><div id="verified" class="verified">Checking current status…</div></section></div><div class="fields" id="fields"></div><div class="validity"><span>VALIDITY</span><span id="validity"></span></div>';
+root.innerHTML='<div class="identity"><img class="photo" id="memberPhoto" src="" alt="Member photograph"><section class="membercopy"><h2 class="membername" id="memberName"></h2><div class="category" id="category"></div><div class="number" id="number"></div><div id="verified" class="verified">Checking current status…</div></section></div><div class="fields" id="fields"></div><div class="validity"><span>VALIDITY</span><span id="validity"></span></div><div class="live-timer" id="liveTimer"><span>LIVE VERIFICATION SESSION</span><strong id="countdown">05:00</strong></div>';
 document.getElementById('memberPhoto').src=String(card.photo);
 document.getElementById('memberName').textContent=esc(card.name);
 document.getElementById('category').textContent='CATEGORY: '+String(card.category||'member').toUpperCase();
@@ -77,6 +77,10 @@ if(card.verified){document.getElementById('verified').innerHTML='<span class="ba
 const fields=[['LEVEL',card.level],['COURSE',card.course],['STREAM',card.stream],['SUBJECT',card.subject],['PLAN',card.plan],['MODE',card.mode],['RESIDENTIAL ADDRESS',card.address,true],['MOBILE NUMBER',card.mobile,true]];
 document.getElementById('fields').innerHTML=fields.map(([label,value,full])=>'<div class="field'+(full?' full':'')+'"><b>'+label+'</b><span>'+safe(value)+'</span></div>').join('');
 document.getElementById('validity').textContent=date(card.validFrom)+' – '+date(card.validTo);
+const statusNode=document.getElementById('verified');
+// Five-minute on-screen session countdown starts when this QR page opens.
+let secondsLeft=300;const timerBox=document.getElementById('liveTimer'),timerText=document.getElementById('countdown');
+const timerInterval=setInterval(()=>{secondsLeft=Math.max(0,secondsLeft-1);timerText.textContent=String(Math.floor(secondsLeft/60)).padStart(2,'0')+':'+String(secondsLeft%60).padStart(2,'0');if(secondsLeft===0){clearInterval(timerInterval);timerBox.classList.add('expired');timerBox.querySelector('span').textContent='SESSION EXPIRED';}},1000);
 const statusNode=document.getElementById('verified');
 const expired=!!(card.validTo && new Date(card.validTo+'T23:59:59')<new Date());
 if(!card.userId){
@@ -114,10 +118,11 @@ if(!card.userId){
    statusNode.textContent='✕ NOT VALID — member status is '+state.toUpperCase();statusNode.style.color='#b42318';
   }else{
    const role=String(p.role||'').trim().toLowerCase();
+   const publicTick=typeof p.public_verified_tick==='boolean'?p.public_verified_tick:!!card.verified;
+   if(publicTick){document.getElementById('memberName').innerHTML=safe(card.name)+' <span class="badge" aria-label="Blue verified tick" style="background:#1877f2">✓</span>';statusNode.innerHTML='<span style="color:#1877f2;font-weight:900">✓ BLUE VERIFIED TICK</span> · LIVE RECORD CONFIRMED';}
    const expected=String(card.category||'').trim().toLowerCase();
    const roleMatches=!role||role===expected||((role==='student'||role==='tutor')&&expected.includes(role));
-   statusNode.textContent='✓ LIVE RECORD FOUND — '+(card.verified?'ADMIN VERIFIED':'MEMBER RECORD FOUND')+(roleMatches?'':' (PLEASE CONFIRM CARD CATEGORY)');
-   statusNode.style.color=card.verified?'#008b32':'#155eef';
+   if(!publicTick){statusNode.textContent='✓ LIVE RECORD FOUND — MEMBER RECORD CONFIRMED'+(roleMatches?'':' (PLEASE CONFIRM CARD CATEGORY)');statusNode.style.color='#155eef';}else{statusNode.style.color='#1877f2';}
   }
  }catch(_){statusNode.textContent='⚠ LIVE VERIFICATION UNAVAILABLE — do not rely on this card alone';statusNode.style.color='#9a3412'}
 }
