@@ -490,9 +490,19 @@ function normalizeRpcUsers(rows){
 }
 
 async function loadLiveUsers(){
-  $('searchStatus').textContent='Loading authorized live Student and Tutor profiles from Supabase…';
+  $('searchStatus').textContent='Refreshing Staff session and loading authorized live Student and Tutor profiles…';
   $('results').innerHTML='';
   try{
+    // The directory is read directly after the Staff login check. Refresh a
+    // nearly expired Supabase session before any table/RPC reads so a stale
+    // JWT does not look like a missing directory or broken profile tables.
+    const current=await sb.auth.getSession();
+    let liveSession=current.data?.session||null;
+    if(!liveSession)throw new Error('Staff/Admin session is missing. Log out and sign in again.');
+    if(!liveSession.expires_at || liveSession.expires_at <= Math.floor(Date.now()/1000)+90){
+      const refreshed=await sb.auth.refreshSession();
+      if(refreshed.error||!refreshed.data?.session)throw new Error('Staff/Admin session could not be refreshed. Log out and sign in again. '+(refreshed.error?.message||''));
+    }
     const rpc=await sb.rpc('gc_admin_find_users',{p_term:''});
     const rpcUsers=(!rpc.error&&Array.isArray(rpc.data))?normalizeRpcUsers(rpc.data):[];
 
@@ -504,8 +514,13 @@ async function loadLiveUsers(){
       sb.from('student_profiles').select('*').order('created_at',{ascending:false}),
       sb.from('tutor_profiles').select('*').order('created_at',{ascending:false})
     ]);
-    const tableErrors=[pr.error,st.error,tr.error].filter(Boolean);
-    if(tableErrors.length && !rpcUsers.length) throw tableErrors[0];
+    const tableResults=[['profiles',pr],['student_profiles',st],['tutor_profiles',tr]];
+    const tableErrors=tableResults.filter(([,r])=>r.error);
+    if(tableErrors.length && !rpcUsers.length){
+      const details=tableErrors.map(([name,r])=>name+': '+(r.error.message||r.error.details||r.error.code||'read denied')).join(' | ');
+      const rpcProblem=rpc.error?' | gc_admin_find_users: '+(rpc.error.message||rpc.error.code||'failed'):'';
+      throw new Error(details+rpcProblem);
+    }
 
     const pm=new Map((pr.data||[]).map(x=>[String(x.id),x]));
     const byEmail=new Map((pr.data||[]).filter(x=>x.email).map(x=>[String(x.email).toLowerCase(),x]));
