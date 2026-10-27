@@ -262,7 +262,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
 
 
 <section class="section" id="sec-idgeneration">
- <div class="secHead"><div><h2>🪪 Student &amp; Tutor ID Card Generation</h2><p>Choose a registered member, upload their photograph, review editable details, then generate and print the ID card.</p></div><span class="pill">ADMIN CONTROLLED</span></div>
+ <div class="secHead"><div><h2>🪪 Student, Tutor &amp; Staff ID Card Generation</h2><p>Create cards for registered Students/Tutors, premium helpline-plan Students, and GURU CONNECT Staff.</p></div><span class="pill">ADMIN CONTROLLED</span></div>
  <div class="secBody">
   <div class="notice">The admin uploads the member photograph for each ID. Digital ID generation stores a public photo copy for QR access. Anyone scanning or receiving the QR link can view all encoded card details, including mobile number and residential address. Re-generate the ID if any details change.</div>
   <div class="idgen-layout">
@@ -271,15 +271,15 @@ button,a,input,select,textarea{touch-action:manipulation;}
     <div class="idgen-formgrid">
      <div class="idgen-field wide"><label for="idMemberSearch">Search by name or public Student/Tutor ID</label><input id="idMemberSearch" placeholder="e.g. GC-T-SSZ1F5 or member name" autocomplete="off"></div>
      <div class="idgen-field wide"><label for="idMemberSelect">Matching registered members</label><select id="idMemberSelect"><option value="">Load or search for a member…</option></select></div>
-     <div class="idgen-field"><label for="idCategory">Category</label><select id="idCategory"><option value="student">Student</option><option value="tutor">Tutor</option></select></div>
+     <div class="idgen-field"><label for="idCategory">Category</label><select id="idCategory"><option value="student">Student</option><option value="tutor">Tutor</option><option value="staff">Staff Member</option></select></div>
      <div class="idgen-field"><label for="idNumber">ID Number</label><input id="idNumber" placeholder="Public profile ID"></div>
      <div class="idgen-field wide"><label for="idFullName">Full Name</label><input id="idFullName" placeholder="Full name"></div>
      <div class="idgen-field"><label for="idLevel">Level</label><select id="idLevel"><option value="">Select level</option><option>Jr. College</option><option>Degree College</option><option>Other</option></select></div>
      <div class="idgen-field"><label for="idCourse">Course</label><select id="idCourse"><option value="">Select course</option><option>XI</option><option>XII</option><option>FY</option><option>SY</option><option>TY</option><option>Other</option></select></div>
      <div class="idgen-field"><label for="idStream">Stream</label><select id="idStream"><option value="">Select stream</option><option>ARTS</option><option>SCIENCE</option><option>COMMERCE</option><option>Other</option></select></div>
-     <div class="idgen-field"><label for="idMode">Mode</label><select id="idMode"><option value="">Select mode</option><option>Online</option><option>Offline</option><option>Online / Offline</option></select></div>
+     <div class="idgen-field"><label for="idMode">Mode</label><select id="idMode"><option value="">Select mode</option><option>Online</option><option>Offline</option><option>Online / Offline</option></select></div><div class="idgen-field wide" id="idTutorTypeWrap" hidden><label for="idTutorType">Tutor Type</label><select id="idTutorType"><option value="">Select tutor type</option><option>Helpline Service Provider</option><option>Online Tutor</option><option>Home Tutor</option></select></div><div class="idgen-field wide" id="idStaffPostWrap" hidden><label for="idStaffPost">Staff Designation / Post</label><select id="idStaffPost"><option value="">Select staff post</option><option>HEAD- CUSTOMER SERVICE CENTER</option><option>CUSTOMER SERVICE EXECUTIVE</option><option>BUSINESS DEVELOPMENT EXECUTIVE</option><option>HEAD-BUSINESS OPERATIONS</option><option>TUTOR COORDINATOR</option><option>INSTITUTE COORDINATOR</option></select></div>
      <div class="idgen-field wide"><label for="idSubject">Subject</label><input id="idSubject" placeholder="Subject(s)"></div>
-     <div class="idgen-field wide"><label for="idPlan">Plan</label><input id="idPlan" placeholder="Membership / service plan"></div>
+     <div class="idgen-field wide" id="idPlanWrap"><label for="idPlan">Helpline / Membership Plan</label><select id="idPlan"><option value="">Select plan</option><option>FREE PLAN</option><option>PRO PLAN</option><option>GENX PLAN</option><option>GENX PRO PLAN</option><option>PRIME PLAN</option><option>PREMIUM PLAN</option><option>Other / Custom Plan</option></select></div>
      <div class="idgen-field wide"><label for="idAddress">Residential Address</label><textarea id="idAddress" placeholder="Residential address"></textarea></div>
      <div class="idgen-field wide"><label for="idMobile">Mobile Number</label><input id="idMobile" placeholder="Registered mobile number"></div>
      <div class="idgen-field"><label for="idValidFrom">Valid from</label><input id="idValidFrom" type="date"></div>
@@ -293,7 +293,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
     <h3>2. Live ID card preview</h3>
     <div id="idCardPreview" class="idgen-card" aria-label="ID card preview">
      <div class="idgen-cardhead"><img class="idgen-logo" src="guru-connect-round-logo.png" alt="GURU CONNECT round logo with books and folded hands"><div class="idgen-brandcopy"><div class="idgen-wordmark"><span class="idgen-guru">GURU</span><span class="idgen-connect">CONNECT</span></div><div class="idgen-tagline">Connecting Mind - Creating Future...</div></div></div>
-     <div class="idgen-cardbody"><div class="idgen-leftcol"><div class="idgen-photo-wrap"><img id="idCardPhoto" class="idgen-cardphoto" alt="Member photo preview"><img class="idgen-photo-seal" src="guru-connect-round-logo.png" alt="GURU CONNECT original brand seal stamp"></div><div class="idgen-qrwrap" id="idCardQrWrap" hidden><img id="idCardQr" alt="QR code for digital GURU CONNECT ID" hidden><small>SCAN FOR DIGITAL ID</small></div></div><div><div class="idgen-cardname"><span id="idCardName">Member Full Name</span><span id="idCardTick" class="idgen-tick" hidden>✓</span></div><div id="idCardCategory" class="idgen-idnumber">CATEGORY: STUDENT</div><div id="idCardNumber" class="idgen-idnumber">ID NO: —</div><div class="idgen-mini-fields"><div><b>LEVEL</b><span id="idCardLevel">—</span></div><div><b>COURSE</b><span id="idCardCourse">—</span></div><div><b>STREAM</b><span id="idCardStream">—</span></div><div><b>SUBJECT</b><span id="idCardSubject">—</span></div><div><b>PLAN</b><span id="idCardPlan">—</span></div><div><b>MODE</b><span id="idCardMode">—</span></div></div><div class="idgen-address"><b>ADDRESS:</b> <span id="idCardAddress">—</span><br><b>MOBILE:</b> <span id="idCardMobile">—</span></div></div></div>
+     <div class="idgen-cardbody"><div class="idgen-leftcol"><div class="idgen-photo-wrap"><img id="idCardPhoto" class="idgen-cardphoto" alt="Member photo preview"><img class="idgen-photo-seal" src="guru-connect-round-logo.png" alt="GURU CONNECT original brand seal stamp"></div><div class="idgen-qrwrap" id="idCardQrWrap" hidden><img id="idCardQr" alt="QR code for digital GURU CONNECT ID" hidden><small>SCAN FOR DIGITAL ID</small></div></div><div><div class="idgen-cardname"><span id="idCardName">Member Full Name</span><span id="idCardTick" class="idgen-tick" hidden>✓</span></div><div id="idCardCategory" class="idgen-idnumber">CATEGORY: STUDENT</div><div id="idCardNumber" class="idgen-idnumber">ID NO: —</div><div class="idgen-mini-fields"><div><b>LEVEL</b><span id="idCardLevel">—</span></div><div><b>COURSE</b><span id="idCardCourse">—</span></div><div><b>STREAM</b><span id="idCardStream">—</span></div><div><b id="idCardSubjectLabel">SUBJECT</b><span id="idCardSubject">—</span></div><div><b>PLAN</b><span id="idCardPlan">—</span></div><div><b id="idCardModeLabel">MODE</b><span id="idCardMode">—</span></div><div><b>DESIGNATION / TYPE</b><span id="idCardRoleDetail">—</span></div></div><div class="idgen-address"><b>ADDRESS:</b> <span id="idCardAddress">—</span><br><b>MOBILE:</b> <span id="idCardMobile">—</span></div></div></div>
      <div class="idgen-validity"><span>VALIDITY:</span><span id="idCardValidity">Select validity dates</span></div>
      <div class="idgen-cardfoot"><span>◉ WhatsApp: +1 (555) 9565-917</span><span>✉ support@guruconnnect.in</span></div>
     </div>
@@ -1713,7 +1713,7 @@ function gcIdAutofill(){
   gcIdSetSelect('idCourse',course);
   gcIdSetSelect('idStream',stream);
   gcIdSetField('idSubject',gcIdFirst(u,['subject','subjects','teaching_subject','specialization','speciality']));
-  gcIdSetField('idPlan',gcIdFirst(u,['plan','plan_name','membership_plan','subscription_plan','service_plan'])||((u.role==='tutor'&&(u.public_verified_tick||u.verified))?'Verified Tutor':''));
+  gcIdSetSelect('idPlan',gcIdFirst(u,['helpline_plan','plan','plan_name','membership_plan','subscription_plan','service_plan']));gcIdSetSelect('idTutorType',gcIdFirst(u,['tutor_type','tutor_mode','service_type']));gcIdUpdateCategoryFields();
   gcIdSetSelect('idMode',gcIdFirst(u,['mode','teaching_mode','class_mode']));
   gcIdSetField('idAddress',gcIdFirst(u,['residential_address','address','full_address','home_address','location']));
   gcIdSetField('idMobile',gcIdFirst(u,['phone','mobile','mobile_number','contact_number']));
@@ -1731,7 +1731,7 @@ function gcIdUpdatePreview(){
   $('idCardStream').textContent=val('idStream');
   $('idCardSubject').textContent=val('idSubject');
   $('idCardPlan').textContent=val('idPlan');
-  $('idCardMode').textContent=val('idMode');
+  $('idCardMode').textContent=val('idMode');const category=val('idCategory').toLowerCase();$('idCardSubjectLabel').textContent=category==='staff'?'DEPARTMENT / SUBJECT':'SUBJECT';$('idCardModeLabel').textContent=category==='tutor'?'TEACHING MODE':'MODE';$('idCardRoleDetail').textContent=category==='staff'?val('idStaffPost'):(category==='tutor'?val('idTutorType'):'—');
   $('idCardAddress').textContent=val('idAddress');
   $('idCardMobile').textContent=val('idMobile');
   const tick=!!(u&&(u.public_verified_tick||u.verified||u.verified_tick||u.is_verified||u.isVerified||String(u.verification_status||'').toLowerCase()==='verified'));
@@ -1744,7 +1744,7 @@ function gcIdUpdatePreview(){
 }
 $('idMemberSearch').addEventListener('input',gcIdFillSelect);
 $('idMemberSelect').addEventListener('change',gcIdAutofill);
-['idCategory','idNumber','idFullName','idLevel','idCourse','idStream','idMode','idSubject','idPlan','idAddress','idMobile','idValidFrom','idValidTo'].forEach(id=>$(id).addEventListener('input',gcIdUpdatePreview));
+['idCategory','idNumber','idFullName','idLevel','idCourse','idStream','idMode','idSubject','idPlan','idAddress','idMobile','idValidFrom','idValidTo','idTutorType','idStaffPost'].forEach(id=>$(id).addEventListener('input',gcIdUpdatePreview));function gcIdUpdateCategoryFields(){const c=$('idCategory').value;$('idTutorTypeWrap').hidden=c!=='tutor';$('idStaffPostWrap').hidden=c!=='staff';$('idPlanWrap').hidden=c!=='student';$('idLevel').closest('.idgen-field').hidden=c==='staff';$('idCourse').closest('.idgen-field').hidden=c==='staff';$('idStream').closest('.idgen-field').hidden=c==='staff';$('idSubject').closest('.idgen-field').hidden=c==='staff';$('idMode').closest('.idgen-field').hidden=c==='staff';} $('idCategory').addEventListener('change',()=>{gcIdUpdateCategoryFields();gcIdUpdatePreview()});gcIdUpdateCategoryFields();
 $('idPhoto').addEventListener('change',()=>{
   const f=$('idPhoto').files?.[0];gcIdPhotoData='';$('idPhotoPreview').hidden=true;
   if(!f){gcIdUpdatePreview();return}
@@ -1753,7 +1753,7 @@ $('idPhoto').addEventListener('change',()=>{
   const reader=new FileReader();reader.onload=()=>{gcIdPhotoData=String(reader.result||'');$('idPhotoPreview').src=gcIdPhotoData;$('idPhotoPreview').hidden=false;gcIdUpdatePreview();$('idGenStatus').textContent='Photograph uploaded and ready for preview.'};reader.onerror=()=>{$('idGenStatus').textContent='Could not read this photograph. Please try another file.'};reader.readAsDataURL(f);
 });
 $('idGenerateBtn').onclick=async()=>{
-  if(!gcIdSelectedUser()){ $('idGenStatus').textContent='Please select a registered Student or Tutor first.';return}
+  if($('idCategory').value!=='staff'&&!gcIdSelectedUser()){ $('idGenStatus').textContent='Please select a registered Student or Tutor first. Staff cards can be created manually.';return}
   if(!gcIdPhotoData){$('idGenStatus').textContent='Photograph is required. Upload the member photograph before generating the ID.';$('idPhoto').focus();return}
   if(!$('idFullName').value.trim()||!$('idNumber').value.trim()){$('idGenStatus').textContent='Full Name and ID Number are required.';return}
   if($('idValidFrom').value&&$('idValidTo').value&&$('idValidTo').value<$('idValidFrom').value){$('idGenStatus').textContent='Validity end date cannot be earlier than the start date.';return}
@@ -1767,7 +1767,7 @@ $('idGenerateBtn').onclick=async()=>{
     if(up.error)throw new Error('Could not save the ID photograph online: '+up.error.message);
     const photoUrl=sb.storage.from('gc-advertisements').getPublicUrl(path).data.publicUrl;
     const u=gcIdSelectedUser();
-    const payload={v:1,userId:String(u?.user_id||''),n:$('idFullName').value.trim(),c:$('idCategory').value,i:$('idNumber').value.trim(),l:$('idLevel').value,co:$('idCourse').value,st:$('idStream').value,su:$('idSubject').value.trim(),p:$('idPlan').value.trim(),m:$('idMode').value,a:$('idAddress').value.trim(),ph:$('idMobile').value.trim(),f:$('idValidFrom').value,t:$('idValidTo').value,ok:!!(u&&u.public_verified_tick===true),im:photoUrl};
+    const payload={v:1,userId:String(u?.user_id||''),n:$('idFullName').value.trim(),c:$('idCategory').value,i:$('idNumber').value.trim(),l:$('idLevel').value,co:$('idCourse').value,st:$('idStream').value,su:$('idSubject').value.trim(),p:$('idPlan').value.trim(),m:$('idMode').value,tt:$('idTutorType').value,post:$('idStaffPost').value,a:$('idAddress').value.trim(),ph:$('idMobile').value.trim(),f:$('idValidFrom').value,t:$('idValidTo').value,ok:!!(u&&u.public_verified_tick===true),im:photoUrl};
     const json=JSON.stringify(payload);
     // Store the card data once and put only a short random token in the QR.
     // This avoids a very dense QR containing the full photo URL and member details.
@@ -1788,7 +1788,7 @@ $('idGenerateBtn').onclick=async()=>{
 $('idResetBtn').onclick=()=>{
   $('idMemberSearch').value='';$('idMemberSelect').value='';$('idPhoto').value='';gcIdPhotoData='';$('idPhotoPreview').hidden=true;$('idPhotoPreview').removeAttribute('src');$('idCardPhoto').removeAttribute('src');$('idCardPhoto').style.visibility='hidden';$('idCardQrWrap').hidden=true;$('idCardQr').hidden=true;$('idCardQr').removeAttribute('src');
   ['idNumber','idFullName','idSubject','idPlan','idAddress','idMobile'].forEach(id=>gcIdSetField(id,''));
-  ['idLevel','idCourse','idStream','idMode'].forEach(id=>gcIdSetSelect(id,''));
+  ['idLevel','idCourse','idStream','idMode','idTutorType','idStaffPost','idPlan'].forEach(id=>gcIdSetSelect(id,''));gcIdSetSelect('idCategory','student');gcIdUpdateCategoryFields();
   const today=new Date();const next=new Date(today);next.setFullYear(next.getFullYear()+1);
   const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   $('idValidFrom').value=fmt(today);$('idValidTo').value=fmt(next);
