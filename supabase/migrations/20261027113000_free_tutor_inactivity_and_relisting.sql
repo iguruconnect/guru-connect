@@ -97,9 +97,8 @@ with check (public.is_admin() or exists (
   and lower(coalesce(p.role,'')) in ('admin','staff')
 ));
 
--- The Free tutor freeze applies only when a known last-tuition date is at least
--- 90 days old. Existing tutors with no recorded tuition date are NOT mass-hidden
--- by this migration; backfill/verify their tuition history before enabling it.
+-- A Free tutor is inactive after 90 days from the last recorded tuition, or
+-- from profile creation if no tuition has ever been recorded.
 create or replace function public.gc_admin_freeze_inactive_free_tutors()
 returns integer
 language plpgsql
@@ -125,8 +124,8 @@ begin
      and coalesce(t.membership_status,'') not in ('PREMIUM_ACTIVE')
      and coalesce(t.is_hidden,false)=false
      and coalesce(t.is_disabled,false)=false
-     and t.last_tuition_received_at is not null
-     and t.last_tuition_received_at <= now() - interval '90 days';
+     and coalesce(t.last_tuition_received_at, t.created_at) is not null
+     and coalesce(t.last_tuition_received_at, t.created_at) <= now() - interval '90 days';
   get diagnostics affected = row_count;
   return affected;
 end;
@@ -161,6 +160,26 @@ begin
   return v_id;
 end;
 $$;
+
+
+-- Run the freeze check daily when pg_cron is installed on this Supabase project.
+-- If pg_cron is not enabled, the Admin dashboard can invoke the protected RPC
+-- after deployment until scheduling is enabled by the project owner.
+do $schedule$
+begin
+  if exists (select 1 from pg_extension where extname='pg_cron') then
+    if not exists (select 1 from cron.job where jobname='gc-free-tutor-inactivity-freeze-daily') then
+      perform cron.schedule(
+        'gc-free-tutor-inactivity-freeze-daily',
+        '17 2 * * *',
+        $job$select public.gc_admin_freeze_inactive_free_tutors();$job$
+      );
+    end if;
+  end if;
+exception when undefined_table or undefined_function then
+  raise notice 'pg_cron is not configured; schedule gc_admin_freeze_inactive_free_tutors() daily in Supabase.';
+end
+$schedule$;
 
 revoke all on function public.gc_admin_freeze_inactive_free_tutors() from public, anon;
 grant execute on function public.gc_admin_freeze_inactive_free_tutors() to authenticated;
