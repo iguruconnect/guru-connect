@@ -153,8 +153,8 @@ button,a,input,select,textarea{touch-action:manipulation;}
 #sec-idgeneration .idgen-cardhead{background:#fff;color:#102e61;padding:8px 13px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #e2e8f0;position:relative;min-height:88px}
 #sec-idgeneration .idgen-logo{display:block;flex:0 0 78px;width:78px;max-width:25%;height:66px;object-fit:contain;object-position:center}#sec-idgeneration .idgen-brandcopy{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:3px}.idgen-wordmark{display:flex;align-items:baseline;gap:5px;white-space:nowrap;line-height:1.02;letter-spacing:-.6px}.idgen-guru{color:#e32636;font-family:Inter,Arial,sans-serif;font-size:clamp(23px,4.3vw,31px);font-weight:950}.idgen-connect{color:#155eef;font-family:Inter,Arial,sans-serif;font-size:clamp(20px,3.8vw,28px);font-weight:300;letter-spacing:-.7px}.idgen-tagline{font-family:"Roboto Condensed",Arial,sans-serif;font-size:13px;font-weight:400;letter-spacing:.1px;color:#123b82;margin:0;line-height:1.15}
 #sec-idgeneration .idgen-cardlabel{display:none}
-#sec-idgeneration .idgen-cardbody{padding:14px 16px 12px;display:grid;grid-template-columns:112px minmax(0,1fr);gap:16px;flex:1;min-height:0;background:linear-gradient(115deg,#fff 0%,#fff 75%,#f8fbff 100%)}
-#sec-idgeneration .idgen-leftcol{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}#sec-idgeneration .idgen-photo-wrap{position:relative;width:100px;height:120px;align-self:start}#sec-idgeneration .idgen-qrwrap{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:0;padding:4px;background:#fff;border:1px solid #e2e8f0;border-radius:8px}#sec-idgeneration .idgen-qrwrap img{width:96px;height:96px;object-fit:contain;border:0;padding:0;background:#fff}#sec-idgeneration .idgen-qrwrap small{font-size:8px;font-weight:800;color:#123b82;letter-spacing:.3px}#sec-idgeneration .idgen-cardphoto{display:block;width:100px;height:120px;object-fit:cover;border-radius:7px;border:2px solid #d8e3f3;background:#eef3fa;box-shadow:0 3px 9px #0f2d5a18}#sec-idgeneration .idgen-photo-seal{position:absolute;z-index:2;width:48px;height:48px;object-fit:contain;right:2px;bottom:2px;opacity:1;transform:none;filter:grayscale(1) brightness(0) saturate(100%) invert(19%) sepia(97%) saturate(4500%) hue-rotate(348deg) brightness(92%) contrast(112%);pointer-events:none}
+#sec-idgeneration .idgen-cardbody{padding:14px 16px 12px;display:grid;grid-template-columns:160px minmax(0,1fr);gap:16px;flex:1;min-height:0;background:linear-gradient(115deg,#fff 0%,#fff 75%,#f8fbff 100%)}
+#sec-idgeneration .idgen-leftcol{display:flex;flex-direction:column;align-items:center;gap:10px;min-width:0}#sec-idgeneration .idgen-photo-wrap{position:relative;width:100px;height:120px;align-self:start}#sec-idgeneration .idgen-qrwrap{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:0;padding:4px;background:#fff;border:1px solid #e2e8f0;border-radius:8px}#sec-idgeneration .idgen-qrwrap img{width:148px;height:148px;object-fit:contain;border:0;padding:0;background:#fff;image-rendering:pixelated}#sec-idgeneration .idgen-qrwrap small{font-size:8px;font-weight:800;color:#123b82;letter-spacing:.3px}#sec-idgeneration .idgen-cardphoto{display:block;width:100px;height:120px;object-fit:cover;border-radius:7px;border:2px solid #d8e3f3;background:#eef3fa;box-shadow:0 3px 9px #0f2d5a18}#sec-idgeneration .idgen-photo-seal{position:absolute;z-index:2;width:48px;height:48px;object-fit:contain;right:2px;bottom:2px;opacity:1;transform:none;filter:grayscale(1) brightness(0) saturate(100%) invert(19%) sepia(97%) saturate(4500%) hue-rotate(348deg) brightness(92%) contrast(112%);pointer-events:none}
 #sec-idgeneration .idgen-cardname{font-size:18px;font-weight:900;color:#102e61;line-height:1.2;overflow-wrap:anywhere}
 #sec-idgeneration .idgen-tick{display:inline-flex;flex:0 0 20px;align-items:center;justify-content:center;vertical-align:middle;background:#00B83F;color:#fff;border:1px solid #fff;border-radius:50%;width:20px;height:20px;min-width:20px;min-height:20px;font-family:Arial,sans-serif;font-size:13px;font-weight:950;line-height:1;clip-path:none;box-shadow:0 0 0 1px #00B83F;filter:none;margin-left:5px;padding:0}#sec-idgeneration .idgen-tick[hidden]{display:none!important}#sec-idgeneration .idgen-tick:not([hidden]){display:inline-flex!important}
 #sec-idgeneration .idgen-idnumber{font-size:11px;font-weight:400;color:#155eef;margin-top:5px;letter-spacing:.3px}#sec-idgeneration #idCardNumber{font-weight:400!important}
@@ -167,11 +167,25 @@ button,a,input,select,textarea{touch-action:manipulation;}
 #sec-idgeneration .idgen-cardfoot span{overflow-wrap:anywhere}
 #sec-idgeneration .idgen-preview-note{font-size:11px;color:#64748b;text-align:center;margin:10px 0 0}
 @media(max-width:900px){#sec-idgeneration .idgen-layout{grid-template-columns:1fr}}
-@media(max-width:560px){#sec-idgeneration .idgen-formgrid{grid-template-columns:1fr}#sec-idgeneration .idgen-field.wide{grid-column:auto}#sec-idgeneration .idgen-cardbody{grid-template-columns:92px minmax(0,1fr);padding:9px;gap:8px}#sec-idgeneration .idgen-leftcol{gap:6px}#sec-idgeneration .idgen-photo-wrap{width:82px;height:98px}#sec-idgeneration .idgen-qrwrap img{width:78px;height:78px}#sec-idgeneration .idgen-qrwrap small{font-size:6px}#sec-idgeneration .idgen-photo-wrap{width:70px;height:88px}#sec-idgeneration .idgen-cardphoto{width:82px;height:98px}#sec-idgeneration .idgen-photo-seal{width:38px;height:38px;right:2px;bottom:2px}#sec-idgeneration .idgen-logo{flex-basis:54px;width:54px;max-width:23%;height:54px}#sec-idgeneration .idgen-wordmark{gap:3px;letter-spacing:-.4px}#sec-idgeneration .idgen-guru{font-size:23px}#sec-idgeneration .idgen-connect{font-size:19px;letter-spacing:-.5px}#sec-idgeneration .idgen-tagline{font-size:10px}#sec-idgeneration .idgen-cardhead{padding:7px 9px;gap:7px;min-height:75px}#sec-idgeneration .idgen-tick{width:17px;height:17px;font-size:12px}#sec-idgeneration .idgen-cardfoot{padding:9px;font-size:10px}#sec-idgeneration .idgen-mini-fields{gap:4px 6px}}
+@media(max-width:560px){#sec-idgeneration .idgen-formgrid{grid-template-columns:1fr}#sec-idgeneration .idgen-field.wide{grid-column:auto}#sec-idgeneration .idgen-cardbody{grid-template-columns:160px minmax(0,1fr);padding:9px;gap:8px}#sec-idgeneration .idgen-leftcol{gap:6px}#sec-idgeneration .idgen-photo-wrap{width:82px;height:98px}#sec-idgeneration .idgen-qrwrap img{width:140px;height:140px}#sec-idgeneration .idgen-qrwrap small{font-size:6px}#sec-idgeneration .idgen-photo-wrap{width:70px;height:88px}#sec-idgeneration .idgen-cardphoto{width:82px;height:98px}#sec-idgeneration .idgen-photo-seal{width:38px;height:38px;right:2px;bottom:2px}#sec-idgeneration .idgen-logo{flex-basis:54px;width:54px;max-width:23%;height:54px}#sec-idgeneration .idgen-wordmark{gap:3px;letter-spacing:-.4px}#sec-idgeneration .idgen-guru{font-size:23px}#sec-idgeneration .idgen-connect{font-size:19px;letter-spacing:-.5px}#sec-idgeneration .idgen-tagline{font-size:10px}#sec-idgeneration .idgen-cardhead{padding:7px 9px;gap:7px;min-height:75px}#sec-idgeneration .idgen-tick{width:17px;height:17px;font-size:12px}#sec-idgeneration .idgen-cardfoot{padding:9px;font-size:10px}#sec-idgeneration .idgen-mini-fields{gap:4px 6px}}
 @media print{body.gc-print-id *{visibility:hidden!important}body.gc-print-id #gc-id-print-root,body.gc-print-id #gc-id-print-root *{visibility:visible!important}body.gc-print-id #gc-id-print-root{position:fixed;inset:0 auto auto 0;width:100%;padding:12mm;box-sizing:border-box;background:#fff}body.gc-print-id #gc-id-print-root .idgen-card{max-width:none;width:100mm;height:76mm;min-height:76mm;aspect-ratio:auto;overflow:visible;box-shadow:none;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+
+/* ID CARD FIX: give the QR its own full space and keep VALIDITY on its own bottom row */
+#sec-idgeneration .idgen-card{height:auto!important;min-height:0!important;aspect-ratio:auto!important;overflow:visible!important}
+#sec-idgeneration .idgen-cardbody{flex:0 0 auto!important;min-height:0!important;overflow:visible!important}
+#sec-idgeneration .idgen-leftcol{align-self:start!important}
+#sec-idgeneration .idgen-qrwrap{flex:0 0 auto!important;max-width:100%!important}
+#sec-idgeneration .idgen-qrwrap img{display:block!important;width:148px!important;height:148px!important;max-width:100%!important;flex:0 0 auto!important}
+#sec-idgeneration .idgen-validity{position:relative!important;z-index:1!important;flex:0 0 auto!important;align-items:center!important;justify-content:flex-start!important;flex-wrap:nowrap!important;white-space:normal!important}
+#sec-idgeneration .idgen-validity>span:first-child{flex:0 0 auto!important;white-space:nowrap!important}
+#sec-idgeneration .idgen-validity>span:last-child{min-width:0!important;overflow-wrap:anywhere!important}
+@media(max-width:560px){
+ #sec-idgeneration .idgen-cardbody{grid-template-columns:160px minmax(0,1fr)!important}
+ #sec-idgeneration .idgen-qrwrap img{width:148px!important;height:148px!important}
+}
 </style></head><body>
 <header class="head"><div class="headin"><div><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
-<main class="wrap"><div id="gate" class="gate">Checking Staff/Admin session…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
+<main class="wrap"><div id="gate" class="gate">Admin page loaded — preparing login scripts…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
 <nav class="controlbar" aria-label="Admin sections">
 <button class="topbtn priority active" data-sec="edit">✏️ <b>EDIT</b><small>Find, edit & delete Student/Tutor</small></button>
 <button class="topbtn priority" data-sec="registrationapproval">🛡️ <b>REGISTRATION APPROVAL</b><small>Approve Student & Tutor registrations</small></button>
@@ -184,14 +198,11 @@ button,a,input,select,textarea{touch-action:manipulation;}
 <button class="topbtn" data-sec="create">➕ <b>CREATE USER</b><small>Create Student or Tutor</small></button>
 <button class="topbtn" data-sec="advertisement">📢 <b>ADVERTISEMENT</b><small>Manage website advertisements</small></button>
 <button class="topbtn" data-sec="idgeneration">🪪 <b>GENERATE ID</b><small>Create Student / Tutor ID card</small></button>
+<button class="topbtn" data-sec="staff">👔 <b>ADD STAFF</b><small>Create and manage permanent Staff IDs</small></button>
 <button class="topbtn" data-sec="renewals">🔁 <b>RENEWALS</b><small>Tutor subscriptions, payment review & history</small></button>
 </nav>
 
-<section class="section" id="sec-renewals"><div class="secHead"><div><h2>🔁 Tutor Subscription Renewals</h2><p>Find a registered tutor, review subscription/payment history, issue a payment link and approve verified renewals.</p></div><button id="renewalRefresh" class="btn light" type="button">↻ REFRESH</button></div><div class="secBody">
-<div class="grid"><div class="field wide"><label>Find Tutor</label><input id="renewalTutorSearch" placeholder="Tutor name, email, phone or user ID"/></div><button id="renewalTutorFind" class="btn primary" type="button">FIND TUTOR</button></div><div id="renewalTutorStatus" class="status"></div><div id="renewalTutorResults" class="results"><div class="empty">Search for a tutor to review their plan and renewal history.</div></div>
-<div class="grid"><div class="field"><label>Selected Tutor User ID</label><input id="renewalUserId" readonly/></div><div class="field"><label>Premium Listing months</label><input id="renewalPremiumMonths" type="number" min="0" max="24" value="1"/></div><div class="field"><label>Verified Tick months (Premium only)</label><input id="renewalVerifiedMonths" type="number" min="0" max="24" value="0"/></div><div class="field"><label>Expected Amount (₹)</label><input id="renewalAmount" readonly value="200"/></div><div class="field wide"><label>Payment Link to send to tutor</label><input id="renewalPaymentLink" placeholder="Paste your payment link"/></div></div>
-<div class="actions"><button id="renewalCreate" class="btn orange" type="button">CREATE RENEWAL REQUEST</button></div><div class="hint">Renewal amounts are ₹200 per Premium month and ₹100 per Verified Tick month. Verified Tick months require Premium months. Each approved renewal is retained as a separate history entry.</div>
-<div id="renewalRequestStatus" class="status"></div><h3>Renewal Requests & Subscription History</h3><div id="renewalHistory" class="results"><div class="empty">Open this tab to load renewal history.</div></div></div></section>
+<section class="section" id="sec-renewals"><div class="secHead"><div><h2>🔁 Tutor Subscription Renewals</h2><p>Find a registered tutor, review subscription/payment history, issue a payment link and approve verified renewals.</p></div><button id="renewalRefresh" class="btn light" type="button">↻ REFRESH</button></div><div class="secBody"><div class="grid"><div class="field wide"><label>Find Tutor</label><input id="renewalTutorSearch" placeholder="Tutor name, email, phone or user ID"/></div><button id="renewalTutorFind" class="btn primary" type="button">FIND TUTOR</button></div><div id="renewalTutorStatus" class="status"></div><div id="renewalTutorResults" class="results"><div class="empty">Search for a tutor to review their plan and renewal history.</div></div><div class="grid"><div class="field"><label>Selected Tutor User ID</label><input id="renewalUserId" readonly/></div><div class="field"><label>Premium Listing months</label><input id="renewalPremiumMonths" type="number" min="1" max="24" value="1"/></div><div class="field"><label>Verified Tick months (Premium only)</label><input id="renewalVerifiedMonths" type="number" min="0" max="24" value="0"/></div><div class="field"><label>Expected Amount (₹)</label><input id="renewalAmount" readonly value="200"/></div><div class="field wide"><label>Payment Link to send to tutor</label><input id="renewalPaymentLink" placeholder="Paste your payment link"/></div></div><div class="actions"><button id="renewalCreate" class="btn orange" type="button">CREATE RENEWAL REQUEST</button></div><div class="hint">Premium is ₹200/month and Verified Tick is ₹100/month. Each renewal is retained as a separate history entry.</div><div id="renewalRequestStatus" class="status"></div><h3>Renewal Requests & Subscription History</h3><div id="renewalHistory" class="results"><div class="empty">Open this tab to load renewal history.</div></div></div></section>
 
 <section class="section" id="sec-directories"><div class="secHead"><div><h2>👥 Tutor Directories | Student Directories</h2><p>Live Supabase directory. Search by full or partial Student/Tutor ID, Profile ID, Auth User ID, name, email or phone.</p></div><span class="pill" id="directoryCount">LIVE DIRECTORY</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="term" autocomplete="off" placeholder="Name, email, phone or Student/Tutor ID…"></div><div class="field"><label>Show</label><select id="roleFilter"><option value="">ALL STUDENTS + TUTORS</option><option value="student">STUDENTS ONLY</option><option value="tutor">TUTORS ONLY</option></select></div><button id="search" class="btn primary">🔎 FIND</button><button id="refresh" class="btn light">↻ REFRESH</button></div><div id="searchStatus" class="status"></div><div id="results" class="results"><div class="empty">Click FIND to load the live Student + Tutor directory.</div></div></div></section>
 
@@ -254,8 +265,24 @@ button,a,input,select,textarea{touch-action:manipulation;}
 </div></section>
 
 
+<section class="section" id="sec-staff">
+ <div class="secHead staff-sec-head"><div><h2>👔 Staff Registration &amp; Management</h2><p>Register staff using a clean, professional form — then create their permanent Staff ID card.</p></div><span class="pill">ADMIN CONTROLLED</span></div>
+ <div class="secBody staff-sec-body"><div class="notice staff-notice"><b>ADMIN-ONLY REGISTRATION</b><br>Enter the staff member’s details below. GURU CONNECT will assign one permanent Staff ID. Check the Staff Directory before creating a duplicate profile.</div>
+ <div class="idgen-panel staff-registration-card" style="margin-bottom:16px"><div class="staff-form-banner"><div class="staff-form-icon">👤</div><div><h3>STAFF REGISTRATION FORM</h3><p>Personal details · Official designation · Contact information</p></div><span class="staff-form-step">NEW PROFILE</span></div><div class="staff-form-inner"><div class="staff-form-section-title"><span>01</span><div><b>Personal &amp; Contact Details</b><small>Enter the staff member’s correct information</small></div></div><div class="idgen-formgrid staff-form-grid">
+ <div class="idgen-field"><label for="staffFullName">Full Name <em>*</em></label><input id="staffFullName" autocomplete="name" placeholder="Enter full name as per records"></div>
+ <div class="idgen-field"><label for="staffEmail">Email Address</label><input id="staffEmail" type="email" autocomplete="email" placeholder="name@example.com"></div>
+ <div class="idgen-field"><label for="staffMobile">Mobile Number</label><input id="staffMobile" type="tel" autocomplete="tel" placeholder="Enter mobile number"></div>
+ <div class="idgen-field"><label for="staffDesignation">Designation <em>*</em></label><select id="staffDesignation"><option value="">Select designation</option><option>HEAD- CUSTOMER SERVICE CENTER</option><option>CUSTOMER SERVICE EXECUTIVE</option><option>BUSINESS DEVELOPMENT EXECUTIVE</option><option>HEAD-BUSINESS OPERATIONS</option><option>TUTOR COORDINATOR</option><option>INSTITUTE COORDINATOR</option><option>STUDENT COORDINATOR</option><option value="__CUSTOM__">CUSTOM / SPECIFIC POST</option></select></div>
+ <div class="idgen-field wide" id="staffCustomDesignationWrap" hidden><label for="staffCustomDesignation">Custom / Specific Post *</label><input id="staffCustomDesignation" placeholder="Enter exact designation"></div>
+ <div class="idgen-field"><label for="staffDepartment">Department / Team</label><input id="staffDepartment" placeholder="e.g. Student Support"></div>
+ <div class="idgen-field"><label for="staffRomPageNo">ROM Page No. (Register of Members)</label><input id="staffRomPageNo" type="text" placeholder="Enter register page number" autocomplete="off"><small style="display:block;margin-top:5px;color:#64748b;font-size:10px">Page number where this staff member’s details and document details are recorded.</small></div>
+ <div class="idgen-field"><label for="staffJoiningDate">Date of Joining</label><input id="staffJoiningDate" type="date"></div>
+ <div class="idgen-field wide"><label for="staffAddress">Residential Address <small>(optional)</small></label><textarea id="staffAddress" placeholder="Enter address to be printed on the ID card"></textarea></div>
+ </div><div class="staff-form-actions"><button id="staffSaveBtn" type="button" class="btn primary">✓ REGISTER STAFF MEMBER</button><button id="staffClearBtn" type="button" class="btn light">CLEAR FORM</button><button id="staffRefreshBtn" type="button" class="btn teal">↻ REFRESH DIRECTORY</button></div><div id="staffStatus" class="status staff-status">Complete the form to create a permanent Staff ID.</div></div></div>
+ <div class="idgen-panel staff-directory-card"><div class="staff-directory-head"><h3>STAFF DIRECTORY</h3><p>Find an existing staff profile and generate its ID card without creating a duplicate.</p></div><div id="staffDirectoryStatus" class="status">Loading staff profiles…</div><div id="staffDirectoryList" class="results"><div class="empty">Loading staff directory…</div></div></div></div>
+</section>
 <section class="section" id="sec-idgeneration">
- <div class="secHead"><div><h2>🪪 Student &amp; Tutor ID Card Generation</h2><p>Choose a registered member, upload their photograph, review editable details, then generate and print the ID card.</p></div><span class="pill">ADMIN CONTROLLED</span></div>
+ <div class="secHead"><div><h2>🪪 Student, Tutor &amp; Staff ID Card Generation</h2><p>Create cards for registered Students/Tutors, premium helpline-plan Students, and GURU CONNECT Staff.</p></div><span class="pill">ADMIN CONTROLLED</span></div>
  <div class="secBody">
   <div class="notice">The admin uploads the member photograph for each ID. Digital ID generation stores a public photo copy for QR access. Anyone scanning or receiving the QR link can view all encoded card details, including mobile number and residential address. Re-generate the ID if any details change.</div>
   <div class="idgen-layout">
@@ -264,15 +291,15 @@ button,a,input,select,textarea{touch-action:manipulation;}
     <div class="idgen-formgrid">
      <div class="idgen-field wide"><label for="idMemberSearch">Search by name or public Student/Tutor ID</label><input id="idMemberSearch" placeholder="e.g. GC-T-SSZ1F5 or member name" autocomplete="off"></div>
      <div class="idgen-field wide"><label for="idMemberSelect">Matching registered members</label><select id="idMemberSelect"><option value="">Load or search for a member…</option></select></div>
-     <div class="idgen-field"><label for="idCategory">Category</label><select id="idCategory"><option value="student">Student</option><option value="tutor">Tutor</option></select></div>
+     <div class="idgen-field"><label for="idCategory">Category</label><select id="idCategory"><option value="student">Student</option><option value="tutor">Tutor</option><option value="staff">Staff Member</option></select></div>
      <div class="idgen-field"><label for="idNumber">ID Number</label><input id="idNumber" placeholder="Public profile ID"></div>
      <div class="idgen-field wide"><label for="idFullName">Full Name</label><input id="idFullName" placeholder="Full name"></div>
      <div class="idgen-field"><label for="idLevel">Level</label><select id="idLevel"><option value="">Select level</option><option>Jr. College</option><option>Degree College</option><option>Other</option></select></div>
      <div class="idgen-field"><label for="idCourse">Course</label><select id="idCourse"><option value="">Select course</option><option>XI</option><option>XII</option><option>FY</option><option>SY</option><option>TY</option><option>Other</option></select></div>
      <div class="idgen-field"><label for="idStream">Stream</label><select id="idStream"><option value="">Select stream</option><option>ARTS</option><option>SCIENCE</option><option>COMMERCE</option><option>Other</option></select></div>
-     <div class="idgen-field"><label for="idMode">Mode</label><select id="idMode"><option value="">Select mode</option><option>Online</option><option>Offline</option><option>Online / Offline</option></select></div>
+     <div class="idgen-field"><label for="idMode">Mode</label><select id="idMode"><option value="">Select mode</option><option>Online</option><option>Offline</option><option>Online / Offline</option></select></div><div class="idgen-field wide" id="idTutorTypeWrap" hidden><label for="idTutorType">Tutor Type</label><select id="idTutorType"><option value="">Select tutor type</option><option>Helpline Service Provider</option><option>Online Tutor</option><option>Home Tutor</option></select></div><div class="idgen-field wide" id="idStaffPostWrap" hidden><label for="idStaffPost">Staff Designation / Post</label><select id="idStaffPost"><option value="">Select staff post</option><option>HEAD- CUSTOMER SERVICE CENTER</option><option>CUSTOMER SERVICE EXECUTIVE</option><option>BUSINESS DEVELOPMENT EXECUTIVE</option><option>HEAD-BUSINESS OPERATIONS</option><option>TUTOR COORDINATOR</option><option>INSTITUTE COORDINATOR</option><option>STUDENT COORDINATOR</option><option value="__CUSTOM__">CUSTOM / SPECIFIC POST</option></select></div><div class="idgen-field wide" id="idStaffPostCustomWrap" hidden><label for="idStaffPostCustom">Enter Custom / Specific Post</label><input id="idStaffPostCustom" placeholder="Type the exact designation for this ID card"></div>
      <div class="idgen-field wide"><label for="idSubject">Subject</label><input id="idSubject" placeholder="Subject(s)"></div>
-     <div class="idgen-field wide"><label for="idPlan">Plan</label><input id="idPlan" placeholder="Membership / service plan"></div>
+     <div class="idgen-field wide" id="idPlanWrap"><label for="idPlan">Helpline / Membership Plan</label><select id="idPlan"><option value="">Select plan</option><option>FREE PLAN</option><option>PRO PLAN</option><option>GENX PLAN</option><option>GENX PRO PLAN</option><option>PRIME PLAN</option><option>PREMIUM PLAN</option><option>Other / Custom Plan</option></select></div>
      <div class="idgen-field wide"><label for="idAddress">Residential Address</label><textarea id="idAddress" placeholder="Residential address"></textarea></div>
      <div class="idgen-field wide"><label for="idMobile">Mobile Number</label><input id="idMobile" placeholder="Registered mobile number"></div>
      <div class="idgen-field"><label for="idValidFrom">Valid from</label><input id="idValidFrom" type="date"></div>
@@ -280,14 +307,14 @@ button,a,input,select,textarea{touch-action:manipulation;}
      <div class="idgen-field wide idgen-upload"><label for="idPhoto">Upload member photograph (required)</label><input id="idPhoto" type="file" accept="image/jpeg,image/png,image/webp" required><small>JPG, PNG or WEBP · Maximum 5 MB. The admin must upload the photo before generating.</small><img id="idPhotoPreview" class="idgen-photo-preview" alt="Uploaded member photograph preview" hidden></div>
     </div>
     <div class="actions"><button id="idGenerateBtn" class="btn primary">🪪 GENERATE ID</button><button id="idResetBtn" class="btn light">CLEAR FORM</button></div>
-    <div id="idGenStatus" class="status">Search for a member, confirm the details, and upload their photo.</div>
+    <div id="idGenStatus" class="status">Search for a member, confirm the details, and upload their photo.</div><div class="actions" style="margin-top:12px"><button id="idGeneratedListBtn" class="btn teal" type="button">📋 ID CARD GENERATED</button></div><div id="idGeneratedRecordsStatus" class="status">Generated ID cards are stored online for verification. Click the button to review the register.</div><div id="idGeneratedRecords" class="results"><div class="empty">Click ID CARD GENERATED to view the saved ID-card register.</div></div>
    </div>
    <div class="idgen-panel">
     <h3>2. Live ID card preview</h3>
     <div id="idCardPreview" class="idgen-card" aria-label="ID card preview">
      <div class="idgen-cardhead"><img class="idgen-logo" src="guru-connect-round-logo.png" alt="GURU CONNECT round logo with books and folded hands"><div class="idgen-brandcopy"><div class="idgen-wordmark"><span class="idgen-guru">GURU</span><span class="idgen-connect">CONNECT</span></div><div class="idgen-tagline">Connecting Mind - Creating Future...</div></div></div>
-     <div class="idgen-cardbody"><div class="idgen-leftcol"><div class="idgen-photo-wrap"><img id="idCardPhoto" class="idgen-cardphoto" alt="Member photo preview"><img class="idgen-photo-seal" src="guru-connect-round-logo.png" alt="GURU CONNECT original brand seal stamp"></div><div class="idgen-qrwrap" id="idCardQrWrap" hidden><img id="idCardQr" alt="QR code for digital GURU CONNECT ID" hidden><small>SCAN FOR DIGITAL ID</small></div></div><div><div class="idgen-cardname"><span id="idCardName">Member Full Name</span><span id="idCardTick" class="idgen-tick" hidden>✓</span></div><div id="idCardCategory" class="idgen-idnumber">CATEGORY: STUDENT</div><div id="idCardNumber" class="idgen-idnumber">ID NO: —</div><div class="idgen-mini-fields"><div><b>LEVEL</b><span id="idCardLevel">—</span></div><div><b>COURSE</b><span id="idCardCourse">—</span></div><div><b>STREAM</b><span id="idCardStream">—</span></div><div><b>SUBJECT</b><span id="idCardSubject">—</span></div><div><b>PLAN</b><span id="idCardPlan">—</span></div><div><b>MODE</b><span id="idCardMode">—</span></div></div><div class="idgen-address"><b>ADDRESS:</b> <span id="idCardAddress">—</span><br><b>MOBILE:</b> <span id="idCardMobile">—</span></div></div></div>
-     <div class="idgen-validity"><span>VALIDITY</span><span id="idCardValidity">Select validity dates</span></div>
+     <div class="idgen-cardbody"><div class="idgen-leftcol"><div class="idgen-photo-wrap"><img id="idCardPhoto" class="idgen-cardphoto" alt="Member photo preview"><img class="idgen-photo-seal" src="guru-connect-round-logo.png" alt="GURU CONNECT original brand seal stamp"></div><div class="idgen-qrwrap" id="idCardQrWrap" hidden><img id="idCardQr" alt="QR code for digital GURU CONNECT ID" hidden><small>SCAN FOR DIGITAL ID</small></div></div><div><div class="idgen-cardname"><span id="idCardName">Member Full Name</span><span id="idCardTick" class="idgen-tick" hidden>✓</span></div><div id="idCardCategory" class="idgen-idnumber">CATEGORY: STUDENT</div><div id="idCardNumber" class="idgen-idnumber">ID NO: —</div><div class="idgen-mini-fields"><div><b>LEVEL</b><span id="idCardLevel">—</span></div><div><b>COURSE</b><span id="idCardCourse">—</span></div><div><b>STREAM</b><span id="idCardStream">—</span></div><div><b id="idCardSubjectLabel">SUBJECT</b><span id="idCardSubject">—</span></div><div><b>PLAN</b><span id="idCardPlan">—</span></div><div><b id="idCardModeLabel">MODE</b><span id="idCardMode">—</span></div><div><b>DESIGNATION / TYPE</b><span id="idCardRoleDetail">—</span></div></div><div class="idgen-address"><b>ADDRESS:</b> <span id="idCardAddress">—</span><br><b>MOBILE:</b> <span id="idCardMobile">—</span></div></div></div>
+     <div class="idgen-validity"><span>VALIDITY:</span><span id="idCardValidity">Select validity dates</span></div>
      <div class="idgen-cardfoot"><span>◉ WhatsApp: +1 (555) 9565-917</span><span>✉ support@guruconnnect.in</span></div>
     </div>
     <p class="idgen-preview-note">Preview only until you click GENERATE ID. Generated cards can be printed or saved as PDF from the print dialog.</p>
@@ -319,10 +346,43 @@ button,a,input,select,textarea{touch-action:manipulation;}
 
 <section class="section" id="sec-create"><div class="secHead"><div><h2>➕ Create User</h2><p>Create a new Student or Tutor account through the existing secure admin function.</p></div></div><div class="secBody"><div class="grid"><div class="field"><label>Role</label><select id="newRole"><option value="student">Student</option><option value="tutor">Tutor</option></select></div><div class="field"><label>Name</label><input id="newName"></div><div class="field"><label>Email</label><input id="newEmail" type="email"></div><div class="field"><label>Phone</label><input id="newPhone"></div><div class="field"><label>Password</label><input id="newPass" type="password" minlength="8"></div></div><div class="actions"><button id="create" class="btn green">CREATE ACCOUNT</button></div><div id="createStatus" class="status"></div></div></section>
 </section></main>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  var gate=document.getElementById('gate');
+  if(gate)gate.textContent='Admin startup check reached browser — loading login libraries…';
+  window.addEventListener('error',function(e){
+    if(gate)gate.textContent='Admin startup error: '+(e.message||'script failed to run')+(e.lineno?' (line '+e.lineno+')':'');
+  });
+  window.addEventListener('unhandledrejection',function(e){
+    if(gate)gate.textContent='Admin login error: '+String(e.reason&&e.reason.message||e.reason||'unknown error');
+  });
+  setTimeout(function(){
+    if(gate&&gate.style.display!=='none'&&gate.textContent==='Admin startup check reached browser — loading login libraries…'){
+      gate.textContent='Startup check ran, but login libraries or admin initialization have not completed.';
+    }
+  },7000);
+})();
+</script>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script><script>
+(function(){
+  var gate=document.getElementById('gate');
+  if(gate)gate.textContent='Admin script reached browser — checking login setup…';
+  window.addEventListener('error',function(e){
+    if(gate)gate.textContent='Admin script error: '+(e.message||'script failed to run')+(e.lineno?' (line '+e.lineno+')':'');
+  });
+  window.addEventListener('unhandledrejection',function(e){
+    if(gate)gate.textContent='Admin login error: '+String(e.reason&&e.reason.message||e.reason||'unknown error');
+  });
+  setTimeout(function(){
+    if(gate&&gate.style.display!=='none'&&gate.textContent==='Admin script reached browser — checking login setup…'){
+      gate.textContent='Admin script started but login check did not finish. Please report this exact message.';
+    }
+  },5000);
+})();
+</script><script>
 const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',FN=U+'/functions/v1/admin-user-actions';
-const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+if(!window.supabase||typeof window.supabase.createClient!=='function'){const g=document.getElementById('gate');if(g)g.textContent='Admin login library failed to load. Please refresh this page; if this message remains, the website cannot reach the login service.';throw new Error('Supabase login library did not load');}const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function deleteUserViaAdminFunction(userId,role){
@@ -391,14 +451,8 @@ async function loadRegistrationApprovals(){
       const regNo=detail.helpline_paid_to_registration_no||'';
       const receipt=detail.helpline_receipt_number||'';
       const utr=detail.helpline_payment_reference||'';
-      const memberType=String(detail.membership_type||'').toUpperCase()||'NOT SET';
-      const memberMonths=detail.membership_months||0;
-      const memberMode=String(detail.membership_payment_mode||'').toUpperCase()||'—';
-      const memberAmount=detail.membership_payment_amount;
-      const verifiedMonths=detail.verified_badge_months||0;
-      const memberStatus=String(detail.membership_status||'').replaceAll('_',' ')||'—';
-      const dateText=v=>v?new Date(v).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';
-      const memberPayment=role==='tutor'?'<br><b>Membership:</b> '+escv(memberType)+' · Status: '+escv(memberStatus)+'<br><b>Payment Mode:</b> '+escv(memberMode)+' · Amount: ₹'+escv(memberAmount)+'<br><b>Transaction No.:</b> '+escv(detail.membership_payment_transaction_number)+'<br><b>Cash Receiver:</b> '+escv(detail.membership_cash_receiver_name)+' · ID: '+escv(detail.membership_cash_receiver_id)+'<br><b>Voucher No.:</b> '+escv(detail.membership_voucher_number)+' · Issuer: '+escv(detail.membership_voucher_issuer_name)+' · Issuer ID: '+escv(detail.membership_voucher_issuer_id)+'<br><b>Voucher Contact:</b> '+escv(detail.membership_voucher_contact)+' · VOUCHER RBN: '+escv(detail.membership_voucher_rbn)+'<br><b>Premium Duration:</b> '+escv(memberMonths)+' month(s) · Review Due: '+escv(dateText(detail.membership_review_due_at))+'<br><b>Profile Expiry:</b> '+escv(dateText(detail.membership_expires_at))+' · <b>Verified Tick Expiry:</b> '+escv(dateText(detail.verified_badge_expires_at))+'<br><b>Last qualifying activity:</b> '+escv(dateText(detail.free_last_qualifying_activity_at)):'';
+      const escv=v=>esc(String(v==null||v===''?'—':v));
+      const memberType=String(detail.membership_type||'').toUpperCase()||'NOT SET',memberMode=String(detail.membership_payment_mode||'').toUpperCase()||'—',memberStatus=String(detail.membership_status||'').replaceAll('_',' ')||'—';const dateText=v=>v?new Date(v).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';const memberPayment=role==='tutor'?'<br><b>Membership:</b> '+escv(memberType)+' · Status: '+escv(memberStatus)+'<br><b>Payment:</b> '+escv(memberMode)+' · ₹'+escv(detail.membership_payment_amount)+'<br><b>Transaction:</b> '+escv(detail.membership_payment_transaction_number)+'<br><b>Cash receiver:</b> '+escv(detail.membership_cash_receiver_name)+' · ID: '+escv(detail.membership_cash_receiver_id)+'<br><b>Premium valid until:</b> '+escv(dateText(detail.membership_expires_at))+'<br><b>Verified Tick valid until:</b> '+escv(dateText(detail.verified_badge_expires_at)):'';
       return '<article class="user"><div class="userHead"><div class="identity"><b>'+escv(p.full_name||detail.name||detail.full_name||'New member')+'</b><span class="badge">'+escv(role.toUpperCase())+'</span><div class="muted">Email: '+escv(p.email||detail.email)+'<br>Phone: '+escv(p.phone||detail.phone)+'<br>Auth User ID: '+escv(p.id)+'<br>Approval Status: <b>'+escv(state)+'</b><br>Registration No: '+escv(p.registration_no||detail.record_no)+'<br>Helpline: '+escv(helpline||'not applicable')+(role==='student'?'<br>Plan: '+escv(plan)+' · Amount: ₹'+escv(amount)+'<br>Payment mode: '+escv(mode)+(mode==='cash'?'<br>Cash paid to: '+escv(cashTo)+' · Branch: '+escv(branch)+' · Recipient: '+escv(cashPerson)+' · Recipient Reg. No.: '+escv(regNo)+' · Receipt No.: '+escv(receipt):'<br>UPI UTR: '+escv(utr)):'')+memberPayment+'</div></div><div class="actions"><button class="btn green" data-reg-approval="approve" data-user-id="'+escv(p.id)+'">✓ APPROVE REGISTRATION</button><button class="btn red" data-reg-approval="reject" data-user-id="'+escv(p.id)+'">✕ REJECT</button></div></div></article>';
     }).join('');
     out.querySelectorAll('[data-reg-approval]').forEach(btn=>btn.addEventListener('click',()=>decideRegistrationApproval(btn.dataset.userId,btn.dataset.regApproval==='approve')));
@@ -413,37 +467,23 @@ async function decideRegistrationApproval(userId,approved){
     status.textContent=action+' registration…';
     const r=await sb.rpc('gc_admin_set_registration_approval',{p_user_id:String(userId),p_approved:!!approved,p_note:approved?'Approved by Admin':'Rejected by Admin'});
     if(r.error)throw r.error;
-    const prof=await sb.from('profiles').select('role').eq('id',String(userId)).maybeSingle();
-    if(prof.error)throw prof.error;
-    if(String(prof.data?.role||'').toLowerCase()==='tutor'){
-      const q=await sb.from('tutor_profiles').select('*').eq('user_id',String(userId)).maybeSingle();
-      if(q.error)throw q.error;
-      if(q.data){
-        const now=new Date(),detail=q.data,free=String(detail.membership_type||'free').toLowerCase()!=='premium';
-        const months=Math.max(1,Math.min(24,Number(detail.membership_months)||1));
-        const verified=!!detail.verified_badge_enabled&&Number(detail.verified_badge_months)>0;
-        const patch=approved ? (free ? {
-          membership_type:'free',membership_status:'FREE_TRIAL',membership_started_at:now.toISOString(),
-          membership_review_due_at:new Date(now.getTime()+60*86400000).toISOString(),
-          membership_expires_at:new Date(now.getTime()+60*86400000).toISOString(),tuition_commission_percent:5,
-          profile_hidden:false,profile_hidden_reason:null,registration_approved:true
-        } : {
-          membership_type:'premium',membership_status:'PREMIUM_ACTIVE',membership_started_at:now.toISOString(),
-          membership_expires_at:new Date(now.getTime()+months*30*86400000).toISOString(),
-          membership_review_due_at:null,paid_status:'PAID',profile_hidden:false,profile_hidden_reason:null,registration_approved:true,tuition_commission_percent:0,
-          verified:verified,verified_badge_started_at:verified?now.toISOString():null,
-          verified_badge_expires_at:verified?new Date(now.getTime()+Math.max(1,Math.min(24,Number(detail.verified_badge_months)||1))*30*86400000).toISOString():null
-        }) : {membership_status:'REJECTED',registration_approved:false,verified:false};
-        const upd=await sb.from('tutor_profiles').update(patch).eq('user_id',String(userId));
-        if(upd.error)throw upd.error;
-      }
-    }
+    const prof=await sb.from('profiles').select('role').eq('id',String(userId)).maybeSingle();if(prof.error)throw prof.error;
+    if(String(prof.data?.role||'').toLowerCase()==='tutor'){const q=await sb.from('tutor_profiles').select('*').eq('user_id',String(userId)).maybeSingle();if(q.error)throw q.error;if(q.data){const now=new Date(),detail=q.data,free=String(detail.membership_type||'free').toLowerCase()!=='premium',months=1,verified=!!detail.verified_badge_enabled&&Number(detail.verified_badge_months)>0;const patch=approved?(free?{membership_type:'free',membership_status:'FREE_TRIAL',membership_started_at:now.toISOString(),membership_review_due_at:new Date(now.getTime()+60*86400000).toISOString(),membership_expires_at:new Date(now.getTime()+60*86400000).toISOString(),tuition_commission_percent:5,profile_hidden:false,profile_hidden_reason:null,registration_approved:true}:{membership_type:'premium',membership_status:'PREMIUM_ACTIVE',membership_started_at:now.toISOString(),membership_expires_at:new Date(now.getTime()+months*30*86400000).toISOString(),membership_review_due_at:null,paid_status:'PAID',tuition_commission_percent:0,profile_hidden:false,profile_hidden_reason:null,registration_approved:true,verified:verified,verified_badge_started_at:verified?now.toISOString():null,verified_badge_expires_at:verified?new Date(now.getTime()+30*86400000).toISOString():null}):{membership_status:'REJECTED',registration_approved:false,verified:false};const upd=await sb.from('tutor_profiles').update(patch).eq('user_id',String(userId));if(upd.error)throw upd.error;}}
     status.textContent='Registration '+(approved?'approved':'rejected')+'. Refreshing list…';
     await loadRegistrationApprovals();
   }catch(e){status.textContent='Registration decision failed: '+(e.message||e)+' — ensure the registration approval SQL migration has been run in Supabase.';}
 }
 $('refreshRegistrationApprovals')?.addEventListener('click',loadRegistrationApprovals);
 
+/* ADMIN-ONLY STAFF DIRECTORY: staff profiles are separate from Student/Tutor accounts. */
+let gcStaffRecords=[];let gcStaffSelectedForCard=null;
+function gcStaffDesignation(){return $("staffDesignation").value==="__CUSTOM__"?String($("staffCustomDesignation").value||"").trim():String($("staffDesignation").value||"").trim()}
+function gcStaffClearForm(){["staffFullName","staffEmail","staffMobile","staffCustomDesignation","staffDepartment","staffRomPageNo","staffJoiningDate","staffAddress"].forEach(id=>$(id).value="");$("staffDesignation").value="";$("staffCustomDesignationWrap").hidden=true;$("staffStatus").textContent="Ready to add a new staff profile."}
+$("staffDesignation").addEventListener("change",()=>$("staffCustomDesignationWrap").hidden=$("staffDesignation").value!=="__CUSTOM__");$("staffClearBtn").addEventListener("click",gcStaffClearForm);$("staffRefreshBtn").addEventListener("click",gcStaffLoadDirectory);
+async function gcStaffLoadDirectory(){const status=$("staffDirectoryStatus"),box=$("staffDirectoryList");status.textContent="Loading staff directory…";box.innerHTML='<div class="empty">Loading staff profiles…</div>';try{const q=await sb.storage.from("gc-advertisements").list("staff-directory",{limit:1000,sortBy:{column:"created_at",order:"desc"}});if(q.error)throw q.error;const files=(q.data||[]).filter(f=>f.name&&f.name.endsWith(".json"));const rows=[];for(const f of files){try{const x=await sb.storage.from("gc-advertisements").download("staff-directory/"+f.name);if(x.error)throw x.error;const d=JSON.parse(await x.data.text());rows.push({...d,_file:f.name})}catch(e){}}gcStaffRecords=rows;if(!rows.length){box.innerHTML='<div class="empty">No staff profiles yet. Use ADD STAFF above to create the first one.</div>';status.textContent="0 staff profiles.";return}box.innerHTML=rows.sort((x,y)=>String(y.createdAt||"").localeCompare(String(x.createdAt||""))).map(r=>'<article class="user"><div class="userHead"><div><b>'+esc(r.name||"Unnamed staff")+'</b><div class="muted">Staff ID: '+esc(r.staffId||"—")+'<br>Designation: '+esc(r.designation||"—")+'<br>Department: '+esc(r.department||"—")+'<br>ROM Page No.: '+esc(r.romPageNo||"—")+'<br>Email: '+esc(r.email||"—")+' · Mobile: '+esc(r.mobile||"—")+'<br>Status: '+esc(String(r.status||"ACTIVE").toUpperCase())+'</div></div><div class="actions" style="margin:0"><button type="button" class="btn teal" data-staff-card="'+esc(r.staffId||"")+'">🪪 GENERATE ID CARD</button></div></div></article>').join("");box.querySelectorAll("[data-staff-card]").forEach(b=>b.onclick=()=>gcStaffUseForCard(b.dataset.staffCard));status.textContent=rows.length+" staff profile(s) loaded. Each profile has a permanent Staff ID."}catch(e){status.textContent="Could not load staff directory: "+(e.message||e);box.innerHTML='<div class="empty">Check Admin login and storage permissions, then refresh.</div>'}}
+$("staffSaveBtn").addEventListener("click",async()=>{const btn=$("staffSaveBtn"),name=String($("staffFullName").value||"").trim(),email=String($("staffEmail").value||"").trim().toLowerCase(),mobile=String($("staffMobile").value||"").replace(/\s+/g,"").trim(),designation=gcStaffDesignation();if(!name){$("staffStatus").textContent="Enter the staff member’s full name.";return}if(!designation){$("staffStatus").textContent="Select a designation or enter a custom designation.";return}if(email&&!email.includes("@")){$("staffStatus").textContent="Please enter a valid email address.";return}btn.disabled=true;try{await gcStaffLoadDirectory();const duplicate=gcStaffRecords.find(r=>(email&&String(r.email||"").toLowerCase()===email)||(mobile&&String(r.mobile||"").replace(/\s+/g,"")===mobile)||String(r.name||"").trim().toLowerCase()===name.toLowerCase());if(duplicate){$("staffStatus").textContent="Possible duplicate: "+duplicate.name+" already has Staff ID "+duplicate.staffId+". Use that existing profile instead of creating another.";return}const session=(await sb.auth.getSession()).data?.session;if(!session?.user?.id)throw new Error("Admin session missing. Please login again.");const uuid=crypto.randomUUID?crypto.randomUUID():Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,"0")).join("");const staffId="GC-STF-"+uuid.replace(/-/g,"").slice(0,10).toUpperCase();const record={v:1,staffId,profileId:uuid,name,email,mobile,designation,department:String($("staffDepartment").value||"").trim(),romPageNo:String($("staffRomPageNo").value||"").trim(),joiningDate:$("staffJoiningDate").value||"",address:String($("staffAddress").value||"").trim(),status:"active",createdAt:new Date().toISOString(),createdBy:session.user.email||"Admin"};const up=await sb.storage.from("gc-advertisements").upload("staff-directory/"+uuid+".json",new Blob([JSON.stringify(record)],{type:"application/json"}),{upsert:false,contentType:"application/json",cacheControl:"no-store"});if(up.error)throw up.error;gcStaffClearForm();$("staffStatus").textContent="✓ Staff profile created. Permanent Staff ID: "+staffId+". Click GENERATE ID CARD beside this staff member.";await gcStaffLoadDirectory()}catch(e){$("staffStatus").textContent="Could not add staff: "+(e.message||e)}finally{btn.disabled=false}});
+function gcStaffUseForCard(staffId){const r=gcStaffRecords.find(x=>String(x.staffId)===String(staffId));if(!r){$("staffStatus").textContent="Staff profile not found. Refresh the directory and try again.";return}gcStaffSelectedForCard=r;switchSection("idgeneration");$("idCategory").value="staff";$("idNumber").readOnly=true;gcIdUpdateCategoryFields();$("idMemberSearch").value="";$("idMemberSelect").value="";gcIdSetField("idNumber",r.staffId);gcIdSetField("idFullName",r.name);gcIdSetField("idSubject",r.department||"");gcIdSetField("idAddress",r.address||"");gcIdSetField("idMobile",r.mobile||"");const match=[...$("idStaffPost").options].find(o=>o.value===r.designation||o.text===r.designation);if(match){$("idStaffPost").value=match.value;gcIdSetField("idStaffPostCustom","")}else{$("idStaffPost").value="__CUSTOM__";gcIdSetField("idStaffPostCustom",r.designation)}gcIdUpdateCategoryFields();gcIdUpdatePreview();$("idGenStatus").textContent="Staff profile loaded: "+r.name+" · "+r.staffId+". Upload the photo and generate the ID. Do not change the Staff ID.";$("idFullName").focus()}
+if(document.getElementById("staffDirectoryList"))gcStaffLoadDirectory();
 function switchSection(name){
   if(!name||activeSection===name)return;
   activeSection=name;
@@ -457,6 +497,7 @@ function switchSection(name){
   // Load advertisements only after the staff session is authenticated, and
   // refresh the list whenever the admin opens the Advertisement tab.
   if(name==='advertisement')loadAdminAdvertisements();
+  if(name==='staff')gcStaffLoadDirectory();
 }
 document.querySelectorAll('.topbtn').forEach(b=>b.addEventListener('click',()=>switchSection(b.dataset.sec)));
 $('logout').onclick=async()=>{const btn=$('logout');if(btn){btn.disabled=true;btn.textContent='LOGGING OUT…'}try{await sb.auth.signOut({scope:'local'});}catch(e){console.warn('Sign-out cleanup:',e)}try{['is_staff_logged','gc_staff_supabase_auth','active_user_role','active_user_id','active_user_email','gc_staff_email','gc_staff_role'].forEach(k=>localStorage.removeItem(k));['is_staff_logged','gc_staff_supabase_auth','active_user_role','active_user_id','active_user_email','gc_staff_email','gc_staff_role'].forEach(k=>sessionStorage.removeItem(k));}catch(e){}try{if('caches'in window){const keys=await caches.keys();await Promise.all(keys.map(k=>caches.delete(k)))}}catch(e){}window.location.replace('./index.html?logout=1&ts='+Date.now());};
@@ -541,11 +582,14 @@ async function loadLiveUsers(){
       }
     }catch(_){}
     renderUsers();
+    // Refresh the Digital ID selector whenever the shared live directory finishes loading.
+    if(typeof gcIdFillSelect==='function')gcIdFillSelect();
     $('searchStatus').textContent=users.length?users.length+' live Student/Tutor profile(s) loaded from Supabase.':'No Student/Tutor profile records are currently visible to this Staff session.';
     $('directoryCount').textContent=users.length+' LIVE PROFILES';
   }catch(e){
-    $('searchStatus').textContent='Directory load failed: '+(e.message||e);
-    $('results').innerHTML='<div class="empty">The live directory could not be read. Check Staff/Admin authorization and the profiles/student_profiles/tutor_profiles tables.</div>';
+    $('searchStatus').textContent='Directory load failed: '+(e.message||e)+' — retry Refresh Directory.';
+    $('results').innerHTML='<div class="empty">The live directory could not be read. Your member records have not been changed. Check the error above, then retry.</div>';
+    if(typeof gcIdFillSelect==='function')gcIdFillSelect();
   }
 }
 
@@ -733,39 +777,67 @@ async function loadAccountCoins(){
     // member's canonical profile ID. Never change wallet or ledger data here.
     const candidates=[];
     const addId=v=>{if(v!==undefined&&v!==null&&String(v).trim()&&!candidates.includes(String(v)))candidates.push(String(v))};
+    // The selected account's canonical/auth ID must win over email matches,
+    // because duplicate profile rows can share an email.
+    addId(u.user_id);addId(u.auth_user_id);addId(u.profile_id);addId(u.id);
+    addId(u.member_id);addId(u.student_id);addId(u.tutor_id);
     try{
+      if(u.user_id){
+        const pq=await sb.from('profiles').select('id,role,email').eq('id',String(u.user_id)).limit(1);
+        if(!pq.error&&pq.data?.[0])addId(pq.data[0].id);
+      }
       if(u.email){
-        let pq=await sb.from('profiles').select('id,role,email').ilike('email',String(u.email).trim()).limit(10);
+        const pq=await sb.from('profiles').select('id,role,email').ilike('email',String(u.email).trim()).limit(10);
         if(!pq.error){
-          const exact=(pq.data||[]).find(x=>String(x.role||'').toLowerCase()===String(u.role||'').toLowerCase())||(pq.data||[])[0];
+          const exact=(pq.data||[]).find(x=>String(x.role||'').toLowerCase()===String(u.role||'').toLowerCase()&&String(x.email||'').toLowerCase()===String(u.email||'').toLowerCase());
           if(exact)addId(exact.id);
         }
       }
     }catch(_){}
-    addId(u.profile_id);addId(u.user_id);addId(u.auth_user_id);addId(u.id);
+    let walletLookupErrors=[];
     try{
       if(candidates.length){
-        const wq=await sb.from('gc_coin_wallets').select('profile_id,auth_user_id,role,balance,held_balance').in('profile_id',candidates);
-        if(!wq.error&&Array.isArray(wq.data)){
-          const matched=wq.data.find(w=>{
-            const wr=String(w.profile_role||w.role||'').toLowerCase();
-            return candidates.includes(String(w.profile_id))&&(!wr||wr===String(u.role||'').toLowerCase());
-          })||wq.data.find(w=>candidates.includes(String(w.profile_id)));
-          if(matched)wallet=matched;
+        const checks=await Promise.all([
+          sb.from('gc_coin_wallets').select('*').in('profile_id',candidates),
+          sb.from('gc_coin_wallets').select('*').in('auth_user_id',candidates)
+        ]);
+        const walletRows=[];
+        for(const q of checks){
+          if(q.error){walletLookupErrors.push(q.error.message||String(q.error));continue}
+          if(Array.isArray(q.data)){
+            for(const w of q.data){
+              if(!walletRows.some(x=>String(x.profile_id)===String(w.profile_id)&&String(x.auth_user_id||'')===String(w.auth_user_id||'')))walletRows.push(w);
+            }
+          }
         }
+        const role=String(u.role||'').toLowerCase();
+        const chosenId=String(u.user_id||u.auth_user_id||u.profile_id||'');
+        const matched=
+          walletRows.find(w=>String(w.profile_id||'')===chosenId&&String(w.role||w.profile_role||'').toLowerCase()===role)||
+          walletRows.find(w=>String(w.auth_user_id||'')===chosenId&&String(w.role||w.profile_role||'').toLowerCase()===role)||
+          walletRows.find(w=>String(w.profile_id||'')===String(u.profile_id||'')&&String(w.role||w.profile_role||'').toLowerCase()===role)||
+          walletRows.find(w=>String(w.auth_user_id||'')===String(u.user_id||'')&&String(w.role||w.profile_role||'').toLowerCase()===role)||
+          walletRows.find(w=>candidates.includes(String(w.profile_id||''))&&String(w.role||w.profile_role||'').toLowerCase()===role)||
+          walletRows.find(w=>candidates.includes(String(w.auth_user_id||'')))||
+          walletRows.find(w=>candidates.includes(String(w.profile_id||'')));
+        if(matched)wallet=matched;
       }
-    }catch(_){}
-    const balance=Number(wallet.balance??wallet.coins??wallet.available_coins??d.account?.coin_balance??0);
-    const held=Number(wallet.held_balance??0);
+    }catch(e){walletLookupErrors.push(e.message||String(e))}
+    const balanceValue=wallet.balance??wallet.coins??wallet.available_coins??wallet.coin_balance;
+    const hasMatchedWallet=balanceValue!==undefined&&balanceValue!==null;
+    const balance=hasMatchedWallet?Number(balanceValue):null;
+    const heldValue=wallet.held_balance??wallet.held_coins;
+    const held=heldValue===undefined||heldValue===null?null:Number(heldValue);
     const cols=rows.length?Object.keys(rows[0]):[];
     p.innerHTML=`
       <div class="gcAcctGrid">
-        <div class="gcStat"><b>Available Guru Coins</b><strong class="gcBlue">🪙 ${balance.toLocaleString('en-IN')}</strong></div>
-        <div class="gcStat"><b>Held Guru Coins</b><strong class="gcOrange">🪙 ${held.toLocaleString('en-IN')}</strong></div>
+        <div class="gcStat"><b>Available Guru Coins</b><strong class="gcBlue">${hasMatchedWallet?'🪙 '+balance.toLocaleString('en-IN'):'NOT FOUND'}</strong></div>
+        <div class="gcStat"><b>Held Guru Coins</b><strong class="gcOrange">${held===null?'NOT FOUND':'🪙 '+held.toLocaleString('en-IN')}</strong></div>
         <div class="gcStat"><b>Ledger Records</b><strong>${rows.length}</strong></div>
         <div class="gcStat"><b>Last Entry</b><strong>${esc(rows[0]?.created_at||'—')}</strong></div>
       </div>
-      <div class="gcAccountNotice">Wallet balance is read from the live <b>gc_coin_wallets</b> record when available; the ledger below shows the transaction history. Viewing this panel does not add, subtract, or edit coins.</div>
+      <div class="gcAccountNotice">Wallet balances are shown only when a wallet record is actually found. Viewing this panel does not add, subtract, or edit coins.</div>
+      ${!hasMatchedWallet?'<div class="dangerNote"><b>Wallet record not found.</b> This is a lookup/permission or wallet-ID mismatch; it does not mean the member has zero coins. '+(walletLookupErrors.length?'<br><br>'+esc([...new Set(walletLookupErrors)].join(' | ')):'')+'<br><br>The account overview RPC returned '+(d.wallet?'a wallet field without a recognized balance':'no wallet field')+'. Ledger rows returned: '+rows.length+'.</div>':''}
       <div class="gcBox">
         <h3>🪙 Complete Coin Ledger — ${rows.length} Record(s)</h3>
         <div class="gcTableWrap"><table class="gcTable">
@@ -1242,7 +1314,7 @@ window.editGlobalCoinRecord=async id=>{
     await accountRpc('update_coin_ledger',payload);
     $('coinHistoryStatus').textContent='Transaction update submitted. Refreshing ledger…';
     coinHistoryLoaded=false;await loadCoinHistory(true);
-  }catch(e){alert('Coin transaction edit failed: '+(e.message||e)+'\n\nThe secure gc_admin_account_action RPC must permit these transaction fields.')}
+  }catch(e){alert('Coin transaction edit failed: '+String(e&&e.message||e)+'. The secure gc_admin_account_action RPC must permit these transaction fields.')}
 };
 window.deleteGlobalCoinRecord=async id=>{
   const r=gcCoinLedgerRows.find(x=>String(x.id)===String(id));if(!r)return alert('Transaction not found. Refresh history and try again.');
@@ -1260,22 +1332,7 @@ $('coinHistoryPdf').onclick=()=>{
   const q=($('coinHistorySearch').value||'').trim();
   const rows=list.map(({r,member})=>'<tr><td>'+esc(r.created_at||r.date||r.transaction_date||'—')+'</td><td>'+esc(gcCoinAmount(r)>=0?'ADDED':'SUBTRACTED')+'</td><td>'+esc(Math.abs(gcCoinAmount(r)))+'</td><td>'+esc(gcCoinActor(r))+'</td><td>'+esc(gcCoinReason(r))+'</td><td>'+esc(gcCoinLrr(r))+'</td><td>'+esc(member.name)+'<br>'+esc(member.role||'')+'<br>'+esc(member.user_id||member.profile_id||'—')+'</td></tr>').join('');
   const w=window.open('','_blank');if(!w)return alert('Please allow pop-ups for this site to create the PDF statement.');
-  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>GURU CONNECT Coin Transaction Statement</title><style>body{font:12px Arial,sans-serif;color:#172554;padding:22px}header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #155eef;padding-bottom:14px}header img{max-width:190px;max-height:72px;object-fit:contain}h1{font-size:22px;margin:0}p{margin:5px 0;color:#475569}.meta{margin:18px 0;padding:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px}table{border-collapse:collapse;width:100%;font-size:10px}th,td{border:1px solid #cbd5e1;padding:7px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf2ff}footer{margin-top:22px;border-top:1px solid #cbd5e1;padding-top:10px;font-weight:bold;color:#334155}@media print{button{display:none}body{padding:0}@page{size:A4 landscape;margin:12mm}}</style></head><body><header><img src="https://www.guruconnnect.in/GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT logo"><div><h1>GURU CONNECT</h1><p>Connecting Mind - Creating Future...</p><p><b>COIN TRANSACTION STATEMENT</b></p></div></header><div class="meta"><b>Search / Member:</b> '+esc(q||'All available coin transactions')+'<br><b>Generated:</b> '+esc(new Date().toLocaleString())+'<br><b>Transactions:</b> '+list.length+'</div><table><thead><tr><th>Date of transaction</th><th>Direction</th><th>Coins</th><th>By whom</th><th>Reason / LRR details</th><th>LRR / reference</th><th>Credited to</th></tr></thead><tbody>'+rows+'</tbody></table><footer>Customer Care: support@guruconnnect.in · GURU CONNECT</footer><p>To save as PDF, choose “Save as PDF” in the print dialog.</p><script>window.onload=()=>setTimeout(()=>window.print(),350)<\/script><style id="gc-admin-alert-style">
-#gc-admin-alert-overlay{position:fixed;inset:0;background:rgba(7,18,38,.68);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;z-index:2147483647;padding:18px;font-family:Arial,sans-serif}
-#gc-admin-alert-overlay.gc-open{display:flex;animation:gcAdminFade .18s ease-out}
-#gc-admin-alert-card{width:min(420px,100%);background:#fff;border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.3);overflow:hidden;text-align:center;border:1px solid #dbeafe}
-#gc-admin-alert-head{padding:22px 24px 14px;background:linear-gradient(135deg,#eff6ff,#f0fdfa)}
-#gc-admin-alert-mark{width:60px;height:60px;margin:auto;border-radius:18px;background:#fff;display:grid;place-items:center;font-size:30px;color:#0f766e;box-shadow:0 5px 18px #0f172a18}
-#gc-admin-alert-brand{font-weight:900;letter-spacing:1.2px;color:#12315b;font-size:18px;margin-top:10px}
-#gc-admin-alert-title{font-size:20px;font-weight:800;color:#14213d;margin:18px 20px 7px}
-#gc-admin-alert-message{white-space:pre-wrap;overflow-wrap:anywhere;color:#526176;font-size:14px;line-height:1.6;margin:0 24px 20px;max-height:35vh;overflow:auto}
-#gc-admin-alert-ok{border:0;border-radius:12px;background:linear-gradient(135deg,#2563eb,#0f766e);color:#fff;font-weight:800;padding:12px 28px;min-width:125px;cursor:pointer;margin-bottom:22px}
-@keyframes gcAdminFade{from{opacity:0}to{opacity:1}}
-@media(prefers-reduced-motion:reduce){#gc-admin-alert-overlay{animation:none}}
-</style>
-<div id="gc-admin-alert-overlay" role="presentation"><section id="gc-admin-alert-card" role="alertdialog" aria-modal="true" aria-labelledby="gc-admin-alert-title" aria-describedby="gc-admin-alert-message"><div id="gc-admin-alert-head"><div id="gc-admin-alert-mark">🔔</div><div id="gc-admin-alert-brand">GURU CONNECT</div><div style="font-size:10px;letter-spacing:2px;color:#0f766e;font-weight:800;margin-top:3px">ADMIN CONTROL CENTER</div></div><h2 id="gc-admin-alert-title">Notice</h2><p id="gc-admin-alert-message"></p><button id="gc-admin-alert-ok" type="button">CONTINUE</button></section></div>
-<script id="gc-admin-alert-script">(()=>{if(window.__gcAdminAlertInstalled)return;window.__gcAdminAlertInstalled=true;const overlay=document.getElementById('gc-admin-alert-overlay');if(!overlay)return;const title=overlay.querySelector('#gc-admin-alert-title'),message=overlay.querySelector('#gc-admin-alert-message'),ok=overlay.querySelector('#gc-admin-alert-ok');let queue=[],busy=false;function beep(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=window.__gcAdminAudio||(window.__gcAdminAudio=new C());if(c.state==='suspended')c.resume();const t=c.currentTime;[0,.22].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=i?880:660;g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(.12,t+d+.025);g.gain.exponentialRampToValueAtTime(.0001,t+d+.16);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+.17)})}catch(_){}}function render(){if(!queue.length){overlay.classList.remove('gc-open');busy=false;return}busy=true;const a=queue[0];title.textContent=a.title;message.textContent=a.message;overlay.classList.add('gc-open');beep();ok.focus()}function close(){queue.shift();render()}ok.addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('gc-open')){e.preventDefault();close()}});const nativeAlert=window.alert.bind(window);window.alert=function(value){const text=String(value??'');const low=text.toLowerCase();queue.push({title:/fail|error|unable|could not|not saved|denied|invalid|missing/.test(low)?'Action Needs Attention':/success|updated|approved|deleted|saved|sent/.test(low)?'Action Completed':'GURU CONNECT Notice',message:text});if(!busy)render()};})();</script>
-</body></html>');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>GURU CONNECT Coin Transaction Statement</title><style>body{font:12px Arial,sans-serif;color:#172554;padding:22px}header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #155eef;padding-bottom:14px}header img{max-width:190px;max-height:72px;object-fit:contain}h1{font-size:22px;margin:0}p{margin:5px 0;color:#475569}.meta{margin:18px 0;padding:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px}table{border-collapse:collapse;width:100%;font-size:10px}th,td{border:1px solid #cbd5e1;padding:7px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf2ff}footer{margin-top:22px;border-top:1px solid #cbd5e1;padding-top:10px;font-weight:bold;color:#334155}@media print{button{display:none}body{padding:0}@page{size:A4 landscape;margin:12mm}}</style></head><body><header><img src="https://www.guruconnnect.in/GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT logo"><div><h1>GURU CONNECT</h1><p>Connecting Mind - Creating Future...</p><p><b>COIN TRANSACTION STATEMENT</b></p></div></header><div class="meta"><b>Search / Member:</b> '+esc(q||'All available coin transactions')+'<br><b>Generated:</b> '+esc(new Date().toLocaleString())+'<br><b>Transactions:</b> '+list.length+'</div><table><thead><tr><th>Date of transaction</th><th>Direction</th><th>Coins</th><th>By whom</th><th>Reason / LRR details</th><th>LRR / reference</th><th>Credited to</th></tr></thead><tbody>'+rows+'</tbody></table><footer>Customer Care: support@guruconnnect.in · GURU CONNECT</footer><p>To save as PDF, choose “Save as PDF” in the print dialog.</p><body onload="setTimeout(function(){window.print()},350)"></body></html>');
   w.document.close();
 };
 
@@ -1643,8 +1700,11 @@ function gcIdFirst(u,keys){
   return '';
 }
 function gcIdPublicNumber(u){
-  // Prefer the same member ID already displayed in the admin directory cards.
-  return gcIdFirst(u,['member_id','student_id','tutor_id','short_id','public_id','registration_no','record_no','profile_id','user_id','id'])||'';
+  // Never print an internal UUID as the public card number.
+  const candidate=gcIdFirst(u,['public_id','registration_no','record_no','member_id','student_id','tutor_id','short_id']);
+  if(candidate && !/^[0-9a-f]{8}-[0-9a-f-]{27,}$/i.test(String(candidate)))return String(candidate);
+  const stable=String(u?.user_id||u?.profile_id||u?.id||'').replace(/[^a-z0-9]/gi,'').toUpperCase();
+  return stable?'GC-'+stable.slice(-8):'';
 }
 function gcIdFillSelect(){
   const search=$('idMemberSearch').value.trim().toLowerCase();
@@ -1687,7 +1747,7 @@ function gcIdAutofill(){
   gcIdSetSelect('idCourse',course);
   gcIdSetSelect('idStream',stream);
   gcIdSetField('idSubject',gcIdFirst(u,['subject','subjects','teaching_subject','specialization','speciality']));
-  gcIdSetField('idPlan',gcIdFirst(u,['plan','plan_name','membership_plan','subscription_plan','service_plan'])||((u.role==='tutor'&&(u.public_verified_tick||u.verified))?'Verified Tutor':''));
+  gcIdSetSelect('idPlan',gcIdFirst(u,['helpline_plan','plan','plan_name','membership_plan','subscription_plan','service_plan']));gcIdSetSelect('idTutorType',gcIdFirst(u,['tutor_type','tutor_mode','service_type']));gcIdUpdateCategoryFields();
   gcIdSetSelect('idMode',gcIdFirst(u,['mode','teaching_mode','class_mode']));
   gcIdSetField('idAddress',gcIdFirst(u,['residential_address','address','full_address','home_address','location']));
   gcIdSetField('idMobile',gcIdFirst(u,['phone','mobile','mobile_number','contact_number']));
@@ -1705,7 +1765,7 @@ function gcIdUpdatePreview(){
   $('idCardStream').textContent=val('idStream');
   $('idCardSubject').textContent=val('idSubject');
   $('idCardPlan').textContent=val('idPlan');
-  $('idCardMode').textContent=val('idMode');
+  $('idCardMode').textContent=val('idMode');const category=val('idCategory').toLowerCase();$('idCardSubjectLabel').textContent=category==='staff'?'DEPARTMENT / SUBJECT':'SUBJECT';$('idCardModeLabel').textContent=category==='tutor'?'TEACHING MODE':'MODE';$('idCardRoleDetail').textContent=category==='staff'?gcIdSelectedStaffPost():(category==='tutor'?val('idTutorType'):'—');
   $('idCardAddress').textContent=val('idAddress');
   $('idCardMobile').textContent=val('idMobile');
   const tick=!!(u&&(u.public_verified_tick||u.verified||u.verified_tick||u.is_verified||u.isVerified||String(u.verification_status||'').toLowerCase()==='verified'));
@@ -1718,7 +1778,7 @@ function gcIdUpdatePreview(){
 }
 $('idMemberSearch').addEventListener('input',gcIdFillSelect);
 $('idMemberSelect').addEventListener('change',gcIdAutofill);
-['idCategory','idNumber','idFullName','idLevel','idCourse','idStream','idMode','idSubject','idPlan','idAddress','idMobile','idValidFrom','idValidTo'].forEach(id=>$(id).addEventListener('input',gcIdUpdatePreview));
+['idCategory','idNumber','idFullName','idLevel','idCourse','idStream','idMode','idSubject','idPlan','idAddress','idMobile','idValidFrom','idValidTo','idTutorType','idStaffPost'].forEach(id=>$(id).addEventListener('input',gcIdUpdatePreview));function gcIdUpdateCategoryFields(){const c=$('idCategory').value;$('idTutorTypeWrap').hidden=c!=='tutor';$('idStaffPostWrap').hidden=c!=='staff';$('idStaffPostCustomWrap').hidden=c!=='staff'||$('idStaffPost').value!=='__CUSTOM__';$('idPlanWrap').hidden=c!=='student';$('idLevel').closest('.idgen-field').hidden=c==='staff';$('idCourse').closest('.idgen-field').hidden=c==='staff';$('idStream').closest('.idgen-field').hidden=c==='staff';$('idSubject').closest('.idgen-field').hidden=c==='staff';$('idMode').closest('.idgen-field').hidden=c==='staff';$('idCardRoleDetail').textContent=c==='staff'?gcIdSelectedStaffPost():(c==='tutor'?gcIdValue($('idTutorType').value)||'—':'—');}function gcIdSelectedStaffPost(){const p=$('idStaffPost').value;return p==='__CUSTOM__'?gcIdValue($('idStaffPostCustom').value)||'—':p||'—';} $('idCategory').addEventListener('change',()=>{gcStaffSelectedForCard=null;$('idNumber').readOnly=false;if($('idCategory').value==='staff'){$('idMemberSelect').value='';['idNumber','idFullName','idSubject','idPlan','idAddress','idMobile'].forEach(id=>gcIdSetField(id,''));['idLevel','idCourse','idStream','idMode','idTutorType','idStaffPost'].forEach(id=>gcIdSetSelect(id,''));gcIdSetField('idStaffPostCustom','');}gcIdUpdateCategoryFields();gcIdUpdatePreview()});$('idStaffPost').addEventListener('change',()=>{gcIdUpdateCategoryFields();gcIdUpdatePreview()});$('idStaffPostCustom').addEventListener('input',gcIdUpdatePreview);gcIdUpdateCategoryFields();
 $('idPhoto').addEventListener('change',()=>{
   const f=$('idPhoto').files?.[0];gcIdPhotoData='';$('idPhotoPreview').hidden=true;
   if(!f){gcIdUpdatePreview();return}
@@ -1727,13 +1787,14 @@ $('idPhoto').addEventListener('change',()=>{
   const reader=new FileReader();reader.onload=()=>{gcIdPhotoData=String(reader.result||'');$('idPhotoPreview').src=gcIdPhotoData;$('idPhotoPreview').hidden=false;gcIdUpdatePreview();$('idGenStatus').textContent='Photograph uploaded and ready for preview.'};reader.onerror=()=>{$('idGenStatus').textContent='Could not read this photograph. Please try another file.'};reader.readAsDataURL(f);
 });
 $('idGenerateBtn').onclick=async()=>{
-  if(!gcIdSelectedUser()){ $('idGenStatus').textContent='Please select a registered Student or Tutor first.';return}
+  if($('idCategory').value!=='staff'&&!gcIdSelectedUser()){ $('idGenStatus').textContent='Please select a registered Student or Tutor first. Staff cards can be created manually.';return}
   if(!gcIdPhotoData){$('idGenStatus').textContent='Photograph is required. Upload the member photograph before generating the ID.';$('idPhoto').focus();return}
-  if(!$('idFullName').value.trim()||!$('idNumber').value.trim()){$('idGenStatus').textContent='Full Name and ID Number are required.';return}
+  if(!$('idFullName').value.trim()||!$('idNumber').value.trim()){$('idGenStatus').textContent='Full Name and ID Number are required.';return}if($('idCategory').value==='staff'&&!gcIdSelectedStaffPost().trim().length||$('idCategory').value==='staff'&&gcIdSelectedStaffPost()==='—'){$('idGenStatus').textContent='Select a staff designation or choose CUSTOM / SPECIFIC POST and enter the post.';return}
   if($('idValidFrom').value&&$('idValidTo').value&&$('idValidTo').value<$('idValidFrom').value){$('idGenStatus').textContent='Validity end date cannot be earlier than the start date.';return}
   const file=$('idPhoto').files?.[0];if(!file){$('idGenStatus').textContent='Please select the photograph again before generating the permanent QR ID.';return}
   const btn=$('idGenerateBtn');btn.disabled=true;$('idGenStatus').textContent='Saving member photo online and preparing the digital ID…';
   try{
+    const existingCard=await gcIdFindExistingCard();
     const safeId=String($('idNumber').value).trim().replace(/[^a-z0-9_-]/gi,'-');
     const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
     const path='id-cards/'+safeId+'-'+Date.now()+'.'+ext;
@@ -1741,11 +1802,22 @@ $('idGenerateBtn').onclick=async()=>{
     if(up.error)throw new Error('Could not save the ID photograph online: '+up.error.message);
     const photoUrl=sb.storage.from('gc-advertisements').getPublicUrl(path).data.publicUrl;
     const u=gcIdSelectedUser();
-    const payload={v:1,n:$('idFullName').value.trim(),c:$('idCategory').value,i:$('idNumber').value.trim(),l:$('idLevel').value,co:$('idCourse').value,st:$('idStream').value,su:$('idSubject').value.trim(),p:$('idPlan').value.trim(),m:$('idMode').value,a:$('idAddress').value.trim(),ph:$('idMobile').value.trim(),f:$('idValidFrom').value,t:$('idValidTo').value,ok:!!(u&&(u.public_verified_tick||u.verified||u.verified_tick||u.is_verified||u.isVerified||String(u.verification_status||'').toLowerCase()==='verified')),im:photoUrl};
-    const json=JSON.stringify(payload);let digitalUrl;
-    if('CompressionStream' in window){const packed=await new Response(new Blob([json]).stream().pipeThrough(new CompressionStream('deflate'))).arrayBuffer();const bytes=btoa(Array.from(new Uint8Array(packed),b=>String.fromCharCode(b)).join('')).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');digitalUrl='https://www.guruconnnect.in/digital-id.html?z='+bytes;}
-    else{const bytes=btoa(unescape(encodeURIComponent(json)));digitalUrl='https://www.guruconnnect.in/digital-id.html?data='+encodeURIComponent(bytes);}
-    const qrBox=document.createElement('div');new QRCode(qrBox,{text:digitalUrl,width:360,height:360,correctLevel:QRCode.CorrectLevel.L});const qrCanvas=qrBox.querySelector('canvas');if(qrCanvas){const padded=document.createElement('canvas');padded.width=420;padded.height=420;const ctx=padded.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,420,420);ctx.imageSmoothingEnabled=false;ctx.drawImage(qrCanvas,30,30,360,360);$('idCardQr').src=padded.toDataURL('image/png')}else{const qrImg=qrBox.querySelector('img');if(!qrImg)throw new Error('QR generator did not produce an image. Please retry.');$('idCardQr').src=qrImg.src}
+    const payload={v:1,userId:$('idCategory').value==='staff'?'':String(u?.user_id||''),staffProfileId:$('idCategory').value==='staff'?(gcStaffSelectedForCard?.staffId||String($('idNumber').value).trim()):'',n:$('idFullName').value.trim(),c:$('idCategory').value,i:$('idNumber').value.trim(),l:$('idLevel').value,co:$('idCourse').value,st:$('idStream').value,su:$('idSubject').value.trim(),p:$('idPlan').value.trim(),m:$('idMode').value,tt:$('idTutorType').value,post:$('idCategory').value==='staff'?gcIdSelectedStaffPost():'',createdAt:new Date().toISOString(),createdBy:(await sb.auth.getSession()).data?.session?.user?.email||'Admin',a:$('idAddress').value.trim(),ph:$('idMobile').value.trim(),f:$('idValidFrom').value,t:$('idValidTo').value,ok:!!(u&&u.public_verified_tick===true),im:photoUrl};
+    const json=JSON.stringify(payload);
+    // Keep one stable QR token per member. Regeneration updates the existing
+    // card record rather than creating another history entry.
+    const token=existingCard?.token||((window.crypto&&typeof crypto.randomUUID==='function')?crypto.randomUUID():Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join(''));
+    const cardPath='digital-id-cards/'+token+'.json';
+    const cardUpload=await sb.storage.from('gc-advertisements').upload(cardPath,new Blob([json],{type:'application/json'}),{upsert:!!existingCard,contentType:'application/json',cacheControl:'no-store'});
+    if(cardUpload.error)throw new Error('Could not save the digital ID details for QR scanning: '+cardUpload.error.message);
+    if(existingCard?.data?.im&&existingCard.data.im!==photoUrl){
+      try{const oldUrl=new URL(existingCard.data.im);const marker='/storage/v1/object/public/gc-advertisements/';const at=oldUrl.pathname.indexOf(marker);if(at>=0){const oldPath=decodeURIComponent(oldUrl.pathname.slice(at+marker.length));if(oldPath.startsWith('id-cards/'))await sb.storage.from('gc-advertisements').remove([oldPath])}}catch(_){}
+    }
+    // Remove any older duplicate cards for this same member; the newest stable
+    // token remains the single official QR link.
+    if(existingCard?.duplicates?.length){await sb.storage.from('gc-advertisements').remove(existingCard.duplicates.map(x=>'digital-id-cards/'+x.token+'.json'))}
+    const digitalUrl='https://guruconnnect.in/digital-id.html?id='+encodeURIComponent(token);
+    const qrBox=document.createElement('div');new QRCode(qrBox,{text:digitalUrl,width:1200,height:1200,correctLevel:QRCode.CorrectLevel.L});const qrCanvas=qrBox.querySelector('canvas');if(qrCanvas){const padded=document.createElement('canvas');padded.width=1440;padded.height=1440;const ctx=padded.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,1440,1440);ctx.imageSmoothingEnabled=false;ctx.drawImage(qrCanvas,120,120,1200,1200);$('idCardQr').src=padded.toDataURL('image/png')}else{const qrImg=qrBox.querySelector('img');if(!qrImg)throw new Error('QR generator did not produce an image. Please retry.');$('idCardQr').src=qrImg.src}
     $('idCardQrWrap').hidden=false;$('idCardQr').hidden=false;
     $('idCardQr').onerror=()=>{$('idGenStatus').textContent='Digital ID link is ready, but QR image service did not load. Please retry Generate ID.';};
     $('idCardPhoto').src=photoUrl;
@@ -1754,10 +1826,41 @@ $('idGenerateBtn').onclick=async()=>{
   }catch(e){$('idGenStatus').textContent='ID generation failed: '+(e?.message||e);gcIdGenerated=false;$('idPrintBtn').disabled=true}
   finally{btn.disabled=false}
 };
+
+async function gcIdFindExistingCard(){
+ const category=String($('idCategory').value||'').toLowerCase();
+ const user=category==='staff'?null:gcIdSelectedUser();
+ const identity=category==='staff'?String(gcStaffSelectedForCard?.staffId||$('idNumber').value||'').trim():String(user?.user_id||user?.id||'').trim();
+ if(!identity)throw new Error('Could not identify this member. Please select the registered member again.');
+ const q=await sb.storage.from('gc-advertisements').list('digital-id-cards',{limit:1000,sortBy:{column:'created_at',order:'desc'}});
+ if(q.error)throw q.error;
+ const matches=[];
+ for(const f of (q.data||[]).filter(x=>x.name&&x.name.endsWith('.json'))){
+  try{const dl=await sb.storage.from('gc-advertisements').download('digital-id-cards/'+f.name);if(dl.error)continue;const d=JSON.parse(await dl.data.text());const c=String(d.c||d.category||'').toLowerCase();let same=false;
+   if(c===category){if(category==='staff')same=String(d.staffProfileId||'').trim()===identity||String(d.i||d.idNumber||'').trim()===String($('idNumber').value||'').trim();else same=String(d.userId||d.user_id||'').trim()===identity;}
+   if(same)matches.push({token:f.name.replace(/\.json$/i,''),data:d,createdAt:d.createdAt||f.created_at||''});
+  }catch(_){}
+ }
+ matches.sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt)));
+ return matches.length?{...matches[0],duplicates:matches.slice(1)}:null;
+}
+
+async function gcIdLoadGeneratedRecords(){const status=$('idGeneratedRecordsStatus'),box=$('idGeneratedRecords'),btn=$('idGeneratedListBtn');btn.disabled=true;status.textContent='Loading saved ID-card records from secure storage…';box.innerHTML='<div class="empty">Loading generated ID cards…</div>';try{const q=await sb.storage.from('gc-advertisements').list('digital-id-cards',{limit:1000,sortBy:{column:'created_at',order:'desc'}});if(q.error)throw q.error;const files=(q.data||[]).filter(x=>x.name&&x.name.endsWith('.json'));if(!files.length){box.innerHTML='<div class="empty">No generated ID cards found in the register yet.</div>';status.textContent='0 ID cards recorded.';return}const records=[];for(const f of files){try{const dl=await sb.storage.from('gc-advertisements').download('digital-id-cards/'+f.name);if(dl.error)throw dl.error;const d=JSON.parse(await dl.data.text());records.push({file:f,data:d,token:f.name.replace(/\.json$/i,''),createdAt:d.createdAt||f.created_at||f.updated_at||'',createdBy:d.createdBy||'—'})}catch(e){records.push({file:f,data:{n:'Unreadable record',c:'unknown',i:'—'},token:f.name.replace(/\\.json$/i,''),createdAt:f.created_at||'',createdBy:'—',error:true})}}
+const uniqueRecords=[];const seenMembers=new Set();let hiddenDuplicateCount=0;
+records.sort((a,b)=>String(b.createdAt||'').localeCompare(String(a.createdAt||'')));
+for(const r of records){
+ const d=r.data||{},category=String(d.c||d.category||'').toLowerCase();
+ const identity=category==='staff'?String(d.staffProfileId||d.i||d.idNumber||'').trim().toLowerCase():String(d.userId||d.user_id||d.i||d.idNumber||'').trim().toLowerCase();
+ const key=identity?category+':'+identity:category+':id:'+String(r.token||r.file?.name||'');
+ if(seenMembers.has(key)){hiddenDuplicateCount++;continue}
+ seenMembers.add(key);uniqueRecords.push(r);
+}
+box.innerHTML=uniqueRecords.map((r,i)=>'<article class="user"><div class="userHead"><div><b>'+esc(r.data.n||r.data.name||'Unnamed')+'</b><div class="muted">'+esc(String(r.data.c||r.data.category||'').toUpperCase())+' · ID: '+esc(r.data.i||r.data.idNumber||'—')+'<br>Post / Type / Plan: '+esc(r.data.post||r.data.tt||r.data.p||'—')+'<br>Generated: '+esc(r.createdAt?new Date(r.createdAt).toLocaleString():'Date not recorded')+' · By: '+esc(r.createdBy)+'</div></div><div class="actions" style="margin:0"><button type="button" class="btn teal" data-id-open="'+esc(r.token)+'">🔎 LIVE VERIFY</button><button type="button" class="btn light" data-id-copy="'+esc(r.token)+'">COPY QR LINK</button><button type="button" class="btn" style="background:#fee2e2;color:#991b1b" data-id-delete="'+esc(r.token)+'">🗑 DELETE ID</button></div></div></article>').join('');box.querySelectorAll('[data-id-open]').forEach(b=>b.onclick=()=>window.open('https://guruconnnect.in/digital-id.html?id='+encodeURIComponent(b.dataset.idOpen),'_blank','noopener'));box.querySelectorAll('[data-id-copy]').forEach(b=>b.onclick=async()=>{const url='https://guruconnnect.in/digital-id.html?id='+encodeURIComponent(b.dataset.idCopy);try{await navigator.clipboard.writeText(url);status.textContent='Digital ID link copied. Open it or scan the card QR to verify.'}catch(_){window.prompt('Copy this digital ID link:',url)}});box.querySelectorAll('[data-id-delete]').forEach(b=>b.onclick=async()=>{if(!confirm('Delete this stored Digital ID? Its QR link will stop working immediately.'))return;b.disabled=true;try{const out=await sb.storage.from('gc-advertisements').remove(['digital-id-cards/'+b.dataset.idDelete+'.json']);if(out.error)throw out.error;status.textContent='Digital ID deleted. Its old QR link is no longer valid.';await gcIdLoadGeneratedRecords()}catch(e){status.textContent='Could not delete this ID: '+(e.message||e);b.disabled=false}});status.textContent=uniqueRecords.length+' unique member ID(s) shown.'+(hiddenDuplicateCount?' '+hiddenDuplicateCount+' duplicate record(s) hidden from this list; future regeneration reuses one member QR.':'')+' Use LIVE VERIFY to open each card’s current verification page.'}catch(e){status.textContent='Could not load the generated ID register: '+(e.message||e);box.innerHTML='<div class="empty">Register could not be loaded. Check the admin login and storage permissions.</div>'}finally{btn.disabled=false}}
+$('idGeneratedListBtn').addEventListener('click',gcIdLoadGeneratedRecords);
 $('idResetBtn').onclick=()=>{
-  $('idMemberSearch').value='';$('idMemberSelect').value='';$('idPhoto').value='';gcIdPhotoData='';$('idPhotoPreview').hidden=true;$('idPhotoPreview').removeAttribute('src');$('idCardPhoto').removeAttribute('src');$('idCardPhoto').style.visibility='hidden';$('idCardQrWrap').hidden=true;$('idCardQr').hidden=true;$('idCardQr').removeAttribute('src');
+  $('idMemberSearch').value='';$('idMemberSelect').value='';$('idNumber').readOnly=false;$('idPhoto').value='';gcIdPhotoData='';$('idPhotoPreview').hidden=true;$('idPhotoPreview').removeAttribute('src');$('idCardPhoto').removeAttribute('src');$('idCardPhoto').style.visibility='hidden';$('idCardQrWrap').hidden=true;$('idCardQr').hidden=true;$('idCardQr').removeAttribute('src');
   ['idNumber','idFullName','idSubject','idPlan','idAddress','idMobile'].forEach(id=>gcIdSetField(id,''));
-  ['idLevel','idCourse','idStream','idMode'].forEach(id=>gcIdSetSelect(id,''));
+  ['idLevel','idCourse','idStream','idMode','idTutorType','idStaffPost','idPlan'].forEach(id=>gcIdSetSelect(id,''));gcIdSetField('idStaffPostCustom','');gcIdSetSelect('idCategory','student');gcIdUpdateCategoryFields();
   const today=new Date();const next=new Date(today);next.setFullYear(next.getFullYear()+1);
   const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
   $('idValidFrom').value=fmt(today);$('idValidTo').value=fmt(next);
@@ -1768,26 +1871,75 @@ $('idPrintBtn').onclick=()=>{
   const preview=$('idCardPreview');
   const w=window.open('','_blank','width=1000,height=750');
   if(!w){$('idGenStatus').textContent='Pop-up blocked. Allow pop-ups for this site, then click Print again.';return}
-  const html='<!doctype html><html><head><meta charset="utf-8"><base href="https://www.guruconnnect.in/"><title>GURU CONNECT ID Card</title><link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400&display=swap" rel="stylesheet"><style>*{box-sizing:border-box}body{margin:0;padding:10mm;background:#fff;font-family:Arial,sans-serif}.idgen-card{width:100mm;height:90mm;min-height:90mm;aspect-ratio:auto;overflow:visible;border:1px solid #cbd5e1;border-radius:3mm;display:flex;flex-direction:column;color:#172033;position:relative;print-color-adjust:exact;-webkit-print-color-adjust:exact}.idgen-card:before{content:"";height:2.8mm;flex:0 0 2.8mm;background:linear-gradient(90deg,#ef3340 0 18%,#ff9f1c 18% 36%,#ffd21f 36% 52%,#19b957 52% 69%,#08a8cf 69% 84%,#633eea 84% 100%)}.idgen-cardhead{background:#fff;color:#102e61;padding:1.5mm 3mm;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:2mm;border-bottom:1px solid #e2e8f0;min-height:17mm;flex:0 0 17mm}.idgen-logo{display:block;flex:0 0 17mm;width:17mm;max-width:24%;height:16mm;object-fit:contain;object-position:center}.idgen-brandcopy{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:.7mm}.idgen-wordmark{display:flex;align-items:baseline;gap:1mm;white-space:nowrap;line-height:1;letter-spacing:-.25mm}.idgen-guru{color:#e32636;font-family:Arial,sans-serif;font-size:17pt;font-weight:900}.idgen-connect{color:#155eef;font-family:Arial,sans-serif;font-size:15pt;font-weight:300;letter-spacing:-.2mm}.idgen-tagline{font-family:"Roboto Condensed",Arial,sans-serif;font-size:7.5pt;font-weight:400;letter-spacing:.1px;color:#123b82;margin:0;line-height:1.1}.idgen-cardlabel{display:none}.idgen-cardbody{padding:3mm 3mm 2mm;display:grid;grid-template-columns:32mm minmax(0,1fr);gap:3mm;flex:1 1 auto;min-height:auto}.idgen-leftcol{display:flex;flex-direction:column;align-items:center;gap:1mm;min-width:0}.idgen-photo-wrap{position:relative;width:29mm;height:31mm;align-self:start}.idgen-cardphoto{display:block;width:28mm;height:31mm;object-fit:cover;border-radius:1.5mm;border:1px solid #d8e3f3;background:#eef3fa}.idgen-qrwrap{display:flex;flex-direction:column;align-items:center;gap:.8mm;padding:1mm;border:0.3mm solid #e2e8f0;border-radius:1mm}.idgen-qrwrap img{width:29mm;height:29mm;object-fit:contain;border:0;padding:0;background:#fff}.idgen-qrwrap small{font-size:4.2pt;font-weight:800;color:#123b82;letter-spacing:0}.idgen-cardphoto{display:block;width:22mm;height:25mm;object-fit:cover;border-radius:1.5mm;border:1px solid #d8e3f3;background:#eef3fa}.idgen-photo-seal{position:absolute;z-index:2;width:12mm;height:12mm;object-fit:contain;right:1mm;bottom:1mm;opacity:1;transform:none;filter:grayscale(1) brightness(0) saturate(100%) invert(19%) sepia(97%) saturate(4500%) hue-rotate(348deg) brightness(92%) contrast(112%);pointer-events:none}.idgen-cardname{font-size:12pt;font-weight:900;color:#102e61;line-height:1.2;overflow-wrap:anywhere}.idgen-tick{display:inline-flex;flex:0 0 5.2mm;align-items:center;justify-content:center;vertical-align:middle;background:#00B83F;color:#fff;border:0.25mm solid #fff;border-radius:50%;width:5.2mm;height:5.2mm;min-width:5.2mm;min-height:5.2mm;font-family:Arial,sans-serif;font-size:8pt;font-weight:950;line-height:1;clip-path:none;box-shadow:0 0 0 .25mm #00B83F;margin-left:1.2mm;padding:0;visibility:visible!important;opacity:1!important}.idgen-tick[hidden]{display:none!important}.idgen-tick:not([hidden]){display:inline-flex!important}.idgen-idnumber{font-size:7pt;font-weight:400;color:#155eef;margin-top:1mm}#idCardNumber{font-weight:400!important}.idgen-mini-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5mm 2mm;margin-top:2mm}.idgen-mini-fields div{min-width:0;font-size:6pt;line-height:1.15;overflow-wrap:anywhere}.idgen-mini-fields b{display:block;font-size:5.5pt;font-weight:800;color:#475569;margin-bottom:.4mm}.idgen-address b{font-weight:800;color:#475569}.idgen-address{font-size:6.2pt;color:#334155;margin-top:1.8mm;line-height:1.35;overflow-wrap:anywhere;white-space:normal;min-width:0;max-width:100%}.idgen-validity{background:linear-gradient(90deg,#eaf2ff,#f3e8ff 60%,#e0f2fe);color:#123b82;padding:2mm 3mm;font-size:6.5pt;font-weight:800;display:flex;justify-content:space-between;gap:2mm;flex:0 0 auto}.idgen-cardfoot{background:#092b64;color:#fff;padding:2.5mm 3mm;display:flex;justify-content:space-between;gap:1.5mm;font-size:7pt;font-weight:400;flex-wrap:nowrap;border-top:.8mm solid #19b957;flex:0 0 auto}@page{size:auto;margin:0} @media print{body{padding:10mm}.idgen-card{break-inside:avoid}}</style></head><body>'+preview.outerHTML+'<script>window.onload=()=>setTimeout(()=>window.print(),350)<\/script></body></html>';
+  const html='<!doctype html><html><head><meta charset="utf-8"><base href="https://www.guruconnnect.in/"><title>GURU CONNECT ID Card</title><link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400&display=swap" rel="stylesheet"><style>*{box-sizing:border-box}body{margin:0;padding:10mm;background:#fff;font-family:Arial,sans-serif}.idgen-card{width:120mm;height:auto;min-height:112mm;aspect-ratio:auto;overflow:visible;border:1px solid #cbd5e1;border-radius:3mm;display:flex;flex-direction:column;color:#172033;position:relative;print-color-adjust:exact;-webkit-print-color-adjust:exact}.idgen-card:before{content:"";height:2.8mm;flex:0 0 2.8mm;background:linear-gradient(90deg,#ef3340 0 18%,#ff9f1c 18% 36%,#ffd21f 36% 52%,#19b957 52% 69%,#08a8cf 69% 84%,#633eea 84% 100%)}.idgen-cardhead{background:#fff;color:#102e61;padding:1.5mm 3mm;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:2mm;border-bottom:1px solid #e2e8f0;min-height:17mm;flex:0 0 17mm}.idgen-logo{display:block;flex:0 0 17mm;width:17mm;max-width:24%;height:16mm;object-fit:contain;object-position:center}.idgen-brandcopy{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:.7mm}.idgen-wordmark{display:flex;align-items:baseline;gap:1mm;white-space:nowrap;line-height:1;letter-spacing:-.25mm}.idgen-guru{color:#e32636;font-family:Arial,sans-serif;font-size:17pt;font-weight:900}.idgen-connect{color:#155eef;font-family:Arial,sans-serif;font-size:15pt;font-weight:300;letter-spacing:-.2mm}.idgen-tagline{font-family:"Roboto Condensed",Arial,sans-serif;font-size:7.5pt;font-weight:400;letter-spacing:.1px;color:#123b82;margin:0;line-height:1.1}.idgen-cardlabel{display:none}.idgen-cardbody{padding:3mm 3mm 2mm;display:grid;grid-template-columns:49mm minmax(0,1fr);gap:3mm;flex:0 0 auto;min-height:auto;overflow:visible}.idgen-leftcol{display:flex;flex-direction:column;align-items:center;gap:1mm;min-width:0}.idgen-photo-wrap{position:relative;width:29mm;height:31mm;align-self:start}.idgen-cardphoto{display:block;width:28mm;height:31mm;object-fit:cover;border-radius:1.5mm;border:1px solid #d8e3f3;background:#eef3fa}.idgen-qrwrap{display:flex;flex-direction:column;align-items:center;gap:.8mm;padding:1mm;border:0.3mm solid #e2e8f0;border-radius:1mm}.idgen-qrwrap img{width:45mm;height:45mm;object-fit:contain;border:0;padding:0;background:#fff;image-rendering:pixelated}.idgen-qrwrap small{font-size:4.2pt;font-weight:800;color:#123b82;letter-spacing:0}.idgen-cardphoto{display:block;width:22mm;height:25mm;object-fit:cover;border-radius:1.5mm;border:1px solid #d8e3f3;background:#eef3fa}.idgen-photo-seal{position:absolute;z-index:2;width:12mm;height:12mm;object-fit:contain;right:1mm;bottom:1mm;opacity:1;transform:none;filter:grayscale(1) brightness(0) saturate(100%) invert(19%) sepia(97%) saturate(4500%) hue-rotate(348deg) brightness(92%) contrast(112%);pointer-events:none}.idgen-cardname{font-size:12pt;font-weight:900;color:#102e61;line-height:1.2;overflow-wrap:anywhere}.idgen-tick{display:inline-flex;flex:0 0 5.2mm;align-items:center;justify-content:center;vertical-align:middle;background:#00B83F;color:#fff;border:0.25mm solid #fff;border-radius:50%;width:5.2mm;height:5.2mm;min-width:5.2mm;min-height:5.2mm;font-family:Arial,sans-serif;font-size:8pt;font-weight:950;line-height:1;clip-path:none;box-shadow:0 0 0 .25mm #00B83F;margin-left:1.2mm;padding:0;visibility:visible!important;opacity:1!important}.idgen-tick[hidden]{display:none!important}.idgen-tick:not([hidden]){display:inline-flex!important}.idgen-idnumber{font-size:7pt;font-weight:400;color:#155eef;margin-top:1mm}#idCardNumber{font-weight:400!important}.idgen-mini-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5mm 2mm;margin-top:2mm}.idgen-mini-fields div{min-width:0;font-size:6pt;line-height:1.15;overflow-wrap:anywhere}.idgen-mini-fields b{display:block;font-size:5.5pt;font-weight:800;color:#475569;margin-bottom:.4mm}.idgen-address b{font-weight:800;color:#475569}.idgen-address{font-size:6.2pt;color:#334155;margin-top:1.8mm;line-height:1.35;overflow-wrap:anywhere;white-space:normal;min-width:0;max-width:100%}.idgen-validity{background:linear-gradient(90deg,#eaf2ff,#f3e8ff 60%,#e0f2fe);color:#123b82;padding:2mm 3mm;font-size:6.5pt;font-weight:800;display:flex;align-items:center;justify-content:flex-start;gap:2mm;flex:0 0 auto;white-space:normal}.idgen-validity span:first-child{flex:0 0 auto;white-space:nowrap}.idgen-validity span:last-child{min-width:0;overflow-wrap:anywhere}.idgen-cardfoot{background:#092b64;color:#fff;padding:2.5mm 3mm;display:flex;justify-content:space-between;gap:1.5mm;font-size:7pt;font-weight:400;flex-wrap:nowrap;border-top:.8mm solid #19b957;flex:0 0 auto}@page{size:auto;margin:0} @media print{body{padding:10mm}.idgen-card{break-inside:avoid}}</style></head><body>'+preview.outerHTML+'<script>window.onload=()=>setTimeout(()=>window.print(),350)<\/script></body></html>';
   w.document.open();w.document.write(html);w.document.close();
 };
 
 // Do not query the admin-only advertisements table before authentication.
 // This avoids a stale error state when the Supabase session is still restoring.
-staffCheck().then(async ok=>{if(ok){await loadLiveUsers();activeSection='edit';switchSection('edit');findForEdit();await loadAdminAdvertisements()}});
+staffCheck().then(ok=>{if(ok){
+  /* Show the authenticated Admin dashboard immediately. Load data in the background so a slow directory or advertisement query cannot hold up the dashboard. */
+  activeSection='edit';switchSection('edit');
+  loadLiveUsers().then(()=>{findForEdit()}).catch(e=>{const s=$('searchStatus');if(s)s.textContent='Directory will be available after refresh: '+(e?.message||e)});
+  loadAdminAdvertisements().catch(e=>{const s=$('adStatus');if(s)s.textContent='Advertisements could not load yet: '+(e?.message||e)});
+}});
+</script>
+<style>
+#gc-admin-alert-overlay{position:fixed;inset:0;background:rgba(7,18,38,.68);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;z-index:2147483647;padding:18px;font-family:Arial,sans-serif}
+#gc-admin-alert-overlay.gc-open{display:flex;animation:gcAdminFade .18s ease-out}
+#gc-admin-alert-card{width:min(420px,100%);background:#fff;border-radius:22px;box-shadow:0 24px 80px rgba(0,0,0,.3);overflow:hidden;text-align:center;border:1px solid #dbeafe}
+#gc-admin-alert-head{padding:22px 24px 14px;background:linear-gradient(135deg,#eff6ff,#f0fdfa)}
+#gc-admin-alert-mark{width:60px;height:60px;margin:auto;border-radius:18px;background:#fff;display:grid;place-items:center;font-size:30px;color:#0f766e;box-shadow:0 5px 18px #0f172a18}
+#gc-admin-alert-brand{font-weight:900;letter-spacing:1.2px;color:#12315b;font-size:18px;margin-top:10px}
+#gc-admin-alert-title{font-size:20px;font-weight:800;color:#14213d;margin:18px 20px 7px}
+#gc-admin-alert-message{white-space:pre-wrap;overflow-wrap:anywhere;color:#526176;font-size:14px;line-height:1.6;margin:0 24px 20px;max-height:35vh;overflow:auto}
+#gc-admin-alert-ok{border:0;border-radius:12px;background:linear-gradient(135deg,#2563eb,#0f766e);color:#fff;font-weight:800;padding:12px 28px;min-width:125px;cursor:pointer;margin-bottom:22px}
+@keyframes gcAdminFade{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){#gc-admin-alert-overlay{animation:none}}
+</style>
+<div id="gc-admin-alert-overlay" role="presentation"><section id="gc-admin-alert-card" role="alertdialog" aria-modal="true" aria-labelledby="gc-admin-alert-title" aria-describedby="gc-admin-alert-message"><div id="gc-admin-alert-head"><div id="gc-admin-alert-mark">🔔</div><div id="gc-admin-alert-brand">GURU CONNECT</div><div style="font-size:10px;letter-spacing:2px;color:#0f766e;font-weight:800;margin-top:3px">ADMIN CONTROL CENTER</div></div><h2 id="gc-admin-alert-title">Notice</h2><p id="gc-admin-alert-message"></p><button id="gc-admin-alert-ok" type="button">CONTINUE</button></section></div>
+<script id="gc-admin-alert-script">(()=>{if(window.__gcAdminAlertInstalled)return;window.__gcAdminAlertInstalled=true;const overlay=document.getElementById('gc-admin-alert-overlay');if(!overlay)return;const title=overlay.querySelector('#gc-admin-alert-title'),message=overlay.querySelector('#gc-admin-alert-message'),ok=overlay.querySelector('#gc-admin-alert-ok');let queue=[],busy=false;function beep(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=window.__gcAdminAudio||(window.__gcAdminAudio=new C());if(c.state==='suspended')c.resume();const t=c.currentTime;[0,.22].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=i?880:660;g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(.12,t+d+.025);g.gain.exponentialRampToValueAtTime(.0001,t+d+.16);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+.17)})}catch(_){}}function render(){if(!queue.length){overlay.classList.remove('gc-open');busy=false;return}busy=true;const a=queue[0];title.textContent=a.title;message.textContent=a.message;overlay.classList.add('gc-open');beep();ok.focus()}function close(){queue.shift();render()}ok.addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('gc-open')){e.preventDefault();close()}});const nativeAlert=window.alert.bind(window);window.alert=function(value){const text=String(value??'');const low=text.toLowerCase();queue.push({title:/fail|error|unable|could not|not saved|denied|invalid|missing/.test(low)?'Action Needs Attention':/success|updated|approved|deleted|saved|sent/.test(low)?'Action Completed':'GURU CONNECT Notice',message:text});if(!busy)render()};})();</script>
 
-// Tutor subscription renewal management inside authenticated Admin workspace.
-let renewalTutors=[],renewalProfiles=[],selectedRenewalTutor=null;
-function renewalEscape(v){return esc(String(v==null||v===''?'—':v))}
-function renewalDate(v){if(!v)return 'Not set';const d=new Date(v);return Number.isNaN(d.getTime())?'Not set':d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}
-function renewalAmount(){const pm=Math.max(0,Math.min(24,Number($('renewalPremiumMonths').value)||0)),vm=Math.max(0,Math.min(24,Number($('renewalVerifiedMonths').value)||0));return pm*200+vm*100}
-function updateRenewalAmount(){const pm=Math.max(0,Number($('renewalPremiumMonths').value)||0),vm=Math.max(0,Number($('renewalVerifiedMonths').value)||0);if(vm>pm)$('renewalVerifiedMonths').value=String(pm);$('renewalAmount').value=String(renewalAmount())}
-async function loadTutorRenewals(){const status=$('renewalTutorStatus');if(status)status.textContent='Loading tutor records and renewal history…';try{const [tr,pr,rr]=await Promise.all([sb.from('tutor_profiles').select('*').order('created_at',{ascending:false}),sb.from('profiles').select('id,full_name,email,phone,role'),sb.from('gc_tutor_subscription_renewals').select('*').order('created_at',{ascending:false})]);const err=[tr.error,pr.error,rr.error].find(Boolean);if(err)throw err;renewalTutors=tr.data||[];renewalProfiles=pr.data||[];renderRenewalTutors();renderRenewalHistory(rr.data||[]);if(status)status.textContent='Loaded '+renewalTutors.length+' tutor profiles and '+(rr.data||[]).length+' renewal/history records.'}catch(e){if(status)status.textContent='Could not load renewals: '+(e.message||e)+'. Run the tutor subscription renewal SQL migration first.'}}
-function renderRenewalTutors(){const q=String($('renewalTutorSearch').value||'').trim().toLowerCase(),out=$('renewalTutorResults');const rows=renewalTutors.map(t=>({t,p:renewalProfiles.find(x=>String(x.id)===String(t.user_id))||{}})).filter(({t,p})=>!q||[t.name,p.full_name,p.email,p.phone,t.email,t.phone,t.user_id,t.id].some(v=>String(v||'').toLowerCase().includes(q)));out.innerHTML=rows.slice(0,50).map(({t,p})=>'<article class="user"><div class="userHead"><div class="identity"><b>'+renewalEscape(p.full_name||t.name||'Tutor')+'</b><span class="badge">'+renewalEscape(String(t.membership_type||'free').toUpperCase())+'</span><div class="muted">Email: '+renewalEscape(p.email||t.email)+'<br>Phone: '+renewalEscape(p.phone||t.phone)+'<br>User ID: '+renewalEscape(t.user_id)+'<br>Premium status: '+renewalEscape(t.membership_status)+'<br>Premium valid until: '+renewalEscape(renewalDate(t.membership_expires_at))+'<br>Verified Tick: '+(t.verified_badge_enabled?'ACTIVE / '+renewalEscape(renewalDate(t.verified_badge_expires_at)):'Not active')+'</div></div><button type="button" class="btn primary" data-select-renewal="'+renewalEscape(t.user_id)+'">SELECT TUTOR</button></div></article>').join('')||'<div class="empty">No tutor matched that search.</div>';out.querySelectorAll('[data-select-renewal]').forEach(b=>b.addEventListener('click',()=>{const t=renewalTutors.find(x=>String(x.user_id)===b.dataset.selectRenewal);if(!t)return;selectedRenewalTutor=t;$('renewalUserId').value=t.user_id||'';$('renewalTutorStatus').textContent='Selected '+(t.name||'tutor')+'. Check the services and months before creating the renewal request.';updateRenewalAmount()}))}
-function renderRenewalHistory(rows){const out=$('renewalHistory');if(!out)return;out.innerHTML=rows.map(r=>{const t=renewalTutors.find(x=>String(x.user_id)===String(r.tutor_user_id))||{},p=renewalProfiles.find(x=>String(x.id)===String(r.tutor_user_id))||{};return '<article class="user"><div class="userHead"><div class="identity"><b>'+renewalEscape(p.full_name||t.name||'Tutor')+'</b><span class="badge">'+renewalEscape(r.status||'REQUESTED')+'</span><div class="muted">Requested: '+renewalEscape(renewalDate(r.created_at))+'<br>Plan: Premium '+renewalEscape(r.premium_months)+' month(s) · Verified Tick '+renewalEscape(r.verified_months)+' month(s)<br>Amount: ₹'+renewalEscape(r.amount)+'<br>Valid from: '+renewalEscape(renewalDate(r.valid_from))+' · Valid until: '+renewalEscape(renewalDate(r.valid_until))+'<br>Payment mode: '+renewalEscape(r.payment_mode)+'<br>Transaction number: '+renewalEscape(r.transaction_number)+'<br>Cash received by: '+renewalEscape(r.cash_receiver_name)+' · ID: '+renewalEscape(r.cash_receiver_id)+'<br>Payment link: '+renewalEscape(r.payment_link)+'<br>Admin note: '+renewalEscape(r.admin_note)+'</div></div>'+(String(r.status||'').toUpperCase()==='PAYMENT_SUBMITTED'?'<button type="button" class="btn green" data-approve-renewal="'+renewalEscape(r.id)+'">APPROVE & EXTEND VALIDITY</button>':String(r.status||'').toUpperCase()==='REQUESTED'?'<button type="button" class="btn orange" data-issue-renewal="'+renewalEscape(r.id)+'">ISSUE PAYMENT LINK</button>':'')+'</div></article>'}).join('')||'<div class="empty">No renewal history yet.</div>';out.querySelectorAll('[data-issue-renewal]').forEach(b=>b.addEventListener('click',async()=>{const row=rows.find(x=>String(x.id)===b.dataset.issueRenewal);if(!row)return;const link=prompt('Enter the payment link to provide to this tutor:',row.payment_link||'');if(link===null)return;if(!link.trim()){alert('Payment link is required.');return}try{const u=await sb.from('gc_tutor_subscription_renewals').update({payment_link:link.trim(),admin_note:'Payment link issued by Admin.'}).eq('id',row.id);if(u.error)throw u.error;alert('Payment link saved. It will be visible in the tutor dashboard.');await loadTutorRenewals()}catch(e){alert('Could not save payment link: '+(e.message||e))}}));out.querySelectorAll('[data-approve-renewal]').forEach(b=>b.addEventListener('click',async()=>{const row=rows.find(x=>String(x.id)===b.dataset.approveRenewal);if(!row)return;const mode=String(row.payment_mode||'').toLowerCase();if(mode==='online'&&!String(row.transaction_number||'').trim()){alert('Cannot approve: transaction number is missing.');return}if(mode==='cash'&&(!String(row.cash_receiver_name||'').trim()||!String(row.cash_receiver_id||'').trim())){alert('Cannot approve: cash receiver name and ID are required.');return}if(!confirm('Approve this renewal and extend tutor validity?'))return;try{const t=renewalTutors.find(x=>String(x.user_id)===String(row.tutor_user_id));if(!t)throw Error('Tutor profile not found');const now=new Date(),oldExpiry=new Date(t.membership_expires_at||0),start=oldExpiry>now?oldExpiry:now,until=new Date(start.getTime()+Number(row.premium_months)*30*86400000),badgeOld=new Date(t.verified_badge_expires_at||0),badgeStart=badgeOld>now?badgeOld:now,badgeUntil=new Date(badgeStart.getTime()+Number(row.verified_months)*30*86400000);const patch={membership_type:'premium',membership_status:'PREMIUM_ACTIVE',membership_started_at:start.toISOString(),membership_expires_at:until.toISOString(),membership_months:Number(row.premium_months),paid_status:'PAID',profile_hidden:false,profile_hidden_reason:null,tuition_commission_percent:0,verified_badge_enabled:Number(row.verified_months)>0||!!(t.verified_badge_enabled&&badgeOld>now),verified_badge_started_at:Number(row.verified_months)>0?badgeStart.toISOString():t.verified_badge_started_at,verified_badge_expires_at:Number(row.verified_months)>0?badgeUntil.toISOString():t.verified_badge_expires_at};const u=await sb.from('tutor_profiles').update(patch).eq('user_id',row.tutor_user_id);if(u.error)throw u.error;const h=await sb.from('gc_tutor_subscription_renewals').update({status:'APPROVED',valid_from:start.toISOString(),valid_until:until.toISOString(),approved_at:now.toISOString(),admin_note:'Payment verified and validity extended by Admin.'}).eq('id',row.id);if(h.error)throw h.error;alert('Renewal approved and validity extended.');await loadTutorRenewals()}catch(e){alert('Renewal approval failed: '+(e.message||e))}}))}
-async function createRenewalRequest(){const status=$('renewalRequestStatus'),t=selectedRenewalTutor,pm=Math.max(0,Math.min(24,Number($('renewalPremiumMonths').value)||0)),vm=Math.max(0,Math.min(24,Number($('renewalVerifiedMonths').value)||0)),link=$('renewalPaymentLink').value.trim();if(!t){status.textContent='Please find and select a tutor first.';return}if(pm<1){status.textContent='At least one Premium listing month is required for a renewal.';return}if(vm>pm){status.textContent='Verified Tick months cannot exceed Premium months.';return}if(!link){status.textContent='Add the payment link before creating the request.';return}try{status.textContent='Creating renewal request…';const r=await sb.from('gc_tutor_subscription_renewals').insert({tutor_user_id:t.user_id,premium_months:pm,verified_months:vm,amount:pm*200+vm*100,payment_link:link,status:'REQUESTED'});if(r.error)throw r.error;status.textContent='Renewal request created. Share the payment link with the tutor and update the record when payment details arrive.';await loadTutorRenewals()}catch(e){status.textContent='Could not create renewal: '+(e.message||e)+'. Run the renewal SQL migration first.'}}
-$('renewalTutorFind').addEventListener('click',renderRenewalTutors);$('renewalRefresh').addEventListener('click',loadTutorRenewals);$('renewalCreate').addEventListener('click',createRenewalRequest);$('renewalPremiumMonths').addEventListener('input',updateRenewalAmount);$('renewalVerifiedMonths').addEventListener('input',updateRenewalAmount);
-</script></body></html>
+<style id="gc-staff-registration-form-ui">
+/* ADD STAFF: professional registration-form styling; existing form IDs and handlers preserved */
+#sec-staff .staff-sec-head{background:linear-gradient(110deg,#eff6ff 0%,#f0fdfa 55%,#f5f3ff 100%);border-bottom:1px solid #cbd5e1}
+#sec-staff .staff-sec-head h2{color:#123b66;font-size:clamp(20px,2.4vw,27px)}
+#sec-staff .staff-sec-body{background:#f7faff;padding:clamp(12px,2.5vw,24px)}
+#sec-staff .staff-notice{background:#eff6ff;border:1px solid #bfdbfe;border-left:5px solid #2563eb;color:#1e3a8a;border-radius:12px;line-height:1.65}
+#sec-staff .staff-registration-card{border:1px solid #d6e1ef;border-radius:20px;overflow:hidden;padding:0;background:#fff;box-shadow:0 12px 30px rgba(22,54,95,.09)}
+#sec-staff .staff-form-banner{display:flex;align-items:center;gap:14px;padding:20px 22px;background:linear-gradient(120deg,#0b2d5c,#155eaa 60%,#0891b2);color:#fff}
+#sec-staff .staff-form-icon{width:52px;height:52px;flex:0 0 52px;display:grid;place-items:center;border-radius:15px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);font-size:25px}
+#sec-staff .staff-form-banner h3{margin:0;color:#fff;font-size:clamp(17px,2vw,22px);letter-spacing:.3px}
+#sec-staff .staff-form-banner p{margin:5px 0 0;color:#dbeafe;font-size:12px;font-weight:650;line-height:1.5}
+#sec-staff .staff-form-step{margin-left:auto;padding:7px 10px;border-radius:999px;background:#dcfce7;color:#166534;font-size:9px;font-weight:950;letter-spacing:.6px;white-space:nowrap}
+#sec-staff .staff-form-inner{padding:clamp(14px,2.5vw,24px)}
+#sec-staff .staff-form-section-title{display:flex;align-items:center;gap:11px;margin:0 0 18px;padding-bottom:13px;border-bottom:1px solid #e2e8f0}
+#sec-staff .staff-form-section-title>span{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:10px;background:#dbeafe;color:#1d4ed8;font-weight:950;font-size:12px}
+#sec-staff .staff-form-section-title b{display:block;color:#17365d;font-size:14px}
+#sec-staff .staff-form-section-title small{display:block;margin-top:3px;color:#64748b;font-size:11px}
+#sec-staff .staff-form-grid{gap:16px}
+#sec-staff .staff-form-grid .idgen-field{min-width:0}
+#sec-staff .staff-form-grid .idgen-field label{display:block;margin-bottom:7px;color:#334155;font-size:11px;font-weight:900;letter-spacing:.25px}
+#sec-staff .staff-form-grid .idgen-field label em{color:#dc2626;font-style:normal}
+#sec-staff .staff-form-grid .idgen-field label small{color:#64748b;font-weight:650;text-transform:none}
+#sec-staff .staff-form-grid .idgen-field input:not([type=checkbox]),#sec-staff .staff-form-grid .idgen-field select,#sec-staff .staff-form-grid .idgen-field textarea{width:100%;min-height:45px;padding:12px 13px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;color:#0f172a;font:600 13px Inter,Arial,sans-serif;box-shadow:0 2px 5px rgba(15,23,42,.025);transition:border-color .15s,box-shadow .15s}
+#sec-staff .staff-form-grid .idgen-field textarea{min-height:90px;resize:vertical}
+#sec-staff .staff-form-grid .idgen-field input:focus,#sec-staff .staff-form-grid .idgen-field select:focus,#sec-staff .staff-form-grid .idgen-field textarea:focus{outline:none;border-color:#2584d8;box-shadow:0 0 0 3px rgba(37,132,216,.14)}
+#sec-staff .staff-form-grid .idgen-field input::placeholder,#sec-staff .staff-form-grid .idgen-field textarea::placeholder{color:#94a3b8;font-weight:500}
+#sec-staff .staff-form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;padding-top:18px;border-top:1px solid #e2e8f0}
+#sec-staff .staff-form-actions .btn{min-height:44px;padding:12px 17px}
+#sec-staff #staffSaveBtn{background:linear-gradient(100deg,#166534,#15803d)!important;box-shadow:0 5px 14px rgba(21,128,61,.2)}
+#sec-staff .staff-status{padding:11px 13px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;line-height:1.6}
+#sec-staff .staff-directory-card{border:1px solid #d6e1ef;border-radius:18px;padding:0;overflow:hidden;background:#fff}
+#sec-staff .staff-directory-head{padding:17px 20px;background:linear-gradient(100deg,#f0fdfa,#eff6ff);border-bottom:1px solid #dbeafe}
+#sec-staff .staff-directory-head h3{margin:0;color:#123b66;font-size:17px}
+#sec-staff .staff-directory-head p{margin:5px 0 0;color:#64748b;font-size:11px;line-height:1.5}
+#sec-staff .staff-directory-card #staffDirectoryStatus,#sec-staff .staff-directory-card #staffDirectoryList{margin-left:16px;margin-right:16px}
+#sec-staff .staff-directory-card #staffDirectoryStatus{margin-top:12px}
+#sec-staff .staff-directory-card #staffDirectoryList{margin-bottom:16px}
+@media(max-width:600px){#sec-staff .staff-form-banner{padding:16px;gap:10px;align-items:flex-start}#sec-staff .staff-form-icon{width:42px;height:42px;flex-basis:42px;font-size:21px}#sec-staff .staff-form-step{font-size:8px;padding:6px 7px}#sec-staff .staff-form-actions{display:grid;grid-template-columns:1fr}#sec-staff .staff-form-actions .btn{width:100%}}
+</style>
+
 <style id="gc-admin-colorful-control-tiles-20261009">
 /* =========================================================
    GURU CONNECT ADMIN — COLORFUL CONTROL TILES
@@ -1810,35 +1962,59 @@ $('renewalTutorFind').addEventListener('click',renderRenewalTutors);$('renewalRe
 .controlbar .topbtn b,.controlbar .topbtn small{position:relative;z-index:1;color:#fff!important;}
 .controlbar .topbtn small{opacity:1!important;}
 
-/* Distinct solid colours for every dashboard tile */
-.controlbar .topbtn:nth-child(1){background:#e53945!important;}
-.controlbar .topbtn:nth-child(2){background:#25D366!important;}
-.controlbar .topbtn:nth-child(3){background:#2563eb!important;}
-.controlbar .topbtn:nth-child(4){background:#f59e0b!important;}
-.controlbar .topbtn:nth-child(5){background:#0d6efd!important;}
-.controlbar .topbtn:nth-child(6){background:#0891b2!important;}
-.controlbar .topbtn:nth-child(7){background:#7c3aed!important;}
-.controlbar .topbtn:nth-child(8){background:#ea580c!important;}
-.controlbar .topbtn:nth-child(9){background:#0e7490!important;}
-.controlbar .topbtn:nth-child(10){background:#ea580c!important;}
-.controlbar .topbtn:nth-child(11){background:#7c3aed!important;}
+/* Distinct solid palette: WhatsApp green for Registration Approval,
+   dark green for ADD STAFF, plus cyan, violet, sky blue, purple, pink and grey. */
+.controlbar .topbtn:nth-child(1){background:#c62828!important;}  /* EDIT — red */
+.controlbar .topbtn:nth-child(2){background:#25D366!important;}  /* REGISTRATION APPROVAL — WhatsApp green */
+.controlbar .topbtn:nth-child(3){background:#3949ab!important;}  /* COINS — indigo */
+.controlbar .topbtn:nth-child(4){background:#00acc1!important;}  /* LRR — cyan */
+.controlbar .topbtn:nth-child(5){background:#7c3aed!important;}  /* COIN APPROVAL — violet */
+.controlbar .topbtn:nth-child(6){background:#ef6c00!important;}  /* RECEIPT — orange */
+.controlbar .topbtn:nth-child(7){background:#29b6f6!important;}  /* DIRECTORIES — sky blue */
+.controlbar .topbtn:nth-child(8){background:#607d8b!important;}  /* PASSWORD RESET — grey-blue */
+.controlbar .topbtn:nth-child(9){background:#6a1b9a!important;}  /* CREATE USER — purple */
+.controlbar .topbtn:nth-child(10){background:#ec407a!important;} /* ADVERTISEMENT — pink */
+.controlbar .topbtn:nth-child(11){background:#00897b!important;} /* GENERATE ID — teal */
+.controlbar .topbtn:nth-child(12){background:#1b5e20!important;} /* ADD STAFF — dark green */
 
-.controlbar .topbtn:hover,
-.controlbar .topbtn.active{
-  color:#fff!important;
-  border:0!important;
-  transform:translateY(-2px)!important;
-  filter:saturate(1.08) brightness(1.03)!important;
-  box-shadow:0 14px 30px rgba(15,45,90,.19)!important;
-}
-.controlbar .topbtn.active:before{
-  content:"";
-  position:absolute;
-  inset:0;
-  border:3px solid rgba(255,255,255,.82);
-  border-radius:16px;
-  pointer-events:none;
-}
 @media(max-width:900px){.controlbar .topbtn{min-height:82px!important;}}
 @media(max-width:600px){.controlbar .topbtn{min-height:76px!important;}}
 </style>
+
+<script id="gc-date-picker-click-anywhere">
+(function(){
+  function openDatePicker(input){
+    if(!input || input.disabled || input.readOnly) return;
+    try { if(typeof input.showPicker === 'function') input.showPicker(); else input.focus(); }
+    catch(e) { input.focus(); }
+  }
+  document.addEventListener('click', function(event){
+    const field = event.target.closest('input[type="date"]');
+    if(field){ openDatePicker(field); return; }
+    const label = event.target.closest('label[for]');
+    if(label){
+      const input = document.getElementById(label.htmlFor);
+      if(input && input.matches('input[type="date"]')) openDatePicker(input);
+    }
+  });
+  document.addEventListener('focusin', function(event){
+    if(event.target && event.target.matches('input[type="date"]')) {
+      /* Focus keeps keyboard and accessibility use working; click opens the native picker. */
+    }
+  });
+})();
+
+// Tutor subscription renewal management.
+let renewalTutors=[],renewalProfiles=[],selectedRenewalTutor=null;
+function renewalEscape(v){return esc(String(v==null||v===''?'—':v))}
+function renewalDate(v){if(!v)return 'Not set';const d=new Date(v);return Number.isNaN(d.getTime())?'Not set':d.toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}
+function renewalAmount(){const pm=Math.max(1,Math.min(24,Number($('renewalPremiumMonths').value)||1)),vm=Math.max(0,Math.min(24,Number($('renewalVerifiedMonths').value)||0));return pm*200+Math.min(pm,vm)*100}
+function updateRenewalAmount(){const pm=Math.max(1,Number($('renewalPremiumMonths').value)||1),vm=Math.max(0,Number($('renewalVerifiedMonths').value)||0);if(vm>pm)$('renewalVerifiedMonths').value=String(pm);$('renewalAmount').value=String(renewalAmount())}
+async function loadTutorRenewals(){const status=$('renewalTutorStatus');if(status)status.textContent='Loading tutor records and renewal history…';try{const [tr,pr,rr]=await Promise.all([sb.from('tutor_profiles').select('*').order('created_at',{ascending:false}),sb.from('profiles').select('id,full_name,email,phone,role'),sb.from('gc_tutor_subscription_renewals').select('*').order('created_at',{ascending:false})]);const err=[tr.error,pr.error,rr.error].find(Boolean);if(err)throw err;renewalTutors=tr.data||[];renewalProfiles=pr.data||[];renderRenewalTutors();renderRenewalHistory(rr.data||[]);if(status)status.textContent='Loaded '+renewalTutors.length+' tutors and '+(rr.data||[]).length+' renewal records.'}catch(e){if(status)status.textContent='Could not load renewals: '+(e.message||e)+'. Run the renewal SQL migration first.'}}
+function renderRenewalTutors(){const q=String($('renewalTutorSearch').value||'').trim().toLowerCase(),out=$('renewalTutorResults');const rows=renewalTutors.map(t=>({t,p:renewalProfiles.find(x=>String(x.id)===String(t.user_id))||{}})).filter(({t,p})=>!q||[t.name,p.full_name,p.email,p.phone,t.email,t.phone,t.user_id,t.id].some(v=>String(v||'').toLowerCase().includes(q)));out.innerHTML=rows.slice(0,50).map(({t,p})=>'<article class="user"><div class="userHead"><div class="identity"><b>'+renewalEscape(p.full_name||t.name||'Tutor')+'</b><span class="badge">'+renewalEscape(String(t.membership_type||'free').toUpperCase())+'</span><div class="muted">Email: '+renewalEscape(p.email||t.email)+'<br>Phone: '+renewalEscape(p.phone||t.phone)+'<br>User ID: '+renewalEscape(t.user_id)+'<br>Premium valid until: '+renewalEscape(renewalDate(t.membership_expires_at))+'<br>Verified Tick valid until: '+renewalEscape(renewalDate(t.verified_badge_expires_at))+'</div></div><button type="button" class="btn primary" data-select-renewal="'+renewalEscape(t.user_id)+'">SELECT TUTOR</button></div></article>').join('')||'<div class="empty">No tutor matched that search.</div>';out.querySelectorAll('[data-select-renewal]').forEach(b=>b.addEventListener('click',()=>{selectedRenewalTutor=renewalTutors.find(t=>String(t.user_id)===b.dataset.selectRenewal);if(!selectedRenewalTutor)return;$('renewalUserId').value=selectedRenewalTutor.user_id;$('renewalTutorStatus').textContent='Selected '+(selectedRenewalTutor.name||'tutor');updateRenewalAmount()}))}
+function renderRenewalHistory(rows){const out=$('renewalHistory');out.innerHTML=rows.map(r=>{const t=renewalTutors.find(x=>String(x.user_id)===String(r.tutor_user_id))||{},p=renewalProfiles.find(x=>String(x.id)===String(r.tutor_user_id))||{};return '<article class="user"><div class="userHead"><div class="identity"><b>'+renewalEscape(p.full_name||t.name||'Tutor')+'</b><span class="badge">'+renewalEscape(r.status)+'</span><div class="muted">Requested: '+renewalEscape(renewalDate(r.created_at))+'<br>Premium: '+renewalEscape(r.premium_months)+' month(s) · Verified Tick: '+renewalEscape(r.verified_months)+' month(s)<br>Amount: ₹'+renewalEscape(r.amount)+'<br>Valid from: '+renewalEscape(renewalDate(r.valid_from))+' · until: '+renewalEscape(renewalDate(r.valid_until))+'<br>Payment mode: '+renewalEscape(r.payment_mode)+'<br>Transaction number: '+renewalEscape(r.transaction_number)+'<br>Cash receiver: '+renewalEscape(r.cash_receiver_name)+' · ID: '+renewalEscape(r.cash_receiver_id)+'<br>Payment link: '+renewalEscape(r.payment_link)+'<br>Admin note: '+renewalEscape(r.admin_note)+'</div></div>'+(r.status==='REQUESTED'?'<button type="button" class="btn orange" data-issue-renewal="'+renewalEscape(r.id)+'">ISSUE PAYMENT LINK</button>':r.status==='PAYMENT_SUBMITTED'?'<button type="button" class="btn green" data-approve-renewal="'+renewalEscape(r.id)+'">APPROVE & EXTEND VALIDITY</button>':'')+'</div></article>'}).join('')||'<div class="empty">No renewal history yet.</div>';out.querySelectorAll('[data-issue-renewal]').forEach(b=>b.addEventListener('click',async()=>{const row=rows.find(x=>String(x.id)===b.dataset.issueRenewal),link=prompt('Enter payment link for this tutor:',row?.payment_link||'');if(link===null)return;if(!link.trim()){alert('Payment link required.');return}const u=await sb.from('gc_tutor_subscription_renewals').update({payment_link:link.trim(),admin_note:'Payment link issued by Admin.'}).eq('id',row.id);if(u.error){alert(u.error.message);return}await loadTutorRenewals()}));out.querySelectorAll('[data-approve-renewal]').forEach(b=>b.addEventListener('click',async()=>{const row=rows.find(x=>String(x.id)===b.dataset.approveRenewal);if(!row)return;if(row.payment_mode==='online'&&!String(row.transaction_number||'').trim()){alert('Transaction number is required.');return}if(row.payment_mode==='cash'&&(!row.cash_receiver_name||!row.cash_receiver_id)){alert('Cash receiver name and ID are required.');return}if(!confirm('Approve renewal and extend validity?'))return;const t=renewalTutors.find(x=>String(x.user_id)===String(row.tutor_user_id));if(!t){alert('Tutor not found.');return}const now=new Date(),old=new Date(t.membership_expires_at||0),start=old>now?old:now,end=new Date(start.getTime()+Number(row.premium_months)*30*86400000),oldBadge=new Date(t.verified_badge_expires_at||0),badgeStart=oldBadge>now?oldBadge:now,badgeEnd=new Date(badgeStart.getTime()+Number(row.verified_months)*30*86400000);const upd=await sb.from('tutor_profiles').update({membership_type:'premium',membership_status:'PREMIUM_ACTIVE',membership_started_at:start.toISOString(),membership_expires_at:end.toISOString(),membership_months:Number(row.premium_months),paid_status:'PAID',tuition_commission_percent:0,profile_hidden:false,profile_hidden_reason:null,verified_badge_enabled:Number(row.verified_months)>0||!!(t.verified_badge_enabled&&oldBadge>now),verified_badge_started_at:Number(row.verified_months)>0?badgeStart.toISOString():t.verified_badge_started_at,verified_badge_expires_at:Number(row.verified_months)>0?badgeEnd.toISOString():t.verified_badge_expires_at}).eq('user_id',row.tutor_user_id);if(upd.error){alert(upd.error.message);return}const h=await sb.from('gc_tutor_subscription_renewals').update({status:'APPROVED',valid_from:start.toISOString(),valid_until:end.toISOString(),approved_at:now.toISOString(),admin_note:'Payment verified by Admin.'}).eq('id',row.id);if(h.error){alert(h.error.message);return}alert('Renewal approved.');await loadTutorRenewals()}))}
+async function createRenewalRequest(){const t=selectedRenewalTutor,pm=Math.max(1,Math.min(24,Number($('renewalPremiumMonths').value)||1)),vm=Math.max(0,Math.min(pm,Number($('renewalVerifiedMonths').value)||0)),link=$('renewalPaymentLink').value.trim(),status=$('renewalRequestStatus');if(!t){status.textContent='Select a tutor first.';return}if(!link){status.textContent='Enter the payment link.';return}const r=await sb.from('gc_tutor_subscription_renewals').insert({tutor_user_id:t.user_id,premium_months:pm,verified_months:vm,amount:pm*200+vm*100,payment_link:link,status:'REQUESTED'});if(r.error){status.textContent=r.error.message;return}status.textContent='Renewal request created.';await loadTutorRenewals()}
+$('renewalTutorFind').addEventListener('click',renderRenewalTutors);$('renewalRefresh').addEventListener('click',loadTutorRenewals);$('renewalCreate').addEventListener('click',createRenewalRequest);$('renewalPremiumMonths').addEventListener('input',updateRenewalAmount);$('renewalVerifiedMonths').addEventListener('input',updateRenewalAmount);
+</script>
+
+</body></html>
