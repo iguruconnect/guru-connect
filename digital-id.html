@@ -6,66 +6,77 @@
 <meta name="robots" content="noindex,nofollow">
 <title>GURU CONNECT Digital ID</title>
 <style>
-*{box-sizing:border-box}:root{--navy:#073779;--blue:#155eef;--gold:#f4ad16;--ink:#152e55}
-body{margin:0;padding:18px;background:#eef3fa;color:var(--ink);font-family:Arial,Helvetica,sans-serif}.wrap{width:min(760px,100%);margin:0 auto}
-.card{width:100%;aspect-ratio:1.586/1;background:#fff;border:1px solid #d5e0f0;border-radius:16px;overflow:hidden;box-shadow:0 14px 36px #0a2b5a20;display:flex;flex-direction:column}
-.stripe{height:4px;flex:0 0 4px;background:linear-gradient(90deg,var(--gold),#ffe29a,var(--blue),var(--navy))}
-header{height:22%;display:flex;align-items:center;gap:10px;padding:1.5% 3%;border-bottom:1px solid #e4ebf5}header img{width:12%;height:100%;object-fit:contain}
-.brandcopy{flex:1;min-width:0}h1{font-size:clamp(14px,3.1vw,27px);line-height:1.05;margin:0;color:var(--navy);font-weight:900;white-space:nowrap}h1 span{color:#d99300}
-.slogan{color:#244b84;margin:4px 0 0;font-size:clamp(7px,1.45vw,12px);font-weight:700;white-space:nowrap}.topright{font-size:clamp(6px,1.15vw,10px);color:#526a8c;font-weight:800;white-space:nowrap;align-self:flex-start;padding-top:1%}
-.identity{height:61%;display:grid;grid-template-columns:19% minmax(0,1fr) 21%;gap:2.2%;padding:2.2% 3%;align-items:center}
-.photo{width:100%;height:100%;max-height:100%;object-fit:cover;aspect-ratio:3/4;border:1.5px solid #b9cbea;border-radius:7px;background:#f0f5fb}
-.details{min-width:0;align-self:stretch;display:flex;flex-direction:column;justify-content:center;overflow:hidden}.category{align-self:flex-start;border-radius:99px;background:#eaf2ff;color:#174a9a;padding:3px 8px;font-size:clamp(6px,1.2vw,10px);font-weight:900;letter-spacing:.4px;max-width:100%;white-space:nowrap}
-.membername{margin:5px 0 3px;color:var(--navy);font-size:clamp(12px,2.65vw,22px);font-weight:900;line-height:1.08;overflow-wrap:anywhere}.number{font-size:clamp(7px,1.35vw,11px);font-weight:800;color:#315582;overflow-wrap:anywhere}
-.rule{height:1px;background:#dfe8f5;margin:5px 0}.detailrow{font-size:clamp(6px,1.28vw,10.5px);line-height:1.3;margin:1.5px 0;color:#354b6e;overflow-wrap:anywhere}.detailrow b{color:#6b7e9a}
-.qrside{height:100%;min-width:0;border-left:1px solid #dbe6f6;padding-left:8%;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
-#qr{width:min(100%,21mm);aspect-ratio:1;background:white;padding:3px;border:1px solid #d9e4f3;border-radius:5px;display:flex;align-items:center;justify-content:center}#qr canvas,#qr img{display:block!important;width:100%!important;height:100%!important;image-rendering:pixelated}
-.qrlabel{font-size:clamp(6px,1.15vw,9px);font-weight:900;color:var(--navy);margin-top:4px;line-height:1.15}.validity{font-size:clamp(5.5px,1.05vw,8.5px);font-weight:800;color:#476184;margin-top:5px;line-height:1.3}
-.foot{height:17%;margin-top:auto;background:linear-gradient(110deg,#062b63,#0b4b9c);color:#fff;padding:1.5% 3%;font-size:clamp(7px,1.5vw,12px);display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:3px solid var(--gold);font-weight:900}.foot small{display:block;font-size:clamp(5px,.95vw,8px);font-weight:600;margin-top:2px}.foot .phrase{font-size:clamp(6px,1.35vw,11px);white-space:nowrap;text-align:right;color:#fff1c8}
-.notice{font-size:12px;color:#64748b;margin:10px 2px 0;line-height:1.5}.error{padding:20px;text-align:center;color:#9f1239;background:#fff;border-radius:12px}
-.download-actions{display:none;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0 8px}.download-actions.ready{display:flex}.download-actions button{border:0;border-radius:10px;padding:12px 18px;background:#155eef;color:#fff;font-weight:800;font-size:14px;cursor:pointer}.download-actions button.secondary{background:#0f766e}.download-help{text-align:center;font-size:12px;color:#64748b;margin:0 0 12px;line-height:1.5}
-@media(max-width:420px){body{padding:10px}.card{border-radius:10px}header{gap:6px}.topright{display:none}.identity{grid-template-columns:18% minmax(0,1fr) 21%;gap:2%}.membername{font-size:clamp(11px,3.2vw,15px)}.detailrow{font-size:clamp(6px,1.7vw,8px)}.slogan{font-size:clamp(6px,1.7vw,8px)}#qr{padding:2px}.foot .phrase{font-size:clamp(5px,1.5vw,7px)}}
-@page{size:86mm 54mm;margin:0}@media print{html,body{width:86mm;height:54mm;margin:0!important;padding:0!important;background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.wrap{width:85.6mm;height:53.8mm;margin:0!important}.card{width:85.6mm;height:53.8mm;aspect-ratio:auto;border:0;border-radius:0;box-shadow:none;break-inside:avoid}.stripe{height:1mm;flex-basis:1mm}header{height:11.5mm;padding:1mm 2.5mm;gap:1.5mm}h1{font-size:13pt}.slogan{font-size:6.2pt;margin-top:1mm}.topright{font-size:5.3pt}.identity{height:32.8mm;padding:1.1mm 2.5mm 1mm;grid-template-columns:15.5mm minmax(0,1fr) 17mm;gap:2mm}.photo{width:15.5mm;height:22mm;border-radius:1.5mm}.category{font-size:5.2pt;padding:.5mm 1.5mm}.membername{font-size:11pt;margin:1mm 0 .5mm}.number{font-size:5.6pt}.rule{margin:1mm 0}.detailrow{font-size:5.2pt;line-height:1.25;margin:.25mm 0}.qrside{padding-left:1.5mm}#qr{width:15.5mm;height:15.5mm;padding:.5mm;border-radius:1mm}.qrlabel{font-size:4.8pt;margin-top:.5mm}.validity{font-size:4.4pt;margin-top:.5mm}.foot{height:9mm;padding:1mm 2.5mm;border-top:1mm solid var(--gold);font-size:6.4pt}.foot small{font-size:4.5pt}.foot .phrase{font-size:5.8pt}.notice,.download-actions,.download-help{display:none!important}}
-
+*{box-sizing:border-box}
+:root{--navy:#092b64;--blue:#155eef;--red:#ef3340;--orange:#ff9f1c;--yellow:#ffd21f;--green:#19b957;--cyan:#08a8cf;--purple:#633eea}
+body{margin:0;padding:22px;background:#f1f5f9;color:#172033;font-family:Arial,Helvetica,sans-serif}
+.wrap{width:min(560px,100%);margin:0 auto}
+.card{background:#fff;border:1px solid #d8e1ef;border-radius:18px;overflow:hidden;box-shadow:0 12px 36px #0f2d5a14}
+.stripe{height:8px;background:linear-gradient(90deg,#ef3340 0 17%,#ff9f1c 17% 34%,#ffd21f 34% 50%,#19b957 50% 67%,#08a8cf 67% 83%,#633eea 83% 100%)}
+header{display:flex;align-items:center;gap:14px;padding:18px;border-bottom:1px solid #e2e8f0}
+header img{width:68px;height:68px;object-fit:contain;flex:0 0 auto}
+.brandcopy{min-width:0}h1{font-size:clamp(20px,4.5vw,26px);line-height:1;margin:0;color:#e32636;font-weight:900}h1 span{color:#155eef;font-weight:500}
+.slogan{color:#123b82;margin:7px 0 0;font-size:12px;font-weight:700}
+.content{padding:20px}
+.identity{display:grid;grid-template-columns:140px minmax(0,1fr);gap:18px;align-items:start}
+.photo{width:132px;height:158px;object-fit:cover;border:2px solid #d8e3f3;border-radius:11px;background:#eef3fa}
+.membercopy{min-width:0}.membername{margin:0;color:#102e61;font-size:clamp(19px,4vw,24px);line-height:1.15;overflow-wrap:anywhere}
+.badge{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;width:21px;height:21px;background:#00b83f;color:white;font-weight:900;font-size:14px;vertical-align:middle;margin-left:5px}
+.category{color:#155eef;font-size:12px;font-weight:800;margin-top:9px;overflow-wrap:anywhere}
+.number{font-size:13px;color:#155eef;margin-top:7px;font-weight:800;overflow-wrap:anywhere}
+.verified{font-size:12px;color:#008b32;font-weight:800;margin-top:6px}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:20px}
+.field{border-bottom:1px solid #e2e8f0;padding-bottom:8px;min-width:0}
+.field b{display:block;font-size:10px;letter-spacing:.5px;color:#64748b;margin-bottom:5px}
+.field span{display:block;font-size:13px;overflow-wrap:anywhere;white-space:pre-wrap;line-height:1.3}
+.full{grid-column:1/-1}
+.validity{margin-top:17px;padding:12px 14px;background:#eaf2ff;border-radius:9px;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#123b82;font-weight:800;font-size:12px}
+.foot{background:#092b64;color:white;padding:14px 18px;font-size:11px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:4px solid #f4ad16}
+.notice{font-size:12px;color:#64748b;margin:14px 2px 0;line-height:1.5}
+.error{padding:28px;text-align:center;color:#9f1239}
+.download-actions{display:none;gap:10px;justify-content:center;flex-wrap:wrap;margin:16px 0}
+.download-actions.ready{display:flex}
+.download-actions button{border:0;border-radius:10px;padding:12px 18px;background:#155eef;color:#fff;font-weight:800;font-size:14px;cursor:pointer}
+.download-actions button.secondary{background:#0f766e}
+.download-help{text-align:center;font-size:12px;color:#64748b;margin:-5px 0 16px;line-height:1.5}
+@media(max-width:420px){body{padding:10px}.content{padding:14px}.identity{grid-template-columns:104px minmax(0,1fr);gap:12px}.photo{width:100px;height:124px}header{padding:13px;gap:9px}header img{width:52px;height:52px}h1{font-size:20px}.slogan{font-size:10px}.fields{gap:10px}.field span{font-size:12px}}
+@page{size:86mm 100mm;margin:0}
+@media print{html,body{width:86mm;margin:0!important;padding:0!important;background:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.wrap{width:86mm;margin:0!important}.card{width:86mm;border:0;border-radius:0;box-shadow:none;break-inside:avoid}.stripe{height:2mm}header{gap:3mm;padding:3mm;border-bottom:1px solid #e2e8f0}header img{width:17mm;height:17mm}h1{font-size:15pt}.slogan{font-size:7pt;margin-top:1.5mm}.content{padding:3mm}.identity{grid-template-columns:25mm minmax(0,1fr);gap:3mm}.photo{width:24mm;height:30mm;border-radius:2mm}.membername{font-size:12pt}.category{font-size:6.5pt;margin-top:1.5mm}.number{font-size:7pt;margin-top:1mm}.verified{font-size:6pt}.fields{gap:2.5mm;margin-top:4mm}.field{padding-bottom:1.5mm}.field b{font-size:5.5pt;margin-bottom:1mm}.field span{font-size:7pt;line-height:1.2}.validity{margin-top:3mm;padding:2.5mm;font-size:7pt}.foot{padding:3mm;font-size:6pt;border-top:1mm solid #f4ad16}.notice,.download-actions,.download-help{display:none!important}}
 </style>
 </head>
-<body><main class="wrap"><div class="card"><div class="stripe"></div><header><img src="guru-connect-round-logo.png" alt="GURU CONNECT logo"><div class="brandcopy"><h1>GURU <span>CONNECT</span></h1><p class="slogan">Connecting mind - creating Future</p></div><div class="topright">Learn · Connect · Grow</div></header><div id="content" class="identity"><p>Loading Digital ID…</p></div><div class="foot"><span>GURU CONNECT<small>Learn · Connect · Grow</small></span><span class="phrase">Connecting mind - creating Future</span></div></div><div class="download-actions" id="downloadActions"><button type="button" id="downloadPdfBtn">⬇ DOWNLOAD DIGITAL ID (PDF)</button><button type="button" class="secondary" id="printIdBtn">🖨 PRINT ID CARD</button></div><p class="download-help" id="downloadHelp">Choose “Download ID Card (PDF)” and select “Save as PDF” in the print window. For a physical card, print at actual size (100%).</p><p class="notice">This digital card displays the details encoded when the QR code was issued. If details change, the member should request an updated ID card and QR code from GURU CONNECT administration.</p></main>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<body><main class="wrap"><div class="card"><div class="stripe"></div><header><img src="guru-connect-round-logo.png" alt="GURU CONNECT logo"><div class="brandcopy"><h1>GURU <span>CONNECT</span></h1><p class="slogan">Connecting Mind - Creating Future...</p></div></header><div id="content" class="content"><p>Loading Digital ID…</p></div><div class="foot"><span>GURU CONNECT Digital ID</span><span>Helpdesk: support@guruconnnect.in</span></div></div><div class="download-actions" id="downloadActions"><button type="button" id="downloadPdfBtn">⬇ DOWNLOAD DIGITAL ID (PDF)</button><button type="button" class="secondary" id="printIdBtn">🖨 PRINT ID CARD</button></div><p class="download-help">Tap “DOWNLOAD DIGITAL ID (PDF)”, then choose “Save as PDF” in the print window.</p><p class="notice">This digital card displays the details encoded when the QR code was issued. If details change, the member should request an updated ID card and QR code from GURU CONNECT administration.</p></main>
 <script>
 (function(){
 const root=document.getElementById('content');
 const esc=v=>String(v==null||v===''?'—':v);
+const safe=v=>String(v==null||v===''?'—':v).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const date=s=>{if(!s)return '—';const p=String(s).split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:s};
-const field=(label,value,full)=>'<div class="field'+(full?' full':'')+'"><b>'+label+'</b><span>'+esc(value).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+'</span></div>';
- (async()=>{try{
+(async()=>{try{
 const params=new URLSearchParams(location.search);let raw;
-const token=params.get('id');const zipped=params.get('z');const encoded=params.get('data');
+const token=params.get('id'),zipped=params.get('z'),encoded=params.get('data');
 if(token){
-  if(!/^[a-f0-9-]{32,36}$/i.test(token))throw new Error('This Digital ID link is invalid. Please ask GURU CONNECT admin for a replacement card.');
-  const cardUrl='https://hzqqswrnawrfgufbxgay.supabase.co/storage/v1/object/public/gc-advertisements/digital-id-cards/'+encodeURIComponent(token)+'.json';
-  const response=await fetch(cardUrl,{cache:'no-store'});
-  if(!response.ok)throw new Error('This Digital ID could not be found. Please ask GURU CONNECT admin to generate a fresh card and QR code.');
-  raw=await response.text();
-}
-else if(zipped){if(!('DecompressionStream' in window))throw new Error('This phone browser cannot open the compressed ID QR. Please use an updated Chrome browser.');const b64=zipped.replace(/-/g,'+').replace(/_/g,'/');const packed=Uint8Array.from(atob(b64+'='.repeat((4-b64.length%4)%4)),c=>c.charCodeAt(0));raw=await new Response(new Blob([packed]).stream().pipeThrough(new DecompressionStream('deflate'))).text();}
-else if(encoded){raw=decodeURIComponent(escape(atob(encoded)));}
+ if(!/^[a-f0-9-]{32,36}$/i.test(token))throw new Error('This Digital ID link is invalid. Please ask GURU CONNECT admin for a replacement card.');
+ const response=await fetch('https://hzqqswrnawrfgufbxgay.supabase.co/storage/v1/object/public/gc-advertisements/digital-id-cards/'+encodeURIComponent(token)+'.json',{cache:'no-store'});
+ if(!response.ok)throw new Error('This Digital ID could not be found. Please ask GURU CONNECT admin to generate a fresh card and QR code.');
+ raw=await response.text();
+}else if(zipped){
+ if(!('DecompressionStream' in window))throw new Error('This phone browser cannot open the compressed ID QR. Please use an updated Chrome browser.');
+ const b64=zipped.replace(/-/g,'+').replace(/_/g,'/');const packed=Uint8Array.from(atob(b64+'='.repeat((4-b64.length%4)%4)),c=>c.charCodeAt(0));
+ raw=await new Response(new Blob([packed]).stream().pipeThrough(new DecompressionStream('deflate'))).text();
+}else if(encoded){raw=decodeURIComponent(escape(atob(encoded)));}
 else throw new Error('This QR code does not contain a Digital ID. Please ask GURU CONNECT admin for a replacement card.');
 const d=JSON.parse(raw);
-const card={brand:d.brand||'GURU CONNECT',slogan:d.slogan||'Connecting Mind - Creating Future...',name:d.name||d.n,category:d.category||d.c,idNumber:d.idNumber||d.i,level:d.level||d.l,course:d.course||d.co,stream:d.stream||d.st,subject:d.subject||d.su,plan:d.plan||d.p,mode:d.mode||d.m,address:d.address||d.a,mobile:d.mobile||d.ph,validFrom:d.validFrom||d.f,validTo:d.validTo||d.t,verified:d.verified??d.ok,photo:d.photo||d.im};
+const card={name:d.name||d.n,category:d.category||d.c,idNumber:d.idNumber||d.i,level:d.level||d.l,course:d.course||d.co,stream:d.stream||d.st,subject:d.subject||d.su,plan:d.plan||d.p,mode:d.mode||d.m,address:d.address||d.a,mobile:d.mobile||d.ph,validFrom:d.validFrom||d.f,validTo:d.validTo||d.t,verified:d.verified??d.ok,photo:d.photo||d.im};
 if(!card.name||!card.idNumber||!card.photo)throw new Error('Digital ID information is incomplete. Please ask GURU CONNECT admin for a replacement card.');
-const safePhoto=String(card.photo);
-if(!/^https:\/\//i.test(safePhoto))throw new Error('The member photograph link is invalid.');
-root.innerHTML='<img class="photo" id="memberPhoto" src="" alt="Member photograph"><section class="details"><div class="category" id="category"></div><h2 class="membername" id="memberName"></h2><div class="number" id="number"></div><div class="rule"></div><div class="detailrow" id="speciality"></div><div class="detailrow" id="courseLine"></div><div class="detailrow" id="mobileLine"></div><div class="detailrow" id="addressLine"></div></section><aside class="qrside"><div id="qr" aria-label="QR code for this Digital ID"></div><div class="qrlabel">SCAN TO VERIFY ID</div><div class="validity" id="validity"></div></aside>';
-document.getElementById('memberPhoto').src=safePhoto;
+if(!/^https:\/\//i.test(String(card.photo)))throw new Error('The member photograph link is invalid.');
+root.innerHTML='<div class="identity"><img class="photo" id="memberPhoto" src="" alt="Member photograph"><section class="membercopy"><h2 class="membername" id="memberName"></h2><div class="category" id="category"></div><div class="number" id="number"></div><div id="verified"></div></section></div><div class="fields" id="fields"></div><div class="validity"><span>VALIDITY</span><span id="validity"></span></div>';
+document.getElementById('memberPhoto').src=String(card.photo);
 document.getElementById('memberName').textContent=esc(card.name);
-document.getElementById('category').textContent=String(card.category||'Member').toUpperCase()+(card.verified?' ✓':'');
-document.getElementById('number').textContent='ID: '+esc(card.idNumber);
-document.getElementById('speciality').innerHTML='<b>Subject:</b> '+String(card.subject||card.course||card.level||'—').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-document.getElementById('courseLine').innerHTML='<b>Course:</b> '+[card.level,card.stream,card.plan,card.mode].filter(Boolean).join(' · ').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-document.getElementById('mobileLine').innerHTML='<b>Mobile:</b> '+String(card.mobile||'—').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-document.getElementById('addressLine').innerHTML='<b>Location:</b> '+String(card.address||'—').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-document.getElementById('validity').textContent='Valid '+date(card.validFrom)+' – '+date(card.validTo);
-if(typeof QRCode==='function')new QRCode(document.getElementById('qr'),{text:location.href,width:180,height:180,colorDark:'#071b37',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});else document.getElementById('qr').textContent='QR unavailable';
+document.getElementById('category').textContent='CATEGORY: '+String(card.category||'member').toUpperCase();
+document.getElementById('number').textContent='ID NO: '+esc(card.idNumber);
+if(card.verified)document.getElementById('verified').innerHTML='<span class="badge" aria-label="Verified">✓</span> <span class="verified">Verified</span>';
+const fields=[['LEVEL',card.level],['COURSE',card.course],['STREAM',card.stream],['SUBJECT',card.subject],['PLAN',card.plan],['MODE',card.mode],['RESIDENTIAL ADDRESS',card.address,true],['MOBILE NUMBER',card.mobile,true]];
+document.getElementById('fields').innerHTML=fields.map(([label,value,full])=>'<div class="field'+(full?' full':'')+'"><b>'+label+'</b><span>'+safe(value)+'</span></div>').join('');
+document.getElementById('validity').textContent=date(card.validFrom)+' – '+date(card.validTo);
 document.getElementById('downloadActions').classList.add('ready');
 document.getElementById('downloadPdfBtn').addEventListener('click',()=>window.print());
 document.getElementById('printIdBtn').addEventListener('click',()=>window.print());
