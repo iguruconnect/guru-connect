@@ -87,13 +87,23 @@ if(!card.userId){
   const check=await fetch('https://hzqqswrnawrfgufbxgay.supabase.co/rest/v1/profiles?select=id,role,registration_status&id=eq.'+encodeURIComponent(card.userId),{cache:'no-store',headers:{apikey:'sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu'}});
   if(!check.ok)throw new Error('Live verification service unavailable');
   const rows=await check.json(),p=Array.isArray(rows)?rows[0]:null;
-  const state=String(p?.registration_status||'registered').toLowerCase();
-  const role=String(p?.role||'').toLowerCase();
-  if(!p || (role && role!==String(card.category||'').toLowerCase()) || ['revoked','suspended','rejected','disabled','deleted','inactive'].includes(state) || expired){
-   statusNode.textContent=expired?'✕ EXPIRED — NOT VALID':'✕ NOT VALID — member record missing or inactive';statusNode.style.color='#b42318';
-  }else if(['active','approved','registered','verified'].includes(state)){
-   statusNode.textContent='✓ LIVE RECORD FOUND — '+(card.verified?'ADMIN VERIFIED':'MEMBER RECORD FOUND');statusNode.style.color=card.verified?'#008b32':'#155eef';
-  }else{statusNode.textContent='⚠ STATUS NEEDS ADMIN CONFIRMATION';statusNode.style.color='#9a3412'}
+  const state=String(p?.registration_status||'registered').trim().toLowerCase();
+  // Card category is presentation text and may not exactly match the stored role.
+  // A role-label mismatch alone must never mark an existing member as inactive.
+  const inactiveStates=['revoked','suspended','rejected','disabled','deleted','inactive','blocked','deactivated'];
+  if(expired){
+   statusNode.textContent='✕ EXPIRED — NOT VALID';statusNode.style.color='#b42318';
+  }else if(!p){
+   statusNode.textContent='✕ NOT VALID — no live profile found for this card';statusNode.style.color='#b42318';
+  }else if(inactiveStates.includes(state)){
+   statusNode.textContent='✕ NOT VALID — member status is '+state.toUpperCase();statusNode.style.color='#b42318';
+  }else{
+   const role=String(p.role||'').trim().toLowerCase();
+   const expected=String(card.category||'').trim().toLowerCase();
+   const roleMatches=!role||role===expected||((role==='student'||role==='tutor')&&expected.includes(role));
+   statusNode.textContent='✓ LIVE RECORD FOUND — '+(card.verified?'ADMIN VERIFIED':'MEMBER RECORD FOUND')+(roleMatches?'':' (PLEASE CONFIRM CARD CATEGORY)');
+   statusNode.style.color=card.verified?'#008b32':'#155eef';
+  }
  }catch(_){statusNode.textContent='⚠ LIVE VERIFICATION UNAVAILABLE — do not rely on this card alone';statusNode.style.color='#9a3412'}
 }
 document.getElementById('downloadActions').classList.add('ready');
