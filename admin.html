@@ -263,19 +263,19 @@ button,a,input,select,textarea{touch-action:manipulation;}
 
 
 <section class="section" id="sec-staff">
- <div class="secHead"><div><h2>👔 Add &amp; Manage Staff</h2><p>Admin-only staff directory. Create one permanent Staff Profile ID, then generate that person’s digital ID card.</p></div><span class="pill">ADMIN CONTROLLED</span></div>
- <div class="secBody"><div class="notice">Staff profiles are created only by the Admin. Use an existing staff profile to generate its ID card; do not create a second profile for the same person.</div>
- <div class="idgen-panel" style="margin-bottom:16px"><h3>ADD STAFF MEMBER</h3><div class="idgen-formgrid">
- <div class="idgen-field"><label for="staffFullName">Full Name *</label><input id="staffFullName" placeholder="Staff member full name"></div>
- <div class="idgen-field"><label for="staffEmail">Email</label><input id="staffEmail" type="email" placeholder="staff@example.com"></div>
- <div class="idgen-field"><label for="staffMobile">Mobile Number</label><input id="staffMobile" placeholder="Mobile number"></div>
- <div class="idgen-field"><label for="staffDesignation">Designation *</label><select id="staffDesignation"><option value="">Select designation</option><option>HEAD- CUSTOMER SERVICE CENTER</option><option>CUSTOMER SERVICE EXECUTIVE</option><option>BUSINESS DEVELOPMENT EXECUTIVE</option><option>HEAD-BUSINESS OPERATIONS</option><option>TUTOR COORDINATOR</option><option>INSTITUTE COORDINATOR</option><option>STUDENT COORDINATOR</option><option value="__CUSTOM__">CUSTOM / SPECIFIC POST</option></select></div>
+ <div class="secHead staff-sec-head"><div><h2>👔 Staff Registration &amp; Management</h2><p>Register staff using a clean, professional form — then create their permanent Staff ID card.</p></div><span class="pill">ADMIN CONTROLLED</span></div>
+ <div class="secBody staff-sec-body"><div class="notice staff-notice"><b>ADMIN-ONLY REGISTRATION</b><br>Enter the staff member’s details below. GURU CONNECT will assign one permanent Staff ID. Check the Staff Directory before creating a duplicate profile.</div>
+ <div class="idgen-panel staff-registration-card" style="margin-bottom:16px"><div class="staff-form-banner"><div class="staff-form-icon">👤</div><div><h3>STAFF REGISTRATION FORM</h3><p>Personal details · Official designation · Contact information</p></div><span class="staff-form-step">NEW PROFILE</span></div><div class="staff-form-inner"><div class="staff-form-section-title"><span>01</span><div><b>Personal &amp; Contact Details</b><small>Enter the staff member’s correct information</small></div></div><div class="idgen-formgrid staff-form-grid">
+ <div class="idgen-field"><label for="staffFullName">Full Name <em>*</em></label><input id="staffFullName" autocomplete="name" placeholder="Enter full name as per records"></div>
+ <div class="idgen-field"><label for="staffEmail">Email Address</label><input id="staffEmail" type="email" autocomplete="email" placeholder="name@example.com"></div>
+ <div class="idgen-field"><label for="staffMobile">Mobile Number</label><input id="staffMobile" type="tel" autocomplete="tel" placeholder="Enter mobile number"></div>
+ <div class="idgen-field"><label for="staffDesignation">Designation <em>*</em></label><select id="staffDesignation"><option value="">Select designation</option><option>HEAD- CUSTOMER SERVICE CENTER</option><option>CUSTOMER SERVICE EXECUTIVE</option><option>BUSINESS DEVELOPMENT EXECUTIVE</option><option>HEAD-BUSINESS OPERATIONS</option><option>TUTOR COORDINATOR</option><option>INSTITUTE COORDINATOR</option><option>STUDENT COORDINATOR</option><option value="__CUSTOM__">CUSTOM / SPECIFIC POST</option></select></div>
  <div class="idgen-field wide" id="staffCustomDesignationWrap" hidden><label for="staffCustomDesignation">Custom / Specific Post *</label><input id="staffCustomDesignation" placeholder="Enter exact designation"></div>
- <div class="idgen-field"><label for="staffDepartment">Department</label><input id="staffDepartment" placeholder="Department / team"></div>
- <div class="idgen-field"><label for="staffJoiningDate">Joining Date</label><input id="staffJoiningDate" type="date"></div>
- <div class="idgen-field wide"><label for="staffAddress">Address (optional)</label><textarea id="staffAddress" placeholder="Address to print on ID card"></textarea></div>
- </div><div class="actions"><button id="staffSaveBtn" type="button" class="btn primary">➕ ADD STAFF</button><button id="staffClearBtn" type="button" class="btn light">CLEAR FORM</button><button id="staffRefreshBtn" type="button" class="btn teal">REFRESH STAFF DIRECTORY</button></div><div id="staffStatus" class="status">Create a staff profile to assign a permanent Staff ID.</div></div>
- <div class="idgen-panel"><h3>STAFF DIRECTORY</h3><div id="staffDirectoryStatus" class="status">Loading staff profiles…</div><div id="staffDirectoryList" class="results"><div class="empty">Loading staff directory…</div></div></div></div>
+ <div class="idgen-field"><label for="staffDepartment">Department / Team</label><input id="staffDepartment" placeholder="e.g. Student Support"></div>
+ <div class="idgen-field"><label for="staffJoiningDate">Date of Joining</label><input id="staffJoiningDate" type="date"></div>
+ <div class="idgen-field wide"><label for="staffAddress">Residential Address <small>(optional)</small></label><textarea id="staffAddress" placeholder="Enter address to be printed on the ID card"></textarea></div>
+ </div><div class="staff-form-actions"><button id="staffSaveBtn" type="button" class="btn primary">✓ REGISTER STAFF MEMBER</button><button id="staffClearBtn" type="button" class="btn light">CLEAR FORM</button><button id="staffRefreshBtn" type="button" class="btn teal">↻ REFRESH DIRECTORY</button></div><div id="staffStatus" class="status staff-status">Complete the form to create a permanent Staff ID.</div></div></div>
+ <div class="idgen-panel staff-directory-card"><div class="staff-directory-head"><h3>STAFF DIRECTORY</h3><p>Find an existing staff profile and generate its ID card without creating a duplicate.</p></div><div id="staffDirectoryStatus" class="status">Loading staff profiles…</div><div id="staffDirectoryList" class="results"><div class="empty">Loading staff directory…</div></div></div></div>
 </section>
 <section class="section" id="sec-idgeneration">
  <div class="secHead"><div><h2>🪪 Student, Tutor &amp; Staff ID Card Generation</h2><p>Create cards for registered Students/Tutors, premium helpline-plan Students, and GURU CONNECT Staff.</p></div><span class="pill">ADMIN CONTROLLED</span></div>
@@ -1859,6 +1859,47 @@ staffCheck().then(ok=>{if(ok){
 </style>
 <div id="gc-admin-alert-overlay" role="presentation"><section id="gc-admin-alert-card" role="alertdialog" aria-modal="true" aria-labelledby="gc-admin-alert-title" aria-describedby="gc-admin-alert-message"><div id="gc-admin-alert-head"><div id="gc-admin-alert-mark">🔔</div><div id="gc-admin-alert-brand">GURU CONNECT</div><div style="font-size:10px;letter-spacing:2px;color:#0f766e;font-weight:800;margin-top:3px">ADMIN CONTROL CENTER</div></div><h2 id="gc-admin-alert-title">Notice</h2><p id="gc-admin-alert-message"></p><button id="gc-admin-alert-ok" type="button">CONTINUE</button></section></div>
 <script id="gc-admin-alert-script">(()=>{if(window.__gcAdminAlertInstalled)return;window.__gcAdminAlertInstalled=true;const overlay=document.getElementById('gc-admin-alert-overlay');if(!overlay)return;const title=overlay.querySelector('#gc-admin-alert-title'),message=overlay.querySelector('#gc-admin-alert-message'),ok=overlay.querySelector('#gc-admin-alert-ok');let queue=[],busy=false;function beep(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const c=window.__gcAdminAudio||(window.__gcAdminAudio=new C());if(c.state==='suspended')c.resume();const t=c.currentTime;[0,.22].forEach((d,i)=>{const o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=i?880:660;g.gain.setValueAtTime(.0001,t+d);g.gain.exponentialRampToValueAtTime(.12,t+d+.025);g.gain.exponentialRampToValueAtTime(.0001,t+d+.16);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+.17)})}catch(_){}}function render(){if(!queue.length){overlay.classList.remove('gc-open');busy=false;return}busy=true;const a=queue[0];title.textContent=a.title;message.textContent=a.message;overlay.classList.add('gc-open');beep();ok.focus()}function close(){queue.shift();render()}ok.addEventListener('click',close);overlay.addEventListener('click',e=>{if(e.target===overlay)close()});document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay.classList.contains('gc-open')){e.preventDefault();close()}});const nativeAlert=window.alert.bind(window);window.alert=function(value){const text=String(value??'');const low=text.toLowerCase();queue.push({title:/fail|error|unable|could not|not saved|denied|invalid|missing/.test(low)?'Action Needs Attention':/success|updated|approved|deleted|saved|sent/.test(low)?'Action Completed':'GURU CONNECT Notice',message:text});if(!busy)render()};})();</script>
+
+<style id="gc-staff-registration-form-ui">
+/* ADD STAFF: professional registration-form styling; existing form IDs and handlers preserved */
+#sec-staff .staff-sec-head{background:linear-gradient(110deg,#eff6ff 0%,#f0fdfa 55%,#f5f3ff 100%);border-bottom:1px solid #cbd5e1}
+#sec-staff .staff-sec-head h2{color:#123b66;font-size:clamp(20px,2.4vw,27px)}
+#sec-staff .staff-sec-body{background:#f7faff;padding:clamp(12px,2.5vw,24px)}
+#sec-staff .staff-notice{background:#eff6ff;border:1px solid #bfdbfe;border-left:5px solid #2563eb;color:#1e3a8a;border-radius:12px;line-height:1.65}
+#sec-staff .staff-registration-card{border:1px solid #d6e1ef;border-radius:20px;overflow:hidden;padding:0;background:#fff;box-shadow:0 12px 30px rgba(22,54,95,.09)}
+#sec-staff .staff-form-banner{display:flex;align-items:center;gap:14px;padding:20px 22px;background:linear-gradient(120deg,#0b2d5c,#155eaa 60%,#0891b2);color:#fff}
+#sec-staff .staff-form-icon{width:52px;height:52px;flex:0 0 52px;display:grid;place-items:center;border-radius:15px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);font-size:25px}
+#sec-staff .staff-form-banner h3{margin:0;color:#fff;font-size:clamp(17px,2vw,22px);letter-spacing:.3px}
+#sec-staff .staff-form-banner p{margin:5px 0 0;color:#dbeafe;font-size:12px;font-weight:650;line-height:1.5}
+#sec-staff .staff-form-step{margin-left:auto;padding:7px 10px;border-radius:999px;background:#dcfce7;color:#166534;font-size:9px;font-weight:950;letter-spacing:.6px;white-space:nowrap}
+#sec-staff .staff-form-inner{padding:clamp(14px,2.5vw,24px)}
+#sec-staff .staff-form-section-title{display:flex;align-items:center;gap:11px;margin:0 0 18px;padding-bottom:13px;border-bottom:1px solid #e2e8f0}
+#sec-staff .staff-form-section-title>span{display:grid;place-items:center;width:34px;height:34px;flex:0 0 34px;border-radius:10px;background:#dbeafe;color:#1d4ed8;font-weight:950;font-size:12px}
+#sec-staff .staff-form-section-title b{display:block;color:#17365d;font-size:14px}
+#sec-staff .staff-form-section-title small{display:block;margin-top:3px;color:#64748b;font-size:11px}
+#sec-staff .staff-form-grid{gap:16px}
+#sec-staff .staff-form-grid .idgen-field{min-width:0}
+#sec-staff .staff-form-grid .idgen-field label{display:block;margin-bottom:7px;color:#334155;font-size:11px;font-weight:900;letter-spacing:.25px}
+#sec-staff .staff-form-grid .idgen-field label em{color:#dc2626;font-style:normal}
+#sec-staff .staff-form-grid .idgen-field label small{color:#64748b;font-weight:650;text-transform:none}
+#sec-staff .staff-form-grid .idgen-field input:not([type=checkbox]),#sec-staff .staff-form-grid .idgen-field select,#sec-staff .staff-form-grid .idgen-field textarea{width:100%;min-height:45px;padding:12px 13px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;color:#0f172a;font:600 13px Inter,Arial,sans-serif;box-shadow:0 2px 5px rgba(15,23,42,.025);transition:border-color .15s,box-shadow .15s}
+#sec-staff .staff-form-grid .idgen-field textarea{min-height:90px;resize:vertical}
+#sec-staff .staff-form-grid .idgen-field input:focus,#sec-staff .staff-form-grid .idgen-field select:focus,#sec-staff .staff-form-grid .idgen-field textarea:focus{outline:none;border-color:#2584d8;box-shadow:0 0 0 3px rgba(37,132,216,.14)}
+#sec-staff .staff-form-grid .idgen-field input::placeholder,#sec-staff .staff-form-grid .idgen-field textarea::placeholder{color:#94a3b8;font-weight:500}
+#sec-staff .staff-form-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px;padding-top:18px;border-top:1px solid #e2e8f0}
+#sec-staff .staff-form-actions .btn{min-height:44px;padding:12px 17px}
+#sec-staff #staffSaveBtn{background:linear-gradient(100deg,#166534,#15803d)!important;box-shadow:0 5px 14px rgba(21,128,61,.2)}
+#sec-staff .staff-status{padding:11px 13px;border-radius:10px;background:#f8fafc;border:1px solid #e2e8f0;line-height:1.6}
+#sec-staff .staff-directory-card{border:1px solid #d6e1ef;border-radius:18px;padding:0;overflow:hidden;background:#fff}
+#sec-staff .staff-directory-head{padding:17px 20px;background:linear-gradient(100deg,#f0fdfa,#eff6ff);border-bottom:1px solid #dbeafe}
+#sec-staff .staff-directory-head h3{margin:0;color:#123b66;font-size:17px}
+#sec-staff .staff-directory-head p{margin:5px 0 0;color:#64748b;font-size:11px;line-height:1.5}
+#sec-staff .staff-directory-card #staffDirectoryStatus,#sec-staff .staff-directory-card #staffDirectoryList{margin-left:16px;margin-right:16px}
+#sec-staff .staff-directory-card #staffDirectoryStatus{margin-top:12px}
+#sec-staff .staff-directory-card #staffDirectoryList{margin-bottom:16px}
+@media(max-width:600px){#sec-staff .staff-form-banner{padding:16px;gap:10px;align-items:flex-start}#sec-staff .staff-form-icon{width:42px;height:42px;flex-basis:42px;font-size:21px}#sec-staff .staff-form-step{font-size:8px;padding:6px 7px}#sec-staff .staff-form-actions{display:grid;grid-template-columns:1fr}#sec-staff .staff-form-actions .btn{width:100%}}
+</style>
+
 <style id="gc-admin-colorful-control-tiles-20261009">
 /* =========================================================
    GURU CONNECT ADMIN — COLORFUL CONTROL TILES
