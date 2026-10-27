@@ -84,17 +84,32 @@ if(!card.userId){
  statusNode.style.color='#9a3412';
 }else{
  try{
-  const check=await fetch('https://hzqqswrnawrfgufbxgay.supabase.co/rest/v1/profiles?select=id,role,registration_status&id=eq.'+encodeURIComponent(card.userId),{cache:'no-store',headers:{apikey:'sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu'}});
+  const headers={apikey:'sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu'};
+  const base='https://hzqqswrnawrfgufbxgay.supabase.co/rest/v1/';
+  // First check the canonical member record, then the same live detail tables
+  // used by the Admin directory. Some valid directory entries may not have a
+  // matching profiles row exposed to this public verification request.
+  const check=await fetch(base+'profiles?select=*&id=eq.'+encodeURIComponent(card.userId),{cache:'no-store',headers});
   if(!check.ok)throw new Error('Live verification service unavailable');
-  const rows=await check.json(),p=Array.isArray(rows)?rows[0]:null;
-  const state=String(p?.registration_status||'registered').trim().toLowerCase();
+  const profileRows=await check.json();
+  let p=Array.isArray(profileRows)?profileRows[0]:null;
+  if(!p){
+   const [tutorCheck,studentCheck]=await Promise.all([
+    fetch(base+'tutor_profiles?select=*&user_id=eq.'+encodeURIComponent(card.userId),{cache:'no-store',headers}),
+    fetch(base+'student_profiles?select=*&user_id=eq.'+encodeURIComponent(card.userId),{cache:'no-store',headers})
+   ]);
+   if(!tutorCheck.ok||!studentCheck.ok)throw new Error('Live directory verification unavailable');
+   const [tutors,students]=await Promise.all([tutorCheck.json(),studentCheck.json()]);
+   p=(Array.isArray(tutors)&&tutors[0])||(Array.isArray(students)&&students[0])||null;
+  }
+  const state=String(p?.registration_status||p?.status||'registered').trim().toLowerCase();
   // Card category is presentation text and may not exactly match the stored role.
   // A role-label mismatch alone must never mark an existing member as inactive.
   const inactiveStates=['revoked','suspended','rejected','disabled','deleted','inactive','blocked','deactivated'];
   if(expired){
    statusNode.textContent='✕ EXPIRED — NOT VALID';statusNode.style.color='#b42318';
   }else if(!p){
-   statusNode.textContent='✕ NOT VALID — no live profile found for this card';statusNode.style.color='#b42318';
+   statusNode.textContent='✕ NOT VALID — no live profile or directory record found for this card';statusNode.style.color='#b42318';
   }else if(inactiveStates.includes(state)){
    statusNode.textContent='✕ NOT VALID — member status is '+state.toUpperCase();statusNode.style.color='#b42318';
   }else{
