@@ -1875,5 +1875,29 @@ staffCheck().then(ok=>{if(ok){
 @media(max-width:900px){.controlbar .topbtn{min-height:82px!important;}}
 @media(max-width:600px){.controlbar .topbtn{min-height:76px!important;}}
 </style>
-</body></html>
 
+<script id="gc-date-picker-click-anywhere">
+(function(){
+  function openDatePicker(input){
+    if(!input || input.disabled || input.readOnly) return;
+    try { if(typeof input.showPicker === 'function') input.showPicker(); else input.focus(); }
+    catch(e) { input.focus(); }
+  }
+  document.addEventListener('click', function(event){
+    const field = event.target.closest('input[type="date"]');
+    if(field){ openDatePicker(field); return; }
+    const label = event.target.closest('label[for]');
+    if(label){
+      const input = document.getElementById(label.htmlFor);
+      if(input && input.matches('input[type="date"]')) openDatePicker(input);
+    }
+  });
+  document.addEventListener('focusin', function(event){
+    if(event.target && event.target.matches('input[type="date"]')) {
+      /* Focus keeps keyboard and accessibility use working; click opens the native picker. */
+    }
+  });
+})();
+</script>
+
+</body></html>
