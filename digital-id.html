@@ -65,10 +65,10 @@ if(token){
 }else if(encoded){raw=decodeURIComponent(escape(atob(encoded)));}
 else throw new Error('This QR code does not contain a Digital ID. Please ask GURU CONNECT admin for a replacement card.');
 const d=JSON.parse(raw);
-const card={name:d.name||d.n,category:d.category||d.c,idNumber:d.idNumber||d.i,level:d.level||d.l,course:d.course||d.co,stream:d.stream||d.st,subject:d.subject||d.su,plan:d.plan||d.p,mode:d.mode||d.m,address:d.address||d.a,mobile:d.mobile||d.ph,validFrom:d.validFrom||d.f,validTo:d.validTo||d.t,verified:d.verified??d.ok,photo:d.photo||d.im};
+const card={userId:d.userId||d.user_id||'',name:d.name||d.n,category:d.category||d.c,idNumber:d.idNumber||d.i,level:d.level||d.l,course:d.course||d.co,stream:d.stream||d.st,subject:d.subject||d.su,plan:d.plan||d.p,mode:d.mode||d.m,address:d.address||d.a,mobile:d.mobile||d.ph,validFrom:d.validFrom||d.f,validTo:d.validTo||d.t,verified:d.verified??d.ok,photo:d.photo||d.im};
 if(!card.name||!card.idNumber||!card.photo)throw new Error('Digital ID information is incomplete. Please ask GURU CONNECT admin for a replacement card.');
 if(!/^https:\/\//i.test(String(card.photo)))throw new Error('The member photograph link is invalid.');
-root.innerHTML='<div class="identity"><img class="photo" id="memberPhoto" src="" alt="Member photograph"><section class="membercopy"><h2 class="membername" id="memberName"></h2><div class="category" id="category"></div><div class="number" id="number"></div><div id="verified"></div></section></div><div class="fields" id="fields"></div><div class="validity"><span>VALIDITY</span><span id="validity"></span></div>';
+root.innerHTML='<div class="identity"><img class="photo" id="memberPhoto" src="" alt="Member photograph"><section class="membercopy"><h2 class="membername" id="memberName"></h2><div class="category" id="category"></div><div class="number" id="number"></div><div id="verified" class="verified">Checking current status…</div></section></div><div class="fields" id="fields"></div><div class="validity"><span>VALIDITY</span><span id="validity"></span></div>';
 document.getElementById('memberPhoto').src=String(card.photo);
 document.getElementById('memberName').textContent=esc(card.name);
 document.getElementById('category').textContent='CATEGORY: '+String(card.category||'member').toUpperCase();
@@ -77,6 +77,25 @@ if(card.verified)document.getElementById('verified').innerHTML='<span class="bad
 const fields=[['LEVEL',card.level],['COURSE',card.course],['STREAM',card.stream],['SUBJECT',card.subject],['PLAN',card.plan],['MODE',card.mode],['RESIDENTIAL ADDRESS',card.address,true],['MOBILE NUMBER',card.mobile,true]];
 document.getElementById('fields').innerHTML=fields.map(([label,value,full])=>'<div class="field'+(full?' full':'')+'"><b>'+label+'</b><span>'+safe(value)+'</span></div>').join('');
 document.getElementById('validity').textContent=date(card.validFrom)+' – '+date(card.validTo);
+const statusNode=document.getElementById('verified');
+const expired=!!(card.validTo && new Date(card.validTo+'T23:59:59')<new Date());
+if(!card.userId){
+ statusNode.textContent='⚠ LIVE VERIFICATION UNAVAILABLE — ask admin to generate a new card';
+ statusNode.style.color='#9a3412';
+}else{
+ try{
+  const check=await fetch('https://hzqqswrnawrfgufbxgay.supabase.co/rest/v1/profiles?select=id,role,registration_status&id=eq.'+encodeURIComponent(card.userId),{cache:'no-store',headers:{apikey:'sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu'}});
+  if(!check.ok)throw new Error('Live verification service unavailable');
+  const rows=await check.json(),p=Array.isArray(rows)?rows[0]:null;
+  const state=String(p?.registration_status||'registered').toLowerCase();
+  const role=String(p?.role||'').toLowerCase();
+  if(!p || (role && role!==String(card.category||'').toLowerCase()) || ['revoked','suspended','rejected','disabled','deleted','inactive'].includes(state) || expired){
+   statusNode.textContent=expired?'✕ EXPIRED — NOT VALID':'✕ NOT VALID — member record missing or inactive';statusNode.style.color='#b42318';
+  }else if(['active','approved','registered','verified'].includes(state)){
+   statusNode.textContent='✓ LIVE RECORD FOUND — '+(card.verified?'ADMIN VERIFIED':'MEMBER RECORD FOUND');statusNode.style.color=card.verified?'#008b32':'#155eef';
+  }else{statusNode.textContent='⚠ STATUS NEEDS ADMIN CONFIRMATION';statusNode.style.color='#9a3412'}
+ }catch(_){statusNode.textContent='⚠ LIVE VERIFICATION UNAVAILABLE — do not rely on this card alone';statusNode.style.color='#9a3412'}
+}
 document.getElementById('downloadActions').classList.add('ready');
 document.getElementById('downloadPdfBtn').addEventListener('click',()=>window.print());
 document.getElementById('printIdBtn').addEventListener('click',()=>window.print());
