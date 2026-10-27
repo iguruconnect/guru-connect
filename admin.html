@@ -147,7 +147,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
 #sec-idgeneration .idgen-field textarea{min-height:55px;resize:vertical}
 #sec-idgeneration .idgen-upload{border:2px dashed #9bb6dd;background:#f5f9ff;border-radius:14px;padding:14px}
 #sec-idgeneration .idgen-photo-preview{width:105px;height:125px;object-fit:cover;border:2px solid #d4dfef;border-radius:10px;background:#edf2f9;display:block;margin-top:10px}
-#sec-idgeneration .idgen-card{width:100%;max-width:430px;aspect-ratio:86/100;margin:0 auto;background:#fff;border-radius:17px;overflow:hidden;border:1px solid #cbd5e1;box-shadow:0 18px 42px rgba(15,45,90,.17);font-family:Arial,sans-serif;color:#172033;display:flex;flex-direction:column;position:relative}
+#sec-idgeneration .idgen-card{width:100%;max-width:560px;aspect-ratio:1.38/1;margin:0 auto;background:#fff;border-radius:17px;overflow:hidden;border:1px solid #cbd5e1;box-shadow:0 18px 42px rgba(15,45,90,.17);font-family:Arial,sans-serif;color:#172033;display:flex;flex-direction:column;position:relative}
 #sec-idgeneration .idgen-card:before{content:"";height:11px;flex:0 0 11px;background:linear-gradient(90deg,#ef3340 0 18%,#ff9f1c 18% 36%,#ffd21f 36% 52%,#19b957 52% 69%,#08a8cf 69% 84%,#633eea 84% 100%)}
 @import url("https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400&display=swap");
 #sec-idgeneration .idgen-cardhead{background:#fff;color:#102e61;padding:8px 13px;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid #e2e8f0;position:relative;min-height:88px}
@@ -168,7 +168,7 @@ button,a,input,select,textarea{touch-action:manipulation;}
 #sec-idgeneration .idgen-preview-note{font-size:11px;color:#64748b;text-align:center;margin:10px 0 0}
 @media(max-width:900px){#sec-idgeneration .idgen-layout{grid-template-columns:1fr}}
 @media(max-width:560px){#sec-idgeneration .idgen-formgrid{grid-template-columns:1fr}#sec-idgeneration .idgen-field.wide{grid-column:auto}#sec-idgeneration .idgen-cardbody{grid-template-columns:160px minmax(0,1fr);padding:9px;gap:8px}#sec-idgeneration .idgen-leftcol{gap:6px}#sec-idgeneration .idgen-photo-wrap{width:82px;height:98px}#sec-idgeneration .idgen-qrwrap img{width:140px;height:140px}#sec-idgeneration .idgen-qrwrap small{font-size:6px}#sec-idgeneration .idgen-photo-wrap{width:70px;height:88px}#sec-idgeneration .idgen-cardphoto{width:82px;height:98px}#sec-idgeneration .idgen-photo-seal{width:38px;height:38px;right:2px;bottom:2px}#sec-idgeneration .idgen-logo{flex-basis:54px;width:54px;max-width:23%;height:54px}#sec-idgeneration .idgen-wordmark{gap:3px;letter-spacing:-.4px}#sec-idgeneration .idgen-guru{font-size:23px}#sec-idgeneration .idgen-connect{font-size:19px;letter-spacing:-.5px}#sec-idgeneration .idgen-tagline{font-size:10px}#sec-idgeneration .idgen-cardhead{padding:7px 9px;gap:7px;min-height:75px}#sec-idgeneration .idgen-tick{width:17px;height:17px;font-size:12px}#sec-idgeneration .idgen-cardfoot{padding:9px;font-size:10px}#sec-idgeneration .idgen-mini-fields{gap:4px 6px}}
-@media print{body.gc-print-id *{visibility:hidden!important}body.gc-print-id #gc-id-print-root,body.gc-print-id #gc-id-print-root *{visibility:visible!important}body.gc-print-id #gc-id-print-root{position:fixed;inset:0 auto auto 0;width:100%;padding:12mm;box-sizing:border-box;background:#fff}body.gc-print-id #gc-id-print-root .idgen-card{max-width:none;width:86mm;height:100mm;min-height:100mm;aspect-ratio:auto;overflow:hidden;box-shadow:none;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
+@media print{body.gc-print-id *{visibility:hidden!important}body.gc-print-id #gc-id-print-root,body.gc-print-id #gc-id-print-root *{visibility:visible!important}body.gc-print-id #gc-id-print-root{position:fixed;inset:0 auto auto 0;width:100%;padding:12mm;box-sizing:border-box;background:#fff}body.gc-print-id #gc-id-print-root .idgen-card{max-width:none;width:100mm;height:76mm;min-height:76mm;aspect-ratio:auto;overflow:visible;box-shadow:none;print-color-adjust:exact;-webkit-print-color-adjust:exact}}
 
 /* ID CARD FIX: give the QR its own full space and keep VALIDITY on its own bottom row */
 #sec-idgeneration .idgen-card{height:auto!important;min-height:0!important;aspect-ratio:auto!important;overflow:visible!important}
@@ -183,32 +183,6 @@ button,a,input,select,textarea{touch-action:manipulation;}
  #sec-idgeneration .idgen-cardbody{grid-template-columns:160px minmax(0,1fr)!important}
  #sec-idgeneration .idgen-qrwrap img{width:148px!important;height:148px!important}
 }
-
-/* ID CARD PORTRAIT RESTORE — standard vertical member card layout */
-#sec-idgeneration .idgen-card{width:100%!important;max-width:340px!important;aspect-ratio:86/120!important;height:auto!important;min-height:0!important;overflow:hidden!important;margin:0 auto!important;border-radius:12px!important}
-#sec-idgeneration .idgen-cardhead{min-height:65px!important;padding:7px 10px!important;gap:8px!important}
-#sec-idgeneration .idgen-logo{width:48px!important;height:48px!important;flex-basis:48px!important;max-width:48px!important}
-#sec-idgeneration .idgen-guru{font-size:22px!important}
-#sec-idgeneration .idgen-connect{font-size:18px!important}
-#sec-idgeneration .idgen-tagline{font-size:9px!important;white-space:nowrap!important}
-#sec-idgeneration .idgen-cardbody{display:flex!important;flex-direction:column!important;align-items:center!important;gap:7px!important;padding:9px 12px!important;min-height:0!important;overflow:hidden!important;flex:1 1 auto!important}
-#sec-idgeneration .idgen-leftcol{width:100%!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:10px!important}
-#sec-idgeneration .idgen-photo-wrap{width:68px!important;height:78px!important;flex:0 0 68px!important}
-#sec-idgeneration .idgen-cardphoto{width:68px!important;height:78px!important}
-#sec-idgeneration .idgen-photo-seal{width:28px!important;height:28px!important}
-#sec-idgeneration .idgen-qrwrap{padding:2px!important;gap:1px!important}
-#sec-idgeneration .idgen-qrwrap img{width:68px!important;height:68px!important;max-width:none!important}
-#sec-idgeneration .idgen-qrwrap small{font-size:5px!important}
-#sec-idgeneration .idgen-cardbody>div:nth-child(2){width:100%!important;min-width:0!important}
-#sec-idgeneration .idgen-cardname{font-size:15px!important;text-align:center!important}
-#sec-idgeneration .idgen-idnumber{text-align:center!important;font-size:8px!important;margin-top:3px!important}
-#sec-idgeneration .idgen-mini-fields{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:4px 8px!important;margin-top:7px!important}
-#sec-idgeneration .idgen-mini-fields div{font-size:8px!important;line-height:1.25!important}
-#sec-idgeneration .idgen-mini-fields b{font-size:6px!important;margin-bottom:1px!important}
-#sec-idgeneration .idgen-address{font-size:7px!important;line-height:1.25!important;margin-top:5px!important;overflow-wrap:anywhere!important}
-#sec-idgeneration .idgen-validity{padding:6px 10px!important;font-size:7px!important;gap:5px!important}
-#sec-idgeneration .idgen-cardfoot{padding:7px 9px!important;font-size:7px!important;gap:4px!important;flex-direction:column!important;align-items:center!important;text-align:center!important}
-@media(max-width:560px){#sec-idgeneration .idgen-card{max-width:340px!important}#sec-idgeneration .idgen-cardbody{grid-template-columns:none!important;padding:9px 12px!important}#sec-idgeneration .idgen-qrwrap img{width:68px!important;height:68px!important}}
 </style></head><body>
 <header class="head"><div class="headin"><div><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
 <main class="wrap"><div id="gate" class="gate">Admin page loaded — preparing login scripts…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
@@ -516,19 +490,9 @@ function normalizeRpcUsers(rows){
 }
 
 async function loadLiveUsers(){
-  $('searchStatus').textContent='Refreshing Staff session and loading authorized live Student and Tutor profiles…';
+  $('searchStatus').textContent='Loading authorized live Student and Tutor profiles from Supabase…';
   $('results').innerHTML='';
   try{
-    // The directory is read directly after the Staff login check. Refresh a
-    // nearly expired Supabase session before any table/RPC reads so a stale
-    // JWT does not look like a missing directory or broken profile tables.
-    const current=await sb.auth.getSession();
-    let liveSession=current.data?.session||null;
-    if(!liveSession)throw new Error('Staff/Admin session is missing. Log out and sign in again.');
-    if(!liveSession.expires_at || liveSession.expires_at <= Math.floor(Date.now()/1000)+90){
-      const refreshed=await sb.auth.refreshSession();
-      if(refreshed.error||!refreshed.data?.session)throw new Error('Staff/Admin session could not be refreshed. Log out and sign in again. '+(refreshed.error?.message||''));
-    }
     const rpc=await sb.rpc('gc_admin_find_users',{p_term:''});
     const rpcUsers=(!rpc.error&&Array.isArray(rpc.data))?normalizeRpcUsers(rpc.data):[];
 
@@ -540,13 +504,8 @@ async function loadLiveUsers(){
       sb.from('student_profiles').select('*').order('created_at',{ascending:false}),
       sb.from('tutor_profiles').select('*').order('created_at',{ascending:false})
     ]);
-    const tableResults=[['profiles',pr],['student_profiles',st],['tutor_profiles',tr]];
-    const tableErrors=tableResults.filter(([,r])=>r.error);
-    if(tableErrors.length && !rpcUsers.length){
-      const details=tableErrors.map(([name,r])=>name+': '+(r.error.message||r.error.details||r.error.code||'read denied')).join(' | ');
-      const rpcProblem=rpc.error?' | gc_admin_find_users: '+(rpc.error.message||rpc.error.code||'failed'):'';
-      throw new Error(details+rpcProblem);
-    }
+    const tableErrors=[pr.error,st.error,tr.error].filter(Boolean);
+    if(tableErrors.length && !rpcUsers.length) throw tableErrors[0];
 
     const pm=new Map((pr.data||[]).map(x=>[String(x.id),x]));
     const byEmail=new Map((pr.data||[]).filter(x=>x.email).map(x=>[String(x.email).toLowerCase(),x]));
@@ -1750,9 +1709,7 @@ function gcIdAutofill(){
   gcIdSetField('idSubject',gcIdFirst(u,['subject','subjects','teaching_subject','specialization','speciality']));
   gcIdSetField('idPlan',gcIdFirst(u,['plan','plan_name','membership_plan','subscription_plan','service_plan'])||((u.role==='tutor'&&(u.public_verified_tick||u.verified))?'Verified Tutor':''));
   gcIdSetSelect('idMode',gcIdFirst(u,['mode','teaching_mode','class_mode']));
-  const address=gcIdFirst(u,['residential_address','address','full_address','home_address']);
-  const safeAddress=/live directory could not be read|check staff\/admin authorization|directory load failed|authorization.*profiles/i.test(String(address||''))?'':address;
-  gcIdSetField('idAddress',safeAddress);
+  gcIdSetField('idAddress',gcIdFirst(u,['residential_address','address','full_address','home_address','location']));
   gcIdSetField('idMobile',gcIdFirst(u,['phone','mobile','mobile_number','contact_number']));
   gcIdUpdatePreview();
   $('idGenStatus').textContent='Member loaded. Review/edit the fields and upload a photograph before generating.';
@@ -1789,29 +1746,6 @@ $('idPhoto').addEventListener('change',()=>{
   if(f.size>5*1024*1024){$('idPhoto').value='';$('idGenStatus').textContent='Photograph must be 5 MB or smaller.';gcIdUpdatePreview();return}
   const reader=new FileReader();reader.onload=()=>{gcIdPhotoData=String(reader.result||'');$('idPhotoPreview').src=gcIdPhotoData;$('idPhotoPreview').hidden=false;gcIdUpdatePreview();$('idGenStatus').textContent='Photograph uploaded and ready for preview.'};reader.onerror=()=>{$('idGenStatus').textContent='Could not read this photograph. Please try another file.'};reader.readAsDataURL(f);
 });
-async function gcIdUploadWithFreshSession(path,body,options){
-  // Refresh the signed-in admin JWT before storage writes. Supabase Storage
-  // rejects an expired JWT with an "exp claim timestamp check failed" error.
-  let sessionResult=await sb.auth.getSession();
-  if(sessionResult.error)throw sessionResult.error;
-  let session=sessionResult.data?.session;
-  const expiry=session?.expires_at||0;
-  if(!session||expiry<=Math.floor(Date.now()/1000)+90){
-    const refreshed=await sb.auth.refreshSession();
-    if(refreshed.error||!refreshed.data?.session){
-      throw new Error('Your admin login has expired. Please log out, sign in again, and generate the ID card.');
-    }
-  }
-  let result=await sb.storage.from('gc-advertisements').upload(path,body,options);
-  if(result.error&&/exp.*claim|jwt.*expired|token.*expired|invalid jwt/i.test(result.error.message||'')){
-    const refreshed=await sb.auth.refreshSession();
-    if(refreshed.error||!refreshed.data?.session){
-      throw new Error('Admin upload session expired and could not be refreshed. Please log out, sign in again, and generate the ID card.');
-    }
-    result=await sb.storage.from('gc-advertisements').upload(path,body,options);
-  }
-  return result;
-}
 $('idGenerateBtn').onclick=async()=>{
   if(!gcIdSelectedUser()){ $('idGenStatus').textContent='Please select a registered Student or Tutor first.';return}
   if(!gcIdPhotoData){$('idGenStatus').textContent='Photograph is required. Upload the member photograph before generating the ID.';$('idPhoto').focus();return}
@@ -1823,7 +1757,7 @@ $('idGenerateBtn').onclick=async()=>{
     const safeId=String($('idNumber').value).trim().replace(/[^a-z0-9_-]/gi,'-');
     const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
     const path='id-cards/'+safeId+'-'+Date.now()+'.'+ext;
-    const up=await gcIdUploadWithFreshSession(path,file,{upsert:false,contentType:file.type||'image/jpeg',cacheControl:'3600'});
+    const up=await sb.storage.from('gc-advertisements').upload(path,file,{upsert:false,contentType:file.type||'image/jpeg',cacheControl:'3600'});
     if(up.error)throw new Error('Could not save the ID photograph online: '+up.error.message);
     const photoUrl=sb.storage.from('gc-advertisements').getPublicUrl(path).data.publicUrl;
     const u=gcIdSelectedUser();
@@ -1833,7 +1767,7 @@ $('idGenerateBtn').onclick=async()=>{
     // This avoids a very dense QR containing the full photo URL and member details.
     const token=(window.crypto&&typeof crypto.randomUUID==='function')?crypto.randomUUID():Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
     const cardPath='digital-id-cards/'+token+'.json';
-    const cardUpload=await gcIdUploadWithFreshSession(cardPath,new Blob([json],{type:'application/json'}),{upsert:false,contentType:'application/json',cacheControl:'3600'});
+    const cardUpload=await sb.storage.from('gc-advertisements').upload(cardPath,new Blob([json],{type:'application/json'}),{upsert:false,contentType:'application/json',cacheControl:'3600'});
     if(cardUpload.error)throw new Error('Could not save the digital ID details for QR scanning: '+cardUpload.error.message);
     const digitalUrl='https://guruconnnect.in/digital-id.html?id='+encodeURIComponent(token);
     const qrBox=document.createElement('div');new QRCode(qrBox,{text:digitalUrl,width:1200,height:1200,correctLevel:QRCode.CorrectLevel.L});const qrCanvas=qrBox.querySelector('canvas');if(qrCanvas){const padded=document.createElement('canvas');padded.width=1440;padded.height=1440;const ctx=padded.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,1440,1440);ctx.imageSmoothingEnabled=false;ctx.drawImage(qrCanvas,120,120,1200,1200);$('idCardQr').src=padded.toDataURL('image/png')}else{const qrImg=qrBox.querySelector('img');if(!qrImg)throw new Error('QR generator did not produce an image. Please retry.');$('idCardQr').src=qrImg.src}
@@ -1859,7 +1793,7 @@ $('idPrintBtn').onclick=()=>{
   const preview=$('idCardPreview');
   const w=window.open('','_blank','width=1000,height=750');
   if(!w){$('idGenStatus').textContent='Pop-up blocked. Allow pop-ups for this site, then click Print again.';return}
-  const html='<!doctype html><html><head><meta charset="utf-8"><base href="https://www.guruconnnect.in/"><title>GURU CONNECT ID Card</title><link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400&display=swap" rel="stylesheet"><style>*{box-sizing:border-box}body{margin:0;padding:2mm;background:#fff;font-family:Arial,sans-serif}.idgen-card{width:86mm;height:100mm;aspect-ratio:86/100;overflow:hidden;border:1px solid #cbd5e1;border-radius:3mm;display:flex;flex-direction:column;color:#172033;position:relative;print-color-adjust:exact;-webkit-print-color-adjust:exact}.idgen-card:before{content:"";height:2mm;flex:0 0 2mm;background:linear-gradient(90deg,#ef3340 0 18%,#ff9f1c 18% 36%,#ffd21f 36% 52%,#19b957 52% 69%,#08a8cf 69% 84%,#633eea 84% 100%)}.idgen-cardhead{background:#fff;color:#102e61;padding:1.5mm 2.5mm;display:flex;align-items:center;gap:1.5mm;border-bottom:1px solid #e2e8f0;min-height:14mm;flex:0 0 14mm}.idgen-logo{display:block;flex:0 0 13mm;width:11mm;max-width:11mm;height:11mm;object-fit:contain}.idgen-brandcopy{flex:1;min-width:0;display:flex;flex-direction:column;gap:1mm}.idgen-wordmark{display:flex;align-items:baseline;gap:1mm;white-space:nowrap;line-height:1}.idgen-guru{color:#e32636;font-size:14pt;font-weight:900}.idgen-connect{color:#155eef;font-size:11pt;font-weight:300;letter-spacing:-.2mm}.idgen-tagline{font-family:Arial,sans-serif;font-size:5.5pt;white-space:nowrap;color:#123b82;margin:0}.idgen-cardbody{padding:2mm 2.5mm;display:flex;flex-direction:column;align-items:center;gap:1.2mm;flex:1;min-height:0;overflow:hidden}.idgen-leftcol{width:100%;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:3mm}.idgen-photo-wrap{position:relative;width:20mm;height:23mm;flex:0 0 20mm}.idgen-cardphoto{display:block;width:20mm;height:23mm;object-fit:cover;border-radius:1mm;border:1px solid #d8e3f3;background:#eef3fa}.idgen-photo-seal{position:absolute;width:8mm;height:8mm;right:1mm;bottom:1mm;object-fit:contain}.idgen-qrwrap{display:flex;flex-direction:column;align-items:center;gap:.5mm;padding:.5mm;border:0.2mm solid #e2e8f0;border-radius:1mm}.idgen-qrwrap img{width:21mm;height:21mm;object-fit:contain;background:#fff}.idgen-qrwrap small{font-size:4.5pt;font-weight:800;color:#123b82}.idgen-cardbody>div:nth-child(2){width:100%;min-width:0}.idgen-cardname{font-size:10pt;font-weight:900;text-align:center;color:#102e61;line-height:1.15;overflow-wrap:anywhere}.idgen-tick{display:inline-flex;align-items:center;justify-content:center;background:#00B83F;color:#fff;border-radius:50%;width:4mm;height:4mm;font-size:7pt}.idgen-tick[hidden]{display:none!important}.idgen-idnumber{font-size:6pt;color:#155eef;text-align:center;margin-top:1mm}.idgen-mini-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1mm 1.5mm;margin-top:1.2mm}.idgen-mini-fields div{font-size:5.3pt;line-height:1.1;overflow-wrap:anywhere}.idgen-mini-fields b{display:block;font-size:4.5pt;color:#475569;margin-bottom:.3mm}.idgen-address{font-size:4.8pt;color:#334155;margin-top:1mm;line-height:1.15;overflow-wrap:anywhere}.idgen-validity{background:linear-gradient(90deg,#eaf2ff,#f3e8ff 60%,#e0f2fe);color:#123b82;padding:1.5mm 2.5mm;font-size:5.3pt;font-weight:800;display:flex;gap:2mm;flex:0 0 auto}.idgen-cardfoot{background:#092b64;color:#fff;padding:1.5mm 2.5mm;display:flex;flex-direction:column;align-items:center;gap:.7mm;font-size:5.3pt;border-top:.8mm solid #19b957;flex:0 0 auto}@page{size:86mm 100mm;margin:0}@media print{body{padding:0}.idgen-card{break-inside:avoid}}</style></head><body>'+preview.outerHTML+'<script>window.onload=()=>setTimeout(()=>window.print(),350)<\/script></body></html>';
+  const html='<!doctype html><html><head><meta charset="utf-8"><base href="https://www.guruconnnect.in/"><title>GURU CONNECT ID Card</title><link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400&display=swap" rel="stylesheet"><style>*{box-sizing:border-box}body{margin:0;padding:10mm;background:#fff;font-family:Arial,sans-serif}.idgen-card{width:120mm;height:auto;min-height:112mm;aspect-ratio:auto;overflow:visible;border:1px solid #cbd5e1;border-radius:3mm;display:flex;flex-direction:column;color:#172033;position:relative;print-color-adjust:exact;-webkit-print-color-adjust:exact}.idgen-card:before{content:"";height:2.8mm;flex:0 0 2.8mm;background:linear-gradient(90deg,#ef3340 0 18%,#ff9f1c 18% 36%,#ffd21f 36% 52%,#19b957 52% 69%,#08a8cf 69% 84%,#633eea 84% 100%)}.idgen-cardhead{background:#fff;color:#102e61;padding:1.5mm 3mm;display:flex;flex-direction:row;align-items:center;justify-content:space-between;gap:2mm;border-bottom:1px solid #e2e8f0;min-height:17mm;flex:0 0 17mm}.idgen-logo{display:block;flex:0 0 17mm;width:17mm;max-width:24%;height:16mm;object-fit:contain;object-position:center}.idgen-brandcopy{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:.7mm}.idgen-wordmark{display:flex;align-items:baseline;gap:1mm;white-space:nowrap;line-height:1;letter-spacing:-.25mm}.idgen-guru{color:#e32636;font-family:Arial,sans-serif;font-size:17pt;font-weight:900}.idgen-connect{color:#155eef;font-family:Arial,sans-serif;font-size:15pt;font-weight:300;letter-spacing:-.2mm}.idgen-tagline{font-family:"Roboto Condensed",Arial,sans-serif;font-size:7.5pt;font-weight:400;letter-spacing:.1px;color:#123b82;margin:0;line-height:1.1}.idgen-cardlabel{display:none}.idgen-cardbody{padding:3mm 3mm 2mm;display:grid;grid-template-columns:49mm minmax(0,1fr);gap:3mm;flex:0 0 auto;min-height:auto;overflow:visible}.idgen-leftcol{display:flex;flex-direction:column;align-items:center;gap:1mm;min-width:0}.idgen-photo-wrap{position:relative;width:29mm;height:31mm;align-self:start}.idgen-cardphoto{display:block;width:28mm;height:31mm;object-fit:cover;border-radius:1.5mm;border:1px solid #d8e3f3;background:#eef3fa}.idgen-qrwrap{display:flex;flex-direction:column;align-items:center;gap:.8mm;padding:1mm;border:0.3mm solid #e2e8f0;border-radius:1mm}.idgen-qrwrap img{width:45mm;height:45mm;object-fit:contain;border:0;padding:0;background:#fff;image-rendering:pixelated}.idgen-qrwrap small{font-size:4.2pt;font-weight:800;color:#123b82;letter-spacing:0}.idgen-cardphoto{display:block;width:22mm;height:25mm;object-fit:cover;border-radius:1.5mm;border:1px solid #d8e3f3;background:#eef3fa}.idgen-photo-seal{position:absolute;z-index:2;width:12mm;height:12mm;object-fit:contain;right:1mm;bottom:1mm;opacity:1;transform:none;filter:grayscale(1) brightness(0) saturate(100%) invert(19%) sepia(97%) saturate(4500%) hue-rotate(348deg) brightness(92%) contrast(112%);pointer-events:none}.idgen-cardname{font-size:12pt;font-weight:900;color:#102e61;line-height:1.2;overflow-wrap:anywhere}.idgen-tick{display:inline-flex;flex:0 0 5.2mm;align-items:center;justify-content:center;vertical-align:middle;background:#00B83F;color:#fff;border:0.25mm solid #fff;border-radius:50%;width:5.2mm;height:5.2mm;min-width:5.2mm;min-height:5.2mm;font-family:Arial,sans-serif;font-size:8pt;font-weight:950;line-height:1;clip-path:none;box-shadow:0 0 0 .25mm #00B83F;margin-left:1.2mm;padding:0;visibility:visible!important;opacity:1!important}.idgen-tick[hidden]{display:none!important}.idgen-tick:not([hidden]){display:inline-flex!important}.idgen-idnumber{font-size:7pt;font-weight:400;color:#155eef;margin-top:1mm}#idCardNumber{font-weight:400!important}.idgen-mini-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.5mm 2mm;margin-top:2mm}.idgen-mini-fields div{min-width:0;font-size:6pt;line-height:1.15;overflow-wrap:anywhere}.idgen-mini-fields b{display:block;font-size:5.5pt;font-weight:800;color:#475569;margin-bottom:.4mm}.idgen-address b{font-weight:800;color:#475569}.idgen-address{font-size:6.2pt;color:#334155;margin-top:1.8mm;line-height:1.35;overflow-wrap:anywhere;white-space:normal;min-width:0;max-width:100%}.idgen-validity{background:linear-gradient(90deg,#eaf2ff,#f3e8ff 60%,#e0f2fe);color:#123b82;padding:2mm 3mm;font-size:6.5pt;font-weight:800;display:flex;align-items:center;justify-content:flex-start;gap:2mm;flex:0 0 auto;white-space:normal}.idgen-validity span:first-child{flex:0 0 auto;white-space:nowrap}.idgen-validity span:last-child{min-width:0;overflow-wrap:anywhere}.idgen-cardfoot{background:#092b64;color:#fff;padding:2.5mm 3mm;display:flex;justify-content:space-between;gap:1.5mm;font-size:7pt;font-weight:400;flex-wrap:nowrap;border-top:.8mm solid #19b957;flex:0 0 auto}@page{size:auto;margin:0} @media print{body{padding:10mm}.idgen-card{break-inside:avoid}}</style></head><body>'+preview.outerHTML+'<script>window.onload=()=>setTimeout(()=>window.print(),350)<\/script></body></html>';
   w.document.open();w.document.write(html);w.document.close();
 };
 
