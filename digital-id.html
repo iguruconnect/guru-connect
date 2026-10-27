@@ -65,7 +65,7 @@ if(token){
 }else if(encoded){raw=decodeURIComponent(escape(atob(encoded)));}
 else throw new Error('This QR code does not contain a Digital ID. Please ask GURU CONNECT admin for a replacement card.');
 const d=JSON.parse(raw);
-const card={userId:d.userId||d.user_id||'',name:d.name||d.n,category:d.category||d.c,idNumber:d.idNumber||d.i,level:d.level||d.l,course:d.course||d.co,stream:d.stream||d.st,subject:d.subject||d.su,plan:d.plan||d.p,mode:d.mode||d.m,address:d.address||d.a,mobile:d.mobile||d.ph,validFrom:d.validFrom||d.f,validTo:d.validTo||d.t,verified:d.verified??d.ok,photo:d.photo||d.im};
+const card={userId:d.userId||d.user_id||'',name:d.name||d.n,category:d.category||d.c,idNumber:d.idNumber||d.i,level:d.level||d.l,course:d.course||d.co,stream:d.stream||d.st,subject:d.subject||d.su,plan:d.plan||d.p,mode:d.mode||d.m,tutorType:d.tutorType||d.tt,post:d.post||d.po,address:d.address||d.a,mobile:d.mobile||d.ph,validFrom:d.validFrom||d.f,validTo:d.validTo||d.t,verified:d.verified??d.ok,photo:d.photo||d.im};
 if(!card.name||!card.idNumber||!card.photo)throw new Error('Digital ID information is incomplete. Please ask GURU CONNECT admin for a replacement card.');
 if(!/^https:\/\//i.test(String(card.photo)))throw new Error('The member photograph link is invalid.');
 root.innerHTML='<div class="identity"><img class="photo" id="memberPhoto" src="" alt="Member photograph"><section class="membercopy"><h2 class="membername" id="memberName"></h2><div class="category" id="category"></div><div class="number" id="number"></div><div id="verified" class="verified">Checking current status…</div></section></div><div class="fields" id="fields"></div><div class="validity"><span>VALIDITY</span><span id="validity"></span></div><div class="live-timer" id="liveTimer"><span>LIVE VERIFICATION SESSION</span><strong id="countdown">05:00</strong></div>';
@@ -74,7 +74,7 @@ document.getElementById('memberName').textContent=esc(card.name);
 document.getElementById('category').textContent='CATEGORY: '+String(card.category||'member').toUpperCase();
 document.getElementById('number').textContent='ID NO: '+esc(card.idNumber);
 if(card.verified){document.getElementById('verified').innerHTML='<span class="badge" aria-label="Blue verified tick" style="display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:50%;background:#1877f2;color:#fff;font-size:13px;font-weight:900;vertical-align:middle">✓</span> <span class="verified" style="color:#1877f2">Blue Verified Tick</span>';}
-const fields=[['LEVEL',card.level],['COURSE',card.course],['STREAM',card.stream],['SUBJECT',card.subject],['PLAN',card.plan],['MODE',card.mode],['RESIDENTIAL ADDRESS',card.address,true],['MOBILE NUMBER',card.mobile,true]];
+const fields=[['LEVEL',card.level],['COURSE',card.course],['STREAM',card.stream],['SUBJECT',card.subject],['PLAN',card.plan],['MODE',card.mode],['TUTOR TYPE',card.tutorType],['STAFF DESIGNATION',card.post],['RESIDENTIAL ADDRESS',card.address,true],['MOBILE NUMBER',card.mobile,true]];
 document.getElementById('fields').innerHTML=fields.map(([label,value,full])=>'<div class="field'+(full?' full':'')+'"><b>'+label+'</b><span>'+safe(value)+'</span></div>').join('');
 document.getElementById('validity').textContent=date(card.validFrom)+' – '+date(card.validTo);
 const statusNode=document.getElementById('verified');
@@ -82,7 +82,7 @@ const statusNode=document.getElementById('verified');
 let secondsLeft=300;const timerBox=document.getElementById('liveTimer'),timerText=document.getElementById('countdown');
 const timerInterval=setInterval(()=>{secondsLeft=Math.max(0,secondsLeft-1);timerText.textContent=String(Math.floor(secondsLeft/60)).padStart(2,'0')+':'+String(secondsLeft%60).padStart(2,'0');if(secondsLeft===0){clearInterval(timerInterval);timerBox.classList.add('expired');timerBox.querySelector('span').textContent='SESSION EXPIRED';}},1000);
 const expired=!!(card.validTo && new Date(card.validTo+'T23:59:59')<new Date());
-if(!card.userId){
+if(!card.userId&&String(card.category||'').toLowerCase()==='staff'){if(expired){statusNode.textContent='✕ EXPIRED — NOT VALID';statusNode.style.color='#b42318'}else{statusNode.textContent='✓ STAFF ID — issued by GURU CONNECT; confirm with the office';statusNode.style.color='#155eef'}}else if(!card.userId){
  statusNode.textContent='⚠ LIVE VERIFICATION UNAVAILABLE — ask admin to generate a new card';
  statusNode.style.color='#9a3412';
 }else{
