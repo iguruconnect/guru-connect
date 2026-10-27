@@ -1744,7 +1744,7 @@ function gcIdUpdatePreview(){
 }
 $('idMemberSearch').addEventListener('input',gcIdFillSelect);
 $('idMemberSelect').addEventListener('change',gcIdAutofill);
-['idCategory','idNumber','idFullName','idLevel','idCourse','idStream','idMode','idSubject','idPlan','idAddress','idMobile','idValidFrom','idValidTo','idTutorType','idStaffPost'].forEach(id=>$(id).addEventListener('input',gcIdUpdatePreview));function gcIdUpdateCategoryFields(){const c=$('idCategory').value;$('idTutorTypeWrap').hidden=c!=='tutor';$('idStaffPostWrap').hidden=c!=='staff';$('idPlanWrap').hidden=c!=='student';$('idLevel').closest('.idgen-field').hidden=c==='staff';$('idCourse').closest('.idgen-field').hidden=c==='staff';$('idStream').closest('.idgen-field').hidden=c==='staff';$('idSubject').closest('.idgen-field').hidden=c==='staff';$('idMode').closest('.idgen-field').hidden=c==='staff';} $('idCategory').addEventListener('change',()=>{gcIdUpdateCategoryFields();gcIdUpdatePreview()});gcIdUpdateCategoryFields();
+['idCategory','idNumber','idFullName','idLevel','idCourse','idStream','idMode','idSubject','idPlan','idAddress','idMobile','idValidFrom','idValidTo','idTutorType','idStaffPost'].forEach(id=>$(id).addEventListener('input',gcIdUpdatePreview));function gcIdUpdateCategoryFields(){const c=$('idCategory').value;$('idTutorTypeWrap').hidden=c!=='tutor';$('idStaffPostWrap').hidden=c!=='staff';$('idPlanWrap').hidden=c!=='student';$('idLevel').closest('.idgen-field').hidden=c==='staff';$('idCourse').closest('.idgen-field').hidden=c==='staff';$('idStream').closest('.idgen-field').hidden=c==='staff';$('idSubject').closest('.idgen-field').hidden=c==='staff';$('idMode').closest('.idgen-field').hidden=c==='staff';} $('idCategory').addEventListener('change',()=>{if($('idCategory').value==='staff')$('idMemberSelect').value='';gcIdUpdateCategoryFields();gcIdUpdatePreview()});gcIdUpdateCategoryFields();
 $('idPhoto').addEventListener('change',()=>{
   const f=$('idPhoto').files?.[0];gcIdPhotoData='';$('idPhotoPreview').hidden=true;
   if(!f){gcIdUpdatePreview();return}
@@ -1767,7 +1767,7 @@ $('idGenerateBtn').onclick=async()=>{
     if(up.error)throw new Error('Could not save the ID photograph online: '+up.error.message);
     const photoUrl=sb.storage.from('gc-advertisements').getPublicUrl(path).data.publicUrl;
     const u=gcIdSelectedUser();
-    const payload={v:1,userId:String(u?.user_id||''),n:$('idFullName').value.trim(),c:$('idCategory').value,i:$('idNumber').value.trim(),l:$('idLevel').value,co:$('idCourse').value,st:$('idStream').value,su:$('idSubject').value.trim(),p:$('idPlan').value.trim(),m:$('idMode').value,tt:$('idTutorType').value,post:$('idStaffPost').value,a:$('idAddress').value.trim(),ph:$('idMobile').value.trim(),f:$('idValidFrom').value,t:$('idValidTo').value,ok:!!(u&&u.public_verified_tick===true),im:photoUrl};
+    const payload={v:1,userId:$('idCategory').value==='staff'?'':String(u?.user_id||''),n:$('idFullName').value.trim(),c:$('idCategory').value,i:$('idNumber').value.trim(),l:$('idLevel').value,co:$('idCourse').value,st:$('idStream').value,su:$('idSubject').value.trim(),p:$('idPlan').value.trim(),m:$('idMode').value,tt:$('idTutorType').value,post:$('idStaffPost').value,a:$('idAddress').value.trim(),ph:$('idMobile').value.trim(),f:$('idValidFrom').value,t:$('idValidTo').value,ok:!!(u&&u.public_verified_tick===true),im:photoUrl};
     const json=JSON.stringify(payload);
     // Store the card data once and put only a short random token in the QR.
     // This avoids a very dense QR containing the full photo URL and member details.
