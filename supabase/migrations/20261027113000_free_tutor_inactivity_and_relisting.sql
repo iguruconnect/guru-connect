@@ -107,7 +107,9 @@ set search_path=public
 as $$
 declare affected integer;
 begin
-  if not (public.is_admin() or exists (
+  -- Scheduled pg_cron/service-role calls have no end-user auth.uid().
+  -- Browser callers have execute permission only when authenticated and must be Admin.
+  if auth.uid() is not null and not (public.is_admin() or exists (
     select 1 from public.profiles p where p.id=auth.uid()
     and lower(coalesce(p.role,'')) in ('admin','staff')
   )) then
