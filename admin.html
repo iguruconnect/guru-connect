@@ -1762,9 +1762,14 @@ $('idGenerateBtn').onclick=async()=>{
     const photoUrl=sb.storage.from('gc-advertisements').getPublicUrl(path).data.publicUrl;
     const u=gcIdSelectedUser();
     const payload={v:1,n:$('idFullName').value.trim(),c:$('idCategory').value,i:$('idNumber').value.trim(),l:$('idLevel').value,co:$('idCourse').value,st:$('idStream').value,su:$('idSubject').value.trim(),p:$('idPlan').value.trim(),m:$('idMode').value,a:$('idAddress').value.trim(),ph:$('idMobile').value.trim(),f:$('idValidFrom').value,t:$('idValidTo').value,ok:!!(u&&(u.public_verified_tick||u.verified||u.verified_tick||u.is_verified||u.isVerified||String(u.verification_status||'').toLowerCase()==='verified')),im:photoUrl};
-    const json=JSON.stringify(payload);let digitalUrl;
-    if('CompressionStream' in window){const packed=await new Response(new Blob([json]).stream().pipeThrough(new CompressionStream('deflate'))).arrayBuffer();const bytes=btoa(Array.from(new Uint8Array(packed),b=>String.fromCharCode(b)).join('')).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');digitalUrl='https://guruconnnect.in/digital-id.html?z='+bytes;}
-    else{const bytes=btoa(unescape(encodeURIComponent(json)));digitalUrl='https://guruconnnect.in/digital-id.html?data='+encodeURIComponent(bytes);}
+    const json=JSON.stringify(payload);
+    // Store the card data once and put only a short random token in the QR.
+    // This avoids a very dense QR containing the full photo URL and member details.
+    const token=(window.crypto&&typeof crypto.randomUUID==='function')?crypto.randomUUID():Array.from(crypto.getRandomValues(new Uint8Array(16)),b=>b.toString(16).padStart(2,'0')).join('');
+    const cardPath='digital-id-cards/'+token+'.json';
+    const cardUpload=await sb.storage.from('gc-advertisements').upload(cardPath,new Blob([json],{type:'application/json'}),{upsert:false,contentType:'application/json',cacheControl:'3600'});
+    if(cardUpload.error)throw new Error('Could not save the digital ID details for QR scanning: '+cardUpload.error.message);
+    const digitalUrl='https://guruconnnect.in/digital-id.html?id='+encodeURIComponent(token);
     const qrBox=document.createElement('div');new QRCode(qrBox,{text:digitalUrl,width:1200,height:1200,correctLevel:QRCode.CorrectLevel.L});const qrCanvas=qrBox.querySelector('canvas');if(qrCanvas){const padded=document.createElement('canvas');padded.width=1440;padded.height=1440;const ctx=padded.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,1440,1440);ctx.imageSmoothingEnabled=false;ctx.drawImage(qrCanvas,120,120,1200,1200);$('idCardQr').src=padded.toDataURL('image/png')}else{const qrImg=qrBox.querySelector('img');if(!qrImg)throw new Error('QR generator did not produce an image. Please retry.');$('idCardQr').src=qrImg.src}
     $('idCardQrWrap').hidden=false;$('idCardQr').hidden=false;
     $('idCardQr').onerror=()=>{$('idGenStatus').textContent='Digital ID link is ready, but QR image service did not load. Please retry Generate ID.';};

@@ -18,8 +18,15 @@ const date=s=>{if(!s)return '—';const p=String(s).split('-');return p.length==
 const field=(label,value,full)=>'<div class="field'+(full?' full':'')+'"><b>'+label+'</b><span>'+esc(value).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+'</span></div>';
  (async()=>{try{
 const params=new URLSearchParams(location.search);let raw;
-const zipped=params.get('z');const encoded=params.get('data');
-if(zipped){if(!('DecompressionStream' in window))throw new Error('This phone browser cannot open the compressed ID QR. Please use an updated Chrome browser.');const b64=zipped.replace(/-/g,'+').replace(/_/g,'/');const packed=Uint8Array.from(atob(b64+'='.repeat((4-b64.length%4)%4)),c=>c.charCodeAt(0));raw=await new Response(new Blob([packed]).stream().pipeThrough(new DecompressionStream('deflate'))).text();}
+const token=params.get('id');const zipped=params.get('z');const encoded=params.get('data');
+if(token){
+  if(!/^[a-f0-9-]{32,36}$/i.test(token))throw new Error('This Digital ID link is invalid. Please ask GURU CONNECT admin for a replacement card.');
+  const cardUrl='https://hzqqswrnawrfgufbxgay.supabase.co/storage/v1/object/public/gc-advertisements/digital-id-cards/'+encodeURIComponent(token)+'.json';
+  const response=await fetch(cardUrl,{cache:'no-store'});
+  if(!response.ok)throw new Error('This Digital ID could not be found. Please ask GURU CONNECT admin to generate a fresh card and QR code.');
+  raw=await response.text();
+}
+else if(zipped){if(!('DecompressionStream' in window))throw new Error('This phone browser cannot open the compressed ID QR. Please use an updated Chrome browser.');const b64=zipped.replace(/-/g,'+').replace(/_/g,'/');const packed=Uint8Array.from(atob(b64+'='.repeat((4-b64.length%4)%4)),c=>c.charCodeAt(0));raw=await new Response(new Blob([packed]).stream().pipeThrough(new DecompressionStream('deflate'))).text();}
 else if(encoded){raw=decodeURIComponent(escape(atob(encoded)));}
 else throw new Error('This QR code does not contain a Digital ID. Please ask GURU CONNECT admin for a replacement card.');
 const d=JSON.parse(raw);
