@@ -152,6 +152,24 @@ if(!card.userId&&String(card.category||'').toLowerCase()==='staff'){
    const [tutors,students]=await Promise.all([tutorCheck.json(),studentCheck.json()]);
    p=(Array.isArray(tutors)&&tutors[0])||(Array.isArray(students)&&students[0])||null;
   }
+  if(String(card.category||'').trim().toLowerCase()==='tutor'){
+   const tutorCheck=await fetch(base+'tutor_profiles?select=*&user_id=eq.'+encodeURIComponent(card.userId),{cache:'no-store',headers});
+   if(!tutorCheck.ok)throw new Error('Live tutor eligibility check unavailable');
+   const tutorRows=await tutorCheck.json();
+   const tutorRecord=Array.isArray(tutorRows)?tutorRows[0]:null;
+   if(tutorRecord)p={...(p||{}),...tutorRecord};
+   const plan=String(p?.payment_plan||p?.membership_plan||p?.subscription_plan||p?.plan||'').toLowerCase();
+   const paid=String(p?.paid_status||'').toUpperCase()==='PAID';
+   const verifiedTick=p?.public_verified_tick===true;
+   if(!((plan==='premium_verified_300'||plan.includes('premium_verified_300'))&&paid&&verifiedTick)){
+    statusNode.textContent='✕ LIVE TUTOR ID NOT AUTHORISED — requires ₹200 Premium Subscription + ₹100 Verified Tick (₹300 total), confirmed payment, and Admin-granted Verified Tick';
+    statusNode.style.color='#b42318';
+    document.getElementById('downloadActions').classList.remove('ready');
+    document.getElementById('downloadPdfBtn').disabled=true;
+    document.getElementById('printIdBtn').disabled=true;
+    return;
+   }
+  }
   const state=String(p?.registration_status||p?.status||'registered').trim().toLowerCase();
   // Card category is presentation text and may not exactly match the stored role.
   // A role-label mismatch alone must never mark an existing member as inactive.
