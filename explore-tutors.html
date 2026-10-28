@@ -88,7 +88,7 @@ const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
 const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-const baseFields='id,user_id,name,subject,stream,experience,qualification,college,teaching_college,price,about_me,photo_url,verified,paid_status,payment_plan,registration_status,rating,review_count,students_taught,teaching_mode,location,languages,availability,created_at';
+const baseFields='id,user_id,name,subject,stream,experience,qualification,college,teaching_college,price,about_me,photo_url,verified,paid_status,payment_plan,registration_status,registration_approval_status,registration_approved,rating,review_count,students_taught,teaching_mode,location,languages,availability,created_at';
 let supa=null, planFieldAvailable=true;
 try{if(window.gcSupabase)supa=window.gcSupabase;else if(window.supabase?.createClient)supa=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}catch(e){}
 function status(msg,isError){$('searchStatus').textContent=msg;$('searchStatus').className='search-status'+(isError?' error':'')}
@@ -112,11 +112,11 @@ async function searchTutors(search){
  let result=await q;
  if(result.error){
   planFieldAvailable=false;
-  const fallbackFields=baseFields.split(',').filter(x=>x!=='payment_plan'&&x!=='registration_status').join(',');
+  const fallbackFields=baseFields.split(',').filter(x=>x!=='payment_plan').join(',');
   result=await supa.from('tutor_profiles').select(fallbackFields).limit(1000);
  }
  if(result.error)throw result.error;
- const rows=(result.data||[]).filter(t=>String(t.registration_status||'registered').toLowerCase()!=='hidden'&&String(t.registration_status||'registered').toLowerCase()!=='deleted');
+ const rows=(result.data||[]).filter(t=>String(t.registration_status||'').toLowerCase()==='approved'&&t.registration_approved===true&&String(t.registration_approval_status||'').toLowerCase()==='approved');
  const subjects=search.subjects.map(norm).filter(Boolean);
  const course=norm(search.course), cls=norm(search.className);
  const scored=rows.map(t=>{
