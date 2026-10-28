@@ -65,7 +65,7 @@ begin
     where t.id = p_tutor_id
       and coalesce(t.is_hidden, false) = false
       and coalesce(t.is_disabled, false) = false
-      and lower(coalesce(t.registration_status, '')) = 'approved'
+      and lower(coalesce(t.registration_status::text, '')) = 'approved'
   ) then
     -- Some older approved profiles use the explicit approval flag.
     if not exists (
@@ -74,7 +74,7 @@ begin
         and coalesce(t.is_hidden, false) = false
         and coalesce(t.is_disabled, false) = false
         and (coalesce(t.registration_approved, false) = true
-             or lower(coalesce(t.registration_approval_status, '')) = 'approved')
+             or lower(coalesce(t.registration_approval_status::text, '')) = 'approved')
     ) then
       raise exception 'This tutor is not currently available for inquiry.';
     end if;
@@ -106,7 +106,7 @@ begin
     exists (
       select 1 from public.profiles p
       where p.id = auth.uid()
-        and lower(coalesce(p.role, '')) in ('admin','staff')
+        and lower(coalesce(p.role::text, '')) in ('admin','staff')
     )
     or lower(coalesce(auth.jwt()->'user_metadata'->>'role','')) in ('admin','staff')
     or lower(coalesce(auth.jwt()->'app_metadata'->>'role','')) in ('admin','staff')
@@ -161,3 +161,5 @@ revoke all on function public.gc_admin_list_tutor_inquiries() from public, anon;
 revoke all on function public.gc_admin_mark_tutor_inquiry_forwarded(uuid,text,text) from public, anon;
 grant execute on function public.gc_admin_list_tutor_inquiries() to authenticated;
 grant execute on function public.gc_admin_mark_tutor_inquiry_forwarded(uuid,text,text) to authenticated;
+
+notify pgrst, 'reload schema';
