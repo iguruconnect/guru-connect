@@ -4,6 +4,9 @@
 
 begin;
 
+-- Persist the selected tutor membership plan so public tutor search can rank Premium tutors accurately.
+alter table public.tutor_profiles add column if not exists payment_plan text not null default 'regular_free';
+
 create or replace function public.gc_register_verified_profile(
   p_user_id uuid, p_role text, p_data jsonb
 ) returns jsonb
@@ -74,6 +77,7 @@ begin
       name=p_data->>'name', subject=p_data->>'subject', stream='', experience=p_data->>'experience',
       qualification=p_data->>'qualification', college=p_data->>'tutor_college', teaching_college=p_data->>'teaching_college',
       address=p_data->>'address', price=p_data->>'rate_hour', about_me=p_data->>'about_me',
+      payment_plan=case when p_data->>'payment_plan' in ('premium_200','premium_verified_300') then p_data->>'payment_plan' else 'regular_free' end,
       photo_url=nullif(trim(coalesce(p_data->>'photo_url','')),''), verified=false, paid_status='PENDING', rating=null,
       review_count=0, students_taught='', teaching_mode='', location=p_data->>'location', languages='', availability='',
       teaching_since=p_data->>'registration_date', is_illustrative=false, registration_status='registered'
@@ -83,12 +87,13 @@ begin
       insert into public.tutor_profiles(
         user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,photo_url,
         verified,paid_status,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,
-        is_illustrative,registration_status
+        is_illustrative,registration_status,payment_plan
       ) values(
         p_user_id,p_data->>'name',p_data->>'subject','',p_data->>'experience',p_data->>'qualification',p_data->>'tutor_college',
         p_data->>'teaching_college',p_data->>'address',p_data->>'rate_hour',p_data->>'about_me',
         nullif(trim(coalesce(p_data->>'photo_url','')),''),false,'PENDING',null,0,'','','',p_data->>'location','','',
-        p_data->>'registration_date',false,'registered'
+        p_data->>'registration_date',false,'registered',
+        case when p_data->>'payment_plan' in ('premium_200','premium_verified_300') then p_data->>'payment_plan' else 'regular_free' end
       );
     end if;
     select * into v_tutor from public.tutor_profiles where user_id=p_user_id limit 1;
