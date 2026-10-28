@@ -1806,6 +1806,16 @@ $('idPhoto').addEventListener('change',()=>{
 });
 $('idGenerateBtn').onclick=async()=>{
   if($('idCategory').value!=='staff'&&!gcIdSelectedUser()){ $('idGenStatus').textContent='Please select a registered Student or Tutor first. Staff cards can be created manually.';return}
+  if(String($('idCategory').value||'').toLowerCase()==='tutor'){
+    const tutor=gcIdSelectedUser();
+    const plan=String(tutor?.payment_plan||tutor?.membership_plan||tutor?.subscription_plan||tutor?.plan||'').toLowerCase();
+    const paid=String(tutor?.paid_status||'').toUpperCase()==='PAID';
+    const tick=tutor?.public_verified_tick===true;
+    if(!((plan==='premium_verified_300'||plan.includes('premium_verified_300'))&&paid&&tick)){
+      $('idGenStatus').textContent='LIVE TUTOR ID REQUIRES BOTH: ₹200 Premium Subscription + ₹100 Verified Tick (₹300 total), payment marked PAID, and Admin-granted Verified Tick. Complete all requirements before generating this tutor’s Live ID.';
+      return;
+    }
+  }
   if(!gcIdPhotoData){$('idGenStatus').textContent='Photograph is required. Upload the member photograph before generating the ID.';$('idPhoto').focus();return}
   if(!$('idFullName').value.trim()||!$('idNumber').value.trim()){$('idGenStatus').textContent='Full Name and ID Number are required.';return}if($('idCategory').value==='staff'&&!gcIdSelectedStaffPost().trim().length||$('idCategory').value==='staff'&&gcIdSelectedStaffPost()==='—'){$('idGenStatus').textContent='Select a staff designation or choose CUSTOM / SPECIFIC POST and enter the post.';return}
   if($('idValidFrom').value&&$('idValidTo').value&&$('idValidTo').value<$('idValidFrom').value){$('idGenStatus').textContent='Validity end date cannot be earlier than the start date.';return}
