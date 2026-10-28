@@ -88,13 +88,13 @@ const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
 const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-const baseFields='id,user_id,name,subject,stream,experience,qualification,college,teaching_college,price,about_me,photo_url,verified,paid_status,rating,review_count,students_taught,teaching_mode,location,languages,availability,created_at';
+const baseFields='id,user_id,name,subject,stream,experience,qualification,college,teaching_college,price,about_me,photo_url,verified,paid_status,payment_plan,registration_status,rating,review_count,students_taught,teaching_mode,location,languages,availability,created_at';
 let supa=null, planFieldAvailable=true;
 try{if(window.gcSupabase)supa=window.gcSupabase;else if(window.supabase?.createClient)supa=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}catch(e){}
 function status(msg,isError){$('searchStatus').textContent=msg;$('searchStatus').className='search-status'+(isError?' error':'')}
 function norm(v){return String(v??'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
 function planName(t){return String(t.payment_plan||t.membership_plan||t.subscription_plan||t.plan||'').toLowerCase()}
-function isPremium(t){const p=planName(t);return p.includes('premium')||(p.includes('200')||p.includes('300'))||String(t.paid_status||'').toLowerCase().includes('premium')}
+function isPremium(t){const p=planName(t),paid=String(t.paid_status||'').toLowerCase();return (p==='premium_200'||p==='premium_verified_300'||p.includes('premium'))&&paid==='paid'}
 function terms(t){return norm([t.subject,t.stream,t.qualification,t.college,t.teaching_college,t.about_me,t.languages,t.teaching_mode].join(' '))}
 function renderCards(rows,subjects){
  const host=$('tutorResults');host.innerHTML='';
@@ -108,11 +108,12 @@ function renderCards(rows,subjects){
 }
 async function searchTutors(search){
  if(!supa)throw new Error('Tutor directory is not connected right now. Please refresh and try again.');
- let q=supa.from('tutor_profiles').select(baseFields+',payment_plan').limit(1000);
+ let q=supa.from('tutor_profiles').select(baseFields).limit(1000);
  let result=await q;
  if(result.error){
   planFieldAvailable=false;
-  result=await supa.from('tutor_profiles').select(baseFields).limit(1000);
+  const fallbackFields=baseFields.split(',').filter(x=>x!=='payment_plan'&&x!=='registration_status').join(',');
+  result=await supa.from('tutor_profiles').select(fallbackFields).limit(1000);
  }
  if(result.error)throw result.error;
  const rows=(result.data||[]).filter(t=>String(t.registration_status||'registered').toLowerCase()!=='hidden'&&String(t.registration_status||'registered').toLowerCase()!=='deleted');
