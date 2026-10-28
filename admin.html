@@ -488,7 +488,7 @@ async function loadTutorInquiries(){
  try{
   const q=await sb.rpc('gc_admin_list_tutor_inquiries');
   if(q.error)throw q.error;
-  const rows=q.data||[];count.textContent=rows.length+' INQUIRY'+(rows.length===1?'':'IES');
+  const rows=q.data||[];count.textContent=rows.length+(rows.length===1?' INQUIRY':' INQUIRIES');
   if(!rows.length){out.innerHTML='<div class="empty">No tutor search inquiries have been submitted yet.</div>';status.textContent='Inquiry list refreshed.';return}
   out.innerHTML=rows.map(x=>{
    const d=x.created_at?new Date(x.created_at).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}):'—';
