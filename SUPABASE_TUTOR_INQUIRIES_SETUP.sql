@@ -110,6 +110,7 @@ begin
     )
     or lower(coalesce(auth.jwt()->'user_metadata'->>'role','')) in ('admin','staff')
     or lower(coalesce(auth.jwt()->'app_metadata'->>'role','')) in ('admin','staff')
+    or lower(coalesce(auth.jwt()->>'email','')) = 'guruconnect.in@gmail.com'
     or lower(coalesce(auth.jwt()->'user_metadata'->>'is_staff','')) = 'true'
     or lower(coalesce(auth.jwt()->'app_metadata'->>'is_staff','')) = 'true'
   ) then
