@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Post Tutor Requirement | GURU CONNECT</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Inter,Arial,sans-serif;color:#0f172a;background:linear-gradient(135deg,#f7fbff,#edf4ff);min-height:100vh}header{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:16px 5%;background:#fff;border-bottom:1px solid #dbe5f0;box-shadow:0 5px 20px #0f172a0b}.brand{font-weight:1000;color:#0b3b8f;font-size:20px;letter-spacing:.04em}.back{background:#0b63ce;color:#fff;text-decoration:none;padding:11px 15px;border-radius:11px;font-size:12px;font-weight:900}.wrap{max-width:1050px;margin:35px auto;padding:0 18px 60px}.hero,.formcard{background:#fff;border:1px solid #dbe5f0;border-radius:22px;padding:28px;box-shadow:0 12px 34px #1e40af0b}.eyebrow{font-size:11px;font-weight:900;letter-spacing:.12em;color:#f97316}.hero h1{font-size:clamp(28px,4vw,42px);color:#082f6b;margin:9px 0}.hero p{color:#475569;line-height:1.7;margin-bottom:0}.formcard{margin-top:18px}.formgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.field{display:flex;flex-direction:column;gap:7px}.field label{font-size:12px;font-weight:900;color:#17365f}.field input,.field select,.field textarea{width:100%;min-height:46px;padding:11px 12px;border:1px solid #cbd5e1;border-radius:11px;background:#fff;color:#0f172a;font:600 14px Inter,Arial,sans-serif}.field textarea{min-height:80px;resize:vertical}.sectiontitle{margin:24px 0 12px;color:#082f6b;font-size:17px}.full{grid-column:1/-1}.required{color:#dc2626}.consent{display:flex;gap:9px;align-items:flex-start;color:#475569;font-size:12px;line-height:1.6;margin-top:18px}.consent input{margin-top:3px}.submit{margin-top:18px;width:100%;min-height:54px;border:0;border-radius:13px;background:#128c4a;color:#fff;font-size:14px;font-weight:1000;cursor:pointer}.submit:disabled{opacity:.6;cursor:wait}.status{margin-top:14px;font-weight:800;font-size:13px;line-height:1.6}.status.error{color:#b91c1c}.status.success{color:#166534}.notice{background:#eff6ff;border:1px solid #bfdbfe;color:#1e40af;padding:12px 14px;border-radius:12px;font-size:12px;line-height:1.6;margin-top:18px}@media(max-width:720px){header{padding:13px 4%}.brand{font-size:16px}.formgrid{grid-template-columns:repeat(2,minmax(0,1fr))}.hero,.formcard{padding:20px}}@media(max-width:520px){.formgrid{grid-template-columns:1fr}.full{grid-column:auto}.back{font-size:10px;padding:9px 10px}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<header><div class="brand">GURU CONNECT</div><a class="back" href="index.html">← BACK TO WEBSITE</a></header>
+<main class="wrap">
+<section class="hero"><div class="eyebrow">LEARN • CONNECT • GROW</div><h1>POST TUTOR REQUIREMENT</h1><p>Tell us what tuition you need. Your requirement will be shared privately with active Premium Tutors only. Your contact details will not be shown on the public website.</p></section>
+<section class="formcard">
+<form id="requirementForm">
+<h2 class="sectiontitle" style="margin-top:0">Student / Parent Contact Details</h2>
+<div class="formgrid">
+<div class="field"><label for="studentName">Student / Parent Full Name <span class="required">*</span></label><input id="studentName" maxlength="120" autocomplete="name" required placeholder="Enter full name"></div>
+<div class="field"><label for="studentPhone">Phone Number <span class="required">*</span></label><input id="studentPhone" type="tel" maxlength="25" autocomplete="tel" required pattern="[+0-9() -]{7,25}" placeholder="Enter contact number"></div>
+<div class="field"><label for="studentEmail">Email Address <span class="required">*</span></label><input id="studentEmail" type="email" maxlength="254" autocomplete="email" required placeholder="Enter email address"></div>
+</div>
+<h2 class="sectiontitle">Tuition Requirement</h2>
+<div class="formgrid">
+<div class="field"><label for="searchClass">Class <span class="required">*</span></label><select id="searchClass" required><option value="">Select Class</option><option>1st</option><option>2nd</option><option>3rd</option><option>4th</option><option>5th</option><option>6th</option><option>7th</option><option>8th</option><option>9th</option><option>10th</option><option>FYJC</option><option>SYJC</option><option>FY</option><option>SY</option><option>TY</option><option>Other</option></select></div>
+<div class="field"><label for="course">Course <span class="required">*</span></label><select id="course" required><option value="">Select Course</option><option>SCHOOL</option><option>SSC</option><option>ARTS</option><option>SCIENCE</option><option>COMMERCE</option><option>CBSE</option><option>ICSE</option><option>JEE</option><option>NEET</option><option>Other</option></select></div>
+<div class="field"><label for="subjectCount">Number of Subjects <span class="required">*</span></label><select id="subjectCount" required><option value="">Select count</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></div>
+<div class="field full"><label for="subjects">Subject(s) Required <span class="required">*</span></label><textarea id="subjects" maxlength="600" required placeholder="e.g. Mathematics, Physics, Chemistry"></textarea></div>
+<div class="field"><label for="mode">Mode <span class="required">*</span></label><select id="mode" required><option value="">Select mode</option><option value="ONLINE">Online</option><option value="OFFLINE">Offline</option></select></div>
+<div class="field"><label for="location">Location / Area <span class="required">*</span></label><input id="location" maxlength="240" required placeholder="Area, city or online location"></div>
+<div class="field"><label for="feesBudget">Fees Budget <span class="required">*</span></label><input id="feesBudget" maxlength="100" required placeholder="e.g. ₹4,000 per month"></div>
+<div class="field"><label for="lastDate">Last Date of Requirement <span class="required">*</span></label><input id="lastDate" type="date" required></div>
+<div class="field"><label for="preferredTiming">Preferred Timing (optional)</label><select id="preferredTiming"><option value="">No preference</option><option>Morning</option><option>Afternoon</option><option>Evening</option><option>Weekend</option><option>Flexible</option></select></div>
+</div>
+<label class="consent"><input id="consent" type="checkbox" required><span>I agree that GURU CONNECT may share the details above, including my contact information, with eligible Premium Tutors so they can respond to this tuition requirement.</span></label>
+<button class="submit" id="submitBtn" type="submit">SUBMIT REQUIREMENT</button><div id="status" class="status" role="status" aria-live="polite"></div>
+<div class="notice">Privacy rule: Only active, paid Premium Tutors (₹200 Premium or ₹300 Premium + Verified Tick) can open the private Tutor Requirements board. Free Tutors cannot read these records or contact details.</div>
+</form>
+</section>
+</main>
+<script>
+(function(){
+'use strict';
+const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
+const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+const $=id=>document.getElementById(id);
+const form=$('requirementForm'),btn=$('submitBtn'),status=$('status');
+const today=new Date();today.setMinutes(today.getMinutes()-today.getTimezoneOffset());$('lastDate').min=today.toISOString().slice(0,10);
+form.addEventListener('submit',async e=>{
+ e.preventDefault();status.className='status';status.textContent='Submitting your requirement securely…';btn.disabled=true;btn.textContent='SUBMITTING…';
+ try{
+  if(!window.supabase?.createClient)throw new Error('The service is not available right now. Please refresh and try again.');
+  const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+  const result=await sb.rpc('gc_submit_tutor_requirement',{
+   p_student_name:$('studentName').value.trim(),p_student_phone:$('studentPhone').value.trim(),p_student_email:$('studentEmail').value.trim(),
+   p_search_class:$('searchClass').value,p_course:$('course').value,p_subject_count:Number($('subjectCount').value),p_subjects:$('subjects').value.trim(),
+   p_mode:$('mode').value,p_location:$('location').value.trim(),p_fees_budget:$('feesBudget').value.trim(),p_last_date:$('lastDate').value,
+   p_preferred_timing:$('preferredTiming').value||null
+  });
+  if(result.error)throw result.error;
+  status.className='status success';status.textContent='Thank you! Your Tutor Requirement has been submitted. Active Premium Tutors can now view it in their dashboard.';
+  form.reset();$('lastDate').min=today.toISOString().slice(0,10);
+ }catch(err){status.className='status error';status.textContent=err?.message||'Could not submit your requirement. Please try again.'}
+ finally{btn.disabled=false;btn.textContent='SUBMIT REQUIREMENT'}
+});
+})();
+</script>
+</body></html>
