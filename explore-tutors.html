@@ -11,7 +11,7 @@
 .subject-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
 .find-btn{display:flex;justify-content:center;align-items:center;gap:13px;width:100%;min-height:56px;margin-top:25px;border:0;border-radius:14px;background:#128C4A;color:#fff;font-size:15px;font-weight:1000;letter-spacing:.03em;cursor:pointer;box-shadow:0 10px 24px #075e3625}.find-btn:hover{background:#075E36}.find-btn:disabled{opacity:.65;cursor:wait}
 .find-btn span{font-size:22px}.required-note{margin:12px 0 0!important;font-size:12px!important;color:#64748b!important}
-.results-section{margin-top:30px;padding:28px;background:#fff;border:1px solid #dbe5f2;border-radius:24px;box-shadow:0 12px 34px #1e40af0b}
+.visitor-gate{margin-top:25px;padding:24px;background:#fff;border:2px solid #cfe0f5;border-radius:20px}.visitor-gate h2{margin:0 0 8px;color:#082f6b}.visitor-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.visitor-gate label{display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:900;color:#17365f}.visitor-gate input{width:100%;min-height:48px;padding:12px;border:1px solid #cbd5e1;border-radius:12px;font:600 15px Inter,Arial,sans-serif}.visitor-gate button,.inquiry-btn{border:0;border-radius:12px;background:#128C4A;color:#fff;padding:13px 17px;font-weight:900;cursor:pointer}.visitor-gate button{margin-top:16px;width:100%;min-height:50px}.visitor-gate small{display:block;color:#64748b;line-height:1.5;margin-top:10px}.locked-search{opacity:.45;pointer-events:none;filter:grayscale(.15)}.inquiry-btn{width:100%;margin-top:auto;background:#0b63ce;min-height:48px}.inquiry-btn:hover{background:#084da5}.results-section{margin-top:30px;padding:28px;background:#fff;border:1px solid #dbe5f2;border-radius:24px;box-shadow:0 12px 34px #1e40af0b}
 .results-heading{display:flex;align-items:center;justify-content:space-between;gap:14px}.results-heading h2{margin:0;color:#082f6b;font-size:25px}.results-heading p{margin:6px 0 0;font-size:13px}.result-count{padding:9px 12px;border-radius:999px;background:#eef4ff;color:#17478b;font-size:11px;font-weight:900;white-space:nowrap}
 .search-status{margin-top:16px;font-size:13px;font-weight:700;color:#475569}.search-status.error{color:#b91c1c}.tutor-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:17px}
 .search-tutor-card{min-width:0;background:#fff;border:1px solid #dbe5f2;border-radius:18px;padding:18px;box-shadow:0 7px 22px #0f172a08;display:flex;flex-direction:column;gap:11px}
@@ -20,14 +20,27 @@
 .plan-badge{display:inline-flex;align-self:flex-start;border-radius:999px;padding:6px 9px;background:#e5e7eb;color:#374151;font-size:10px;font-weight:1000;letter-spacing:.04em}.premium .plan-badge{background:#fef3c7;color:#854d0e}
 .tutor-meta{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tutor-meta div{padding:9px;background:#f8fafc;border-radius:10px;min-width:0}.tutor-meta b{display:block;font-size:9px;color:#64748b;letter-spacing:.05em;margin-bottom:4px}.tutor-meta span{display:block;color:#1e293b;font-size:12px;font-weight:800;overflow-wrap:anywhere}
 .tutor-about{margin:0;font-size:12px;line-height:1.6;color:#475569;overflow-wrap:anywhere}.empty-results{grid-column:1/-1;padding:30px;text-align:center;border:1px dashed #cbd5e1;border-radius:16px;color:#64748b;background:#f8fbff}
-@media(max-width:800px){.form-grid,.subject-grid,.tutor-results{grid-template-columns:repeat(2,minmax(0,1fr))}.results-section{padding:20px}.search-form{padding:18px}}
-@media(max-width:520px){.form-grid,.subject-grid,.tutor-results{grid-template-columns:1fr}.results-heading{align-items:flex-start}.results-heading h2{font-size:21px}.subject-heading{align-items:flex-start}}
+@media(max-width:800px){.form-grid,.subject-grid,.tutor-results,.visitor-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.results-section{padding:20px}.search-form{padding:18px}}
+@media(max-width:520px){.form-grid,.subject-grid,.tutor-results,.visitor-grid{grid-template-columns:1fr}.results-heading{align-items:flex-start}.results-heading h2{font-size:21px}.subject-heading{align-items:flex-start}}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body><header><div class="brand"><img src="guru-connect-brand.png" alt="GURU CONNECT — Connecting Minds Creating Future"></div><a class="back" href="index.html">← Back to Website</a></header><main class="wrap">
 <section class="hero">
   <div style="font-size:13px;font-weight:900;color:#f97316;text-transform:uppercase;letter-spacing:.08em">GURU CONNECT • TUTOR SEARCH</div>
   <h1>Search / Browse Tutors</h1>
   <p style="font-size:18px;color:#334155">Tell us what you need. We’ll show matching tutor profiles, with Premium tutors first when the membership plan is available in the directory.</p>
-  <form id="tutorSearchForm" class="search-form">
+  <section id="visitorGate" class="visitor-gate">
+    <h2>Before You Search — Your Contact Details</h2>
+    <p style="margin:0 0 16px">Please enter your details first. GURU CONNECT’s Admin may contact you about your tutor inquiry.</p>
+    <form id="visitorDetailsForm">
+      <div class="visitor-grid">
+        <label>Your Full Name <span style="color:#dc2626">*</span><input id="visitorName" type="text" maxlength="120" autocomplete="name" required placeholder="Enter your name"></label>
+        <label>Phone Number <span style="color:#dc2626">*</span><input id="visitorPhone" type="tel" maxlength="20" autocomplete="tel" required pattern="[+0-9()\\-\\s]{7,20}" placeholder="Enter phone number"></label>
+        <label>Email Address <span style="color:#dc2626">*</span><input id="visitorEmail" type="email" maxlength="254" autocomplete="email" required placeholder="Enter email address"></label>
+      </div>
+      <button type="submit">SAVE DETAILS & UNLOCK TUTOR SEARCH</button>
+      <small>Your details are shared with GURU CONNECT Admin for handling your inquiry. They will not be shown publicly on tutor cards.</small>
+    </form>
+  </section>
+  <form id="tutorSearchForm" class="search-form locked-search" aria-disabled="true">
     <div class="form-grid">
       <label>Class <span>*</span>
         <select id="searchClass" required>
@@ -89,6 +102,7 @@ const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const baseFields='id,user_id,name,subject,stream,experience,qualification,college,teaching_college,price,about_me,photo_url,verified,paid_status,payment_plan,registration_status,registration_approval_status,registration_approved,is_hidden,is_disabled,rating,review_count,students_taught,teaching_mode,location,languages,availability,created_at';
+let visitorDetails=null;
 let supa=null, planFieldAvailable=true;
 try{if(window.gcSupabase)supa=window.gcSupabase;else if(window.supabase?.createClient)supa=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}catch(e){}
 function status(msg,isError){$('searchStatus').textContent=msg;$('searchStatus').className='search-status'+(isError?' error':'')}
@@ -103,9 +117,33 @@ function renderCards(rows,subjects){
   const premium=isPremium(t), name=String(t.name||'Registered Tutor'), avatar=t.photo_url?'<img src="'+esc(t.photo_url)+'" alt="Tutor profile photo" loading="lazy">':esc(name.trim().charAt(0).toUpperCase()||'T');
   const sub=String(t.subject||'Not specified'), stream=String(t.stream||'Not specified'), qual=String(t.qualification||'Not provided'), mode=String(t.teaching_mode||'Not specified'), price=t.price!==null&&t.price!==undefined&&String(t.price).trim()?String(t.price):'Contact tutor';
   const about=String(t.about_me||'').trim();
-  host.insertAdjacentHTML('beforeend','<article class="search-tutor-card '+(premium?'premium':'')+'"><div class="tutor-card-top"><div class="tutor-avatar">'+avatar+'</div><div class="tutor-card-name"><h3>'+esc(name)+'</h3><p>'+esc(stream)+'</p></div></div><span class="plan-badge">'+(premium?'★ PREMIUM SUBSCRIPTION':'REGULAR TUTOR')+'</span><div class="tutor-meta"><div><b>SUBJECT EXPERTISE</b><span>'+esc(sub)+'</span></div><div><b>QUALIFICATION</b><span>'+esc(qual)+'</span></div><div><b>TEACHING MODE</b><span>'+esc(mode)+'</span></div><div><b>RATE / HOUR</b><span>'+esc(price)+'</span></div></div>'+(about?'<p class="tutor-about">'+esc(about.slice(0,240))+'</p>':'')+'</article>');
+  const experience=String(t.experience||'Not specified'), college=String(t.college||t.teaching_college||'Not specified'), location=String(t.location||'Not specified'), languages=String(t.languages||'Not specified');
+  host.insertAdjacentHTML('beforeend','<article class="search-tutor-card '+(premium?'premium':'')+'"><div class="tutor-card-top"><div class="tutor-avatar">'+avatar+'</div><div class="tutor-card-name"><h3>'+esc(name)+'</h3><p>'+esc(stream)+'</p></div></div><span class="plan-badge">'+(premium?'★ PREMIUM SUBSCRIPTION':'REGULAR TUTOR')+'</span><div class="tutor-meta"><div><b>SUBJECT EXPERTISE</b><span>'+esc(sub)+'</span></div><div><b>QUALIFICATION</b><span>'+esc(qual)+'</span></div><div><b>EXPERIENCE</b><span>'+esc(experience)+'</span></div><div><b>TEACHING MODE</b><span>'+esc(mode)+'</span></div><div><b>RATE / HOUR</b><span>'+esc(price)+'</span></div><div><b>LOCATION</b><span>'+esc(location)+'</span></div></div>'+(college!=='Not specified'?'<p class="tutor-about"><b>College / Institution:</b> '+esc(college)+'</p>':'')+(languages!=='Not specified'?'<p class="tutor-about"><b>Languages:</b> '+esc(languages)+'</p>':'')+(about?'<p class="tutor-about">'+esc(about.slice(0,360))+'</p>':'')+'<button type="button" class="inquiry-btn" data-send-inquiry="'+esc(t.id)+'" data-tutor-name="'+esc(name)+'">SEND INQUIRY</button></article>');
  });
 }
+async function sendInquiry(tutorId,tutorName,button){
+ if(!visitorDetails){status('Please enter your name, phone number and email before sending an inquiry.',true);$('visitorGate').scrollIntoView({behavior:'smooth',block:'center'});return}
+ if(!supa)throw new Error('Inquiry service is unavailable. Please refresh and try again.');
+ if(button)button.disabled=true;
+ try{
+  const res=await supa.rpc('gc_submit_tutor_inquiry',{p_visitor_name:visitorDetails.name,p_visitor_phone:visitorDetails.phone,p_visitor_email:visitorDetails.email,p_tutor_id:String(tutorId),p_tutor_name:String(tutorName),p_search_class:$('searchClass').value,p_course:$('searchCourse').value,p_subjects:Array.from(document.querySelectorAll('.subject-input')).map(x=>x.value.trim()).filter(Boolean).join(', ')});
+  if(res.error)throw res.error;
+  if(typeof window.gcShowPopup==='function')window.gcShowPopup('Your inquiry has been sent to GURU CONNECT Admin. The Admin will review your requirements and may contact you. No tutor has been connected automatically.',{title:'Inquiry Submitted',kind:'success',button:'CONTINUE'});
+  else alert('Your inquiry has been sent to GURU CONNECT Admin.');
+ }finally{if(button)button.disabled=false}
+}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-send-inquiry]');if(!b)return;try{await sendInquiry(b.dataset.sendInquiry,b.dataset.tutorName,b)}catch(err){if(typeof window.gcShowPopup==='function')window.gcShowPopup('Your inquiry could not be submitted. Please try again. Details: '+(err.message||String(err)),{title:'Inquiry Not Sent',kind:'error'});else alert('Inquiry could not be submitted: '+(err.message||String(err)))}});
+$('visitorDetailsForm').addEventListener('submit',e=>{
+ e.preventDefault();
+ const name=$('visitorName').value.trim(),phone=$('visitorPhone').value.trim(),email=$('visitorEmail').value.trim();
+ if(!name||!phone||!email){status('Please complete all three contact fields before searching.',true);return}
+ visitorDetails={name,phone,email};
+ $('tutorSearchForm').classList.remove('locked-search');$('tutorSearchForm').setAttribute('aria-disabled','false');
+ $('visitorGate').querySelector('button').textContent='✓ DETAILS SAVED — SEARCH UNLOCKED';
+ $('visitorGate').querySelector('button').disabled=true;
+ $('visitorGate').style.borderColor='#16a34a';
+ status('Your details are saved for this page session. You may now search tutors and send an inquiry.',false);
+});
 async function searchTutors(search){
  if(!supa)throw new Error('Tutor directory is not connected right now. Please refresh and try again.');
  let q=supa.from('tutor_profiles').select(baseFields).limit(1000);
@@ -136,6 +174,7 @@ async function searchTutors(search){
 }
 $('tutorSearchForm').addEventListener('submit',async e=>{
  e.preventDefault();
+ if(!visitorDetails){status('Enter your name, phone number and email above before searching.',true);$('visitorGate').scrollIntoView({behavior:'smooth',block:'center'});return}
  const className=$('searchClass').value,course=$('searchCourse').value,count=Number($('subjectCount').value),subjects=Array.from(document.querySelectorAll('.subject-input')).map(x=>x.value.trim());
  if(!className||!course||!Number.isInteger(count)||count<1||count>6){status('Please complete all compulsory fields. Number of subjects must be between 1 and 6.',true);return}
  const btn=$('findTutorsBtn');btn.disabled=true;btn.textContent='SEARCHING TUTORS…';$('tutorResults').innerHTML='';$('resultCount').textContent='SEARCHING';status('Searching registered tutor profiles…',false);
