@@ -632,7 +632,7 @@ async function loadTutorInquiries(){
   [...groups.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([day,dayRows])=>{
     const dayStandards=countBy(dayRows,'search_class'),dayStreams=countBy(dayRows,'stream'),daySubjects=countBy(dayRows,'subjects');
     const dateDisplay=day.replaceAll('-','.').split('.').reverse().join('.').toUpperCase();
-    const dateNice=new Date(day+'T12:00:00').toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}).replaceAll(' ',' ').toUpperCase().replace(' ',' .').replace(' .','.');
+    const dp=new Date(day+'T12:00:00');const dateNice=String(dp.getDate()).padStart(2,'0')+'.'+dp.toLocaleDateString('en-GB',{month:'short'}).toUpperCase()+'.'+dp.getFullYear();
     return '<section class="gc-inquiry-day"><header><div><small>DAILY INQUIRY REPORT</small><h3>DATE: '+escv(dateNice)+'</h3></div><span class="gc-inquiry-day-count">'+dayRows.length+' TOTAL INQUIRIES</span></header>'+
     '<div class="gc-inquiry-day-breakdown"><span><b>Standard:</b> '+dayStandards.map(x=>escv(x[0])+' ('+x[1]+')').join(' | ')+'</span><span><b>Stream:</b> '+dayStreams.map(x=>escv(x[0])+' ('+x[1]+')').join(' | ')+'</span><span><b>Subject:</b> '+daySubjects.map(x=>escv(x[0])+' ('+x[1]+')').join(' | ')+'</span></div>'+
     '<nav class="gc-inquiry-tabs"><button type="button" class="active" data-inquiry-tab="standard" data-day="'+day+'">STANDARD-WISE</button><button type="button" data-inquiry-tab="stream" data-day="'+day+'">STREAM-WISE</button><button type="button" data-inquiry-tab="subject" data-day="'+day+'">SUBJECT-WISE</button><button type="button" data-inquiry-tab="all" data-day="'+day+'">ALL INQUIRIES</button></nav>'+
