@@ -10497,7 +10497,7 @@ body {
     if (!gcCloudEnabled) return { rows: [], total: 0 };
 
     const fields = table === 'tutor_profiles'
-      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at'
+      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,premium_badge_override,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at'
       : 'id,user_id,name,course,stream,learning_requirement,subject,year,semester,standard,college,division,roll_number,cgpa,email,phone,location,address,mode,teaching_mode,languages,availability,member_since,record_no,data_source,about_me,achievement_photos,helpline_plan,helpline_status,helpline_course,helpline_subject,helpline_subject_count,helpline_amount,privacy,photo_url,created_at';
 
     const cacheKey = 'ALL:' + table;
@@ -14866,7 +14866,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
     };
 
     const row=await updateAndVerify('tutor_profiles',t.id,patch,
-      'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at');
+      'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,premium_badge_override,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at');
 
     Object.assign(t,{
       id:row.id,user_id:row.user_id||t.user_id,name:row.name||'',
