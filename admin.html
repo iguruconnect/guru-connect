@@ -662,9 +662,36 @@ async function loadTutorInquiries(){
    document.body.appendChild(modal);
   });
   out.querySelectorAll('[data-send-premium-requirement]').forEach(b=>b.onclick=async()=>{
-   const id=b.dataset.sendPremiumRequirement,st=$('visitor-send-status-'+id);b.disabled=true;if(st)st.textContent='Matching active Premium Tutors…';
-   try{const z=await sb.rpc('gc_admin_send_visitor_requirement_to_premium_tutors',{p_inquiry_id:id});if(z.error)throw z.error;const n=Number(z.data?.matched_tutors||0);if(st)st.textContent='✓ SENT TO PREMIUM TUTORS — '+n+' tutor(s) received this inquiry.';status.textContent='✓ Inquiry sent successfully to '+n+' matching Premium Tutor(s).';document.getElementById('gcVisitorInquiryModal')?.remove();const success=document.createElement('div');success.id='gcVisitorSendSuccessModal';success.setAttribute('role','dialog');success.setAttribute('aria-modal','true');success.style.cssText='position:fixed;inset:0;z-index:100010;background:rgba(7,18,42,.72);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px)';success.innerHTML='<div style="width:min(520px,96vw);background:white;border-radius:22px;padding:28px;text-align:center;box-shadow:0 25px 80px #0005;border-top:6px solid #16a34a"><div style="width:70px;height:70px;border-radius:50%;margin:0 auto 14px;background:#dcfce7;color:#15803d;display:grid;place-items:center;font-size:38px;font-weight:900">✓</div><h2 style="margin:0 0 8px;color:#14532d">Inquiry Sent Successfully!</h2><p style="color:#475569;margin:0 0 8px">This inquiry has been forwarded to <b>'+n+' matching Premium Tutor(s)</b>.</p><p style="background:#f0fdf4;color:#166534;padding:11px;border-radius:10px;font-weight:800">STATUS: SENT TO PREMIUM TUTORS</p><p style="font-size:12px;color:#64748b">The sent status will also appear in Inquiry History.</p><button type="button" id="gcVisitorSendSuccessClose" style="margin-top:8px;border:0;border-radius:10px;background:#15803d;color:white;padding:12px 22px;font-weight:800;cursor:pointer">OK</button></div>';document.body.appendChild(success);success.querySelector('#gcVisitorSendSuccessClose').onclick=()=>success.remove();await loadTutorInquiries()}
-   catch(e){if(st)st.textContent='Not sent: '+(e.message||String(e));status.textContent='Could not send requirement: '+(e.message||String(e));b.disabled=false}
+   const id=b.dataset.sendPremiumRequirement,st=$('visitor-send-status-'+id);
+   b.disabled=true;
+   if(st)st.textContent='Sending inquiry and checking matching Premium Tutors…';
+   const showSendResult=(ok,title,message,detail)=>{
+    document.getElementById('gcVisitorSendResultModal')?.remove();
+    const pop=document.createElement('div');pop.id='gcVisitorSendResultModal';pop.setAttribute('role','dialog');pop.setAttribute('aria-modal','true');
+    pop.style.cssText='position:fixed;inset:0;z-index:100200;background:rgba(7,18,42,.78);display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(5px)';
+    const accent=ok?'#15803d':'#b91c1c',pale=ok?'#dcfce7':'#fee2e2';
+    pop.innerHTML='<div style="width:min(460px,96vw);background:#fff;border-radius:18px;padding:24px;text-align:center;box-shadow:0 22px 70px #0005;border-top:5px solid '+accent+'"><div style="width:58px;height:58px;border-radius:50%;margin:0 auto 12px;background:'+pale+';color:'+accent+';display:grid;place-items:center;font-size:32px;font-weight:900">'+(ok?'✓':'!')+'</div><h2 style="margin:0 0 9px;color:'+accent+';font-size:21px">'+title+'</h2><p style="color:#334155;line-height:1.5;margin:0 0 10px">'+message+'</p><div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px;color:#475569;font-size:12px;overflow-wrap:anywhere">'+detail+'</div><button type="button" id="gcVisitorSendResultClose" style="margin-top:16px;border:0;border-radius:10px;background:'+accent+';color:#fff;padding:11px 28px;font-weight:800;cursor:pointer">OK</button></div>';
+    document.body.appendChild(pop);pop.querySelector('#gcVisitorSendResultClose').onclick=()=>pop.remove();pop.addEventListener('click',e=>{if(e.target===pop)pop.remove()});
+   };
+   try{
+    const z=await sb.rpc('gc_admin_send_visitor_requirement_to_premium_tutors',{p_inquiry_id:id});
+    if(z.error)throw z.error;
+    const data=Array.isArray(z.data)?(z.data[0]||{}):(z.data||{});
+    const n=Number(data.matched_tutors??data.tutors_sent??data.recipient_count??0);
+    const sent= n>0 || data.success===true || data.sent===true;
+    if(st)st.textContent=sent?'✓ SENT TO PREMIUM TUTORS — '+n+' matching tutor(s).':(data.message||'The request completed, but no matching Premium Tutor was confirmed.');
+    status.textContent=sent?'Inquiry sent to '+n+' matching Premium Tutor(s).':'Inquiry was not confirmed as sent. Check tutor matching and inquiry eligibility.';
+    document.getElementById('gcVisitorInquiryModal')?.remove();
+    showSendResult(sent,sent?'Inquiry Sent Successfully':'Inquiry Not Sent',sent?'The inquiry was sent to '+n+' matching active Premium Tutor(s).':'The system did not confirm delivery to any matching active Premium Tutor. No successful send is confirmed.',data.message||data.error||('Matching tutors reported: '+n));
+    if(sent){await loadTutorInquiries()}
+    else b.disabled=false;
+   }catch(e){
+    const msg=e?.message||String(e);
+    if(st)st.textContent='✕ NOT SENT: '+msg;
+    status.textContent='Inquiry sending failed: '+msg;
+    b.disabled=false;
+    showSendResult(false,'Inquiry Not Sent','The inquiry could not be sent. Please check the error below and try again.',msg);
+   }
   });
   status.textContent='Loaded '+rows.length+' visitor inquiry row(s).';
  }catch(e){status.textContent='Could not load visitor inquiries: '+(e.message||String(e));out.innerHTML='<div class="empty">Run SUPABASE_TUTOR_INQUIRIES_SETUP.sql and SUPABASE_VISITOR_PREMIUM_TUTOR_ROUTING.sql in Supabase, then refresh.</div>'}
