@@ -22,6 +22,34 @@
 .tutor-about{margin:0;font-size:12px;line-height:1.6;color:#475569;overflow-wrap:anywhere}.empty-results{grid-column:1/-1;padding:30px;text-align:center;border:1px dashed #cbd5e1;border-radius:16px;color:#64748b;background:#f8fbff}
 @media(max-width:800px){.form-grid,.subject-grid,.tutor-results,.visitor-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.results-section{padding:20px}.search-form{padding:18px}}
 @media(max-width:520px){.form-grid,.subject-grid,.tutor-results,.visitor-grid{grid-template-columns:1fr}.results-heading{align-items:flex-start}.results-heading h2{font-size:21px}.subject-heading{align-items:flex-start}}
+
+/* Final approved Design 1: blue-and-white grid cards with colorful accents */
+body{background:linear-gradient(145deg,#f4f9ff 0%,#fff 54%,#f2f7ff 100%);color:#102b50}
+header{border-bottom:1px solid #d6e6fb;box-shadow:0 5px 22px rgba(15,54,105,.08)}
+.back,.inquiry-btn{background:linear-gradient(135deg,#0878e8,#0755bd);box-shadow:0 6px 15px rgba(7,85,189,.15)}
+.back:hover,.inquiry-btn:hover{background:linear-gradient(135deg,#0755bd,#073d8c)}
+.hero{background:linear-gradient(120deg,#fff 0%,#f0f7ff 60%,#e7f4ff 100%);border-color:#cfe3fb}
+.search-form{background:linear-gradient(135deg,#f3f9ff,#fff);border-color:#cfe3fb}
+.find-btn{background:linear-gradient(135deg,#0878e8,#0755bd);box-shadow:0 10px 24px rgba(7,85,189,.18)}
+.find-btn:hover{background:linear-gradient(135deg,#0755bd,#073d8c)}
+.visitor-gate{border-color:#cfe3fb}
+.visitor-gate button{background:linear-gradient(135deg,#0878e8,#0755bd)}
+.results-section{border-color:#d6e6fb}
+.tutor-results{grid-template-columns:repeat(3,minmax(0,1fr))}
+.search-tutor-card{position:relative;border-color:#d7e6f8;background:linear-gradient(155deg,#fff,#f8fbff);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;box-shadow:0 7px 20px rgba(21,67,125,.07)}
+.search-tutor-card:hover{transform:translateY(-3px);box-shadow:0 13px 28px rgba(21,67,125,.13);border-color:#7db8fa}
+.search-tutor-card:nth-child(3n+2):not(.premium){background:linear-gradient(155deg,#fff,#f4fbff);border-color:#b9e5fa}
+.search-tutor-card:nth-child(3n):not(.premium){background:linear-gradient(155deg,#fff,#f5f8ff);border-color:#d6ccff}
+.search-tutor-card.premium{border-color:#e9bd4d;background:linear-gradient(155deg,#fffaf0,#fff 60%);box-shadow:0 8px 22px rgba(180,125,20,.10)}
+.tutor-avatar{background:linear-gradient(135deg,#dbeafe,#d1fae5);border-radius:16px}
+.plan-badge{background:#e8f1ff;color:#17478b}
+.verified-badge{background:#dcfce7;color:#166534}
+.tutor-meta div{background:rgba(235,244,255,.75)}
+.sort-control{display:flex;align-items:center;gap:8px;color:#23466f;font-size:12px;font-weight:800}
+.sort-control select{border:1px solid #cbdcf0;border-radius:10px;background:#fff;color:#17365f;padding:9px 10px;font:700 12px Inter,Arial,sans-serif;max-width:155px}
+@media(max-width:800px){.tutor-results{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.tutor-results{grid-template-columns:1fr}.sort-control{align-items:flex-end;flex-direction:column}}
+@media(prefers-reduced-motion:reduce){.search-tutor-card{transition:none}.search-tutor-card:hover{transform:none}}
 </style><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body><header><div class="brand"><img src="guru-connect-brand.png" alt="GURU CONNECT — Connecting Minds Creating Future"></div><a class="back" href="index.html">← Back to Website</a></header><main class="wrap">
 <section class="hero">
   <div style="font-size:13px;font-weight:900;color:#f97316;text-transform:uppercase;letter-spacing:.08em">GURU CONNECT • TUTOR SEARCH</div>
@@ -72,7 +100,7 @@
   </form>
 </section>
 <section id="searchResultsSection" class="results-section" aria-live="polite">
-  <div class="results-heading"><div><h2>Matching Tutor Profiles</h2><p id="resultsSummary">Fill in your requirements and select FIND REQUIRED TUTORS.</p></div><span id="resultCount" class="result-count">0 TUTORS</span></div>
+  <div class="results-heading"><div><h2>Matching Tutor Profiles</h2><p id="resultsSummary">Fill in your requirements and select FIND REQUIRED TUTORS.</p></div><div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap"><label class="sort-control" for="tutorSort">Sort by <select id="tutorSort"><option value="best">Best Match</option><option value="rating">Highest Rating</option><option value="experience">Most Experience</option><option value="price">Fee: Low to High</option><option value="name">Name: A–Z</option></select></label><span id="resultCount" class="result-count">0 TUTORS</span></div></div>
   <div id="searchStatus" class="search-status" role="status"></div>
   <div id="tutorResults" class="tutor-results"></div>
 </section>
@@ -104,13 +132,24 @@ const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const baseFields='id,user_id,name,subject,stream,experience,qualification,college,teaching_college,price,about_me,photo_url,verified,paid_status,payment_plan,registration_status,registration_approval_status,registration_approved,is_hidden,is_disabled,rating,review_count,students_taught,teaching_mode,location,languages,availability,created_at';
 let visitorDetails=null;
-let supa=null, planFieldAvailable=true;
+let supa=null, planFieldAvailable=true, currentResults=[], currentSubjects=[];
 try{if(window.gcSupabase)supa=window.gcSupabase;else if(window.supabase?.createClient)supa=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}catch(e){}
 function status(msg,isError){$('searchStatus').textContent=msg;$('searchStatus').className='search-status'+(isError?' error':'')}
 function norm(v){return String(v??'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
 function planName(t){return String(t.payment_plan||t.membership_plan||t.subscription_plan||t.plan||'').toLowerCase()}
 function isPremium(t){const p=planName(t),paid=String(t.paid_status||'').toLowerCase();return (p==='premium_200'||p==='premium_verified_300'||p.includes('premium'))&&paid==='paid'}
 function terms(t){return norm([t.subject,t.stream,t.qualification,t.college,t.teaching_college,t.about_me,t.languages,t.teaching_mode].join(' '))}
+function sortTutorResults(rows){
+ const mode=$('tutorSort')?.value||'best';
+ const num=(v)=>{const m=String(v??'').replace(/,/g,'').match(/\d+(?:\.\d+)?/);return m?Number(m[0]):null};
+ return [...rows].sort((a,b)=>{
+  if(mode==='rating'){const ar=num(a.rating),br=num(b.rating);return (br===null?-1:br)-(ar===null?-1:ar)||((Number(b.__premium)-Number(a.__premium)))||String(a.name||'').localeCompare(String(b.name||''))}
+  if(mode==='experience'){const ar=num(a.experience),br=num(b.experience);return (br===null?-1:br)-(ar===null?-1:ar)||((Number(b.__premium)-Number(a.__premium)))||String(a.name||'').localeCompare(String(b.name||''))}
+  if(mode==='price'){const ar=num(a.price),br=num(b.price);if(ar===null&&br!==null)return 1;if(br===null&&ar!==null)return -1;return (ar??0)-(br??0)||String(a.name||'').localeCompare(String(b.name||''))}
+  if(mode==='name')return String(a.name||'').localeCompare(String(b.name||''));
+  return (Number(b.__premium)-Number(a.__premium))||(b.__score-a.__score)||String(a.name||'').localeCompare(String(b.name||''));
+ });
+}
 function renderCards(rows,subjects){
  const host=$('tutorResults');host.innerHTML='';
  if(!rows.length){host.innerHTML='<div class="empty-results">No matching tutors were found for these requirements. Try a different subject or course.</div>';return}
@@ -169,13 +208,14 @@ async function searchTutors(search){
   if(t.verified===true)score+=1;
   return {...t,__score:score,__premium:isPremium(t)};
  }).filter(Boolean);
- scored.sort((a,b)=>(Number(b.__premium)-Number(a.__premium))||(b.__score-a.__score)||String(a.name||'').localeCompare(String(b.name||'')));
+ currentResults=scored;currentSubjects=subjects;scored=sortTutorResults(scored);
  $('resultCount').textContent=scored.length+' TUTOR'+(scored.length===1?'':'S');
  $('resultsSummary').textContent='Search: '+search.className+' • '+search.course+' • '+search.subjectCount+' subject(s) required'+(subjects.length?' • Subjects: '+search.subjects.filter(Boolean).join(', '):'');
  renderCards(scored,subjects);
  if(!planFieldAvailable)status('Found '+scored.length+' tutor profile(s). Note: the current directory does not expose a membership-plan field, so Premium-first ordering cannot be verified until plan information is saved in Supabase.',false);
  else status('Found '+scored.length+' matching tutor profile(s). Premium Subscription tutors are shown first.',false);
 }
+$('tutorSort').addEventListener('change',()=>{if(currentResults.length)renderCards(sortTutorResults(currentResults),currentSubjects)});
 $('tutorSearchForm').addEventListener('submit',async e=>{
  e.preventDefault();
  if(!visitorDetails){status('Enter your name, phone number and email above before searching.',true);$('visitorGate').scrollIntoView({behavior:'smooth',block:'center'});return}
