@@ -32,7 +32,7 @@ create or replace function public.gc_submit_tutor_inquiry(
   p_course text default null, p_subjects text default null, p_stream text default null
 ) returns jsonb
 language plpgsql security definer set search_path = public
-as $
+as $$
 declare v_id uuid;
 begin
   if nullif(trim(p_visitor_name),'') is null or nullif(trim(p_visitor_phone),'') is null
@@ -57,7 +57,7 @@ begin
   returning id into v_id;
   return jsonb_build_object('success',true,'inquiry_id',v_id);
 end;
-$;
+$$;
 revoke all on function public.gc_submit_tutor_inquiry(text,text,text,uuid,text,text,text,text,text) from public;
 grant execute on function public.gc_submit_tutor_inquiry(text,text,text,uuid,text,text,text,text,text) to anon, authenticated;
 
@@ -197,7 +197,7 @@ returns setof public.gc_tutor_requirements
 language plpgsql
 security definer
 set search_path = public
-as $
+as $$
 declare v_tutor_id uuid;
 begin
   if auth.uid() is null then raise exception 'Please log in with an eligible Premium Tutor account.'; end if;
@@ -215,7 +215,7 @@ begin
        where x.requirement_id=r.id and x.tutor_profile_id=v_tutor_id))
    order by r.created_at desc;
 end;
-$;
+$$;
 revoke all on function public.gc_tutor_requirement_history_list() from public, anon;
 grant execute on function public.gc_tutor_requirement_history_list() to authenticated;
 
