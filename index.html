@@ -4855,6 +4855,25 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
   #publicWebsiteContent > .gc-approved-hero#home > .gc-approved-hero-image { display:block !important; width:100% !important; height:auto !important; max-width:none !important; max-height:none !important; object-fit:contain !important; object-position:center !important; margin:0 !important; padding:0 !important; border:0 !important; border-radius:0 !important; box-shadow:none !important; opacity:1 !important; filter:none !important; transform:none !important; }
   @media(max-width:640px){ #publicWebsiteContent > .gc-approved-hero#home > .gc-approved-hero-image { width:100% !important; height:auto !important; } }
 </style>
+
+<style id="gc-homepage-distinct-tile-colours">
+/* Homepage action tiles: distinct colours; visual-only styling. */
+#homeActionTiles .gc-home-tile{border:1px solid transparent!important;overflow:hidden}
+#homeActionTiles .gc-home-tile .gc-home-tile-icon{color:#fff!important}
+#homeActionTiles .gc-home-tile .gc-home-tile-btn{background:rgba(255,255,255,.96)!important;color:#172033!important;border:0!important}
+#homeActionTiles .gc-home-tile .gc-home-tile-badge{background:rgba(255,255,255,.22)!important;color:#fff!important}
+#homeActionTiles .gc-home-browse{background:linear-gradient(135deg,#155eef,#4f8cff)!important;color:#fff!important}
+#homeActionTiles .gc-home-requirement{background:linear-gradient(135deg,#b45309,#fb923c)!important;color:#fff!important}
+#homeActionTiles .gc-home-tutor-register{background:linear-gradient(135deg,#be123c,#fb7185)!important;color:#fff!important}
+#homeActionTiles .gc-home-tutor-profile{background:linear-gradient(135deg,#047857,#34d399)!important;color:#fff!important}
+#homeActionTiles .gc-home-student-register{background:linear-gradient(135deg,#6d28d9,#a78bfa)!important;color:#fff!important}
+#homeActionTiles .gc-home-student-profile{background:linear-gradient(135deg,#0e7490,#22d3ee)!important;color:#083344!important}
+#homeActionTiles .gc-home-lrr{background:linear-gradient(135deg,#166534,#4ade80)!important;color:#fff!important}
+#homeActionTiles .gc-home-student-profile .gc-home-tile-icon,
+#homeActionTiles .gc-home-student-profile .gc-home-tile-badge{color:#083344!important}
+@media(max-width:640px){#homeActionTiles .gc-home-tile{min-width:0}}
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -5103,23 +5122,37 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 <article class="gc-quick-card gc-home-tile gc-home-requirement">
   <div class="gc-home-tile-icon"><i class="fa-solid fa-clipboard-list"></i></div>
   <span class="gc-home-tile-badge">PREMIUM TUTORS</span>
-  <h3>POST TUTOR REQUIREMENT</h3>
+  <h3>Post Tutor Requirement</h3>
   <p>Tell us your class, subjects, mode, location, budget and last date of requirement. Active Premium Tutors can respond directly.</p>
   <a class="gc-home-tile-btn" href="post-tutor-requirement.html">Submit Requirement <i class="fa-solid fa-arrow-right"></i></a>
 </article>
-<article class="gc-quick-card gc-home-tile gc-home-tutor">
+<article class="gc-quick-card gc-home-tile gc-home-tutor-register">
+  <div class="gc-home-tile-icon"><i class="fa-solid fa-user-plus"></i></div>
+  <span class="gc-home-tile-badge">JOIN</span>
+  <h3>Tutor Registration</h3>
+  <p>Create your tutor account and start your GURU CONNECT journey.</p>
+  <a class="gc-home-tile-btn" href="registration.html?role=tutor">Register as Tutor <i class="fa-solid fa-arrow-right"></i></a>
+</article>
+<article class="gc-quick-card gc-home-tile gc-home-tutor-profile">
   <div class="gc-home-tile-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
-  <h3>Tutor Profiles</h3>
+  <span class="gc-home-tile-badge">EXPLORE</span>
+  <h3>Tutor Profile</h3>
   <p>Browse tutor profiles, qualifications and subject expertise.</p>
   <a class="gc-home-tile-btn" href="#tutors">View Tutor Profiles <i class="fa-solid fa-arrow-right"></i></a>
-  <a href="registration.html?role=tutor" style="display:inline-block;margin-top:8px;font-size:12px;font-weight:800;color:inherit;text-decoration:underline">Register as Tutor</a>
 </article>
-<article class="gc-quick-card gc-home-tile gc-home-student">
+<article class="gc-quick-card gc-home-tile gc-home-student-register">
+  <div class="gc-home-tile-icon"><i class="fa-solid fa-user-plus"></i></div>
+  <span class="gc-home-tile-badge">JOIN</span>
+  <h3>Student Registration</h3>
+  <p>Create your student account and connect with the learning community.</p>
+  <a class="gc-home-tile-btn" href="registration.html?role=student">Register as Student <i class="fa-solid fa-arrow-right"></i></a>
+</article>
+<article class="gc-quick-card gc-home-tile gc-home-student-profile">
   <div class="gc-home-tile-icon"><i class="fa-solid fa-user-graduate"></i></div>
-  <h3>Student Profiles</h3>
+  <span class="gc-home-tile-badge">EXPLORE</span>
+  <h3>Student Profile</h3>
   <p>Browse student profiles across Science, Commerce and Arts.</p>
   <a class="gc-home-tile-btn" href="#studentsDirectory">View Student Profiles <i class="fa-solid fa-arrow-right"></i></a>
-  <a href="registration.html?role=student" style="display:inline-block;margin-top:8px;font-size:12px;font-weight:800;color:inherit;text-decoration:underline">Register as Student</a>
 </article>
 <article class="gc-quick-card gc-home-tile gc-home-lrr">
   <div class="gc-home-tile-icon"><i class="fa-solid fa-file-lines"></i></div>
