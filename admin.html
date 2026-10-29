@@ -616,14 +616,21 @@ async function loadTutorInquiries(){
   const groups=new Map();rows.forEach(x=>{const k=dateKey(x.created_at);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(x)});
   const countBy=(list,key)=>{const m=new Map();list.forEach(x=>{const v=String(x[key]||'Not specified').trim()||'Not specified';m.set(v,(m.get(v)||0)+1)});return [...m.entries()].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))};
   const chips=(items,color)=>items.map(([name,n])=>'<span style="display:inline-flex;gap:7px;align-items:center;padding:6px 9px;margin:3px;border-radius:9px;background:'+color+';font-size:11px;font-weight:800">'+escv(name)+' <b style="font-size:12px">'+n+'</b></span>').join('');
-  const overallStandard=countBy(rows,'search_class'),overallSubject=countBy(rows,'subjects');
-  out.innerHTML='<div class="gc-inquiry-analytics"><div class="gc-inquiry-analytics-top"><div><small>TOTAL INQUIRIES</small><strong>'+rows.length+'</strong></div><div><small>DAYS WITH INQUIRIES</small><strong>'+groups.size+'</strong></div><div><small>TOP STANDARD</small><strong>'+escv(overallStandard[0]?.[0]||'—')+'</strong><small>'+(overallStandard[0]?.[1]||0)+' inquiries</small></div><div><small>TOP SUBJECT</small><strong>'+escv(overallSubject[0]?.[0]||'—')+'</strong><small>'+(overallSubject[0]?.[1]||0)+' inquiries</small></div></div><div class="gc-inquiry-breakdown"><div><b>STANDARD-WISE DEMAND</b><div>'+chips(overallStandard,'#dbeafe')+'</div></div><div><b>SUBJECT-WISE DEMAND</b><div>'+chips(overallSubject,'#dcfce7')+'</div></div></div></div>'+
-  [...groups.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([day,dayRows])=>'<section class="gc-inquiry-day"><header><div><small>DAILY TRANSACTION LIST</small><h3>'+escv(dayLabel(day))+'</h3></div><span class="gc-inquiry-day-count">'+dayRows.length+' INQUIR'+(dayRows.length===1?'Y':'IES')+'</span></header><div class="gc-inquiry-day-breakdown"><span><b>Standards:</b> '+countBy(dayRows,'search_class').map(x=>escv(x[0])+' ('+x[1]+')').join(' · ')+'</span><span><b>Subjects:</b> '+countBy(dayRows,'subjects').map(x=>escv(x[0])+' ('+x[1]+')').join(' · ')+'</span></div>'+dayRows.map(x=>{
-   const id=escv(x.id),d=fmt(x.created_at),sent=String(x.status||'NEW').toUpperCase()==='FORWARDED';
-   const standard=x.search_class||'—',course=x.course||'—',stream=x.stream||'—',subject=x.subjects||'—';
-   const visitor=[['Visitor type',x.visitor_type||'Visitor'],['Name',x.visitor_name],['Phone / WhatsApp',x.visitor_phone],['Email',x.visitor_email],['Standard',standard],['Course',course],['Stream',stream],['Subject',subject],['Other details',x.requirement_details||'—'],['Received',d]];
-   return '<article class="gc-visitor-inquiry-row" data-inquiry-row="'+id+'"><div class="gc-visitor-inquiry-summary"><span class="gc-inquiry-time">'+escv(d)+'</span><b>'+escv(standard)+'</b><span>'+escv(course)+'</span><span>'+escv(stream)+'</span><span>'+escv(subject)+'</span><button type="button" class="btn light" data-inquiry-details="'+id+'">DETAILS</button><span class="gc-visitor-inquiry-status '+(sent?'sent':'')+'">'+(sent?'✓ SENT TO PREMIUM TUTORS':'NEW INQUIRY')+'</span></div><div class="gc-visitor-inquiry-details" id="visitor-details-'+id+'" hidden><div class="gc-visitor-inquiry-fields">'+visitor.map(v=>'<div><small>'+escv(v[0])+'</small><b>'+escv(v[1]||'—')+'</b></div>').join('')+'</div><div class="gc-visitor-inquiry-actions"><button type="button" class="btn green" data-send-premium-requirement="'+id+'" '+(sent?'disabled':'')+'>'+(sent?'✓ ALREADY SENT':'SEND TO PREMIUM TUTORS')+'</button></div><p class="gc-visitor-send-status" id="visitor-send-status-'+id+'">'+(sent?'Forwarded to matching Premium Tutors.':'Only active Premium Tutors matching Standard, Stream and Subject will receive this requirement.')+'</p></div></article>';
-  }).join('')+'</section>').join('');
+  const overallStandard=countBy(rows,'search_class'),overallCourse=countBy(rows,'course'),overallSubject=countBy(rows,'subjects');
+  const statRows=(title,items)=>'<div class="gc-demand-stat"><h4>'+title+'</h4><ol>'+items.map(([name,n])=>'<li><span>'+escv(name)+'</span><b>'+n+'</b></li>').join('')+'</ol></div>';
+  out.innerHTML='<div class="gc-inquiry-analytics"><div class="gc-inquiry-analytics-top"><div><small>TOTAL INQUIRIES</small><strong>'+rows.length+'</strong></div><div><small>DATES WITH INQUIRIES</small><strong>'+groups.size+'</strong></div></div><div class="gc-inquiry-demand-grid">'+statRows('MOST REQUESTED SUBJECTS',overallSubject)+statRows('COURSE DEMAND',overallCourse)+statRows('STANDARD DEMAND',overallStandard)+'</div></div>'+
+  [...groups.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([day,dayRows])=>{
+   const daySubjects=countBy(dayRows,'subjects'),dayCourses=countBy(dayRows,'course'),dayStandards=countBy(dayRows,'search_class');
+   return '<section class="gc-inquiry-day"><header><div><small>INQUIRIES RECEIVED ON</small><h3>'+escv(dayLabel(day))+'</h3></div><span class="gc-inquiry-day-count">'+dayRows.length+' INQUIR'+(dayRows.length===1?'Y':'IES')+'</span></header>'+
+   '<div class="gc-inquiry-day-breakdown"><span><b>Standards:</b> '+dayStandards.map(x=>escv(x[0])+' ('+x[1]+')').join(' · ')+'</span><span><b>Courses:</b> '+dayCourses.map(x=>escv(x[0])+' ('+x[1]+')').join(' · ')+'</span><span><b>Subjects:</b> '+daySubjects.map(x=>escv(x[0])+' ('+x[1]+')').join(' · ')+'</span></div>'+
+   '<div class="gc-inquiry-table-wrap"><table class="gc-inquiry-table"><thead><tr><th>Time received</th><th>Standard</th><th>Course</th><th>Stream</th><th>Subject(s)</th><th>Inquiry details</th><th>Status</th></tr></thead><tbody>'+
+   dayRows.slice().sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(x=>{
+    const id=escv(x.id),d=fmt(x.created_at),sent=String(x.status||'NEW').toUpperCase()==='FORWARDED';
+    const standard=x.search_class||'Not specified',course=x.course||'Not specified',stream=x.stream||'—',subject=x.subjects||'Not specified';
+    const visitor=[['Visitor type',x.visitor_type||'Visitor'],['Name',x.visitor_name],['Phone / WhatsApp',x.visitor_phone],['Email',x.visitor_email],['Standard',standard],['Course',course],['Stream',stream],['Subject',subject],['Other details',x.requirement_details||'—'],['Received',d]];
+    return '<tr data-inquiry-row="'+id+'"><td>'+escv(d)+'</td><td><b>'+escv(standard)+'</b></td><td>'+escv(course)+'</td><td>'+escv(stream)+'</td><td><b>'+escv(subject)+'</b></td><td><button type="button" class="btn light" data-inquiry-details="'+id+'">DETAILS</button><div class="gc-visitor-inquiry-details" id="visitor-details-'+id+'" hidden><div class="gc-visitor-inquiry-fields">'+visitor.map(v=>'<div><small>'+escv(v[0])+'</small><b>'+escv(v[1]||'—')+'</b></div>').join('')+'</div><div class="gc-visitor-inquiry-actions"><button type="button" class="btn green" data-send-premium-requirement="'+id+'" '+(sent?'disabled':'')+'>'+(sent?'✓ ALREADY SENT':'SEND TO PREMIUM TUTORS')+'</button></div><p class="gc-visitor-send-status" id="visitor-send-status-'+id+'">'+(sent?'Forwarded to matching Premium Tutors.':'Only active Premium Tutors matching Standard, Stream and Subject will receive this requirement.')+'</p></div></td><td><span class="gc-visitor-inquiry-status '+(sent?'sent':'')+'">'+(sent?'✓ SENT TO PREMIUM TUTORS':'NEW INQUIRY')+'</span></td></tr>';
+   }).join('')+'</tbody></table></div></section>';
+  }).join('');
   out.querySelectorAll('[data-inquiry-details]').forEach(b=>b.onclick=()=>{
    const id=b.dataset.inquiryDetails,details=$('visitor-details-'+id);if(!details)return;
    document.getElementById('gcVisitorInquiryModal')?.remove();
@@ -2624,6 +2631,23 @@ staffCheck().then(ok=>{if(ok){
 @media(max-width:950px){#sec-tutorinquiries .gc-visitor-inquiry-summary{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
 @media(max-width:650px){#sec-tutorinquiries .gc-inquiry-analytics-top{grid-template-columns:repeat(2,minmax(0,1fr))}#sec-tutorinquiries .gc-inquiry-breakdown{grid-template-columns:1fr}#sec-tutorinquiries .gc-visitor-inquiry-summary{grid-template-columns:repeat(2,minmax(0,1fr))!important}#sec-tutorinquiries .gc-visitor-inquiry-summary [data-inquiry-details]{width:100%}#sec-tutorinquiries .gc-inquiry-day-breakdown>span{min-width:100%}}
 
+/* Clear date-wise visitor inquiry report */
+.gc-inquiry-demand-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.gc-demand-stat{background:#fff;border:1px solid #dbe5f2;border-radius:12px;padding:12px;min-width:0}
+.gc-demand-stat h4{margin:0 0 8px;font-size:12px;font-weight:900;color:#1e3a8a}
+.gc-demand-stat ol{list-style:none;margin:0;padding:0}
+.gc-demand-stat li{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px solid #edf2f7;font-size:12px}
+.gc-demand-stat li:last-child{border-bottom:0}
+.gc-demand-stat li span{overflow-wrap:anywhere}
+.gc-demand-stat li b{background:#dcfce7;color:#166534;border-radius:7px;padding:2px 8px;white-space:nowrap}
+.gc-inquiry-table-wrap{width:100%;overflow-x:auto;background:#fff;border:1px solid #dbe5f2;border-radius:12px;margin-top:12px}
+.gc-inquiry-table{width:100%;border-collapse:collapse;min-width:900px;text-align:left}
+.gc-inquiry-table th{background:#eff6ff;color:#1e3a8a;font-size:11px;text-transform:uppercase;letter-spacing:.3px;padding:12px 10px;white-space:nowrap}
+.gc-inquiry-table td{padding:12px 10px;border-top:1px solid #e5edf6;font-size:12px;vertical-align:top}
+.gc-inquiry-table tbody tr:hover{background:#f8fbff}
+.gc-inquiry-table td:nth-child(2),.gc-inquiry-table td:nth-child(5){max-width:190px;overflow-wrap:anywhere}
+.gc-inquiry-table .gc-visitor-inquiry-details{min-width:280px}
+@media(max-width:760px){.gc-inquiry-demand-grid{grid-template-columns:1fr}.gc-inquiry-table{min-width:850px}.gc-inquiry-day-breakdown{display:grid;gap:7px}}
 </style>
 
 </body></html>
