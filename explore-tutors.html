@@ -23,11 +23,42 @@
 @media(max-width:800px){.form-grid,.subject-grid,.tutor-results,.visitor-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.results-section{padding:20px}.search-form{padding:18px}}
 @media(max-width:520px){.form-grid,.subject-grid,.tutor-results,.visitor-grid{grid-template-columns:1fr}.results-heading{align-items:flex-start}.results-heading h2{font-size:21px}.subject-heading{align-items:flex-start}}
 
+/* Profile-style tutor cards matching the approved reference image */
+.search-tutor-card{padding:17px;border-radius:19px;gap:11px;min-height:100%;border:1.5px solid #cfe1f7;background:linear-gradient(150deg,#fff 0%,#f7fbff 100%);box-shadow:0 7px 22px rgba(22,72,130,.09)}
+.search-tutor-card:nth-child(3n+2):not(.premium){background:linear-gradient(150deg,#fff 0%,#f3faff 100%);border-color:#b8e4f7}
+.search-tutor-card:nth-child(3n):not(.premium){background:linear-gradient(150deg,#fff 0%,#f7f5ff 100%);border-color:#d9d0ff}
+.search-tutor-card.premium{border:2px solid #20b76a;background:linear-gradient(150deg,#f1fff6 0%,#fff 68%);box-shadow:0 8px 24px rgba(22,163,74,.12)}
+.tutor-card-top{align-items:center;gap:13px;min-height:94px}
+.tutor-avatar{width:88px;height:88px;flex:0 0 88px;border-radius:50%;border:3px solid #e1edfb;background:linear-gradient(135deg,#d9f1ff,#d9fbe8);box-shadow:0 2px 8px rgba(15,60,110,.08);font-size:28px}
+.tutor-avatar img{object-fit:cover}
+.tutor-card-name h3{font-size:18px;line-height:1.25;color:#092e60}
+.tutor-card-name p{font-size:11px;font-weight:700;color:#54708f;margin-top:5px}
+.profile-badges{gap:6px;margin-top:1px}
+.plan-badge,.verified-badge{padding:6px 9px;font-size:9px;letter-spacing:.035em}
+.plan-badge.premium-label{background:#ffdf57;color:#654800}
+.verified-badge{background:#c8f7dc;color:#08733b}
+.tutor-rating{font-size:13px;color:#f59e0b;margin-top:7px}
+.tutor-rating span{color:#36516f;font-weight:600}
+.tutor-subject-tags{display:flex;flex-wrap:wrap;gap:6px;margin:0}
+.tutor-subject-tag{display:inline-flex;padding:5px 9px;border:1px solid #c6dcf7;border-radius:999px;background:#edf6ff;color:#1a4e8a;font-size:10px;font-weight:800}
+.tutor-meta{gap:7px}
+.tutor-meta div{padding:10px 9px;background:rgba(232,243,255,.78);border:1px solid rgba(211,229,250,.6);border-radius:10px}
+.tutor-meta b{font-size:9px;color:#6b829e;letter-spacing:.04em}
+.tutor-meta span{font-size:12px;color:#153a68;line-height:1.4}
+.tutor-location-line{font-size:11px!important;font-weight:700;color:#36516f!important;line-height:1.5!important;margin:0}
+.tutor-about{font-size:11px;line-height:1.55;color:#36516f}
+.inquiry-btn{width:100%;min-height:45px;margin-top:auto;border-radius:12px;font-size:12px;font-weight:1000;letter-spacing:.035em}
+.inquiry-btn:disabled{opacity:.65;cursor:wait}
+@media(max-width:800px){.tutor-avatar{width:76px;height:76px;flex-basis:76px}.tutor-card-name h3{font-size:16px}}
+@media(max-width:520px){.tutor-avatar{width:88px;height:88px;flex-basis:88px}.search-tutor-card{padding:17px}.tutor-meta span{font-size:13px}}
+
 /* Final approved Design 1: blue-and-white grid cards with colorful accents */
 body{background:linear-gradient(145deg,#f4f9ff 0%,#fff 54%,#f2f7ff 100%);color:#102b50}
 header{border-bottom:1px solid #d6e6fb;box-shadow:0 5px 22px rgba(15,54,105,.08)}
-.back,.inquiry-btn{background:linear-gradient(135deg,#0878e8,#0755bd);box-shadow:0 6px 15px rgba(7,85,189,.15)}
-.back:hover,.inquiry-btn:hover{background:linear-gradient(135deg,#0755bd,#073d8c)}
+.back{background:linear-gradient(135deg,#0878e8,#0755bd);box-shadow:0 6px 15px rgba(7,85,189,.15)}
+.back:hover{background:linear-gradient(135deg,#0755bd,#073d8c)}
+.inquiry-btn{background:linear-gradient(135deg,#16a34a,#087a3e);color:#fff;box-shadow:0 7px 17px rgba(22,163,74,.22);border:0}
+.inquiry-btn:hover{background:linear-gradient(135deg,#087a3e,#066332)}
 .hero{background:linear-gradient(120deg,#fff 0%,#f0f7ff 60%,#e7f4ff 100%);border-color:#cfe3fb}
 .search-form{background:linear-gradient(135deg,#f3f9ff,#fff);border-color:#cfe3fb}
 .find-btn{background:linear-gradient(135deg,#0878e8,#0755bd);box-shadow:0 10px 24px rgba(7,85,189,.18)}
@@ -160,8 +191,9 @@ function renderCards(rows,subjects){
   const experience=String(t.experience||'Not specified'), college=String(t.college||t.teaching_college||'Not specified'), location=String(t.location||'Not specified'), languages=String(t.languages||'Not specified'), availability=String(t.availability||'Not specified');
   const verified=t.verified===true||String(t.verified||'').toLowerCase()==='true';
   const rating=Number(t.rating||0), reviews=Number(t.review_count||0), students=String(t.students_taught||'').trim();
-  const profileBadges=(premium?'<span class="plan-badge premium-label">★ PREMIUM SUBSCRIPTION</span>':'<span class="plan-badge">REGULAR TUTOR</span>')+(verified?'<span class="verified-badge" title="Verified tutor">✓ VERIFIED</span>':'');
-  host.insertAdjacentHTML('beforeend','<article class="search-tutor-card '+(premium?'premium':'')+'"><div class="tutor-card-top"><div class="tutor-avatar">'+avatar+'</div><div class="tutor-card-name"><h3>'+esc(name)+'</h3><p>'+esc(stream)+'</p>'+(rating>0?'<div class="tutor-rating">★ '+esc(rating.toFixed(1))+(reviews>0?' ('+esc(reviews)+' reviews)':'')+'</div>':'')+'</div></div><div class="profile-badges">'+profileBadges+'</div><div class="tutor-meta"><div><b>SUBJECT EXPERTISE</b><span>'+esc(sub)+'</span></div><div><b>QUALIFICATION</b><span>'+esc(qual)+'</span></div><div><b>EXPERIENCE</b><span>'+esc(experience)+'</span></div><div><b>TEACHING MODE</b><span>'+esc(mode)+'</span></div><div><b>RATE / HOUR</b><span>'+esc(price)+'</span></div><div><b>LOCATION</b><span>'+esc(location)+'</span></div></div>'+(college!=='Not specified'?'<p class="tutor-about"><b>College / Institution:</b> '+esc(college)+'</p>':'')+(languages!=='Not specified'?'<p class="tutor-about"><b>Languages:</b> '+esc(languages)+'</p>':'')+(availability!=='Not specified'?'<p class="tutor-about"><b>Availability:</b> '+esc(availability)+'</p>':'')+(students?'<p class="tutor-about"><b>Students taught:</b> '+esc(students)+'</p>':'')+(about?'<p class="tutor-about">'+esc(about.slice(0,360))+'</p>':'')+'<button type="button" class="inquiry-btn" data-send-inquiry="'+esc(t.id)+'" data-tutor-name="'+esc(name)+'">SEND INQUIRY</button></article>');
+  const profileBadges=(premium?'<span class="plan-badge premium-label">★ PREMIUM</span>':'<span class="plan-badge">REGULAR TUTOR</span>')+(verified?'<span class="verified-badge" title="Verified tutor">✓ VERIFIED</span>':'');
+  const subjectTags=sub.split(/[,;|]/).map(s=>s.trim()).filter(Boolean).slice(0,4).map(s=>'<span class="tutor-subject-tag">'+esc(s)+'</span>').join('');
+  host.insertAdjacentHTML('beforeend','<article class="search-tutor-card '+(premium?'premium':'')+'"><div class="tutor-card-top"><div class="tutor-avatar">'+avatar+'</div><div class="tutor-card-name"><h3>'+esc(name)+'</h3><p>'+esc(stream)+'</p><div class="profile-badges">'+profileBadges+'</div>'+(rating>0?'<div class="tutor-rating">★ '+esc(rating.toFixed(1))+' <span>'+(reviews>0?'('+esc(reviews)+' reviews)':'')+'</span></div>':'')+'</div></div><div class="tutor-subject-tags">'+subjectTags+'</div><div class="tutor-meta"><div><b>QUALIFICATION</b><span>'+esc(qual)+'</span></div><div><b>EXPERIENCE</b><span>'+esc(experience)+'</span></div><div><b>TEACHING MODE</b><span>'+esc(mode)+'</span></div><div><b>RATE / HOUR</b><span>'+esc(price)+'</span></div></div><p class="tutor-location-line">⌖ '+esc(location)+(languages!=='Not specified'?' &nbsp; | &nbsp; Languages: '+esc(languages):'')+'</p>'+(college!=='Not specified'?'<p class="tutor-about"><b>College / Institution:</b> '+esc(college)+'</p>':'')+(availability!=='Not specified'?'<p class="tutor-about"><b>Availability:</b> '+esc(availability)+'</p>':'')+(students?'<p class="tutor-about"><b>Students taught:</b> '+esc(students)+'</p>':'')+(about?'<p class="tutor-about">'+esc(about.slice(0,220))+'</p>':'')+'<button type="button" class="inquiry-btn" data-send-inquiry="'+esc(t.id)+'" data-tutor-name="'+esc(name)+'">➤ &nbsp; SEND INQUIRY</button></article>');
  });
 }
 async function sendInquiry(tutorId,tutorName,button){
