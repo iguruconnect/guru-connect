@@ -109,7 +109,12 @@ header{border-bottom:1px solid #d6e6fb;box-shadow:0 5px 22px rgba(15,54,105,.08)
       </label>
       <label>Course <span>*</span>
         <select id="searchCourse" required>
-          <option value="">Select Course</option><option>SCHOOL</option><option>SSC</option><option>ARTS</option><option>SCIENCE</option><option>COMMERCE</option>
+          <option value="">Select Course</option><option>SCHOOL</option><option>SSC</option><option>HSC</option><option>JEE</option><option>NEET</option><option>UG</option><option>PG</option><option>OTHER</option>
+        </select>
+      </label>
+      <label>Stream <span>*</span>
+        <select id="searchStream" required>
+          <option value="">Select Stream</option><option>SCIENCE</option><option>COMMERCE</option><option>ARTS</option><option>GENERAL</option><option>OTHER</option>
         </select>
       </label>
       <label>Number of Subjects for Which Tuition Is Required <span>*</span>
@@ -201,7 +206,7 @@ async function sendInquiry(tutorId,tutorName,button){
  if(!supa)throw new Error('Inquiry service is unavailable. Please refresh and try again.');
  if(button)button.disabled=true;
  try{
-  const res=await supa.rpc('gc_submit_tutor_inquiry',{p_visitor_name:visitorDetails.name,p_visitor_phone:visitorDetails.phone,p_visitor_email:visitorDetails.email,p_tutor_id:String(tutorId),p_tutor_name:String(tutorName),p_search_class:$('searchClass').value,p_course:$('searchCourse').value,p_subjects:Array.from(document.querySelectorAll('.subject-input')).map(x=>x.value.trim()).filter(Boolean).join(', ')});
+  const res=await supa.rpc('gc_submit_tutor_inquiry',{p_visitor_name:visitorDetails.name,p_visitor_phone:visitorDetails.phone,p_visitor_email:visitorDetails.email,p_tutor_id:String(tutorId),p_tutor_name:String(tutorName),p_search_class:$('searchClass').value,p_course:$('searchCourse').value,p_subjects:Array.from(document.querySelectorAll('.subject-input')).map(x=>x.value.trim()).filter(Boolean).join(', '),p_stream:$('searchStream').value});
   if(res.error)throw res.error;
   if(typeof window.gcShowPopup==='function')window.gcShowPopup('Your inquiry has been sent to GURU CONNECT Admin. The Admin will review your requirements and may contact you. No tutor has been connected automatically.',{title:'Inquiry Submitted',kind:'success',button:'CONTINUE'});
   else alert('Your inquiry has been sent to GURU CONNECT Admin.');
