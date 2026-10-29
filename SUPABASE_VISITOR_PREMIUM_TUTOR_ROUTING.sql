@@ -5,6 +5,7 @@
 alter table public.gc_tutor_inquiries
   add column if not exists stream text,
   add column if not exists requirement_details text,
+  add column if not exists location text,
   add column if not exists visitor_type text not null default 'Visitor';
 
 alter table public.gc_tutor_requirements
