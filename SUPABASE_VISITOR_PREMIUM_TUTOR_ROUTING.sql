@@ -219,4 +219,77 @@ $$;
 revoke all on function public.gc_tutor_requirement_history_list() from public, anon;
 grant execute on function public.gc_tutor_requirement_history_list() to authenticated;
 
+
+-- Admin inquiry history: show each inquiry and the actual Premium Tutor recipient(s).
+-- This is a read-only history view; it does not change LRRs, escrow, or coin balances.
+create or replace function public.gc_admin_tutor_inquiry_history()
+returns table (
+  inquiry_id uuid,
+  inquiry_received timestamptz,
+  visitor_name text,
+  search_class text,
+  course text,
+  stream text,
+  subjects text,
+  inquiry_status text,
+  forwarded_at timestamptz,
+  tutor_name text,
+  tutor_email text,
+  delivered_at timestamptz
+)
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  if auth.uid() is null or not (
+    exists (select 1 from public.profiles p where p.id = auth.uid()
+      and lower(coalesce(p.role::text,'')) in ('admin','staff'))
+    or lower(coalesce(auth.jwt()->'user_metadata'->>'role','')) in ('admin','staff')
+    or lower(coalesce(auth.jwt()->'app_metadata'->>'role','')) in ('admin','staff')
+    or lower(coalesce(auth.jwt()->>'email','')) = 'guruconnect.in@gmail.com'
+    or lower(coalesce(auth.jwt()->'user_metadata'->>'is_staff','')) = 'true'
+    or lower(coalesce(auth.jwt()->'app_metadata'->>'is_staff','')) = 'true'
+  ) then
+    raise exception 'Admin/Staff authorization required.';
+  end if;
+
+  return query
+  select
+    i.id,
+    i.created_at,
+    i.visitor_name,
+    i.search_class,
+    i.course,
+    i.stream,
+    i.subjects,
+    i.status,
+    i.forwarded_at,
+    coalesce(
+      nullif(to_jsonb(t)->>'full_name',''),
+      nullif(to_jsonb(t)->>'name',''),
+      nullif(to_jsonb(t)->>'display_name',''),
+      nullif(to_jsonb(p)->>'full_name',''),
+      nullif(to_jsonb(p)->>'name',''),
+      nullif(to_jsonb(p)->>'display_name',''),
+      'Premium Tutor'
+    )::text,
+    coalesce(
+      nullif(to_jsonb(t)->>'email',''),
+      nullif(to_jsonb(p)->>'email',''),
+      ''
+    )::text,
+    rr.delivered_at
+  from public.gc_tutor_inquiries i
+  left join public.gc_tutor_requirements r on r.source_inquiry_id = i.id
+  left join public.gc_tutor_requirement_recipients rr on rr.requirement_id = r.id
+  left join public.tutor_profiles t on t.id = rr.tutor_profile_id
+  left join public.profiles p on p.id = t.user_id
+  order by i.created_at desc, rr.delivered_at asc nulls last;
+end;
+$$;
+
+revoke all on function public.gc_admin_tutor_inquiry_history() from public, anon;
+grant execute on function public.gc_admin_tutor_inquiry_history() to authenticated;
+
 notify pgrst, 'reload schema';
