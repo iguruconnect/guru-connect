@@ -1479,8 +1479,7 @@ $('coinHistoryPdf').onclick=()=>{
   w.document.close();
 };
 
-<style id="gc-visitor-inquiry-routing">
-#sec-tutorinquiries #tutorInquiryResults{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
+(()=>{const s=document.createElement('style');s.id='gc-visitor-inquiry-routing';s.textContent=`#sec-tutorinquiries #tutorInquiryResults{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
 .gc-visitor-inquiry-row{border:1px solid #d8e2ef;border-radius:12px;background:#fff;box-shadow:0 2px 7px #0f172a0a;overflow:hidden}
 .gc-visitor-inquiry-summary{display:flex;align-items:center;gap:12px;padding:11px 13px;flex-wrap:wrap}
 .gc-visitor-inquiry-summary>b,.gc-visitor-inquiry-summary>span{min-width:90px;flex:1;color:#17365f;font-size:12px;font-weight:750}
@@ -1496,8 +1495,7 @@ $('coinHistoryPdf').onclick=()=>{
 .gc-visitor-inquiry-actions{margin-top:12px}
 .gc-visitor-inquiry-actions .btn.green{background:#15803d;color:#fff;font-weight:900}
 .gc-visitor-send-status{font-size:11px;color:#475569;margin:9px 0 0}
-@media(max-width:650px){.gc-visitor-inquiry-summary{gap:7px}.gc-visitor-inquiry-summary>b,.gc-visitor-inquiry-summary>span{min-width:calc(50% - 8px);flex:1 1 calc(50% - 8px)}.gc-visitor-inquiry-fields{grid-template-columns:1fr}.gc-visitor-inquiry-summary .btn{flex:1}}
-</style>
+@media(max-width:650px){.gc-visitor-inquiry-summary{gap:7px}.gc-visitor-inquiry-summary>b,.gc-visitor-inquiry-summary>span{min-width:calc(50% - 8px);flex:1 1 calc(50% - 8px)}.gc-visitor-inquiry-fields{grid-template-columns:1fr}.gc-visitor-inquiry-summary .btn{flex:1}}`;document.head.appendChild(s);})();
 
 async function lrrAction(id,action){
   const row=(window.__adminLrrRows||[]).find(x=>String(x.id||x.request_id||x.request_code)===String(id));
