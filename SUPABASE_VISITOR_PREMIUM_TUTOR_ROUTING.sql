@@ -265,7 +265,7 @@ begin
     i.subjects,
     i.status,
     i.forwarded_at,
-    coalesce(
+    case when rr.tutor_profile_id is null then null else coalesce(
       nullif(to_jsonb(t)->>'full_name',''),
       nullif(to_jsonb(t)->>'name',''),
       nullif(to_jsonb(t)->>'display_name',''),
@@ -273,7 +273,7 @@ begin
       nullif(to_jsonb(p)->>'name',''),
       nullif(to_jsonb(p)->>'display_name',''),
       'Premium Tutor'
-    )::text,
+    )::text end,
     coalesce(
       nullif(to_jsonb(t)->>'email',''),
       nullif(to_jsonb(p)->>'email',''),
