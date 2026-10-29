@@ -166,14 +166,14 @@ const URL='https://hzqqswrnawrfgufbxgay.supabase.co';
 const KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-const baseFields='id,user_id,name,subject,stream,experience,qualification,college,teaching_college,price,about_me,photo_url,verified,paid_status,payment_plan,registration_status,registration_approval_status,registration_approved,is_hidden,is_disabled,rating,review_count,students_taught,teaching_mode,location,languages,availability,created_at';
+const baseFields='id,user_id,name,subject,stream,experience,qualification,college,teaching_college,price,about_me,photo_url,verified,paid_status,payment_plan,premium_badge_override,registration_status,registration_approval_status,registration_approved,is_hidden,is_disabled,rating,review_count,students_taught,teaching_mode,location,languages,availability,created_at';
 let visitorDetails=null;
 let supa=null, planFieldAvailable=true, currentResults=[], currentSubjects=[];
 try{if(window.gcSupabase)supa=window.gcSupabase;else if(window.supabase?.createClient)supa=window.supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}})}catch(e){}
 function status(msg,isError){$('searchStatus').textContent=msg;$('searchStatus').className='search-status'+(isError?' error':'')}
 function norm(v){return String(v??'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim()}
 function planName(t){return String(t.payment_plan||t.membership_plan||t.subscription_plan||t.plan||'').toLowerCase()}
-function isPremium(t){const p=planName(t),paid=String(t.paid_status||'').toLowerCase();return (p==='premium_200'||p==='premium_verified_300'||p.includes('premium'))&&paid==='paid'}
+function isPremium(t){if(t.premium_badge_override===true)return true;if(t.premium_badge_override===false)return false;const p=planName(t),paid=String(t.paid_status||'').toLowerCase();return (p==='premium_200'||p==='premium_verified_300'||p.includes('premium'))&&paid==='paid'}
 function terms(t){return norm([t.subject,t.stream,t.qualification,t.college,t.teaching_college,t.about_me,t.languages,t.teaching_mode].join(' '))}
 function sortTutorResults(rows){
  const mode=$('tutorSort')?.value||'best';
@@ -196,7 +196,7 @@ function renderCards(rows,subjects){
   const experience=String(t.experience||'Not specified'), college=String(t.college||t.teaching_college||'Not specified'), location=String(t.location||'Not specified'), languages=String(t.languages||'Not specified'), availability=String(t.availability||'Not specified');
   const verified=t.verified===true||String(t.verified||'').toLowerCase()==='true';
   const rating=Number(t.rating||0), reviews=Number(t.review_count||0), students=String(t.students_taught||'').trim();
-  const profileBadges=(premium?'<span class="plan-badge premium-label">★ PREMIUM</span>':'<span class="plan-badge">REGULAR TUTOR</span>')+(verified?'<span class="verified-badge" title="Verified tutor">✓ VERIFIED</span>':'');
+  const profileBadges=(premium?'<span class="plan-badge premium-label">👑 PREMIUM TUTOR</span>':'<span class="plan-badge">REGULAR TUTOR</span>')+(verified?'<span class="verified-badge" title="Verified tutor">✓ VERIFIED</span>':'');
   const subjectTags=sub.split(/[,;|]/).map(s=>s.trim()).filter(Boolean).slice(0,4).map(s=>'<span class="tutor-subject-tag">'+esc(s)+'</span>').join('');
   host.insertAdjacentHTML('beforeend','<article class="search-tutor-card '+(premium?'premium':'')+'"><div class="tutor-card-top"><div class="tutor-avatar">'+avatar+'</div><div class="tutor-card-name"><h3>'+esc(name)+'</h3><p>'+esc(stream)+'</p><div class="profile-badges">'+profileBadges+'</div>'+(rating>0?'<div class="tutor-rating">★ '+esc(rating.toFixed(1))+' <span>'+(reviews>0?'('+esc(reviews)+' reviews)':'')+'</span></div>':'')+'</div></div><div class="tutor-subject-tags">'+subjectTags+'</div><div class="tutor-meta"><div><b>QUALIFICATION</b><span>'+esc(qual)+'</span></div><div><b>EXPERIENCE</b><span>'+esc(experience)+'</span></div><div><b>TEACHING MODE</b><span>'+esc(mode)+'</span></div><div><b>RATE / HOUR</b><span>'+esc(price)+'</span></div></div><p class="tutor-location-line">⌖ '+esc(location)+(languages!=='Not specified'?' &nbsp; | &nbsp; Languages: '+esc(languages):'')+'</p>'+(college!=='Not specified'?'<p class="tutor-about"><b>College / Institution:</b> '+esc(college)+'</p>':'')+(availability!=='Not specified'?'<p class="tutor-about"><b>Availability:</b> '+esc(availability)+'</p>':'')+(students?'<p class="tutor-about"><b>Students taught:</b> '+esc(students)+'</p>':'')+(about?'<p class="tutor-about">'+esc(about.slice(0,220))+'</p>':'')+'<button type="button" class="inquiry-btn" data-send-inquiry="'+esc(t.id)+'" data-tutor-name="'+esc(name)+'">➤ &nbsp; SEND INQUIRY</button></article>');
  });
