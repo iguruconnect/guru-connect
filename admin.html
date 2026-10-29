@@ -236,6 +236,31 @@ button,a,input,select,textarea{touch-action:manipulation;}
 #sec-tutorinquiries .gc-inquiry-field span{font-size:14px}
 #sec-tutorinquiries .gc-inquiry-forward-form{margin-top:22px}
 @media(max-width:600px){#sec-tutorinquiries .gc-inquiry-head{align-items:flex-start;padding:18px;flex-direction:row;flex-wrap:wrap}#sec-tutorinquiries .gc-inquiry-avatar{width:60px;height:60px;flex-basis:60px;font-size:24px}#sec-tutorinquiries .gc-inquiry-title b{font-size:18px}#sec-tutorinquiries .gc-inquiry-body{padding:17px}#sec-tutorinquiries .gc-inquiry-status{margin-left:76px}}
+
+/* Match the compact tutor profile card proportions */
+#sec-tutorinquiries #tutorInquiryResults{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,340px));gap:16px;align-items:start}
+#sec-tutorinquiries .gc-inquiry-card{width:100%;max-width:340px;margin:0!important;border-radius:16px!important;box-shadow:0 5px 16px rgba(30,64,175,.09)!important}
+#sec-tutorinquiries .gc-inquiry-card:before{height:4px}
+#sec-tutorinquiries .gc-inquiry-head{min-height:0;padding:14px;gap:9px;align-items:center}
+#sec-tutorinquiries .gc-inquiry-person{gap:10px}
+#sec-tutorinquiries .gc-inquiry-avatar{width:54px;height:54px;flex:0 0 54px;font-size:22px;border-width:3px}
+#sec-tutorinquiries .gc-inquiry-title b{font-size:15px}
+#sec-tutorinquiries .gc-inquiry-title small{font-size:10px;margin-top:3px}
+#sec-tutorinquiries .gc-inquiry-title:after{font-size:9px;margin-top:3px}
+#sec-tutorinquiries .gc-inquiry-status{font-size:9px;padding:6px 8px}
+#sec-tutorinquiries .gc-inquiry-body{padding:13px}
+#sec-tutorinquiries .gc-inquiry-section-label{font-size:10px;margin-bottom:8px}
+#sec-tutorinquiries .gc-inquiry-fields{grid-template-columns:1fr 1fr;gap:7px}
+#sec-tutorinquiries .gc-inquiry-field{padding:9px;border-radius:10px;min-height:0}
+#sec-tutorinquiries .gc-inquiry-field b{font-size:8px;margin-bottom:3px}
+#sec-tutorinquiries .gc-inquiry-field span{font-size:11px;line-height:1.4}
+#sec-tutorinquiries .gc-inquiry-forward-form{grid-template-columns:1fr;gap:9px;margin-top:13px;padding:11px;border-radius:12px}
+#sec-tutorinquiries .gc-inquiry-forward-form label{font-size:10px}
+#sec-tutorinquiries .gc-inquiry-forward-form input{min-height:36px;padding:8px 9px;font-size:12px}
+#sec-tutorinquiries .gc-inquiry-actions{gap:7px;margin-top:10px}
+#sec-tutorinquiries .gc-inquiry-actions .btn{min-height:36px;padding:8px 10px;font-size:10px}
+#sec-tutorinquiries .gc-inquiry-help{font-size:10px}
+@media(max-width:600px){#sec-tutorinquiries #tutorInquiryResults{grid-template-columns:minmax(0,1fr)}#sec-tutorinquiries .gc-inquiry-card{max-width:none}#sec-tutorinquiries .gc-inquiry-head{padding:12px;flex-direction:row;align-items:center}#sec-tutorinquiries .gc-inquiry-avatar{width:48px;height:48px;flex-basis:48px;font-size:20px}#sec-tutorinquiries .gc-inquiry-body{padding:12px}#sec-tutorinquiries .gc-inquiry-status{margin-left:0}}
 </style></head><body>
 <header class="head"><div class="headin"><div><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
 <main class="wrap"><div id="gate" class="gate">Admin page loaded — preparing login scripts…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
