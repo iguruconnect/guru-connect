@@ -4874,6 +4874,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
 @media(max-width:640px){#homeActionTiles .gc-home-tile{min-width:0}}
 </style>
 
+<style id="gc-premium-tutor-badge-style">.gc-premium-tutor-badge{position:relative;z-index:4;display:inline-flex;align-items:center;gap:6px;width:max-content;max-width:100%;margin-top:8px;padding:7px 11px;border:1px solid #facc15;border-radius:999px;background:linear-gradient(135deg,#fff4b8,#ffd54a);color:#624400;font:900 11px/1.2 Roboto,Arial,sans-serif;letter-spacing:.035em;box-shadow:0 3px 10px rgba(0,0,0,.14)}</style>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -6278,6 +6279,7 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
                                 ${verified ? `<img src="${VERIFIED_TICK_LOGO_URL}" alt="Verified" class="gc-blue-tick">` : ''}
                             </div>
                             <div class="gc-tutor-id-badge"><span>GURU CONNECT ID</span><strong>${t.id || '—'}</strong></div>
+                            ${t.premiumBadgeOverride === true ? '<div class="gc-premium-tutor-badge">👑 PREMIUM TUTOR</div>' : ''}
                             <div class="gc-subtitle"><span></span><strong>Junior College Faculty</strong><span></span></div>
                         </div>
                     </div>
@@ -10374,6 +10376,7 @@ body {
       photoData: row.photo_url || '',
       verified: row.verified === true,
       paidStatus: row.paid_status || 'PENDING',
+      premiumBadgeOverride: row.premium_badge_override === true,
       rating: row.rating != null ? String(row.rating) : '',
       _manualRating: row.rating != null ? Number(row.rating) : null,
       reviewCount: row.review_count != null ? Number(row.review_count) : 0,
@@ -10456,7 +10459,7 @@ body {
     if (cached) return cached;
 
     const fields = table === 'tutor_profiles'
-      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at'
+      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,premium_badge_override,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at'
       : 'id,user_id,name,course,stream,learning_requirement,subject,year,semester,standard,college,division,roll_number,cgpa,email,phone,location,address,mode,teaching_mode,languages,availability,member_since,record_no,data_source,about_me,achievement_photos,helpline_plan,helpline_status,helpline_course,helpline_subject,helpline_subject_count,helpline_amount,privacy,photo_url,created_at';
 
     const result = await gcSupabase.from(table)
