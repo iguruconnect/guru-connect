@@ -603,44 +603,28 @@ if(document.getElementById("staffDirectoryList"))gcStaffLoadDirectory();
 async function loadTutorInquiries(){
  const status=$('tutorInquiryStatus'),out=$('tutorInquiryResults'),count=$('tutorInquiryCount');
  if(!status||!out||!count)return;
- status.textContent='Loading tutor inquiry cards…';out.innerHTML='';
+ status.textContent='Loading visitor inquiries…';out.innerHTML='';
  try{
   const q=await sb.rpc('gc_admin_list_tutor_inquiries');
   if(q.error)throw q.error;
   const rows=q.data||[];count.textContent=rows.length+(rows.length===1?' INQUIRY':' INQUIRIES');
-  if(!rows.length){out.innerHTML='<div class="empty">No tutor search inquiries have been submitted yet.</div>';status.textContent='Inquiry list refreshed.';return}
-  // Each inquiry stores tutor_id. Load the actual tutor profiles so these cards
-  // use the tutor's real photo/profile details rather than a visitor initial.
-  let profileById={};
-  try{
-   const ids=[...new Set(rows.map(x=>x.tutor_id).filter(Boolean))];
-   if(ids.length){
-    const pr=await sb.from('tutor_profiles').select('id,name,photo_url,subject,stream,experience,qualification,teaching_mode,location,about_me').in('id',ids);
-    if(!pr.error)(pr.data||[]).forEach(p=>profileById[String(p.id)]=p);
-   }
-  }catch(profileError){console.warn('Tutor inquiry profile enrichment unavailable',profileError)}
+  if(!rows.length){out.innerHTML='<div class="empty">No visitor inquiries have been submitted yet.</div>';status.textContent='Inquiry list refreshed.';return}
   const escv=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const validPhoto=v=>/^https?:\/\//i.test(String(v||''));
+  const fmt=v=>v?new Date(v).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}):'—';
   out.innerHTML=rows.map(x=>{
-   const d=x.created_at?new Date(x.created_at).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}):'—';
-   const p=profileById[String(x.tutor_id||'')]||{};
-   const tutorName=p.name||x.tutor_name||'Tutor profile';
-   const photo=p.photo_url||x.tutor_photo_url||x.photo_url||'';
-   const statusText=String(x.status||'NEW'), forwarded=!!String(x.forwarded_to||'').trim()||/forward/i.test(statusText);
-   const payload=['Visitor: '+(x.visitor_name||''),'Phone: '+(x.visitor_phone||''),'Email: '+(x.visitor_email||''),'Tutor: '+tutorName,'Class: '+(x.search_class||''),'Course: '+(x.course||''),'Subjects: '+(x.subjects||''),'Received: '+d].join('\\n');
-   const field=(label,value,wide)=>'<div class="gc-inquiry-field'+(wide?' wide':'')+'"><b>'+label+'</b><span>'+escv(value||'—')+'</span></div>';
-   const avatar=validPhoto(photo)?'<img src="'+escv(photo)+'" alt="'+escv(tutorName)+' profile photo" loading="lazy">':escv(String(tutorName||'T').trim().charAt(0).toUpperCase()||'T');
-   const profileFacts=[p.subject||x.subjects,p.qualification,p.experience?(p.experience+' experience'):null,p.teaching_mode,p.location].filter(Boolean).slice(0,4);
-   const subjectTags=[p.subject,p.stream,x.subjects].filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).flatMap(v=>String(v).split(/[,;|]/)).map(v=>v.trim()).filter(Boolean).filter((v,i,a)=>a.indexOf(v)===i).slice(0,4).map((v,i)=>'<span class="tutor-subject-tag gc-vtag-'+i+'">'+escv(v)+'</span>').join('');
-   const meta=(label,value)=>'<div><b>'+label+'</b><span>'+escv(value||'Not provided')+'</span></div>';
-   const visitorItem=(label,value,icon)=>value?'<div class="gc-vcard-visitor-item"><span>'+icon+'</span><div><small>'+label+'</small><b>'+escv(value)+'</b></div></div>':'';
-   const visitorFacts=visitorItem('VISITOR NAME',x.visitor_name,'👤')+visitorItem('PHONE / WHATSAPP',x.visitor_phone,'📞')+visitorItem('EMAIL',x.visitor_email,'✉️')+visitorItem('CLASS LEVEL',x.search_class,'📚')+visitorItem('COURSE',x.course,'🎓')+visitorItem('SUBJECTS',x.subjects,'📖')+visitorItem('PREFERRED LOCATION',x.location,'📍')+visitorItem('INQUIRY RECEIVED',d,'🕒');
-   return '<article class="user gc-inquiry-card gc-visiting-card"><div class="gc-vcard-header"><div class="gc-vcard-tutor"><div class="tutor-avatar">'+avatar+'</div><div class="tutor-card-name"><h3>'+escv(tutorName)+'</h3><p>'+escv(p.stream||'Experienced Tutor')+' | Passionate Educator</p><div class="profile-badges"><span class="plan-badge">TUTOR PROFILE</span>'+(p.verified===true||String(p.verified||'').toLowerCase()==='true'?'<span class="verified-badge">✓ VERIFIED</span>':'')+'</div><div class="tutor-subject-tags">'+(subjectTags||'<span class="tutor-subject-tag">Subjects not specified</span>')+'</div></div></div><div class="gc-vcard-brand"><div class="gc-vcard-logo">📘</div><div><b>GURU CONNECT</b><small>Learn · Connect · Grow</small></div><span class="gc-inquiry-status '+(forwarded?'is-forwarded':'')+'">'+(forwarded?'✓ ':'● ')+escv(statusText)+'</span></div><div class="gc-vcard-ref">TUTOR SEARCH INQUIRY · ID '+escv(String(x.id||'').slice(0,8)||'—')+' · '+escv(d)+'</div></div><div class="tutor-meta gc-vcard-meta">'+meta('QUALIFICATION',p.qualification)+meta('EXPERIENCE',p.experience?String(p.experience)+' years':'Not provided')+meta('TEACHING MODE',p.teaching_mode)+meta('LOCATION',p.location)+meta('CLASS / LEVEL',x.search_class)+meta('RATE / HOUR',p.price||p.rate_hour||'Contact tutor')+'</div>'+(p.about_me?'<div class="tutor-about gc-vcard-about"><b>ABOUT THE TUTOR</b><p>'+escv(p.about_me)+'</p></div>':'')+'<div class="gc-vcard-inquiry"><div class="gc-vcard-inquiry-title"><span>✉️</span><div><b>VISITOR INQUIRY</b><small>Visitor contact details and learning requirements</small></div></div><div class="gc-vcard-visitor-grid">'+(visitorFacts||'<div class="gc-vcard-no-facts">No visitor details provided.</div>')+'</div><div class="gc-vcard-actions"><button type="button" class="btn light" data-copy-inquiry="'+escv(x.id)+'" data-copy-payload="'+escv(payload)+'">📋 COPY DETAILS</button><button type="button" class="btn green" data-forward-inquiry="'+escv(x.id)+'">↗ MARK FORWARDED</button></div><details class="gc-inquiry-forward-details"><summary>Forward inquiry / add admin note</summary><div class="gc-inquiry-forward-form"><label>Premium Tutor(s) / recipient details<input id="forwardTo-'+escv(x.id)+'" placeholder="Tutor name, email or phone" value="'+escv(x.forwarded_to||'')+'"></label><label>Admin note (optional)<input id="forwardNote-'+escv(x.id)+'" placeholder="Internal note" value="'+escv(x.admin_note||'')+'"></label></div></details><p class="gc-inquiry-help">Copy the visitor details, forward them to your chosen Premium Tutor(s), then mark the inquiry as forwarded.</p></div></article>';
+   const id=escv(x.id),d=fmt(x.created_at),sent=String(x.status||'NEW').toUpperCase()==='FORWARDED';
+   const standard=x.search_class||'—',course=x.course||'—',stream=x.stream||'—',subject=x.subjects||'—';
+   const visitor=[['Visitor type',x.visitor_type||'Visitor'],['Name',x.visitor_name],['Phone / WhatsApp',x.visitor_phone],['Email',x.visitor_email],['Standard',standard],['Course',course],['Stream',stream],['Subject',subject],['Other details',x.requirement_details||'—'],['Received',d]];
+   return '<article class="gc-visitor-inquiry-row" data-inquiry-row="'+id+'"><div class="gc-visitor-inquiry-summary"><b>'+escv(standard)+'</b><span>'+escv(course)+'</span><span>'+escv(stream)+'</span><span>'+escv(subject)+'</span><button type="button" class="btn light" data-inquiry-details="'+id+'">DETAILS</button><span class="gc-visitor-inquiry-status '+(sent?'sent':'')+'">'+(sent?'✓ SENT TO PREMIUM TUTORS':'NEW INQUIRY')+'</span></div><div class="gc-visitor-inquiry-details" id="visitor-details-'+id+'" hidden><div class="gc-visitor-inquiry-fields">'+visitor.map(v=>'<div><small>'+escv(v[0])+'</small><b>'+escv(v[1]||'—')+'</b></div>').join('')+'</div><div class="gc-visitor-inquiry-actions"><button type="button" class="btn green" data-send-premium-requirement="'+id+'" '+(sent?'disabled':'')+'>'+(sent?'✓ ALREADY SENT':'SEND TO PREMIUM TUTORS')+'</button></div><p class="gc-visitor-send-status" id="visitor-send-status-'+id+'">'+(sent?'Forwarded to matching Premium Tutors.':'Only active Premium Tutors matching Standard, Stream and Subject will receive this requirement.')+'</p></div></article>';
   }).join('');
-  status.textContent='Loaded '+rows.length+' tutor inquiry card(s).';
-  out.querySelectorAll('[data-copy-inquiry]').forEach(b=>b.onclick=async()=>{try{await navigator.clipboard.writeText(b.dataset.copyPayload);status.textContent='Inquiry contact details copied. You can now forward them to the chosen Premium Tutor.'}catch(e){status.textContent='Copy failed. Select and copy the details manually.'}});
-  out.querySelectorAll('[data-forward-inquiry]').forEach(b=>b.onclick=async()=>{const id=b.dataset.forwardInquiry,to=$('forwardTo-'+id).value.trim(),note=$('forwardNote-'+id).value.trim();if(!to){status.textContent='Enter the Premium Tutor(s) or recipient details first.';return}b.disabled=true;try{const z=await sb.rpc('gc_admin_mark_tutor_inquiry_forwarded',{p_inquiry_id:id,p_forwarded_to:to,p_admin_note:note||null});if(z.error)throw z.error;status.textContent='Inquiry marked as forwarded.';await loadTutorInquiries()}catch(e){status.textContent='Could not update inquiry: '+(e.message||String(e))}finally{b.disabled=false}});
- }catch(e){status.textContent='Could not load inquiries: '+(e.message||String(e));out.innerHTML='<div class="empty">Run SUPABASE_TUTOR_INQUIRIES_SETUP.sql in Supabase and confirm your Admin/Staff session is authorized, then refresh.</div>'}
+  out.querySelectorAll('[data-inquiry-details]').forEach(b=>b.onclick=()=>{const el=$('visitor-details-'+b.dataset.inquiryDetails);if(el)el.hidden=!el.hidden;b.textContent=el&&!el.hidden?'HIDE DETAILS':'DETAILS'});
+  out.querySelectorAll('[data-send-premium-requirement]').forEach(b=>b.onclick=async()=>{
+   const id=b.dataset.sendPremiumRequirement,st=$('visitor-send-status-'+id);b.disabled=true;if(st)st.textContent='Matching active Premium Tutors…';
+   try{const z=await sb.rpc('gc_admin_send_visitor_requirement_to_premium_tutors',{p_inquiry_id:id});if(z.error)throw z.error;const n=Number(z.data?.matched_tutors||0);if(st)st.textContent='Sent successfully to '+n+' matching Premium Tutor(s).';status.textContent='Visitor requirement sent to '+n+' matching Premium Tutor(s).';await loadTutorInquiries()}
+   catch(e){if(st)st.textContent='Not sent: '+(e.message||String(e));status.textContent='Could not send requirement: '+(e.message||String(e));b.disabled=false}
+  });
+  status.textContent='Loaded '+rows.length+' visitor inquiry row(s).';
+ }catch(e){status.textContent='Could not load visitor inquiries: '+(e.message||String(e));out.innerHTML='<div class="empty">Run SUPABASE_TUTOR_INQUIRIES_SETUP.sql and SUPABASE_VISITOR_PREMIUM_TUTOR_ROUTING.sql in Supabase, then refresh.</div>'}
 }
 $('refreshTutorInquiries')?.addEventListener('click',loadTutorInquiries);
 function switchSection(name){
@@ -1491,7 +1475,26 @@ $('coinHistoryPdf').onclick=()=>{
   const q=($('coinHistorySearch').value||'').trim();
   const rows=list.map(({r,member})=>'<tr><td>'+esc(r.created_at||r.date||r.transaction_date||'—')+'</td><td>'+esc(gcCoinAmount(r)>=0?'ADDED':'SUBTRACTED')+'</td><td>'+esc(Math.abs(gcCoinAmount(r)))+'</td><td>'+esc(gcCoinActor(r))+'</td><td>'+esc(gcCoinReason(r))+'</td><td>'+esc(gcCoinLrr(r))+'</td><td>'+esc(member.name)+'<br>'+esc(member.role||'')+'<br>'+esc(member.user_id||member.profile_id||'—')+'</td></tr>').join('');
   const w=window.open('','_blank');if(!w)return alert('Please allow pop-ups for this site to create the PDF statement.');
-  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>GURU CONNECT Coin Transaction Statement</title><style>body{font:12px Arial,sans-serif;color:#172554;padding:22px}header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #155eef;padding-bottom:14px}header img{max-width:190px;max-height:72px;object-fit:contain}h1{font-size:22px;margin:0}p{margin:5px 0;color:#475569}.meta{margin:18px 0;padding:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px}table{border-collapse:collapse;width:100%;font-size:10px}th,td{border:1px solid #cbd5e1;padding:7px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf2ff}footer{margin-top:22px;border-top:1px solid #cbd5e1;padding-top:10px;font-weight:bold;color:#334155}@media print{button{display:none}body{padding:0}@page{size:A4 landscape;margin:12mm}}</style></head><body><header><img src="https://www.guruconnnect.in/GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT logo"><div><h1>GURU CONNECT</h1><p>Connecting Mind - Creating Future...</p><p><b>COIN TRANSACTION STATEMENT</b></p></div></header><div class="meta"><b>Search / Member:</b> '+esc(q||'All available coin transactions')+'<br><b>Generated:</b> '+esc(new Date().toLocaleString())+'<br><b>Transactions:</b> '+list.length+'</div><table><thead><tr><th>Date of transaction</th><th>Direction</th><th>Coins</th><th>By whom</th><th>Reason / LRR details</th><th>LRR / reference</th><th>Credited to</th></tr></thead><tbody>'+rows+'</tbody></table><footer>Customer Care: support@guruconnnect.in · GURU CONNECT</footer><p>To save as PDF, choose “Save as PDF” in the print dialog.</p><body onload="setTimeout(function(){window.print()},350)"></body></html>');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>GURU CONNECT Coin Transaction Statement</title><style>body{font:12px Arial,sans-serif;color:#172554;padding:22px}header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #155eef;padding-bottom:14px}header img{max-width:190px;max-height:72px;object-fit:contain}h1{font-size:22px;margin:0}p{margin:5px 0;color:#475569}.meta{margin:18px 0;padding:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px}table{border-collapse:collapse;width:100%;font-size:10px}th,td{border:1px solid #cbd5e1;padding:7px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf2ff}footer{margin-top:22px;border-top:1px solid #cbd5e1;padding-top:10px;font-weight:bold;color:#334155}@media print{button{display:none}body{padding:0}@page{size:A4 landscape;margin:12mm}}</style></head><body><header><img src="https://www.guruconnnect.in/GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT logo"><div><h1>GURU CONNECT</h1><p>Connecting Mind - Creating Future...</p><p><b>COIN TRANSACTION STATEMENT</b></p></div></header><div class="meta"><b>Search / Member:</b> '+esc(q||'All available coin transactions')+'<br><b>Generated:</b> '+esc(new Date().toLocaleString())+'<br><b>Transactions:</b> '+list.length+'</div><table><thead><tr><th>Date of transaction</th><th>Direction</th><th>Coins</th><th>By whom</th><th>Reason / LRR details</th><th>LRR / reference</th><th>Credited to</th></tr></thead><tbody>'+rows+'</tbody></table><footer>Customer Care: support@guruconnnect.in · GURU CONNECT</footer><p>To save as PDF, choose “Save as PDF” in the print dialog.</p><body onload="setTimeout(function(){window.print()},350)">
+<style id="gc-visitor-inquiry-routing">
+#sec-tutorinquiries #tutorInquiryResults{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
+.gc-visitor-inquiry-row{border:1px solid #d8e2ef;border-radius:12px;background:#fff;box-shadow:0 2px 7px #0f172a0a;overflow:hidden}
+.gc-visitor-inquiry-summary{display:flex;align-items:center;gap:12px;padding:11px 13px;flex-wrap:wrap}
+.gc-visitor-inquiry-summary>b,.gc-visitor-inquiry-summary>span{min-width:90px;flex:1;color:#17365f;font-size:12px;font-weight:750}
+.gc-visitor-inquiry-summary>b{color:#1d4ed8}
+.gc-visitor-inquiry-summary .btn{padding:7px 13px;min-height:32px;white-space:nowrap}
+.gc-visitor-inquiry-status{border-radius:999px;background:#fff7ed;color:#9a3412;padding:6px 9px;font-size:10px;font-weight:850;white-space:nowrap}
+.gc-visitor-inquiry-status.sent{background:#dcfce7;color:#166534}
+.gc-visitor-inquiry-details{border-top:1px solid #e2e8f0;background:#f8fbff;padding:14px}
+.gc-visitor-inquiry-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.gc-visitor-inquiry-fields>div{background:#fff;border:1px solid #e2e8f0;border-radius:9px;padding:9px;min-width:0}
+.gc-visitor-inquiry-fields small{display:block;color:#64748b;font-size:10px;font-weight:800;text-transform:uppercase;margin-bottom:4px}
+.gc-visitor-inquiry-fields b{display:block;color:#0f172a;font-size:12px;overflow-wrap:anywhere}
+.gc-visitor-inquiry-actions{margin-top:12px}
+.gc-visitor-inquiry-actions .btn.green{background:#15803d;color:#fff;font-weight:900}
+.gc-visitor-send-status{font-size:11px;color:#475569;margin:9px 0 0}
+@media(max-width:650px){.gc-visitor-inquiry-summary{gap:7px}.gc-visitor-inquiry-summary>b,.gc-visitor-inquiry-summary>span{min-width:calc(50% - 8px);flex:1 1 calc(50% - 8px)}.gc-visitor-inquiry-fields{grid-template-columns:1fr}.gc-visitor-inquiry-summary .btn{flex:1}}
+</style></body></html>');
   w.document.close();
 };
 
