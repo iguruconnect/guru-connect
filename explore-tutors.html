@@ -200,7 +200,7 @@ async function searchTutors(search){
  const rows=(result.data||[]).filter(t=>{const status=String(t.registration_status||'').toLowerCase(),approval=String(t.registration_approval_status||'').toLowerCase();if(t.is_hidden===true||t.is_disabled===true||['hidden','deleted','rejected'].includes(status)||approval==='rejected')return false;return status==='approved'||t.registration_approved===true||approval==='approved';});
  const subjects=search.subjects.map(norm).filter(Boolean);
  const course=norm(search.course), cls=norm(search.className);
- const scored=rows.map(t=>{
+ let scored=rows.map(t=>{
   const hay=terms(t);let score=0;
   if(subjects.length){const matched=subjects.filter(s=>hay.includes(s));if(!matched.length)return null;score+=matched.length*10}
   if(course&&hay.includes(course))score+=4;
