@@ -257,4 +257,45 @@ $('tutorSearchForm').addEventListener('submit',async e=>{
  try{await searchTutors({className,course,subjectCount:count,subjects})}catch(err){status('Tutor search could not be completed: '+(err?.message||'Please try again.'),true);$('tutorResults').innerHTML='<div class="empty-results">Please refresh the page and try again.</div>'}finally{btn.disabled=false;btn.innerHTML='FIND REQUIRED TUTORS <span>→</span>'}
 });
 })();
-</script></body></html>
+</script>
+<style id="gc-home-tutor-card-match">
+/* Match the warm, colorful profile-card style used across the GURU CONNECT homepage. */
+.search-tutor-card{
+ background:linear-gradient(155deg,#fff8f0 0%,#ffead8 100%);
+ border:2px solid #f6a45b;border-radius:22px;padding:18px;gap:12px;
+ box-shadow:0 8px 22px rgba(180,83,9,.12);overflow:hidden;
+}
+.search-tutor-card:nth-child(3n+2):not(.premium),
+.search-tutor-card:nth-child(3n):not(.premium){
+ background:linear-gradient(155deg,#fffaf5 0%,#ffe8d4 100%);border-color:#f3b27c;
+}
+.search-tutor-card.premium{
+ background:linear-gradient(155deg,#fff8df 0%,#ffebbd 100%);
+ border:2px solid #e6b735;box-shadow:0 8px 24px rgba(180,125,20,.15);
+}
+.tutor-card-top{align-items:center;gap:13px}
+.tutor-avatar{
+ width:92px;height:92px;flex:0 0 92px;border-radius:50%;
+ border:4px solid #fff;background:linear-gradient(135deg,#ffdbb8,#ffd8d8);
+ box-shadow:0 3px 12px rgba(124,45,18,.16);font-size:29px;
+}
+.tutor-card-name{background:#fff;border:1px solid #fed7aa;border-radius:14px;padding:10px 12px;flex:1;min-width:0;box-shadow:0 3px 9px rgba(124,45,18,.06)}
+.tutor-card-name h3{color:#7c2d12;font-size:18px;line-height:1.3}
+.tutor-card-name p{color:#9a3412;font-weight:800}
+.profile-badges{margin-top:7px}
+.plan-badge{background:#ffedd5;color:#9a3412;border:1px solid #fdba74}
+.plan-badge.premium-label,.premium .plan-badge{background:#fef08a;color:#854d0e;border-color:#eab308}
+.verified-badge{background:#dcfce7;color:#166534;border:1px solid #86efac}
+.tutor-rating{color:#b45309}
+.tutor-rating span{color:#7c2d12}
+.tutor-subject-tag{background:#fff7ed;border-color:#fdba74;color:#9a3412}
+.tutor-meta{gap:9px}
+.tutor-meta div{background:rgba(255,255,255,.88);border:1px solid #fed7aa;border-radius:12px;padding:12px 10px}
+.tutor-meta b{color:#9a3412}
+.tutor-meta span{color:#7c2d12;font-size:13px;line-height:1.45}
+.tutor-location-line,.tutor-about{color:#7c2d12!important}
+.inquiry-btn{background:linear-gradient(135deg,#16a34a,#087a3e)!important;color:#fff!important;border:0;box-shadow:0 7px 17px rgba(22,163,74,.22)}
+.inquiry-btn:hover{background:linear-gradient(135deg,#087a3e,#066332)!important}
+@media(max-width:520px){.tutor-avatar{width:82px;height:82px;flex-basis:82px}.tutor-card-name h3{font-size:16px}.tutor-meta span{font-size:12px}}
+</style>
+</body></html>
