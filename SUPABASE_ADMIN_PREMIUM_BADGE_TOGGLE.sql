@@ -18,12 +18,22 @@ as $$
 declare
   v_rows integer;
 begin
-  if auth.uid() is null or not exists (
-    select 1 from public.profiles p
-    where p.id = auth.uid()
-      and lower(coalesce(p.role, '')) = 'admin'
+  -- Match the site's existing Admin/Staff authorization conventions.
+  -- The Admin dashboard may authenticate staff through JWT metadata or the
+  -- configured admin account rather than profiles.role='admin'.
+  if auth.uid() is null or not (
+    exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid()
+        and lower(coalesce(p.role::text,'')) in ('admin','staff')
+    )
+    or lower(coalesce(auth.jwt()->'user_metadata'->>'role','')) in ('admin','staff')
+    or lower(coalesce(auth.jwt()->'app_metadata'->>'role','')) in ('admin','staff')
+    or lower(coalesce(auth.jwt()->>'email','')) = 'guruconnect.in@gmail.com'
+    or lower(coalesce(auth.jwt()->'user_metadata'->>'is_staff','')) = 'true'
+    or lower(coalesce(auth.jwt()->'app_metadata'->>'is_staff','')) = 'true'
   ) then
-    raise exception 'Admin access required to change Premium badge.';
+    raise exception 'Admin/Staff authorization required to change Premium badge.';
   end if;
 
   update public.tutor_profiles
