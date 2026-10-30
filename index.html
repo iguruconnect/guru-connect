@@ -4481,7 +4481,7 @@ footer:before{
 </style>
 <script id="gc-tutor-name-id-relocation-final-2026">
 (function(){
- function fixTutorNames(){document.querySelectorAll('.gc-target-card.gc-target-tutor').forEach(function(card){var name=card.querySelector('.gc-target-name'),copy=card.querySelector('.gc-target-copy');if(!name||!copy)return;var id=card.querySelector('.gc-auth-public-id');if(id&&id.parentElement!==copy)copy.appendChild(id);id=card.querySelector('.gc-auth-public-id');if(id&&id.previousElementSibling!==name)name.insertAdjacentElement('afterend',id);var txt=card.querySelector('.gc-target-name-text');if(txt){txt.style.whiteSpace='normal';txt.style.wordBreak='normal';txt.style.overflowWrap='normal';txt.style.hyphens='none'}})}
+ function fixTutorNames(){document.querySelectorAll('.gc-target-card.gc-target-tutor').forEach(function(card){var name=card.querySelector('.gc-target-name'),copy=card.querySelector('.gc-target-copy');if(!name||!copy)return;var id=card.querySelector('.gc-auth-public-id');if(id&&id.parentElement!==copy)copy.appendChild(id);id=card.querySelector('.gc-auth-public-id');if(id&&id.previousElementSibling!==name)name.insertAdjacentElement('afterend',id);var chip=card.querySelector('.gc-premium-member-chip');if(chip){if(id){if(chip.previousElementSibling!==id)id.insertAdjacentElement('afterend',chip)}else if(chip.parentElement!==copy){copy.appendChild(chip)}}var txt=card.querySelector('.gc-target-name-text');if(txt){txt.style.whiteSpace='nowrap';txt.style.wordBreak='normal';txt.style.overflowWrap='normal';txt.style.hyphens='none'}})}
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',fixTutorNames);else fixTutorNames();window.addEventListener('load',function(){setTimeout(fixTutorNames,100);setTimeout(fixTutorNames,1000)});new MutationObserver(function(){clearTimeout(window.__gcTutorNameFix);window.__gcTutorNameFix=setTimeout(fixTutorNames,40)}).observe(document.body,{subtree:true,childList:true});setInterval(fixTutorNames,1200);
 })();
 </script>
@@ -4906,6 +4906,49 @@ header.gc-beautiful-header .gc-logo3-lockup::before,header.gc-beautiful-header .
  .gc-target-card.gc-target-tutor .gc-target-name-text{font-size:inherit!important;white-space:nowrap!important}
  .gc-target-card.gc-target-tutor .gc-target-verified{width:22px!important;height:22px!important}
  .gc-target-card.gc-target-tutor .gc-premium-member-chip{font-size:9px!important;padding:4px 6px!important;margin-left:3px!important}
+}
+</style>
+
+
+<style id="gc-premium-member-solid-orange-final">
+/* Premium member badge: solid Nagpur orange, white lettering, aligned beside GC ID. */
+.gc-target-card.gc-target-tutor .gc-target-name{
+  display:flex!important;align-items:center!important;flex-flow:row nowrap!important;
+  justify-content:flex-start!important;gap:5px!important;min-width:0!important;
+}
+.gc-target-card.gc-target-tutor .gc-premium-name-verified-group{
+  display:inline-flex!important;align-items:center!important;flex:0 1 auto!important;
+  flex-wrap:nowrap!important;white-space:nowrap!important;min-width:0!important;max-width:100%!important;gap:5px!important;
+}
+.gc-target-card.gc-target-tutor .gc-premium-name-verified-group .gc-target-name-text{
+  display:inline-block!important;flex:0 1 auto!important;min-width:0!important;
+  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+}
+.gc-target-card.gc-target-tutor .gc-premium-name-verified-group .gc-target-verified{
+  display:inline-flex!important;align-items:center!important;flex:0 0 auto!important;
+  width:20px!important;height:20px!important;margin:0!important;vertical-align:middle!important;
+}
+.gc-target-card.gc-target-tutor .gc-premium-name-verified-group .gc-target-verified img{
+  display:block!important;width:100%!important;height:100%!important;object-fit:contain!important;
+}
+.gc-target-card.gc-target-tutor .gc-premium-crown-inline{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  flex:0 0 auto!important;color:#F5B301!important;font-size:1.12em!important;line-height:1!important;
+  margin-right:1px!important;filter:drop-shadow(0 1px 2px rgba(120,75,0,.35))!important;
+}
+.gc-target-card.gc-target-tutor .gc-premium-member-chip{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  flex:0 0 auto!important;margin:5px 0 0 2px!important;padding:5px 10px!important;
+  border:1px solid #C2410C!important;border-radius:7px!important;background:#EA580C!important;
+  color:#FFFFFF!important;font:900 10px/1.1 Roboto,Arial,sans-serif!important;
+  letter-spacing:.035em!important;text-transform:uppercase!important;white-space:nowrap!important;
+  box-shadow:0 2px 6px rgba(194,65,12,.22)!important;
+}
+.gc-target-card.gc-target-tutor .gc-auth-public-id{display:inline-flex!important;vertical-align:middle!important;margin-right:6px!important;}
+@media(max-width:520px){
+ .gc-target-card.gc-target-tutor .gc-target-name{flex-wrap:wrap!important;row-gap:3px!important}
+ .gc-target-card.gc-target-tutor .gc-premium-member-chip{font-size:9px!important;padding:4px 8px!important}
+ .gc-target-card.gc-target-tutor .gc-premium-name-verified-group .gc-target-verified{width:18px!important;height:18px!important}
 }
 </style>
 
@@ -14540,7 +14583,7 @@ window.connectWithStudent=async function(studentId){const st=(typeof studentDire
      const rating=val(t.rating,'4.5'),reviews=val(t.reviewCount,t.reviewsCount,'0'),students=val(t.students,t.studentsTaught,'—'),mode=val(t.mode,t.teachingMode,'Online / Offline'),loc=val(t.location,'—'),langs=val(t.languages,'Hindi, English'),avail=val(t.availability,'Mon - Sun');
      const card=document.createElement('article');card.className='gc-target-card gc-target-tutor';card.dataset.tutorId=id;
      card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✓ VERIFIED TUTOR':'TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
-       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name">'+(t.premiumBadgeOverride===true?'<span class="gc-premium-crown-inline" aria-label="Premium Member">👑</span>':'')+'<span class="gc-premium-name-verified-group"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified&&tick()?'<span class="gc-target-verified"><img src="'+esc(tick())+'" alt="Verified"></span>':'')+'</span>'+(t.premiumBadgeOverride===true?'<span class="gc-premium-member-chip">Premium Member</span>':'')+'</h3><div class="gc-target-subtitle">'+esc(q)+' · '+esc(subject)+'</div>'+'</div></div>'+
+       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photo(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name">'+(t.premiumBadgeOverride===true?'<i class="fa-solid fa-crown gc-premium-crown-inline" aria-label="Premium Member"></i>':'')+'<span class="gc-premium-name-verified-group"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified&&tick()?'<span class="gc-target-verified"><img src="'+esc(tick())+'" alt="Verified"></span>':'')+'</span>'+(t.premiumBadgeOverride===true?'<span class="gc-premium-member-chip">PREMIUM MEMBER</span>':'')+'</h3><div class="gc-target-subtitle">'+esc(q)+' · '+esc(subject)+'</div>'+'</div></div>'+
        '<div class="gc-target-info">'+box('📚','Subjects',subject)+box('💼','Experience',exp)+box('₹','Rate / Hour',rate)+box('⭐','Rating',rating+' ('+reviews+')')+box('👥','Students Taught',students)+box('💻','Mode',mode)+box('📍','Location',loc)+box('🪙','Coins','0')+box('◷','Availability',avail)+box('🎓','Qualification',q)+'</div>'+ 
        '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-tutor-id="'+esc(id)+'">MORE <i class="fa-solid fa-user"></i></button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
      c.appendChild(card);
