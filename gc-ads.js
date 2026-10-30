@@ -83,7 +83,7 @@
   function refreshPremiumBadges(root=document){
     root.querySelectorAll('.gc-target-card .gc-premium-tutor-badge').forEach(node=>{
       if(node.dataset.gcNagpurBadge==='true')return;
-      node.innerHTML='<svg viewBox="0 0 100 74" aria-hidden="true" focusable="false"><path d="M8 64 0 17c8-5 15-4 20 4l13 19c6 9 12 9 17-1l-1-21c-1-12 4-18 12-18s13 6 12 18l-1 21c5 10 11 10 17 1l13-19c5-8 12-9 20-4l-8 47H8Z" transform="translate(0 0) scale(1 .94)"/><path d="M8 68Q50 62 92 68" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></svg><span>PREMIUM MEMBER</span>';
+      node.innerHTML='<svg viewBox="0 0 100 72" aria-hidden="true" focusable="false"><path d="M8 23 20 52Q23 57 28 51L42 33Q50 22 58 33L72 51Q77 57 80 52L92 23 82 62Q50 67 18 62Z"/><circle cx="8" cy="18" r="8"/><circle cx="30" cy="23" r="7"/><circle cx="50" cy="8" r="8"/><circle cx="70" cy="23" r="7"/><circle cx="92" cy="18" r="8"/><path d="M17 67Q50 62 83 67" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></svg><span>PREMIUM MEMBER</span>';
       node.dataset.gcNagpurBadge='true';
       node.setAttribute('aria-label','Premium Member');
     });
