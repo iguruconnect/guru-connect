@@ -649,22 +649,20 @@ async function loadTutorInquiries(){
    document.getElementById('gcVisitorInquiryModal')?.remove();
    const modal=document.createElement('div');modal.id='gcVisitorInquiryModal';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label','Visitor tutor requirement details');
    modal.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(7,18,42,.72);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px)';
-   modal.innerHTML='<div style="width:min(1040px,96vw);max-height:94vh;min-height:72vh;overflow:auto;background:#fff;border-radius:22px;box-shadow:0 24px 80px #0005;border:1px solid #dbeafe"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;background:linear-gradient(135deg,#eff6ff,#f5f3ff);border-bottom:1px solid #dbeafe"><div><div style="font-size:10px;font-weight:900;letter-spacing:2px;color:#2563eb">GURU CONNECT • ADMIN VERIFICATION</div><h2 style="margin:5px 0 0;font-size:21px;color:#14264a">Tutor Inquiry Details</h2><div style="font-size:12px;color:#64748b;margin-top:4px">Review visitor details before sending to matching Premium Tutors.</div></div><button type="button" data-close-visitor-modal style="border:0;border-radius:50%;width:40px;height:40px;font-size:24px;background:#e2e8f0;color:#0f172a;cursor:pointer">×</button></div><div style="padding:18px 20px"><div id="gcVisitorInquiryModalFields" class="gc-visitor-inquiry-fields"></div><div id="gcVisitorInquiryModalAction" style="margin-top:16px"></div></div></div>';
+   modal.innerHTML='<div class="gc-inquiry-profile-card"><div class="gc-inquiry-profile-head"><button type="button" data-close-visitor-modal aria-label="Close">×</button><div class="gc-inquiry-profile-avatar">🎓</div><div class="gc-inquiry-profile-brand">GURU CONNECT</div><h2 id="gcVisitorInquiryCardName">Visitor Inquiry</h2><p>Learning requirement received</p><span class="gc-inquiry-profile-pill">NEW LEARNING REQUEST</span></div><div class="gc-inquiry-profile-body"><div class="gc-inquiry-profile-section-title"><span>📘</span><div><b>LEARNING REQUIREMENT</b><small>Visitor details and requested subjects</small></div></div><div id="gcVisitorInquiryModalFields" class="gc-inquiry-profile-grid"></div><div id="gcVisitorInquiryModalAction" class="gc-inquiry-profile-actions"></div></div><div class="gc-inquiry-profile-footer">Learn • Connect • Grow</div></div>';
    const fields=details.querySelector('.gc-visitor-inquiry-fields'),action=details.querySelector('.gc-visitor-inquiry-actions'),target=modal.querySelector('#gcVisitorInquiryModalFields'),actionTarget=modal.querySelector('#gcVisitorInquiryModalAction');
    if(fields){
     const inquiryItems=[...fields.children];
-    const inquiryGroups=[
-     {key:'visitor',label:'👤 VISITOR',title:'Visitor Information',icon:'👤'},
-     {key:'learning',label:'🎓 LEARNING NEED',title:'Learning Requirements',icon:'🎓'},
-     {key:'notes',label:'📝 DETAILS',title:'Additional Details',icon:'📝'}
-    ];
-    target.innerHTML='<nav class="gc-inquiry-sheet-tabs" aria-label="Inquiry detail sections">'+inquiryGroups.map((g,i)=>'<button type="button" class="gc-inquiry-sheet-tab '+(i===0?'active':'')+'" data-sheet-tab="'+g.key+'">'+g.label+'</button>').join('')+'</nav>'+inquiryGroups.map((g,i)=>'<section class="gc-inquiry-sheet-panel" data-sheet-panel="'+g.key+'" '+(i?'hidden':'')+'><h3>'+g.icon+' '+g.title+'</h3><div class="gc-inquiry-sheet-grid"></div></section>').join('');
-    const groupFor=label=>/^(visitor type|name|phone \/ whatsapp|email)$/i.test(label)?'visitor':/^(standard|course|stream|subject)$/i.test(label)?'learning':'notes';
-    inquiryItems.forEach(item=>{const label=item.querySelector('small')?.textContent?.trim()||'';const panel=target.querySelector('[data-sheet-panel="'+groupFor(label)+'"] .gc-inquiry-sheet-grid');if(panel)panel.appendChild(item.cloneNode(true));});
-    target.querySelectorAll('[data-sheet-tab]').forEach(tab=>tab.onclick=()=>{
-     const key=tab.dataset.sheetTab;
-     target.querySelectorAll('[data-sheet-tab]').forEach(x=>x.classList.toggle('active',x===tab));
-     target.querySelectorAll('[data-sheet-panel]').forEach(x=>x.hidden=x.dataset.sheetPanel!==key);
+    const nameItem=inquiryItems.find(item=>/^(name)$/i.test(item.querySelector('small')?.textContent?.trim()||''));
+    const visitorName=nameItem?.querySelector('b')?.textContent?.trim();
+    if(visitorName)target.closest('.gc-inquiry-profile-card')?.querySelector('#gcVisitorInquiryCardName')?.replaceChildren(document.createTextNode(visitorName));
+    inquiryItems.forEach(item=>{
+     const label=item.querySelector('small')?.textContent?.trim()||'Details';
+     const value=item.querySelector('b')?.textContent?.trim()||'—';
+     const icon=/name/i.test(label)?'👤':/phone|whatsapp/i.test(label)?'📱':/email/i.test(label)?'✉️':/standard|class/i.test(label)?'🎒':/course/i.test(label)?'🎓':/stream/i.test(label)?'📚':/subject/i.test(label)?'📖':/received/i.test(label)?'🕒':/other details/i.test(label)?'📝':'🔹';
+     const itemCard=document.createElement('div');itemCard.className='gc-inquiry-profile-field';
+     const iconNode=document.createElement('span');iconNode.className='gc-inquiry-profile-field-icon';iconNode.textContent=icon;
+     const textNode=document.createElement('div');const small=document.createElement('small');small.textContent=label;const strong=document.createElement('b');strong.textContent=value;textNode.append(small,strong);itemCard.append(iconNode,textNode);target.appendChild(itemCard);
     });
    }
    if(action)actionTarget.innerHTML=action.innerHTML;
@@ -2834,6 +2832,36 @@ staffCheck().then(ok=>{if(ok){
  #gcVisitorInquiryModalFields .gc-inquiry-sheet-grid{grid-template-columns:1fr!important}
  #gcVisitorInquiryModalFields [data-sheet-panel="notes"] .gc-inquiry-sheet-grid>div:first-child{grid-column:auto!important}
 }
+</style>
+
+
+<style id="gc-visitor-inquiry-tutor-profile-card-20261030">
+#gcVisitorInquiryModal{padding:14px!important;background:rgba(8,25,48,.76)!important;backdrop-filter:blur(5px)!important}
+#gcVisitorInquiryModal>.gc-inquiry-profile-card{position:relative;width:min(440px,96vw)!important;max-height:94vh!important;min-height:0!important;height:auto!important;overflow:auto!important;margin:auto!important;border:2px solid #f6a45b!important;border-radius:22px!important;background:linear-gradient(155deg,#fff8f0,#ffead8)!important;box-shadow:0 24px 75px rgba(0,0,0,.35)!important}
+.gc-inquiry-profile-head{position:relative;padding:22px 20px 20px!important;text-align:center!important;background:linear-gradient(145deg,#ffdbb8,#fff0d8 48%,#d9f6e8)!important;border-bottom:1px solid #fdba74!important}
+.gc-inquiry-profile-head [data-close-visitor-modal]{position:absolute;right:12px;top:12px;width:34px;height:34px;border:1px solid #fed7aa;border-radius:50%;background:#fff;color:#7c2d12;font-size:22px;line-height:1;cursor:pointer}
+.gc-inquiry-profile-avatar{display:grid;place-items:center;width:76px;height:76px;margin:0 auto 10px;border:4px solid #fff;border-radius:50%;background:linear-gradient(135deg,#ffedd5,#fed7aa);box-shadow:0 4px 14px #9a341233;font-size:34px}
+.gc-inquiry-profile-brand{color:#9a3412;font-size:10px;font-weight:900;letter-spacing:2px}
+.gc-inquiry-profile-head h2{margin:6px 0 3px!important;color:#7c2d12!important;font-size:23px!important;font-weight:850!important;line-height:1.2!important;overflow-wrap:anywhere}
+.gc-inquiry-profile-head p{margin:0 0 10px!important;color:#9a3412!important;font-size:12px!important;font-weight:600!important}
+.gc-inquiry-profile-pill{display:inline-flex;padding:6px 11px;border:1px solid #fdba74;border-radius:20px;background:#fff7ed;color:#9a3412;font-size:9px;font-weight:900;letter-spacing:.5px}
+.gc-inquiry-profile-body{padding:16px!important;background:#fff}
+.gc-inquiry-profile-section-title{display:flex;align-items:center;gap:10px;margin-bottom:12px;padding:11px 12px;border:1px solid #fed7aa;border-radius:13px;background:linear-gradient(100deg,#fff7ed,#eff6ff)}
+.gc-inquiry-profile-section-title>span{display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:#ffedd5;font-size:20px}
+.gc-inquiry-profile-section-title b{display:block;color:#7c2d12;font-size:12px;font-weight:900;letter-spacing:.4px}
+.gc-inquiry-profile-section-title small{display:block;margin-top:3px;color:#64748b;font-size:10px}
+.gc-inquiry-profile-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.gc-inquiry-profile-field{display:flex;align-items:flex-start;gap:9px;min-width:0;min-height:62px;padding:10px;border:1px solid #fed7aa;border-radius:12px;background:linear-gradient(145deg,#fff8f0,#fff)}
+.gc-inquiry-profile-field:nth-child(3n+2){border-color:#ddd6fe;background:linear-gradient(145deg,#f5f3ff,#fff)}
+.gc-inquiry-profile-field:nth-child(3n){border-color:#bae6fd;background:linear-gradient(145deg,#effaff,#fff)}
+.gc-inquiry-profile-field-icon{flex:0 0 25px;display:grid;place-items:center;width:25px;height:25px;border-radius:8px;background:#ffedd5;font-size:14px}
+.gc-inquiry-profile-field small{display:block;margin:0 0 4px;color:#9a3412;font-size:8px;font-weight:900;letter-spacing:.5px;text-transform:uppercase}
+.gc-inquiry-profile-field b{display:block;color:#172554;font-size:11px;font-weight:650;line-height:1.4;overflow-wrap:anywhere;white-space:pre-wrap}
+.gc-inquiry-profile-actions{margin-top:14px;padding-top:12px;border-top:1px solid #e2e8f0}
+#gcVisitorInquiryModalAction [data-send-premium-requirement]{width:100%!important;min-height:46px!important;border:0!important;border-radius:12px!important;background:linear-gradient(135deg,#16a34a,#087a3e)!important;color:#fff!important;font-size:12px!important;font-weight:900!important;box-shadow:0 6px 16px #16a34a30!important;cursor:pointer}
+#gcVisitorInquiryModalAction .gc-visitor-send-status{margin:10px 0 0;color:#64748b;font-size:10px;line-height:1.5}
+.gc-inquiry-profile-footer{padding:9px;text-align:center;background:#fff7ed;border-top:1px solid #fed7aa;color:#9a3412;font-size:9px;font-weight:800;letter-spacing:1px}
+@media(max-width:520px){#gcVisitorInquiryModal>.gc-inquiry-profile-card{width:min(420px,96vw)!important;border-radius:17px!important}.gc-inquiry-profile-head{padding:18px 14px 15px!important}.gc-inquiry-profile-avatar{width:64px;height:64px;font-size:28px}.gc-inquiry-profile-head h2{font-size:20px!important}.gc-inquiry-profile-body{padding:12px!important}.gc-inquiry-profile-grid{grid-template-columns:1fr!important;gap:7px}.gc-inquiry-profile-field{min-height:0;padding:9px}}
 </style>
 
 </body></html>
