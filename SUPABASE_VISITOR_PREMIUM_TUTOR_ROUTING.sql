@@ -75,6 +75,7 @@ declare
   v_course text;
   v_stream text;
   v_subjects text;
+  v_active_count integer := 0;
 begin
   if auth.uid() is null or not (
     exists (select 1 from public.profiles p where p.id = auth.uid()
@@ -111,6 +112,15 @@ begin
      'To be discussed directly', null, v_stream, v.id, 'VISITOR', 'ACTIVE')
   returning id into v_req;
 
+  -- Count eligible, genuinely paid Premium Tutors separately from profile matching.
+  -- Premium badge display overrides alone do not qualify a tutor for visitor requirements.
+  select count(*) into v_active_count
+  from public.tutor_profiles t
+  where lower(coalesce(t.payment_plan,'')) in ('premium_200','premium_verified_300')
+    and upper(coalesce(t.paid_status,'')) = 'PAID'
+    and coalesce(t.is_hidden,false) = false
+    and coalesce(t.is_disabled,false) = false;
+
   insert into public.gc_tutor_requirement_recipients(requirement_id, tutor_profile_id)
   select v_req, t.id
   from public.tutor_profiles t
@@ -118,27 +128,60 @@ begin
     and upper(coalesce(t.paid_status,'')) = 'PAID'
     and coalesce(t.is_hidden,false) = false
     and coalesce(t.is_disabled,false) = false
+    -- Subject is the essential match. Use the same profile fields as the public tutor directory.
     and (
-      lower(coalesce(to_jsonb(t)->>'stream','')) like '%'||lower(v_stream)||'%'
-      or v_stream = 'Not specified'
+      v_subjects = 'Not specified'
+      or exists (
+        select 1
+        from regexp_split_to_table(v_subjects, '[,;|]') requested_subject
+        where nullif(trim(requested_subject),'') is not null
+          and regexp_replace(
+            lower(coalesce(to_jsonb(t)->>'subject','') || ' ' || coalesce(to_jsonb(t)->>'subjects','')),
+            '[^a-z0-9]+',' ','g'
+          ) like '%' || regexp_replace(lower(trim(requested_subject)),'[^a-z0-9]+',' ','g') || '%'
+      )
+    )
+    -- Treat an empty tutor profile field as "not specified", rather than excluding the tutor.
+    and (
+      v_stream = 'Not specified'
+      or nullif(trim(coalesce(to_jsonb(t)->>'stream','')),'') is null
+      or regexp_replace(lower(coalesce(to_jsonb(t)->>'stream','')),'[^a-z0-9]+',' ','g')
+         like '%' || regexp_replace(lower(v_stream),'[^a-z0-9]+',' ','g') || '%'
+      or regexp_replace(lower(v_stream),'[^a-z0-9]+',' ','g')
+         like '%' || regexp_replace(lower(coalesce(to_jsonb(t)->>'stream','')),'[^a-z0-9]+',' ','g') || '%'
     )
     and (
-      lower(coalesce(to_jsonb(t)->>'subject','') || ' ' || coalesce(to_jsonb(t)->>'subjects',''))
-        like '%'||lower(split_part(v_subjects,',',1))||'%'
-      or lower(coalesce(to_jsonb(t)->>'subject','') || ' ' || coalesce(to_jsonb(t)->>'subjects',''))
-        like '%'||lower(v_subjects)||'%'
+      v_class = 'Not specified'
+      or nullif(trim(
+        coalesce(to_jsonb(t)->>'standard','') || ' ' ||
+        coalesce(to_jsonb(t)->>'class','') || ' ' ||
+        coalesce(to_jsonb(t)->>'classes_taught','') || ' ' ||
+        coalesce(to_jsonb(t)->>'teaching_classes','')
+      ),'') is null
+      or regexp_replace(
+        lower(coalesce(to_jsonb(t)->>'standard','') || ' ' ||
+          coalesce(to_jsonb(t)->>'class','') || ' ' ||
+          coalesce(to_jsonb(t)->>'classes_taught','') || ' ' ||
+          coalesce(to_jsonb(t)->>'teaching_classes','')),
+        '[^a-z0-9]+',' ','g'
+      ) like '%' || regexp_replace(lower(v_class),'[^a-z0-9]+',' ','g') || '%'
     )
     and (
-      lower(coalesce(to_jsonb(t)->>'standard','') || ' ' || coalesce(to_jsonb(t)->>'class','') || ' ' || coalesce(to_jsonb(t)->>'classes_taught',''))
-        like '%'||lower(v_class)||'%'
-      or lower(coalesce(to_jsonb(t)->>'teaching_classes','')) like '%'||lower(v_class)||'%'
+      v_course = 'Not specified'
+      or nullif(trim(coalesce(to_jsonb(t)->>'course','') || ' ' || coalesce(to_jsonb(t)->>'courses','')),'') is null
+      or regexp_replace(lower(coalesce(to_jsonb(t)->>'course','') || ' ' || coalesce(to_jsonb(t)->>'courses','')),'[^a-z0-9]+',' ','g')
+         like '%' || regexp_replace(lower(v_course),'[^a-z0-9]+',' ','g') || '%'
     )
   on conflict do nothing;
 
   get diagnostics v_count = row_count;
   if v_count = 0 then
     delete from public.gc_tutor_requirements where id = v_req;
-    raise exception 'No active Premium Tutor matched this Standard, Stream and Subject. Please check the inquiry details/profile matching before sending.';
+    if v_active_count = 0 then
+      raise exception 'No active paid Premium Tutor is currently eligible. Please check that at least one tutor has a Premium plan, PAID status, and is not hidden or disabled.';
+    else
+      raise exception 'Active paid Premium Tutors exist, but none matched this inquiry subject and the available Standard/Stream/Course profile details. Please check tutor profile subjects and inquiry details.';
+    end if;
   end if;
 
   update public.gc_tutor_inquiries
