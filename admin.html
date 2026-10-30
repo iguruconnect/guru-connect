@@ -651,7 +651,22 @@ async function loadTutorInquiries(){
    modal.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(7,18,42,.72);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px)';
    modal.innerHTML='<div style="width:min(1040px,96vw);max-height:94vh;min-height:72vh;overflow:auto;background:#fff;border-radius:22px;box-shadow:0 24px 80px #0005;border:1px solid #dbeafe"><div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px;background:linear-gradient(135deg,#eff6ff,#f5f3ff);border-bottom:1px solid #dbeafe"><div><div style="font-size:10px;font-weight:900;letter-spacing:2px;color:#2563eb">GURU CONNECT • ADMIN VERIFICATION</div><h2 style="margin:5px 0 0;font-size:21px;color:#14264a">Tutor Inquiry Details</h2><div style="font-size:12px;color:#64748b;margin-top:4px">Review visitor details before sending to matching Premium Tutors.</div></div><button type="button" data-close-visitor-modal style="border:0;border-radius:50%;width:40px;height:40px;font-size:24px;background:#e2e8f0;color:#0f172a;cursor:pointer">×</button></div><div style="padding:18px 20px"><div id="gcVisitorInquiryModalFields" class="gc-visitor-inquiry-fields"></div><div id="gcVisitorInquiryModalAction" style="margin-top:16px"></div></div></div>';
    const fields=details.querySelector('.gc-visitor-inquiry-fields'),action=details.querySelector('.gc-visitor-inquiry-actions'),target=modal.querySelector('#gcVisitorInquiryModalFields'),actionTarget=modal.querySelector('#gcVisitorInquiryModalAction');
-   if(fields)target.innerHTML=fields.innerHTML;
+   if(fields){
+    const inquiryItems=[...fields.children];
+    const inquiryGroups=[
+     {key:'visitor',label:'👤 VISITOR',title:'Visitor Information',icon:'👤'},
+     {key:'learning',label:'🎓 LEARNING NEED',title:'Learning Requirements',icon:'🎓'},
+     {key:'notes',label:'📝 DETAILS',title:'Additional Details',icon:'📝'}
+    ];
+    target.innerHTML='<nav class="gc-inquiry-sheet-tabs" aria-label="Inquiry detail sections">'+inquiryGroups.map((g,i)=>'<button type="button" class="gc-inquiry-sheet-tab '+(i===0?'active':'')+'" data-sheet-tab="'+g.key+'">'+g.label+'</button>').join('')+'</nav>'+inquiryGroups.map((g,i)=>'<section class="gc-inquiry-sheet-panel" data-sheet-panel="'+g.key+'" '+(i?'hidden':'')+'><h3>'+g.icon+' '+g.title+'</h3><div class="gc-inquiry-sheet-grid"></div></section>').join('');
+    const groupFor=label=>/^(visitor type|name|phone \/ whatsapp|email)$/i.test(label)?'visitor':/^(standard|course|stream|subject)$/i.test(label)?'learning':'notes';
+    inquiryItems.forEach(item=>{const label=item.querySelector('small')?.textContent?.trim()||'';const panel=target.querySelector('[data-sheet-panel="'+groupFor(label)+'"] .gc-inquiry-sheet-grid');if(panel)panel.appendChild(item.cloneNode(true));});
+    target.querySelectorAll('[data-sheet-tab]').forEach(tab=>tab.onclick=()=>{
+     const key=tab.dataset.sheetTab;
+     target.querySelectorAll('[data-sheet-tab]').forEach(x=>x.classList.toggle('active',x===tab));
+     target.querySelectorAll('[data-sheet-panel]').forEach(x=>x.hidden=x.dataset.sheetPanel!==key);
+    });
+   }
    if(action)actionTarget.innerHTML=action.innerHTML;
    const originalSend=out.querySelector('[data-send-premium-requirement="'+id+'"]'),modalSend=actionTarget.querySelector('[data-send-premium-requirement]');
    if(modalSend&&originalSend){modalSend.style.cssText='width:100%;padding:14px 18px;border:0;border-radius:12px;background:#15803d;color:white;font-weight:900;font-size:14px;cursor:pointer';modalSend.onclick=()=>{originalSend.click();modal.remove()}}
@@ -2794,6 +2809,30 @@ staffCheck().then(ok=>{if(ok){
 @media print {
  #gcVisitorInquiryModal {position:static!important;background:#fff!important;padding:0!important}
  #gcVisitorInquiryModal > div {width:210mm!important;height:297mm!important;max-height:none!important;box-shadow:none!important;border:0!important}
+}
+</style>
+
+
+<style id="gc-inquiry-sheet-tabs-polish-20261030">
+#gcVisitorInquiryModalFields.gc-visitor-inquiry-fields{display:block!important}
+#gcVisitorInquiryModalFields>.gc-inquiry-sheet-tabs{display:flex!important;gap:9px!important;margin:0 0 18px!important;padding:7px!important;border-radius:13px!important;background:#f1f5f9!important;border:1px solid #e2e8f0!important}
+#gcVisitorInquiryModalFields>.gc-inquiry-sheet-tabs button{flex:1!important;min-height:46px!important;border:1px solid transparent!important;border-radius:10px!important;background:transparent!important;color:#475569!important;font-size:11px!important;font-weight:800!important;cursor:pointer!important}
+#gcVisitorInquiryModalFields>.gc-inquiry-sheet-tabs button.active{background:linear-gradient(135deg,#2563eb,#7c3aed)!important;color:#fff!important;box-shadow:0 5px 13px #4f46e533!important}
+#gcVisitorInquiryModalFields>.gc-inquiry-sheet-panel{display:block!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important}
+#gcVisitorInquiryModalFields>.gc-inquiry-sheet-panel[hidden]{display:none!important}
+#gcVisitorInquiryModalFields .gc-inquiry-sheet-panel h3{margin:0 0 13px!important;padding:12px 15px!important;border-radius:11px!important;background:linear-gradient(100deg,#fff7ed,#eff6ff,#f5f3ff)!important;color:#1e3a8a!important;font-size:16px!important;font-weight:800!important}
+#gcVisitorInquiryModalFields .gc-inquiry-sheet-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important}
+#gcVisitorInquiryModalFields .gc-inquiry-sheet-grid>div{min-width:0!important;min-height:94px!important;padding:15px!important;border-radius:13px!important;border:1px solid #dbeafe!important;background:linear-gradient(145deg,#eff6ff,#fff)!important;box-shadow:0 5px 16px rgba(30,64,175,.07)!important}
+#gcVisitorInquiryModalFields .gc-inquiry-sheet-grid>div:nth-child(3n+2){background:linear-gradient(145deg,#f5f3ff,#fff)!important;border-color:#ddd6fe!important}
+#gcVisitorInquiryModalFields .gc-inquiry-sheet-grid>div:nth-child(3n){background:linear-gradient(145deg,#fdf2f8,#fff)!important;border-color:#fbcfe8!important}
+#gcVisitorInquiryModalFields .gc-inquiry-sheet-grid>div small{font-size:10px!important;letter-spacing:.07em!important}
+#gcVisitorInquiryModalFields .gc-inquiry-sheet-grid>div b{font-size:15px!important;font-weight:650!important}
+#gcVisitorInquiryModalFields [data-sheet-panel="notes"] .gc-inquiry-sheet-grid>div:first-child{grid-column:1/-1!important;min-height:125px!important}
+@media(max-width:650px){
+ #gcVisitorInquiryModalFields>.gc-inquiry-sheet-tabs{gap:4px!important;padding:5px!important}
+ #gcVisitorInquiryModalFields>.gc-inquiry-sheet-tabs button{font-size:9px!important;padding:7px 4px!important}
+ #gcVisitorInquiryModalFields .gc-inquiry-sheet-grid{grid-template-columns:1fr!important}
+ #gcVisitorInquiryModalFields [data-sheet-panel="notes"] .gc-inquiry-sheet-grid>div:first-child{grid-column:auto!important}
 }
 </style>
 
