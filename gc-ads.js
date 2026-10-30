@@ -83,7 +83,7 @@
   function refreshPremiumBadges(root=document){
     root.querySelectorAll('.gc-target-card .gc-premium-tutor-badge').forEach(node=>{
       if(node.dataset.gcNagpurBadge==='true')return;
-      node.innerHTML='<svg viewBox="0 0 100 72" aria-hidden="true" focusable="false"><path d="M8 23 20 52Q23 57 28 51L42 33Q50 22 58 33L72 51Q77 57 80 52L92 23 82 62Q50 67 18 62Z"/><circle cx="8" cy="18" r="8"/><circle cx="30" cy="23" r="7"/><circle cx="50" cy="8" r="8"/><circle cx="70" cy="23" r="7"/><circle cx="92" cy="18" r="8"/><path d="M17 67Q50 62 83 67" fill="none" stroke="#f47700" stroke-width="6" stroke-linecap="round"/></svg><span>PREMIUM MEMBER</span>';
+      node.innerHTML='<svg viewBox="0 0 100 72" aria-hidden="true" focusable="false"><path fill="#f47700" d="M8 23 20 52Q23 57 28 51L42 33Q50 22 58 33L72 51Q77 57 80 52L92 23 82 62Q50 67 18 62Z"/><circle fill="#f47700" cx="8" cy="18" r="8"/><circle fill="#f47700" cx="30" cy="23" r="7"/><circle fill="#f47700" cx="50" cy="8" r="8"/><circle fill="#f47700" cx="70" cy="23" r="7"/><circle fill="#f47700" cx="92" cy="18" r="8"/><path d="M17 67Q50 62 83 67" fill="none" stroke="#f47700" stroke-width="6" stroke-linecap="round"/></svg><span>PREMIUM MEMBER</span>';
       node.dataset.gcNagpurBadge='true';
       node.setAttribute('aria-label','Premium Member');
     });
