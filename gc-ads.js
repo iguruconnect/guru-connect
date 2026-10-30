@@ -88,10 +88,16 @@
       node.setAttribute('aria-label','Premium Member');
     });
   }
+  function replaceCardCrownEmoji(root=document){
+    const cards=[];if(root.matches?.('.gc-target-card'))cards.push(root);root.querySelectorAll?.('.gc-target-card').forEach(x=>cards.push(x));
+    cards.forEach(card=>{const walker=document.createTreeWalker(card,NodeFilter.SHOW_TEXT);const nodes=[];while(walker.nextNode()){if(walker.currentNode.nodeValue.includes('👑'))nodes.push(walker.currentNode)}
+      nodes.forEach(n=>{const parts=n.nodeValue.split('👑');if(parts.length<2)return;const frag=document.createDocumentFragment();parts.forEach((part,i)=>{if(part)frag.appendChild(document.createTextNode(part));if(i<parts.length-1){const crown=document.createElementNS('http://www.w3.org/2000/svg','svg');crown.setAttribute('viewBox','0 0 100 72');crown.setAttribute('aria-hidden','true');crown.style.cssText='width:22px;height:19px;vertical-align:middle;display:inline-block;filter:drop-shadow(0 1px 2px rgba(196,65,0,.35))';const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d','M8 23 20 52Q23 57 28 51L42 33Q50 22 58 33L72 51Q77 57 80 52L92 23 82 62Q50 67 18 62Z');p.setAttribute('fill','#F47700');crown.appendChild(p);const b=document.createElementNS('http://www.w3.org/2000/svg','path');b.setAttribute('d','M17 67Q50 62 83 67');b.setAttribute('fill','none');b.setAttribute('stroke','#C94F00');b.setAttribute('stroke-width','6');b.setAttribute('stroke-linecap','round');crown.appendChild(b);const sh=document.createElementNS('http://www.w3.org/2000/svg','path');sh.setAttribute('d','M24 47 16 27M48 29 50 15M76 47 86 27');sh.setAttribute('fill','none');sh.setAttribute('stroke','#FF9A45');sh.setAttribute('stroke-width','3.5');sh.setAttribute('stroke-linecap','round');crown.appendChild(sh);frag.appendChild(crown);}});n.parentNode.replaceChild(frag,n);});
+    });
+  }
   function boot(){
     if(window.__gcAdsBooted)return; installCss(); installPremiumBadgeStyle(); window.__gcAdsBooted=true;
-    refreshPremiumBadges();
-    const badgeObserver=new MutationObserver(records=>{for(const record of records){for(const added of record.addedNodes){if(added.nodeType===1){if(added.matches?.('.gc-target-card,.gc-premium-tutor-badge'))refreshPremiumBadges(added.parentElement||added);else refreshPremiumBadges(added)}}}});
+    refreshPremiumBadges(); replaceCardCrownEmoji();
+    const badgeObserver=new MutationObserver(records=>{for(const record of records){for(const added of record.addedNodes){if(added.nodeType===1){if(added.matches?.('.gc-target-card,.gc-premium-tutor-badge'))refreshPremiumBadges(added.parentElement||added);else refreshPremiumBadges(added);replaceCardCrownEmoji(added)}}}});
     badgeObserver.observe(document.body,{childList:true,subtree:true});
     render();
     setInterval(render,60000);
