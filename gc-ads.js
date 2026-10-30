@@ -72,7 +72,7 @@
     if(document.getElementById('gc-premium-member-badge-style'))return;
     const st=document.createElement('style');st.id='gc-premium-member-badge-style';st.textContent=`
 .gc-target-copy .gc-premium-tutor-badge{display:inline-flex!important;align-items:center!important;gap:7px!important;width:max-content!important;max-width:100%!important;margin:8px 0 0!important;padding:6px 11px!important;border:0!important;border-radius:7px!important;background:#f47700!important;color:#fff!important;font-family:Inter,Arial,sans-serif!important;font-size:10px!important;font-weight:600!important;letter-spacing:.12em!important;line-height:1.25!important;white-space:nowrap!important;box-shadow:0 2px 6px rgba(180,83,9,.16)!important}
-.gc-premium-tutor-badge svg{width:17px!important;height:15px!important;flex:0 0 17px!important;display:block!important;fill:currentColor!important}
+.gc-premium-tutor-badge svg{width:22px!important;height:19px!important;flex:0 0 22px!important;display:block!important;fill:#f47700!important;background:#fff!important;border-radius:4px!important;padding:1px!important;box-sizing:border-box!important}
 .gc-target-name{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:5px!important}
 .gc-target-name-text{min-width:0!important}
 .gc-target-verified{display:inline-flex!important;align-items:center!important;vertical-align:middle!important;flex:0 0 auto!important}
@@ -83,7 +83,7 @@
   function refreshPremiumBadges(root=document){
     root.querySelectorAll('.gc-target-card .gc-premium-tutor-badge').forEach(node=>{
       if(node.dataset.gcNagpurBadge==='true')return;
-      node.innerHTML='<svg viewBox="0 0 100 72" aria-hidden="true" focusable="false"><path d="M8 23 20 52Q23 57 28 51L42 33Q50 22 58 33L72 51Q77 57 80 52L92 23 82 62Q50 67 18 62Z"/><circle cx="8" cy="18" r="8"/><circle cx="30" cy="23" r="7"/><circle cx="50" cy="8" r="8"/><circle cx="70" cy="23" r="7"/><circle cx="92" cy="18" r="8"/><path d="M17 67Q50 62 83 67" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></svg><span>PREMIUM MEMBER</span>';
+      node.innerHTML='<svg viewBox="0 0 100 72" aria-hidden="true" focusable="false"><path d="M8 23 20 52Q23 57 28 51L42 33Q50 22 58 33L72 51Q77 57 80 52L92 23 82 62Q50 67 18 62Z"/><circle cx="8" cy="18" r="8"/><circle cx="30" cy="23" r="7"/><circle cx="50" cy="8" r="8"/><circle cx="70" cy="23" r="7"/><circle cx="92" cy="18" r="8"/><path d="M17 67Q50 62 83 67" fill="none" stroke="#f47700" stroke-width="6" stroke-linecap="round"/></svg><span>PREMIUM MEMBER</span>';
       node.dataset.gcNagpurBadge='true';
       node.setAttribute('aria-label','Premium Member');
     });
