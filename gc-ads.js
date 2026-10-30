@@ -68,8 +68,31 @@
     }catch(e){console.warn('GURU CONNECT advertisements unavailable:',e)}
     finally{rendering=false}
   }
+  function installPremiumBadgeStyle(){
+    if(document.getElementById('gc-premium-member-badge-style'))return;
+    const st=document.createElement('style');st.id='gc-premium-member-badge-style';st.textContent=`
+.gc-target-copy .gc-premium-tutor-badge{display:inline-flex!important;align-items:center!important;gap:7px!important;width:max-content!important;max-width:100%!important;margin:8px 0 0!important;padding:6px 11px!important;border:0!important;border-radius:7px!important;background:#f47700!important;color:#fff!important;font-family:Inter,Arial,sans-serif!important;font-size:10px!important;font-weight:600!important;letter-spacing:.12em!important;line-height:1.25!important;white-space:nowrap!important;box-shadow:0 2px 6px rgba(180,83,9,.16)!important}
+.gc-premium-tutor-badge svg{width:17px!important;height:15px!important;flex:0 0 17px!important;display:block!important;fill:currentColor!important}
+.gc-target-name{display:flex!important;align-items:center!important;flex-wrap:wrap!important;gap:5px!important}
+.gc-target-name-text{min-width:0!important}
+.gc-target-verified{display:inline-flex!important;align-items:center!important;vertical-align:middle!important;flex:0 0 auto!important}
+@media(max-width:600px){.gc-target-copy .gc-premium-tutor-badge{font-size:9px!important;letter-spacing:.1em!important;padding:6px 9px!important}}
+`;
+    document.head.appendChild(st);
+  }
+  function refreshPremiumBadges(root=document){
+    root.querySelectorAll('.gc-target-card .gc-premium-tutor-badge').forEach(node=>{
+      if(node.dataset.gcNagpurBadge==='true')return;
+      node.innerHTML='<svg viewBox="0 0 100 74" aria-hidden="true" focusable="false"><path d="M8 64 0 17c8-5 15-4 20 4l13 19c6 9 12 9 17-1l-1-21c-1-12 4-18 12-18s13 6 12 18l-1 21c5 10 11 10 17 1l13-19c5-8 12-9 20-4l-8 47H8Z" transform="translate(0 0) scale(1 .94)"/><path d="M8 68Q50 62 92 68" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round"/></svg><span>PREMIUM MEMBER</span>';
+      node.dataset.gcNagpurBadge='true';
+      node.setAttribute('aria-label','Premium Member');
+    });
+  }
   function boot(){
-    if(window.__gcAdsBooted)return; installCss(); window.__gcAdsBooted=true;
+    if(window.__gcAdsBooted)return; installCss(); installPremiumBadgeStyle(); window.__gcAdsBooted=true;
+    refreshPremiumBadges();
+    const badgeObserver=new MutationObserver(records=>{for(const record of records){for(const added of record.addedNodes){if(added.nodeType===1){if(added.matches?.('.gc-target-card,.gc-premium-tutor-badge'))refreshPremiumBadges(added.parentElement||added);else refreshPremiumBadges(added)}}}});
+    badgeObserver.observe(document.body,{childList:true,subtree:true});
     render();
     setInterval(render,60000);
     // Existing directory/LRR renderers replace grid HTML. Re-inject after they finish.
