@@ -649,8 +649,21 @@ async function loadTutorInquiries(){
   const renderInquiryRows=list=>list.slice().sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(x=>{
     const id=escv(x.id),d=fmt(x.created_at),sent=String(x.status||'NEW').toUpperCase()==='FORWARDED'||!!x.forwarded_at;
     const standard=x.search_class||'Not specified',course=x.course||'Not specified',stream=x.stream||'Not specified',subject=x.subjects||'Not specified';
-    const visitor=[['Visitor type',x.visitor_type||'Visitor'],['Name',x.visitor_name],['Phone / WhatsApp',x.visitor_phone],['Email',x.visitor_email],['Standard',standard],['Course',course],['Stream',stream],['Subject',subject],['Other details',x.requirement_details||'—'],['Received',d]];
-    return '<article class="gc-inquiry-individual"><div class="gc-inquiry-individual-main"><span>'+escv(d)+'</span><b>'+escv(standard)+'</b><span>'+escv(course)+'</span><span>'+escv(stream)+'</span><b>'+escv(subject)+'</b><button type="button" class="btn gc-inquiry-details-open" data-inquiry-details="'+id+'">🔎 SEARCH DETAILS</button><span class="gc-visitor-inquiry-status '+(sent?'sent':'')+'">'+(sent?'✓ SENT TO PREMIUM TUTORS':'NEW INQUIRY')+'</span></div><div class="gc-visitor-inquiry-details" id="visitor-details-'+id+'" hidden><div class="gc-visitor-inquiry-fields">'+visitor.map(v=>'<div><small>'+escv(v[0])+'</small><b>'+escv(v[1]||'—')+'</b></div>').join('')+'</div><div class="gc-visitor-inquiry-actions"><button type="button" class="btn green" data-send-premium-requirement="'+id+'" '+(sent?'disabled':'')+'>'+(sent?'✓ ALREADY SENT':'SEND TO PREMIUM TUTORS')+'</button></div><p class="gc-visitor-send-status" id="visitor-send-status-'+id+'">'+(sent?'Forwarded to matching Premium Tutors.':'Only active Premium Tutors matching Standard, Stream and Subject will receive this requirement.')+'</p></div></article>';
+    const visitorName=x.visitor_name||'Visitor Inquiry',visitorType=x.visitor_type||'Visitor';
+    const visitor=[['Visitor type',visitorType],['Name',visitorName],['Phone / WhatsApp',x.visitor_phone],['Email',x.visitor_email],['Standard',standard],['Course',course],['Stream',stream],['Subject',subject],['Other details',x.requirement_details||'—'],['Received',d]];
+    const info=(icon,label,value,extra='')=>'<div class="gc-visitor-fact '+extra+'"><span class="gc-visitor-fact-icon">'+icon+'</span><div><small>'+label+'</small><b>'+escv(value||'—')+'</b></div></div>';
+    return '<article class="gc-inquiry-individual gc-visitor-card">'+
+      '<header class="gc-visitor-card-head"><div class="gc-visitor-avatar">🎓</div><div class="gc-visitor-identity"><small>📩 PUBLIC TUTOR SEARCH INQUIRY</small><h3>'+escv(visitorName)+'</h3><span>'+escv(visitorType)+'</span></div><span class="gc-visitor-state '+(sent?'sent':'new')+'">'+(sent?'✓ FORWARDED':'● NEW')+'</span></header>'+
+      '<div class="gc-visitor-facts">'+
+        info('📱','PHONE / WHATSAPP',x.visitor_phone)+info('✉️','EMAIL',x.visitor_email)+
+        info('🎒','STANDARD',standard)+info('🎓','COURSE',course)+
+        info('🌐','STREAM',stream)+info('📚','SUBJECT',subject)+
+        info('🕒','RECEIVED',d,'gc-visitor-fact-wide')+
+      '</div>'+
+      '<div class="gc-visitor-requirement"><small>📝 LEARNING REQUIREMENT / OTHER DETAILS</small><p>'+escv(x.requirement_details||'No additional details provided')+'</p></div>'+
+      '<div class="gc-visitor-card-actions"><button type="button" class="btn light" data-inquiry-details="'+id+'">MORE DETAILS</button><button type="button" class="btn '+(sent?'light':'green')+'" data-send-premium-requirement="'+id+'" '+(sent?'disabled':'')+'>'+(sent?'✓ ALREADY SENT':'SEND TO PREMIUM TUTORS ➤')+'</button></div>'+
+      '<div class="gc-visitor-inquiry-details" id="visitor-details-'+id+'" hidden><div class="gc-visitor-inquiry-fields">'+visitor.map(v=>'<div><small>'+escv(v[0])+'</small><b>'+escv(v[1]||'—')+'</b></div>').join('')+'</div><div class="gc-visitor-inquiry-actions"></div><p class="gc-visitor-send-status" id="visitor-send-status-'+id+'">'+(sent?'Forwarded to matching Premium Tutors.':'Only active Premium Tutors matching Standard, Stream and Subject will receive this requirement.')+'</p></div>'+
+    '</article>';
   }).join('');
   const renderGrouped=(list,key)=>countBy(list,key).map(([name,n],idx)=>{
     const subset=list.filter(x=>(String(x[key]||'Not specified').trim()||'Not specified')===name);
@@ -1608,7 +1621,44 @@ $('coinHistoryPdf').onclick=()=>{
   const q=($('coinHistorySearch').value||'').trim();
   const rows=list.map(({r,member})=>'<tr><td>'+esc(r.created_at||r.date||r.transaction_date||'—')+'</td><td>'+esc(gcCoinAmount(r)>=0?'ADDED':'SUBTRACTED')+'</td><td>'+esc(Math.abs(gcCoinAmount(r)))+'</td><td>'+esc(gcCoinActor(r))+'</td><td>'+esc(gcCoinReason(r))+'</td><td>'+esc(gcCoinLrr(r))+'</td><td>'+esc(member.name)+'<br>'+esc(member.role||'')+'<br>'+esc(member.user_id||member.profile_id||'—')+'</td></tr>').join('');
   const w=window.open('','_blank');if(!w)return alert('Please allow pop-ups for this site to create the PDF statement.');
-  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>GURU CONNECT Coin Transaction Statement</title><style>body{font:12px Arial,sans-serif;color:#172554;padding:22px}header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #155eef;padding-bottom:14px}header img{max-width:190px;max-height:72px;object-fit:contain}h1{font-size:22px;margin:0}p{margin:5px 0;color:#475569}.meta{margin:18px 0;padding:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px}table{border-collapse:collapse;width:100%;font-size:10px}th,td{border:1px solid #cbd5e1;padding:7px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf2ff}footer{margin-top:22px;border-top:1px solid #cbd5e1;padding-top:10px;font-weight:bold;color:#334155}@media print{button{display:none}body{padding:0}@page{size:A4 landscape;margin:12mm}}</style></head><body><header><img src="https://www.guruconnnect.in/GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT logo"><div><h1>GURU CONNECT</h1><p>Connecting Mind - Creating Future...</p><p><b>COIN TRANSACTION STATEMENT</b></p></div></header><div class="meta"><b>Search / Member:</b> '+esc(q||'All available coin transactions')+'<br><b>Generated:</b> '+esc(new Date().toLocaleString())+'<br><b>Transactions:</b> '+list.length+'</div><table><thead><tr><th>Date of transaction</th><th>Direction</th><th>Coins</th><th>By whom</th><th>Reason / LRR details</th><th>LRR / reference</th><th>Credited to</th></tr></thead><tbody>'+rows+'</tbody></table><footer>Customer Care: support@guruconnnect.in · GURU CONNECT</footer><p>To save as PDF, choose “Save as PDF” in the print dialog.</p><body onload="setTimeout(function(){window.print()},350)"></body></html>');
+  w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>GURU CONNECT Coin Transaction Statement</title><style>body{font:12px Arial,sans-serif;color:#172554;padding:22px}header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #155eef;padding-bottom:14px}header img{max-width:190px;max-height:72px;object-fit:contain}h1{font-size:22px;margin:0}p{margin:5px 0;color:#475569}.meta{margin:18px 0;padding:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px}table{border-collapse:collapse;width:100%;font-size:10px}th,td{border:1px solid #cbd5e1;padding:7px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf2ff}footer{margin-top:22px;border-top:1px solid #cbd5e1;padding-top:10px;font-weight:bold;color:#334155}@media print{button{display:none}body{padding:0}@page{size:A4 landscape;margin:12mm}}</style></head><body><header><img src="https://www.guruconnnect.in/GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT logo"><div><h1>GURU CONNECT</h1><p>Connecting Mind - Creating Future...</p><p><b>COIN TRANSACTION STATEMENT</b></p></div></header><div class="meta"><b>Search / Member:</b> '+esc(q||'All available coin transactions')+'<br><b>Generated:</b> '+esc(new Date().toLocaleString())+'<br><b>Transactions:</b> '+list.length+'</div><table><thead><tr><th>Date of transaction</th><th>Direction</th><th>Coins</th><th>By whom</th><th>Reason / LRR details</th><th>LRR / reference</th><th>Credited to</th></tr></thead><tbody>'+rows+'</tbody></table><footer>Customer Care: support@guruconnnect.in · GURU CONNECT</footer><p>To save as PDF, choose “Save as PDF” in the print dialog.</p><body onload="setTimeout(function(){window.print()},350)">
+<style id="gc-visitor-inquiry-card-refresh-20261031">
+/* Public Tutor Search inquiries: LRR-inspired, full-detail profile cards */
+#sec-tutorinquiries #tutorInquiryResults{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(310px,390px))!important;gap:15px!important;align-items:start!important}
+#sec-tutorinquiries .gc-visitor-card{width:100%;max-width:390px;margin:0!important;padding:0!important;overflow:hidden!important;border:2px solid #ff6b16!important;border-radius:19px!important;background:linear-gradient(155deg,#fffaf5,#fff0e4)!important;box-shadow:0 8px 22px rgba(124,45,18,.10)!important}
+#sec-tutorinquiries .gc-visitor-card:before{display:none!important}
+#sec-tutorinquiries .gc-visitor-card-head{display:grid;grid-template-columns:58px minmax(0,1fr);gap:10px;align-items:center;position:relative;padding:14px 13px 12px;background:linear-gradient(125deg,#fff0df,#fffaf4 58%,#f0fdf4);border-bottom:1px solid #fed7aa}
+#sec-tutorinquiries .gc-visitor-avatar{display:grid;place-items:center;width:56px;height:56px;border:3px solid #fff;border-radius:50%;background:#ffedd5;box-shadow:0 2px 8px #9a341222;font-size:27px}
+#sec-tutorinquiries .gc-visitor-identity{min-width:0;padding-right:3px}
+#sec-tutorinquiries .gc-visitor-identity small{display:block;color:#c2410c;font-size:8px;font-weight:950;letter-spacing:.45px}
+#sec-tutorinquiries .gc-visitor-identity h3{margin:4px 0 2px;color:#172554;font-size:18px;font-weight:900;overflow-wrap:anywhere}
+#sec-tutorinquiries .gc-visitor-identity span{color:#475569;font-size:11px;font-weight:800}
+#sec-tutorinquiries .gc-visitor-state{grid-column:1/-1;justify-self:start;padding:5px 9px;border:1px solid #fdba74;border-radius:30px;background:#fff7ed;color:#9a3412;font-size:9px;font-weight:950}
+#sec-tutorinquiries .gc-visitor-state.sent{border-color:#86efac;background:#dcfce7;color:#166534}
+#sec-tutorinquiries .gc-visitor-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:11px 12px 8px}
+#sec-tutorinquiries .gc-visitor-fact{display:grid;grid-template-columns:25px minmax(0,1fr);gap:7px;align-items:center;min-width:0;min-height:53px;padding:8px;border:1px solid #fed7aa;border-radius:10px;background:#fff}
+#sec-tutorinquiries .gc-visitor-fact:nth-child(4n+2){border-color:#bfdbfe;background:#eff6ff}
+#sec-tutorinquiries .gc-visitor-fact:nth-child(4n+3){border-color:#ddd6fe;background:#f5f3ff}
+#sec-tutorinquiries .gc-visitor-fact:nth-child(4n){border-color:#bbf7d0;background:#f0fdf4}
+#sec-tutorinquiries .gc-visitor-fact-icon{display:grid;place-items:center;width:25px;height:25px;border-radius:8px;background:#fff1e6;font-size:14px}
+#sec-tutorinquiries .gc-visitor-fact small{display:block;margin-bottom:3px;color:#9a3412;font-size:8px;font-weight:950;letter-spacing:.3px}
+#sec-tutorinquiries .gc-visitor-fact b{display:block;color:#172554;font-size:10px;font-weight:800;line-height:1.35;overflow-wrap:anywhere}
+#sec-tutorinquiries .gc-visitor-fact-wide{grid-column:1/-1}
+#sec-tutorinquiries .gc-visitor-requirement{margin:0 12px 10px;padding:10px 11px;border:1px solid #fdba74;border-radius:11px;background:#fff}
+#sec-tutorinquiries .gc-visitor-requirement small{display:block;color:#c2410c;font-size:9px;font-weight:950;letter-spacing:.25px}
+#sec-tutorinquiries .gc-visitor-requirement p{margin:5px 0 0;color:#334155;font-size:11px;font-weight:650;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+#sec-tutorinquiries .gc-visitor-card-actions{display:grid;grid-template-columns:.8fr 1.2fr;gap:8px;padding:0 12px 12px}
+#sec-tutorinquiries .gc-visitor-card-actions .btn{min-height:40px;padding:9px 8px;border-radius:10px;font-size:10px;font-weight:950}
+#sec-tutorinquiries .gc-visitor-card-actions .btn.green{background:#079447!important;color:#fff!important}
+#sec-tutorinquiries .gc-visitor-card .gc-visitor-inquiry-details{margin:0 12px 12px;padding:10px;border:1px dashed #fdba74;border-radius:11px;background:#fff}
+#sec-tutorinquiries .gc-visitor-card .gc-visitor-inquiry-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+#sec-tutorinquiries .gc-visitor-card .gc-visitor-inquiry-fields>div{min-width:0;padding:8px;border:1px solid #e2e8f0;border-radius:8px;background:#f8fafc}
+#sec-tutorinquiries .gc-visitor-card .gc-visitor-inquiry-fields small{display:block;color:#64748b;font-size:8px;font-weight:900;text-transform:uppercase}
+#sec-tutorinquiries .gc-visitor-card .gc-visitor-inquiry-fields b{display:block;margin-top:3px;color:#172554;font-size:10px;overflow-wrap:anywhere}
+@media(max-width:650px){#sec-tutorinquiries #tutorInquiryResults{grid-template-columns:minmax(0,1fr)!important}#sec-tutorinquiries .gc-visitor-card{max-width:none!important}#sec-tutorinquiries .gc-visitor-facts{gap:6px;padding:9px}#sec-tutorinquiries .gc-visitor-fact{padding:7px;min-height:50px}#sec-tutorinquiries .gc-visitor-card-actions{grid-template-columns:1fr 1.35fr}}
+</style>
+
+</body></html>');
   w.document.close();
 };
 
