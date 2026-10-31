@@ -12,6 +12,9 @@ alter table public.gc_tutor_requirements
   add column if not exists stream text,
   add column if not exists source_inquiry_id uuid,
   add column if not exists requirement_source text not null default 'STUDENT';
+alter table public.gc_tutor_requirements
+  add column if not exists visitor_requirement_details text,
+  add column if not exists visitor_type text;
 
 create table if not exists public.gc_tutor_requirement_recipients (
   requirement_id uuid not null references public.gc_tutor_requirements(id) on delete cascade,
@@ -101,7 +104,7 @@ begin
   insert into public.gc_tutor_requirements
     (last_date, student_name, student_phone, student_email, search_class, course,
      subject_count, subjects, mode, location, fees_budget, preferred_timing,
-     stream, source_inquiry_id, requirement_source, status)
+     stream, source_inquiry_id, requirement_source, status, visitor_requirement_details, visitor_type)
   values
     (current_date + 30, coalesce(nullif(trim(v.visitor_name),''),'Visitor'),
      coalesce(nullif(trim(v.visitor_phone),''),'Not provided'),
@@ -109,7 +112,8 @@ begin
      v_class, v_course,
      greatest(1, least(6, array_length(regexp_split_to_array(v_subjects, '\\s*[,;|]\\s*'),1))),
      v_subjects, 'ONLINE', coalesce(nullif(trim(v.location),''),'To be confirmed'),
-     'To be discussed directly', null, v_stream, v.id, 'VISITOR', 'ACTIVE')
+     'To be discussed directly', null, v_stream, v.id, 'VISITOR', 'ACTIVE',
+     nullif(trim(v.requirement_details),''), coalesce(nullif(trim(v.visitor_type),''),'Visitor'))
   returning id into v_req;
 
   -- Count eligible, genuinely paid Premium Tutors separately from profile matching.
