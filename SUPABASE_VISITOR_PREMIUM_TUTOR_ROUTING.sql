@@ -110,7 +110,7 @@ begin
      coalesce(nullif(trim(v.visitor_phone),''),'Not provided'),
      coalesce(nullif(trim(v.visitor_email),''),'not-provided@example.invalid'),
      v_class, v_course,
-     greatest(1, least(6, array_length(regexp_split_to_array(v_subjects, '\\s*[,;|]\\s*'),1))),
+     greatest(1, least(6, array_length(regexp_split_to_array(v_subjects, '[,;|]'),1))),
      v_subjects, 'ONLINE', coalesce(nullif(trim(v.location),''),'To be confirmed'),
      'To be discussed directly', null, v_stream, v.id, 'VISITOR', 'ACTIVE',
      nullif(trim(v.requirement_details),''), coalesce(nullif(trim(v.visitor_type),''),'Visitor'))
