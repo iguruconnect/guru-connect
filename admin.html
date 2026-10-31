@@ -331,7 +331,7 @@ body,body button,body input,body select,body textarea,body table,body th,body td
  #gcVisitorInquiryModal .gc-inquiry-profile-field b{font-size:11px!important}
 }
 </style></head><body>
-<header class="head"><div class="headin"><div><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><button id="logout" class="btn light">LOG OUT</button></div></header>
+<header class="head"><div class="headin"><div><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><h1>GURU CONNECT • ADMIN CONTROL CENTER</h1><p>Staff/Admin workspace — manage registered Students, Tutors, payments, advertisements, coins and Learning Requests.</p></div><div class="gc-admin-helpline"><span class="gc-admin-headset">🎧</span><div><b>Helpline</b><a href="mailto:support@guruconnnect.in">support@guruconnnect.in</a></div></div><button id="logout" class="btn light">↪ LOG OUT</button></div></header>
 <main class="wrap"><div id="gate" class="gate">Admin page loaded — preparing login scripts…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div>
 <nav class="controlbar" aria-label="Admin sections">
 <button class="topbtn priority active" data-sec="edit">✏️ <b>EDIT</b><small>Find, edit & delete Student/Tutor</small></button>
@@ -2962,4 +2962,92 @@ staffCheck().then(ok=>{if(ok){
 #sec-tutorinquiries .gc-visitor-card .gc-visitor-inquiry-fields b{display:block;margin-top:3px;color:#172554;font-size:10px;overflow-wrap:anywhere}
 @media(max-width:650px){#sec-tutorinquiries #tutorInquiryResults{grid-template-columns:minmax(0,1fr)!important}#sec-tutorinquiries .gc-visitor-card{max-width:none!important}#sec-tutorinquiries .gc-visitor-facts{gap:6px;padding:9px}#sec-tutorinquiries .gc-visitor-fact{padding:7px;min-height:50px}#sec-tutorinquiries .gc-visitor-card-actions{grid-template-columns:1fr 1.35fr}}
 </style>
+
+<style id="gc-admin-chatgpt-dashboard-20261031">
+/* Guru Connect admin: clean ChatGPT-like typography and reference dashboard layout */
+:root{font-synthesis:none;text-rendering:optimizeLegibility}
+html,body{min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}
+body{background:#f3f6fb!important;color:#102b61!important}
+.head{padding:12px 22px!important;background:#fff!important;color:#102b61!important;border-top:6px solid transparent;border-image:linear-gradient(90deg,#facc15 0 12%,#16a34a 12% 24%,#f97316 24% 36%,#2563eb 36% 48%,#e11d48 48% 60%,#9333ea 60% 72%,#a855f7 72% 100%) 1;box-shadow:0 5px 20px rgba(15,23,42,.09)!important}
+.headin{width:min(1600px,98vw)!important;min-height:82px;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:18px!important}
+.headin>div:first-child{display:flex;align-items:center;gap:18px;min-width:0}
+.gc-admin-brand{margin:0!important;padding:0!important;background:transparent!important;box-shadow:none!important}
+.gc-admin-brand img{width:min(330px,34vw)!important;max-height:92px!important}
+.headin>div:first-child h1,.headin>div:first-child p{display:none!important}
+.gc-admin-helpline{display:flex;align-items:center;gap:10px;margin-left:auto;padding:8px 16px;border-right:1px solid #cbd5e1;color:#123b82}
+.gc-admin-headset{font-size:26px}
+.gc-admin-helpline b{display:block;font-size:13px;font-weight:850}
+.gc-admin-helpline a{color:#123b82;text-decoration:none;font-size:13px;font-weight:750}
+#logout{background:#eff6ff!important;color:#123b82!important;border:1px solid #bfdbfe!important;border-radius:24px!important;padding:11px 17px!important;white-space:nowrap}
+.wrap{width:min(1600px,98vw)!important;max-width:none!important;margin:18px auto 36px!important}
+#app[style*="display: block"]{display:grid!important;grid-template-columns:242px minmax(0,1fr);gap:16px;align-items:start}
+#app>.notice{grid-column:1/-1;margin:0!important;border-radius:12px!important;background:#eff6ff!important;border:1px solid #bfdbfe!important;color:#1e40af!important;line-height:1.5}
+.controlbar{grid-column:1!important;grid-row:2/span 30;position:sticky!important;top:12px!important;display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:5px!important;max-height:calc(100vh - 24px);overflow-y:auto!important;overflow-x:hidden!important;padding:10px!important;margin:0!important;border:1px solid #d7e5f7!important;border-radius:17px!important;background:linear-gradient(180deg,#073477,#08275e 72%,#061e49)!important;box-shadow:0 8px 26px rgba(7,35,83,.18)!important;scrollbar-width:thin}
+.controlbar:after{content:"GURU CONNECT";display:block;margin-top:auto;padding:24px 7px 8px;border-top:3px solid #facc15;color:#fff;font-size:17px;font-weight:950;letter-spacing:-.5px}
+.topbtn,.topbtn.priority{flex:0 0 auto!important;width:100%!important;min-width:0!important;min-height:43px!important;padding:11px 12px!important;border:1px solid transparent!important;border-radius:10px!important;background:transparent!important;color:#fff!important;text-align:left!important;white-space:normal!important;box-shadow:none!important;font-size:13px!important;font-weight:750!important;transform:none!important}
+.topbtn:hover{background:#164b9c!important}
+.topbtn.active{background:linear-gradient(100deg,#0d5bd7,#1478ed)!important;border-color:#3988f5!important;box-shadow:0 4px 14px rgba(0,0,0,.14)!important}
+.topbtn small{margin-top:3px!important;color:#c8ddff!important;font-size:9px!important;line-height:1.3}
+.section{grid-column:2!important;grid-row:2!important;margin:0!important;border:1px solid #e0e8f2!important;border-radius:17px!important;box-shadow:0 8px 28px rgba(15,23,42,.07)!important}
+.section.open{display:block!important}
+.secHead{padding:17px 21px!important;background:linear-gradient(105deg,#0646a8,#0867e8)!important;color:#fff!important;border:0!important}
+.secHead h2{font-size:22px!important;font-weight:850!important;letter-spacing:-.4px}
+.secHead p{color:#dbeafe!important;font-size:11px!important}
+.secHead .pill{background:#fff!important;color:#0754c5!important}
+.secBody{padding:18px!important}
+.btn{font-family:inherit!important;font-size:12px!important;letter-spacing:.05px}
+.field label{font-size:10px!important;letter-spacing:.35px}
+.field input,.field select,.field textarea,.quickSearch input{font-family:inherit!important;border-radius:10px!important}
+.panel,.user,.empty{border-radius:14px!important}
+.status{font-size:11px!important}
+#sec-tutorinquiries .secHead{background:linear-gradient(100deg,#0646a8,#0867e8)!important}
+#sec-tutorinquiries .secHead h2:before{content:"⌕";font-size:27px;margin-right:9px;vertical-align:-2px}
+#sec-tutorinquiries .secBody>.row{justify-content:space-between!important;padding:0 0 8px}
+#sec-tutorinquiries #tutorInquiryResults{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:14px!important}
+#sec-tutorinquiries .gc-visitor-card{display:grid!important;grid-template-columns:minmax(235px,290px) minmax(0,1fr)!important;grid-template-rows:auto auto auto!important;align-items:center!important;max-width:none!important;width:100%!important;min-height:0!important;padding:12px!important;border:2px solid #ff6b16!important;border-radius:19px!important;background:linear-gradient(110deg,#fff7ef,#fff 56%,#fffaf5)!important;box-shadow:0 5px 15px rgba(15,23,42,.08)!important;gap:8px 12px!important}
+#sec-tutorinquiries .gc-visitor-card:nth-child(3n+2){border-color:#a855f7!important;background:linear-gradient(110deg,#faf5ff,#fff 58%,#fdfaff)!important}
+#sec-tutorinquiries .gc-visitor-card:nth-child(3n){border-color:#22a06b!important;background:linear-gradient(110deg,#f0fdf4,#fff 58%,#f7fff9)!important}
+#sec-tutorinquiries .gc-visitor-card-head{grid-column:1;grid-row:1/3;display:grid!important;grid-template-columns:94px minmax(0,1fr)!important;align-content:center!important;gap:8px 12px!important;padding:12px!important;border:0!important;background:transparent!important}
+#sec-tutorinquiries .gc-visitor-avatar{grid-row:1/3;width:88px!important;height:88px!important;border:3px solid #ff6b16!important;background:#fff0df!important;font-size:39px!important}
+#sec-tutorinquiries .gc-visitor-identity small{font-size:9px!important}
+#sec-tutorinquiries .gc-visitor-identity h3{font-size:21px!important;line-height:1.2!important}
+#sec-tutorinquiries .gc-visitor-identity span{display:inline-block;margin-top:4px;padding:6px 13px;border-radius:20px;background:#0875ed;color:white!important;font-size:11px!important}
+#sec-tutorinquiries .gc-visitor-state{grid-column:2!important;justify-self:start!important;font-size:9px!important}
+#sec-tutorinquiries .gc-visitor-facts{grid-column:2;grid-row:1;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:7px!important;padding:0!important}
+#sec-tutorinquiries .gc-visitor-fact{min-height:58px!important;padding:8px!important;border-radius:11px!important;box-shadow:0 2px 7px rgba(15,23,42,.04)}
+#sec-tutorinquiries .gc-visitor-fact-icon{width:29px!important;height:29px!important;font-size:17px!important}
+#sec-tutorinquiries .gc-visitor-fact small{font-size:8px!important}
+#sec-tutorinquiries .gc-visitor-fact b{font-size:11px!important;color:#102b61!important}
+#sec-tutorinquiries .gc-visitor-fact-wide{grid-column:1/-1}
+#sec-tutorinquiries .gc-visitor-requirement{grid-column:2;grid-row:2;margin:0!important;padding:9px 11px!important;border:0!important;border-radius:10px!important;background:#e0efff!important}
+#sec-tutorinquiries .gc-visitor-requirement small{font-size:9px!important;color:#0754b8!important}
+#sec-tutorinquiries .gc-visitor-requirement p{font-size:11px!important}
+#sec-tutorinquiries .gc-visitor-card-actions{grid-column:1/-1;grid-row:3;display:flex!important;gap:10px!important;justify-content:center!important;padding:3px 5px 0!important}
+#sec-tutorinquiries .gc-visitor-card-actions .btn{flex:1;max-width:230px;min-height:42px!important;border-radius:10px!important;font-size:12px!important}
+#sec-tutorinquiries .gc-visitor-card-actions .btn:first-child{background:linear-gradient(90deg,#f97316,#f59e0b)!important;color:#fff!important}
+#sec-tutorinquiries .gc-visitor-card-actions .btn:last-child{background:#0c9b52!important;color:#fff!important}
+#sec-tutorinquiries .gc-visitor-card .gc-visitor-inquiry-details{grid-column:1/-1;width:100%;margin:0!important}
+@media(max-width:1050px){#app[style*="display: block"]{grid-template-columns:205px minmax(0,1fr)}.controlbar{grid-row:2/span 30}.topbtn,.topbtn.priority{font-size:11px!important;padding:10px!important}#sec-tutorinquiries .gc-visitor-card{grid-template-columns:200px minmax(0,1fr)!important}#sec-tutorinquiries .gc-visitor-card-head{grid-template-columns:70px minmax(0,1fr)!important}#sec-tutorinquiries .gc-visitor-avatar{width:66px!important;height:66px!important;font-size:30px!important}#sec-tutorinquiries .gc-visitor-facts{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:720px){
+ .head{padding:9px 12px!important}.headin{width:100%!important;min-height:0!important;gap:8px!important}.gc-admin-brand img{width:min(210px,53vw)!important;max-height:65px!important}.gc-admin-helpline{padding:5px 7px;gap:5px;border:0}.gc-admin-headset{font-size:19px}.gc-admin-helpline b,.gc-admin-helpline a{font-size:9px!important}#logout{padding:8px!important;font-size:9px!important}
+ .wrap{width:100%!important;margin:10px auto 20px!important;padding:0 9px}
+ #app[style*="display: block"]{grid-template-columns:minmax(0,1fr)!important;gap:10px}
+ #app>.notice{grid-column:1!important}
+ .controlbar{grid-column:1!important;grid-row:auto!important;position:sticky!important;top:0!important;z-index:600;display:flex!important;flex-direction:row!important;max-height:none!important;overflow-x:auto!important;overflow-y:hidden!important;padding:7px!important;border-radius:12px!important}
+ .controlbar:after{display:none!important}
+ .topbtn,.topbtn.priority{width:auto!important;min-width:125px!important;min-height:42px!important;font-size:10px!important;padding:8px 10px!important}
+ .topbtn small{font-size:8px!important}
+ .section{grid-column:1!important;grid-row:auto!important}
+ .secHead{padding:13px!important}.secHead h2{font-size:18px!important}.secBody{padding:12px!important}
+ #sec-tutorinquiries .gc-visitor-card{grid-template-columns:minmax(0,1fr)!important;gap:8px!important}
+ #sec-tutorinquiries .gc-visitor-card-head{grid-column:1;grid-row:auto;grid-template-columns:72px minmax(0,1fr)!important;padding:7px!important}
+ #sec-tutorinquiries .gc-visitor-avatar{width:68px!important;height:68px!important;font-size:30px!important}
+ #sec-tutorinquiries .gc-visitor-facts{grid-column:1;grid-row:auto;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #sec-tutorinquiries .gc-visitor-requirement{grid-column:1;grid-row:auto}
+ #sec-tutorinquiries .gc-visitor-card-actions{grid-column:1;grid-row:auto;flex-wrap:wrap}
+ #sec-tutorinquiries .gc-visitor-card-actions .btn{min-width:130px}
+}
+@media(max-width:420px){.gc-admin-helpline{display:none!important}#sec-tutorinquiries .gc-visitor-facts{grid-template-columns:1fr!important}}
+</style>
+
 </body></html>
