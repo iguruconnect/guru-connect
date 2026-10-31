@@ -347,10 +347,22 @@ body,body button,body input,body select,body textarea,body table,body th,body td
 <button class="topbtn" data-sec="idgeneration">🪪 <b>GENERATE ID</b><small>Create Student / Tutor ID card</small></button>
 <button class="topbtn" data-sec="staff">👔 <b>ADD STAFF</b><small>Create and manage permanent Staff IDs</small></button>
 <button class="topbtn" data-sec="tutorinquiries">📩 <b>TUTOR INQUIRIES</b><small>Visitor contacts and Premium tutor forwarding</small></button>
+<button class="topbtn priority" data-sec="tutorrequirements">🎯 <b>TUTOR REQUIREMENT</b><small>Parent / Student posted requirements</small></button>
 <button class="topbtn" data-sec="studenttutorcontacts">📞 <b>STD & TUT CNCT REQ</b><small>Student-to-tutor contact requests and lifetime history</small></button>
 </nav>
 
 <section class="section" id="sec-tutorinquiries"><div class="secHead"><div><h2>📩 Public Tutor Search Inquiries</h2><p>Review visitor contact details and manually forward each inquiry to the Premium Tutor(s) you select.</p></div><span class="pill" id="tutorInquiryCount">INQUIRIES</span></div><div class="secBody"><div class="row" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="btn primary" id="refreshTutorInquiries" type="button">↻ REFRESH INQUIRIES</button><button class="btn purple" id="viewTutorInquiryHistory" type="button">🕘 INQUIRY HISTORY</button><span class="status" id="tutorInquiryStatus">Run the Tutor Inquiry SQL setup in Supabase first.</span></div><div id="tutorInquiryResults" style="margin-top:16px"></div></div></section>
+<section class="section" id="sec-tutorrequirements">
+ <div class="secHead"><div><h2>🎯 TUTOR REQUIREMENT</h2><p>Parent and Student requirements, shown date-wise in a detailed table-style layout.</p></div><span class="pill" id="gcTutorReqCount">REQUIREMENTS</span></div>
+ <div class="secBody">
+  <div class="actions" style="margin-top:0;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+   <button class="btn primary" type="button" onclick="gcAdminLoadTutorRequirements(false)">↻ REFRESH REQUIREMENTS</button>
+   <button class="btn purple" type="button" onclick="gcAdminLoadTutorRequirements(true)">🕘 LIFETIME HISTORY</button>
+   <span class="status" id="gcTutorReqStatus">Open this tab to load parent/student requirements.</span>
+  </div>
+  <div id="gcTutorReqResults" style="margin-top:16px"></div>
+ </div>
+</section>
 <section class="section" id="sec-studenttutorcontacts">
  <div class="secHead"><div><h2>📞 Student & Tutor Contact Requests</h2><p>Admin-only date-wise record of student requests to contact eligible Premium + Verified tutors.</p></div><span class="pill" id="gcContactCount">CONTACT REQUESTS</span></div>
  <div class="secBody">
@@ -819,6 +831,44 @@ window.gcSaveStudentTutorContact=async function(id){
  try{const q=await sb.rpc('gc_admin_update_student_tutor_contact_request',{p_request_id:id,p_status:st.value,p_admin_note:note?note.value:null});if(q.error)throw q.error;status.textContent='Request status and admin note saved.';await gcLoadStudentTutorContacts(gcContactHistoryMode);}
  catch(e){status.textContent='Could not save request: '+(e.message||String(e));}
 };
+let gcAdminTutorReqHistoryMode=false;
+window.gcAdminLoadTutorRequirements=async function(showHistory=false){
+ gcAdminTutorReqHistoryMode=!!showHistory;
+ const status=$('gcTutorReqStatus'),out=$('gcTutorReqResults'),count=$('gcTutorReqCount');
+ if(!status||!out||!count)return;
+ status.textContent='Loading parent/student requirements…';out.innerHTML='';
+ try{
+  const q=await sb.rpc('gc_admin_tutor_requirement_history');
+  if(q.error)throw q.error;
+  const rows=q.data||[];
+  count.textContent=rows.length+(rows.length===1?' REQUIREMENT':' REQUIREMENTS');
+  if(!rows.length){out.innerHTML='<div class="empty">No Tutor Requirements have been submitted yet.</div>';status.textContent='Requirement list refreshed.';return;}
+  const esc=v=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const date=v=>{if(!v)return '—';const d=new Date(v);return Number.isNaN(d.getTime())?'—':d.toLocaleString('en-IN',{day:'2-digit',month:'long',year:'numeric',weekday:'short',hour:'2-digit',minute:'2-digit'});};
+  const day=v=>{const d=new Date(v||Date.now());return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+  const dayName=k=>new Date(k+'T12:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  const groups=new Map();rows.forEach(r=>{const k=day(r.created_at);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r);});
+  const field=(label,value)=>'<td><small>'+label+'</small><b>'+esc(value||'—')+'</b></td>';
+  out.innerHTML='<style>
+  #gcTutorReqResults .gc-tr-day{border:2px solid #ff8a24;border-radius:16px;background:#fff8f0;margin:0 0 18px;overflow:hidden;box-shadow:0 5px 16px #f9731615}
+  #gcTutorReqResults .gc-tr-dayhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;background:linear-gradient(100deg,#ffedd5,#fff7ed);color:#9a3412;border-bottom:1px solid #fdba74;font-weight:900}
+  #gcTutorReqResults .gc-tr-dayhead strong{font-size:17px}
+  #gcTutorReqResults .gc-tr-dayhead span{background:#facc15;color:#172554;border-radius:30px;padding:8px 16px}
+  #gcTutorReqResults .gc-tr-tablewrap{overflow-x:auto}
+  #gcTutorReqResults table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;font-size:13px}
+  #gcTutorReqResults th{background:#eff6ff;color:#173b78;text-align:left;padding:11px 12px;border-bottom:1px solid #bfdbfe;white-space:nowrap}
+  #gcTutorReqResults td{padding:12px;border-bottom:1px solid #fed7aa;vertical-align:top;min-width:125px}
+  #gcTutorReqResults td small{display:block;color:#c2410c;font-size:10px;font-weight:900;margin-bottom:5px}
+  #gcTutorReqResults td b{display:block;color:#172554;white-space:normal;overflow-wrap:anywhere}
+  #gcTutorReqResults .gc-tr-person{font-size:15px;color:#0f2e70}
+  #gcTutorReqResults .gc-tr-description{min-width:220px}
+  #gcTutorReqResults .gc-tr-actions{padding:13px;background:#fff7ed}
+  #gcTutorReqResults .gc-tr-send{background:#9ca3af!important;color:#fff!important;cursor:not-allowed!important;opacity:.9}
+  #gcTutorReqResults .gc-tr-note{font-size:12px;color:#92400e;margin-left:8px}
+  </style>'+[...groups.entries()].sort((x,y)=>y[0].localeCompare(x[0])).map(([k,list])=>'<section class="gc-tr-day"><div class="gc-tr-dayhead"><strong>📅 REQUIREMENT DATE · '+dayName(k)+'</strong><span>'+list.length+' REQUIREMENT'+(list.length===1?'':'S')+'</span></div><div class="gc-tr-tablewrap"><table><thead><tr><th>Parent / Student</th><th>Contact</th><th>Class / Course</th><th>Stream</th><th>Subject(s)</th><th>Mode</th><th>Location</th><th>Fees Budget</th><th>Preferred Timing</th><th>Posted / Last Date</th><th>Requirement Details</th><th>Status</th></tr></thead><tbody>'+list.sort((x,y)=>new Date(y.created_at)-new Date(x.created_at)).map(r=>'<tr>'+field('NAME',r.student_name)+field('PHONE / EMAIL',[r.student_phone,r.student_email].filter(Boolean).join(' · '))+field('CLASS / COURSE',[r.search_class,r.course].filter(Boolean).join(' / '))+field('STREAM',r.stream)+field('SUBJECTS ('+(r.subject_count||'—')+')',r.subjects)+field('MODE',r.mode)+field('LOCATION',r.location)+field('FEES BUDGET',r.fees_budget)+field('TIMING',r.preferred_timing)+field('POSTED / LAST DATE',date(r.created_at)+' · Last date: '+(r.last_date||'—'))+'<td class="gc-tr-description"><small>LEARNING REQUIREMENT</small><b>'+esc(r.visitor_requirement_details||r.requirement_details||r.description||'—')+'</b></td>'+field('STATUS',r.status||'ACTIVE')+'</tr><tr><td colspan="12" class="gc-tr-actions"><button type="button" class="btn gc-tr-send" disabled title="Matching Premium Tutor delivery requires its dedicated secure routing SQL function">➤ SEND TO PREMIUM TUTORS</button><span class="gc-tr-note">Tutor matching and delivery will activate after the dedicated secure routing SQL is installed. This button is shown but not active yet.</span></td></tr>').join('')+'</tbody></table></div></section>').join('');
+  status.textContent=(showHistory?'Lifetime history':'Current requirement list')+' loaded. '+rows.length+' record(s).';
+ }catch(e){status.textContent='Could not load Tutor Requirements: '+(e.message||String(e));}
+};
 function switchSection(name){
   if(!name||activeSection===name)return;
   activeSection=name;
@@ -833,6 +883,7 @@ function switchSection(name){
   if(name==='advertisement')loadAdminAdvertisements();
   if(name==='staff')gcStaffLoadDirectory();
   if(name==='tutorinquiries')loadTutorInquiries();
+  if(name==='tutorrequirements')gcAdminLoadTutorRequirements(false);
   if(name==='studenttutorcontacts')gcLoadStudentTutorContacts(false);
 }
 document.querySelectorAll('.topbtn').forEach(b=>b.addEventListener('click',()=>switchSection(b.dataset.sec)));
