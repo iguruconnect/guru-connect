@@ -654,7 +654,7 @@ async function loadTutorInquiries(){
     const info=(icon,label,value,extra='')=>'<div class="gc-visitor-fact '+extra+'"><span class="gc-visitor-fact-icon">'+icon+'</span><div><small>'+label+'</small><b>'+escv(value||'—')+'</b></div></div>';
     return '<article class="gc-inquiry-individual gc-visitor-card gc-lrr-soft-card">'+
       '<div class="gc-lrr-card-top"><span>📩 &nbsp; GURU CONNECT · INQUIRY</span><span class="gc-lrr-card-mark">✦</span></div>'+
-      '<div class="gc-visitor-card-head"><div class="gc-visitor-avatar">🎓</div><div class="gc-visitor-identity"><h3>'+escv(visitorName)+'</h3><span>'+escv(visitorType)+'</span><i class="gc-visitor-state '+(sent?'sent':'new')+'">'+(sent?'✓ FORWARDED':'● NEW INQUIRY')+'</i></div></div>'+
+      '<div class="gc-visitor-card-head"><div class="gc-visitor-avatar" aria-label="Student avatar">🧑‍🎓</div><div class="gc-visitor-identity"><h3>'+escv(visitorName)+'</h3><span>'+escv(visitorType)+'</span><i class="gc-visitor-state '+(sent?'sent':'new')+'">'+(sent?'✓ FORWARDED':'● NEW INQUIRY')+'</i></div></div>'+
       '<div class="gc-visitor-facts">'+
         info('👤','VISITOR TYPE',visitorType)+info('📱','MOBILE / WHATSAPP',x.visitor_phone)+
         info('✉️','EMAIL ADDRESS',x.visitor_email)+info('🎒','STANDARD',standard)+
@@ -671,15 +671,15 @@ async function loadTutorInquiries(){
     const subset=list.filter(x=>(String(x[key]||'Not specified').trim()||'Not specified')===name);
     return '<details class="gc-inquiry-group"><summary><span>'+escv(name)+'</span><b>'+n+' INQUIR'+(n===1?'Y':'IES')+'</b></summary><div>'+renderInquiryRows(subset)+'</div></details>';
   }).join('');
-  out.innerHTML='<details class="gc-inquiry-analytics gc-compact-analytics"><summary><b>INQUIRY OVERVIEW</b><span>'+rows.length+' inquiries · '+groups.size+' dates</span><em>Click to expand</em></summary><div class="gc-inquiry-analytics-content"><div class="gc-inquiry-analytics-top"><div><small>TOTAL INQUIRIES</small><strong>'+rows.length+'</strong></div><div><small>DATES WITH INQUIRIES</small><strong>'+groups.size+'</strong></div></div><div class="gc-inquiry-demand-grid">'+statRows('STANDARD DEMAND',overallStandard)+statRows('STREAM DEMAND',overallStream)+statRows('SUBJECT DEMAND',overallSubject)+'</div>'+statRows('COURSE DEMAND',overallCourse)+'</div></details>'+
-  [...groups.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([day,dayRows])=>{
-    const dayStandards=countBy(dayRows,'search_class'),dayStreams=countBy(dayRows,'stream'),daySubjects=countBy(dayRows,'subjects');
-    const dateDisplay=day.replaceAll('-','.').split('.').reverse().join('.').toUpperCase();
-    const dp=new Date(day+'T12:00:00');const dateNice=String(dp.getDate()).padStart(2,'0')+'.'+dp.toLocaleDateString('en-GB',{month:'short'}).toUpperCase()+'.'+dp.getFullYear();
-    return '<details class="gc-inquiry-day"><summary class="gc-inquiry-day-summary"><span><small>DAILY INQUIRY REPORT</small><b>DATE: '+escv(dateNice)+'</b></span><span class="gc-inquiry-day-count">'+dayRows.length+' INQUIRIES</span><em>Click to view</em></summary><div class="gc-inquiry-day-content">'+
-    '<div class="gc-inquiry-day-breakdown"><span><b>Standard:</b> '+dayStandards.map(x=>escv(x[0])+' ('+x[1]+')').join(' | ')+'</span><span><b>Stream:</b> '+dayStreams.map(x=>escv(x[0])+' ('+x[1]+')').join(' | ')+'</span><span><b>Subject:</b> '+daySubjects.map(x=>escv(x[0])+' ('+x[1]+')').join(' | ')+'</span></div>'+
-    '<nav class="gc-inquiry-tabs"><button type="button" class="active" data-inquiry-tab="standard" data-day="'+day+'">STANDARD-WISE</button><button type="button" data-inquiry-tab="stream" data-day="'+day+'">STREAM-WISE</button><button type="button" data-inquiry-tab="subject" data-day="'+day+'">SUBJECT-WISE</button><button type="button" data-inquiry-tab="all" data-day="'+day+'">ALL INQUIRIES</button></nav>'+
-    '<div class="gc-inquiry-tab-panel" data-panel-day="'+day+'" data-panel-type="standard">'+renderGrouped(dayRows,'search_class')+'</div><div class="gc-inquiry-tab-panel" data-panel-day="'+day+'" data-panel-type="stream" hidden>'+renderGrouped(dayRows,'stream')+'</div><div class="gc-inquiry-tab-panel" data-panel-day="'+day+'" data-panel-type="subject" hidden>'+renderGrouped(dayRows,'subjects')+'</div><div class="gc-inquiry-tab-panel" data-panel-day="'+day+'" data-panel-type="all" hidden>'+renderInquiryRows(dayRows)+'</div></div></details>';
+  out.innerHTML=[...groups.entries()].sort((a,b)=>b[0].localeCompare(a[0])).map(([day,dayRows])=>{
+    const dp=new Date(day+'T12:00:00');
+    const dateNice=String(dp.getDate()).padStart(2,'0')+'.'+dp.toLocaleDateString('en-GB',{month:'short'}).toUpperCase()+'.'+dp.getFullYear();
+    const inquiryRows=dayRows.slice().sort((a,b)=>new Date(b.created_at)-new Date(a.created_at)).map(x=>{
+      const id=escv(x.id),stamp=fmt(x.created_at);
+      const summary=[x.search_class||'Not specified',x.course||'Not specified',x.subjects||'Not specified'].map(escv).join(' <span class="gc-inquiry-row-sep">|</span> ');
+      return '<div class="gc-inquiry-date-row"><div class="gc-inquiry-date-stamp"><span>🕒</span><b>'+escv(stamp)+'</b></div><div class="gc-inquiry-date-summary"><small>STANDARD <span>|</span> COURSE <span>|</span> SUBJECT</small><b>'+summary+'</b></div><button type="button" class="gc-inquiry-date-details" data-inquiry-details="'+id+'">DETAILS</button><div class="gc-inquiry-row-card-source" hidden>'+renderInquiryRows([x])+'</div></div>';
+    }).join('');
+    return '<details class="gc-inquiry-day"><summary class="gc-inquiry-day-summary"><span><small>INQUIRY DATE</small><b>📅 '+escv(dateNice)+'</b></span><span class="gc-inquiry-day-count">'+dayRows.length+' INQUIRIES</span><em>VIEW INQUIRIES ▾</em></summary><div class="gc-inquiry-day-content"><div class="gc-inquiry-date-list">'+inquiryRows+'</div></div></details>';
   }).join('');
   const compactStyle=document.createElement('style');compactStyle.textContent='.gc-compact-analytics{margin:0 0 8px!important;border:1px solid #dbe3ef;border-radius:10px;background:#fff;overflow:hidden}.gc-compact-analytics>summary,.gc-inquiry-day-summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:10px 12px}.gc-compact-analytics>summary::-webkit-details-marker,.gc-inquiry-day-summary::-webkit-details-marker{display:none}.gc-compact-analytics>summary{justify-content:space-between;font-size:12px;color:#172554}.gc-compact-analytics>summary span{color:#2563eb;font-weight:800}.gc-compact-analytics>summary em,.gc-inquiry-day-summary em{font-size:10px;color:#64748b;font-style:normal;margin-left:auto}.gc-inquiry-analytics-content{padding:10px;border-top:1px solid #e2e8f0}.gc-inquiry-day{margin:6px 0;border:1px solid #dbe3ef;border-radius:10px;background:#fff;overflow:hidden}.gc-inquiry-day-summary{background:#f8fafc}.gc-inquiry-day-summary>span:first-child{display:flex;flex-direction:column;gap:3px}.gc-inquiry-day-summary small{font-size:9px;letter-spacing:.7px;color:#64748b}.gc-inquiry-day-summary b{font-size:13px;color:#172554}.gc-inquiry-day-count{font-size:10px;font-weight:800;color:#1d4ed8;background:#dbeafe;padding:5px 8px;border-radius:20px;white-space:nowrap}.gc-inquiry-day-content{padding:8px}.gc-inquiry-day-breakdown{padding:7px 9px!important;margin-bottom:6px!important;font-size:11px!important;line-height:1.6}.gc-inquiry-tabs{margin:5px 0!important;gap:4px!important}.gc-inquiry-tabs button{padding:6px 8px!important;font-size:10px!important}.gc-inquiry-group{margin:5px 0!important}.gc-inquiry-group>summary{padding:8px 10px!important;font-size:11px!important}.gc-inquiry-individual{padding:8px!important;margin:5px 0!important}.gc-inquiry-individual-main{gap:6px!important;font-size:11px!important}';if(!document.getElementById('gcCompactInquiryStyles')){compactStyle.id='gcCompactInquiryStyles';document.head.appendChild(compactStyle)}
   out.querySelectorAll('[data-inquiry-tab]').forEach(b=>b.onclick=()=>{
@@ -692,7 +692,7 @@ async function loadTutorInquiries(){
    document.getElementById('gcVisitorInquiryModal')?.remove();
    const modal=document.createElement('div');modal.id='gcVisitorInquiryModal';modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-label','Visitor tutor requirement details');
    modal.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(7,18,42,.72);display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px)';
-   modal.innerHTML='<div class="gc-inquiry-profile-card"><div class="gc-inquiry-profile-head"><button type="button" data-close-visitor-modal aria-label="Close">×</button><div class="gc-inquiry-profile-avatar">🎓</div><div class="gc-inquiry-profile-brand">GURU CONNECT</div><h2 id="gcVisitorInquiryCardName">Visitor Inquiry</h2><p>Learning requirement received</p><span class="gc-inquiry-profile-pill">NEW LEARNING REQUEST</span></div><div class="gc-inquiry-profile-body"><div class="gc-inquiry-profile-section-title"><span>📘</span><div><b>LEARNING REQUIREMENT</b><small>Visitor details and requested subjects</small></div></div><div id="gcVisitorInquiryModalFields" class="gc-inquiry-profile-grid"></div><div id="gcVisitorInquiryModalAction" class="gc-inquiry-profile-actions"></div></div><div class="gc-inquiry-profile-footer">Learn • Connect • Grow</div></div>';
+   modal.innerHTML='<div class="gc-inquiry-profile-card"><div class="gc-inquiry-profile-head"><button type="button" data-close-visitor-modal aria-label="Close">×</button><div class="gc-inquiry-profile-avatar" aria-label="Student avatar">🧑‍🎓</div><div class="gc-inquiry-profile-brand">GURU CONNECT</div><h2 id="gcVisitorInquiryCardName">Visitor Inquiry</h2><p>Learning requirement received</p><span class="gc-inquiry-profile-pill">NEW LEARNING REQUEST</span></div><div class="gc-inquiry-profile-body"><div class="gc-inquiry-profile-section-title"><span>📘</span><div><b>LEARNING REQUIREMENT</b><small>Visitor details and requested subjects</small></div></div><div id="gcVisitorInquiryModalFields" class="gc-inquiry-profile-grid"></div><div id="gcVisitorInquiryModalAction" class="gc-inquiry-profile-actions"></div></div><div class="gc-inquiry-profile-footer">Learn • Connect • Grow</div></div>';
    const fields=details.querySelector('.gc-visitor-inquiry-fields'),action=details.querySelector('.gc-visitor-inquiry-actions'),target=modal.querySelector('#gcVisitorInquiryModalFields'),actionTarget=modal.querySelector('#gcVisitorInquiryModalAction');
    if(fields){
     const inquiryItems=[...fields.children];
@@ -3232,5 +3232,37 @@ body{background:#f4f7fb!important;color:#102b61!important}
   border-color:#ff7417!important;
   background:radial-gradient(ellipse at 90% 0%,#fff0e5 0%,transparent 42%),linear-gradient(145deg,#fffaf6 0%,#fff 70%,#fff7f0 100%)!important;
 }
+</style>
+<style id="gc-inquiry-date-list-compact-20261031">
+/* Date-first inquiry register: timestamp, standard/course/subject and one clear Details action */
+#sec-tutorinquiries .gc-inquiry-day{margin:0 0 10px!important;border:1px solid #ffb27e!important;border-radius:13px!important;background:#fffaf6!important;overflow:hidden;box-shadow:0 3px 10px rgba(120,72,32,.06)!important}
+#sec-tutorinquiries .gc-inquiry-day-summary{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:12px!important;min-height:58px!important;padding:10px 14px!important;cursor:pointer!important;background:linear-gradient(110deg,#fff1e6,#fffaf6)!important;color:#17366b!important}
+#sec-tutorinquiries .gc-inquiry-day-summary>span:first-child{display:flex!important;flex-direction:column!important;gap:3px!important}
+#sec-tutorinquiries .gc-inquiry-day-summary small{font-size:8px!important;font-weight:900!important;letter-spacing:.45px!important;color:#c2410c!important}
+#sec-tutorinquiries .gc-inquiry-day-summary b{font-size:14px!important;font-weight:950!important}
+#sec-tutorinquiries .gc-inquiry-day-count{padding:6px 9px!important;border-radius:20px!important;background:#fff!important;border:1px solid #ffd2b5!important;color:#9a3412!important;font-size:9px!important;font-weight:900!important;white-space:nowrap!important}
+#sec-tutorinquiries .gc-inquiry-day-summary em{font-size:9px!important;font-style:normal!important;font-weight:850!important;color:#64748b!important;white-space:nowrap!important}
+#sec-tutorinquiries .gc-inquiry-day-content{padding:8px!important;background:#fff!important}
+#sec-tutorinquiries .gc-inquiry-date-list{display:flex!important;flex-direction:column!important;gap:6px!important}
+#sec-tutorinquiries .gc-inquiry-date-row{display:grid!important;grid-template-columns:minmax(145px,.8fr) minmax(0,2.2fr) 86px!important;align-items:center!important;gap:9px!important;padding:8px 9px!important;border:1px solid #f4d4c2!important;border-radius:10px!important;background:#fffaf6!important}
+#sec-tutorinquiries .gc-inquiry-date-stamp{display:flex!important;align-items:center!important;gap:6px!important;min-width:0!important;color:#40516c!important;font-size:10px!important;font-weight:800!important}
+#sec-tutorinquiries .gc-inquiry-date-stamp>span{font-size:15px!important}
+#sec-tutorinquiries .gc-inquiry-date-stamp b{font-size:10px!important;font-weight:850!important;overflow-wrap:anywhere!important}
+#sec-tutorinquiries .gc-inquiry-date-summary{min-width:0!important}
+#sec-tutorinquiries .gc-inquiry-date-summary small{display:block!important;margin-bottom:3px!important;color:#c2410c!important;font-size:7px!important;font-weight:950!important;letter-spacing:.25px!important}
+#sec-tutorinquiries .gc-inquiry-date-summary small span{padding:0 3px!important;color:#94a3b8!important}
+#sec-tutorinquiries .gc-inquiry-date-summary>b{display:block!important;color:#17366b!important;font-size:10px!important;font-weight:850!important;line-height:1.35!important;overflow-wrap:anywhere!important}
+#sec-tutorinquiries .gc-inquiry-row-sep{color:#f97316!important;padding:0 3px!important;font-weight:950!important}
+#sec-tutorinquiries .gc-inquiry-date-details{min-height:32px!important;padding:6px 9px!important;border:0!important;border-radius:8px!important;background:#159447!important;color:#fff!important;font-size:9px!important;font-weight:950!important;letter-spacing:.3px!important;cursor:pointer!important;box-shadow:0 2px 6px #15803d25!important}
+#sec-tutorinquiries .gc-inquiry-date-details:hover{background:#08783a!important}
+#sec-tutorinquiries .gc-inquiry-row-card-source[hidden]{display:none!important}
+#sec-tutorinquiries .gc-lrr-card-top{background:#f8fafc!important}
+#sec-tutorinquiries .gc-visitor-fact,
+#sec-tutorinquiries .gc-visitor-fact:nth-child(4n+1),
+#sec-tutorinquiries .gc-visitor-fact:nth-child(4n+2),
+#sec-tutorinquiries .gc-visitor-fact:nth-child(4n+3),
+#sec-tutorinquiries .gc-visitor-fact:nth-child(4n){background:#fffaf6!important;border-color:#ffd5c0!important;box-shadow:none!important}
+#sec-tutorinquiries .gc-visitor-avatar{font-size:37px!important}
+@media(max-width:700px){#sec-tutorinquiries .gc-inquiry-date-row{grid-template-columns:minmax(0,1fr) 78px!important;gap:6px!important}#sec-tutorinquiries .gc-inquiry-date-stamp{grid-column:1/-1;padding-bottom:4px;border-bottom:1px solid #f3dfd3}#sec-tutorinquiries .gc-inquiry-date-summary small{font-size:7px!important}#sec-tutorinquiries .gc-inquiry-date-summary>b{font-size:9px!important}#sec-tutorinquiries .gc-inquiry-day-summary{padding:9px!important}#sec-tutorinquiries .gc-inquiry-day-summary em{font-size:8px!important}}
 </style>
 </body></html>
