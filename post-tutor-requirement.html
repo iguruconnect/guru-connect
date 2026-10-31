@@ -144,7 +144,7 @@ $('shareWhatsApp').addEventListener('click',async()=>{
 });
 $('shareGmail').addEventListener('click',()=>{
  const subject='GURU CONNECT — New Tutor Requirement';
- const body=makeMessage()+'\n\nPlease review this visitor requirement.';
+ const body='GURU CONNECT — NEW TUTOR REQUIREMENT\n\nFIELD                         | DETAILS\n'+'-----------------------------------------------\n'+getRequirement().map(([k,v])=>k.padEnd(29,' ')+' | '+(v||'—')).join('\n')+'\n-----------------------------------------------\nSubmitted through https://guruconnnect.in/post-tutor-requirement.html\n\nPlease review this visitor requirement.';
  const url='https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent('support@guruconnnect.in')+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
  window.open(url,'_blank','noopener');
 });
