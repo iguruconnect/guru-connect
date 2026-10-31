@@ -99,6 +99,7 @@ const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
 const $=id=>document.getElementById(id), esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 let sb=null,me=null,role='',profile=null,tab='requests',currentChat=null,notificationTimer=null,realtimeChannel=null,notifications=[];
 let tutorRequirementsEligible=false,tutorRequirementsCache=[],tutorRequirementUnreadCount=0,tutorReqTimer=null;
+let tutorVisitorInquiryEligible=false,tutorVisitorInquiryCache=[],tutorVisitorInquiryUnreadCount=0,tutorVisitorInquiryInitialized=false;
 function msg(t,kind='error'){const text=String(t??'');if(typeof window.gcShowPopup==='function'){const low=text.toLowerCase();const title=kind==='success'?'Action Successful':kind==='warn'?'Please Note':(/connection request|student must accept/.test(low)?'Connection Request':'Action Unsuccessful');window.gcShowPopup(text,{title,kind:kind==='warning'?'warn':kind});$('globalError').innerHTML='';return}$('globalError').innerHTML='<div class="'+kind+'">'+esc(text)+'</div>';if(kind==='success')setTimeout(clearMsg,4000)}
 function clearMsg(){$('globalError').innerHTML=''}
 function wait(ms){return new Promise((_,rej)=>setTimeout(()=>rej(new Error('Request timed out. Please refresh and try again.')),ms))}
@@ -135,7 +136,7 @@ async function init(){
   localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_profile_id',profile.id);localStorage.setItem('active_user_id',me.id);localStorage.setItem('active_user_name',profile.name||profile.full_name||me.email?.split('@')[0]||'User');
   const dashboardDisplayName=profile.name||profile.full_name||profile.display_name||[profile.first_name,profile.middle_name,profile.last_name].filter(Boolean).join(' ')||me.user_metadata?.full_name||me.user_metadata?.name||me.email?.split('@')[0]||'User';
   $('who').textContent=(role==='student'?'STUDENT':'TUTOR')+' • '+dashboardDisplayName;
-  if(role==='tutor'){await refreshTutorRequirementsBadge();if(tutorReqTimer)clearInterval(tutorReqTimer);tutorReqTimer=setInterval(refreshTutorRequirementsBadge,15000);}
+  if(role==='tutor'){await Promise.all([refreshTutorRequirementsBadge(),refreshTutorVisitorInquiryBadge()]);if(tutorReqTimer)clearInterval(tutorReqTimer);tutorReqTimer=setInterval(()=>{refreshTutorRequirementsBadge();refreshTutorVisitorInquiryBadge()},10000);}
   bind();render();startNotificationWatch();loadNotifications(true).catch(e=>console.warn('Notification load deferred:',e));
  }catch(e){msg(e.message||e)}
 }
@@ -152,10 +153,11 @@ function tabs(){
  const a=[['requests','📚 MY LEARNING REQUESTS'],['post','➕ POST REQUEST'],['account','🪙 MY ACCOUNT']];
  if(role!=='student')a.splice(1,1);
  if(role==='tutor'&&tutorRequirementsEligible)a.splice(1,0,['tutorrequirements','🎯 TUTOR REQUIREMENTS']);
- $('tabs').innerHTML=a.map(x=>{let badge='';if(x[0]==='requests')badge='<span id="chatBadge" class="tab-badge" style="display:none">0</span>';if(x[0]==='connections')badge+='<span id="connBadge" class="tab-badge" style="display:none">0</span>';if(x[0]==='tutorrequirements')badge+='<span id="tutorReqBadge" class="tab-badge" style="display:none">0</span>';return '<button type="button" class="tab '+(tab===x[0]?'active':'')+'" data-tab="'+x[0]+'">'+x[1]+badge+'</button>'}).join('');
- document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{tab=b.dataset.tab;clearMsg();if(tab==='connections')await markNotificationTypeRead(['CONNECTION_REQUEST','CONNECTION_RESPONSE']);if(tab==='requests')await markNotificationTypeRead(['CHAT_MESSAGE']);if(tab==='tutorrequirements'){const newest=tutorRequirementsCache.reduce((v,r)=>Math.max(v,Date.parse(r.created_at||'')||0),0);if(newest)localStorage.setItem('gc_tutor_req_seen_'+pid(),new Date(newest).toISOString());tutorRequirementUnreadCount=0;updateBadges()}await render()});updateBadges();
+ if(role==='tutor'&&tutorVisitorInquiryEligible)a.splice(2,0,['tutorinquiry','📩 TUTOR INQUIRY']);
+ $('tabs').innerHTML=a.map(x=>{let badge='';if(x[0]==='requests')badge='<span id="chatBadge" class="tab-badge" style="display:none">0</span>';if(x[0]==='connections')badge+='<span id="connBadge" class="tab-badge" style="display:none">0</span>';if(x[0]==='tutorrequirements')badge+='<span id="tutorReqBadge" class="tab-badge" style="display:none">0</span>';if(x[0]==='tutorinquiry')badge+='<span id="tutorInquiryBadge" class="tab-badge" style="display:none">0</span>';return '<button type="button" class="tab '+(tab===x[0]?'active':'')+'" data-tab="'+x[0]+'">'+x[1]+badge+'</button>'}).join('');
+ document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=async()=>{tab=b.dataset.tab;clearMsg();if(tab==='connections')await markNotificationTypeRead(['CONNECTION_REQUEST','CONNECTION_RESPONSE']);if(tab==='requests')await markNotificationTypeRead(['CHAT_MESSAGE']);if(tab==='tutorrequirements'){const newest=tutorRequirementsCache.reduce((v,r)=>Math.max(v,Date.parse(r.created_at||'')||0),0);if(newest)localStorage.setItem('gc_tutor_req_seen_'+pid(),new Date(newest).toISOString());tutorRequirementUnreadCount=0;updateBadges()}if(tab==='tutorinquiry'){const newest=tutorVisitorInquiryCache.reduce((v,r)=>Math.max(v,Date.parse(r.created_at||'')||0),0);if(newest)localStorage.setItem('gc_tutor_inquiry_seen_'+pid(),new Date(newest).toISOString());tutorVisitorInquiryUnreadCount=0;updateBadges()}await render()});updateBadges();
 }
-async function render(){tabs();$('app').innerHTML='<div class="card empty">Loading…</div>';try{if(tab==='tutorrequirements'){await tutorRequirementsView();return}if(tab==='post'){if(role!=='student')throw new Error('Only Students can post a Learning Request.');$('app').innerHTML=postView();const d=$('deadline');if(d){const x=new Date(Date.now()+30*60*1000);x.setSeconds(0,0);d.min=x.toISOString().slice(0,16)}$('postBtn').onclick=postRequest;const postForm=$('postBtn')?.closest('form');if(postForm){postForm.onsubmit=e=>{e.preventDefault();postRequest()}}return}if(tab==='connections'){await requestsView();return}if(tab==='account'){await accountView();return}await requestsView()}catch(e){$('app').innerHTML='<div class="card error"><b>Could not load this section.</b><br>'+esc(e.message||e)+'</div>';}}
+async function render(){tabs();$('app').innerHTML='<div class="card empty">Loading…</div>';try{if(tab==='tutorrequirements'){await tutorRequirementsView();return}if(tab==='tutorinquiry'){await tutorInquiryView();return}if(tab==='post'){if(role!=='student')throw new Error('Only Students can post a Learning Request.');$('app').innerHTML=postView();const d=$('deadline');if(d){const x=new Date(Date.now()+30*60*1000);x.setSeconds(0,0);d.min=x.toISOString().slice(0,16)}$('postBtn').onclick=postRequest;const postForm=$('postBtn')?.closest('form');if(postForm){postForm.onsubmit=e=>{e.preventDefault();postRequest()}}return}if(tab==='connections'){await requestsView();return}if(tab==='account'){await accountView();return}await requestsView()}catch(e){$('app').innerHTML='<div class="card error"><b>Could not load this section.</b><br>'+esc(e.message||e)+'</div>';}}
 async function refreshTutorRequirementsBadge(){
  if(!sb||role!=='tutor')return;
  try{
@@ -167,6 +169,48 @@ async function refreshTutorRequirementsBadge(){
   updateBadges();
  }catch(_){tutorRequirementsEligible=false;tutorRequirementsCache=[];tutorRequirementUnreadCount=0;updateBadges()}
 }
+async function refreshTutorVisitorInquiryBadge(){
+ if(!sb||role!=='tutor')return;
+ try{
+  const q=await safe(sb.rpc('gc_tutor_visitor_inquiries_list'));
+  if(q.error){tutorVisitorInquiryEligible=false;tutorVisitorInquiryCache=[];tutorVisitorInquiryUnreadCount=0;updateBadges();return}
+  const next=Array.isArray(q.data)?q.data:[];
+  const previousIds=new Set(tutorVisitorInquiryCache.map(r=>String(r.id)));
+  const newlyArrived=next.filter(r=>!previousIds.has(String(r.id)));
+  if(tutorVisitorInquiryInitialized&&newlyArrived.length){
+   const first=newlyArrived[0],n=newlyArrived.length;
+   const body=n===1
+    ? (first.search_class||'New inquiry')+' · '+(first.course||'')+' · '+(first.subjects||'')
+    : n+' new subject-matched tutor inquiries have arrived.';
+   toast('📩 NEW TUTOR INQUIRY',body);
+   beepNotification();
+   browserNotify('GURU CONNECT · NEW TUTOR INQUIRY',body);
+  }
+  tutorVisitorInquiryCache=next;
+  tutorVisitorInquiryEligible=true;
+  const seen=Date.parse(localStorage.getItem('gc_tutor_inquiry_seen_'+pid())||'')||0;
+  tutorVisitorInquiryUnreadCount=next.filter(r=>(Date.parse(r.created_at||'')||0)>seen).length;
+  tutorVisitorInquiryInitialized=true;
+  updateBadges();
+ }catch(e){console.warn('Tutor inquiry refresh failed:',e);tutorVisitorInquiryEligible=false;tutorVisitorInquiryCache=[];tutorVisitorInquiryUnreadCount=0;updateBadges()}
+}
+async function tutorInquiryView(){
+ if(role!=='tutor')throw new Error('TUTOR INQUIRY is available only to Premium Tutors.');
+ const q=await safe(sb.rpc('gc_tutor_visitor_inquiries_list'));
+ if(q.error)throw q.error;
+ tutorVisitorInquiryEligible=true;
+ tutorVisitorInquiryCache=Array.isArray(q.data)?q.data:[];
+ const rows=tutorVisitorInquiryCache;
+ const newest=rows.reduce((v,r)=>Math.max(v,Date.parse(r.created_at||'')||0),0);
+ if(newest)localStorage.setItem('gc_tutor_inquiry_seen_'+pid(),new Date(newest).toISOString());
+ tutorVisitorInquiryUnreadCount=0;
+ updateBadges();
+ const fmtInquiryTime=v=>{if(!v)return '—';const d=new Date(v);return Number.isNaN(d.getTime())?'—':d.toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})};
+ const cards=rows.map(r=>'<article class="req gc-tutor-visitor-inquiry"><div class="reqhead"><div><div class="subject">📩 '+esc(r.search_class||'Inquiry')+' · '+esc(r.course||'')+'</div><div class="small">Received '+esc(fmtInquiryTime(r.created_at))+'</div></div><span class="pill open">NEW INQUIRY</span></div><div class="gc-lrr-highlight"><div><b>Contact Person</b><span>'+esc(r.student_name||'—')+' · '+esc(r.visitor_type||'Visitor')+'</span></div><div><b>Standard</b><span>'+esc(r.search_class||'—')+'</span></div><div><b>Course</b><span>'+esc(r.course||'—')+'</span></div><div><b>Stream</b><span>'+esc(r.stream||'—')+'</span></div><div><b>Subject</b><span>'+esc(r.subjects||'—')+'</span></div><div><b>Mode</b><span>'+esc(String(r.mode||'—').replaceAll('_',' '))+'</span></div><div><b>Location</b><span>'+esc(r.location||'—')+'</span></div><div><b>Last Date</b><span>'+esc(fmtReqDate(r.last_date))+'</span></div></div><div class="note"><b>LEARNING REQUIREMENT</b><br>'+esc(r.visitor_requirement_details||'No additional details provided')+'</div><div class="note"><b>CONTACT DETAILS</b><br>'+esc(r.student_name||'—')+'<br>'+esc(r.student_phone||'—')+' · '+esc(r.student_email||'—')+'</div><div class="row"><a class="btn green" style="text-decoration:none;display:inline-block" href="tel:'+esc(String(r.student_phone||'').replace(/[^+0-9]/g,''))+'">📞 CALL</a><a class="btn" style="text-decoration:none;display:inline-block" href="mailto:'+esc(r.student_email||'')+'">✉ EMAIL</a></div></article>').join('');
+ $('app').innerHTML='<div class="card"><h2>📩 TUTOR INQUIRY</h2><p>New visitor inquiries sent by GURU CONNECT Admin to active Premium Tutors matched by subject, standard, course and stream.</p><div class="row"><button class="btn green" id="refreshTutorInquiries" type="button">↻ REFRESH INQUIRIES</button><span class="pill">'+rows.length+' MATCHED INQUIRY'+(rows.length===1?'':'IES')+'</span></div></div><div class="grid">'+(cards||'<div class="card empty">No new subject-matched inquiries have been sent to your Premium Tutor account yet. New inquiries will appear here with an alert.</div>')+'</div>';
+ $('refreshTutorInquiries').onclick=async()=>{const b=$('refreshTutorInquiries');b.disabled=true;try{await refreshTutorVisitorInquiryBadge();await tutorInquiryView()}catch(e){msg(e.message||String(e))}finally{if($('refreshTutorInquiries'))$('refreshTutorInquiries').disabled=false}};
+}
+
 async function tutorRequirementsView(){
  if(role!=='tutor')throw new Error('TUTOR REQUIREMENTS are available only to Premium Tutors.');
  const q=await safe(sb.rpc('gc_tutor_requirements_list'));
@@ -826,6 +870,7 @@ function updateBadges(){
  const conn=notifications.filter(n=>!n.read_at&&['CONNECTION_REQUEST','CONNECTION_RESPONSE'].includes(String(n.type))).length;const cb=$('connBadge');if(cb){cb.textContent=conn>99?'99+':String(conn);cb.style.display=conn?'block':'none';cb.classList.toggle('breathe',!!conn)}
  const chats=notifications.filter(n=>!n.read_at&&String(n.type)==='CHAT_MESSAGE').length;const ch=$('chatBadge');if(ch){ch.textContent=chats>99?'99+':String(chats);ch.style.display=chats?'block':'none';ch.classList.toggle('breathe',!!chats)}
  const tr=$('tutorReqBadge');if(tr){tr.textContent=tutorRequirementUnreadCount>99?'99+':String(tutorRequirementUnreadCount);tr.style.display=tutorRequirementUnreadCount?'block':'none';tr.classList.toggle('breathe',!!tutorRequirementUnreadCount)}
+ const ti=$('tutorInquiryBadge');if(ti){ti.textContent=tutorVisitorInquiryUnreadCount>99?'99+':String(tutorVisitorInquiryUnreadCount);ti.style.display=tutorVisitorInquiryUnreadCount?'block':'none';ti.classList.toggle('breathe',!!tutorVisitorInquiryUnreadCount)}
  if(badge)badge.classList.toggle('breathe',!!unread);
 }
 async function markNotificationsRead(ids){if(!ids?.length)return;try{const recipientIds=identityUuidValues();if(!recipientIds.length)return;const q=await safe(sb.from('gc_notifications').update({read_at:new Date().toISOString()}).in('id',ids).in('recipient_profile_id',recipientIds));if(q.error)throw q.error;notifications=notifications.map(n=>ids.includes(String(n.id))?{...n,read_at:new Date().toISOString()}:n);renderNotifications();updateBadges()}catch(e){console.warn('mark read failed',e)}}
@@ -836,7 +881,7 @@ async function enableDesktopNotifications(){if(!('Notification' in window)){toas
 function beepNotification(){try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;const ctx=window.__gcNotifyAudio||(window.__gcNotifyAudio=new C());if(ctx.state==='suspended')ctx.resume();const now=ctx.currentTime;[0,0.22].forEach((offset,i)=>{const osc=ctx.createOscillator(),gain=ctx.createGain();osc.type='sine';osc.frequency.value=i?880:660;gain.gain.setValueAtTime(0.0001,now+offset);gain.gain.exponentialRampToValueAtTime(0.12,now+offset+0.025);gain.gain.exponentialRampToValueAtTime(0.0001,now+offset+0.16);osc.connect(gain);gain.connect(ctx.destination);osc.start(now+offset);osc.stop(now+offset+0.17)})}catch(_){}}
 function browserNotify(title,body){try{if('Notification' in window&&Notification.permission==='granted'&&document.hidden)new Notification(title,{body,icon:'guru-connect-new-header.png'})}catch(_){}
 }
-async function logout(){if(window.__gcLoggingOut)return;window.__gcLoggingOut=true;const b=$('logoutBtn');if(b){b.disabled=true;b.textContent='LOGGING OUT…'}sessionStorage.setItem('gc_logged_out','1');clearInterval(notificationTimer);try{if(realtimeChannel)await sb?.removeChannel(realtimeChannel)}catch(_){}['active_user_role','active_user_profile_id','active_user_id','active_user_name','active_user_email'].forEach(k=>localStorage.removeItem(k));const target=new URL('index.html',window.location.href).href;try{await Promise.race([sb?.auth.signOut({scope:'global'}),new Promise(r=>setTimeout(r,1200))])}catch(_){}window.location.replace(target)}
+async function logout(){if(window.__gcLoggingOut)return;window.__gcLoggingOut=true;const b=$('logoutBtn');if(b){b.disabled=true;b.textContent='LOGGING OUT…'}sessionStorage.setItem('gc_logged_out','1');clearInterval(notificationTimer);clearInterval(tutorReqTimer);try{if(realtimeChannel)await sb?.removeChannel(realtimeChannel)}catch(_){}['active_user_role','active_user_profile_id','active_user_id','active_user_name','active_user_email'].forEach(k=>localStorage.removeItem(k));const target=new URL('index.html',window.location.href).href;try{await Promise.race([sb?.auth.signOut({scope:'global'}),new Promise(r=>setTimeout(r,1200))])}catch(_){}window.location.replace(target)}
 document.addEventListener('click',e=>{const b=e.target.closest?.('#postBtn');if(!b||b.dataset.gcPostingBound==='1')return;if(typeof postRequest==='function'){e.preventDefault();e.stopImmediatePropagation();postRequest()}},true);
 window.addEventListener('error',e=>msg('Page error: '+(e.message||'Unknown JavaScript error')));window.addEventListener('unhandledrejection',e=>msg('System error: '+(e.reason?.message||e.reason||'Unknown error')));window.addEventListener('load',init);
 })();
@@ -866,4 +911,12 @@ window.addEventListener('error',e=>msg('Page error: '+(e.message||'Unknown JavaS
 #tabs button[data-tab="tutorrequirements"] #tutorReqBadge{background:#dc2626!important;color:#fff!important;animation:gcReqPulse 1s infinite;box-shadow:0 0 0 0 #ef444477}
 @keyframes gcReqPulse{0%{transform:scale(1);box-shadow:0 0 0 0 #ef444477}65%{transform:scale(1.12);box-shadow:0 0 0 7px #ef444400}100%{transform:scale(1);box-shadow:0 0 0 0 #ef444400}}
 #tutorReqHistory{background:#f0fdf4;color:#166534;border:1px solid #86efac;font-weight:850}
-</style></body></html>
+</style><style id="gc-tutor-inquiry-notification-style">
+#tabs [data-tab="tutorinquiry"]{position:relative}
+#tabs [data-tab="tutorinquiry"].active{background:linear-gradient(120deg,#0b8f4b,#16a05a)!important;border-color:#08783a!important}
+.gc-tutor-visitor-inquiry{border:1.5px solid #ffb27e!important;background:linear-gradient(145deg,#fffaf6,#fff)!important;box-shadow:0 5px 16px rgba(120,72,32,.08)!important}
+.gc-tutor-visitor-inquiry .reqhead{align-items:center}
+.gc-tutor-visitor-inquiry .gc-lrr-highlight>div{background:#fffaf6!important;border:1px solid #ffd5c0!important}
+.gc-tutor-visitor-inquiry .note{background:#fffaf6!important;border:1px solid #ffd5c0!important}
+</style>
+</body></html>
