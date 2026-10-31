@@ -347,9 +347,21 @@ body,body button,body input,body select,body textarea,body table,body th,body td
 <button class="topbtn" data-sec="idgeneration">🪪 <b>GENERATE ID</b><small>Create Student / Tutor ID card</small></button>
 <button class="topbtn" data-sec="staff">👔 <b>ADD STAFF</b><small>Create and manage permanent Staff IDs</small></button>
 <button class="topbtn" data-sec="tutorinquiries">📩 <b>TUTOR INQUIRIES</b><small>Visitor contacts and Premium tutor forwarding</small></button>
+<button class="topbtn" data-sec="studenttutorcontacts">📞 <b>STD & TUT CNCT REQ</b><small>Student-to-tutor contact requests and lifetime history</small></button>
 </nav>
 
 <section class="section" id="sec-tutorinquiries"><div class="secHead"><div><h2>📩 Public Tutor Search Inquiries</h2><p>Review visitor contact details and manually forward each inquiry to the Premium Tutor(s) you select.</p></div><span class="pill" id="tutorInquiryCount">INQUIRIES</span></div><div class="secBody"><div class="row" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="btn primary" id="refreshTutorInquiries" type="button">↻ REFRESH INQUIRIES</button><button class="btn purple" id="viewTutorInquiryHistory" type="button">🕘 INQUIRY HISTORY</button><span class="status" id="tutorInquiryStatus">Run the Tutor Inquiry SQL setup in Supabase first.</span></div><div id="tutorInquiryResults" style="margin-top:16px"></div></div></section>
+<section class="section" id="sec-studenttutorcontacts">
+ <div class="secHead"><div><h2>📞 Student & Tutor Contact Requests</h2><p>Admin-only date-wise record of student requests to contact eligible Premium + Verified tutors.</p></div><span class="pill" id="gcContactCount">CONTACT REQUESTS</span></div>
+ <div class="secBody">
+  <div class="actions" style="margin-top:0">
+   <button class="btn primary" id="gcContactRefresh" type="button" onclick="gcLoadStudentTutorContacts(false)">↻ REFRESH REQUESTS</button>
+   <button class="btn purple" id="gcContactHistory" type="button" onclick="gcLoadStudentTutorContacts(true)">🕘 LIFETIME HISTORY</button>
+   <span class="status" id="gcContactStatus">Open this tab to load contact requests.</span>
+  </div>
+  <div id="gcContactResults" style="margin-top:16px"></div>
+ </div>
+</section>
 
 <section class="section" id="sec-directories"><div class="secHead"><div><h2>👥 Tutor Directories | Student Directories</h2><p>Live Supabase directory. Search by full or partial Student/Tutor ID, Profile ID, Auth User ID, name, email or phone.</p></div><span class="pill" id="directoryCount">LIVE DIRECTORY</span></div><div class="secBody"><div class="searchrow"><div class="field wide"><label>Find Student or Tutor</label><input id="term" autocomplete="off" placeholder="Name, email, phone or Student/Tutor ID…"></div><div class="field"><label>Show</label><select id="roleFilter"><option value="">ALL STUDENTS + TUTORS</option><option value="student">STUDENTS ONLY</option><option value="tutor">TUTORS ONLY</option></select></div><button id="search" class="btn primary">🔎 FIND</button><button id="refresh" class="btn light">↻ REFRESH</button></div><div id="searchStatus" class="status"></div><div id="results" class="results"><div class="empty">Click FIND to load the live Student + Tutor directory.</div></div></div></section>
 
@@ -772,6 +784,39 @@ $('viewTutorInquiryHistory')?.addEventListener('click',async()=>{
  }catch(e){status.textContent='Could not load inquiry history: '+(e.message||String(e))+' — run the updated routing SQL in Supabase first.'}
 });
 
+
+// STUDENT ↔ TUTOR CONTACT REQUESTS — admin-only RPC view; does not modify LRR or coins.
+let gcContactHistoryMode=false;
+window.gcLoadStudentTutorContacts=async function(showHistory=false){
+ gcContactHistoryMode=!!showHistory;
+ const status=$('gcContactStatus'),out=$('gcContactResults'),count=$('gcContactCount');
+ if(!status||!out||!count)return;
+ status.textContent='Loading contact requests…';out.innerHTML='';
+ try{
+  const q=await sb.rpc('gc_admin_student_tutor_contact_history');
+  if(q.error)throw q.error;
+  const rows=q.data||[];
+  count.textContent=rows.length+(rows.length===1?' REQUEST':' REQUESTS');
+  const visible=gcContactHistoryMode?rows:rows.filter(r=>String(r.request_status||'PENDING').toUpperCase()==='PENDING');
+  if(!rows.length){out.innerHTML='<div class="empty">No student-to-tutor contact requests have been received yet.</div>';status.textContent='Contact request history checked.';return;}
+  if(!visible.length){out.innerHTML='<div class="empty">No pending contact requests. Click LIFETIME HISTORY to view all previous requests.</div>';status.textContent='No pending requests.';return;}
+  const esc=v=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const date=v=>v?new Date(v).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}):'—';
+  const groups=new Map();
+  visible.forEach(r=>{const key=r.requested_at?new Date(r.requested_at).toLocaleDateString('en-IN',{dateStyle:'full'}):'Date not available';if(!groups.has(key))groups.set(key,[]);groups.get(key).push(r);});
+  out.innerHTML=Array.from(groups.entries()).map(([day,list])=>'<h3 style="margin:18px 0 8px;color:#123b66;font-size:14px">📅 '+esc(day)+' <small style="color:#64748b">('+list.length+')</small></h3>'+list.map(r=>{
+   const id=esc(r.request_id),st=String(r.request_status||'PENDING').toUpperCase();
+   return '<article class="user" style="border:1.5px solid #cfe1f7;background:linear-gradient(145deg,#fff,#f7fbff)"><div class="userHead"><div class="identity"><b>Student: '+esc(r.student_name)+'</b><div class="muted">Requested: '+esc(date(r.requested_at))+'<br>Request ID: '+id+'</div></div><span class="pill">'+esc(st)+'</span></div><div class="lrrMeta"><div class="metaBox"><b>Student contact</b>'+esc(r.student_phone)+'<br>'+esc(r.student_email)+'</div><div class="metaBox"><b>Selected tutor</b>'+esc(r.tutor_name)+'<br>'+esc(r.tutor_email)+'</div><div class="metaBox"><b>Student account ID</b>'+esc(r.student_user_id)+'</div><div class="metaBox"><b>Tutor account ID</b>'+esc(r.tutor_user_id)+'</div><div class="metaBox"><b>Last updated</b>'+esc(date(r.updated_at))+'</div></div><div class="grid" style="margin-top:12px"><div class="field"><label>Request status</label><select id="gcContactStatus_'+id+'"><option '+(st==='PENDING'?'selected':'')+'>PENDING</option><option '+(st==='CONTACTED'?'selected':'')+'>CONTACTED</option><option '+(st==='CONNECTED'?'selected':'')+'>CONNECTED</option><option '+(st==='DECLINED'?'selected':'')+'>DECLINED</option><option '+(st==='CLOSED'?'selected':'')+'>CLOSED</option></select></div><div class="field"><label>Admin note</label><input id="gcContactNote_'+id+'" value="'+esc(r.admin_note||'').replace(/"/g,'&quot;')+'" placeholder="Add follow-up note"></div></div><div class="actions"><button class="btn green" type="button" onclick="gcSaveStudentTutorContact(\''+id+'\')">SAVE STATUS & NOTE</button></div></article>';
+  }).join('')).join('');
+  status.textContent='Showing '+visible.length+' '+(gcContactHistoryMode?'lifetime':'pending')+' request(s). Private contact details are visible only in this admin screen.';
+ }catch(e){status.textContent='Could not load contact requests: '+(e.message||String(e))+' — confirm the contact-request SQL was run in Supabase.';out.innerHTML='<div class="empty">Contact request data could not be loaded.</div>';}
+};
+window.gcSaveStudentTutorContact=async function(id){
+ const status=$('gcContactStatus'),st=$('gcContactStatus_'+id),note=$('gcContactNote_'+id);
+ if(!st)return;
+ try{const q=await sb.rpc('gc_admin_update_student_tutor_contact_request',{p_request_id:id,p_status:st.value,p_admin_note:note?note.value:null});if(q.error)throw q.error;status.textContent='Request status and admin note saved.';await gcLoadStudentTutorContacts(gcContactHistoryMode);}
+ catch(e){status.textContent='Could not save request: '+(e.message||String(e));}
+};
 function switchSection(name){
   if(!name||activeSection===name)return;
   activeSection=name;
@@ -786,6 +831,7 @@ function switchSection(name){
   if(name==='advertisement')loadAdminAdvertisements();
   if(name==='staff')gcStaffLoadDirectory();
   if(name==='tutorinquiries')loadTutorInquiries();
+  if(name==='studenttutorcontacts')gcLoadStudentTutorContacts(false);
 }
 document.querySelectorAll('.topbtn').forEach(b=>b.addEventListener('click',()=>switchSection(b.dataset.sec)));
 $('logout').onclick=async()=>{const btn=$('logout');if(btn){btn.disabled=true;btn.textContent='LOGGING OUT…'}try{await sb.auth.signOut({scope:'local'});}catch(e){console.warn('Sign-out cleanup:',e)}try{['is_staff_logged','gc_staff_supabase_auth','active_user_role','active_user_id','active_user_email','gc_staff_email','gc_staff_role'].forEach(k=>localStorage.removeItem(k));['is_staff_logged','gc_staff_supabase_auth','active_user_role','active_user_id','active_user_email','gc_staff_email','gc_staff_role'].forEach(k=>sessionStorage.removeItem(k));}catch(e){}try{if('caches'in window){const keys=await caches.keys();await Promise.all(keys.map(k=>caches.delete(k)))}}catch(e){}window.location.replace('./index.html?logout=1&ts='+Date.now());};
