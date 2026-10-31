@@ -39,6 +39,24 @@
 </form>
 </section>
 </main>
+<style id="gc-inquiry-share-actions">
+.share-panel{display:none;margin-top:18px;padding:18px;border:1px solid #bfdbfe;border-radius:16px;background:linear-gradient(135deg,#eff6ff,#fff 65%,#f0fdf4)}
+.share-panel.open{display:block}.share-panel h3{margin:0 0 7px;color:#123b82;font-size:17px}.share-panel p{margin:0 0 13px;color:#475569;font-size:12px;line-height:1.6}
+.share-actions{display:flex;gap:10px;flex-wrap:wrap}.share-actions button{flex:1;min-width:190px;min-height:46px;border:0;border-radius:11px;padding:11px 14px;color:#fff;font-weight:950;cursor:pointer}
+.share-wa{background:#128c4a}.share-gmail{background:#d93025}.share-image{background:#155eef}
+.share-help{margin-top:10px!important;font-size:11px!important;color:#64748b!important}
+@media(max-width:520px){.share-actions{flex-direction:column}.share-actions button{width:100%}}
+</style>
+<div class="share-panel" id="sharePanel" aria-live="polite">
+ <h3>Requirement submitted successfully!</h3>
+ <p>Your requirement is saved in the GURU CONNECT Admin Dashboard. You can now share a table-style copy with GURU CONNECT using WhatsApp or Gmail.</p>
+ <div class="share-actions">
+  <button type="button" class="share-wa" id="shareWhatsApp">WHATSAPP — SHARE REQUIREMENT</button>
+  <button type="button" class="share-gmail" id="shareGmail">GMAIL — EMAIL REQUIREMENT</button>
+  <button type="button" class="share-image" id="downloadInquiryImage">DOWNLOAD REQUIREMENT IMAGE</button>
+ </div>
+ <p class="share-help">WhatsApp image sharing is supported on devices that provide file sharing. Otherwise, the requirement image will download and WhatsApp will open with the details ready to send; attach the downloaded image if desired. Gmail opens a pre-filled email for you to review and send.</p>
+</div>
 <script>
 (function(){
 'use strict';
@@ -46,9 +64,94 @@ const SUPABASE_URL='https://hzqqswrnawrfgufbxgay.supabase.co';
 const SUPABASE_KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
 const $=id=>document.getElementById(id);
 const form=$('requirementForm'),btn=$('submitBtn'),status=$('status');
+const sharePanel=$('sharePanel');
+let submitted=false, cachedImageBlob=null, cachedMessage='';
 const today=new Date();today.setMinutes(today.getMinutes()-today.getTimezoneOffset());$('lastDate').min=today.toISOString().slice(0,10);
+function getRequirement(){
+ const fields=[
+  ['Visitor / Parent Name',$('studentName').value.trim()],
+  ['Phone Number',$('studentPhone').value.trim()],
+  ['Email Address',$('studentEmail').value.trim()],
+  ['Class',$('searchClass').value],
+  ['Course',$('course').value],
+  ['Number of Subjects',$('subjectCount').value],
+  ['Subject(s) Required',$('subjects').value.trim()],
+  ['Mode',$('mode').value],
+  ['Location / Area',$('location').value.trim()],
+  ['Fees Budget',$('feesBudget').value.trim()],
+  ['Last Date',$('lastDate').value],
+  ['Preferred Timing',$('preferredTiming').value||'No preference']
+ ];
+ return fields;
+}
+function makeMessage(){
+ const rows=getRequirement();
+ return 'GURU CONNECT — NEW TUTOR REQUIREMENT\n'+'================================\n'+rows.map(([k,v])=>k+': '+(v||'—')).join('\n')+'\n================================\nSubmitted through https://guruconnnect.in/post-tutor-requirement.html';
+}
+function makeImageBlob(){
+ if(cachedImageBlob)return Promise.resolve(cachedImageBlob);
+ const rows=getRequirement(),canvas=document.createElement('canvas'),ctx=canvas.getContext('2d');
+ const width=1200,pad=64,colGap=34,colW=(width-pad*2-colGap)/2,rowH=100;
+ canvas.width=width;canvas.height=260+Math.ceil(rows.length/2)*rowH+70;
+ ctx.fillStyle='#f8fbff';ctx.fillRect(0,0,width,canvas.height);
+ ctx.fillStyle='#0b3b8f';ctx.fillRect(0,0,width,150);
+ ctx.fillStyle='#ffffff';ctx.font='900 42px Arial';ctx.fillText('GURU CONNECT',pad,66);
+ ctx.font='700 22px Arial';ctx.fillText('NEW TUTOR REQUIREMENT',pad,111);
+ ctx.fillStyle='#f97316';ctx.fillRect(pad,177,170,8);
+ function wrap(text,maxWidth,font){
+  ctx.font=font;const words=String(text||'—').split(/\s+/),lines=[];let line='';
+  words.forEach(word=>{const test=line?line+' '+word:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word}else line=test});
+  if(line)lines.push(line);return lines.slice(0,3);
+ }
+ rows.forEach(([label,value],i)=>{
+  const col=i%2,row=Math.floor(i/2),x=pad+col*(colW+colGap),y=220+row*rowH;
+  ctx.fillStyle='#ffffff';ctx.strokeStyle='#dbe5f0';ctx.lineWidth=2;
+  ctx.beginPath();ctx.roundRect(x,y,colW,rowH-14,15);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#64748b';ctx.font='800 16px Arial';ctx.fillText(label.toUpperCase(),x+20,y+29);
+  ctx.fillStyle='#102b61';const lines=wrap(value,colW-40,'700 22px Arial');
+  ctx.font='700 22px Arial';lines.forEach((line,j)=>ctx.fillText(line,x+20,y+62+j*25));
+ });
+ ctx.fillStyle='#64748b';ctx.font='600 15px Arial';ctx.fillText('Learn • Connect • Grow  |  guruconnnect.in',pad,canvas.height-25);
+ return new Promise(resolve=>canvas.toBlob(blob=>{cachedImageBlob=blob;resolve(blob)},'image/png'));
+}
+function downloadBlob(blob){
+ const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='GURU-CONNECT-Tutor-Requirement.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+}
+$('downloadInquiryImage').addEventListener('click',async()=>{
+ try{const blob=await makeImageBlob();if(!blob)throw new Error('Image could not be created on this device.');downloadBlob(blob);status.textContent='Requirement image downloaded.'}
+ catch(err){status.className='status error';status.textContent=err.message||'Could not create the image.'}
+});
+$('shareWhatsApp').addEventListener('click',async()=>{
+ const text=cachedMessage||makeMessage();
+ try{
+  const blob=await makeImageBlob();
+  const file=new File([blob],'GURU-CONNECT-Tutor-Requirement.png',{type:'image/png'});
+  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
+   await navigator.share({files:[file],title:'GURU CONNECT Tutor Requirement',text});
+   status.className='status success';status.textContent='Share sheet opened. Select WhatsApp and send the requirement image.';
+   return;
+  }
+  downloadBlob(blob);
+  const url='https://wa.me/15559565917?text='+encodeURIComponent(text);
+  window.open(url,'_blank','noopener');
+  status.className='status success';status.textContent='Requirement image downloaded and WhatsApp opened with the details. Attach the downloaded PNG before sending if you want to send it as an image.';
+ }catch(err){
+  if(err&&err.name==='AbortError')return;
+  const url='https://wa.me/15559565917?text='+encodeURIComponent(text);
+  window.open(url,'_blank','noopener');
+  status.className='status';status.textContent='WhatsApp opened with the requirement details. If image sharing is unavailable, use DOWNLOAD REQUIREMENT IMAGE and attach the PNG.';
+ }
+});
+$('shareGmail').addEventListener('click',()=>{
+ const subject='GURU CONNECT — New Tutor Requirement';
+ const body=makeMessage()+'\n\nPlease review this visitor requirement.';
+ const url='https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent('support@guruconnnect.in')+'&su='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
+ window.open(url,'_blank','noopener');
+});
 form.addEventListener('submit',async e=>{
- e.preventDefault();status.className='status';status.textContent='Submitting your requirement securely…';btn.disabled=true;btn.textContent='SUBMITTING…';
+ e.preventDefault();
+ if(submitted)return;
+ status.className='status';status.textContent='Submitting your requirement securely…';btn.disabled=true;btn.textContent='SUBMITTING…';
  try{
   if(!window.supabase?.createClient)throw new Error('The service is not available right now. Please refresh and try again.');
   const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
@@ -59,10 +162,14 @@ form.addEventListener('submit',async e=>{
    p_preferred_timing:$('preferredTiming').value||null
   });
   if(result.error)throw result.error;
-  status.className='status success';status.textContent='Thank you! Your Tutor Requirement has been submitted. Active Premium Tutors can now view it in their dashboard.';
-  form.reset();$('lastDate').min=today.toISOString().slice(0,10);
- }catch(err){status.className='status error';status.textContent=err?.message||'Could not submit your requirement. Please try again.'}
- finally{btn.disabled=false;btn.textContent='SUBMIT REQUIREMENT'}
+  submitted=true;cachedMessage=makeMessage();
+  status.className='status success';status.textContent='Saved successfully in GURU CONNECT. Your requirement is now available in the Admin Dashboard under Tutor Inquiries. Choose WhatsApp or Gmail below to share a copy.';
+  sharePanel.classList.add('open');btn.textContent='REQUIREMENT SAVED';btn.disabled=true;
+  sharePanel.scrollIntoView({behavior:'smooth',block:'center'});
+ }catch(err){
+  status.className='status error';status.textContent=err?.message||'Could not submit your requirement. Please try again.';
+  btn.disabled=false;btn.textContent='SUBMIT REQUIREMENT';
+ }
 });
 })();
 </script>
