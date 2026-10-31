@@ -225,11 +225,7 @@ begin
   return query
     select r.* from public.gc_tutor_requirements r
     where r.status = 'ACTIVE' and r.last_date >= current_date
-      and (
-        coalesce(r.requirement_source,'STUDENT') <> 'VISITOR'
-        or exists (select 1 from public.gc_tutor_requirement_recipients x
-          where x.requirement_id = r.id and x.tutor_profile_id = v_tutor_id)
-      )
+      and coalesce(r.requirement_source,'STUDENT') <> 'VISITOR'
     order by r.created_at desc;
 end;
 $$;
@@ -257,9 +253,7 @@ begin
   limit 1;
   if v_tutor_id is null then raise exception 'Requirement history is available only to active Premium Tutors.'; end if;
   return query select r.* from public.gc_tutor_requirements r
-   where (coalesce(r.requirement_source,'STUDENT') <> 'VISITOR'
-      or exists (select 1 from public.gc_tutor_requirement_recipients x
-       where x.requirement_id=r.id and x.tutor_profile_id=v_tutor_id))
+   where coalesce(r.requirement_source,'STUDENT') <> 'VISITOR'
    order by r.created_at desc;
 end;
 $$;
