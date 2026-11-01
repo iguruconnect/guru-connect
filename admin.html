@@ -332,21 +332,11 @@ body,body button,body input,body select,body textarea,body table,body th,body td
 }
 </style><style id="gc-global-chatgpt-font-20261101">:root{font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-synthesis:none;text-rendering:optimizeLegibility}html,body,body *{font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}body{font-weight:400}button,input,select,textarea{font:inherit}strong,b,th{font-weight:700}</style>
 <style id="gc-admin-tutor-inquiry-card-size-20261101">
-/* Keep inquiry cards full-size and visible; dynamic style applies the same dimensions. */
-#sec-tutorinquiries .gc-inquiry-date-list{
- display:grid!important;
- grid-template-columns:repeat(auto-fill,minmax(500px,500px))!important;
- justify-content:start!important;align-items:start!important;gap:18px!important;
-}
-#sec-tutorinquiries .gc-inquiry-sample-card{
- width:500px!important;min-width:500px!important;max-width:500px!important;
- height:800px!important;min-height:800px!important;max-height:800px!important;
- box-sizing:border-box!important;overflow-y:auto!important;overflow-x:hidden!important;
-}
-@media(max-width:520px){
- #sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:minmax(0,1fr)!important}
- #sec-tutorinquiries .gc-inquiry-sample-card{width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
-}
+/* Compact orange inquiry tiles */
+#sec-tutorinquiries .gc-inquiry-date-list{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(300px,300px))!important;justify-content:start!important;align-items:start!important;gap:16px!important}
+#sec-tutorinquiries .gc-inquiry-sample-card{width:300px!important;min-width:300px!important;max-width:300px!important;height:500px!important;min-height:500px!important;max-height:500px!important;box-sizing:border-box!important;overflow-y:auto!important;overflow-x:hidden!important;border:1.5px solid #f97316!important;background:linear-gradient(155deg,#fffaf5,#fff1e6)!important}
+#sec-tutorinquiries .gc-inquiry-sample-bluehead{background:linear-gradient(120deg,#f97316,#ea580c)!important;color:#fff!important}
+@media(max-width:520px){#sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:minmax(0,1fr)!important}#sec-tutorinquiries .gc-inquiry-sample-card{width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}}
 </style>
 
 
@@ -852,29 +842,59 @@ if(!document.getElementById('gcCompactInquiryStyles')){compactStyle.id='gcCompac
 #sec-tutorinquiries .gc-inquiry-sample-contact a,#sec-tutorinquiries .gc-inquiry-sample-contact button{min-height:40px!important;padding:8px!important;font-size:10px!important;border-radius:10px!important}
 #sec-tutorinquiries .gc-inquiry-sample-contact button{grid-column:1/-1!important}
 #sec-tutorinquiries .gc-inquiry-sample-matchnote{font-size:9px!important;line-height:1.4!important;text-align:left!important}
-/* Final inquiry tile sizing: desktop 500px wide x 800px tall */
+/* Final inquiry tile styling: compact 300px x 500px orange cards */
 #sec-tutorinquiries .gc-inquiry-date-list{
  display:grid!important;
- grid-template-columns:repeat(auto-fill,minmax(500px,500px))!important;
+ grid-template-columns:repeat(auto-fill,minmax(300px,300px))!important;
  justify-content:start!important;align-items:start!important;
- gap:18px!important;width:100%!important;max-width:100%!important;
+ gap:16px!important;width:100%!important;max-width:100%!important;
 }
 #sec-tutorinquiries .gc-inquiry-sample-card{
  display:flex!important;flex-direction:column!important;
- width:500px!important;min-width:500px!important;max-width:500px!important;
- height:800px!important;min-height:800px!important;max-height:800px!important;
+ width:300px!important;min-width:300px!important;max-width:300px!important;
+ height:500px!important;min-height:500px!important;max-height:500px!important;
  box-sizing:border-box!important;overflow-y:auto!important;overflow-x:hidden!important;
+ border:1.5px solid #f97316!important;border-radius:16px!important;
+ background:linear-gradient(155deg,#fffaf5 0%,#fff1e6 100%)!important;
+ box-shadow:0 5px 16px rgba(194,65,12,.13)!important;
 }
-#sec-tutorinquiries .gc-inquiry-sample-body{flex:1 0 auto!important}
+#sec-tutorinquiries .gc-inquiry-sample-bluehead{
+ min-height:42px!important;padding:9px 11px!important;
+ background:linear-gradient(120deg,#f97316,#ea580c)!important;
+ color:#fff!important;font-size:11px!important;font-weight:900!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-status{font-size:8px!important;padding:4px 6px!important}
+#sec-tutorinquiries .gc-inquiry-sample-body{flex:1 0 auto!important;padding:10px!important;gap:7px!important}
+#sec-tutorinquiries .gc-inquiry-sample-date{padding:6px 8px!important;border:1px solid #fed7aa!important;background:#fff7ed!important}
+#sec-tutorinquiries .gc-inquiry-sample-date b{font-size:10px!important;color:#9a3412!important}
+#sec-tutorinquiries .gc-inquiry-sample-date strong{background:#ffedd5!important;color:#9a3412!important}
+#sec-tutorinquiries .gc-inquiry-sample-main{gap:7px!important}
+#sec-tutorinquiries .gc-inquiry-sample-person{gap:9px!important}
+#sec-tutorinquiries .gc-inquiry-sample-avatar{width:62px!important;height:62px!important;flex:0 0 62px!important;font-size:29px!important;border:2px solid #fed7aa!important;background:linear-gradient(135deg,#ffedd5,#fff7ed)!important}
+#sec-tutorinquiries .gc-inquiry-sample-person h3{font-size:15px!important;color:#7c2d12!important}
+#sec-tutorinquiries .gc-inquiry-sample-person b{font-size:9px!important}
+#sec-tutorinquiries .gc-inquiry-sample-facts{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:5px!important}
+#sec-tutorinquiries .gc-sample-fact{min-height:48px!important;padding:6px 7px!important;border:1px solid #fed7aa!important;border-radius:8px!important;background:#fff7ed!important;gap:5px!important}
+#sec-tutorinquiries .gc-sample-fact>span{font-size:14px!important;flex-basis:17px!important}
+#sec-tutorinquiries .gc-sample-fact small{font-size:7px!important;color:#9a3412!important}
+#sec-tutorinquiries .gc-sample-fact b{font-size:9px!important;line-height:1.25!important;color:#7c2d12!important}
+#sec-tutorinquiries .gc-inquiry-sample-requirement{padding:7px 8px!important;border:1px solid #fed7aa!important;background:#fff7ed!important}
+#sec-tutorinquiries .gc-inquiry-sample-requirement>span{font-size:16px!important}
+#sec-tutorinquiries .gc-inquiry-sample-requirement small{font-size:7px!important;color:#9a3412!important}
+#sec-tutorinquiries .gc-inquiry-sample-requirement b{font-size:9px!important;color:#7c2d12!important}
+#sec-tutorinquiries .gc-inquiry-sample-contact{grid-template-columns:1fr 1fr!important;gap:5px!important}
+#sec-tutorinquiries .gc-inquiry-sample-contact a,#sec-tutorinquiries .gc-inquiry-sample-contact button{min-height:34px!important;padding:6px!important;font-size:9px!important;border-radius:8px!important}
+#sec-tutorinquiries .gc-inquiry-sample-contact a:first-child{background:#f97316!important}
+#sec-tutorinquiries .gc-inquiry-sample-contact button{grid-column:1/-1!important;background:#ea580c!important}
+#sec-tutorinquiries .gc-inquiry-sample-matchnote{font-size:8px!important;line-height:1.3!important;text-align:left!important}
 @media(min-width:521px) and (max-width:1050px){
- #sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:repeat(auto-fill,minmax(min(100%,500px),500px))!important}
- #sec-tutorinquiries .gc-inquiry-sample-card{width:min(500px,100%)!important;min-width:0!important;max-width:500px!important}
+ #sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:repeat(auto-fill,minmax(300px,300px))!important}
 }
 @media(max-width:520px){
  #sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:minmax(0,1fr)!important;padding:5px!important}
  #sec-tutorinquiries .gc-inquiry-sample-card{width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
- #sec-tutorinquiries .gc-inquiry-sample-avatar{width:88px!important;height:88px!important;flex-basis:88px!important}
- #sec-tutorinquiries .gc-inquiry-sample-body{padding:15px!important}
+ #sec-tutorinquiries .gc-inquiry-sample-avatar{width:62px!important;height:62px!important;flex-basis:62px!important}
+ #sec-tutorinquiries .gc-inquiry-sample-body{padding:10px!important}
 }
 `;document.head.appendChild(readable)} 
   out.querySelectorAll('[data-inquiry-tab]').forEach(b=>b.onclick=()=>{
