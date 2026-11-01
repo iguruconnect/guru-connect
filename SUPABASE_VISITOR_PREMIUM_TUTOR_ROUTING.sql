@@ -116,20 +116,32 @@ begin
      nullif(trim(v.requirement_details),''), coalesce(nullif(trim(v.visitor_type),''),'Visitor'))
   returning id into v_req;
 
-  -- Count eligible, genuinely paid Premium Tutors separately from profile matching.
-  -- Premium badge display overrides alone do not qualify a tutor for visitor requirements.
+  -- Admin's explicit PREMIUM: ON override qualifies for visitor inquiries.
+  -- Explicit OFF suppresses automatic plan-based qualification. Hidden/disabled tutors remain excluded.
   select count(*) into v_active_count
   from public.tutor_profiles t
-  where lower(coalesce(t.payment_plan,'')) in ('premium_200','premium_verified_300')
-    and upper(coalesce(t.paid_status,'')) = 'PAID'
+  where (
+      t.premium_badge_override is true
+      or (
+        t.premium_badge_override is null
+        and lower(coalesce(t.payment_plan,'')) in ('premium_200','premium_verified_300')
+        and upper(coalesce(t.paid_status,'')) = 'PAID'
+      )
+    )
     and coalesce(t.is_hidden,false) = false
     and coalesce(t.is_disabled,false) = false;
 
   insert into public.gc_tutor_requirement_recipients(requirement_id, tutor_profile_id)
   select v_req, t.id
   from public.tutor_profiles t
-  where lower(coalesce(t.payment_plan,'')) in ('premium_200','premium_verified_300')
-    and upper(coalesce(t.paid_status,'')) = 'PAID'
+  where (
+      t.premium_badge_override is true
+      or (
+        t.premium_badge_override is null
+        and lower(coalesce(t.payment_plan,'')) in ('premium_200','premium_verified_300')
+        and upper(coalesce(t.paid_status,'')) = 'PAID'
+      )
+    )
     and coalesce(t.is_hidden,false) = false
     and coalesce(t.is_disabled,false) = false
     -- Subject is the essential match. Use the same profile fields as the public tutor directory.
@@ -213,8 +225,14 @@ begin
   end if;
   select t.id into v_tutor_id from public.tutor_profiles t
   where t.user_id = auth.uid()
-    and lower(coalesce(t.payment_plan,'')) in ('premium_200','premium_verified_300')
-    and upper(coalesce(t.paid_status,'')) = 'PAID'
+    and (
+      t.premium_badge_override is true
+      or (
+        t.premium_badge_override is null
+        and lower(coalesce(t.payment_plan,'')) in ('premium_200','premium_verified_300')
+        and upper(coalesce(t.paid_status,'')) = 'PAID'
+      )
+    )
     and coalesce(t.is_hidden,false) = false
     and coalesce(t.is_disabled,false) = false
   limit 1;
@@ -246,8 +264,14 @@ begin
   if auth.uid() is null then raise exception 'Please log in with an eligible Premium Tutor account.'; end if;
   select t.id into v_tutor_id from public.tutor_profiles t
   where t.user_id = auth.uid()
-    and lower(coalesce(t.payment_plan,'')) in ('premium_200','premium_verified_300')
-    and upper(coalesce(t.paid_status,'')) = 'PAID'
+    and (
+      t.premium_badge_override is true
+      or (
+        t.premium_badge_override is null
+        and lower(coalesce(t.payment_plan,'')) in ('premium_200','premium_verified_300')
+        and upper(coalesce(t.paid_status,'')) = 'PAID'
+      )
+    )
     and coalesce(t.is_hidden,false) = false
     and coalesce(t.is_disabled,false) = false
   limit 1;
@@ -356,8 +380,14 @@ begin
   select t.id into v_tutor_id
   from public.tutor_profiles t
   where t.user_id = auth.uid()
-    and lower(coalesce(t.payment_plan,'')) in ('premium_200','premium_verified_300')
-    and upper(coalesce(t.paid_status,'')) = 'PAID'
+    and (
+      t.premium_badge_override is true
+      or (
+        t.premium_badge_override is null
+        and lower(coalesce(t.payment_plan,'')) in ('premium_200','premium_verified_300')
+        and upper(coalesce(t.paid_status,'')) = 'PAID'
+      )
+    )
     and coalesce(t.is_hidden,false) = false
     and coalesce(t.is_disabled,false) = false
   limit 1;
