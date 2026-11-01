@@ -1094,19 +1094,18 @@ compactStyle.textContent+='#sec-tutorinquiries .gc-tutor-inquiry-lrr-card{max-wi
     tileWidthFix.id='gcInquiryInnerTileWidthFix20261102';
     tileWidthFix.textContent=`
       #sec-tutorinquiries .gc-tutor-inquiry-lrr-card .lrr-info{
-        grid-template-columns:repeat(3,minmax(0,1fr))!important;
-        gap:6px!important;
+        display:flex!important;flex-wrap:wrap!important;align-items:stretch!important;
+        justify-content:flex-start!important;gap:6px!important;
       }
       #sec-tutorinquiries .gc-tutor-inquiry-lrr-card .lrr-info-box{
+        flex:0 1 auto!important;width:fit-content!important;max-width:100%!important;
         min-width:0!important;padding:6px!important;min-height:42px!important;
       }
-      #sec-tutorinquiries .gc-tutor-inquiry-lrr-card .lrr-info-box span:not(.ico){
-        overflow-wrap:anywhere!important;word-break:break-word!important;
+      #sec-tutorinquiries .gc-tutor-inquiry-lrr-card .lrr-info-box>div{
+        width:fit-content!important;max-width:100%!important;min-width:0!important;
       }
-      @media(max-width:700px){
-        #sec-tutorinquiries .gc-tutor-inquiry-lrr-card .lrr-info{
-          grid-template-columns:repeat(2,minmax(0,1fr))!important;
-        }
+      #sec-tutorinquiries .gc-tutor-inquiry-lrr-card .lrr-info-box span:not(.ico){
+        overflow-wrap:anywhere!important;word-break:normal!important;
       }
     `;
     document.head.appendChild(tileWidthFix);
