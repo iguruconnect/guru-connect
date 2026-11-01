@@ -1020,5 +1020,31 @@ window.addEventListener('error',e=>msg('Page error: '+(e.message||'Unknown JavaS
 #app .gc-tutor-inquiry-more b{display:block!important;color:#172b4d!important;font-size:10px!important;overflow-wrap:anywhere!important}
 @media(max-width:600px){#app .gc-tutor-inquiry-facts{grid-template-columns:repeat(2,minmax(0,1fr))!important}#app .gc-tutor-inquiry-actions{grid-template-columns:1fr 1fr!important}}
 @media(max-width:600px){#app details.gc-tutor-inquiry-date>summary{gap:7px!important;padding:9px!important}#app .gc-tutor-inquiry-date-open{font-size:8px!important}#app .gc-tutor-inquiry-date-cards{grid-template-columns:1fr!important;padding:8px!important}#app .gc-tutor-inquiry-avatar{flex-basis:76px!important;width:76px!important;height:76px!important;min-width:76px!important;min-height:76px!important}}
+
+/* Tutor visitor-inquiry cards: balanced width instead of one stretched full-row card */
+#app .gc-tutor-inquiry-date-cards{
+ display:grid!important;
+ grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),440px))!important;
+ justify-content:start!important;
+ align-items:start!important;
+ gap:14px!important;
+ width:100%!important;
+ max-width:100%!important;
+ box-sizing:border-box!important;
+}
+#app .gc-tutor-inquiry-lrr-card{
+ width:100%!important;
+ max-width:440px!important;
+ min-width:0!important;
+ height:auto!important;
+ min-height:0!important;
+ max-height:none!important;
+ align-self:start!important;
+ box-sizing:border-box!important;
+}
+@media(max-width:600px){
+ #app .gc-tutor-inquiry-date-cards{grid-template-columns:minmax(0,1fr)!important;padding:8px!important}
+ #app .gc-tutor-inquiry-lrr-card{max-width:100%!important}
+}
 </style>
 </body></html>
