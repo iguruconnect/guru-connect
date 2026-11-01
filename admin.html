@@ -4270,3 +4270,82 @@ html,body,body *:not(svg):not(path):not(i):not(.material-icons):not(.material-sy
   background:#fff8f1!important;
 }
 </style>
+
+
+<style id="gc-tutor-inquiry-5x3-landscape-fit-20261101">
+/* Approx. 5in wide x 3in high landscape cards; keep every inquiry tile inside. */
+#sec-tutorinquiries .gc-inquiry-date-list{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,5in),5in))!important;
+  gap:14px!important;
+  justify-content:center!important;
+  align-items:stretch!important;
+  width:100%!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-card{
+  width:100%!important;
+  max-width:5in!important;
+  min-width:0!important;
+  min-height:3in!important;
+  height:auto!important;
+  aspect-ratio:5 / 3!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-body{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)!important;
+  gap:6px 8px!important;
+  padding:8px!important;
+  overflow:auto!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-date,
+#sec-tutorinquiries .gc-inquiry-sample-requirement,
+#sec-tutorinquiries .gc-inquiry-sample-contact,
+#sec-tutorinquiries .gc-inquiry-sample-matchnote{grid-column:1/-1!important}
+#sec-tutorinquiries .gc-inquiry-sample-facts{
+  grid-column:2!important;
+  grid-row:2!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:5px!important;
+  min-width:0!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-card small{
+  font-size:9px!important;
+  line-height:1.2!important;
+  overflow-wrap:anywhere!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-card b,
+#sec-tutorinquiries .gc-inquiry-sample-card strong{
+  font-size:10px!important;
+  line-height:1.2!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-contact{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:5px!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-contact button{grid-column:1/-1!important}
+@media(max-width:700px){
+  #sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:minmax(0,1fr)!important}
+  #sec-tutorinquiries .gc-inquiry-sample-card{
+    max-width:5in!important;
+    width:100%!important;
+    min-height:3in!important;
+    aspect-ratio:auto!important;
+  }
+  #sec-tutorinquiries .gc-inquiry-sample-body{
+    display:flex!important;
+    flex-direction:column!important;
+    overflow:visible!important;
+  }
+  #sec-tutorinquiries .gc-inquiry-sample-facts{
+    width:100%!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+</style>
