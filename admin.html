@@ -739,33 +739,36 @@ async function loadTutorInquiries(){
         ['✉️','EMAIL',x.visitor_email||'Not provided'],
         ['📨','STATUS',sent?'Sent to Premium Tutors':'New inquiry']
       ];
-      return '<article class="gc-visiting-card gc-tutor-profile-inquiry">'+
-        '<div class="gc-vcard-header">'+
-          '<div class="gc-vcard-tutor">'+
-            '<div class="tutor-avatar" aria-label="Visitor profile">🧑‍🎓</div>'+
-            '<div class="tutor-card-name">'+
-              '<h3>'+escv(visitorName)+'</h3>'+
-              '<p>'+escv(visitorType.toUpperCase())+' · PUBLIC TUTOR SEARCH</p>'+
-              '<div class="profile-badges"><span class="gc-inquiry-status '+(sent?'sent':'new')+'">'+(sent?'✓ SENT TO PREMIUM TUTORS':'● NEW INQUIRY')+'</span></div>'+
-              '<div class="tutor-subject-tags">'+subjectTags.map((v,i)=>'<span class="tutor-subject-tag gc-vtag-'+(i%3)+'">'+escv(v)+'</span>').join('')+'</div>'+
-            '</div>'+
-          '</div>'+
-          '<div class="gc-vcard-brand"><div class="gc-vcard-logo">🎓</div><div><b>GURU CONNECT</b><small>Learn • Connect • Grow</small></div></div>'+
-          '<div class="gc-vcard-ref">TUTOR INQUIRY &nbsp; · &nbsp; PUBLIC TUTOR SEARCH</div>'+
+      const tableRow=(label,value)=>'<tr><th scope="row">'+label+'</th><td>'+escv(value||'—')+'</td></tr>';
+      return '<div class="gc-inquiry-table-record">'+
+        '<div class="gc-inquiry-table-title"><div><strong>'+escv(visitorName)+'</strong><small>'+escv(visitorType.toUpperCase())+' · PUBLIC TUTOR SEARCH</small></div><span class="gc-inquiry-status '+(sent?'sent':'new')+'">'+(sent?'✓ SENT TO PREMIUM TUTORS':'● NEW INQUIRY')+'</span></div>'+
+        '<div class="gc-inquiry-table-scroll"><table class="gc-inquiry-details-table"><tbody>'+
+          '<tr class="gc-inquiry-table-section"><th colspan="2">VISITOR DETAILS</th></tr>'+
+          tableRow('Visitor Name',visitorName)+
+          tableRow('Visitor Type',visitorType)+
+          tableRow('Phone Number',x.visitor_phone||'Not provided')+
+          tableRow('Email Address',x.visitor_email||'Not provided')+
+          '<tr class="gc-inquiry-table-section"><th colspan="2">TUTOR REQUIREMENT</th></tr>'+
+          tableRow('Standard / Class',standard)+
+          tableRow('Course',course)+
+          tableRow('Stream',stream)+
+          tableRow('Subject(s)',subject)+
+          tableRow('Learning Mode',x.mode||x.learning_mode||'Not specified')+
+          tableRow('Location',x.location||'Not specified')+
+          tableRow('Fees Budget',x.fees_budget||x.budget||'Not specified')+
+          tableRow('Last Date',x.last_date||'Not specified')+
+          tableRow('Learning Requirement',requirement)+
+          '<tr class="gc-inquiry-table-section"><th colspan="2">INQUIRY STATUS & ACTIONS</th></tr>'+
+          tableRow('Status',sent?'Sent to Premium Tutors':'New inquiry')+
+          tableRow('Received At',stamp)+
+        '</tbody></table></div>'+
+        '<div class="gc-inquiry-table-actions">'+
+          '<a class="btn light" href="'+(phone?'tel:'+escv(phone):'#')+'" '+(!phone?'aria-disabled="true" onclick="return false"':'')+'>☎ &nbsp; CALL VISITOR</a>'+
+          '<a class="btn light" href="'+(email?'mailto:'+encodeURIComponent(email):'#')+'" '+(!email?'aria-disabled="true" onclick="return false"':'')+'>✉ &nbsp; EMAIL VISITOR</a>'+
+          '<button type="button" class="btn green gc-inquiry-sample-send '+(sent?'sent':'')+'" data-send-premium-requirement="'+id+'" '+(sent?'disabled':'')+'>'+(sent?'✓ &nbsp; ALREADY SENT':'➤ &nbsp; SEND TO PREMIUM TUTORS')+'</button>'+
         '</div>'+
-        '<div class="gc-vcard-profile">'+visitorFacts.map(v=>vFact(v[0],v[1],v[2])).join('')+'</div>'+
-        '<div class="gc-vcard-about"><b>LEARNING REQUIREMENT</b><p>'+escv(requirement)+'</p></div>'+
-        '<section class="gc-vcard-inquiry">'+
-          '<div class="gc-vcard-inquiry-title"><span>📨</span><div><b>VISITOR & INQUIRY DETAILS</b><small>All submitted details are shown together below</small></div></div>'+
-          '<div class="gc-vcard-visitor-grid">'+contactFacts.map(v=>'<div class="gc-vcard-visitor-item"><span>'+v[0]+'</span><div><small>'+v[1]+'</small><b>'+escv(v[2]||'—')+'</b></div></div>').join('')+'</div>'+
-          '<div class="gc-vcard-actions">'+
-            '<a class="btn light" href="'+(phone?'tel:'+escv(phone):'#')+'" '+(!phone?'aria-disabled="true" onclick="return false"':'')+'>☎ &nbsp; CALL VISITOR</a>'+
-            '<a class="btn light" href="'+(email?'mailto:'+encodeURIComponent(email):'#')+'" '+(!email?'aria-disabled="true" onclick="return false"':'')+'>✉ &nbsp; EMAIL VISITOR</a>'+
-            '<button type="button" class="btn green gc-inquiry-sample-send '+(sent?'sent':'')+'" data-send-premium-requirement="'+id+'" '+(sent?'disabled':'')+'>'+(sent?'✓ &nbsp; ALREADY SENT':'➤ &nbsp; SEND TO PREMIUM TUTORS')+'</button>'+
-          '</div>'+
-          '<p class="gc-inquiry-help">'+(sent?'This inquiry has already been forwarded to matching active, paid Premium Tutors.':'Forward this inquiry to eligible active, paid Premium Tutors matching the class, stream, course and subject.')+'</p>'+
-        '</section>'+
-      '</article>';
+        '<p class="gc-inquiry-help">'+(sent?'This inquiry has already been forwarded to matching active, paid Premium Tutors.':'Forward this inquiry to eligible active, paid Premium Tutors matching the class, stream, course and subject.')+'</p>'+
+      '</div>';
     }).join('');
     return '<details open class="gc-inquiry-day"><summary class="gc-inquiry-day-summary"><span><small>INQUIRY DATE</small><b>📅 '+escv(dateNice)+'</b></span><span class="gc-inquiry-day-count">'+dayRows.length+' INQUIRIES</span><em>VIEW INQUIRIES ▾</em></summary><div class="gc-inquiry-day-content"><div class="gc-inquiry-date-list">'+inquiryRows+'</div></div></details>';
   }).join('');
@@ -5425,5 +5428,120 @@ html,body,body *:not(svg):not(path):not(i):not(.material-icons):not(.material-sy
     max-width:none!important;
     min-width:0!important;
   }
+}
+</style>
+
+
+<style id="gc-tutor-inquiry-form-table-layout-20261101">
+/* Form-style two-column detail table: every submitted inquiry field remains readable. */
+#sec-tutorinquiries .gc-inquiry-date-list{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:18px!important;
+  width:100%!important;
+}
+#sec-tutorinquiries .gc-inquiry-table-record{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  background:#fff!important;
+  border:1px solid #cbd5e1!important;
+  border-radius:16px!important;
+  overflow:hidden!important;
+  box-shadow:0 7px 22px rgba(15,23,42,.08)!important;
+}
+#sec-tutorinquiries .gc-inquiry-table-title{
+  display:flex!important;
+  justify-content:space-between!important;
+  align-items:center!important;
+  gap:12px!important;
+  flex-wrap:wrap!important;
+  padding:16px 18px!important;
+  background:linear-gradient(110deg,#eaf4ff,#f3edff)!important;
+  border-bottom:1px solid #cbd5e1!important;
+}
+#sec-tutorinquiries .gc-inquiry-table-title strong{
+  display:block!important;
+  color:#123b70!important;
+  font-size:18px!important;
+  line-height:1.35!important;
+}
+#sec-tutorinquiries .gc-inquiry-table-title small{
+  display:block!important;
+  margin-top:4px!important;
+  color:#475569!important;
+  font-size:11px!important;
+  font-weight:800!important;
+}
+#sec-tutorinquiries .gc-inquiry-table-scroll{
+  width:100%!important;
+  overflow-x:auto!important;
+}
+#sec-tutorinquiries .gc-inquiry-details-table{
+  width:100%!important;
+  min-width:0!important;
+  border-collapse:collapse!important;
+  table-layout:fixed!important;
+  background:#fff!important;
+}
+#sec-tutorinquiries .gc-inquiry-details-table th,
+#sec-tutorinquiries .gc-inquiry-details-table td{
+  padding:12px 15px!important;
+  border-bottom:1px solid #e2e8f0!important;
+  text-align:left!important;
+  vertical-align:top!important;
+  font-size:14px!important;
+  line-height:1.5!important;
+  overflow-wrap:anywhere!important;
+  white-space:pre-wrap!important;
+}
+#sec-tutorinquiries .gc-inquiry-details-table tbody tr:not(.gc-inquiry-table-section) th{
+  width:30%!important;
+  background:#f8fafc!important;
+  color:#334155!important;
+  font-weight:800!important;
+}
+#sec-tutorinquiries .gc-inquiry-details-table tbody tr:not(.gc-inquiry-table-section) td{
+  color:#0f172a!important;
+  font-weight:600!important;
+}
+#sec-tutorinquiries .gc-inquiry-details-table .gc-inquiry-table-section th{
+  width:auto!important;
+  padding:10px 15px!important;
+  background:#eaf2ff!important;
+  color:#17428a!important;
+  font-size:12px!important;
+  font-weight:950!important;
+  letter-spacing:.45px!important;
+}
+#sec-tutorinquiries .gc-inquiry-table-actions{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  gap:9px!important;
+  padding:14px 16px 8px!important;
+}
+#sec-tutorinquiries .gc-inquiry-table-actions .btn{
+  min-height:42px!important;
+  padding:10px 14px!important;
+  font-size:12px!important;
+}
+#sec-tutorinquiries .gc-inquiry-table-record .gc-inquiry-help{
+  margin:4px 16px 14px!important;
+  color:#64748b!important;
+  font-size:11px!important;
+  line-height:1.5!important;
+}
+@media(max-width:600px){
+  #sec-tutorinquiries .gc-inquiry-table-title{padding:13px!important}
+  #sec-tutorinquiries .gc-inquiry-details-table th,
+  #sec-tutorinquiries .gc-inquiry-details-table td{
+    padding:10px!important;
+    font-size:13px!important;
+  }
+  #sec-tutorinquiries .gc-inquiry-details-table tbody tr:not(.gc-inquiry-table-section) th{
+    width:38%!important;
+  }
+  #sec-tutorinquiries .gc-inquiry-table-actions{display:grid!important;grid-template-columns:1fr!important}
+  #sec-tutorinquiries .gc-inquiry-table-actions .btn{width:100%!important}
 }
 </style>
