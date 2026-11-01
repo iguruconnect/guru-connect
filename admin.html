@@ -1008,6 +1008,21 @@ if(!document.getElementById('gcCompactInquiryStyles')){compactStyle.id='gcCompac
 #sec-tutorinquiries .gc-tutor-inquiry-lrr-card .gc-inquiry-help{font-size:11px!important;line-height:1.4!important}
 @media(max-width:700px){#sec-tutorinquiries .gc-tutor-inquiry-lrr-card{padding:13px!important}#sec-tutorinquiries .gc-tutor-inquiry-lrr-card .name{font-size:21px!important}#sec-tutorinquiries .gc-tutor-inquiry-lrr-card .lrr-info-box span:not(.ico){font-size:12px!important}}
 `;document.head.appendChild(comfort)}
+  if(!document.getElementById('gcInquiryFourteenPointText')){const readable14=document.createElement('style');readable14.id='gcInquiryFourteenPointText';readable14.textContent=`
+#sec-tutorinquiries .gc-tutor-inquiry-lrr-card .lrr-info-box span:not(.ico){font-size:14px!important;line-height:1.4!important}
+#sec-tutorinquiries .gc-tutor-inquiry-lrr-card .gc-lrr-inquiry-need>div{font-size:14px!important;line-height:1.5!important}
+#sec-tutorinquiries .gc-tutor-inquiry-lrr-card .sub{font-size:14px!important;line-height:1.35!important}
+#sec-tutorinquiries .gc-tutor-inquiry-lrr-card .gc-inquiry-help{font-size:12px!important;line-height:1.45!important}
+#sec-tutorinquiries .gc-tutor-inquiry-lrr-card .lrr-info-box b,
+#sec-tutorinquiries .gc-tutor-inquiry-lrr-card .gc-lrr-inquiry-need>b,
+#sec-tutorinquiries .gc-tutor-inquiry-lrr-card .name,
+#sec-tutorinquiries .gc-tutor-inquiry-lrr-card .lrr-role{font-weight:800!important}
+#sec-tutorinquiries .gc-tutor-inquiry-lrr-card .lrr-info-box b{font-size:11px!important}
+#sec-tutorinquiries .gc-tutor-inquiry-lrr-card .gc-lrr-inquiry-need>b{font-size:12px!important}
+#sec-tutorinquiries .gc-tutor-inquiry-lrr-card .gc-lrr-inquiry-actions a,
+#sec-tutorinquiries .gc-tutor-inquiry-lrr-card .gc-lrr-inquiry-actions button{font-size:12px!important;font-weight:800!important}
+`;document.head.appendChild(readable14)}
+
 
   out.querySelectorAll('[data-inquiry-tab]').forEach(b=>b.onclick=()=>{
     const day=b.dataset.day,type=b.dataset.inquiryTab;
