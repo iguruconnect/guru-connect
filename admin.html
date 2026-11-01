@@ -356,42 +356,7 @@ body,body button,body input,body select,body textarea,body table,body th,body td
 }
 </style>
 
-<style id="gc-tutor-inquiry-card-700x500">
-/* Admin tutor inquiry card: 700 x 500 desktop; fluid on mobile */
-#sec-tutorinquiries #tutorInquiryResults{
-  display:grid!important;
-  grid-template-columns:repeat(auto-fit,minmax(min(700px,100%),700px))!important;
-  justify-content:start;
-  gap:18px!important;
-}
-#sec-tutorinquiries .gc-inquiry-card,
-#sec-tutorinquiries .gc-tutor-profile-inquiry{
-  width:700px!important;
-  max-width:700px!important;
-  height:500px!important;
-  min-height:500px!important;
-  max-height:500px!important;
-  box-sizing:border-box!important;
-  overflow-y:auto!important;
-  overflow-x:hidden!important;
-  margin:0!important;
-}
-#sec-tutorinquiries .gc-inquiry-card .gc-inquiry-body{padding:16px 20px!important}
-#sec-tutorinquiries .gc-inquiry-card .gc-inquiry-fields{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
-@media(max-width:720px){
-  #sec-tutorinquiries #tutorInquiryResults{grid-template-columns:minmax(0,1fr)!important}
-  #sec-tutorinquiries .gc-inquiry-card,
-  #sec-tutorinquiries .gc-tutor-profile-inquiry{
-    width:100%!important;
-    max-width:100%!important;
-    height:auto!important;
-    min-height:500px!important;
-    max-height:none!important;
-    overflow:visible!important;
-  }
-  #sec-tutorinquiries .gc-inquiry-card .gc-inquiry-fields{grid-template-columns:repeat(2,minmax(0,1fr))!important}
-}
-</style>
+
 </head><body>
 <header class="head"><div class="headin"><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><div class="gc-admin-titlebar"><span class="gc-admin-title-icon">▦</span><div><h1>Admin Dashboard</h1><p>Manage Your Platform Efficiently</p></div></div><div class="gc-admin-helpline"><span class="gc-admin-headset">◉</span><div><b>Helpline</b><a href="mailto:support@guruconnnect.in">support@guruconnnect.in</a></div></div><div class="gc-admin-user"><span>AJ</span><b>Admin</b></div><button id="logout" class="btn light">↪ LOG OUT</button></div></header>
 <main class="wrap"><div id="gate" class="gate">Admin page loaded — preparing login scripts…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div><div class="gc-admin-stat-grid"><div class="gc-admin-stat stat-blue"><span class="gc-stat-icon">👥</span><div><small>Total Inquiries</small><strong id="gcStatTotalInquiry">—</strong><em>Visitor requests</em></div><b class="gc-stat-arrow">›</b></div><div class="gc-admin-stat stat-green"><span class="gc-stat-icon">🎓</span><div><small>Tutor Inquiries</small><strong id="gcStatTutorInquiry">—</strong><em>Public tutor search</em></div><b class="gc-stat-arrow">›</b></div><div class="gc-admin-stat stat-purple"><span class="gc-stat-icon">🛡️</span><div><small>Pending Approval</small><strong id="gcStatPending">—</strong><em>Needs review</em></div><b class="gc-stat-arrow">›</b></div><div class="gc-admin-stat stat-orange"><span class="gc-stat-icon">📚</span><div><small>Learning Requests</small><strong>LRR</strong><em>Manage requests</em></div><b class="gc-stat-arrow">›</b></div></div>
@@ -846,7 +811,65 @@ if(!document.getElementById('gcCompactInquiryStyles')){compactStyle.id='gcCompac
 #sec-tutorinquiries .gc-inquiry-sample-facts{grid-template-columns:repeat(2,minmax(0,1fr))!important}
 #sec-tutorinquiries .gc-sample-fact{align-items:flex-start!important}
 #sec-tutorinquiries .gc-inquiry-sample-contact{grid-template-columns:repeat(3,minmax(0,1fr))!important}
-}`;document.head.appendChild(readable)} 
+}`;readable.textContent += `
+/* Match Search Tutors profile-card dimensions and visual language */
+#sec-tutorinquiries .gc-inquiry-date-list{
+ display:grid!important;
+ grid-template-columns:repeat(3,minmax(0,1fr))!important;
+ align-items:stretch!important;
+ gap:16px!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-card{
+ display:flex!important;flex-direction:column!important;
+ width:100%!important;max-width:none!important;min-width:0!important;
+ height:auto!important;min-height:0!important;max-height:none!important;
+ margin:0!important;padding:0!important;overflow:hidden!important;
+ border:1.5px solid #cfe1f7!important;border-radius:19px!important;
+ background:linear-gradient(150deg,#fff 0%,#f7fbff 100%)!important;
+ box-shadow:0 7px 22px rgba(22,72,130,.09)!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-bluehead{
+ min-height:48px!important;padding:10px 14px!important;
+ background:linear-gradient(120deg,#e8f3ff,#f2efff)!important;
+ color:#0f2f5b!important;font-size:11px!important;font-weight:950!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-status{font-size:8px!important;padding:5px 7px!important}
+#sec-tutorinquiries .gc-inquiry-sample-body{padding:15px 16px 16px!important;gap:10px!important;background:transparent!important}
+#sec-tutorinquiries .gc-inquiry-sample-date{padding:8px 10px!important;border:1px solid #dbeafe!important;border-radius:10px!important;background:#f4f8ff!important}
+#sec-tutorinquiries .gc-inquiry-sample-date>span{font-size:18px!important}
+#sec-tutorinquiries .gc-inquiry-sample-date small{font-size:8px!important;color:#64748b!important}
+#sec-tutorinquiries .gc-inquiry-sample-date b{font-size:11px!important;color:#153a68!important}
+#sec-tutorinquiries .gc-inquiry-sample-date strong{font-size:8px!important;padding:5px 8px!important;background:#e8f1ff!important;color:#17478b!important}
+#sec-tutorinquiries .gc-inquiry-sample-main{display:flex!important;flex-direction:column!important;gap:10px!important;margin:0!important}
+#sec-tutorinquiries .gc-inquiry-sample-person{gap:12px!important;padding:2px!important}
+#sec-tutorinquiries .gc-inquiry-sample-avatar{width:88px!important;height:88px!important;flex:0 0 88px!important;font-size:38px!important;border:3px solid #e1edfb!important;outline:0!important;background:linear-gradient(135deg,#d9f1ff,#d9fbe8)!important}
+#sec-tutorinquiries .gc-inquiry-sample-person h3{font-size:18px!important;line-height:1.25!important;color:#092e60!important;margin:0 0 5px!important}
+#sec-tutorinquiries .gc-inquiry-sample-person b{font-size:10px!important;color:#54708f!important}
+#sec-tutorinquiries .gc-inquiry-sample-facts{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:7px!important}
+#sec-tutorinquiries .gc-sample-fact{min-height:58px!important;padding:8px 9px!important;border:1px solid #d3e5fa!important;border-radius:10px!important;background:rgba(232,243,255,.78)!important;gap:7px!important}
+#sec-tutorinquiries .gc-sample-fact>span{font-size:16px!important;flex:0 0 20px!important}
+#sec-tutorinquiries .gc-sample-fact>div{display:block!important;min-width:0!important}
+#sec-tutorinquiries .gc-sample-fact small{display:block!important;font-size:8px!important;color:#6b829e!important;margin:0 0 4px!important;white-space:normal!important}
+#sec-tutorinquiries .gc-sample-fact b{display:block!important;font-size:11px!important;line-height:1.35!important;color:#153a68!important;overflow-wrap:anywhere!important}
+#sec-tutorinquiries .gc-inquiry-sample-requirement{padding:10px 11px!important;border:1px solid #cfe3fb!important;border-radius:10px!important;background:#f0f7ff!important}
+#sec-tutorinquiries .gc-inquiry-sample-requirement>span{font-size:19px!important}
+#sec-tutorinquiries .gc-inquiry-sample-requirement small{font-size:8px!important;color:#6b829e!important}
+#sec-tutorinquiries .gc-inquiry-sample-requirement b{font-size:11px!important;color:#153a68!important}
+#sec-tutorinquiries .gc-inquiry-sample-contact{display:grid!important;grid-template-columns:1fr 1fr!important;gap:7px!important;margin:0!important}
+#sec-tutorinquiries .gc-inquiry-sample-contact a,#sec-tutorinquiries .gc-inquiry-sample-contact button{min-height:40px!important;padding:8px!important;font-size:10px!important;border-radius:10px!important}
+#sec-tutorinquiries .gc-inquiry-sample-contact button{grid-column:1/-1!important}
+#sec-tutorinquiries .gc-inquiry-sample-matchnote{font-size:9px!important;line-height:1.4!important;text-align:left!important}
+@media(max-width:800px){
+ #sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #sec-tutorinquiries .gc-inquiry-sample-avatar{width:76px!important;height:76px!important;flex-basis:76px!important}
+ #sec-tutorinquiries .gc-inquiry-sample-person h3{font-size:16px!important}
+}
+@media(max-width:520px){
+ #sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:1fr!important}
+ #sec-tutorinquiries .gc-inquiry-sample-avatar{width:88px!important;height:88px!important;flex-basis:88px!important}
+ #sec-tutorinquiries .gc-inquiry-sample-body{padding:15px!important}
+}
+`;document.head.appendChild(readable)} 
   out.querySelectorAll('[data-inquiry-tab]').forEach(b=>b.onclick=()=>{
     const day=b.dataset.day,type=b.dataset.inquiryTab;
     out.querySelectorAll('[data-inquiry-tab][data-day="'+day+'"]').forEach(x=>x.classList.toggle('active',x===b));
