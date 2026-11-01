@@ -355,6 +355,43 @@ body,body button,body input,body select,body textarea,body table,body th,body td
  #sec-tutorinquiries .gc-inquiry-sample-card{max-width:100%!important}
 }
 </style>
+
+<style id="gc-tutor-inquiry-card-700x500">
+/* Admin tutor inquiry card: 700 x 500 desktop; fluid on mobile */
+#sec-tutorinquiries #tutorInquiryResults{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(min(700px,100%),700px))!important;
+  justify-content:start;
+  gap:18px!important;
+}
+#sec-tutorinquiries .gc-inquiry-card,
+#sec-tutorinquiries .gc-tutor-profile-inquiry{
+  width:700px!important;
+  max-width:700px!important;
+  height:500px!important;
+  min-height:500px!important;
+  max-height:500px!important;
+  box-sizing:border-box!important;
+  overflow-y:auto!important;
+  overflow-x:hidden!important;
+  margin:0!important;
+}
+#sec-tutorinquiries .gc-inquiry-card .gc-inquiry-body{padding:16px 20px!important}
+#sec-tutorinquiries .gc-inquiry-card .gc-inquiry-fields{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+@media(max-width:720px){
+  #sec-tutorinquiries #tutorInquiryResults{grid-template-columns:minmax(0,1fr)!important}
+  #sec-tutorinquiries .gc-inquiry-card,
+  #sec-tutorinquiries .gc-tutor-profile-inquiry{
+    width:100%!important;
+    max-width:100%!important;
+    height:auto!important;
+    min-height:500px!important;
+    max-height:none!important;
+    overflow:visible!important;
+  }
+  #sec-tutorinquiries .gc-inquiry-card .gc-inquiry-fields{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+</style>
 </head><body>
 <header class="head"><div class="headin"><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><div class="gc-admin-titlebar"><span class="gc-admin-title-icon">▦</span><div><h1>Admin Dashboard</h1><p>Manage Your Platform Efficiently</p></div></div><div class="gc-admin-helpline"><span class="gc-admin-headset">◉</span><div><b>Helpline</b><a href="mailto:support@guruconnnect.in">support@guruconnnect.in</a></div></div><div class="gc-admin-user"><span>AJ</span><b>Admin</b></div><button id="logout" class="btn light">↪ LOG OUT</button></div></header>
 <main class="wrap"><div id="gate" class="gate">Admin page loaded — preparing login scripts…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div><div class="gc-admin-stat-grid"><div class="gc-admin-stat stat-blue"><span class="gc-stat-icon">👥</span><div><small>Total Inquiries</small><strong id="gcStatTotalInquiry">—</strong><em>Visitor requests</em></div><b class="gc-stat-arrow">›</b></div><div class="gc-admin-stat stat-green"><span class="gc-stat-icon">🎓</span><div><small>Tutor Inquiries</small><strong id="gcStatTutorInquiry">—</strong><em>Public tutor search</em></div><b class="gc-stat-arrow">›</b></div><div class="gc-admin-stat stat-purple"><span class="gc-stat-icon">🛡️</span><div><small>Pending Approval</small><strong id="gcStatPending">—</strong><em>Needs review</em></div><b class="gc-stat-arrow">›</b></div><div class="gc-admin-stat stat-orange"><span class="gc-stat-icon">📚</span><div><small>Learning Requests</small><strong>LRR</strong><em>Manage requests</em></div><b class="gc-stat-arrow">›</b></div></div>
