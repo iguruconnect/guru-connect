@@ -332,27 +332,20 @@ body,body button,body input,body select,body textarea,body table,body th,body td
 }
 </style><style id="gc-global-chatgpt-font-20261101">:root{font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-synthesis:none;text-rendering:optimizeLegibility}html,body,body *{font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}body{font-weight:400}button,input,select,textarea{font:inherit}strong,b,th{font-weight:700}</style>
 <style id="gc-admin-tutor-inquiry-card-size-20261101">
-/* Match Admin Tutor Inquiry cards to the compact Tutor / Student / LRR card scale */
-#sec-tutorinquiries .gc-inquiry-date-list:has(.gc-inquiry-sample-card){
+/* Keep inquiry cards full-size and visible; dynamic style applies the same dimensions. */
+#sec-tutorinquiries .gc-inquiry-date-list{
  display:grid!important;
- grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),360px))!important;
- justify-content:start!important;
- align-items:start!important;
- gap:14px!important;
+ grid-template-columns:repeat(auto-fill,minmax(500px,500px))!important;
+ justify-content:start!important;align-items:start!important;gap:18px!important;
 }
 #sec-tutorinquiries .gc-inquiry-sample-card{
- width:100%!important;
- max-width:360px!important;
- min-width:0!important;
- height:auto!important;
- min-height:0!important;
- max-height:none!important;
- margin:0!important;
- align-self:start!important;
+ width:500px!important;min-width:500px!important;max-width:500px!important;
+ height:800px!important;min-height:800px!important;max-height:800px!important;
+ box-sizing:border-box!important;overflow-y:auto!important;overflow-x:hidden!important;
 }
-@media(max-width:700px){
- #sec-tutorinquiries .gc-inquiry-date-list:has(.gc-inquiry-sample-card){grid-template-columns:minmax(0,1fr)!important}
- #sec-tutorinquiries .gc-inquiry-sample-card{max-width:100%!important}
+@media(max-width:520px){
+ #sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:minmax(0,1fr)!important}
+ #sec-tutorinquiries .gc-inquiry-sample-card{width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
 }
 </style>
 
@@ -859,13 +852,27 @@ if(!document.getElementById('gcCompactInquiryStyles')){compactStyle.id='gcCompac
 #sec-tutorinquiries .gc-inquiry-sample-contact a,#sec-tutorinquiries .gc-inquiry-sample-contact button{min-height:40px!important;padding:8px!important;font-size:10px!important;border-radius:10px!important}
 #sec-tutorinquiries .gc-inquiry-sample-contact button{grid-column:1/-1!important}
 #sec-tutorinquiries .gc-inquiry-sample-matchnote{font-size:9px!important;line-height:1.4!important;text-align:left!important}
-@media(max-width:800px){
- #sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}
- #sec-tutorinquiries .gc-inquiry-sample-avatar{width:76px!important;height:76px!important;flex-basis:76px!important}
- #sec-tutorinquiries .gc-inquiry-sample-person h3{font-size:16px!important}
+/* Final inquiry tile sizing: desktop 500px wide x 800px tall */
+#sec-tutorinquiries .gc-inquiry-date-list{
+ display:grid!important;
+ grid-template-columns:repeat(auto-fill,minmax(500px,500px))!important;
+ justify-content:start!important;align-items:start!important;
+ gap:18px!important;width:100%!important;max-width:100%!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-card{
+ display:flex!important;flex-direction:column!important;
+ width:500px!important;min-width:500px!important;max-width:500px!important;
+ height:800px!important;min-height:800px!important;max-height:800px!important;
+ box-sizing:border-box!important;overflow-y:auto!important;overflow-x:hidden!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-body{flex:1 0 auto!important}
+@media(min-width:521px) and (max-width:1050px){
+ #sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:repeat(auto-fill,minmax(min(100%,500px),500px))!important}
+ #sec-tutorinquiries .gc-inquiry-sample-card{width:min(500px,100%)!important;min-width:0!important;max-width:500px!important}
 }
 @media(max-width:520px){
- #sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:1fr!important}
+ #sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:minmax(0,1fr)!important;padding:5px!important}
+ #sec-tutorinquiries .gc-inquiry-sample-card{width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important}
  #sec-tutorinquiries .gc-inquiry-sample-avatar{width:88px!important;height:88px!important;flex-basis:88px!important}
  #sec-tutorinquiries .gc-inquiry-sample-body{padding:15px!important}
 }
