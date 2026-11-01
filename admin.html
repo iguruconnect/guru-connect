@@ -720,20 +720,53 @@ async function loadTutorInquiries(){
       const course=x.course||'Not specified',stream=x.stream||'Not specified';
       const fact=(icon,label,value)=>'<div class="gc-sample-fact"><span>'+icon+'</span><div><small>'+label+'</small><b>'+escv(value||'—')+'</b></div></div>';
       const requirement=x.requirement_details||'No additional learning requirement details provided.';
-      return '<article class="gc-inquiry-sample-card">'+
-        '<div class="gc-inquiry-sample-bluehead"><span>🔔 &nbsp; TUTOR INQUIRY</span><span class="gc-inquiry-sample-status '+(sent?'sent':'new')+'">'+(sent?'✓ SENT TO PREMIUM TUTORS':'● NEW INQUIRY')+'</span></div>'+
-        '<div class="gc-inquiry-sample-body">'+
-          '<div class="gc-inquiry-sample-date"><span>📅</span><div><small>INQUIRY DATE</small><b>'+escv(stamp)+'</b></div><strong>INQUIRY</strong></div>'+
-          '<div class="gc-inquiry-sample-main"><div class="gc-inquiry-sample-person"><div class="gc-inquiry-sample-avatar">🧑‍🎓</div><div><h3>'+escv(visitorName)+'</h3><b>'+escv(visitorType).toUpperCase()+'</b></div></div>'+
-          '<div class="gc-inquiry-sample-facts">'+
-            fact('📘','COURSE',course)+fact('🌐','STREAM',stream)+
-            fact('🎒','STANDARD / CLASS',standard)+fact('🎯','SUBJECT',subject)+
-            fact('⏳','POSTED',stamp)+fact('📍','LOCATION',x.location||'Not specified')+fact('☎️','PHONE',x.visitor_phone||'Not provided')+fact('✉️','EMAIL',x.visitor_email||'Not provided')+fact('💻','MODE',x.mode||x.learning_mode||'Not specified')+fact('💰','FEES BUDGET',x.fees_budget||x.budget||'Not specified')+fact('📆','LAST DATE',x.last_date||'Not specified')+
-          '</div></div>'+
-          '<div class="gc-inquiry-sample-requirement"><span>📣</span><div><small>LEARNING REQUIREMENT</small><b>'+escv(requirement)+'</b></div></div>'+
-          '<div class="gc-inquiry-sample-contact"><a href="'+(phone?'tel:'+escv(phone):'#')+'" '+(!phone?'aria-disabled="true" onclick="return false"':'')+'>☎ &nbsp; CALL</a><a href="'+(email?'mailto:'+encodeURIComponent(email):'#')+'" '+(!email?'aria-disabled="true" onclick="return false"':'')+'>✉ &nbsp; EMAIL</a><button type="button" class="gc-inquiry-sample-send '+(sent?'sent':'')+'" data-send-premium-requirement="'+id+'" '+(sent?'disabled':'')+'>'+(sent?'✓ &nbsp; ALREADY SENT':'➤ &nbsp; SEND TO PREMIUM TUTORS')+'</button></div>'+
-          '<div class="gc-inquiry-sample-matchnote">'+(sent?'Forwarded to the matching active, paid Premium Tutors.':'Click SEND TO PREMIUM TUTORS to match this subject, class, stream and course with eligible active, paid Premium Tutors.')+'</div>'+
-        '</div></article>';
+      const subjectTags=String(subject||'Not specified').split(/[,;|]/).map(v=>v.trim()).filter(Boolean);
+      const vFact=(icon,label,value)=>'<div class="gc-vcard-fact"><span>'+icon+'</span><div><small>'+label+'</small><b>'+escv(value||'—')+'</b></div></div>';
+      const visitorFacts=[
+        ['🎒','STANDARD / CLASS',standard],
+        ['📘','COURSE',course],
+        ['🌐','STREAM',stream],
+        ['🎯','SUBJECT',subject],
+        ['💻','LEARNING MODE',x.mode||x.learning_mode||'Not specified'],
+        ['📍','LOCATION',x.location||'Not specified'],
+        ['💰','FEES BUDGET',x.fees_budget||x.budget||'Not specified'],
+        ['📆','LAST DATE',x.last_date||'Not specified']
+      ];
+      const contactFacts=[
+        ['👤','VISITOR NAME',visitorName],
+        ['🧾','VISITOR TYPE',visitorType],
+        ['☎️','PHONE',x.visitor_phone||'Not provided'],
+        ['✉️','EMAIL',x.visitor_email||'Not provided'],
+        ['🗓️','INQUIRY DATE',stamp],
+        ['📨','STATUS',sent?'Sent to Premium Tutors':'New inquiry']
+      ];
+      return '<article class="gc-visiting-card gc-tutor-profile-inquiry">'+
+        '<div class="gc-vcard-header">'+
+          '<div class="gc-vcard-tutor">'+
+            '<div class="tutor-avatar" aria-label="Visitor profile">🧑‍🎓</div>'+
+            '<div class="tutor-card-name">'+
+              '<h3>'+escv(visitorName)+'</h3>'+
+              '<p>'+escv(visitorType.toUpperCase())+' · PUBLIC TUTOR SEARCH</p>'+
+              '<div class="profile-badges"><span class="gc-inquiry-status '+(sent?'sent':'new')+'">'+(sent?'✓ SENT TO PREMIUM TUTORS':'● NEW INQUIRY')+'</span></div>'+
+              '<div class="tutor-subject-tags">'+subjectTags.map((v,i)=>'<span class="tutor-subject-tag gc-vtag-'+(i%3)+'">'+escv(v)+'</span>').join('')+'</div>'+
+            '</div>'+
+          '</div>'+
+          '<div class="gc-vcard-brand"><div class="gc-vcard-logo">🎓</div><div><b>GURU CONNECT</b><small>Learn • Connect • Grow</small></div></div>'+
+          '<div class="gc-vcard-ref">TUTOR INQUIRY &nbsp; · &nbsp; RECEIVED '+escv(stamp)+'</div>'+
+        '</div>'+
+        '<div class="gc-vcard-profile">'+visitorFacts.map(v=>vFact(v[0],v[1],v[2])).join('')+'</div>'+
+        '<div class="gc-vcard-about"><b>LEARNING REQUIREMENT</b><p>'+escv(requirement)+'</p></div>'+
+        '<section class="gc-vcard-inquiry">'+
+          '<div class="gc-vcard-inquiry-title"><span>📨</span><div><b>VISITOR & INQUIRY DETAILS</b><small>All submitted details are shown together below</small></div></div>'+
+          '<div class="gc-vcard-visitor-grid">'+contactFacts.map(v=>'<div class="gc-vcard-visitor-item"><span>'+v[0]+'</span><div><small>'+v[1]+'</small><b>'+escv(v[2]||'—')+'</b></div></div>').join('')+'</div>'+
+          '<div class="gc-vcard-actions">'+
+            '<a class="btn light" href="'+(phone?'tel:'+escv(phone):'#')+'" '+(!phone?'aria-disabled="true" onclick="return false"':'')+'>☎ &nbsp; CALL VISITOR</a>'+
+            '<a class="btn light" href="'+(email?'mailto:'+encodeURIComponent(email):'#')+'" '+(!email?'aria-disabled="true" onclick="return false"':'')+'>✉ &nbsp; EMAIL VISITOR</a>'+
+            '<button type="button" class="btn green gc-inquiry-sample-send '+(sent?'sent':'')+'" data-send-premium-requirement="'+id+'" '+(sent?'disabled':'')+'>'+(sent?'✓ &nbsp; ALREADY SENT':'➤ &nbsp; SEND TO PREMIUM TUTORS')+'</button>'+
+          '</div>'+
+          '<p class="gc-inquiry-help">'+(sent?'This inquiry has already been forwarded to matching active, paid Premium Tutors.':'Forward this inquiry to eligible active, paid Premium Tutors matching the class, stream, course and subject.')+'</p>'+
+        '</section>'+
+      '</article>';
     }).join('');
     return '<details class="gc-inquiry-day"><summary class="gc-inquiry-day-summary"><span><small>INQUIRY DATE</small><b>📅 '+escv(dateNice)+'</b></span><span class="gc-inquiry-day-count">'+dayRows.length+' INQUIRIES</span><em>VIEW INQUIRIES ▾</em></summary><div class="gc-inquiry-day-content"><div class="gc-inquiry-date-list">'+inquiryRows+'</div></div></details>';
   }).join('');
@@ -4268,5 +4301,186 @@ html,body,body *:not(svg):not(path):not(i):not(.material-icons):not(.material-sy
 #sec-tutorinquiries .gc-inquiry-sample-requirement,
 #sec-tutorinquiries .gc-inquiry-sample-facts .gc-sample-fact{
   background:#fff8f1!important;
+}
+</style>
+
+
+<style id="gc-tutor-inquiry-5x3-landscape-fit-20261101">
+/* Approx. 5in wide x 3in high landscape cards; keep every inquiry tile inside. */
+#sec-tutorinquiries .gc-inquiry-date-list{
+  display:grid!important;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,5in),5in))!important;
+  gap:14px!important;
+  justify-content:center!important;
+  align-items:stretch!important;
+  width:100%!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-card{
+  width:100%!important;
+  max-width:5in!important;
+  min-width:0!important;
+  min-height:3in!important;
+  height:auto!important;
+  aspect-ratio:5 / 3!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-body{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)!important;
+  gap:6px 8px!important;
+  padding:8px!important;
+  overflow:auto!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-date,
+#sec-tutorinquiries .gc-inquiry-sample-requirement,
+#sec-tutorinquiries .gc-inquiry-sample-contact,
+#sec-tutorinquiries .gc-inquiry-sample-matchnote{grid-column:1/-1!important}
+#sec-tutorinquiries .gc-inquiry-sample-facts{
+  grid-column:2!important;
+  grid-row:2!important;
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:5px!important;
+  min-width:0!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-card small{
+  font-size:9px!important;
+  line-height:1.2!important;
+  overflow-wrap:anywhere!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-card b,
+#sec-tutorinquiries .gc-inquiry-sample-card strong{
+  font-size:10px!important;
+  line-height:1.2!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-contact{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:5px!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-contact button{grid-column:1/-1!important}
+@media(max-width:700px){
+  #sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:minmax(0,1fr)!important}
+  #sec-tutorinquiries .gc-inquiry-sample-card{
+    max-width:5in!important;
+    width:100%!important;
+    min-height:3in!important;
+    aspect-ratio:auto!important;
+  }
+  #sec-tutorinquiries .gc-inquiry-sample-body{
+    display:flex!important;
+    flex-direction:column!important;
+    overflow:visible!important;
+  }
+  #sec-tutorinquiries .gc-inquiry-sample-facts{
+    width:100%!important;
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+</style>
+
+
+
+<style id="gc-tutor-inquiry-real-profile-card-20261101">
+/* Use the same image-led profile-card structure as the Explore Tutors cards. */
+#sec-tutorinquiries .gc-inquiry-date-list{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:18px!important;
+  padding:10px!important;
+}
+#sec-tutorinquiries .gc-visiting-card.gc-tutor-profile-inquiry{
+  width:100%!important;
+  max-width:1200px!important;
+  min-width:0!important;
+  min-height:0!important;
+  height:auto!important;
+  aspect-ratio:auto!important;
+  margin:0 auto 14px!important;
+  overflow:hidden!important;
+  border:1.5px solid #ffd0a8!important;
+  border-radius:20px!important;
+  background:#fff1e6!important;
+  box-shadow:0 8px 24px rgba(194,65,12,.10)!important;
+  display:flex!important;
+  flex-direction:column!important;
+  padding:0!important;
+}
+#sec-tutorinquiries .gc-vcard-header{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:18px!important;
+  flex-wrap:wrap!important;
+  padding:22px 24px 30px!important;
+  background:linear-gradient(115deg,#bdefff 0%,#f0faff 48%,#d1fae5 100%)!important;
+  position:relative!important;
+}
+#sec-tutorinquiries .gc-vcard-tutor{display:flex!important;align-items:center!important;gap:18px!important;flex:1 1 520px!important;min-width:0!important}
+#sec-tutorinquiries .gc-visiting-card .tutor-avatar{
+  width:108px!important;height:108px!important;flex:0 0 108px!important;
+  border-radius:50%!important;border:5px solid #fff!important;outline:3px solid #38bdf8!important;
+  background:linear-gradient(135deg,#d9f1ff,#d9fbe8)!important;
+  display:grid!important;place-items:center!important;font-size:48px!important;
+}
+#sec-tutorinquiries .gc-visiting-card .tutor-card-name h3{font-size:clamp(22px,2.5vw,32px)!important;color:#092e60!important;margin:0!important}
+#sec-tutorinquiries .gc-visiting-card .tutor-card-name p{font-size:12px!important;color:#244a7c!important;margin:5px 0 8px!important}
+#sec-tutorinquiries .gc-visiting-card .profile-badges{display:flex!important;gap:7px!important;flex-wrap:wrap!important}
+#sec-tutorinquiries .gc-visiting-card .gc-inquiry-status{display:inline-flex!important;padding:6px 10px!important;border-radius:999px!important;font-size:10px!important;font-weight:900!important}
+#sec-tutorinquiries .gc-visiting-card .gc-inquiry-status.new{background:#fff7ed!important;color:#c2410c!important;border:1px solid #fed7aa!important}
+#sec-tutorinquiries .gc-visiting-card .gc-inquiry-status.sent{background:#dcfce7!important;color:#166534!important;border:1px solid #86efac!important}
+#sec-tutorinquiries .gc-visiting-card .tutor-subject-tags{display:flex!important;flex-wrap:wrap!important;gap:6px!important;margin-top:9px!important}
+#sec-tutorinquiries .gc-visiting-card .tutor-subject-tag{padding:6px 10px!important;border-radius:999px!important;font-size:10px!important;font-weight:850!important;color:#fff!important;background:#0875e8!important}
+#sec-tutorinquiries .gc-visiting-card .tutor-subject-tag.gc-vtag-1{background:#7c3aed!important}
+#sec-tutorinquiries .gc-visiting-card .tutor-subject-tag.gc-vtag-2{background:#db2777!important}
+#sec-tutorinquiries .gc-vcard-brand{display:flex!important;align-items:center!important;gap:9px!important;flex-wrap:wrap!important}
+#sec-tutorinquiries .gc-vcard-logo{display:grid!important;place-items:center!important;width:48px!important;height:48px!important;border-radius:13px!important;background:#fff!important;font-size:28px!important}
+#sec-tutorinquiries .gc-vcard-brand>div:nth-child(2)>b{font-size:17px!important;color:#123773!important}
+#sec-tutorinquiries .gc-vcard-brand>div:nth-child(2)>small{font-size:11px!important;color:#078b9a!important}
+#sec-tutorinquiries .gc-vcard-ref{position:absolute!important;bottom:0!important;left:0!important;right:0!important;padding:6px 24px!important;background:#ffffffa8!important;color:#526b87!important;font-size:9px!important;font-weight:850!important}
+#sec-tutorinquiries .gc-visiting-card .gc-vcard-profile{
+  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  gap:0!important;padding:14px 18px!important;background:#fff8f1!important;border-bottom:1px solid #f3d5bb!important;
+}
+#sec-tutorinquiries .gc-visiting-card .gc-vcard-fact{display:flex!important;align-items:center!important;gap:9px!important;min-width:0!important;padding:10px 12px!important;border-right:1px solid #f0d7c2!important}
+#sec-tutorinquiries .gc-visiting-card .gc-vcard-fact>span{font-size:22px!important}
+#sec-tutorinquiries .gc-visiting-card .gc-vcard-fact small{display:block!important;color:#9a5a2b!important;font-size:9px!important;font-weight:900!important;margin-bottom:4px!important}
+#sec-tutorinquiries .gc-visiting-card .gc-vcard-fact b{display:block!important;color:#17365d!important;font-size:12px!important;line-height:1.35!important;overflow-wrap:anywhere!important}
+#sec-tutorinquiries .gc-visiting-card .gc-vcard-about{padding:14px 20px!important;background:#fff1e6!important;border-bottom:1px solid #f3d5bb!important}
+#sec-tutorinquiries .gc-visiting-card .gc-vcard-about>b{font-size:10px!important;color:#9a3412!important;letter-spacing:.06em!important}
+#sec-tutorinquiries .gc-visiting-card .gc-vcard-about p{font-size:12px!important;color:#334b72!important;line-height:1.55!important;margin:6px 0 0!important;white-space:pre-wrap!important}
+#sec-tutorinquiries .gc-vcard-inquiry{padding:16px 20px!important;background:linear-gradient(135deg,#fff8ed,#fffdf8)!important}
+#sec-tutorinquiries .gc-vcard-inquiry-title{display:flex!important;align-items:center!important;gap:10px!important;margin-bottom:10px!important}
+#sec-tutorinquiries .gc-vcard-inquiry-title>span{display:grid!important;place-items:center!important;width:36px!important;height:36px!important;border-radius:11px!important;background:#ffedc4!important;font-size:20px!important}
+#sec-tutorinquiries .gc-vcard-inquiry-title b{font-size:14px!important;color:#163b78!important}
+#sec-tutorinquiries .gc-vcard-inquiry-title small{font-size:10px!important;color:#6d7890!important}
+#sec-tutorinquiries .gc-vcard-visitor-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:0!important}
+#sec-tutorinquiries .gc-vcard-visitor-item{display:flex!important;gap:8px!important;align-items:flex-start!important;min-width:0!important;padding:9px 10px!important;border-right:1px solid #f0dfbd!important;border-bottom:1px solid #f5e8d0!important}
+#sec-tutorinquiries .gc-vcard-visitor-item>span{font-size:18px!important}
+#sec-tutorinquiries .gc-vcard-visitor-item small{display:block!important;color:#9a5a2b!important;font-size:8px!important;font-weight:900!important;margin-bottom:4px!important}
+#sec-tutorinquiries .gc-vcard-visitor-item b{display:block!important;color:#16315b!important;font-size:11px!important;line-height:1.4!important;overflow-wrap:anywhere!important}
+#sec-tutorinquiries .gc-vcard-actions{display:flex!important;gap:9px!important;flex-wrap:wrap!important;margin-top:14px!important}
+#sec-tutorinquiries .gc-vcard-actions .btn{min-height:42px!important;flex:1 1 190px!important;border-radius:11px!important;font-size:11px!important;font-weight:900!important}
+#sec-tutorinquiries .gc-vcard-actions .btn.light{background:linear-gradient(135deg,#12b76a,#25b45b)!important;color:#fff!important;border:0!important}
+#sec-tutorinquiries .gc-vcard-actions .btn.green{background:linear-gradient(135deg,#2563eb,#0788f9)!important;color:#fff!important;border:0!important}
+#sec-tutorinquiries .gc-visiting-card .gc-inquiry-help{margin:9px 0 0!important;color:#64748b!important;font-size:10px!important}
+@media(max-width:800px){
+ #sec-tutorinquiries .gc-visiting-card .gc-vcard-profile{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #sec-tutorinquiries .gc-vcard-visitor-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:560px){
+ #sec-tutorinquiries .gc-vcard-header{padding:17px 14px 28px!important}
+ #sec-tutorinquiries .gc-vcard-tutor{gap:12px!important;flex-basis:100%!important}
+ #sec-tutorinquiries .gc-visiting-card .tutor-avatar{width:76px!important;height:76px!important;flex-basis:76px!important;font-size:34px!important}
+ #sec-tutorinquiries .gc-vcard-brand{justify-content:flex-start!important}
+ #sec-tutorinquiries .gc-visiting-card .gc-vcard-profile{padding:9px 7px!important}
+ #sec-tutorinquiries .gc-visiting-card .gc-vcard-fact{padding:8px 6px!important;border-right:0!important}
+ #sec-tutorinquiries .gc-vcard-visitor-grid{grid-template-columns:1fr!important}
+ #sec-tutorinquiries .gc-vcard-inquiry{padding:13px!important}
+ #sec-tutorinquiries .gc-vcard-ref{padding-left:14px!important}
 }
 </style>
