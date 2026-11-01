@@ -1088,6 +1088,31 @@ compactStyle.textContent+='#sec-tutorinquiries .gc-tutor-inquiry-lrr-card{max-wi
   }
 
 
+  /* Narrow the information tiles inside each Public Tutor Search inquiry card. */
+  if(!document.getElementById('gcInquiryInnerTileWidthFix20261102')){
+    const tileWidthFix=document.createElement('style');
+    tileWidthFix.id='gcInquiryInnerTileWidthFix20261102';
+    tileWidthFix.textContent=`
+      #sec-tutorinquiries .gc-tutor-inquiry-lrr-card .lrr-info{
+        grid-template-columns:repeat(3,minmax(0,1fr))!important;
+        gap:6px!important;
+      }
+      #sec-tutorinquiries .gc-tutor-inquiry-lrr-card .lrr-info-box{
+        min-width:0!important;padding:6px!important;min-height:42px!important;
+      }
+      #sec-tutorinquiries .gc-tutor-inquiry-lrr-card .lrr-info-box span:not(.ico){
+        overflow-wrap:anywhere!important;word-break:break-word!important;
+      }
+      @media(max-width:700px){
+        #sec-tutorinquiries .gc-tutor-inquiry-lrr-card .lrr-info{
+          grid-template-columns:repeat(2,minmax(0,1fr))!important;
+        }
+      }
+    `;
+    document.head.appendChild(tileWidthFix);
+  }
+
+
   out.querySelectorAll('[data-inquiry-tab]').forEach(b=>b.onclick=()=>{
     const day=b.dataset.day,type=b.dataset.inquiryTab;
     out.querySelectorAll('[data-inquiry-tab][data-day="'+day+'"]').forEach(x=>x.classList.toggle('active',x===b));
