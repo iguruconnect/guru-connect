@@ -1905,29 +1905,7 @@ $('coinHistoryPdf').onclick=()=>{
   const rows=list.map(({r,member})=>'<tr><td>'+esc(r.created_at||r.date||r.transaction_date||'—')+'</td><td>'+esc(gcCoinAmount(r)>=0?'ADDED':'SUBTRACTED')+'</td><td>'+esc(Math.abs(gcCoinAmount(r)))+'</td><td>'+esc(gcCoinActor(r))+'</td><td>'+esc(gcCoinReason(r))+'</td><td>'+esc(gcCoinLrr(r))+'</td><td>'+esc(member.name)+'<br>'+esc(member.role||'')+'<br>'+esc(member.user_id||member.profile_id||'—')+'</td></tr>').join('');
   const w=window.open('','_blank');if(!w)return alert('Please allow pop-ups for this site to create the PDF statement.');
   w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>GURU CONNECT Coin Transaction Statement</title><style>body{font:12px Arial,sans-serif;color:#172554;padding:22px}header{display:flex;align-items:center;gap:16px;border-bottom:3px solid #155eef;padding-bottom:14px}header img{max-width:190px;max-height:72px;object-fit:contain}h1{font-size:22px;margin:0}p{margin:5px 0;color:#475569}.meta{margin:18px 0;padding:12px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px}table{border-collapse:collapse;width:100%;font-size:10px}th,td{border:1px solid #cbd5e1;padding:7px;text-align:left;vertical-align:top;overflow-wrap:anywhere}th{background:#eaf2ff}footer{margin-top:22px;border-top:1px solid #cbd5e1;padding-top:10px;font-weight:bold;color:#334155}@media print{button{display:none}body{padding:0}@page{size:A4 landscape;margin:12mm}}</style></head><body><header><img src="https://www.guruconnnect.in/GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT logo"><div><h1>GURU CONNECT</h1><p>Connecting Mind - Creating Future...</p><p><b>COIN TRANSACTION STATEMENT</b></p></div></header><div class="meta"><b>Search / Member:</b> '+esc(q||'All available coin transactions')+'<br><b>Generated:</b> '+esc(new Date().toLocaleString())+'<br><b>Transactions:</b> '+list.length+'</div><table><thead><tr><th>Date of transaction</th><th>Direction</th><th>Coins</th><th>By whom</th><th>Reason / LRR details</th><th>LRR / reference</th><th>Credited to</th></tr></thead><tbody>'+rows+'</tbody></table><footer>Customer Care: support@guruconnnect.in · GURU CONNECT</footer><p>To save as PDF, choose “Save as PDF” in the print dialog.</p><body onload="setTimeout(function(){window.print()},350)">
-<style id="gc-inquiry-card-no-inner-scroll-20261101">
-/* Give inquiry cards enough room to show their complete contents without an inner scrollbar */
-#sec-tutorinquiries .gc-inquiry-sample-card{
-  height:auto!important;
-  min-height:500px!important;
-  max-height:none!important;
-  overflow:visible!important;
-  overflow-y:visible!important;
-  overflow-x:hidden!important;
-}
-#sec-tutorinquiries .gc-inquiry-sample-body{flex:1 1 auto!important;overflow:visible!important;padding:12px!important;gap:10px!important}
-#sec-tutorinquiries .gc-inquiry-sample-main{gap:9px!important}
-#sec-tutorinquiries .gc-sample-fact{min-height:44px!important;padding:6px!important}
-#sec-tutorinquiries .gc-sample-fact small{font-size:8px!important;line-height:1.25!important}
-#sec-tutorinquiries .gc-sample-fact b{font-size:10px!important;line-height:1.35!important}
-#sec-tutorinquiries .gc-inquiry-sample-requirement{padding:9px!important}
-#sec-tutorinquiries .gc-inquiry-sample-requirement b{font-size:10px!important;line-height:1.4!important}
-#sec-tutorinquiries .gc-inquiry-sample-contact>*{font-size:10px!important;min-height:36px!important}
-#sec-tutorinquiries .gc-inquiry-sample-matchnote{font-size:9px!important;line-height:1.4!important}
-@media(max-width:900px){
-  #sec-tutorinquiries .gc-inquiry-sample-card{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;overflow-y:visible!important}
-}
-</style>
+
 </body></html>');
   w.document.close();
 };
@@ -3641,5 +3619,28 @@ body{background:#f4f7fb!important;color:#102b61!important}
 @media (min-width:701px) and (max-width:900px){#sec-tutorinquiries .gc-inquiry-date-list{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}#sec-tutorinquiries .gc-inquiry-sample-card{width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;max-height:none!important}}
 @media (min-width:381px) and (max-width:700px){#sec-tutorinquiries .gc-inquiry-date-list{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}#sec-tutorinquiries .gc-inquiry-sample-card{height:auto!important;min-height:0!important;max-height:none!important}#sec-tutorinquiries .gc-inquiry-sample-body{padding:9px!important}#sec-tutorinquiries .gc-inquiry-sample-main{display:block!important;margin:8px 0!important}#sec-tutorinquiries .gc-inquiry-sample-facts{grid-template-columns:minmax(0,1fr)!important;gap:6px!important}#sec-tutorinquiries .gc-sample-fact{min-height:0!important;padding:7px!important}#sec-tutorinquiries .gc-inquiry-sample-contact{grid-template-columns:minmax(0,1fr)!important;gap:6px!important}}
 @media (max-width:380px){#sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:minmax(0,1fr)!important}#sec-tutorinquiries .gc-inquiry-sample-card{height:auto!important;min-height:0!important;max-height:none!important}}
+</style>
+<style id="gc-inquiry-card-no-inner-scroll-20261101">
+/* Give inquiry cards enough room to show their complete contents without an inner scrollbar */
+#sec-tutorinquiries .gc-inquiry-sample-card{
+  height:auto!important;
+  min-height:500px!important;
+  max-height:none!important;
+  overflow:visible!important;
+  overflow-y:visible!important;
+  overflow-x:hidden!important;
+}
+#sec-tutorinquiries .gc-inquiry-sample-body{flex:1 1 auto!important;overflow:visible!important;padding:12px!important;gap:10px!important}
+#sec-tutorinquiries .gc-inquiry-sample-main{gap:9px!important}
+#sec-tutorinquiries .gc-sample-fact{min-height:44px!important;padding:6px!important}
+#sec-tutorinquiries .gc-sample-fact small{font-size:8px!important;line-height:1.25!important}
+#sec-tutorinquiries .gc-sample-fact b{font-size:10px!important;line-height:1.35!important}
+#sec-tutorinquiries .gc-inquiry-sample-requirement{padding:9px!important}
+#sec-tutorinquiries .gc-inquiry-sample-requirement b{font-size:10px!important;line-height:1.4!important}
+#sec-tutorinquiries .gc-inquiry-sample-contact>*{font-size:10px!important;min-height:36px!important}
+#sec-tutorinquiries .gc-inquiry-sample-matchnote{font-size:9px!important;line-height:1.4!important}
+@media(max-width:900px){
+  #sec-tutorinquiries .gc-inquiry-sample-card{height:auto!important;min-height:0!important;max-height:none!important;overflow:visible!important;overflow-y:visible!important}
+}
 </style>
 </body></html>
