@@ -3492,11 +3492,13 @@ body{background:#f4f7fb!important;color:#102b61!important}
 /* Desktop card fit: two fact tiles per row, with all content contained inside the inquiry frame */
 @media (min-width: 901px) {
 #sec-tutorinquiries,#sec-tutorinquiries *{box-sizing:border-box!important}
+#sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+#sec-tutorinquiries .gc-inquiry-sample-card{max-width:none!important}
 #sec-tutorinquiries #tutorInquiryResults,
 #sec-tutorinquiries .gc-inquiry-day,
-#sec-tutorinquiries .gc-inquiry-day-content,
-#sec-tutorinquiries .gc-inquiry-date-list{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;overflow:visible!important}
-#sec-tutorinquiries .gc-inquiry-sample-card{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0 0 16px!important;overflow:hidden!important}
+#sec-tutorinquiries .gc-inquiry-day-content{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;overflow:visible!important}
+#sec-tutorinquiries .gc-inquiry-date-list{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:start!important;gap:14px!important;width:100%!important;max-width:100%!important;min-width:0!important;overflow:visible!important}
+#sec-tutorinquiries .gc-inquiry-sample-card{display:block!important;width:100%!important;max-width:none!important;min-width:0!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;overflow:hidden!important}
 #sec-tutorinquiries .gc-inquiry-sample-body{display:block!important;width:100%!important;max-width:100%!important;min-width:0!important;height:auto!important;overflow:visible!important;padding:14px 16px 16px!important}
 #sec-tutorinquiries .gc-inquiry-sample-main{display:grid!important;grid-template-columns:minmax(150px,190px) minmax(0,1fr)!important;align-items:start!important;gap:14px!important;width:100%!important;max-width:100%!important;min-width:0!important;margin:14px 0!important}
 #sec-tutorinquiries .gc-inquiry-sample-person{display:flex!important;align-items:flex-start!important;gap:10px!important;min-width:0!important;max-width:100%!important;flex-wrap:wrap!important}
@@ -3512,6 +3514,12 @@ body{background:#f4f7fb!important;color:#102b61!important}
 #sec-tutorinquiries .gc-inquiry-sample-requirement b{display:block!important;white-space:normal!important;overflow-wrap:anywhere!important;word-break:break-word!important;line-height:1.45!important}
 #sec-tutorinquiries .gc-inquiry-sample-contact{display:grid!important;grid-template-columns:minmax(0,.8fr) minmax(0,1fr) minmax(0,1.5fr)!important;gap:9px!important;width:100%!important;max-width:100%!important;min-width:0!important}
 #sec-tutorinquiries .gc-inquiry-sample-contact>*{min-width:0!important;max-width:100%!important;white-space:normal!important}
+@media (min-width:701px) and (max-width:1100px){
+#sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media (max-width:700px){
+#sec-tutorinquiries .gc-inquiry-date-list{grid-template-columns:minmax(0,1fr)!important}
+}
 }
 </style>
 </body></html>
