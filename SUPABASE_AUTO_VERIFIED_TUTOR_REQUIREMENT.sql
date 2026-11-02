@@ -86,7 +86,7 @@ begin
      or length(coalesce(p_preferred_timing,'')) > 120 then
     raise exception 'One or more fields are too long. Please shorten your entry.';
   end if;
-  if trim(p_student_email) !~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,}$' then
+  if trim(p_student_email) !~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$' then
     raise exception 'Please enter a valid email address.';
   end if;
   if p_subject_count is null or p_subject_count < 1 or p_subject_count > 6 then
@@ -108,15 +108,15 @@ begin
   end;
 
   v_details := 'CLIENT EMAIL VERIFIED: YES'
-    || E'\\nVerified at: ' || to_char(v_verified_at at time zone 'UTC','YYYY-MM-DD HH24:MI UTC')
-    || E'\\nDistribution: Automatic to matching active Premium Tutors'
-    || E'\\nClass: ' || trim(p_search_class)
-    || E'\\nCourse: ' || trim(p_course)
-    || E'\\nSubjects: ' || trim(p_subjects)
-    || E'\\nMode: ' || upper(trim(p_mode))
-    || E'\\nLocation: ' || trim(p_location)
-    || E'\\nBudget: ' || trim(p_fees_budget)
-    || E'\\nPreferred timing: ' || coalesce(nullif(trim(p_preferred_timing),''),'No preference');
+    || E'\nVerified at: ' || to_char(v_verified_at at time zone 'UTC','YYYY-MM-DD HH24:MI UTC')
+    || E'\nDistribution: Automatic to matching active Premium Tutors'
+    || E'\nClass: ' || trim(p_search_class)
+    || E'\nCourse: ' || trim(p_course)
+    || E'\nSubjects: ' || trim(p_subjects)
+    || E'\nMode: ' || upper(trim(p_mode))
+    || E'\nLocation: ' || trim(p_location)
+    || E'\nBudget: ' || trim(p_fees_budget)
+    || E'\nPreferred timing: ' || coalesce(nullif(trim(p_preferred_timing),''),'No preference');
 
   insert into public.gc_tutor_requirements
     (last_date, student_name, student_phone, student_email, search_class, course,
