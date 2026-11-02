@@ -179,7 +179,7 @@ begin
   insert into public.gc_notifications(
     recipient_profile_id,recipient_role,sender_profile_id,type,title,body,request_id,connection_id
   ) values (
-    m.tutor_user_id::text,'tutor',auth.uid()::text,
+    m.tutor_user_id,'tutor',auth.uid(),
     'ADMIN_FORWARDED_TUTOR_MESSAGE','New Student Message (Admin Reviewed)',
     'Student: '||m.student_name||E'\n\nMessage: '||m.message,
     null,null
