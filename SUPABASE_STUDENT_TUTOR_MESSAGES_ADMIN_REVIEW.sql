@@ -24,6 +24,7 @@ create table if not exists public.gc_student_tutor_messages (
   reviewed_by uuid,
   reviewed_at timestamptz,
   forwarded_at timestamptz,
+  tutor_read_at timestamptz,
   admin_note text
 );
 
@@ -35,6 +36,7 @@ create index if not exists gc_student_tutor_messages_student_idx
   on public.gc_student_tutor_messages(student_user_id,created_at desc);
 create index if not exists gc_student_tutor_messages_tutor_idx
   on public.gc_student_tutor_messages(tutor_user_id,created_at desc);
+alter table public.gc_student_tutor_messages add column if not exists tutor_read_at timestamptz;
 
 alter table public.gc_student_tutor_messages enable row level security;
 revoke all on public.gc_student_tutor_messages from public, anon, authenticated;
@@ -221,6 +223,42 @@ end;
 $$;
 revoke all on function public.gc_admin_reject_student_tutor_message(uuid,text) from public,anon;
 grant execute on function public.gc_admin_reject_student_tutor_message(uuid,text) to authenticated;
+
+
+-- Tutor inbox: only messages explicitly forwarded by Admin are visible.
+create or replace function public.gc_tutor_student_messages_list()
+returns table(message_id uuid,created_at timestamptz,student_name text,message text,tutor_read_at timestamptz)
+language plpgsql security definer set search_path=public
+as $
+begin
+ if auth.uid() is null or not exists(select 1 from public.profiles p where p.id=auth.uid() and lower(coalesce(p.role::text,''))='tutor') then
+  raise exception 'Registered Tutor login required.';
+ end if;
+ return query select m.id,m.created_at,m.student_name,m.message,m.tutor_read_at
+ from public.gc_student_tutor_messages m
+ where m.tutor_user_id=auth.uid() and m.status='SENT_TO_TUTOR'
+ order by m.created_at desc;
+end;
+$;
+revoke all on function public.gc_tutor_student_messages_list() from public,anon;
+grant execute on function public.gc_tutor_student_messages_list() to authenticated;
+
+create or replace function public.gc_tutor_student_messages_mark_read()
+returns jsonb language plpgsql security definer set search_path=public
+as $
+declare n integer;
+begin
+ if auth.uid() is null or not exists(select 1 from public.profiles p where p.id=auth.uid() and lower(coalesce(p.role::text,''))='tutor') then
+  raise exception 'Registered Tutor login required.';
+ end if;
+ update public.gc_student_tutor_messages set tutor_read_at=now(),updated_at=now()
+ where tutor_user_id=auth.uid() and status='SENT_TO_TUTOR' and tutor_read_at is null;
+ get diagnostics n=row_count;
+ return jsonb_build_object('success',true,'marked_read',n);
+end;
+$;
+revoke all on function public.gc_tutor_student_messages_mark_read() from public,anon;
+grant execute on function public.gc_tutor_student_messages_mark_read() to authenticated;
 
 notify pgrst,'reload schema';
 commit;
