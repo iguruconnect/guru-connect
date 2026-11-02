@@ -36,7 +36,8 @@ create or replace function public.gc_submit_verified_tutor_requirement(
   p_location text,
   p_fees_budget text,
   p_last_date date,
-  p_preferred_timing text default null
+  p_preferred_timing text default null,
+  p_contact_consent boolean default false
 ) returns jsonb
 language plpgsql
 security definer
@@ -64,6 +65,10 @@ begin
   end if;
   if v_verified_email <> lower(trim(coalesce(p_student_email,''))) then
     raise exception 'The verified email does not match the email entered in this requirement.';
+  end if;
+
+  if not coalesce(p_contact_consent,false) then
+    raise exception 'Please confirm that GURU CONNECT may share your details with eligible Premium Tutors.';
   end if;
 
   if nullif(trim(p_student_name),'') is null
@@ -203,7 +208,7 @@ begin
 end;
 $$;
 
-revoke all on function public.gc_submit_verified_tutor_requirement(text,text,text,text,text,integer,text,text,text,text,date,text) from public, anon;
+revoke all on function public.gc_submit_verified_tutor_requirement(text,text,text,text,text,integer,text,text,text,text,date,text,boolean) from public, anon;
 grant execute on function public.gc_submit_verified_tutor_requirement(text,text,text,text,text,integer,text,text,text,text,date,text) to authenticated;
 
 -- Active Tutor Dashboard: show general Student requirements plus visitor requirements
