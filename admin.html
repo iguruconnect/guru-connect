@@ -1248,14 +1248,51 @@ window.gcAdminLoadTutorRequirements=async function(showHistory=false){
   count.textContent=rows.length+(rows.length===1?' REQUIREMENT':' REQUIREMENTS');
   if(!rows.length){out.innerHTML='<div class="empty">No Tutor Requirements have been submitted yet.</div>';status.textContent='Requirement list refreshed.';return;}
   const esc=v=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-  const date=v=>{if(!v)return '—';const d=new Date(v);return Number.isNaN(d.getTime())?'—':d.toLocaleString('en-IN',{day:'2-digit',month:'long',year:'numeric',weekday:'short',hour:'2-digit',minute:'2-digit'});};
+  const date=v=>{if(!v)return '—';const d=new Date(v);return Number.isNaN(d.getTime())?'—':d.toLocaleString('en-IN',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});};
   const day=v=>{const d=new Date(v||Date.now());return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
   const dayName=k=>new Date(k+'T12:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'2-digit',month:'long',year:'numeric'});
   const groups=new Map();rows.forEach(r=>{const k=day(r.created_at);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r);});
-  const field=(label,value)=>'<td><small>'+label+'</small><b>'+esc(value||'—')+'</b></td>';
-  out.innerHTML='<style>#gcTutorReqResults .gc-tr-day{border:2px solid #ff8a24;border-radius:16px;background:#fff8f0;margin:0 0 18px;overflow:hidden;box-shadow:0 5px 16px #f9731615} #gcTutorReqResults .gc-tr-dayhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:14px 18px;background:linear-gradient(100deg,#ffedd5,#fff7ed);color:#9a3412;border-bottom:1px solid #fdba74;font-weight:900} #gcTutorReqResults .gc-tr-dayhead strong{font-size:17px} #gcTutorReqResults .gc-tr-dayhead span{background:#facc15;color:#172554;border-radius:30px;padding:8px 16px} #gcTutorReqResults .gc-tr-tablewrap{overflow-x:auto} #gcTutorReqResults table{width:100%;border-collapse:separate;border-spacing:0;background:#fff;font-size:13px} #gcTutorReqResults th{background:#eff6ff;color:#173b78;text-align:left;padding:11px 12px;border-bottom:1px solid #bfdbfe;white-space:nowrap} #gcTutorReqResults td{padding:12px;border-bottom:1px solid #fed7aa;vertical-align:top;min-width:125px} #gcTutorReqResults td small{display:block;color:#c2410c;font-size:10px;font-weight:900;margin-bottom:5px} #gcTutorReqResults td b{display:block;color:#172554;white-space:normal;overflow-wrap:anywhere} #gcTutorReqResults .gc-tr-person{font-size:15px;color:#0f2e70} #gcTutorReqResults .gc-tr-description{min-width:220px} #gcTutorReqResults .gc-tr-actions{padding:13px;background:#fff7ed} #gcTutorReqResults .gc-tr-send{background:#9ca3af!important;color:#fff!important;cursor:not-allowed!important;opacity:.9} #gcTutorReqResults .gc-tr-note{font-size:12px;color:#92400e;margin-left:8px}</style>'+[...groups.entries()].sort((x,y)=>y[0].localeCompare(x[0])).map(([k,list])=>'<section class="gc-tr-day"><div class="gc-tr-dayhead"><strong>📅 REQUIREMENT DATE · '+dayName(k)+'</strong><span>'+list.length+' REQUIREMENT'+(list.length===1?'':'S')+'</span></div><div class="gc-tr-tablewrap"><table><thead><tr><th>Parent / Student</th><th>Contact</th><th>Email Verification</th><th>Class / Course</th><th>Stream</th><th>Subject(s)</th><th>Mode</th><th>Location</th><th>Fees Budget</th><th>Preferred Timing</th><th>Posted / Last Date</th><th>Requirement Details</th><th>Status</th><th>Premium Tutors Notified</th></tr></thead><tbody>'+list.sort((x,y)=>new Date(y.created_at)-new Date(x.created_at)).map(r=>'<tr>'+field('NAME',r.student_name)+field('PHONE / EMAIL',[r.student_phone,r.student_email].filter(Boolean).join(' · '))+field('EMAIL VERIFICATION',r.requirement_source==='VISITOR'?(r.client_email_verified?'VERIFIED · '+date(r.email_verified_at):'NOT VERIFIED'):'Not applicable')+field('CLASS / COURSE',[r.search_class,r.course].filter(Boolean).join(' / '))+field('STREAM',r.stream)+field('SUBJECTS ('+(r.subject_count||'—')+')',r.subjects)+field('MODE',r.mode)+field('LOCATION',r.location)+field('FEES BUDGET',r.fees_budget)+field('TIMING',r.preferred_timing)+field('POSTED / LAST DATE',date(r.created_at)+' · Last date: '+(r.last_date||'—'))+'<td class="gc-tr-description"><small>LEARNING REQUIREMENT</small><b>'+esc(r.visitor_requirement_details||r.requirement_details||r.description||'—')+'</b></td>'+field('STATUS',r.status||'ACTIVE')+field('PREMIUM TUTORS NOTIFIED',r.requirement_source==='VISITOR'?(Number(r.matched_tutor_count||0)>0?Number(r.matched_tutor_count)+' MATCHING TUTOR(S)':'NO MATCHING TUTORS'):'Not applicable')+'</tr><tr><td colspan="14" class="gc-tr-actions"><span class="gc-tr-note">'+(r.requirement_source==='VISITOR'?'✓ Email OTP verified. Automatic Premium Tutor distribution is recorded above.':'Student requirement retained in Admin history.')+'</span></td></tr>').join('')+'</tbody></table></div></section>').join('');
-  status.textContent=(showHistory?'Lifetime history':'Current requirement list')+' loaded. '+rows.length+' record(s).';
- }catch(e){status.textContent='Could not load Tutor Requirements: '+(e.message||String(e));}
+  const value=(v)=>esc(v||'—');
+  const item=(label,v)=>'<div class="gc-tr-field"><span>'+label+'</span><strong>'+value(v)+'</strong></div>';
+  const cards=[...groups.entries()].sort((x,y)=>y[0].localeCompare(x[0])).map(([k,list])=>
+   '<section class="gc-tr-day"><div class="gc-tr-dayhead"><strong>📅 '+dayName(k)+'</strong><span>'+list.length+' REQUIREMENT'+(list.length===1?'':'S')+'</span></div><div class="gc-tr-cards">'+
+   list.sort((x,y)=>new Date(y.created_at)-new Date(x.created_at)).map(r=>{
+    const verified=r.requirement_source==='VISITOR'?(r.client_email_verified?'✓ EMAIL OTP VERIFIED':'EMAIL NOT VERIFIED'):'REGISTERED STUDENT';
+    const notified=r.requirement_source==='VISITOR'?(Number(r.matched_tutor_count||0)>0?Number(r.matched_tutor_count)+' PREMIUM TUTOR(S) NOTIFIED':'NO MATCHING PREMIUM TUTORS'):'NOT APPLICABLE';
+    const subjects=(r.subjects||'—');
+    return '<article class="gc-tr-card"><div class="gc-tr-cardhead"><div><span class="gc-tr-kicker">POSTED REQUIREMENT</span><h3>'+value(r.student_name)+'</h3><p>'+value(r.student_phone)+' &nbsp;·&nbsp; '+value(r.student_email)+'</p></div><div class="gc-tr-badges"><span class="gc-tr-badge '+(r.requirement_source==='VISITOR'&&r.client_email_verified?'verified':'')+'">'+verified+'</span><span class="gc-tr-badge blue">'+value(r.status||'ACTIVE')+'</span></div></div><div class="gc-tr-grid">'+
+     item('STANDARD / CLASS',r.search_class)+item('COURSE',r.course)+item('STREAM',r.stream)+item('SUBJECT COUNT',r.subject_count)+item('SUBJECT(S)',subjects)+item('MODE',r.mode)+item('LOCATION',r.location)+item('FEES BUDGET',r.fees_budget)+item('PREFERRED TIMING',r.preferred_timing)+item('LAST DATE',r.last_date)+item('POSTED ON',date(r.created_at))+
+     '<div class="gc-tr-field gc-tr-wide"><span>REQUIREMENT DETAILS</span><strong>'+value(r.visitor_requirement_details||r.requirement_details||r.description)+'</strong></div></div><div class="gc-tr-cardfoot"><span class="gc-tr-delivery">🎯 '+esc(notified)+'</span><span class="gc-tr-source">'+(r.requirement_source==='VISITOR'?'Email-verified public requirement':'Student dashboard requirement')+'</span></div></article>';
+   }).join('')+'</div></section>'
+  ).join('');
+  out.innerHTML='<style>'+
+   '#gcTutorReqResults .gc-tr-day{margin:0 0 22px}'+
+   '#gcTutorReqResults .gc-tr-dayhead{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;margin-bottom:12px;border-radius:13px;background:linear-gradient(100deg,#ffedd5,#fff7ed);border:1px solid #fdba74;color:#9a3412;font-weight:900}'+
+   '#gcTutorReqResults .gc-tr-dayhead strong{font-size:15px}'+
+   '#gcTutorReqResults .gc-tr-dayhead span{background:#facc15;color:#172554;border-radius:30px;padding:7px 13px;font-size:12px}'+
+   '#gcTutorReqResults .gc-tr-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}'+
+   '#gcTutorReqResults .gc-tr-card{min-width:0;border:1px solid #fdba74;border-left:6px solid #f97316;border-radius:16px;background:#fff;overflow:hidden;box-shadow:0 5px 18px #0f172a12}'+
+   '#gcTutorReqResults .gc-tr-cardhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:15px 16px;background:linear-gradient(110deg,#fff7ed,#fff);border-bottom:1px solid #fed7aa}'+
+   '#gcTutorReqResults .gc-tr-kicker{font-size:10px;font-weight:900;letter-spacing:1px;color:#c2410c}'+
+   '#gcTutorReqResults .gc-tr-cardhead h3{margin:4px 0 3px;color:#142e63;font-size:18px;font-weight:900;overflow-wrap:anywhere}'+
+   '#gcTutorReqResults .gc-tr-cardhead p{margin:0;color:#475569;font-size:12px;overflow-wrap:anywhere}'+
+   '#gcTutorReqResults .gc-tr-badges{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}'+
+   '#gcTutorReqResults .gc-tr-badge{display:inline-block;padding:6px 9px;border-radius:20px;background:#fee2e2;color:#991b1b;font-size:10px;font-weight:900;text-align:center}'+
+   '#gcTutorReqResults .gc-tr-badge.verified{background:#dcfce7;color:#166534}'+
+   '#gcTutorReqResults .gc-tr-badge.blue{background:#dbeafe;color:#1e40af}'+
+   '#gcTutorReqResults .gc-tr-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;padding:5px 14px}'+
+   '#gcTutorReqResults .gc-tr-field{min-width:0;padding:10px 8px;border-bottom:1px solid #eef2f7}'+
+   '#gcTutorReqResults .gc-tr-field span{display:block;margin-bottom:4px;color:#c2410c;font-size:10px;font-weight:900;letter-spacing:.35px}'+
+   '#gcTutorReqResults .gc-tr-field strong{display:block;color:#172554;font-size:13px;font-weight:700;overflow-wrap:anywhere;white-space:normal}'+
+   '#gcTutorReqResults .gc-tr-wide{grid-column:1/-1}'+
+   '#gcTutorReqResults .gc-tr-cardfoot{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;padding:11px 15px;background:#fff7ed}'+
+   '#gcTutorReqResults .gc-tr-delivery{color:#166534;font-size:12px;font-weight:900}'+
+   '#gcTutorReqResults .gc-tr-source{color:#64748b;font-size:11px;font-weight:700}'+
+   '@media(max-width:900px){#gcTutorReqResults .gc-tr-cards{grid-template-columns:1fr}}'+
+   '@media(max-width:600px){#gcTutorReqResults .gc-tr-cardhead{display:block}#gcTutorReqResults .gc-tr-badges{flex-direction:row;align-items:flex-start;flex-wrap:wrap;margin-top:10px}#gcTutorReqResults .gc-tr-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#gcTutorReqResults .gc-tr-field strong{font-size:12px}}'+
+   '</style>'+cards;
+  status.textContent=(showHistory?'Lifetime history':'Current requirement list')+' loaded in card view. '+rows.length+' record(s).';
+ }catch(e){status.textContent='Could not load Tutor Requirements: '+(e.message||String(e));out.innerHTML='<div class="empty">Tutor Requirements could not be loaded. Please refresh and check the Admin session.</div>';}
 };
 function switchSection(name){
   if(!name||activeSection===name)return;
