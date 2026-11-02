@@ -10450,6 +10450,7 @@ body {
       photoData: row.photo_url || '',
       verified: row.verified === true,
       paidStatus: row.paid_status || 'PENDING',
+      paymentPlan: row.payment_plan || 'regular_free',
       premiumBadgeOverride: row.premium_badge_override === true,
       rating: row.rating != null ? String(row.rating) : '',
       _manualRating: row.rating != null ? Number(row.rating) : null,
@@ -10533,7 +10534,7 @@ body {
     if (cached) return cached;
 
     const fields = table === 'tutor_profiles'
-      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,premium_badge_override,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at'
+      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,payment_plan,premium_badge_override,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at'
       : 'id,user_id,name,course,stream,learning_requirement,subject,year,semester,standard,college,division,roll_number,cgpa,email,phone,location,address,mode,teaching_mode,languages,availability,member_since,record_no,data_source,about_me,achievement_photos,helpline_plan,helpline_status,helpline_course,helpline_subject,helpline_subject_count,helpline_amount,privacy,photo_url,created_at';
 
     const result = await gcSupabase.from(table)
@@ -10571,7 +10572,7 @@ body {
     if (!gcCloudEnabled) return { rows: [], total: 0 };
 
     const fields = table === 'tutor_profiles'
-      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,premium_badge_override,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at'
+      ? 'id,user_id,name,subject,stream,experience,qualification,college,teaching_college,address,price,about_me,verified,paid_status,payment_plan,premium_badge_override,photo_url,rating,review_count,students_taught,teaching_mode,location,languages,availability,teaching_since,created_at'
       : 'id,user_id,name,course,stream,learning_requirement,subject,year,semester,standard,college,division,roll_number,cgpa,email,phone,location,address,mode,teaching_mode,languages,availability,member_since,record_no,data_source,about_me,achievement_photos,helpline_plan,helpline_status,helpline_course,helpline_subject,helpline_subject_count,helpline_amount,privacy,photo_url,created_at';
 
     const cacheKey = 'ALL:' + table;
@@ -12071,12 +12072,12 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
     var list=arr('tutorDirectoryList');var per=Number(window.tutorsPerPage)||6;var page=Math.max(1,Number(window.currentTutorPage)||1);var start=(page-1)*per;var items=list.slice(start,start+per);c.innerHTML='';
     c.classList.add('gc-target-directory','gc-directory-ready');c.classList.remove('gc-directory-loading');
     items.forEach(function(t){
-      var id=val(t.id,'');var name=val(t.name,'Tutor');var verified=t.verified===true;var subject=val(t.subject,'Not specified');var exp=val(t.experience,'—');var rate=val(t.price||t.rate,'—');var rating=val(t.rating,'4.5');var reviews=Number(t.reviewCount||t.reviewsCount||0);var students=val(t.students,'—');var mode=val(t.mode||t.teachingMode,'Online / Offline');var loc=val(t.location,'—');var langs=val(t.languages,'Hindi, English');var availability=val(t.availability,'Mon - Sun');var since=val(t.teachingSince||t.memberSince,'—');
+      var id=val(t.id,'');var name=val(t.name,'Tutor');var verified=t.verified===true;var plan=String(t.paymentPlan||t.payment_plan||'').trim().toLowerCase();var paid=String(t.paidStatus||t.paid_status||'').trim().toUpperCase()==='PAID';var activePremium=['premium_200','premium_verified_300'].includes(plan)&&paid;var canConnect=activePremium&&verified;var subject=val(t.subject,'Not specified');var exp=val(t.experience,'—');var rate=val(t.price||t.rate,'—');var rating=val(t.rating,'4.5');var reviews=Number(t.reviewCount||t.reviewsCount||0);var students=val(t.students,'—');var mode=val(t.mode||t.teachingMode,'Online / Offline');var loc=val(t.location,'—');var langs=val(t.languages,'Hindi, English');var availability=val(t.availability,'Mon - Sun');var since=val(t.teachingSince||t.memberSince,'—');
       var card=document.createElement('article');card.className='gc-target-card gc-target-tutor';
       card.innerHTML='<div class="gc-target-top"><span class="gc-target-role">'+(verified?'✔ VERIFIED TUTOR':'👤 TUTOR')+'</span><div class="gc-target-chip-wifi"><span class="gc-target-chip"></span><span class="gc-target-wifi" aria-label="Wi-Fi"><svg viewBox="0 0 40 34" aria-hidden="true"><path d="M3 10 Q20 -1 37 10"/><path d="M7 16 Q20 7 33 16"/><path d="M11 22 Q20 15 29 22"/><path d="M15 27 Q20 23 25 27"/><circle cx="20" cy="31" r="2.2"/></svg></span></div></div>'+
       '<div class="gc-target-identity"><div class="gc-target-avatar">'+photoMarkup(t,name,false)+'</div><div class="gc-target-copy"><h3 class="gc-target-name"><span class="gc-target-name-text">'+esc(name)+'</span>'+(verified?(tick()?'<img class="gc-target-verified" src="'+esc(tick())+'" alt="Verified">':'<span class="gc-target-verified">✓</span>'):'')+'</h3><div class="gc-target-subtitle">'+esc(val(t.qualification||t.title||t.subject,'Tutor'))+'</div></div></div>'+ 
       '<div class="gc-target-info">'+info('📚','Subjects',subject)+info('💼','Experience',exp)+info('₹','Rate / Hour',rate)+info('⭐','Rating',rating+(reviews?' ('+reviews+')':''))+info('👥','Students Taught',students)+info('💻','Mode',mode)+info('📍','Location',loc)+info('🪙','Coins','0')+info('<i class="fa-solid fa-calendar-days"></i>','Availability',availability)+info('🗓','Teaching Since',since)+'</div>'+ 
-      '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-gc-more-tutor="'+esc(id)+'">MORE ✚ 👤</button><button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button></div>';
+      '<div class="gc-target-actions"><button type="button" class="gc-target-btn gc-target-more" data-gc-more-tutor="'+esc(id)+'">MORE ✚ 👤</button>'+(canConnect?'<button type="button" class="gc-target-btn gc-target-connect" data-gc-connect-tutor="'+esc(id)+'">CONNECT ➤</button>':'<button type="button" class="gc-target-btn gc-target-connect" data-gc-message-tutor="'+esc(id)+'">✉ SEND MESSAGE</button>')+'</div>';
       c.appendChild(card);
     });
     try{if(typeof renderTutorPagination==='function')renderTutorPagination()}catch(e){}
@@ -12098,7 +12099,7 @@ html,body{height:auto!important;min-height:100%!important;overflow-x:hidden!impo
     return true;
   }
   window.renderTutorDirectory=tutor;window.renderStudentDirectory=student;
-  function bind(c){if(!c||c.dataset.gcTargetBound)return;c.dataset.gcTargetBound='1';c.addEventListener('click',function(e){var b=e.target.closest('[data-gc-more-tutor]');if(b){e.preventDefault();e.stopPropagation();if(typeof window.openTutorProfile==='function')window.openTutorProfile(b.dataset.gcMoreTutor);return}b=e.target.closest('[data-gc-more-student]');if(b){e.preventDefault();e.stopPropagation();if(typeof window.openStudentProfile==='function')window.openStudentProfile(b.dataset.gcMoreStudent);return}b=e.target.closest('[data-gc-connect-tutor]');if(b){e.preventDefault();e.stopPropagation();if(typeof window.connectWithTutor==='function')window.connectWithTutor(b.dataset.gcConnectTutor);return}b=e.target.closest('[data-gc-connect-student]');if(b){e.preventDefault();e.stopPropagation();if(typeof window.connectWithStudent==='function')window.connectWithStudent(b.dataset.gcConnectStudent);return}},true)}
+  function bind(c){if(!c||c.dataset.gcTargetBound)return;c.dataset.gcTargetBound='1';c.addEventListener('click',function(e){var b=e.target.closest('[data-gc-more-tutor]');if(b){e.preventDefault();e.stopPropagation();if(typeof window.openTutorProfile==='function')window.openTutorProfile(b.dataset.gcMoreTutor);return}b=e.target.closest('[data-gc-more-student]');if(b){e.preventDefault();e.stopPropagation();if(typeof window.openStudentProfile==='function')window.openStudentProfile(b.dataset.gcMoreStudent);return}b=e.target.closest('[data-gc-message-tutor]');if(b){e.preventDefault();e.stopPropagation();if(typeof window.GC_OPEN_TUTOR_MESSAGE==='function')window.GC_OPEN_TUTOR_MESSAGE(b.dataset.gcMessageTutor);return}b=e.target.closest('[data-gc-connect-tutor]');if(b){e.preventDefault();e.stopPropagation();if(typeof window.connectWithTutor==='function')window.connectWithTutor(b.dataset.gcConnectTutor);return}b=e.target.closest('[data-gc-connect-student]');if(b){e.preventDefault();e.stopPropagation();if(typeof window.connectWithStudent==='function')window.connectWithStudent(b.dataset.gcConnectStudent);return}},true)}
   function boot(){var t=document.getElementById('tutorGrid'),s=document.getElementById('studentGridContainer');if(t)t.classList.add('gc-directory-loading');if(s)s.classList.add('gc-directory-loading');var ok1=tutor(),ok2=student();bind(t);bind(s);if(t&&ok1)t.classList.add('gc-directory-ready');if(s&&ok2)s.classList.add('gc-directory-ready');}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot,{once:true});else boot();
   window.addEventListener('load',function(){try{tutor()}catch(e){}try{student()}catch(e){}},{once:false});
@@ -16853,5 +16854,46 @@ input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-
 }
 .gc-profile-card.gc-tutor-card .gc-premium-crown-icon{color:#f5b400!important;font-size:1.55em!important;filter:drop-shadow(0 2px 2px rgba(150,95,0,.3))!important}
 </style>
+
+<script id="gc-homepage-tutor-message-composer-20261102">
+(function(){
+ 'use strict';
+ var esc=function(v){return String(v==null?'':v).replace(/[&<>"']/g,function(m){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]})};
+ function client(){return window.gcSupabase||window.GC_SUPABASE_CLIENT||null}
+ function tutorById(id){try{return typeof tutorDirectoryList!=='undefined'?tutorDirectoryList.find(function(t){return String(t.id)===String(id)}):null}catch(e){return null}}
+ function popup(title,msg,kind){if(typeof window.gcV4Popup==='function')window.gcV4Popup(title,msg,kind||'info');else if(typeof window.showProtectedPopup==='function')window.showProtectedPopup(title,msg,'fa-message');else alert(title+'\n\n'+msg)}
+ function mount(){
+  if(document.getElementById('gcHomeTutorMessageOverlay'))return;
+  var style=document.createElement('style');style.id='gc-home-tutor-message-style';style.textContent='#gcHomeTutorMessageOverlay{position:fixed;inset:0;z-index:999999;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(3,12,32,.72);backdrop-filter:blur(7px)}#gcHomeTutorMessageOverlay.open{display:flex}#gcHomeTutorMessageCard{width:min(100%,520px);background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.35)}#gcHomeTutorMessageHead{padding:18px 20px;background:linear-gradient(120deg,#064e3b,#059669);color:#fff;display:flex;justify-content:space-between;align-items:center;gap:12px}#gcHomeTutorMessageHead strong{font-size:16px;font-weight:950}#gcHomeTutorMessageBody{padding:20px}#gcHomeTutorMessageBody textarea{width:100%;min-height:140px;border:1px solid #cbd5e1;border-radius:13px;padding:12px;font:inherit;font-size:14px;resize:vertical;outline:none}#gcHomeTutorMessageBody textarea:focus{border-color:#059669;box-shadow:0 0 0 3px #10b98122}#gcHomeTutorMessageActions{display:flex;gap:9px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}#gcHomeTutorMessageActions button{border:0;border-radius:10px;padding:11px 16px;font-size:12px;font-weight:900;cursor:pointer}#gcHomeTutorMessageCancel{background:#e2e8f0;color:#334155}#gcHomeTutorMessageSend{background:#059669;color:#fff}#gcHomeTutorMessageSend:disabled{opacity:.55;cursor:wait}';
+  document.head.appendChild(style);
+  var wrap=document.createElement('div');wrap.id='gcHomeTutorMessageOverlay';wrap.innerHTML='<section id="gcHomeTutorMessageCard" role="dialog" aria-modal="true" aria-labelledby="gcHomeTutorMessageTitle"><header id="gcHomeTutorMessageHead"><strong id="gcHomeTutorMessageTitle">✉ SEND MESSAGE TO TUTOR</strong><button type="button" id="gcHomeTutorMessageX" aria-label="Close" style="border:0;background:rgba(255,255,255,.18);color:white;border-radius:9px;padding:6px 10px;font-weight:900">✕</button></header><div id="gcHomeTutorMessageBody"><p style="margin:0 0 12px;color:#475569;font-size:13px">Your message will be sent to GURU CONNECT Admin for review. It will not be sent directly to the Tutor.</p><div id="gcHomeTutorMessageTutor" style="font-weight:900;color:#123b8f;margin-bottom:10px"></div><textarea id="gcHomeTutorMessageText" maxlength="3000" placeholder="Write your message to the Tutor..." aria-label="Your message"></textarea><div style="display:flex;justify-content:space-between;gap:8px;margin-top:6px;color:#64748b;font-size:11px"><span>Maximum 3,000 characters</span><span id="gcHomeTutorMessageCount">0 / 3000</span></div><div id="gcHomeTutorMessageActions"><button type="button" id="gcHomeTutorMessageCancel">CANCEL</button><button type="button" id="gcHomeTutorMessageSend">SUBMIT TO ADMIN</button></div></div></section>';
+  document.body.appendChild(wrap);
+  function close(){wrap.classList.remove('open');wrap.dataset.tutorId=''}
+  document.getElementById('gcHomeTutorMessageX').onclick=close;document.getElementById('gcHomeTutorMessageCancel').onclick=close;
+  wrap.addEventListener('click',function(e){if(e.target===wrap)close()});
+  var area=document.getElementById('gcHomeTutorMessageText');area.addEventListener('input',function(){document.getElementById('gcHomeTutorMessageCount').textContent=area.value.length+' / 3000'});
+  document.getElementById('gcHomeTutorMessageSend').onclick=async function(){
+   var message=area.value.trim(),id=wrap.dataset.tutorId,btn=this;if(!message){area.focus();return}if(message.length>3000)return;
+   var viewer=typeof getActiveViewer==='function'?getActiveViewer():null;
+   if(!viewer||!viewer.isRegistered||String(viewer.role||'').toLowerCase()!=='student'){popup('STUDENT LOGIN REQUIRED','Please log in with your registered Student account before sending a message.','gold');return}
+   var t=tutorById(id);if(!t||t.isDummy!==false){popup('TUTOR MESSAGE UNAVAILABLE','This is a pre-listed profile and cannot receive a live message yet. Please choose a registered Tutor profile.','gold');return}
+   var s=client();if(!s){popup('SERVICE UNAVAILABLE','Secure messaging is temporarily unavailable. Please try again later.','gold');return}
+   btn.disabled=true;btn.textContent='SUBMITTING…';
+   try{var r=await s.rpc('gc_student_submit_tutor_message',{p_tutor_profile_id:String(id),p_message:message});if(r.error)throw r.error;close();area.value='';document.getElementById('gcHomeTutorMessageCount').textContent='0 / 3000';popup('MESSAGE SUBMITTED','Your message has been sent to GURU CONNECT Admin for review. It has not been sent directly to the Tutor.','success')}
+   catch(e){popup('MESSAGE NOT SENT',e&&e.message?e.message:'Your message could not be submitted. Please try again.','gold')}
+   finally{btn.disabled=false;btn.textContent='SUBMIT TO ADMIN'}
+  };
+ }
+ window.GC_OPEN_TUTOR_MESSAGE=function(id){
+  mount();var t=tutorById(id);if(!t)return popup('TUTOR NOT FOUND','Please refresh the tutor directory and try again.','gold');
+  var viewer=typeof getActiveViewer==='function'?getActiveViewer():null;
+  if(!viewer||!viewer.isRegistered||String(viewer.role||'').toLowerCase()!=='student')return popup('STUDENT LOGIN REQUIRED','Please log in with your registered Student account before sending a message.','gold');
+  if(t.isDummy!==false)return popup('TUTOR MESSAGE UNAVAILABLE','This is a pre-listed profile and cannot receive a live message yet. Please choose a registered Tutor profile.','gold');
+  var w=document.getElementById('gcHomeTutorMessageOverlay');w.dataset.tutorId=String(id);document.getElementById('gcHomeTutorMessageTutor').textContent='To: '+(t.name||'Selected Tutor');document.getElementById('gcHomeTutorMessageText').value='';document.getElementById('gcHomeTutorMessageCount').textContent='0 / 3000';w.classList.add('open');setTimeout(function(){document.getElementById('gcHomeTutorMessageText').focus()},80);
+ };
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',mount,{once:true});else mount();
+})();
+</script>
+
 </body>
 </html>
