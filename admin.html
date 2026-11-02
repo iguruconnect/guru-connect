@@ -5932,3 +5932,53 @@ html,body,body *:not(svg):not(path):not(i):not(.material-icons):not(.material-sy
   #gcTutorReqResults .gc-tr-card .name{font-size:18px!important}
 }
 </style>
+
+
+<style id="gc-tutor-requirement-card-compact-priority-fix-20261102">
+/* Higher-specificity override because Tutor Requirement cards inject their own styles when loaded. */
+#sec-tutorrequirements #gcTutorReqResults .gc-tr-cards{
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),620px))!important;
+  justify-content:center!important;
+  gap:12px!important;
+}
+#sec-tutorrequirements #gcTutorReqResults .gc-tr-card{
+  width:100%!important;
+  max-width:620px!important;
+  min-width:0!important;
+  margin:6px auto!important;
+  border-radius:14px!important;
+}
+#sec-tutorrequirements #gcTutorReqResults .gc-tr-card .lrr-card-top{
+  min-height:36px!important;padding:7px 11px!important;font-size:12px!important;
+}
+#sec-tutorrequirements #gcTutorReqResults .gc-tr-card .lrr-identity{
+  min-height:72px!important;margin:5px 10px!important;padding:6px 3px!important;gap:10px!important;
+}
+#sec-tutorrequirements #gcTutorReqResults .gc-tr-card .lrr-avatar{
+  width:60px!important;height:60px!important;min-width:60px!important;
+}
+#sec-tutorrequirements #gcTutorReqResults .gc-tr-card .lrr-avatar-fallback{font-size:30px!important}
+#sec-tutorrequirements #gcTutorReqResults .gc-tr-card .name{font-size:19px!important}
+#sec-tutorrequirements #gcTutorReqResults .gc-tr-facts{gap:5px!important;padding:0 10px!important}
+#sec-tutorrequirements #gcTutorReqResults .gc-tr-fact{
+  min-height:48px!important;padding:6px 7px!important;gap:6px!important;
+}
+#sec-tutorrequirements #gcTutorReqResults .gc-tr-fact-ico{font-size:17px!important;flex-basis:21px!important}
+#sec-tutorrequirements #gcTutorReqResults .gc-tr-fact b{font-size:12px!important}
+#sec-tutorrequirements #gcTutorReqResults .gc-tr-need{
+  margin:8px 10px 0!important;padding:9px 11px!important;
+}
+#sec-tutorrequirements #gcTutorReqResults .gc-tr-delivery{
+  margin:7px 10px 0!important;padding:8px 10px!important;
+}
+#sec-tutorrequirements #gcTutorReqResults .gc-tr-foot{
+  margin-top:8px!important;padding:8px 11px!important;
+}
+@media(max-width:520px){
+  #sec-tutorrequirements #gcTutorReqResults .gc-tr-cards{grid-template-columns:minmax(0,1fr)!important}
+  #sec-tutorrequirements #gcTutorReqResults .gc-tr-card{max-width:100%!important}
+  #sec-tutorrequirements #gcTutorReqResults .gc-tr-card .lrr-identity{min-height:68px!important}
+  #sec-tutorrequirements #gcTutorReqResults .gc-tr-card .lrr-avatar{width:56px!important;height:56px!important;min-width:56px!important}
+  #sec-tutorrequirements #gcTutorReqResults .gc-tr-card .name{font-size:18px!important}
+}
+</style>
