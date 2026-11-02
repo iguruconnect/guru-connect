@@ -198,7 +198,7 @@ function renderCards(rows,subjects){
   const rating=Number(t.rating||0), reviews=Number(t.review_count||0), students=String(t.students_taught||'').trim();
   const profileBadges=(premium?'<span class="plan-badge premium-label">👑 PREMIUM TUTOR</span>':'<span class="plan-badge">REGULAR TUTOR</span>')+(verified?'<span class="verified-badge" title="Verified tutor">✓ VERIFIED</span>':'');
   const subjectTags=sub.split(/[,;|]/).map(s=>s.trim()).filter(Boolean).slice(0,4).map(s=>'<span class="tutor-subject-tag">'+esc(s)+'</span>').join('');
-  host.insertAdjacentHTML('beforeend','<article class="search-tutor-card '+(premium?'premium':'')+'"><div class="tutor-card-top"><div class="tutor-avatar">'+avatar+'</div><div class="tutor-card-name"><h3>'+esc(name)+'</h3><p>'+esc(stream)+'</p><div class="profile-badges">'+profileBadges+'</div>'+(rating>0?'<div class="tutor-rating">★ '+esc(rating.toFixed(1))+' <span>'+(reviews>0?'('+esc(reviews)+' reviews)':'')+'</span></div>':'')+'</div></div><div class="tutor-subject-tags">'+subjectTags+'</div><div class="tutor-meta"><div><b>QUALIFICATION</b><span>'+esc(qual)+'</span></div><div><b>EXPERIENCE</b><span>'+esc(experience)+'</span></div><div><b>TEACHING MODE</b><span>'+esc(mode)+'</span></div><div><b>RATE / HOUR</b><span>'+esc(price)+'</span></div></div><p class="tutor-location-line">⌖ '+esc(location)+(languages!=='Not specified'?' &nbsp; | &nbsp; Languages: '+esc(languages):'')+'</p>'+(college!=='Not specified'?'<p class="tutor-about"><b>College / Institution:</b> '+esc(college)+'</p>':'')+(availability!=='Not specified'?'<p class="tutor-about"><b>Availability:</b> '+esc(availability)+'</p>':'')+(students?'<p class="tutor-about"><b>Students taught:</b> '+esc(students)+'</p>':'')+(about?'<p class="tutor-about">'+esc(about.slice(0,220))+'</p>':'')+'<button type="button" class="inquiry-btn" data-send-inquiry="'+esc(t.id)+'" data-tutor-name="'+esc(name)+'">➤ &nbsp; SEND INQUIRY</button></article>');
+  host.insertAdjacentHTML('beforeend','<article class="search-tutor-card '+(premium?'premium':'')+'"><div class="gc-profile-card-brand"><span>GURU CONNECT</span><span class="gc-card-verified">✓ VERIFIED</span></div><div class="tutor-card-top"><div class="tutor-avatar">'+avatar+'</div><div class="tutor-card-name">'+(premium?'<div class="gc-name-crown" aria-label="Premium tutor">👑</div>':'')+'<h3>'+esc(name)+'</h3><p>'+esc(stream)+'</p><div class="profile-badges">'+(premium?'<span class="plan-badge premium-label">PREMIUM MEMBER</span>':'<span class="plan-badge">REGULAR TUTOR</span>')+(verified?'<span class="verified-badge" title="Verified tutor">✓ VERIFIED</span>':'')+'</div>'+(rating>0?'<div class="tutor-rating">★ '+esc(rating.toFixed(1))+' <span>'+(reviews>0?'('+esc(reviews)+' reviews)':'')+'</span></div>':'')+'</div></div><div class="tutor-subject-tags">'+subjectTags+'</div><div class="tutor-meta"><div><b>QUALIFICATION</b><span>'+esc(qual)+'</span></div><div><b>EXPERIENCE</b><span>'+esc(experience)+'</span></div><div><b>TEACHING MODE</b><span>'+esc(mode)+'</span></div><div><b>RATE / HOUR</b><span>'+esc(price)+'</span></div></div><p class="tutor-location-line">⌖ '+esc(location)+(languages!=='Not specified'?' &nbsp; | &nbsp; Languages: '+esc(languages):'')+'</p>'+(college!=='Not specified'?'<p class="tutor-about"><b>College / Institution:</b> '+esc(college)+'</p>':'')+(availability!=='Not specified'?'<p class="tutor-about"><b>Availability:</b> '+esc(availability)+'</p>':'')+(students?'<p class="tutor-about"><b>Students taught:</b> '+esc(students)+'</p>':'')+(about?'<p class="tutor-about">'+esc(about.slice(0,220))+'</p>':'')+'<button type="button" class="inquiry-btn" data-send-inquiry="'+esc(t.id)+'" data-tutor-name="'+esc(name)+'">➤ &nbsp; SEND INQUIRY</button></article>');
  });
 }
 async function sendInquiry(tutorId,tutorName,button){
@@ -305,5 +305,31 @@ $('tutorSearchForm').addEventListener('submit',async e=>{
 </style>
 <style id="gc-global-arial-nova-code-font-20261101">
 html,body,body *:not(svg):not(path):not(i):not(.material-icons):not(.material-symbols):not([class*="icon"]):not([class*="fa-"]){font-family:"Arial Nova Code","Arial Nova",Arial,sans-serif!important}
+</style>
+
+<style id="gc-premium-profile-reference-design-20261102">
+.search-tutor-card{padding:0!important;border:2px solid #f59e0b!important;border-radius:22px!important;background:linear-gradient(160deg,#fff 0%,#fffaf0 100%)!important;box-shadow:0 10px 26px rgba(180,83,9,.14)!important;overflow:hidden;gap:12px!important}
+.gc-profile-card-brand{min-height:42px;padding:8px 13px;display:flex;align-items:center;justify-content:space-between;gap:8px;background:linear-gradient(100deg,#0646c8,#0878f9 70%,#0646c8);color:#fff;font-size:12px;font-weight:1000;letter-spacing:.06em}
+.gc-card-verified{padding:5px 9px;border-radius:999px;background:#16a34a;color:#fff;font-size:10px;letter-spacing:0;white-space:nowrap}
+.search-tutor-card>.tutor-card-top,.search-tutor-card>.tutor-subject-tags,.search-tutor-card>.tutor-meta,.search-tutor-card>.tutor-location-line,.search-tutor-card>.tutor-about,.search-tutor-card>.inquiry-btn{margin-left:14px!important;margin-right:14px!important}
+.search-tutor-card>.tutor-card-top{margin-top:5px!important;align-items:center;gap:12px}
+.tutor-avatar{width:94px!important;height:110px!important;flex:0 0 94px!important;border:4px solid #0878f9!important;border-radius:19px!important;background:linear-gradient(135deg,#dbeafe,#fff)!important;box-shadow:0 5px 14px rgba(7,85,189,.15)!important}
+.tutor-card-name{background:transparent!important;border:0!important;box-shadow:none!important;padding:2px 0!important}
+.gc-name-crown{font-size:30px;line-height:1;margin:0 0 3px;text-align:left;filter:drop-shadow(0 3px 2px rgba(180,120,0,.25))}
+.tutor-card-name h3{font-size:20px!important;line-height:1.2!important;color:#09256e!important;font-weight:1000!important}
+.tutor-card-name p{font-size:11px!important;color:#31527f!important}
+.plan-badge.premium-label,.premium .plan-badge{background:#ff7900!important;color:#fff!important;border:0!important;border-radius:9px!important;padding:7px 11px!important;font-size:10px!important;letter-spacing:.08em!important}
+.verified-badge{background:#eaf2ff!important;color:#0864df!important;border:1px solid #9fc7ff!important;border-radius:9px!important}
+.search-tutor-card.premium{border-color:#f59e0b!important;background:linear-gradient(160deg,#fff 0%,#fff8e9 100%)!important}
+.search-tutor-card>.tutor-subject-tags{margin-top:0!important}
+.tutor-subject-tag{background:#edf4ff!important;border:1px solid #b9d5ff!important;color:#123d8a!important;font-size:11px!important}
+.tutor-meta{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.tutor-meta div{background:linear-gradient(135deg,#eff6ff,#eef0ff)!important;border:1px solid #bfd5ff!important;border-radius:12px!important;padding:11px 10px!important}
+.tutor-meta b{color:#16458d!important}.tutor-meta span{color:#102b68!important;font-size:12px!important}
+.tutor-location-line,.tutor-about{color:#243f72!important}
+.search-tutor-card>.tutor-about{background:#fff2cf;border:1.5px solid #f59e0b;border-radius:13px;padding:11px 12px!important}
+.search-tutor-card>.inquiry-btn{width:calc(100% - 28px)!important;margin-top:2px!important;margin-bottom:14px!important;min-height:48px!important;border-radius:13px!important;background:linear-gradient(135deg,#075ee8,#0647c8)!important;color:#fff!important;font-size:13px!important;box-shadow:0 7px 17px rgba(7,85,189,.2)!important}
+.search-tutor-card>.inquiry-btn:hover{background:linear-gradient(135deg,#0647c8,#063a9e)!important}
+@media(max-width:520px){.search-tutor-card>.tutor-card-top{align-items:center}.tutor-avatar{width:86px!important;height:100px!important;flex-basis:86px!important}.tutor-card-name h3{font-size:17px!important}.gc-profile-card-brand{font-size:11px}}
 </style>
 </body></html>
