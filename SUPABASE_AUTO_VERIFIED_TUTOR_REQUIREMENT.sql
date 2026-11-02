@@ -10,7 +10,8 @@ alter table public.gc_tutor_requirements
   add column if not exists visitor_requirement_details text,
   add column if not exists visitor_type text,
   add column if not exists client_email_verified boolean not null default false,
-  add column if not exists email_verified_at timestamptz;
+  add column if not exists email_verified_at timestamptz,
+  add column if not exists matched_tutor_count integer not null default 0;
 
 create table if not exists public.gc_tutor_requirement_recipients (
   requirement_id uuid not null references public.gc_tutor_requirements(id) on delete cascade,
@@ -190,6 +191,7 @@ begin
   on conflict do nothing;
 
   get diagnostics v_count = row_count;
+  update public.gc_tutor_requirements set matched_tutor_count=v_count where id=v_id;
 
   return jsonb_build_object(
     'success',true,
