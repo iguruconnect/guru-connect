@@ -219,7 +219,9 @@ function renderCards(rows,subjects){
   const about=String(t.about_me||'').trim();
   const experience=String(t.experience||'Not specified'), college=String(t.college||t.teaching_college||'Not specified'), location=String(t.location||'Not specified'), languages=String(t.languages||'Not specified'), availability=String(t.availability||'Not specified');
   const verified=t.verified===true||String(t.verified||'').toLowerCase()==='true';
-  const canConnect=premium&&verified;
+  const paidPlan=planName(t).trim();
+  const activePremium=['premium_200','premium_verified_300'].includes(paidPlan)&&String(t.paid_status||'').trim().toUpperCase()==='PAID';
+  const canConnect=activePremium&&verified;
   const rating=Number(t.rating||0), reviews=Number(t.review_count||0), students=String(t.students_taught||'').trim();
   const profileBadges=(premium?'<span class="plan-badge premium-label">👑 PREMIUM TUTOR</span>':'<span class="plan-badge">REGULAR TUTOR</span>')+(verified?'<span class="verified-badge" title="Verified tutor">✓ VERIFIED</span>':'');
   const subjectTags=sub.split(/[,;|]/).map(s=>s.trim()).filter(Boolean).slice(0,4).map(s=>'<span class="tutor-subject-tag">'+esc(s)+'</span>').join('');
