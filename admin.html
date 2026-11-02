@@ -361,6 +361,7 @@ body,body button,body input,body select,body textarea,body table,body th,body td
 <button class="topbtn" data-sec="tutorinquiries">📩 <b>TUTOR INQUIRIES</b><small>Visitor contacts and Premium tutor forwarding</small></button>
 <button class="topbtn priority" data-sec="tutorrequirements">🎯 <b>TUTOR REQUIREMENT</b><small>Parent / Student posted requirements</small></button>
 <button class="topbtn" data-sec="studenttutorcontacts">📞 <b>STD & TUT CNCT REQ</b><small>Student-to-tutor contact requests and lifetime history</small></button>
+<button class="topbtn priority" data-sec="stdmsgfortutors">✉️ <b>STD MSG FOR TUTORS</b><small>Review student messages and forward to tutors</small></button>
 </nav>
 
 <section class="section" id="sec-tutorinquiries"><div class="secHead"><div><h2>📩 Public Tutor Search Inquiries</h2><p>Review visitor contact details and manually forward each inquiry to the Premium Tutor(s) you select.</p></div><span class="pill" id="tutorInquiryCount">INQUIRIES</span></div><div class="secBody"><div class="row" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="btn primary" id="refreshTutorInquiries" type="button">↻ REFRESH INQUIRIES</button><button class="btn purple" id="viewTutorInquiryHistory" type="button">🕘 INQUIRY HISTORY</button><span class="status" id="tutorInquiryStatus">Run the Tutor Inquiry SQL setup in Supabase first.</span></div><div id="tutorInquiryResults" style="margin-top:16px"></div></div></section>
@@ -384,6 +385,17 @@ body,body button,body input,body select,body textarea,body table,body th,body td
    <span class="status" id="gcContactStatus">Open this tab to load contact requests.</span>
   </div>
   <div id="gcContactResults" style="margin-top:16px"></div>
+ </div>
+</section>
+<section class="section" id="sec-stdmsgfortutors">
+ <div class="secHead"><div><h2>✉️ STD MSG FOR TUTORS</h2><p>Review registered Student messages and forward each message to the selected Tutor only after Admin approval.</p></div><span class="pill" id="gcStdMsgCount">MESSAGES</span></div>
+ <div class="secBody">
+  <div class="actions" style="margin-top:0;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+   <button class="btn primary" type="button" onclick="gcLoadStdTutorMessages(false)">↻ REFRESH MESSAGES</button>
+   <button class="btn purple" type="button" onclick="gcLoadStdTutorMessages(true)">🕘 LIFETIME HISTORY</button>
+   <span class="status" id="gcStdMsgStatus">Open this tab to load student messages.</span>
+  </div>
+  <div id="gcStdMsgResults" style="margin-top:16px"></div>
  </div>
 </section>
 
@@ -1309,6 +1321,42 @@ window.gcAdminLoadTutorRequirements=async function(showHistory=false){
   status.textContent=(showHistory?'Lifetime history':'Current requirement list')+' loaded in LRR-style cards. '+rows.length+' record(s).';
  }catch(e){status.textContent='Could not load Tutor Requirements: '+(e.message||String(e));out.innerHTML='<div class="empty">Tutor Requirements could not be loaded. Please refresh and check the Admin session.</div>';}
 };
+
+// STD MSG FOR TUTORS — Admin-reviewed messages, separate from LRR and coins.
+let gcStdMsgHistoryMode=false;
+window.gcLoadStdTutorMessages=async function(showHistory=false){
+ gcStdMsgHistoryMode=!!showHistory;
+ const status=$('gcStdMsgStatus'),out=$('gcStdMsgResults'),count=$('gcStdMsgCount');
+ if(!status||!out||!count)return;
+ status.textContent='Loading student messages…';out.innerHTML='';
+ try{
+  const q=await sb.rpc('gc_admin_student_tutor_message_history');
+  if(q.error)throw q.error;
+  const rows=q.data||[];count.textContent=rows.length+(rows.length===1?' MESSAGE':' MESSAGES');
+  const visible=gcStdMsgHistoryMode?rows:rows.filter(r=>String(r.message_status||'PENDING_ADMIN')==='PENDING_ADMIN');
+  if(!rows.length){out.innerHTML='<div class="empty">No student messages have been received yet.</div>';status.textContent='Message history checked.';return;}
+  if(!visible.length){out.innerHTML='<div class="empty">No pending messages. Click LIFETIME HISTORY to view forwarded and rejected messages.</div>';status.textContent='No pending messages.';return;}
+  const esc=v=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const date=v=>v?new Date(v).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short'}):'—';
+  const groups=new Map();visible.forEach(r=>{const d=r.created_at?new Date(r.created_at).toLocaleDateString('en-IN',{dateStyle:'full'}):'Date not available';if(!groups.has(d))groups.set(d,[]);groups.get(d).push(r)});
+  const fields=[['Course','course'],['Stream','stream'],['Class / Standard','standard'],['Year','year'],['Semester','semester'],['Division','division'],['Subject','subject'],['College','college'],['Roll Number','roll_number'],['Phone','phone'],['Email','email'],['Location','location'],['Address','address'],['Mode','mode'],['Teaching Mode','teaching_mode'],['Learning Requirement','learning_requirement'],['About Student','about_me']];
+  out.innerHTML=Array.from(groups.entries()).map(([day,list])=>'<h3 style="margin:18px 0 9px;color:#123b66;font-size:14px">📅 '+esc(day)+' <small style="color:#64748b">('+list.length+')</small></h3>'+list.map(r=>{
+   const id=esc(r.message_id),st=String(r.message_status||'PENDING_ADMIN');
+   const snapshot=r.student_profile_snapshot&&typeof r.student_profile_snapshot==='object'?r.student_profile_snapshot:{};
+   const facts=fields.map(([label,key])=>{const val=snapshot[key]??(key==='phone'?r.student_phone:key==='email'?r.student_email:null);return val!==null&&val!==''&&val!==undefined?'<div class="metaBox"><b>'+esc(label)+'</b>'+esc(Array.isArray(val)?val.join(', '):val)+'</div>':''}).filter(Boolean).join('');
+   return '<article class="user" style="border:2px solid #ff9a45;background:linear-gradient(145deg,#fffaf5,#fff1e6);margin:12px 0"><div class="userHead"><div class="identity"><b>👨‍🎓 '+esc(r.student_name)+'</b><div class="muted">Received: '+esc(date(r.created_at))+'<br>Student ID: '+esc(r.student_user_id)+'<br>Message ID: '+id+'</div></div><span class="pill">'+esc(st.replaceAll('_',' '))+'</span></div><div class="lrrMeta">'+facts+'<div class="metaBox"><b>SELECTED TUTOR</b>'+esc(r.tutor_name)+'<br>Tutor ID: '+esc(r.tutor_user_id)+'</div></div><div style="margin:13px 0;padding:15px;border:1.5px solid #fed7aa;border-radius:13px;background:#fff"><b style="display:block;color:#c2410c;margin-bottom:7px">✉️ STUDENT MESSAGE TO THIS TUTOR</b><div style="white-space:pre-wrap;overflow-wrap:anywhere;color:#17365f;font-size:14px;line-height:1.6">'+esc(r.message)+'</div></div><div class="actions">'+(st==='PENDING_ADMIN'?'<button class="btn green" type="button" onclick="gcForwardStdTutorMessage(\''+id+'\')">➤ SEND TO TUTOR</button><button class="btn red" type="button" onclick="gcRejectStdTutorMessage(\''+id+'\')">✕ REJECT</button>':'<span class="status">Reviewed: '+esc(date(r.reviewed_at))+(r.forwarded_at?' · Forwarded: '+esc(date(r.forwarded_at)):'')+'</span>')+'</div>'+(r.admin_note?'<p class="muted">Admin note: '+esc(r.admin_note)+'</p>':'')+'</article>';
+  }).join('')).join('');
+  status.textContent='Showing '+visible.length+' '+(gcStdMsgHistoryMode?'lifetime':'pending')+' student message(s). Student contact and profile details are visible only in this Admin tab.';
+ }catch(e){status.textContent='Could not load student messages: '+(e.message||String(e))+' — run SUPABASE_STUDENT_TUTOR_MESSAGES_ADMIN_REVIEW.sql in Supabase.';out.innerHTML='<div class="empty">Student messages could not be loaded.</div>';}
+};
+window.gcForwardStdTutorMessage=async function(id){
+ const status=$('gcStdMsgStatus');try{const q=await sb.rpc('gc_admin_forward_student_tutor_message',{p_message_id:id});if(q.error)throw q.error;status.textContent='Message successfully forwarded to the selected Tutor.';await gcLoadStdTutorMessages(gcStdMsgHistoryMode)}catch(e){status.textContent='Could not forward message: '+(e.message||String(e))}
+};
+window.gcRejectStdTutorMessage=async function(id){
+ const note=prompt('Optional reason for rejecting this student message:');if(note===null)return;
+ const status=$('gcStdMsgStatus');try{const q=await sb.rpc('gc_admin_reject_student_tutor_message',{p_message_id:id,p_admin_note:note});if(q.error)throw q.error;status.textContent='Student message rejected and saved in history.';await gcLoadStdTutorMessages(gcStdMsgHistoryMode)}catch(e){status.textContent='Could not reject message: '+(e.message||String(e))}
+};
+
 function switchSection(name){
   if(!name||activeSection===name)return;
   activeSection=name;
