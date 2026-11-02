@@ -220,7 +220,7 @@ form.addEventListener('submit',async e=>{
    p_student_name:$('studentName').value.trim(),p_student_phone:$('studentPhone').value.trim(),p_student_email:email,
    p_search_class:$('searchClass').value,p_course:$('course').value,p_subject_count:Number($('subjectCount').value),p_subjects:$('subjects').value.trim(),
    p_mode:$('mode').value,p_location:$('location').value.trim(),p_fees_budget:$('feesBudget').value.trim(),p_last_date:$('lastDate').value,
-   p_preferred_timing:$('preferredTiming').value||null
+   p_preferred_timing:$('preferredTiming').value||null,p_contact_consent:$('consent').checked
   });
   if(result.error)throw result.error;
   const data=Array.isArray(result.data)?(result.data[0]||{}):(result.data||{});
