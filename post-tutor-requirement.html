@@ -189,12 +189,12 @@ $('shareWhatsApp').addEventListener('click',async()=>{
    return;
   }
   downloadBlob(blob);
-  const url='https://wa.me/15559565917?text='+encodeURIComponent(text);
+  const url='https://wa.me/17112312470?text='+encodeURIComponent(text);
   window.open(url,'_blank','noopener');
   status.className='status success';status.textContent='Requirement image downloaded and WhatsApp opened with the details. Attach the downloaded PNG before sending if you want to send it as an image.';
  }catch(err){
   if(err&&err.name==='AbortError')return;
-  const url='https://wa.me/15559565917?text='+encodeURIComponent(text);
+  const url='https://wa.me/17112312470?text='+encodeURIComponent(text);
   window.open(url,'_blank','noopener');
   status.className='status';status.textContent='WhatsApp opened with the requirement details. If image sharing is unavailable, use DOWNLOAD REQUIREMENT IMAGE and attach the PNG.';
  }
