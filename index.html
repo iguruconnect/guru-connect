@@ -17002,5 +17002,73 @@ input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-
 }
 </style>
 
+
+<!-- GURU CONNECT: keep the floating WhatsApp support button visible after page initialization -->
+<style id="gc-persistent-floating-whatsapp-fix">
+  #gcFloatingWhatsappSupport {
+    position: fixed !important;
+    right: 24px !important;
+    bottom: 24px !important;
+    left: auto !important;
+    top: auto !important;
+    z-index: 2147483000 !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    width: 56px !important;
+    height: 56px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 9999px !important;
+    background: #16a34a !important;
+    color: #fff !important;
+    box-shadow: 0 10px 24px rgba(0,0,0,.28) !important;
+  }
+  #gcFloatingWhatsappSupport i {
+    color: #fff !important;
+    font-size: 30px !important;
+    line-height: 1 !important;
+  }
+  @media (max-width: 640px) {
+    #gcFloatingWhatsappSupport { right: 16px !important; bottom: 16px !important; }
+  }
+</style>
+<script id="gc-persistent-floating-whatsapp-fix-js">
+(function () {
+  'use strict';
+  function keepFloatingWhatsappVisible() {
+    var button = document.querySelector('a[title="Chat on WhatsApp"][href*="phone=15559565917"]');
+    if (!button) return;
+    button.id = 'gcFloatingWhatsappSupport';
+    if (button.parentElement !== document.body) document.body.appendChild(button);
+    button.setAttribute('aria-label', 'Chat with GURU CONNECT on WhatsApp');
+    button.style.setProperty('position', 'fixed', 'important');
+    button.style.setProperty('right', '24px', 'important');
+    button.style.setProperty('bottom', '24px', 'important');
+    button.style.setProperty('left', 'auto', 'important');
+    button.style.setProperty('top', 'auto', 'important');
+    button.style.setProperty('z-index', '2147483000', 'important');
+    button.style.setProperty('display', 'flex', 'important');
+    button.style.setProperty('visibility', 'visible', 'important');
+    button.style.setProperty('opacity', '1', 'important');
+    button.style.setProperty('pointer-events', 'auto', 'important');
+    button.style.setProperty('width', '56px', 'important');
+    button.style.setProperty('height', '56px', 'important');
+    button.style.setProperty('align-items', 'center', 'important');
+    button.style.setProperty('justify-content', 'center', 'important');
+    button.style.setProperty('border-radius', '9999px', 'important');
+    button.style.setProperty('background', '#16a34a', 'important');
+    button.style.setProperty('color', '#fff', 'important');
+    button.style.setProperty('box-shadow', '0 10px 24px rgba(0,0,0,.28)', 'important');
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', keepFloatingWhatsappVisible, { once: true });
+  } else {
+    keepFloatingWhatsappVisible();
+  }
+})();
+</script>
+
 </body>
 </html>
