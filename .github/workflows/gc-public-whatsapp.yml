@@ -30,7 +30,7 @@ jobs:
           if marker in s:
               print("Public WhatsApp button is already installed; no change needed.")
               sys.exit(0)
-          if not re.search(r"</body\\s*>", s, re.I):
+          if not re.search(r"</body\s*>, s, re.I):
               raise SystemExit("STOP: index.html has no closing body tag; refusing to modify it.")
           script = r"""
           <!-- GC_PUBLIC_WHATSAPP_BUTTON_17112312470 -->
@@ -69,7 +69,7 @@ jobs:
           })();
           </script>
           """
-          s = re.sub(r"</body\\s*>", script + "\\n</body>", s, count=1, flags=re.I)
+          s = re.sub(r"</body\s*>, script + "\n</body>", s, count=1, flags=re.I)
           p.write_text(s, encoding="utf-8")
           print("Inserted public WhatsApp button and old bottom-right WhatsApp cleanup.")
           PY
