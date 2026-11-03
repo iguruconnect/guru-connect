@@ -1,0 +1,45 @@
+name: Recover GURU CONNECT homepage responsiveness
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-whatsapp-recovery.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  remove-problematic-whatsapp-script:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Remove injected observer and floating button safely
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, sys
+          p = Path("index.html")
+          s = p.read_text(encoding="utf-8")
+          pattern = r"\s*<!-- GC_PUBLIC_WHATSAPP_BUTTON_17112312470 -->.*?</script>\s*"
+          updated, count = re.subn(pattern, "\n", s, count=1, flags=re.S)
+          if count != 1:
+              raise SystemExit("Recovery marker not found exactly once; refusing any broad edit.")
+          p.write_text(updated, encoding="utf-8")
+          print("Removed the injected floating WhatsApp button and MutationObserver script.")
+          PY
+      - name: Commit recovery
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "No recovery change required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Restore homepage responsiveness by removing WhatsApp observer"
+          git push origin main
