@@ -32,13 +32,14 @@ jobs:
           if not source.exists():
               raise SystemExit("STOP: source hero image is missing; no website changes made.")
           im = Image.open(source).convert("RGB")
-          if im.size != (1536, 682):
-              raise SystemExit(f"STOP: unexpected source image dimensions {im.size}; refusing to alter artwork.")
+          sx, sy = im.width / 1536, im.height / 682
+          def box(x1, y1, x2, y2):
+              return (round(x1*sx), round(y1*sy), round(x2*sx), round(y2*sy))
           canvas = im.copy()
-          ImageDraw.Draw(canvas).rounded_rectangle((824, 578, 1473, 654), radius=38, fill="white")
-          email_group = im.crop((1170, 595, 1450, 638))
-          canvas.paste(email_group, (1005, 598))
-          enhanced = canvas.resize((3072, 1364), Image.Resampling.LANCZOS)
+          ImageDraw.Draw(canvas).rounded_rectangle(box(824, 578, 1473, 654), radius=round(38*min(sx,sy)), fill="white")
+          email_group = im.crop(box(1170, 595, 1450, 638))
+          canvas.paste(email_group, (round(1005*sx), round(598*sy)))
+          enhanced = canvas.resize((im.width*2, im.height*2), Image.Resampling.LANCZOS)
           enhanced = enhanced.filter(ImageFilter.UnsharpMask(radius=1.2, percent=90, threshold=3))
           enhanced = ImageEnhance.Contrast(enhanced).enhance(1.02)
           target = Path("assets/gc-home-hero-no-whatsapp.png")
