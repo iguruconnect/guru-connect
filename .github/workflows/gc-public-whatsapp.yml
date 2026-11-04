@@ -45,7 +45,7 @@ jobs:
           if dp.exists():
               ds = dp.read_text(encoding="utf-8")
               ds, removed = re.subn(
-                  r'<a id="gcDashboardAdminWhatsApp"[\\s\\S]*?</a>\\s*<style>#gcDashboardAdminWhatsApp[\\s\\S]*?</style>',
+                  r'<a id="gcDashboardAdminWhatsApp"[\s\S]*?</a>\s*<style>#gcDashboardAdminWhatsApp[\s\S]*?</style>',
                   "",
                   ds,
                   count=1,
@@ -67,6 +67,6 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
+          git add index.html dashboard.html
           git commit -m "Replace floating WhatsApp with Jotform chatbot"
           git push origin main
