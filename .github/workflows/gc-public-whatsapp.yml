@@ -17,77 +17,68 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Remove public WhatsApp button and install GURU CONNECT chatbot
+      - name: Prepare improved mobile-friendly GURU CONNECT hero and preserve site behavior
         shell: bash
         run: |
+          python -m pip install Pillow
           python - <<'PY'
           from pathlib import Path
+          from PIL import Image, ImageDraw, ImageFilter, ImageEnhance
           import re
+
+          # Use the uploaded GURU CONNECT banner, remove the WhatsApp phone contact,
+          # retain the exact logo/brand/email, and create a high-resolution asset.
+          source = Path("assets/New Hero Image.png")
+          if not source.exists():
+              raise SystemExit("STOP: source hero image is missing; no website changes made.")
+          im = Image.open(source).convert("RGB")
+          if im.size != (1536, 682):
+              raise SystemExit(f"STOP: unexpected source image dimensions {im.size}; refusing to alter artwork.")
+          canvas = im.copy()
+          ImageDraw.Draw(canvas).rounded_rectangle((824, 578, 1473, 654), radius=38, fill="white")
+          email_group = im.crop((1170, 595, 1450, 638))
+          canvas.paste(email_group, (1005, 598))
+          enhanced = canvas.resize((3072, 1364), Image.Resampling.LANCZOS)
+          enhanced = enhanced.filter(ImageFilter.UnsharpMask(radius=1.2, percent=90, threshold=3))
+          enhanced = ImageEnhance.Contrast(enhanced).enhance(1.02)
+          target = Path("assets/gc-home-hero-no-whatsapp.png")
+          enhanced.save(target, "PNG", optimize=True)
 
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-
-          # Keep the approved hero artwork; preserve its native aspect ratio on every screen.
-          hero_src = "https://raw.githubusercontent.com/iguruconnect/guru-connect/main/gc-home-hero-20261105.webp..webp"
+          hero_src = "https://raw.githubusercontent.com/iguruconnect/guru-connect/main/assets/gc-home-hero-no-whatsapp.png"
           s, hero_count = re.subn(
               r'(<img\b(?=[^>]*\bclass=["\'][^"\']*gc-approved-hero-image[^"\']*["\'])[^>]*\bsrc=["\'])[^"\']*(["\'])',
               lambda m: m.group(1) + hero_src + m.group(2),
-              s,
-              count=1,
-              flags=re.I
+              s, count=1, flags=re.I
           )
           if hero_count != 1:
               raise SystemExit("STOP: expected approved hero image tag was not found; no hero change made.")
 
           hero_style = """<style id="gc-new-responsive-hero-20261105">
           #publicWebsiteContent > section.gc-approved-hero#home {
-            display: block !important;
-            width: 100% !important;
-            height: auto !important;
-            min-height: 0 !important;
-            max-height: none !important;
-            aspect-ratio: auto !important;
-            margin: 0 !important;
-            padding: 0 !important;
-            overflow: visible !important;
-            background: #fff !important;
-            border-radius: 0 !important;
+            display:block !important; width:100% !important; height:auto !important;
+            min-height:0 !important; max-height:none !important; aspect-ratio:auto !important;
+            margin:0 !important; padding:0 !important; overflow:visible !important;
+            background:#fff !important; border-radius:0 !important;
           }
           #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image {
-            display: block !important;
-            width: 100% !important;
-            height: auto !important;
-            min-height: 0 !important;
-            max-width: 100% !important;
-            max-height: none !important;
-            aspect-ratio: auto !important;
-            object-fit: contain !important;
-            object-position: center center !important;
-            margin: 0 auto !important;
-            padding: 0 !important;
-            border: 0 !important;
-            border-radius: 0 !important;
+            display:block !important; width:100% !important; height:auto !important;
+            min-height:0 !important; max-width:100% !important; max-height:none !important;
+            aspect-ratio:auto !important; object-fit:contain !important;
+            object-position:center center !important; margin:0 auto !important;
+            padding:0 !important; border:0 !important; border-radius:0 !important;
           }
-          @media (max-width: 640px) {
+          @media (max-width:640px) {
             #publicWebsiteContent > section.gc-approved-hero#home {
-              width: 100% !important;
-              max-width: 100% !important;
-              height: auto !important;
-              min-height: 0 !important;
-              max-height: none !important;
-              aspect-ratio: auto !important;
-              overflow: visible !important;
-              margin: 0 !important;
-              border-radius: 0 !important;
+              width:100% !important; max-width:100% !important; height:auto !important;
+              min-height:0 !important; max-height:none !important; aspect-ratio:auto !important;
+              overflow:visible !important; margin:0 !important; border-radius:0 !important;
             }
             #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image {
-              display: block !important;
-              width: 100% !important;
-              height: auto !important;
-              min-height: 0 !important;
-              max-height: none !important;
-              aspect-ratio: auto !important;
-              object-fit: contain !important;
+              display:block !important; width:100% !important; height:auto !important;
+              min-height:0 !important; max-height:none !important; aspect-ratio:auto !important;
+              object-fit:contain !important;
             }
           }
           </style>"""
@@ -101,13 +92,10 @@ jobs:
                   s = s[:a] + s[a + b.start() + len("</script>"):]
           s = re.sub(r'<style id="gc-public-whatsapp-style">[\s\S]*?</style>\s*<a id="gc-public-whatsapp-btn"[\s\S]*?</a>', "", s, flags=re.I)
 
-          # Hide any remaining floating WhatsApp launcher/link on the public homepage.
           hide_style = """<style id="gc-hide-public-whatsapp">
           a[href*="wa.me" i], a[href*="whatsapp.com" i],
           [id*="whatsapp" i], [class*="whatsapp" i] {
-            display: none !important;
-            visibility: hidden !important;
-            pointer-events: none !important;
+            display:none !important; visibility:hidden !important; pointer-events:none !important;
           }
           </style>"""
           s = re.sub(r'<style id="gc-hide-public-whatsapp">[\s\S]*?</style>', "", s, flags=re.I)
@@ -123,33 +111,26 @@ jobs:
           s = re.sub(r"</body\s*>", embed + "\n</body>", s, count=1, flags=re.I)
           p.write_text(s, encoding="utf-8")
 
-          # Remove the separate WhatsApp Admin floating button from the dashboard.
           dp = Path("dashboard.html")
           if dp.exists():
               ds = dp.read_text(encoding="utf-8")
               ds, removed = re.subn(
                   r'<a id="gcDashboardAdminWhatsApp"[\s\S]*?</a>\s*<style>#gcDashboardAdminWhatsApp[\s\S]*?</style>',
-                  "",
-                  ds,
-                  count=1,
-                  flags=re.I
+                  "", ds, count=1, flags=re.I
               )
               if removed:
                   dp.write_text(ds, encoding="utf-8")
                   print("Removed separate WhatsApp Admin button from dashboard.html.")
-              else:
-                  print("No separate WhatsApp Admin button block found in dashboard.html.")
-
-          print("Public WhatsApp launchers hidden; Jotform chatbot installed.")
+          print("Prepared responsive high-resolution hero; preserved existing chatbot and WhatsApp removal behavior.")
           PY
       - name: Commit website updates
         run: |
-          if git diff --quiet -- index.html dashboard.html; then
+          if git diff --quiet -- index.html dashboard.html assets/gc-home-hero-no-whatsapp.png; then
             echo "No website change required."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html dashboard.html
-          git commit -m "Hide remaining public WhatsApp launcher behind chatbot"
+          git add index.html dashboard.html assets/gc-home-hero-no-whatsapp.png
+          git commit -m "Add enhanced mobile-friendly GURU CONNECT hero without WhatsApp number"
           git push origin main
