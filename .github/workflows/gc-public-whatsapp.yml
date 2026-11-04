@@ -26,19 +26,22 @@ jobs:
           from PIL import Image, ImageDraw, ImageFilter, ImageEnhance
           import re
 
-          # Use the uploaded GURU CONNECT banner, remove the WhatsApp phone contact,
-          # retain the exact logo/brand/email, and create a high-resolution asset.
+          # Remove both WhatsApp phone contact and email contact capsule.
+          # Rebuild the capsule area from adjacent banner background, retaining logo/brand.
           source = Path("assets/New Hero Image.png")
           if not source.exists():
               raise SystemExit("STOP: source hero image is missing; no website changes made.")
           im = Image.open(source).convert("RGB")
           sx, sy = im.width / 1536, im.height / 682
-          def box(x1, y1, x2, y2):
-              return (round(x1*sx), round(y1*sy), round(x2*sx), round(y2*sy))
-          canvas = im.copy()
-          ImageDraw.Draw(canvas).rounded_rectangle(box(824, 578, 1473, 654), radius=round(38*min(sx,sy)), fill="white")
-          email_group = im.crop(box(1170, 595, 1450, 638))
-          canvas.paste(email_group, (round(1005*sx), round(598*sy)))
+          import numpy as np
+          arr = np.asarray(im).astype("float32").copy()
+          x1, y1, x2, y2 = [round(v*s) for v,s in ((824,sx),(578,sy),(1473,sx),(654,sy))]
+          top = arr[max(0,y1-round(7*sy)), x1:x2+1, :]
+          bottom = arr[min(im.height-1,y2+round(7*sy)), x1:x2+1, :]
+          for y in range(y1,y2+1):
+              t = (y-(y1-round(7*sy)))/((y2+round(7*sy))-(y1-round(7*sy)))
+              arr[y,x1:x2+1,:] = top*(1-t) + bottom*t
+          canvas = Image.fromarray(np.uint8(np.clip(arr,0,255)))
           enhanced = canvas.resize((im.width*2, im.height*2), Image.Resampling.LANCZOS)
           enhanced = enhanced.filter(ImageFilter.UnsharpMask(radius=1.2, percent=90, threshold=3))
           enhanced = ImageEnhance.Contrast(enhanced).enhance(1.02)
