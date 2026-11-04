@@ -39,6 +39,24 @@ jobs:
               raise SystemExit("STOP: index.html has no closing body tag; refusing to modify it.")
           s = re.sub(r"</body\s*>", embed + "\n</body>", s, count=1, flags=re.I)
           p.write_text(s, encoding="utf-8")
+
+          # Remove the separate WhatsApp Admin floating button from the dashboard.
+          dp = Path("dashboard.html")
+          if dp.exists():
+              ds = dp.read_text(encoding="utf-8")
+              ds, removed = re.subn(
+                  r'<a id="gcDashboardAdminWhatsApp"[\\s\\S]*?</a>\\s*<style>#gcDashboardAdminWhatsApp[\\s\\S]*?</style>',
+                  "",
+                  ds,
+                  count=1,
+                  flags=re.I
+              )
+              if removed:
+                  dp.write_text(ds, encoding="utf-8")
+                  print("Removed separate WhatsApp Admin button from dashboard.html.")
+              else:
+                  print("No separate WhatsApp Admin button block found in dashboard.html.")
+
           print("Homepage WhatsApp floating button removed; Jotform chatbot installed.")
           PY
       - name: Commit homepage update
