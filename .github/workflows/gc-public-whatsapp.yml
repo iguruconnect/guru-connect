@@ -27,7 +27,7 @@ jobs:
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
 
-          # Use the newly uploaded 16:9 GURU CONNECT hero artwork on desktop and mobile.
+          # Keep the approved hero artwork; preserve its native aspect ratio on every screen.
           hero_src = "https://raw.githubusercontent.com/iguruconnect/guru-connect/main/gc-home-hero-20261105.webp..webp"
           s, hero_count = re.subn(
               r'(<img\b(?=[^>]*\bclass=["\'][^"\']*gc-approved-hero-image[^"\']*["\'])[^>]*\bsrc=["\'])[^"\']*(["\'])',
@@ -41,6 +41,7 @@ jobs:
 
           hero_style = """<style id="gc-new-responsive-hero-20261105">
           #publicWebsiteContent > section.gc-approved-hero#home {
+            display: block !important;
             width: 100% !important;
             height: auto !important;
             min-height: 0 !important;
@@ -48,7 +49,7 @@ jobs:
             aspect-ratio: auto !important;
             margin: 0 !important;
             padding: 0 !important;
-            overflow: hidden !important;
+            overflow: visible !important;
             background: #fff !important;
             border-radius: 0 !important;
           }
@@ -56,9 +57,10 @@ jobs:
             display: block !important;
             width: 100% !important;
             height: auto !important;
+            min-height: 0 !important;
             max-width: 100% !important;
             max-height: none !important;
-            aspect-ratio: 16 / 9 !important;
+            aspect-ratio: auto !important;
             object-fit: contain !important;
             object-position: center center !important;
             margin: 0 auto !important;
@@ -70,14 +72,21 @@ jobs:
             #publicWebsiteContent > section.gc-approved-hero#home {
               width: 100% !important;
               max-width: 100% !important;
-              margin: 0 !important;
+              height: auto !important;
+              min-height: 0 !important;
+              max-height: none !important;
               aspect-ratio: auto !important;
+              overflow: visible !important;
+              margin: 0 !important;
               border-radius: 0 !important;
             }
             #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image {
+              display: block !important;
               width: 100% !important;
               height: auto !important;
-              aspect-ratio: 16 / 9 !important;
+              min-height: 0 !important;
+              max-height: none !important;
+              aspect-ratio: auto !important;
               object-fit: contain !important;
             }
           }
