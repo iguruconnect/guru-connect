@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>GURU CONNECT — Admin Control Center</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><title>GURU CONNECT — Admin Control Center</title>
 <style>
 *{box-sizing:border-box}body{margin:0;background:#f5f8fc;color:#0f172a;font-family:Inter,Arial,sans-serif}.head{background:linear-gradient(135deg,#08265c,#155eef 58%,#0891b2);color:#fff;padding:20px}.headin{width:min(1280px,94vw);margin:auto;display:flex;justify-content:space-between;align-items:center;gap:16px}h1{margin:0;font-size:clamp(21px,3vw,32px)}.head p{margin:5px 0 0;color:#dbeafe;font-size:12px;font-weight:700}.wrap{width:min(1280px,94vw);margin:22px auto 60px}.gate,.panel{background:#fff;border:1px solid #dbe3ef;border-radius:20px;box-shadow:0 12px 38px rgba(15,23,42,.07)}.gate{padding:22px;font-weight:800}.notice{padding:13px 16px;background:#fff7ed;border:1px solid #fed7aa;color:#9a3412;border-radius:14px;font-size:12px;font-weight:800;margin-bottom:16px}.controlbar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:16px}.topbtn{border:1px solid #d7e0ed;background:#fff;color:#12315b;border-radius:15px;padding:15px 12px;text-align:left;font-weight:950;cursor:pointer;box-shadow:0 5px 16px rgba(15,23,42,.05);transition:.15s}.topbtn:hover,.topbtn.active{border-color:#155eef;background:#eff6ff;transform:translateY(-1px)}.topbtn small{display:block;color:#64748b;font-size:10px;font-weight:750;margin-top:4px}.section{display:none;background:#fff;border:1px solid #dbe3ef;border-radius:20px;box-shadow:0 12px 38px rgba(15,23,42,.07);overflow:hidden;margin-bottom:16px}.section.open{display:block}.secHead{padding:18px 20px;border-bottom:1px solid #e5eaf1;background:linear-gradient(135deg,#f8fbff,#fff);display:flex;justify-content:space-between;gap:14px;align-items:center;flex-wrap:wrap}.secHead h2{margin:0;font-size:20px}.secHead p{margin:5px 0 0;color:#64748b;font-size:12px;font-weight:700}.secBody{padding:20px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field label{display:block;font-size:10px;font-weight:950;color:#475569;text-transform:uppercase;margin:0 0 6px}.field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid #cbd5e1;border-radius:11px;font:700 13px Inter,Arial;outline:0;background:#fff}.ad-flyer-field{padding:12px;border:2px dashed #155eef;border-radius:13px;background:#eff6ff}.ad-flyer-field>label{font-size:11px;color:#123b82}.ad-flyer-field input[type=file]{padding:8px;background:#fff;border:1px solid #93c5fd}.ad-flyer-field input[type=file]::file-selector-button{border:0;border-radius:8px;padding:9px 12px;margin-right:10px;background:#155eef;color:#fff;font-weight:900;cursor:pointer}.ad-flyer-help{display:block;margin-top:7px;font-size:11px;line-height:1.5;color:#475569;font-weight:700}.field textarea{min-height:80px;resize:vertical}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.btn{border:0;border-radius:11px;padding:11px 14px;font-weight:950;cursor:pointer}.btn:disabled{opacity:.6;cursor:not-allowed}.primary{background:#155eef;color:#fff}.green{background:#059669;color:#fff}.orange{background:#ea580c;color:#fff}.purple{background:#7c3aed;color:#fff}.red{background:#dc2626;color:#fff}.light{background:#eef2f7;color:#334155}.teal{background:#0f766e;color:#fff}.status{margin-top:10px;font-size:12px;font-weight:800;color:#64748b;white-space:pre-wrap}.finder{border:2px solid #155eef}.searchrow{display:grid;grid-template-columns:1fr 210px auto auto;gap:10px;align-items:end}.results{margin-top:15px}.user{border:1px solid #dbe3ef;border-radius:17px;padding:15px;margin-top:11px;background:#fbfdff}.userHead{display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.identity b{font-size:16px}.badge{display:inline-block;margin-left:7px;padding:4px 8px;border-radius:999px;background:#dbeafe;color:#1d4ed8;font-size:9px;font-weight:950}.muted{color:#64748b;font-size:11px;line-height:1.65;margin-top:5px}.edit{display:none;margin-top:14px;padding-top:14px;border-top:1px solid #e2e8f0}.edit.open{display:block}.editTitle{font-size:11px;font-weight:950;color:#155eef;margin-bottom:10px;text-transform:uppercase}.empty{padding:20px;border:1px dashed #cbd5e1;border-radius:14px;color:#64748b;font-weight:800;text-align:center}.pill{padding:6px 9px;border-radius:999px;background:#ecfdf5;color:#047857;font-size:10px;font-weight:950}.dangerNote{background:#fff1f2;border:1px solid #fecdd3;color:#9f1239;border-radius:13px;padding:12px;font-size:11px;font-weight:750;line-height:1.55}@media(max-width:900px){.controlbar{grid-template-columns:repeat(2,minmax(0,1fr))}.searchrow{grid-template-columns:1fr 1fr}.searchrow .wide{grid-column:1/-1}}@media(max-width:650px){.controlbar{grid-template-columns:1fr}.grid,.searchrow{grid-template-columns:1fr}.userHead{flex-direction:column}.userHead .actions,.userHead .actions .btn{width:100%}.headin{align-items:flex-start;flex-direction:column}}
 
@@ -602,11 +602,27 @@ async function api(action,payload={}){
   if(!r.ok)throw new Error(d.error||'Server error');
   return d;
 }
-async function staffCheck(){
-  const s=await sb.auth.getSession(),u=s.data?.session?.user;
-  if(!u||String(u.email||'').toLowerCase()!=='guruconnect.in@gmail.com'||String(u.id||'')!=='1df7606a-3a96-4116-b022-804b37a3c3dd'){location.replace('./index.html?open_login=1&ts='+Date.now());return false}
-  $('gate').style.display='none';$('app').style.display='block';return true;
+function gcAdminIsAuthorizedSession(session){
+  const u=session?.user;
+  return !!u&&String(u.email||'').toLowerCase()==='guruconnect.in@gmail.com'&&String(u.id||'')==='1df7606a-3a96-4116-b022-804b37a3c3dd';
 }
+function gcAdminLockAndRedirect(){
+  const app=$('app'),gate=$('gate');
+  if(app)app.style.display='none';
+  if(gate){gate.style.display='block';gate.textContent='Admin session ended. Redirecting to the home page…';}
+  try{['is_staff_logged','gc_staff_supabase_auth','active_user_role','active_user_id','active_user_email','gc_staff_email','gc_staff_role'].forEach(k=>{localStorage.removeItem(k);sessionStorage.removeItem(k);});}catch(e){}
+  location.replace('./index.html?logout=1&ts='+Date.now());
+}
+async function staffCheck(){
+  const app=$('app'),gate=$('gate');
+  if(app)app.style.display='none';
+  if(gate){gate.style.display='block';gate.textContent='Checking Staff/Admin session…';}
+  try{const s=await sb.auth.getSession();if(!gcAdminIsAuthorizedSession(s.data?.session)){gcAdminLockAndRedirect();return false;}}
+  catch(e){gcAdminLockAndRedirect();return false;}
+  if(gate)gate.style.display='none';if(app)app.style.display='block';return true;
+}
+let gcAdminLoggingOut=false;
+sb.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'&&!gcAdminLoggingOut)gcAdminLockAndRedirect();});
 let users=[];
 let activeSection='edit';
 let lrrLoaded=false,lrrLoading=false,coinHistoryLoaded=false;
@@ -1376,8 +1392,20 @@ function switchSection(name){
   if(name==='stdmsgfortutors')gcLoadStdTutorMessages(false);
 }
 document.querySelectorAll('.topbtn').forEach(b=>b.addEventListener('click',()=>switchSection(b.dataset.sec)));
-$('logout').onclick=async()=>{const btn=$('logout');if(btn){btn.disabled=true;btn.textContent='LOGGING OUT…'}try{await sb.auth.signOut({scope:'local'});}catch(e){console.warn('Sign-out cleanup:',e)}try{['is_staff_logged','gc_staff_supabase_auth','active_user_role','active_user_id','active_user_email','gc_staff_email','gc_staff_role'].forEach(k=>localStorage.removeItem(k));['is_staff_logged','gc_staff_supabase_auth','active_user_role','active_user_id','active_user_email','gc_staff_email','gc_staff_role'].forEach(k=>sessionStorage.removeItem(k));}catch(e){}try{if('caches'in window){const keys=await caches.keys();await Promise.all(keys.map(k=>caches.delete(k)))}}catch(e){}window.location.replace('./index.html?logout=1&ts='+Date.now());};
-window.addEventListener('pageshow',function(e){if(e.persisted&&localStorage.getItem('is_staff_logged')!=='true'){window.location.replace('./index.html?logout=1&ts='+Date.now())}});
+$('logout').onclick=async()=>{
+  gcAdminLoggingOut=true;
+  const btn=$('logout');if(btn){btn.disabled=true;btn.textContent='LOGGING OUT…'}
+  const app=$('app'),gate=$('gate');if(app)app.style.display='none';if(gate){gate.style.display='block';gate.textContent='Signing out securely…';}
+  try{await sb.auth.signOut({scope:'local'});}catch(e){console.warn('Sign-out cleanup:',e)}
+  try{['is_staff_logged','gc_staff_supabase_auth','active_user_role','active_user_id','active_user_email','gc_staff_email','gc_staff_role'].forEach(k=>{localStorage.removeItem(k);sessionStorage.removeItem(k);});}catch(e){}
+  window.location.replace('./index.html?logout=1&ts='+Date.now());
+};
+window.addEventListener('pageshow',async function(){
+  const app=$('app');if(app)app.style.display='none';
+  try{const s=await sb.auth.getSession();if(!gcAdminIsAuthorizedSession(s.data?.session)){gcAdminLockAndRedirect();return;}if(app)app.style.display='block';const gate=$('gate');if(gate)gate.style.display='none';}
+  catch(e){gcAdminLockAndRedirect();}
+});
+window.addEventListener('pagehide',function(){const app=$('app');if(app)app.style.display='none';});
 
 function adminWhatsAppUser(i){const u=users[i]||{};let phone=String(u.phone||'').replace(/\D/g,'');if(phone.startsWith('00'))phone=phone.slice(2);if(phone.length===11&&phone.startsWith('0'))phone=phone.slice(1);if(phone.length===10)phone='91'+phone;if(!phone){alert('This user has no registered phone/WhatsApp number.');return}const name=String(u.name||u.full_name||u.role||'GURU CONNECT member');const msg='Hello '+name+', I am contacting you from GURU CONNECT Admin regarding your account.';window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank','noopener,noreferrer')}
 function normalizeRpcUsers(rows){
