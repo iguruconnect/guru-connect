@@ -1,4 +1,4 @@
-name: Install GURU CONNECT public WhatsApp button
+name: Replace public WhatsApp button with GURU CONNECT chatbot
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  install-public-whatsapp:
+  install-guru-connect-chatbot:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -26,26 +26,22 @@ jobs:
 
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-          # Remove the previously injected floating WhatsApp block, if present.
           marker = "<!-- GC_PUBLIC_WHATSAPP_BUTTON_17112312470 -->"
           if marker in s:
               a = s.index(marker)
-              b = re.search(r"</script>\\s*</body\\s*>", s[a:], re.I)
+              b = re.search(r"</script>\s*</body\s*>", s[a:], re.I)
               if b:
                   s = s[:a] + s[a + b.start() + len("</script>"):]
-
-          # Remove any remaining injected WhatsApp floating button elements/styles.
-          s = re.sub(r'<style id="gc-public-whatsapp-style">[\\s\\S]*?</style>\\s*<a id="gc-public-whatsapp-btn"[\\s\\S]*?</a>', '', s, flags=re.I)
-          # Install the supplied Jotform chatbot once, immediately before </body>.
-          embed = """<script src='https://cdn.jotfor.ms/agent/embedjs/01a1a716b670700081f380b07d03cd740514/embed.js'></script>"""
-          s = re.sub(r"\\s*<script src=['\"]https://cdn\\.jotfor\\.ms/agent/embedjs/01a1a716b670700081f380b07d03cd740514/embed\\.js['\"]>\\s*</script>", "", s, flags=re.I)
-          if not re.search(r"</body\\s*>", s, re.I):
+          s = re.sub(r'<style id="gc-public-whatsapp-style">[\s\S]*?</style>\s*<a id="gc-public-whatsapp-btn"[\s\S]*?</a>', "", s, flags=re.I)
+          embed = "<script src='https://cdn.jotfor.ms/agent/embedjs/01a1a716b670700081f380b07d03cd740514/embed.js'></script>"
+          s = re.sub(r"\s*<script src=['\"]https://cdn\.jotfor\.ms/agent/embedjs/01a1a716b670700081f380b07d03cd740514/embed\.js['\"]>\s*</script>", "", s, flags=re.I)
+          if not re.search(r"</body\s*>", s, re.I):
               raise SystemExit("STOP: index.html has no closing body tag; refusing to modify it.")
-          s = re.sub(r"</body\\s*>", embed + "\\n</body>", s, count=1, flags=re.I)
+          s = re.sub(r"</body\s*>", embed + "\n</body>", s, count=1, flags=re.I)
           p.write_text(s, encoding="utf-8")
-          print("Removed public floating WhatsApp button and installed Jotform chatbot embed.")
+          print("Homepage WhatsApp floating button removed; Jotform chatbot installed.")
           PY
-      - name: Commit homepage update
+      - name: Commit homepage update      - name: Commit homepage update
         run: |
           if git diff --quiet -- index.html; then
             echo "No homepage change required."
