@@ -53,19 +53,18 @@
 .share-panel{display:none;margin-top:18px;padding:18px;border:1px solid #bfdbfe;border-radius:16px;background:linear-gradient(135deg,#eff6ff,#fff 65%,#f0fdf4)}
 .share-panel.open{display:block}.share-panel h3{margin:0 0 7px;color:#123b82;font-size:17px}.share-panel p{margin:0 0 13px;color:#475569;font-size:12px;line-height:1.6}
 .share-actions{display:flex;gap:10px;flex-wrap:wrap}.share-actions button{flex:1;min-width:190px;min-height:46px;border:0;border-radius:11px;padding:11px 14px;color:#fff;font-weight:950;cursor:pointer}
-.share-wa{background:#128c4a}.share-gmail{background:#d93025}.share-image{background:#155eef}
+.share-gmail{background:#d93025}.share-image{background:#155eef}
 .share-help{margin-top:10px!important;font-size:11px!important;color:#64748b!important}
 @media(max-width:520px){.share-actions{flex-direction:column}.share-actions button{width:100%}}
 </style>
 <div class="share-panel" id="sharePanel" aria-live="polite">
  <h3>Requirement submitted successfully!</h3>
- <p>Your requirement is saved in the GURU CONNECT Admin Dashboard. You can now share a table-style copy with GURU CONNECT using WhatsApp or Gmail.</p>
+ <p>Your requirement is saved in the GURU CONNECT Admin Dashboard. You can now share a table-style copy with GURU CONNECT using Gmail.</p>
  <div class="share-actions">
-  <button type="button" class="share-wa" id="shareWhatsApp">WHATSAPP — SHARE REQUIREMENT</button>
   <button type="button" class="share-gmail" id="shareGmail">GMAIL — EMAIL REQUIREMENT</button>
   <button type="button" class="share-image" id="downloadInquiryImage">DOWNLOAD REQUIREMENT IMAGE</button>
  </div>
- <p class="share-help">WhatsApp image sharing is supported on devices that provide file sharing. Otherwise, the requirement image will download and WhatsApp will open with the details ready to send; attach the downloaded image if desired. Gmail opens a pre-filled email for you to review and send.</p>
+ <p class="share-help">You can download a copy of your requirement or send it by Gmail. Gmail opens a pre-filled email for you to review and send.</p>
 </div>
 <script>
 (function(){
@@ -178,27 +177,6 @@ function downloadBlob(blob){
 $('downloadInquiryImage').addEventListener('click',async()=>{
  try{const blob=await makeImageBlob();if(!blob)throw new Error('Image could not be created on this device.');downloadBlob(blob);status.textContent='Requirement image downloaded.'}
  catch(err){status.className='status error';status.textContent=err.message||'Could not create the image.'}
-});
-$('shareWhatsApp').addEventListener('click',async()=>{
- const text=cachedMessage||makeMessage();
- try{
-  const blob=await makeImageBlob();
-  const file=new File([blob],'GURU-CONNECT-Tutor-Requirement.png',{type:'image/png'});
-  if(navigator.share&&navigator.canShare&&navigator.canShare({files:[file]})){
-   await navigator.share({files:[file],title:'GURU CONNECT Tutor Requirement',text});
-   status.className='status success';status.textContent='Share sheet opened. Select WhatsApp and send the requirement image.';
-   return;
-  }
-  downloadBlob(blob);
-  const url='https://wa.me/17112312470?text='+encodeURIComponent(text);
-  window.open(url,'_blank','noopener');
-  status.className='status success';status.textContent='Requirement image downloaded and WhatsApp opened with the details. Attach the downloaded PNG before sending if you want to send it as an image.';
- }catch(err){
-  if(err&&err.name==='AbortError')return;
-  const url='https://wa.me/17112312470?text='+encodeURIComponent(text);
-  window.open(url,'_blank','noopener');
-  status.className='status';status.textContent='WhatsApp opened with the requirement details. If image sharing is unavailable, use DOWNLOAD REQUIREMENT IMAGE and attach the PNG.';
- }
 });
 $('shareGmail').addEventListener('click',()=>{
  const subject='GURU CONNECT — New Tutor Requirement';
