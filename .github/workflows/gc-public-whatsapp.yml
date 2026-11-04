@@ -30,7 +30,7 @@ jobs:
           # Use the newly uploaded 16:9 GURU CONNECT hero artwork on desktop and mobile.
           hero_src = "https://raw.githubusercontent.com/iguruconnect/guru-connect/main/gc-home-hero-20261105.webp..webp"
           s, hero_count = re.subn(
-              r'(<img\\b(?=[^>]*\\bclass=["\\'][^"\\']*gc-approved-hero-image[^"\\']*["\\'])[^>]*\\bsrc=["\\'])[^"\\']*(["\\'])',
+              r'(<img\b(?=[^>]*\bclass=["\'][^"\']*gc-approved-hero-image[^"\']*["\'])[^>]*\bsrc=["\'])[^"\']*(["\'])',
               lambda m: m.group(1) + hero_src + m.group(2),
               s,
               count=1,
@@ -82,8 +82,8 @@ jobs:
             }
           }
           </style>"""
-          s = re.sub(r'<style id="gc-new-responsive-hero-20261105">[\\s\\S]*?</style>\\s*', "", s, flags=re.I)
-          s = re.sub(r"</head\\s*>", hero_style + "\\n</head>", s, count=1, flags=re.I)
+          s = re.sub(r'<style id="gc-new-responsive-hero-20261105">[\s\S]*?</style>\s*', "", s, flags=re.I)
+          s = re.sub(r"</head\s*>", hero_style + "\n</head>", s, count=1, flags=re.I)
           marker = "<!-- GC_PUBLIC_WHATSAPP_BUTTON_17112312470 -->"
           if marker in s:
               a = s.index(marker)
