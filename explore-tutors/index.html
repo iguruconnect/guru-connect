@@ -374,4 +374,22 @@ html,body,body *:not(svg):not(path):not(i):not(.material-icons):not(.material-sy
 .search-tutor-card>.inquiry-btn:hover{background:linear-gradient(135deg,#0647c8,#063a9e)!important}
 @media(max-width:520px){.search-tutor-card>.tutor-card-top{align-items:center}.tutor-avatar{width:86px!important;height:100px!important;flex-basis:86px!important}.tutor-card-name h3{font-size:17px!important}.gc-profile-card-brand{font-size:11px}}
 </style>
+
+<script id="gc-hero-search-prefill">
+(function(){
+  try{
+    var term=new URLSearchParams(window.location.search).get('q');
+    if(!term)return;
+    term=term.trim().slice(0,80);
+    if(!term)return;
+    var first=document.querySelector('.subject-input');
+    var count=document.getElementById('subjectCount');
+    if(first)first.value=term;
+    if(count)count.value='1';
+    var status=document.getElementById('searchStatus');
+    if(status)status.textContent='Search term added: '+term+'. Complete your class, course and contact details, then select FIND REQUIRED TUTORS.';
+  }catch(e){}
+})();
+</script>
+
 </body></html>
