@@ -5566,7 +5566,8 @@ a[href*="wa.me" i], a[href*="whatsapp.com" i],
       </select>
       <input autocomplete="email" class="w-full border rounded-xl p-3.5 text-sm font-bold" id="loginEmailInput" placeholder="Registered email address" type="email"/>
       <input autocomplete="current-password" class="w-full border rounded-xl p-3.5 text-sm font-bold" id="loginPasswordInput" placeholder="Password" type="password"/>
-      <button class="w-full gc-modern-login-btn text-white font-black py-3.5 rounded-xl text-sm" onclick="gcEmailLogin()" type="button"><i class="fa-solid fa-right-to-bracket mr-2"></i>LOGIN SECURELY</button>
+      <div class="gc-login-captcha-wrap" style="padding:12px;border:1px solid #dbeafe;border-radius:14px;background:#f8fafc"><div style="font-size:11px;font-weight:800;color:#334155;margin-bottom:8px">HUMAN VERIFICATION</div><div id="gcLoginTurnstile"></div><div id="gcLoginCaptchaStatus" role="status" aria-live="polite" style="font-size:12px;color:#64748b;margin-top:7px">Loading Cloudflare security check…</div></div>
+      <button id="gcLoginSubmitBtn" class="w-full gc-modern-login-btn text-white font-black py-3.5 rounded-xl text-sm" onclick="gcEmailLogin()" type="button"><i class="fa-solid fa-right-to-bracket mr-2"></i>LOGIN SECURELY</button>
       <button class="w-full text-blue-700 font-bold text-xs py-2" onclick="gcResetPassword()" type="button">Forgot password? Send reset email</button>
       <div class="text-[11px] text-slate-400 text-center">Your password is handled by Supabase Authentication and is never stored in the website.</div>
     </div>
@@ -16115,27 +16116,45 @@ window.gcEmailLogin=async function(){
  const email=clean(document.getElementById('loginEmailInput')?.value).toLowerCase();
  const password=document.getElementById('loginPasswordInput')?.value||'';
  const selected=clean(document.getElementById('loginRoleInput')?.value)||'student';
- if(!/^\S+@\S+\.\S+$/.test(email))return alert('Enter a valid email address.');
+ const btn=document.getElementById('gcLoginSubmitBtn');
+ if(!/^\\S+@\\S+\\.\\S+$/.test(email))return alert('Enter a valid email address.');
  if(!password)return alert('Enter your password.');
+ if(!window.gcLoginCaptchaToken){document.getElementById('gcLoginCaptchaStatus')?.replaceChildren('Please complete the Cloudflare human verification first.');return alert('Please complete the Cloudflare human verification first.');}
  const s=S();if(!s)return alert('Secure login is unavailable. Please refresh the website and try again.');
+ if(btn){btn.disabled=true;btn.textContent='VERIFYING & SIGNING IN…';}
  try{
-  const r=await s.auth.signInWithPassword({email,password});
+  const captchaToken=window.gcLoginCaptchaToken;
+  const r=await s.auth.signInWithPassword({email,password,options:{captchaToken}});
   if(r.error)throw r.error;
-  const u=r.data?.user;if(!u)throw new Error('Supabase did not return a logged-in user.');
+  const u=r.data?.user,session=r.data?.session;if(!u||!session)throw new Error('Supabase did not return a secure login session.');
   if(!u.email_confirmed_at){try{await s.auth.signOut()}catch(_){};throw new Error('Please verify your email first. Check your verification email.');}
-  let role=selected, table=role==='tutor'?'tutor_profiles':'student_profiles';
+  // Admin identity is checked privately after authentication; the visible Student/Tutor choice is ignored.
+  if(email===STAFF_EMAIL){
+   if(String(u.id)!=='1df7606a-3a96-4116-b022-804b37a3c3dd'||String(u.email||'').toLowerCase()!==STAFF_EMAIL){try{await s.auth.signOut()}catch(_){};throw new Error('This account is not the authorised GURU CONNECT account.');}
+   localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');
+   sessionStorage.setItem('is_staff_logged','true');sessionStorage.setItem('gc_staff_supabase_auth','true');
+   localStorage.setItem('active_user_id',u.id);localStorage.setItem('active_user_email',u.email||STAFF_EMAIL);localStorage.setItem('active_user_role','staff');
+   try{sessionStorage.removeItem('gc_logged_out')}catch(_){}
+   window.closeLoginModal?.();window.location.replace('admin.html');return true;
+  }
+  let role=selected,table=role==='tutor'?'tutor_profiles':'student_profiles';
   let q=await s.from(table).select('*').eq('user_id',u.id).maybeSingle();
   if(q.error)throw q.error;
   if(!q.data){const otherRole=role==='tutor'?'student':'tutor',otherTable=otherRole==='tutor'?'tutor_profiles':'student_profiles';const oq=await s.from(otherTable).select('*').eq('user_id',u.id).maybeSingle();if(oq.error)throw oq.error;if(oq.data){role=otherRole;table=otherTable;q=oq;}}
   if(!q.data)throw new Error('No registered '+selected+' profile is linked to this email account. Please register first.');
   const p=q.data;
   localStorage.setItem('active_user_name',p.name||email.split('@')[0]);localStorage.setItem('active_user_email',email);localStorage.setItem('active_user_phone',p.phone||'');localStorage.setItem('active_user_role',role);localStorage.setItem('active_user_profile_id',String(p.id));localStorage.setItem('active_user_id',String(u.id));
-  window.__gcLoggedInProfile=p;try{updateAuthBadge?.()}catch(_){};try{closeLoginModal?.()}catch(_){}
-  // Clear the previous dashboard logout marker only after Supabase authentication and profile validation succeed.
+  window.__gcLoggedInProfile=p;try{updateAuthBadge?.()}catch(_){};try{window.closeLoginModal?.()}catch(_){}
   try{sessionStorage.removeItem('gc_logged_out')}catch(_){}
-  window.location.replace('dashboard.html?login=success&t='+Date.now());
- }catch(e){console.error(e);alert('Login failed: '+(e.message||String(e)));}
-};
+  window.location.replace('dashboard.html?login=success&t='+Date.now());return true;
+ }catch(e){console.error(e);alert('Login failed: '+(e.message||String(e)));return false;}
+ finally{
+  window.gcLoginCaptchaToken='';
+  if(window.gcLoginTurnstileId!==null&&window.turnstile){try{window.turnstile.reset(window.gcLoginTurnstileId)}catch(_){}}
+  const st=document.getElementById('gcLoginCaptchaStatus');if(st)st.textContent='Please complete the security check again.';
+  if(btn){btn.disabled=false;btn.textContent='LOGIN SECURELY';}
+ }
+}
 async function staffSession(){
  const s=S();if(!s)throw new Error('Supabase client is not loaded.');
  const q=await s.auth.getSession();
@@ -16305,7 +16324,7 @@ window.openLoginModal=function(role){
   document.body.classList.remove('gc-staff-login-open');
   const m=el('loginModal');if(m){m.classList.remove('hidden');m.style.display='flex';m.setAttribute('aria-hidden','false');}
   try{window.closeNavMenu?.()}catch(_){}
-  setTimeout(()=>el('loginEmailInput')?.focus(),50);
+  setTimeout(()=>el('loginEmailInput')?.focus(),50);setTimeout(()=>window.gcEnsureLoginCaptcha?.(),150);
 };
 window.closeLoginModal=function(){const m=el('loginModal');if(m){m.classList.add('hidden');m.style.display='none';m.setAttribute('aria-hidden','true');}document.body.classList.remove('gc-staff-login-open');};
 window.openStaffLoginModal=function(){window.openLoginModal('staff')};
@@ -17136,5 +17155,36 @@ input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-
 }
 </style>
 
+
+<script id="gc-login-turnstile-init">
+(function(){
+ 'use strict';
+ window.gcLoginCaptchaToken='';
+ window.gcLoginTurnstileId=null;
+ window.gcLoginTurnstileApiReady=false;
+ window.gcLoginTurnstileReady=function(){
+  window.gcLoginTurnstileApiReady=true;
+  window.gcEnsureLoginCaptcha();
+ };
+ window.gcEnsureLoginCaptcha=function(){
+  const host=document.getElementById('gcLoginTurnstile');
+  if(!host||!window.gcLoginTurnstileApiReady||!window.turnstile)return;
+  if(window.gcLoginTurnstileId!==null)return;
+  try{
+   window.gcLoginTurnstileId=window.turnstile.render(host,{
+    sitekey:'0x4AAAAAAFy99xtMvTDkv10E',theme:'light',size:'normal',
+    callback:function(token){window.gcLoginCaptchaToken=token;const st=document.getElementById('gcLoginCaptchaStatus');if(st)st.textContent='✓ Human verification completed.';},
+    'expired-callback':function(){window.gcLoginCaptchaToken='';const st=document.getElementById('gcLoginCaptchaStatus');if(st)st.textContent='Verification expired. Please complete it again.';},
+    'error-callback':function(){window.gcLoginCaptchaToken='';const st=document.getElementById('gcLoginCaptchaStatus');if(st)st.textContent='Cloudflare could not load the security check. Please refresh and try again.';}
+   });
+  }catch(e){const st=document.getElementById('gcLoginCaptchaStatus');if(st)st.textContent='Cloudflare security check could not initialise. Please refresh.';console.error(e);}
+ };
+ const loader=document.createElement('script');
+ loader.src='https://challenges.cloudflare.com/turnstile/v0/api.js?onload=gcLoginTurnstileReady&render=explicit';
+ loader.async=true;loader.defer=true;
+ loader.onerror=function(){const st=document.getElementById('gcLoginCaptchaStatus');if(st)st.textContent='Cloudflare script could not be reached. Check your connection and refresh.';};
+ document.head.appendChild(loader);
+})();
+</script>
 </body>
 </html>
