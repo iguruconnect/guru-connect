@@ -46,7 +46,9 @@ jobs:
           }
           }
           </style>"""
-          s = style + "\\n" + s
+          # Strip the literal backslash-n text left by the earlier workflow run.
+          s = re.sub(r"^(?:\s*\\n)+", "", s)
+          s = style + "\n" + s
           p.write_text(s, encoding="utf-8")
           print("Mobile hero hidden from first paint; orange patch removed; desktop unchanged.")
           PY
