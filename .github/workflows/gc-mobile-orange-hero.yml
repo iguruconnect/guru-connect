@@ -1,4 +1,4 @@
-name: Keep mobile orange hero permanently visible
+name: Remove mobile orange hero patch
 
 on:
   push:
@@ -10,14 +10,14 @@ permissions:
   contents: write
 
 jobs:
-  patch-mobile-hero:
+  remove-mobile-patch:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: main
           fetch-depth: 0
-      - name: Remove branded mobile patch and shorten orange thought
+      - name: Remove orange mobile patch and keep mobile hero image hidden
         shell: bash
         run: |
           python - <<'PY'
@@ -27,60 +27,27 @@ jobs:
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
 
-          # Remove old injected versions first, so the banner is never duplicated.
-          s = re.sub(r'<script id="gc-persistent-mobile-orange-hero-script">[\s\S]*?</script>', '', s, flags=re.I)
-          s = re.sub(r'<style id="gc-persistent-mobile-orange-hero">[\s\S]*?</style>', '', s, flags=re.I)
-          s = re.sub(r'<style id="gc-static-mobile-orange-hero">[\s\S]*?</style>', '', s, flags=re.I)
-          s = re.sub(r'<div id="gc-mobile-orange-thought"[^>]*>[\s\S]*?</div>', '', s, flags=re.I)
+          # Remove every injected orange-banner implementation.
+          s = re.sub(r'<script id="gc-persistent-mobile-orange-hero-script">[\\s\\S]*?</script>', '', s, flags=re.I)
+          s = re.sub(r'<style id="gc-persistent-mobile-orange-hero">[\\s\\S]*?</style>', '', s, flags=re.I)
+          s = re.sub(r'<style id="gc-static-mobile-orange-hero">[\\s\\S]*?</style>', '', s, flags=re.I)
+          s = re.sub(r'<div id="gc-mobile-orange-thought"[^>]*>[\\s\\S]*?</div>', '', s, flags=re.I)
 
-          banner = '''<div id="gc-mobile-orange-thought" role="region" aria-label="A thought for learners">Dream big. Learn. Grow.</div>'''
-          pattern = r'(<section\b(?=[^>]*\bid="home")(?=[^>]*\bgc-approved-hero)[^>]*>)'
-          s, n = re.subn(pattern, lambda m: m.group(1) + '\n  ' + banner, s, count=1, flags=re.I)
-          if n != 1:
-              raise SystemExit("STOP: Could not locate the existing homepage hero section exactly once.")
-
-          style = r"""<style id="gc-static-mobile-orange-hero">
-          #publicWebsiteContent > section.gc-approved-hero#home > #gc-mobile-orange-thought { display:none !important; }
+          # On phones, remove the complete hero area rather than showing either image or orange patch.
+          style = """<style id="gc-mobile-hero-hidden">
           @media screen and (max-width:640px) {
             #publicWebsiteContent > section.gc-approved-hero#home {
-              display:block !important; width:100% !important; height:auto !important;
-              min-height:125px !important; max-height:none !important; overflow:visible !important;
-              padding:0 !important; margin:0 !important; line-height:normal !important;
-              background:linear-gradient(135deg,#f47700 0%,#ff8b1f 52%,#e85d04 100%) !important;
+              display:none !important;
             }
-            /* Remove the old mobile hero patch containing the brand name. */
-            #publicWebsiteContent .gc-mobile-hero-copy,
-            #publicWebsiteContent .gc-mobile-hero-brand {
-              display:none !important; visibility:hidden !important; opacity:0 !important;
-            }
-            #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image {
-              display:none !important; visibility:hidden !important; opacity:0 !important;
-            }
-            #publicWebsiteContent > section.gc-approved-hero#home > #gc-mobile-orange-thought {
-              display:flex !important; visibility:visible !important; opacity:1 !important;
-              position:relative !important; box-sizing:border-box !important;
-              width:100% !important; min-height:125px !important; height:auto !important;
-              padding:20px 18px !important; margin:0 !important;
-              align-items:center !important; justify-content:center !important;
-              text-align:center !important; color:#fff !important;
-              background:linear-gradient(135deg,#f47700 0%,#ff8b1f 52%,#e85d04 100%) !important;
-              font-family:Roboto,Arial,sans-serif !important;
-              font-size:clamp(22px,6vw,28px) !important; line-height:1.2 !important;
-              font-weight:900 !important; letter-spacing:-.4px !important;
-              border:0 !important; border-radius:0 !important;
-              box-shadow:inset 0 1px 0 #ffffff35 !important;
-            }
-          }
-          @media screen and (min-width:641px) {
-            #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image { display:block !important; }
-            #publicWebsiteContent > section.gc-approved-hero#home > #gc-mobile-orange-thought { display:none !important; }
           }
           </style>"""
-          if not re.search(r'</head\s*>', s, re.I):
+          s = re.sub(r'<style id="gc-mobile-hero-hidden">[\\s\\S]*?</style>', '', s, flags=re.I)
+          if not re.search(r'</head\\s*>', s, re.I):
               raise SystemExit("STOP: index.html has no closing head tag.")
-          s = re.sub(r'</head\s*>', lambda m: style + '\n' + m.group(0), s, count=1, flags=re.I)
+          s = re.sub(r'</head\\s*>', lambda m: style + '\\n' + m.group(0), s, count=1, flags=re.I)
+
           p.write_text(s, encoding="utf-8")
-          print("Old branded mobile hero hidden; short orange thought installed. Desktop hero preserved.")
+          print("Removed orange thought patch; mobile hero area hidden; desktop hero unchanged.")
           PY
       - name: Commit and push homepage fix
         run: |
@@ -91,5 +58,5 @@ jobs:
             echo "No changes to commit."
             exit 0
           fi
-          git commit -m "Remove branded mobile hero and shorten orange section"
+          git commit -m "Remove orange thought patch from mobile homepage"
           git push origin main
