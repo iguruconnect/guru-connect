@@ -5021,6 +5021,27 @@ a[href*="wa.me" i], a[href*="whatsapp.com" i],
 @media(min-width:641px){.gc-mobile-hero-copy{display:none!important}}
 </style>
 
+<style id="gc-persistent-mobile-orange-hero">
+#gc-mobile-orange-thought { display:none; }
+@media (max-width:640px) {
+  #publicWebsiteContent > section.gc-approved-hero#home {
+    display:block !important; height:auto !important; min-height:0 !important;
+    max-height:none !important; overflow:visible !important; background:transparent !important;
+  }
+  #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image {
+    display:none !important;
+  }
+  #gc-mobile-orange-thought {
+    display:flex !important; box-sizing:border-box; width:100%; min-height:245px;
+    padding:34px 24px; margin:0; align-items:center; justify-content:center;
+    text-align:center; color:#fff; border-radius:0;
+    background:linear-gradient(135deg,#f47700 0%,#ff8b1f 52%,#e85d04 100%);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+    font-size:clamp(25px,7vw,34px); line-height:1.25; font-weight:850;
+    letter-spacing:-.6px; text-wrap:balance; box-shadow:inset 0 1px 0 #ffffff35;
+  }
+}
+</style>
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -17241,6 +17262,31 @@ input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-
  loader.async=true;loader.defer=true;
  loader.onerror=function(){const st=document.getElementById('gcLoginCaptchaStatus');if(st)st.textContent='Cloudflare script could not be reached. Check your connection and refresh.';};
  document.head.appendChild(loader);
+})();
+</script>
+<script id="gc-persistent-mobile-orange-hero-script">
+(function(){
+  function install(){
+    if(!window.matchMedia || !window.matchMedia('(max-width:640px)').matches) return;
+    var home=document.querySelector('#publicWebsiteContent > section.gc-approved-hero#home') || document.getElementById('home');
+    if(!home) return;
+    var banner=document.getElementById('gc-mobile-orange-thought');
+    if(!banner){
+      banner=document.createElement('div');
+      banner.id='gc-mobile-orange-thought';
+      banner.setAttribute('role','region');
+      banner.setAttribute('aria-label','A thought for learners');
+      banner.textContent='Dream big. Learn with purpose. Grow with confidence.';
+    }
+    var image=home.querySelector('.gc-approved-hero-image');
+    if(image){ image.style.setProperty('display','none','important'); if(image.parentNode===home) home.insertBefore(banner,image); else home.insertBefore(banner,home.firstChild); }
+    else if(banner.parentNode!==home){ home.insertBefore(banner,home.firstChild); }
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',install,{once:true});
+  else install();
+  var observer=new MutationObserver(install);
+  observer.observe(document.documentElement,{childList:true,subtree:true});
+  window.addEventListener('resize',install,{passive:true});
 })();
 </script>
 </body>
