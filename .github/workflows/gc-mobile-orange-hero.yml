@@ -17,37 +17,27 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Remove orange mobile patch and keep mobile hero image hidden
+      - name: Remove orange mobile patch
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
           import re
-
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-
-          # Remove every injected orange-banner implementation.
-          s = re.sub(r'<script id="gc-persistent-mobile-orange-hero-script">[\\s\\S]*?</script>', '', s, flags=re.I)
-          s = re.sub(r'<style id="gc-persistent-mobile-orange-hero">[\\s\\S]*?</style>', '', s, flags=re.I)
-          s = re.sub(r'<style id="gc-static-mobile-orange-hero">[\\s\\S]*?</style>', '', s, flags=re.I)
-          s = re.sub(r'<div id="gc-mobile-orange-thought"[^>]*>[\\s\\S]*?</div>', '', s, flags=re.I)
-
-          # On phones, remove the complete hero area rather than showing either image or orange patch.
+          s = re.sub(r'<script id="gc-persistent-mobile-orange-hero-script">[\s\S]*?</script>', '', s, flags=re.I)
+          s = re.sub(r'<style id="gc-persistent-mobile-orange-hero">[\s\S]*?</style>', '', s, flags=re.I)
+          s = re.sub(r'<style id="gc-static-mobile-orange-hero">[\s\S]*?</style>', '', s, flags=re.I)
+          s = re.sub(r'<div id="gc-mobile-orange-thought"[^>]*>[\s\S]*?</div>', '', s, flags=re.I)
+          s = re.sub(r'<style id="gc-mobile-hero-hidden">[\s\S]*?</style>', '', s, flags=re.I)
           style = """<style id="gc-mobile-hero-hidden">
           @media screen and (max-width:640px) {
-            #publicWebsiteContent > section.gc-approved-hero#home {
-              display:none !important;
-            }
+            #publicWebsiteContent > section.gc-approved-hero#home { display:none !important; }
           }
           </style>"""
-          s = re.sub(r'<style id="gc-mobile-hero-hidden">[\\s\\S]*?</style>', '', s, flags=re.I)
-          if not re.search(r'</head\\s*>', s, re.I):
-              raise SystemExit("STOP: index.html has no closing head tag.")
-          s = re.sub(r'</head\\s*>', lambda m: style + '\\n' + m.group(0), s, count=1, flags=re.I)
-
+          s += "\\n" + style + "\\n"
           p.write_text(s, encoding="utf-8")
-          print("Removed orange thought patch; mobile hero area hidden; desktop hero unchanged.")
+          print("Orange patch removed; mobile hero area hidden; desktop hero unchanged.")
           PY
       - name: Commit and push homepage fix
         run: |
