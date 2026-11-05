@@ -17,7 +17,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Remove orange mobile patch
+      - name: Remove orange patch and prevent first-load flash
         shell: bash
         run: |
           python - <<'PY'
@@ -25,19 +25,30 @@ jobs:
           import re
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-          s = re.sub(r'<script id="gc-persistent-mobile-orange-hero-script">[\s\S]*?</script>', '', s, flags=re.I)
-          s = re.sub(r'<style id="gc-persistent-mobile-orange-hero">[\s\S]*?</style>', '', s, flags=re.I)
-          s = re.sub(r'<style id="gc-static-mobile-orange-hero">[\s\S]*?</style>', '', s, flags=re.I)
-          s = re.sub(r'<div id="gc-mobile-orange-thought"[^>]*>[\s\S]*?</div>', '', s, flags=re.I)
-          s = re.sub(r'<style id="gc-mobile-hero-hidden">[\s\S]*?</style>', '', s, flags=re.I)
+
+          # Remove all previous injected orange-banner markup and styles.
+          s = re.sub(r'<script id="gc-persistent-mobile-orange-hero-script">[\\s\\S]*?</script>', '', s, flags=re.I)
+          s = re.sub(r'<style id="gc-persistent-mobile-orange-hero">[\\s\\S]*?</style>', '', s, flags=re.I)
+          s = re.sub(r'<style id="gc-static-mobile-orange-hero">[\\s\\S]*?</style>', '', s, flags=re.I)
+          s = re.sub(r'<div id="gc-mobile-orange-thought"[^>]*>[\\s\\S]*?</div>', '', s, flags=re.I)
+          s = re.sub(r'<style id="gc-mobile-hero-hidden">[\\s\\S]*?</style>', '', s, flags=re.I)
+
+          # Put the mobile rule at the VERY START of the document so it applies
+          # before the hero can paint. Desktop layout remains untouched.
           style = """<style id="gc-mobile-hero-hidden">
           @media screen and (max-width:640px) {
-            #publicWebsiteContent > section.gc-approved-hero#home { display:none !important; }
+            #publicWebsiteContent > section.gc-approved-hero#home,
+            #publicWebsiteContent .gc-mobile-hero-copy,
+            #publicWebsiteContent .gc-mobile-hero-brand {
+              display:none !important;
+              visibility:hidden !important;
+              opacity:0 !important;
+          }
           }
           </style>"""
-          s += "\\n" + style + "\\n"
+          s = style + "\\n" + s
           p.write_text(s, encoding="utf-8")
-          print("Orange patch removed; mobile hero area hidden; desktop hero unchanged.")
+          print("Mobile hero hidden from first paint; orange patch removed; desktop unchanged.")
           PY
       - name: Commit and push homepage fix
         run: |
@@ -48,5 +59,5 @@ jobs:
             echo "No changes to commit."
             exit 0
           fi
-          git commit -m "Remove orange thought patch from mobile homepage"
+          git commit -m "Prevent mobile hero patch flash on page load"
           git push origin main
