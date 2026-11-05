@@ -5022,30 +5022,35 @@ a[href*="wa.me" i], a[href*="whatsapp.com" i],
 </style>
 
 
+
 <style id="gc-static-mobile-orange-hero">
 #publicWebsiteContent > section.gc-approved-hero#home > #gc-mobile-orange-thought { display:none !important; }
 @media screen and (max-width:640px) {
   #publicWebsiteContent > section.gc-approved-hero#home {
     display:block !important; width:100% !important; height:auto !important;
-    min-height:245px !important; max-height:none !important; overflow:visible !important;
+    min-height:125px !important; max-height:none !important; overflow:visible !important;
     padding:0 !important; margin:0 !important; line-height:normal !important;
     background:linear-gradient(135deg,#f47700 0%,#ff8b1f 52%,#e85d04 100%) !important;
   }
-  #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image,
-  #publicWebsiteContent > section.gc-approved-hero#home > .gc-mobile-hero-copy {
-    display:none !important; visibility:hidden !important;
+  /* Remove the old mobile hero patch containing the brand name. */
+  #publicWebsiteContent .gc-mobile-hero-copy,
+  #publicWebsiteContent .gc-mobile-hero-brand {
+    display:none !important; visibility:hidden !important; opacity:0 !important;
+  }
+  #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image {
+    display:none !important; visibility:hidden !important; opacity:0 !important;
   }
   #publicWebsiteContent > section.gc-approved-hero#home > #gc-mobile-orange-thought {
     display:flex !important; visibility:visible !important; opacity:1 !important;
     position:relative !important; box-sizing:border-box !important;
-    width:100% !important; min-height:245px !important; height:auto !important;
-    padding:34px 24px !important; margin:0 !important;
+    width:100% !important; min-height:125px !important; height:auto !important;
+    padding:20px 18px !important; margin:0 !important;
     align-items:center !important; justify-content:center !important;
     text-align:center !important; color:#fff !important;
     background:linear-gradient(135deg,#f47700 0%,#ff8b1f 52%,#e85d04 100%) !important;
     font-family:Roboto,Arial,sans-serif !important;
-    font-size:clamp(25px,7vw,34px) !important; line-height:1.25 !important;
-    font-weight:900 !important; letter-spacing:-.6px !important;
+    font-size:clamp(22px,6vw,28px) !important; line-height:1.2 !important;
+    font-weight:900 !important; letter-spacing:-.4px !important;
     border:0 !important; border-radius:0 !important;
     box-shadow:inset 0 1px 0 #ffffff35 !important;
   }
@@ -5290,7 +5295,8 @@ a[href*="wa.me" i], a[href*="whatsapp.com" i],
 <div class="w-full" id="publicWebsiteContent">
 <!-- GURU CONNECT approved clear hero artwork: original opacity, no overlay or fade -->
 <section class="gc-approved-hero" id="home" aria-label="GURU CONNECT — Indian college students and tutors">
-  <div id="gc-mobile-orange-thought" role="region" aria-label="A thought for learners">Dream big. Learn with purpose. Grow with confidence.</div>
+  <div id="gc-mobile-orange-thought" role="region" aria-label="A thought for learners">Dream big. Learn. Grow.</div>
+  
   <img class="gc-approved-hero-image" alt="GURU CONNECT — Find the right tutor. Find the right student. Connecting Mind - Creating Future." src="https://raw.githubusercontent.com/iguruconnect/guru-connect/main/assets/gc-home-hero-no-whatsapp.png" loading="eager" fetchpriority="high" decoding="async" />
   <div class="gc-mobile-hero-copy" aria-hidden="true">
     <div class="gc-mobile-hero-brand">GURU <span>CONNECT</span></div>
