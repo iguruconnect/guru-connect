@@ -16117,7 +16117,7 @@ window.gcEmailLogin=async function(){
  const password=document.getElementById('loginPasswordInput')?.value||'';
  const selected=clean(document.getElementById('loginRoleInput')?.value)||'student';
  const btn=document.getElementById('gcLoginSubmitBtn');
- if(!/^\\S+@\\S+\\.\\S+$/.test(email))return alert('Enter a valid email address.');
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return alert('Enter a valid email address.');
  if(!password)return alert('Enter your password.');
  if(!window.gcLoginCaptchaToken){document.getElementById('gcLoginCaptchaStatus')?.replaceChildren('Please complete the Cloudflare human verification first.');return alert('Please complete the Cloudflare human verification first.');}
  const s=S();if(!s)return alert('Secure login is unavailable. Please refresh the website and try again.');
