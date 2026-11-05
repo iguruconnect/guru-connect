@@ -16373,16 +16373,30 @@ window.gcEmailLogin=async function(){
   if(email===STAFF_EMAIL){
     if(!password){alert('Enter your password.');return false;}
     const s=S();if(!s){alert('Secure login is unavailable. Please refresh the website.');return false;}
+    const captchaToken=window.gcLoginCaptchaToken;
+    if(!captchaToken){
+      el('gcLoginCaptchaStatus')?.replaceChildren('Please complete the Cloudflare human verification first.');
+      alert('Please complete the Cloudflare human verification first.');
+      return false;
+    }
     try{
-      const r=await s.auth.signInWithPassword({email,password});if(r.error)throw r.error;
+      const r=await s.auth.signInWithPassword({email,password,options:{captchaToken}});
+      if(r.error)throw r.error;
       const u=r.data?.user,session=r.data?.session;
       if(!u||!session)throw new Error('Supabase did not create a secure session.');
+      if(!u.email_confirmed_at)throw new Error('Please verify your email first. Check your verification email.');
       if(String(u.email||'').toLowerCase()!==STAFF_EMAIL||String(u.id||'')!=='1df7606a-3a96-4116-b022-804b37a3c3dd')throw new Error('This account is not the authorized GURU CONNECT Admin account.');
       localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');
       localStorage.setItem('active_user_id',u.id);localStorage.setItem('active_user_email',u.email||STAFF_EMAIL);localStorage.setItem('active_user_role','staff');
       sessionStorage.setItem('is_staff_logged','true');sessionStorage.setItem('gc_staff_supabase_auth','true');
+      try{sessionStorage.removeItem('gc_logged_out')}catch(_){}
       window.closeLoginModal();window.location.replace('admin.html');return true;
     }catch(err){console.error('Admin login failed',err);alert('Login failed: '+(err?.message||String(err)));return false;}
+    finally{
+      window.gcLoginCaptchaToken='';
+      if(window.gcLoginTurnstileId!==null&&window.turnstile){try{window.turnstile.reset(window.gcLoginTurnstileId)}catch(_){}}
+      const st=el('gcLoginCaptchaStatus');if(st)st.textContent='Please complete the security check again.';
+    }
   }
   if(role==='staff'){const roleInput=el('loginRoleInput');if(roleInput)roleInput.value='student';}
   if(typeof originalLogin==='function')return originalLogin();
