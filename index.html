@@ -5021,25 +5021,38 @@ a[href*="wa.me" i], a[href*="whatsapp.com" i],
 @media(min-width:641px){.gc-mobile-hero-copy{display:none!important}}
 </style>
 
-<style id="gc-persistent-mobile-orange-hero">
-#gc-mobile-orange-thought { display:none; }
-@media (max-width:640px) {
+
+<style id="gc-static-mobile-orange-hero">
+#publicWebsiteContent > section.gc-approved-hero#home > #gc-mobile-orange-thought { display:none !important; }
+@media screen and (max-width:640px) {
   #publicWebsiteContent > section.gc-approved-hero#home {
-    display:block !important; height:auto !important; min-height:0 !important;
-    max-height:none !important; overflow:visible !important; background:transparent !important;
+    display:block !important; width:100% !important; height:auto !important;
+    min-height:245px !important; max-height:none !important; overflow:visible !important;
+    padding:0 !important; margin:0 !important; line-height:normal !important;
+    background:linear-gradient(135deg,#f47700 0%,#ff8b1f 52%,#e85d04 100%) !important;
   }
-  #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image {
-    display:none !important;
+  #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image,
+  #publicWebsiteContent > section.gc-approved-hero#home > .gc-mobile-hero-copy {
+    display:none !important; visibility:hidden !important;
   }
-  #gc-mobile-orange-thought {
-    display:flex !important; box-sizing:border-box; width:100%; min-height:245px;
-    padding:34px 24px; margin:0; align-items:center; justify-content:center;
-    text-align:center; color:#fff; border-radius:0;
-    background:linear-gradient(135deg,#f47700 0%,#ff8b1f 52%,#e85d04 100%);
-    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-    font-size:clamp(25px,7vw,34px); line-height:1.25; font-weight:850;
-    letter-spacing:-.6px; text-wrap:balance; box-shadow:inset 0 1px 0 #ffffff35;
+  #publicWebsiteContent > section.gc-approved-hero#home > #gc-mobile-orange-thought {
+    display:flex !important; visibility:visible !important; opacity:1 !important;
+    position:relative !important; box-sizing:border-box !important;
+    width:100% !important; min-height:245px !important; height:auto !important;
+    padding:34px 24px !important; margin:0 !important;
+    align-items:center !important; justify-content:center !important;
+    text-align:center !important; color:#fff !important;
+    background:linear-gradient(135deg,#f47700 0%,#ff8b1f 52%,#e85d04 100%) !important;
+    font-family:Roboto,Arial,sans-serif !important;
+    font-size:clamp(25px,7vw,34px) !important; line-height:1.25 !important;
+    font-weight:900 !important; letter-spacing:-.6px !important;
+    border:0 !important; border-radius:0 !important;
+    box-shadow:inset 0 1px 0 #ffffff35 !important;
   }
+}
+@media screen and (min-width:641px) {
+  #publicWebsiteContent > section.gc-approved-hero#home > .gc-approved-hero-image { display:block !important; }
+  #publicWebsiteContent > section.gc-approved-hero#home > #gc-mobile-orange-thought { display:none !important; }
 }
 </style>
 </head>
@@ -5277,6 +5290,7 @@ a[href*="wa.me" i], a[href*="whatsapp.com" i],
 <div class="w-full" id="publicWebsiteContent">
 <!-- GURU CONNECT approved clear hero artwork: original opacity, no overlay or fade -->
 <section class="gc-approved-hero" id="home" aria-label="GURU CONNECT — Indian college students and tutors">
+  <div id="gc-mobile-orange-thought" role="region" aria-label="A thought for learners">Dream big. Learn with purpose. Grow with confidence.</div>
   <img class="gc-approved-hero-image" alt="GURU CONNECT — Find the right tutor. Find the right student. Connecting Mind - Creating Future." src="https://raw.githubusercontent.com/iguruconnect/guru-connect/main/assets/gc-home-hero-no-whatsapp.png" loading="eager" fetchpriority="high" decoding="async" />
   <div class="gc-mobile-hero-copy" aria-hidden="true">
     <div class="gc-mobile-hero-brand">GURU <span>CONNECT</span></div>
@@ -17264,31 +17278,7 @@ input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-
  document.head.appendChild(loader);
 })();
 </script>
-<script id="gc-persistent-mobile-orange-hero-script">
-(function(){
-  function install(){
-    if(!window.matchMedia || !window.matchMedia('(max-width:640px)').matches) return;
-    var home=document.querySelector('#publicWebsiteContent > section.gc-approved-hero#home') || document.getElementById('home');
-    if(!home) return;
-    var banner=document.getElementById('gc-mobile-orange-thought');
-    if(!banner){
-      banner=document.createElement('div');
-      banner.id='gc-mobile-orange-thought';
-      banner.setAttribute('role','region');
-      banner.setAttribute('aria-label','A thought for learners');
-      banner.textContent='Dream big. Learn with purpose. Grow with confidence.';
-    }
-    var image=home.querySelector('.gc-approved-hero-image');
-    if(image){ image.style.setProperty('display','none','important'); if(image.parentNode===home) home.insertBefore(banner,image); else home.insertBefore(banner,home.firstChild); }
-    else if(banner.parentNode!==home){ home.insertBefore(banner,home.firstChild); }
-  }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',install,{once:true});
-  else install();
-  var observer=new MutationObserver(install);
-  observer.observe(document.documentElement,{childList:true,subtree:true});
-  window.addEventListener('resize',install,{passive:true});
-})();
-</script>
+
 </body>
 </html>
 
