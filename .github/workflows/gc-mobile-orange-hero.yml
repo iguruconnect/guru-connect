@@ -27,14 +27,12 @@ jobs:
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
 
-          # Remove the previous JavaScript-dependent banner and its CSS.
-          s = re.sub(r'<script id="gc-persistent-mobile-orange-hero-script">[\\s\\S]*?</script>', '', s, flags=re.I)
-          s = re.sub(r'<style id="gc-persistent-mobile-orange-hero">[\\s\\S]*?</style>', '', s, flags=re.I)
+          s = re.sub(r'<script id="gc-persistent-mobile-orange-hero-script">[\s\S]*?</script>', '', s, flags=re.I)
+          s = re.sub(r'<style id="gc-persistent-mobile-orange-hero">[\s\S]*?</style>', '', s, flags=re.I)
 
           banner = '''<div id="gc-mobile-orange-thought" role="region" aria-label="A thought for learners">Dream big. Learn with purpose. Grow with confidence.</div>'''
-          # Place real HTML directly inside the existing hero section; no runtime insertion.
-          pattern = r'(<section\\b(?=[^>]*\\bid="home")(?=[^>]*\\bgc-approved-hero)[^>]*>)'
-          s, n = re.subn(pattern, lambda m: m.group(1) + '\\n  ' + banner, s, count=1, flags=re.I)
+          pattern = r'(<section\b(?=[^>]*\bid="home")(?=[^>]*\bgc-approved-hero)[^>]*>)'
+          s, n = re.subn(pattern, lambda m: m.group(1) + '\n  ' + banner, s, count=1, flags=re.I)
           if n != 1:
               raise SystemExit("STOP: Could not locate the existing homepage hero section exactly once.")
 
@@ -71,9 +69,9 @@ jobs:
             #publicWebsiteContent > section.gc-approved-hero#home > #gc-mobile-orange-thought { display:none !important; }
           }
           </style>"""
-          if '</head>' not in s.lower():
+          if not re.search(r'</head\s*>', s, re.I):
               raise SystemExit("STOP: index.html has no closing head tag.")
-          s = re.sub(r'</head\\s*>', lambda m: style + '\\n' + m.group(0), s, count=1, flags=re.I)
+          s = re.sub(r'</head\s*>', lambda m: style + '\n' + m.group(0), s, count=1, flags=re.I)
           p.write_text(s, encoding="utf-8")
           print("Static orange banner inserted directly in homepage HTML. No brand name; desktop hero preserved.")
           PY
