@@ -17168,7 +17168,8 @@ input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-
  };
  window.gcEnsureLoginCaptcha=function(){
   const host=document.getElementById('gcLoginTurnstile');
-  if(!host||!window.gcLoginTurnstileApiReady||!window.turnstile)return;
+  const modal=document.getElementById('loginModal');
+  if(!host||!modal||modal.classList.contains('hidden')||!window.gcLoginTurnstileApiReady||!window.turnstile)return;
   if(window.gcLoginTurnstileId!==null)return;
   try{
    window.gcLoginTurnstileId=window.turnstile.render(host,{
