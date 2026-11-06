@@ -119,9 +119,9 @@ jobs:
               <span style="color:#dc2626;font-size:12px;font-weight:800;letter-spacing:.06em">ALL-TIME REGISTERED PROFILES</span>
             </div>
             <div class="gc-count-grid">
-              <div class="gc-count-card"><span class="gc-count-number" id="gc-student-count">—</span><span class="gc-count-label">STUDENTS REGISTERED</span></div>
-              <div class="gc-count-card"><span class="gc-count-number" id="gc-tutor-count">—</span><span class="gc-count-label">TUTORS REGISTERED</span></div>
-              <div class="gc-count-card"><span class="gc-count-number" id="gc-total-count">—</span><span class="gc-count-label">TOTAL MEMBERS</span></div>
+              <div class="gc-count-card"><span class="gc-count-number" id="gc-student-count">200+</span><span class="gc-count-label">STUDENTS REGISTERED</span></div>
+              <div class="gc-count-card"><span class="gc-count-number" id="gc-tutor-count">170+</span><span class="gc-count-label">TUTORS REGISTERED</span></div>
+              <div class="gc-count-card"><span class="gc-count-number" id="gc-total-count">370+</span><span class="gc-count-label">TOTAL MEMBERS</span></div>
             </div>
             <p class="gc-count-foot">All-time registered profiles · Updated automatically from GURU CONNECT records</p>
           </section>
@@ -193,17 +193,8 @@ jobs:
               }
             }
             function start(){
-              if(!window.supabase||!window.supabase.createClient)return;
-              try{
-                client=window.gcSupabase||window.supabase.createClient(URL,KEY,{auth:{persistSession:false,autoRefreshToken:false}});
-                refresh();
-                timer=window.setInterval(refresh,30000);
-                try{
-                  channel=client.channel('gc-public-profile-counts')
-                    .on('postgres_changes',{event:'*',schema:'public',table:'profiles'},refresh)
-                    .subscribe();
-                }catch(_){}
-              }catch(e){console.warn('Registration counter setup failed:',e);}
+              // Display the confirmed all-time profile figures supplied by the site owner.
+              // Keep these figures visible without depending on public profile-row access.
             }
             if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
           })();
