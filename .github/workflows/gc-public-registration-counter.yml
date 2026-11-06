@@ -98,10 +98,10 @@ jobs:
           }
           </style>
           """
-          s = re.sub(r'<style id="gc-clean-orange-hero-and-live-counts">[\\s\\S]*?</style>\\s*', '', s, flags=re.I)
-          if not re.search(r'</head\\s*>', s, re.I):
+          s = re.sub(r'<style id="gc-clean-orange-hero-and-live-counts">[\s\S]*?</style>\s*', '', s, flags=re.I)
+          if not re.search(r'</head\s*>', s, re.I):
               raise SystemExit("STOP: </head> not found; no homepage changes made.")
-          s = re.sub(r'</head\\s*>', lambda m: css + "\\n" + m.group(0), s, count=1, flags=re.I)
+          s = re.sub(r'</head\s*>', lambda m: css + "\n" + m.group(0), s, count=1, flags=re.I)
 
           widget = """
           <section id="gc-registration-live-counts" aria-label="GURU CONNECT all-time registrations">
@@ -119,15 +119,15 @@ jobs:
           """
           if 'id="gc-registration-live-counts"' not in s:
               hero = None
-              for m in re.finditer(r'<section\\b[^>]*>', s, re.I):
+              for m in re.finditer(r'<section\b[^>]*>', s, re.I):
                   tag = m.group(0)
-                  if not re.search(r'\\bid=["\\']home["\\']', tag, re.I):
+                  if not re.search(r'\bid=["\']home["\']', tag, re.I):
                       continue
-                  if not re.search(r'\\bclass=["\\'][^"\\']*gc-approved-hero', tag, re.I):
+                  if not re.search(r'\bclass=["\'][^"\']*gc-approved-hero', tag, re.I):
                       continue
                   depth = 0
                   end = None
-                  for t in re.finditer(r'</?section\\b[^>]*>', s[m.start():], re.I):
+                  for t in re.finditer(r'</?section\b[^>]*>', s[m.start():], re.I):
                       if t.group(0).startswith('</'):
                           depth -= 1
                           if depth == 0:
@@ -140,7 +140,7 @@ jobs:
                       break
               if hero is None:
                   raise SystemExit("STOP: approved hero section not found; refusing to guess where to insert the counter.")
-              s = s[:hero] + "\\n" + widget.strip() + "\\n" + s[hero:]
+              s = s[:hero] + "\n" + widget.strip() + "\n" + s[hero:]
 
           script = """
           <script id="gc-registration-live-counts-script">
@@ -198,10 +198,10 @@ jobs:
           })();
           </script>
           """
-          s = re.sub(r'<script id="gc-registration-live-counts-script">[\\s\\S]*?</script>\\s*', '', s, flags=re.I)
-          if not re.search(r'</body\\s*>', s, re.I):
+          s = re.sub(r'<script id="gc-registration-live-counts-script">[\s\S]*?</script>\s*', '', s, flags=re.I)
+          if not re.search(r'</body\s*>', s, re.I):
               raise SystemExit("STOP: </body> not found; refusing to save an incomplete homepage.")
-          s = re.sub(r'</body\\s*>', lambda m: script + "\\n" + m.group(0), s, count=1, flags=re.I)
+          s = re.sub(r'</body\s*>', lambda m: script + "\n" + m.group(0), s, count=1, flags=re.I)
           p.write_text(s, encoding="utf-8")
           print("Inserted the live all-time student/tutor registration counter and removed hero text overlays only.")
           PY
