@@ -123,7 +123,7 @@ jobs:
               <div class="gc-count-card"><span class="gc-count-number" id="gc-tutor-count">170+</span><span class="gc-count-label">TUTORS REGISTERED</span></div>
               <div class="gc-count-card"><span class="gc-count-number" id="gc-total-count">370+</span><span class="gc-count-label">TOTAL MEMBERS</span></div>
             </div>
-            <p class="gc-count-foot">All-time registered profiles · Updated automatically from GURU CONNECT records</p>
+            <p class="gc-count-foot">All-time registered profiles across GURU CONNECT</p>
           </section>
           """
           if 'id="gc-registration-live-counts"' not in s:
@@ -150,6 +150,13 @@ jobs:
               if hero is None:
                   raise SystemExit("STOP: approved hero section not found; refusing to guess where to insert the counter.")
               s = s[:hero] + "\n" + widget.strip() + "\n" + s[hero:]
+
+          # Correct the displayed figures even if an earlier workflow already inserted the widget.
+          for element_id, value in (("gc-student-count", "200+"), ("gc-tutor-count", "170+"), ("gc-total-count", "370+")):
+              pattern = r'(<span\\b[^>]*\\bid=["\\']' + re.escape(element_id) + r'["\\'][^>]*>)[\\s\\S]*?(</span>)'
+              s, changed = re.subn(pattern, lambda m, v=value: m.group(1) + v + m.group(2), s, count=1, flags=re.I)
+              if changed != 1:
+                  raise SystemExit("STOP: could not verify/update the " + element_id + " figure.")
 
           script = """
           <script id="gc-registration-live-counts-script">
