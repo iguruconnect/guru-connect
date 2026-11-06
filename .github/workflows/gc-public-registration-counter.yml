@@ -202,9 +202,7 @@ jobs:
                 });
               }catch(e){
                 console.warn('GURU CONNECT public registration counts are not currently readable:',e&&e.message||e);
-                ['gc-student-count','gc-tutor-count','gc-total-count'].forEach(function(id){
-                  var el=document.getElementById(id);if(el&&el.dataset.value===undefined)el.textContent='—';
-                });
+                // Keep the verified baseline figures visible if the RPC is temporarily unavailable.
               }
             }
             function start(){
