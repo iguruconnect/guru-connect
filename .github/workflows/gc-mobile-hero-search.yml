@@ -51,7 +51,29 @@ jobs:
               if n != 1:
                   raise SystemExit("STOP: existing search overlay could not be safely identified; no homepage edit made.")
           else:
-              raise SystemExit("STOP: existing search overlay marker not found; refusing to insert a second search bar.")
+              hero = None
+              for m in re.finditer(r'<section\b[^>]*>', s, re.I):
+                  tag = m.group(0)
+                  if not re.search(r'\bid=["\']home["\']', tag, re.I):
+                      continue
+                  if not re.search(r'\bclass=["\'][^"\']*gc-approved-hero', tag, re.I):
+                      continue
+                  depth = 0
+                  end = None
+                  for t in re.finditer(r'</?section\b[^>]*>', s[m.start():], re.I):
+                      if t.group(0).startswith('</'):
+                          depth -= 1
+                          if depth == 0:
+                              end = m.start() + t.start()
+                              break
+                      else:
+                          depth += 1
+                  if end is not None:
+                      hero = end
+                      break
+              if hero is None:
+                  raise SystemExit("STOP: approved homepage hero section not found; no homepage edit made.")
+              s = s[:hero] + markup.strip() + s[hero:]
 
           style = """
           <style id="gc-mobile-hero-search-style">
