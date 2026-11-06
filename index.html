@@ -5063,6 +5063,75 @@ a[href*="wa.me" i], a[href*="whatsapp.com" i],
 }
 </style>
 
+
+<style id="gc-clean-orange-hero-and-live-counts">
+#publicWebsiteContent > section.gc-approved-hero#home {
+  position:relative !important;
+}
+#publicWebsiteContent > section.gc-approved-hero#home > :not(.gc-approved-hero-image):not(#gc-mobile-hero-search) {
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+}
+#publicWebsiteContent > section.gc-approved-hero#home .gc-mobile-hero-copy,
+#publicWebsiteContent > section.gc-approved-hero#home .gc-mobile-hero-brand,
+#publicWebsiteContent > section.gc-approved-hero#home h1,
+#publicWebsiteContent > section.gc-approved-hero#home h2,
+#publicWebsiteContent > section.gc-approved-hero#home h3,
+#publicWebsiteContent > section.gc-approved-hero#home p {
+  display:none !important;
+  visibility:hidden !important;
+  opacity:0 !important;
+}
+#gc-registration-live-counts {
+  box-sizing:border-box; width:min(1120px,calc(100% - 32px));
+  margin:22px auto 28px; padding:20px;
+  border:1px solid #e5eaf0; border-radius:20px;
+  background:linear-gradient(135deg,#fff 0%,#fff8f0 100%);
+  box-shadow:0 10px 28px rgba(28,45,70,.08);
+  color:#172033; font-family:inherit;
+}
+#gc-registration-live-counts .gc-count-head {
+  display:flex; align-items:center; justify-content:space-between;
+  gap:12px; flex-wrap:wrap; margin-bottom:16px;
+}
+#gc-registration-live-counts h2 {
+  margin:0; font-size:clamp(18px,2.2vw,24px); font-weight:800;
+}
+#gc-registration-live-counts .gc-live-pill {
+  display:inline-flex; align-items:center; gap:7px;
+  color:#14783a; font-size:12px; font-weight:800; letter-spacing:.06em;
+}
+#gc-registration-live-counts .gc-live-dot {
+  width:8px;height:8px;border-radius:50%;background:#16a34a;
+  box-shadow:0 0 0 4px rgba(22,163,74,.12);
+}
+#gc-registration-live-counts .gc-count-grid {
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;
+}
+#gc-registration-live-counts .gc-count-card {
+  min-width:0;padding:17px 12px;border-radius:15px;
+  background:#fff;border:1px solid #edf0f4;text-align:center;
+}
+#gc-registration-live-counts .gc-count-number {
+  display:block;font-size:clamp(25px,4vw,38px);line-height:1.1;
+  font-weight:900;color:#172033;font-variant-numeric:tabular-nums;
+}
+#gc-registration-live-counts .gc-count-label {
+  display:block;margin-top:7px;font-size:12px;font-weight:800;
+  letter-spacing:.045em;color:#667085;
+}
+#gc-registration-live-counts .gc-count-foot {
+  margin:13px 0 0;text-align:center;color:#7a8494;font-size:11px;
+}
+@media(max-width:560px){
+  #gc-registration-live-counts{width:calc(100% - 22px);padding:15px;margin:16px auto 22px}
+  #gc-registration-live-counts .gc-count-grid{gap:8px}
+  #gc-registration-live-counts .gc-count-card{padding:14px 5px}
+  #gc-registration-live-counts .gc-count-label{font-size:10px}
+}
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
@@ -5321,6 +5390,19 @@ a[href*="wa.me" i], a[href*="whatsapp.com" i],
   </form>
 </div>
 </section>
+<section id="gc-registration-live-counts" aria-label="GURU CONNECT all-time registrations">
+  <div class="gc-count-head">
+    <h2>Growing Together, Every Day</h2>
+    <span class="gc-live-pill"><span class="gc-live-dot"></span> LIVE REGISTRATION COUNT</span>
+  </div>
+  <div class="gc-count-grid">
+    <div class="gc-count-card"><span class="gc-count-number" id="gc-student-count">—</span><span class="gc-count-label">STUDENTS REGISTERED</span></div>
+    <div class="gc-count-card"><span class="gc-count-number" id="gc-tutor-count">—</span><span class="gc-count-label">TUTORS REGISTERED</span></div>
+    <div class="gc-count-card"><span class="gc-count-number" id="gc-total-count">—</span><span class="gc-count-label">TOTAL MEMBERS</span></div>
+  </div>
+  <p class="gc-count-foot">All-time registered profiles · Updated automatically from GURU CONNECT records</p>
+</section>
+
 <div id="gcHomeLrrAdHost" class="gc-lrr-ad-host" style="display:none"></div>
 <div class="gc-quick-grid gc-home-actions-grid" id="homeActionTiles">
 <article class="gc-quick-card gc-home-tile gc-home-browse">
@@ -17311,6 +17393,62 @@ input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-
 @media(max-width:850px){.gc-beautiful-header{min-height:92px!important}.gc-header-inner{min-height:92px!important;padding-left:10px!important;padding-right:10px!important}.gc-logo3-lockup,.gc-final-brand-lockup,.gc-approved-lockup{flex:0 0 370px!important;width:370px!important;min-width:0!important;max-width:370px!important;height:94px!important}.gc-logo3-image,.gc-final-header-logo,.gc-approved-logo{width:370px!important;height:94px!important;max-width:100%!important}}
 @media(max-width:520px){.gc-beautiful-header{min-height:84px!important}.gc-header-inner{min-height:84px!important;padding:6px 8px!important}.gc-logo3-lockup,.gc-final-brand-lockup,.gc-approved-lockup{flex:0 1 330px!important;width:min(330px,78vw)!important;min-width:0!important;max-width:330px!important;height:auto!important;aspect-ratio:1383/530!important}.gc-logo3-image,.gc-final-header-logo,.gc-approved-logo{width:100%!important;height:auto!important;max-width:100%!important;max-height:none!important}}
 </style>
+
+<script id="gc-registration-live-counts-script">
+(function(){
+  if(window.__gcRegistrationCounterStarted)return;
+  window.__gcRegistrationCounterStarted=true;
+  var URL='https://hzqqswrnawrfgufbxgay.supabase.co';
+  var KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+  var client=null, timer=null, channel=null;
+  function number(id,n){
+    var el=document.getElementById(id); if(!el)return;
+    var target=Math.max(0,Number(n)||0), start=Number(el.dataset.value||0);
+    el.dataset.value=String(target);
+    var began=performance.now(), duration=650;
+    function frame(now){
+      var t=Math.min(1,(now-began)/duration), eased=1-Math.pow(1-t,3);
+      el.textContent=Math.round(start+(target-start)*eased).toLocaleString('en-IN');
+      if(t<1)requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+  async function refresh(){
+    if(!client)return;
+    try{
+      var results=await Promise.all([
+        client.from('profiles').select('id',{count:'exact',head:true}).eq('role','student'),
+        client.from('profiles').select('id',{count:'exact',head:true}).eq('role','tutor')
+      ]);
+      if(results[0].error||results[1].error)throw (results[0].error||results[1].error);
+      var students=Number(results[0].count||0), tutors=Number(results[1].count||0);
+      number('gc-student-count',students);
+      number('gc-tutor-count',tutors);
+      number('gc-total-count',students+tutors);
+    }catch(e){
+      console.warn('GURU CONNECT public registration counts are not currently readable:',e&&e.message||e);
+      ['gc-student-count','gc-tutor-count','gc-total-count'].forEach(function(id){
+        var el=document.getElementById(id);if(el&&el.dataset.value===undefined)el.textContent='—';
+      });
+    }
+  }
+  function start(){
+    if(!window.supabase||!window.supabase.createClient)return;
+    try{
+      client=window.gcSupabase||window.supabase.createClient(URL,KEY,{auth:{persistSession:false,autoRefreshToken:false}});
+      refresh();
+      timer=window.setInterval(refresh,30000);
+      try{
+        channel=client.channel('gc-public-profile-counts')
+          .on('postgres_changes',{event:'*',schema:'public',table:'profiles'},refresh)
+          .subscribe();
+      }catch(_){}
+    }catch(e){console.warn('Registration counter setup failed:',e);}
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+})();
+</script>
+
 </body>
 </html>
 
