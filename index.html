@@ -5069,6 +5069,7 @@ a[href*="wa.me" i], a[href*="whatsapp.com" i],
 
 
 
+
 <style id="gc-clean-orange-hero-and-live-counts">
 #publicWebsiteContent > section.gc-approved-hero#home {
   position:relative !important;
@@ -17412,6 +17413,7 @@ input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-
 
 
 
+
 <script id="gc-registration-live-counts-script">
 (function(){
   if(window.__gcRegistrationCounterStarted)return;
@@ -17453,17 +17455,8 @@ input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-
     }
   }
   function start(){
-    if(!window.supabase||!window.supabase.createClient)return;
-    try{
-      client=window.gcSupabase||window.supabase.createClient(URL,KEY,{auth:{persistSession:false,autoRefreshToken:false}});
-      refresh();
-      timer=window.setInterval(refresh,30000);
-      try{
-        channel=client.channel('gc-public-profile-counts')
-          .on('postgres_changes',{event:'*',schema:'public',table:'profiles'},refresh)
-          .subscribe();
-      }catch(_){}
-    }catch(e){console.warn('Registration counter setup failed:',e);}
+    // Display the confirmed all-time profile figures supplied by the site owner.
+    // Keep these figures visible without depending on public profile-row access.
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
