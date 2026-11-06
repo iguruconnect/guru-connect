@@ -44,7 +44,7 @@ jobs:
           """
           if 'id="gc-mobile-hero-search"' in s:
               s, n = re.subn(
-                  r'<div id="gc-mobile-hero-search"[^>]*>[\\s\\S]*?</form>\\s*</div>',
+                  r'<div id="gc-mobile-hero-search"[^>]*>[\s\S]*?</form>\s*</div>',
                   lambda m: markup.strip(),
                   s, count=1, flags=re.I
               )
@@ -88,10 +88,10 @@ jobs:
           }
           </style>
           """
-          s = re.sub(r'<style id="gc-mobile-hero-search-style">[\\s\\S]*?</style>\\s*', '', s, flags=re.I)
-          if not re.search(r'</head\\s*>', s, re.I):
+          s = re.sub(r'<style id="gc-mobile-hero-search-style">[\s\S]*?</style>\s*', '', s, flags=re.I)
+          if not re.search(r'</head\s*>', s, re.I):
               raise SystemExit("STOP: homepage head closing tag not found; no homepage edit made.")
-          s = re.sub(r'</head\\s*>', lambda m: style + "\\n" + m.group(0), s, count=1, flags=re.I)
+          s = re.sub(r'</head\s*>', lambda m: style + "\n" + m.group(0), s, count=1, flags=re.I)
           p.write_text(s, encoding="utf-8")
 
           # Preserve the existing search-to-tutor-form handoff; add it only if absent.
@@ -116,9 +116,9 @@ jobs:
           })();
           </script>
           """
-              if not re.search(r'</body\\s*>', q, re.I):
+              if not re.search(r'</body\s*>', q, re.I):
                   raise SystemExit("STOP: tutor search page body closing tag not found.")
-              q = re.sub(r'</body\\s*>', lambda m: script + "\\n" + m.group(0), q, count=1, flags=re.I)
+              q = re.sub(r'</body\s*>', lambda m: script + "\n" + m.group(0), q, count=1, flags=re.I)
               qpath.write_text(q, encoding="utf-8")
 
           print("Updated only the existing mobile hero search overlay and its search handoff.")
