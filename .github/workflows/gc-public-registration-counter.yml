@@ -153,7 +153,7 @@ jobs:
 
           # Correct the displayed figures even if an earlier workflow already inserted the widget.
           for element_id, value in (("gc-student-count", "200+"), ("gc-tutor-count", "170+"), ("gc-total-count", "370+")):
-              pattern = r'(<span\\b[^>]*\\bid=["\\']' + re.escape(element_id) + r'["\\'][^>]*>)[\\s\\S]*?(</span>)'
+              pattern = r"""(<span\b[^>]*\bid=["']""" + re.escape(element_id) + r"""["'][^>]*>)[\s\S]*?(</span>)"""
               s, changed = re.subn(pattern, lambda m, v=value: m.group(1) + v + m.group(2), s, count=1, flags=re.I)
               if changed != 1:
                   raise SystemExit("STOP: could not verify/update the " + element_id + " figure.")
