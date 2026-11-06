@@ -29,6 +29,8 @@ jobs:
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
           marker = 'id="gc-mobile-hero-search"'
+          # Correct the heading even when the search bar already exists.
+          s = s.replace('Find the right tutor', 'We are happy to help you')
           if marker not in s:
               hero = None
               for m in re.finditer(r'<section\b[^>]*>', s, re.I):
