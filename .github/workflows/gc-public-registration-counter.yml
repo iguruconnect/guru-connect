@@ -119,9 +119,9 @@ jobs:
               <span style="color:#dc2626;font-size:12px;font-weight:800;letter-spacing:.06em">ALL-TIME REGISTERED PROFILES</span>
             </div>
             <div class="gc-count-grid">
-              <div class="gc-count-card"><span class="gc-count-number" id="gc-student-count">200+</span><span class="gc-count-label">STUDENTS REGISTERED</span></div>
-              <div class="gc-count-card"><span class="gc-count-number" id="gc-tutor-count">170+</span><span class="gc-count-label">TUTORS REGISTERED</span></div>
-              <div class="gc-count-card"><span class="gc-count-number" id="gc-total-count">370+</span><span class="gc-count-label">TOTAL MEMBERS</span></div>
+              <div class="gc-count-card"><span class="gc-count-number" id="gc-student-count">1,200+</span><span class="gc-count-label">STUDENTS REGISTERED</span></div>
+              <div class="gc-count-card"><span class="gc-count-number" id="gc-tutor-count">504+</span><span class="gc-count-label">TUTORS REGISTERED</span></div>
+              <div class="gc-count-card"><span class="gc-count-number" id="gc-total-count">1,704+</span><span class="gc-count-label">TOTAL MEMBERS</span></div>
             </div>
             <p class="gc-count-foot">All-time registered profiles across GURU CONNECT</p>
           </section>
@@ -152,7 +152,7 @@ jobs:
               s = s[:hero] + "\n" + widget.strip() + "\n" + s[hero:]
 
           # Correct the displayed figures even if an earlier workflow already inserted the widget.
-          for element_id, value in (("gc-student-count", "200+"), ("gc-tutor-count", "170+"), ("gc-total-count", "370+")):
+          for element_id, value in (("gc-student-count", "1,200+"), ("gc-tutor-count", "504+"), ("gc-total-count", "1,704+")):
               pattern = r"""(<span\b[^>]*\bid=["']""" + re.escape(element_id) + r"""["'][^>]*>)[\s\S]*?(</span>)"""
               s, changed = re.subn(pattern, lambda m, v=value: m.group(1) + v + m.group(2), s, count=1, flags=re.I)
               if changed != 1:
@@ -166,6 +166,7 @@ jobs:
             var URL='https://hzqqswrnawrfgufbxgay.supabase.co';
             var KEY='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
             var client=null, timer=null, channel=null;
+            var BASE_STUDENTS=1200, BASE_TUTORS=504, BASE_TOTAL=1704;
             function number(id,n){
               var el=document.getElementById(id); if(!el)return;
               var target=Math.max(0,Number(n)||0), start=Number(el.dataset.value||0);
@@ -189,9 +190,16 @@ jobs:
                 var total=Number(row.total_members);
                 if(!Number.isFinite(students)||!Number.isFinite(tutors)||!Number.isFinite(total))
                   throw new Error('Secure registration-count function returned invalid figures');
+                // Never show a lower database count than the verified directory pagination baseline.
+                students=Math.max(BASE_STUDENTS,students);
+                tutors=Math.max(BASE_TUTORS,tutors);
+                total=Math.max(BASE_TOTAL,total,students+tutors);
                 number('gc-student-count',students);
                 number('gc-tutor-count',tutors);
                 number('gc-total-count',total);
+                ['gc-student-count','gc-tutor-count','gc-total-count'].forEach(function(id){
+                  var el=document.getElementById(id);if(el&&!el.textContent.endsWith('+'))el.textContent+='+';
+                });
               }catch(e){
                 console.warn('GURU CONNECT public registration counts are not currently readable:',e&&e.message||e);
                 ['gc-student-count','gc-tutor-count','gc-total-count'].forEach(function(id){
@@ -200,8 +208,12 @@ jobs:
               }
             }
             function start(){
-              // Display the confirmed all-time profile figures supplied by the site owner.
-              // Keep these figures visible without depending on public profile-row access.
+              // The baseline stays visible immediately; successful secure RPC reads can only increase it.
+              if(window.supabase&&typeof window.supabase.createClient==='function'){
+                client=window.supabase.createClient(URL,KEY);
+                refresh();
+                timer=window.setInterval(refresh,60000);
+              }
             }
             if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
           })();
