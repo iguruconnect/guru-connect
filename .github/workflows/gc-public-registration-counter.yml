@@ -198,6 +198,9 @@ jobs:
           })();
           </script>
           """
+          # Ensure the Supabase JS client is loaded before the counter script.
+          if "cdn.jsdelivr.net/npm/@supabase/supabase-js@2" not in s:
+              s = re.sub(r'<script id="gc-registration-live-counts-script">', '<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>\\n<script id="gc-registration-live-counts-script">', s, count=1, flags=re.I)
           s = re.sub(r'<script id="gc-registration-live-counts-script">[\s\S]*?</script>\s*', '', s, flags=re.I)
           if not re.search(r'</body\s*>', s, re.I):
               raise SystemExit("STOP: </body> not found; refusing to save an incomplete homepage.")
