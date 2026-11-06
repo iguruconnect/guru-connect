@@ -173,15 +173,17 @@ jobs:
             async function refresh(){
               if(!client)return;
               try{
-                var results=await Promise.all([
-                  client.from('profiles').select('id',{count:'exact',head:true}).eq('role','student'),
-                  client.from('profiles').select('id',{count:'exact',head:true}).eq('role','tutor')
-                ]);
-                if(results[0].error||results[1].error)throw (results[0].error||results[1].error);
-                var students=Number(results[0].count||0), tutors=Number(results[1].count||0);
+                var result=await client.rpc('gc_public_registration_counts');
+                if(result.error)throw result.error;
+                var row=Array.isArray(result.data)?result.data[0]:result.data;
+                if(!row)throw new Error('Secure registration-count function returned no data');
+                var students=Number(row.student_count), tutors=Number(row.tutor_count);
+                var total=Number(row.total_members);
+                if(!Number.isFinite(students)||!Number.isFinite(tutors)||!Number.isFinite(total))
+                  throw new Error('Secure registration-count function returned invalid figures');
                 number('gc-student-count',students);
                 number('gc-tutor-count',tutors);
-                number('gc-total-count',students+tutors);
+                number('gc-total-count',total);
               }catch(e){
                 console.warn('GURU CONNECT public registration counts are not currently readable:',e&&e.message||e);
                 ['gc-student-count','gc-tutor-count','gc-total-count'].forEach(function(id){
