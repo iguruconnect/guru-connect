@@ -1,4 +1,4 @@
-name: Add mobile search bar to orange homepage hero
+name: Refine mobile orange hero search bar
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  add-mobile-hero-search:
+  refine-mobile-hero-search:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,80 +18,86 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Insert mobile hero search and connect it to tutor search
+      - name: Precisely adjust only the homepage hero search overlay
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
           import re
 
-          # Homepage: add one mobile-only search bar inside the approved hero.
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-          marker = 'id="gc-mobile-hero-search"'
-          # Correct the heading even when the search bar already exists.
-          s = s.replace('Find the right tutor', 'We are happy to help you')
-          if marker not in s:
-              hero = None
-              for m in re.finditer(r'<section\b[^>]*>', s, re.I):
-                  tag = m.group(0)
-                  if not re.search(r'\bid=["\']home["\']', tag, re.I):
-                      continue
-                  if not re.search(r'\bclass=["\'][^"\']*gc-approved-hero', tag, re.I):
-                      continue
-                  depth = 0
-                  end = None
-                  for t in re.finditer(r'</?section\b[^>]*>', s[m.start():], re.I):
-                      token = t.group(0)
-                      if token.startswith('</'):
-                          depth -= 1
-                          if depth == 0:
-                              end = m.start() + t.start()
-                              break
-                      else:
-                          depth += 1
-                  if end is not None:
-                      hero = (m.start(), end)
-                      break
-              if not hero:
-                  raise SystemExit("STOP: approved homepage hero section not found; no homepage edit made.")
 
-              markup = """
+          # Replace only the injected search overlay; do not rebuild the homepage.
+          markup = """
           <div id="gc-mobile-hero-search">
-            <div class="gc-mobile-search-title">We are happy to help you</div>
             <form action="/explore-tutors/" method="get" role="search">
-              <input type="search" name="q" maxlength="80" aria-label="Search tutor or subject" placeholder="Search tutor or subject..." required>
-              <button type="submit">SEARCH</button>
+              <input type="search" name="q" maxlength="80" aria-label="Search tutor or subject" required>
+              <button type="submit" aria-label="Search">
+                <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+                  <circle cx="10.8" cy="10.8" r="6.8" fill="none" stroke="currentColor" stroke-width="2.2"></circle>
+                  <path d="m16 16 5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"></path>
+                </svg>
+              </button>
             </form>
           </div>
           """
-              s = s[:hero[1]] + markup + s[hero[1]:]
+          if 'id="gc-mobile-hero-search"' in s:
+              s, n = re.subn(
+                  r'<div id="gc-mobile-hero-search"[^>]*>[\\s\\S]*?</form>\\s*</div>',
+                  lambda m: markup.strip(),
+                  s, count=1, flags=re.I
+              )
+              if n != 1:
+                  raise SystemExit("STOP: existing search overlay could not be safely identified; no homepage edit made.")
+          else:
+              raise SystemExit("STOP: existing search overlay marker not found; refusing to insert a second search bar.")
 
           style = """
           <style id="gc-mobile-hero-search-style">
           #gc-mobile-hero-search{display:none}
           @media(max-width:640px){
             #home.gc-approved-hero{position:relative!important}
-            #gc-mobile-hero-search{display:block!important;position:absolute;z-index:9999;left:5%;right:5%;top:7%;bottom:auto;max-width:520px;margin:0 auto;padding:14px 13px 14px;background:#fff!important;opacity:1!important;isolation:isolate;border:1px solid #fff;border-radius:17px;box-shadow:0 8px 24px rgba(80,35,0,.22)}
-            #gc-mobile-hero-search .gc-mobile-search-title{font:800 14px/1.3 Arial,sans-serif;color:#71320b;margin:0 0 8px;text-align:left}
-            #gc-mobile-hero-search form{display:flex;align-items:center;gap:8px;margin:0}
-            #gc-mobile-hero-search input{display:block;min-width:0;flex:1;height:43px;padding:0 12px;border:1px solid #d7dce3;border-radius:10px;background:#fff;color:#172033;font:600 14px Arial,sans-serif;outline:none}
+            /* Remove the orange hero's overlaid copy, keeping its background image. */
+            #home.gc-approved-hero .gc-mobile-hero-copy,
+            #home.gc-approved-hero .gc-mobile-hero-brand,
+            #home.gc-approved-hero h1,
+            #home.gc-approved-hero h2,
+            #home.gc-approved-hero h3,
+            #home.gc-approved-hero p{
+              display:none!important;visibility:hidden!important;opacity:0!important;
+            }
+            #gc-mobile-hero-search{
+              display:block!important;position:absolute;z-index:99999;
+              left:5%;right:5%;top:2.5%;bottom:auto;max-width:520px;
+              margin:0 auto;padding:9px;background:#fff!important;opacity:1!important;
+              isolation:isolate;border:1px solid #fff;border-radius:15px;
+              box-shadow:0 8px 24px rgba(80,35,0,.22)
+            }
+            #gc-mobile-hero-search form{display:flex;align-items:center;gap:7px;margin:0}
+            #gc-mobile-hero-search input{
+              display:block;min-width:0;flex:1;height:43px;padding:0 12px;
+              border:1px solid #d7dce3;border-radius:10px;background:#fff;
+              color:#172033;font:600 14px Arial,sans-serif;outline:none
+            }
             #gc-mobile-hero-search input:focus{border-color:#16843c;box-shadow:0 0 0 3px rgba(22,132,60,.12)}
-            #gc-mobile-hero-search button{flex:0 0 auto;height:43px;padding:0 16px;border:0;border-radius:10px;background:#13843b;color:#fff;font:900 13px Arial,sans-serif;letter-spacing:.3px;cursor:pointer}
+            #gc-mobile-hero-search button{
+              flex:0 0 43px;width:43px;height:43px;padding:0;border:0;border-radius:10px;
+              display:grid;place-items:center;background:#13843b;color:#fff;cursor:pointer
+            }
           }
           </style>
           """
-          s = re.sub(r'<style id="gc-mobile-hero-search-style">[\s\S]*?</style>\s*', '', s, flags=re.I)
-          if not re.search(r'</head\s*>', s, re.I):
-              raise SystemExit("STOP: homepage head closing tag not found.")
-          s = re.sub(r'</head\s*>', lambda m: style + "\n" + m.group(0), s, count=1, flags=re.I)
+          s = re.sub(r'<style id="gc-mobile-hero-search-style">[\\s\\S]*?</style>\\s*', '', s, flags=re.I)
+          if not re.search(r'</head\\s*>', s, re.I):
+              raise SystemExit("STOP: homepage head closing tag not found; no homepage edit made.")
+          s = re.sub(r'</head\\s*>', lambda m: style + "\\n" + m.group(0), s, count=1, flags=re.I)
           p.write_text(s, encoding="utf-8")
 
-          # Tutor search page: prefill the existing first subject field from ?q=.
+          # Preserve the existing search-to-tutor-form handoff; add it only if absent.
           qpath = Path("explore-tutors/index.html")
           q = qpath.read_text(encoding="utf-8")
-          qmarker = 'id="gc-hero-search-prefill"'
-          if qmarker not in q:
+          if 'id="gc-hero-search-prefill"' not in q:
               script = """
           <script id="gc-hero-search-prefill">
           (function(){
@@ -110,15 +116,15 @@ jobs:
           })();
           </script>
           """
-              if not re.search(r'</body\s*>', q, re.I):
+              if not re.search(r'</body\\s*>', q, re.I):
                   raise SystemExit("STOP: tutor search page body closing tag not found.")
-              q = re.sub(r'</body\s*>', lambda m: script + "\n" + m.group(0), q, count=1, flags=re.I)
+              q = re.sub(r'</body\\s*>', lambda m: script + "\\n" + m.group(0), q, count=1, flags=re.I)
               qpath.write_text(q, encoding="utf-8")
 
-          print("Mobile orange-hero search bar inserted; search term is prefilled in the existing tutor search form.")
+          print("Updated only the existing mobile hero search overlay and its search handoff.")
           PY
 
-      - name: Commit and push homepage and search-page changes
+      - name: Commit and push the focused homepage change
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -127,5 +133,5 @@ jobs:
             echo "No changes required."
             exit 0
           fi
-          git commit -m "Add mobile hero tutor search bar"
+          git commit -m "Move mobile hero search up and remove overlay text"
           git push origin main
