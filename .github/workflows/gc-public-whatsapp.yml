@@ -110,12 +110,12 @@ jobs:
 
           # Install the floating Jotform chatbot launcher (not an inline iframe).
           # Remove old and duplicate Jotform agent launchers and the previous inline iframe.
-          s = re.sub(r"\\s*<script src=['\\"]https://cdn\\.jotfor\\.ms/agent/embedjs/(?:01a1a716b670700081f380b07d03cd740514|01a1b9d4e660700280a7d08810cef53960fc)/embed\\.js['\\"]>\\s*</script>", "", s, flags=re.I)
-          s = re.sub(r'<iframe\\b(?=[^>]*\\bid=["\\']JotFormIFrame-01a1b9d4e660700280a7d08810cef53960fc["\\'])[^>]*>[\\s\\S]*?</iframe>\\s*<script[^>]*for-form-embed-handler\\.js[^>]*></script>\\s*<script>[\\s\\S]*?jotformEmbedHandler[\\s\\S]*?</script>', "", s, flags=re.I)
+          s = re.sub(r"\s*<script src=['\"]https://cdn\.jotfor\.ms/agent/embedjs/(?:01a1a716b670700081f380b07d03cd740514|01a1b9d4e660700280a7d08810cef53960fc)/embed\.js['\"]>\s*</script>", "", s, flags=re.I)
+          s = re.sub(r'<iframe\b(?=[^>]*\bid=["\']JotFormIFrame-01a1b9d4e660700280a7d08810cef53960fc["\'])[^>]*>[\s\S]*?</iframe>\s*<script[^>]*for-form-embed-handler\.js[^>]*></script>\s*<script>[\s\S]*?jotformEmbedHandler[\s\S]*?</script>', "", s, flags=re.I)
           embed = "<script src='https://cdn.jotfor.ms/agent/embedjs/01a1b9d4e660700280a7d08810cef53960fc/embed.js'></script>"
-          if not re.search(r"</body\\s*>", s, re.I):
+          if not re.search(r"</body\s*>", s, re.I):
               raise SystemExit("STOP: index.html has no closing body tag; refusing to modify it.")
-          s = re.sub(r"</body\\s*>", embed + "\\n</body>", s, count=1, flags=re.I)
+          s = re.sub(r"</body\s*>", embed + "\n</body>", s, count=1, flags=re.I)
           p.write_text(s, encoding="utf-8")
 
           dp = Path("dashboard.html")
