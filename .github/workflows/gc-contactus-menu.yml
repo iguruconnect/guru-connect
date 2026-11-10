@@ -41,7 +41,7 @@ jobs:
               if not (has_contact_label or has_old_contact_target):
                   return tag
               if href and re.fullmatch(r'/contactus/?', href.group(2).strip(), re.I):
-                  cleaned = re.sub(r'\\s+onclick\\s*=\\s*(["\\']).*?\\1', '', tag, count=1, flags=re.I | re.S)
+                  cleaned = re.sub(r'\s+onclick\s*=\s*(["\']).*?\1', '', tag, count=1, flags=re.I | re.S)
                   if cleaned != tag:
                       changed += 1
                       return cleaned
@@ -54,7 +54,7 @@ jobs:
                   tag, count=1, flags=re.I | re.S
               )
               if n:
-                  updated = re.sub(r'\\s+onclick\\s*=\\s*(["\\']).*?\\1', '', updated, count=1, flags=re.I | re.S)
+                  updated = re.sub(r'\s+onclick\s*=\s*(["\']).*?\1', '', updated, count=1, flags=re.I | re.S)
                   changed += 1
                   return updated
               return tag
