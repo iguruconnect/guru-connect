@@ -1,0 +1,67 @@
+name: Update Contact Us menu link
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-contactus-menu.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  update-contact-menu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Change only Contact Us menu destinations
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path("index.html")
+          s = p.read_text(encoding="utf-8")
+          anchor_re = re.compile(r'<a\\b[^>]*>[\\s\\S]*?</a\\s*>', re.I)
+          changed = 0
+
+          def update_anchor(m):
+              global changed
+              tag = m.group(0)
+              visible = re.sub(r'<[^>]+>', ' ', tag)
+              visible = re.sub(r'&nbsp;|&#160;', ' ', visible, flags=re.I)
+              if not re.search(r'\\bcontact\\s*us\\b', visible, re.I):
+                  return tag
+              if re.search(r'\\bhref\\s*=\\s*([\\"\\'])/contactus/?\\1', tag, re.I):
+                  return tag
+              if re.search(r'\\bhref\\s*=', tag, re.I):
+                  updated, n = re.subn(
+                      r'(\\bhref\\s*=\\s*)([\\"\\'])[^\\"\\']*\\2',
+                      lambda x: x.group(1) + x.group(2) + '/contactus/' + x.group(2),
+                      tag, count=1, flags=re.I
+                  )
+                  if n:
+                      changed += 1
+                      return updated
+                  return tag
+              return tag
+
+          s = anchor_re.sub(update_anchor, s)
+          if changed == 0:
+              raise SystemExit("STOP: no Contact Us anchor with an existing href was found. Homepage left unchanged.")
+          p.write_text(s, encoding="utf-8")
+          print(f"Updated {changed} Contact Us link(s) in the existing homepage menu markup.")
+          PY
+
+      - name: Commit and push the focused menu update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Point Contact Us menu to the new contact page"
+          git push origin main
