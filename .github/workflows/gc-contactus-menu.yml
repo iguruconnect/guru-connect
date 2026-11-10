@@ -18,7 +18,7 @@ jobs:
           ref: main
           fetch-depth: 0
 
-      - name: Change only Contact Us menu destinations
+      - name: Change only Contact Us links
         shell: bash
         run: |
           python - <<'PY'
@@ -27,7 +27,7 @@ jobs:
 
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-          anchor_re = re.compile(r'<a\\b[^>]*>[\\s\\S]*?</a\\s*>', re.I)
+          anchor_re = re.compile(r'<a\b[^>]*>[\s\S]*?</a\s*>', re.I)
           changed = 0
 
           def update_anchor(m):
@@ -35,27 +35,30 @@ jobs:
               tag = m.group(0)
               visible = re.sub(r'<[^>]+>', ' ', tag)
               visible = re.sub(r'&nbsp;|&#160;', ' ', visible, flags=re.I)
-              if not re.search(r'\\bcontact\\s*us\\b', visible, re.I):
+              has_contact_label = bool(re.search(r'\bcontact\s*us\b', visible, re.I))
+              href = re.search(r'\bhref\s*=\s*(["\'])(.*?)\1', tag, re.I | re.S)
+              has_old_contact_target = bool(href and re.search(r'contact', href.group(2), re.I))
+              if not (has_contact_label or has_old_contact_target):
                   return tag
-              if re.search(r'\\bhref\\s*=\\s*([\\"\\'])/contactus/?\\1', tag, re.I):
+              if href and re.fullmatch(r'/contactus/?', href.group(2).strip(), re.I):
                   return tag
-              if re.search(r'\\bhref\\s*=', tag, re.I):
-                  updated, n = re.subn(
-                      r'(\\bhref\\s*=\\s*)([\\"\\'])[^\\"\\']*\\2',
-                      lambda x: x.group(1) + x.group(2) + '/contactus/' + x.group(2),
-                      tag, count=1, flags=re.I
-                  )
-                  if n:
-                      changed += 1
-                      return updated
+              if not href:
                   return tag
+              updated, n = re.subn(
+                  r'(\bhref\s*=\s*)(["\'])(.*?)\2',
+                  lambda x: x.group(1) + x.group(2) + '/contactus/' + x.group(2),
+                  tag, count=1, flags=re.I | re.S
+              )
+              if n:
+                  changed += 1
+                  return updated
               return tag
 
           s = anchor_re.sub(update_anchor, s)
           if changed == 0:
-              raise SystemExit("STOP: no Contact Us anchor with an existing href was found. Homepage left unchanged.")
+              raise SystemExit("STOP: no Contact Us menu/link anchor was safely identified. Homepage left unchanged.")
           p.write_text(s, encoding="utf-8")
-          print(f"Updated {changed} Contact Us link(s) in the existing homepage menu markup.")
+          print(f"Updated {changed} Contact Us link(s) in homepage markup.")
           PY
 
       - name: Commit and push the focused menu update
