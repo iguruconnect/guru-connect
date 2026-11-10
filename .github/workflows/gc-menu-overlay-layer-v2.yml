@@ -1,0 +1,63 @@
+name: Fix homepage menu overlay stacking
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-menu-overlay-layer-v2.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  apply-menu-layer:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Add navigation overlay CSS
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p = Path("index.html")
+          s = p.read_text(encoding="utf-8")
+          style = """
+          <style id="gc-menu-overlay-layer-fix">
+          @media (max-width: 900px) {
+            header, .header, .site-header, .main-header, .navbar, .nav-bar,
+            .topbar, .top-bar, .gc-header {
+              position: relative !important;
+              z-index: 1000000 !important;
+              isolation: isolate !important;
+            }
+            header nav, .header nav, .site-header nav, .main-header nav,
+            .navbar nav, .nav-bar nav, nav[role="navigation"],
+            .nav-menu, .nav-links, .mobile-menu, .mobile-nav,
+            .menu-dropdown, .dropdown-menu, .nav-dropdown,
+            [aria-label*="menu" i], [class*="mobile-menu"],
+            [class*="nav-menu"], [class*="nav-dropdown"] {
+              z-index: 1000001 !important;
+            }
+            #gc-mobile-hero-search { z-index: 1 !important; }
+          }
+          </style>
+          """
+          s = re.sub(r'<style id="gc-menu-overlay-layer-fix">[\s\S]*?</style>\s*', '', s, flags=re.I)
+          if not re.search(r'</head\s*>', s, flags=re.I):
+              raise SystemExit("STOP: homepage head closing tag not found; no edit made.")
+          s = re.sub(r'</head\s*>', lambda m: style + "\n" + m.group(0), s, count=1, flags=re.I)
+          p.write_text(s, encoding="utf-8")
+          print("Added mobile navigation stacking CSS only.")
+          PY
+      - name: Commit focused change
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Keep mobile menu above hero search"
+          git push origin main
