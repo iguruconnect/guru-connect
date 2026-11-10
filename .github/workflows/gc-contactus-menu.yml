@@ -50,6 +50,7 @@ jobs:
                   tag, count=1, flags=re.I | re.S
               )
               if n:
+                  updated = re.sub(r'\\s+onclick\\s*=\\s*(["\\']).*?\\1', '', updated, count=1, flags=re.I | re.S)
                   changed += 1
                   return updated
               return tag
