@@ -5150,6 +5150,27 @@ a[href*="wa.me" i], a[href*="whatsapp.com" i],
   display:none !important; visibility:hidden !important; pointer-events:none !important;
 }
 </style>
+
+<style id="gc-menu-overlay-layer-fix">
+@media (max-width: 900px) {
+  header, .header, .site-header, .main-header, .navbar, .nav-bar,
+  .topbar, .top-bar, .gc-header {
+    position: relative !important;
+    z-index: 1000000 !important;
+    isolation: isolate !important;
+  }
+  header nav, .header nav, .site-header nav, .main-header nav,
+  .navbar nav, .nav-bar nav, nav[role="navigation"],
+  .nav-menu, .nav-links, .mobile-menu, .mobile-nav,
+  .menu-dropdown, .dropdown-menu, .nav-dropdown,
+  [aria-label*="menu" i], [class*="mobile-menu"],
+  [class*="nav-menu"], [class*="nav-dropdown"] {
+    z-index: 1000001 !important;
+  }
+  #gc-mobile-hero-search { z-index: 1 !important; }
+}
+</style>
+
 </head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
