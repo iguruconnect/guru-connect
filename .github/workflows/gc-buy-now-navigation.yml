@@ -22,11 +22,11 @@ jobs:
           import re
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-          marker = "GC_BUY_NOW_PUBLIC_NAV_V2_20261111"
+          marker = "GC_BUY_NOW_PUBLIC_NAV_V3_20261111"
           if marker not in s:
               script = """
-          <script id="gc-buy-now-public-nav-v2-20261111">
-          /* GC_BUY_NOW_PUBLIC_NAV_V2_20261111 */
+          <script id="gc-buy-now-public-nav-v3-20261111">
+          /* GC_BUY_NOW_PUBLIC_NAV_V3_20261111 */
           (() => {
             const addLink = () => {
               const links = Array.from(document.querySelectorAll('nav a[href], header a[href], .navbar a[href], .navigation a[href]'));
@@ -34,6 +34,17 @@ jobs:
                 /contact\\s*us/i.test((a.textContent || '').trim()) ||
                 /\\/contactus\\/?(?:[?#]|$)/i.test(a.getAttribute('href') || '')
               );
+              if (!contactLinks.length) {
+                const nav = document.querySelector('header nav, nav, .navbar, .navigation');
+                if (nav && !nav.querySelector('[data-gc-buy-now-nav]')) {
+                  const fallback = document.createElement('a');
+                  fallback.href = '/buy-now/';
+                  fallback.textContent = 'BUY NOW';
+                  fallback.setAttribute('data-gc-buy-now-nav', 'true');
+                  fallback.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;margin:4px 8px;padding:9px 15px;border-radius:9px;background:#f97316;color:#fff!important;font-weight:900;text-decoration:none;white-space:nowrap;';
+                  nav.appendChild(fallback);
+                }
+              }
               contactLinks.forEach(contact => {
                 const parentItem = contact.closest('li');
                 const container = parentItem && parentItem.parentElement
