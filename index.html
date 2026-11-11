@@ -5410,7 +5410,7 @@ a[href*="wa.me" i], a[href*="whatsapp.com" i],
 <section class="gc-approved-hero" id="home" aria-label="GURU CONNECT — Indian college students and tutors">
   
   
-  <img class="gc-approved-hero-image" alt="GURU CONNECT — We are happy to help you. Find the right student. Connecting Mind - Creating Future." src="https://raw.githubusercontent.com/iguruconnect/guru-connect/main/assets/gc-home-hero-no-whatsapp.png" loading="eager" fetchpriority="high" decoding="async" />
+  <img class="gc-approved-hero-image" alt="GURU CONNECT — We are happy to help you. Find the right student. Connecting Mind - Creating Future." src="/assets/gc-desktop-hero.png?rev=20261111c" loading="lazy" fetchpriority="high" decoding="async" />
   <div class="gc-mobile-hero-copy" aria-hidden="true">
     <div class="gc-mobile-hero-brand">GURU <span>CONNECT</span></div>
     <h1>Every Mind Has Potential.<br/>Every Dream Deserves a Chance.</h1>
@@ -17839,30 +17839,7 @@ a[data-gc-buy-now-menu] { display:inline-flex!important;align-items:center!impor
 
 
 
-<script id="gc-desktop-hero-only-v5-20261111">
-/* GC_DESKTOP_HERO_IMAGE_ONLY_V5_20261111: one desktop-only image switch; mobile stays untouched */
-(() => {
-  const desktop = window.matchMedia('(min-width: 641px)');
-  const imageUrl = '/assets/gc-desktop-hero.png?rev=20261111b';
-  const selector = '#publicWebsiteContent > section.gc-approved-hero#home > img.gc-approved-hero-image';
-  const apply = () => {
-    const img = document.querySelector(selector);
-    if (!img) return;
-    if (img.dataset.gcDesktopHeroOriginal === undefined) {
-      img.dataset.gcDesktopHeroOriginal = img.getAttribute('src') || '';
-    }
-    const next = desktop.matches ? imageUrl : img.dataset.gcDesktopHeroOriginal;
-    if (next && img.getAttribute('src') !== next) img.setAttribute('src', next);
-  };
-  apply();
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', apply, {once:true});
-  }
-  if (desktop.addEventListener) desktop.addEventListener('change', apply);
-  else desktop.addListener(apply);
-  window.addEventListener('resize', apply, {passive:true});
-})();
-</script>
+
 </body>
 </html>
 
