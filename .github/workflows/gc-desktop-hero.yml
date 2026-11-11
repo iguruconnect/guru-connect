@@ -14,7 +14,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Consolidate desktop-only hero integration
+      - name: Use the desktop hero asset directly without changing mobile styling
         shell: bash
         run: |
           python - <<'PY'
@@ -22,50 +22,38 @@ jobs:
           import re
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-          marker = "GC_DESKTOP_HERO_IMAGE_ONLY_V5_20261111"
-          # Remove the two previous competing desktop hero scripts; retain all other homepage code.
-          for script_id in ("gc-desktop-hero-only-v3-20261111", "gc-desktop-hero-only-v4-20261111"):
+          # Remove obsolete late-swap scripts so the old hero is never loaded first.
+          for script_id in (
+              "gc-desktop-hero-only-v3-20261111",
+              "gc-desktop-hero-only-v4-20261111",
+              "gc-desktop-hero-only-v5-20261111",
+          ):
               pattern = r'<script[^>]*id="' + re.escape(script_id) + r'".*?</script>'
               s = re.sub(pattern, '', s, count=1, flags=re.I | re.S)
-          if marker not in s:
-              script = """
-          <script id="gc-desktop-hero-only-v5-20261111">
-          /* GC_DESKTOP_HERO_IMAGE_ONLY_V5_20261111: one desktop-only image switch; mobile stays untouched */
-          (() => {
-            const desktop = window.matchMedia('(min-width: 641px)');
-            const imageUrl = '/assets/gc-desktop-hero.png?rev=20261111b';
-            const selector = '#publicWebsiteContent > section.gc-approved-hero#home > img.gc-approved-hero-image';
-            const apply = () => {
-              const img = document.querySelector(selector);
-              if (!img) return;
-              if (img.dataset.gcDesktopHeroOriginal === undefined) {
-                img.dataset.gcDesktopHeroOriginal = img.getAttribute('src') || '';
-              }
-              const next = desktop.matches ? imageUrl : img.dataset.gcDesktopHeroOriginal;
-              if (next && img.getAttribute('src') !== next) img.setAttribute('src', next);
-            };
-            apply();
-            if (document.readyState === 'loading') {
-              document.addEventListener('DOMContentLoaded', apply, {once:true});
-            }
-            if (desktop.addEventListener) desktop.addEventListener('change', apply);
-            else desktop.addListener(apply);
-            window.addEventListener('resize', apply, {passive:true});
-          })();
-          </script>
-          """
-              if "</body>" not in s:
-                  raise SystemExit("STOP: closing body tag not found; no change made.")
-              s = s.replace("</body>", script + "</body>", 1)
-          s = s.replace("\\n</body>", "</body>", 1)
+          # Change only the source of the existing hero img. Its mobile CSS/layout stays intact.
+          match = re.search(r'<img\\b[^>]*class="gc-approved-hero-image"[^>]*>', s, re.I)
+          if not match:
+              raise SystemExit("STOP: approved hero image element not found; no change made.")
+          tag = match.group(0)
+          tag, src_count = re.subn(
+              r'\\bsrc="[^"]*"',
+              'src="/assets/gc-desktop-hero.png?rev=20261111c"',
+              tag,
+              count=1,
+              flags=re.I
+          )
+          if src_count != 1:
+              raise SystemExit("STOP: hero image src not found; no change made.")
+          tag = re.sub(r'\\bloading="[^"]*"', 'loading="lazy"', tag, count=1, flags=re.I)
+          s = s[:match.start()] + tag + s[match.end():]
           p.write_text(s, encoding="utf-8")
           PY
-      - name: Commit consolidated hero integration
+      - name: Commit direct desktop hero source
         run: |
           if git diff --quiet -- index.html; then exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Consolidate desktop hero image switch"
+          git commit -m "Load desktop hero asset directly"
           git pull --rebase origin main
           git push origin main
