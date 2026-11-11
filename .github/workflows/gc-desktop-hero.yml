@@ -57,6 +57,7 @@ jobs:
               if "</body>" not in s:
                   raise SystemExit("STOP: closing body tag not found; no change made.")
               s = s.replace("</body>", script + "</body>", 1)
+          s = s.replace("\\n</body>", "</body>", 1)
           p.write_text(s, encoding="utf-8")
           PY
       - name: Commit consolidated hero integration
