@@ -17702,6 +17702,34 @@ input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-
 })();
 </script>
 
+
+<style id="gc-buy-now-nav-visibility-v5-20261111">
+a[data-gc-buy-now-nav], a[data-gc-buy-now-nav]:visited, a[data-gc-buy-now-nav]:hover { display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#f97316!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:10px 16px!important;margin:4px 8px!important;border-radius:9px!important;font-weight:900!important;text-decoration:none!important;opacity:1!important;visibility:visible!important; }
+</style>
+<script id="gc-buy-now-public-nav-v5-20261111">
+/* GC_BUY_NOW_PUBLIC_NAV_V5_20261111 */
+(() => {
+  const addLink = () => {
+    if (document.querySelector('a[data-gc-buy-now-nav]')) return;
+    const anchors = Array.from(document.querySelectorAll('header a, nav a, .navbar a, .navigation a'));
+    const contact = anchors.find(a => {
+      const label = (a.textContent || '').trim().toLowerCase();
+      const href = (a.getAttribute('href') || '').toLowerCase();
+      return label.includes('contact') || href.includes('contactus') || href.includes('/contact');
+    });
+    const link = document.createElement('a');
+    link.href = '/buy-now/';
+    link.textContent = 'BUY NOW';
+    link.setAttribute('data-gc-buy-now-nav', 'true');
+    link.style.cssText = 'display:inline-flex!important;align-items:center!important;justify-content:center;margin:4px 8px!important;padding:10px 16px!important;border-radius:9px!important;background:#f97316!important;color:#fff!important;-webkit-text-fill-color:#fff!important;font-weight:900!important;text-decoration:none!important;white-space:nowrap!important;visibility:visible!important;opacity:1!important;';
+    if (contact && contact.parentElement) contact.insertAdjacentElement('afterend', link);
+    else { const nav = document.querySelector('header nav, nav, .navbar, .navigation, header'); if (nav) nav.appendChild(link); }
+  };
+  const start = () => { addLink(); new MutationObserver(addLink).observe(document.documentElement,{childList:true,subtree:true}); };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
+})();
+</script>
+
 </body>
 </html>
 
