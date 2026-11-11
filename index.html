@@ -17503,342 +17503,48 @@ input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-
 
 <script src='https://cdn.jotfor.ms/agent/embedjs/01a1b9d4e660700280a7d08810cef53960fc/embed.js'></script>
 
-<script id="gc-buy-now-public-nav-20261111">
-/* GC_BUY_NOW_PUBLIC_NAV_20261111 */
-(() => {
-  const addLink = () => {
-    const anchors = Array.from(document.querySelectorAll('a[href]'));
-    const contacts = anchors.filter(a => /contact\s*us/i.test((a.textContent || '').trim()) || /\/contactus\/?(?:[?#]|$)/i.test(a.getAttribute('href') || ''));
-    contacts.forEach(contact => {
-      const scope = contact.closest('nav, header, .menu, .navbar, .navigation') || contact.parentElement?.parentElement;
-      if (!scope || scope.querySelector('[data-gc-buy-now-nav]')) return;
-      const link = document.createElement('a');
-      link.href = '/buy-now/';
-      link.textContent = 'BUY NOW';
-      link.setAttribute('data-gc-buy-now-nav', 'true');
-      link.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;margin:4px 8px;padding:9px 15px;border-radius:9px;background:#f97316;color:#fff!important;font-weight:900;text-decoration:none;white-space:nowrap;';
-      const item = contact.closest('li');
-      if (item && item.parentElement) {
-        const clone = item.cloneNode(false);
-        clone.appendChild(link);
-        item.parentElement.insertBefore(clone, item.nextSibling);
-      } else {
-        contact.insertAdjacentElement('afterend', link);
-      }
-    });
-  };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addLink, {once:true});
-  else addLink();
-  const observer = new MutationObserver(addLink);
-  observer.observe(document.documentElement, {childList:true,subtree:true});
-})();
-</script>
-
-
-<script id="gc-buy-now-public-nav-v2-20261111">
-/* GC_BUY_NOW_PUBLIC_NAV_V2_20261111 */
-(() => {
-  const addLink = () => {
-    const links = Array.from(document.querySelectorAll('nav a[href], header a[href], .navbar a[href], .navigation a[href]'));
-    const contactLinks = links.filter(a =>
-      /contact\s*us/i.test((a.textContent || '').trim()) ||
-      /\/contactus\/?(?:[?#]|$)/i.test(a.getAttribute('href') || '')
-    );
-    contactLinks.forEach(contact => {
-      const parentItem = contact.closest('li');
-      const container = parentItem && parentItem.parentElement
-        ? parentItem.parentElement
-        : contact.parentElement;
-      if (!container || container.querySelector('[data-gc-buy-now-nav]')) return;
-      const link = document.createElement('a');
-      link.href = '/buy-now/';
-      link.textContent = 'BUY NOW';
-      link.setAttribute('data-gc-buy-now-nav', 'true');
-      link.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;margin:4px 8px;padding:9px 15px;border-radius:9px;background:#f97316;color:#fff!important;font-weight:900;text-decoration:none;white-space:nowrap;';
-      if (parentItem && parentItem.parentElement) {
-        const item = document.createElement(parentItem.tagName || 'li');
-        item.appendChild(link);
-        parentItem.parentElement.insertBefore(item, parentItem.nextSibling);
-      } else {
-        contact.insertAdjacentElement('afterend', link);
-      }
-    });
-  };
-  const start = () => {
-    addLink();
-    const observer = new MutationObserver(addLink);
-    observer.observe(document.documentElement, {childList:true,subtree:true});
-  };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
-  else start();
-})();
-</script>
-
-
-
-
-
-<script id="gc-buy-now-public-nav-v3-20261111">
-/* GC_BUY_NOW_PUBLIC_NAV_V3_20261111 */
-(() => {
-  const addLink = () => {
-    const links = Array.from(document.querySelectorAll('nav a[href], header a[href], .navbar a[href], .navigation a[href]'));
-    const contactLinks = links.filter(a =>
-      /contact\s*us/i.test((a.textContent || '').trim()) ||
-      /\/contactus\/?(?:[?#]|$)/i.test(a.getAttribute('href') || '')
-    );
-    if (!contactLinks.length) {
-      const nav = document.querySelector('header nav, nav, .navbar, .navigation');
-      if (nav && !nav.querySelector('[data-gc-buy-now-nav]')) {
-        const fallback = document.createElement('a');
-        fallback.href = '/buy-now/';
-        fallback.textContent = 'BUY NOW';
-        fallback.setAttribute('data-gc-buy-now-nav', 'true');
-        fallback.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;margin:4px 8px;padding:9px 15px;border-radius:9px;background:#f97316;color:#fff!important;font-weight:900;text-decoration:none;white-space:nowrap;';
-        nav.appendChild(fallback);
-      }
-    }
-    contactLinks.forEach(contact => {
-      const parentItem = contact.closest('li');
-      const container = parentItem && parentItem.parentElement
-        ? parentItem.parentElement
-        : contact.parentElement;
-      if (!container || container.querySelector('[data-gc-buy-now-nav]')) return;
-      const link = document.createElement('a');
-      link.href = '/buy-now/';
-      link.textContent = 'BUY NOW';
-      link.setAttribute('data-gc-buy-now-nav', 'true');
-      link.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;margin:4px 8px;padding:9px 15px;border-radius:9px;background:#f97316;color:#fff!important;font-weight:900;text-decoration:none;white-space:nowrap;';
-      if (parentItem && parentItem.parentElement) {
-        const item = document.createElement(parentItem.tagName || 'li');
-        item.appendChild(link);
-        parentItem.parentElement.insertBefore(item, parentItem.nextSibling);
-      } else {
-        contact.insertAdjacentElement('afterend', link);
-      }
-    });
-  };
-  const start = () => {
-    addLink();
-    const observer = new MutationObserver(addLink);
-    observer.observe(document.documentElement, {childList:true,subtree:true});
-  };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
-  else start();
-})();
-</script>
-
-
-<style id="gc-buy-now-nav-visibility-v4-20261111">
-          a[data-gc-buy-now-nav], a[data-gc-buy-now-nav]:visited, a[data-gc-buy-now-nav]:hover { background:#f97316 !important; background-color:#f97316 !important; color:#fff !important; -webkit-text-fill-color:#fff !important; opacity:1 !important; visibility:visible !important; display:inline-flex !important; align-items:center !important; justify-content:center !important; padding:9px 15px !important; border-radius:9px !important; font-weight:900 !important; text-decoration:none !important; }
-          </style>
-          <script id="gc-buy-now-public-nav-v4-20261111">
-/* GC_BUY_NOW_PUBLIC_NAV_V3_20261111 */
-(() => {
-  const addLink = () => {
-    const links = Array.from(document.querySelectorAll('nav a[href], header a[href], .navbar a[href], .navigation a[href]'));
-    const contactLinks = links.filter(a =>
-      /contact\s*us/i.test((a.textContent || '').trim()) ||
-      /\/contactus\/?(?:[?#]|$)/i.test(a.getAttribute('href') || '')
-    );
-    if (!contactLinks.length) {
-      const nav = document.querySelector('header nav, nav, .navbar, .navigation');
-      if (nav && !nav.querySelector('[data-gc-buy-now-nav]')) {
-        const fallback = document.createElement('a');
-        fallback.href = '/buy-now/';
-        fallback.textContent = 'BUY NOW';
-        fallback.setAttribute('data-gc-buy-now-nav', 'true');
-        fallback.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;margin:4px 8px;padding:9px 15px;border-radius:9px;background:#f97316!important;background-color:#f97316!important;color:#fff!important;font-weight:900;text-decoration:none;white-space:nowrap;';
-        nav.appendChild(fallback);
-      }
-    }
-    contactLinks.forEach(contact => {
-      const parentItem = contact.closest('li');
-      const container = parentItem && parentItem.parentElement
-        ? parentItem.parentElement
-        : contact.parentElement;
-      if (!container || container.querySelector('[data-gc-buy-now-nav]')) return;
-      const link = document.createElement('a');
-      link.href = '/buy-now/';
-      link.textContent = 'BUY NOW';
-      link.setAttribute('data-gc-buy-now-nav', 'true');
-      link.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;margin:4px 8px;padding:9px 15px;border-radius:9px;background:#f97316;color:#fff!important;font-weight:900;text-decoration:none;white-space:nowrap;';
-      if (parentItem && parentItem.parentElement) {
-        const item = document.createElement(parentItem.tagName || 'li');
-        item.appendChild(link);
-        parentItem.parentElement.insertBefore(item, parentItem.nextSibling);
-      } else {
-        contact.insertAdjacentElement('afterend', link);
-      }
-    });
-  };
-  const start = () => {
-    addLink();
-    const observer = new MutationObserver(addLink);
-    observer.observe(document.documentElement, {childList:true,subtree:true});
-  };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
-  else start();
-})();
-</script>
-
-
-<style id="gc-buy-now-nav-visibility-v5-20261111">
-a[data-gc-buy-now-nav], a[data-gc-buy-now-nav]:visited, a[data-gc-buy-now-nav]:hover { display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#f97316!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:10px 16px!important;margin:4px 8px!important;border-radius:9px!important;font-weight:900!important;text-decoration:none!important;opacity:1!important;visibility:visible!important; }
-</style>
-<script id="gc-buy-now-public-nav-v5-20261111">
-/* GC_BUY_NOW_PUBLIC_NAV_V5_20261111 */
-(() => {
-  const addLink = () => {
-    if (document.querySelector('a[data-gc-buy-now-nav]')) return;
-    const anchors = Array.from(document.querySelectorAll('header a, nav a, .navbar a, .navigation a'));
-    const contact = anchors.find(a => {
-      const label = (a.textContent || '').trim().toLowerCase();
-      const href = (a.getAttribute('href') || '').toLowerCase();
-      return label.includes('contact') || href.includes('contactus') || href.includes('/contact');
-    });
-    const link = document.createElement('a');
-    link.href = '/buy-now/';
-    link.textContent = 'BUY NOW';
-    link.setAttribute('data-gc-buy-now-nav', 'true');
-    link.style.cssText = 'display:inline-flex!important;align-items:center!important;justify-content:center;margin:4px 8px!important;padding:10px 16px!important;border-radius:9px!important;background:#f97316!important;color:#fff!important;-webkit-text-fill-color:#fff!important;font-weight:900!important;text-decoration:none!important;white-space:nowrap!important;visibility:visible!important;opacity:1!important;';
-    if (contact && contact.parentElement) contact.insertAdjacentElement('afterend', link);
-    else { const nav = document.querySelector('header nav, nav, .navbar, .navigation, header'); if (nav) nav.appendChild(link); }
-  };
-  const start = () => { addLink(); new MutationObserver(addLink).observe(document.documentElement,{childList:true,subtree:true}); };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true}); else start();
-})();
-</script>
-
-
 <style id="gc-buy-now-nav-v6-style">
 a[data-gc-buy-now-nav] { display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:10px 16px!important;margin:4px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;position:relative!important;z-index:99999!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important; }
 </style>
-<script id="gc-buy-now-public-nav-v6">
-/* GC_BUY_NOW_PUBLIC_NAV_V6_20261111 */
-(() => {
-  const install = () => {
-    const navs = Array.from(document.querySelectorAll('header nav, nav, .navbar, .navigation, [role="navigation"]'));
-    let targets = navs.filter(n => n.getClientRects().length && getComputedStyle(n).visibility !== 'hidden');
-    if (!targets.length) targets = navs;
-    targets.forEach(nav => {
-      if (nav.querySelector('a[data-gc-buy-now-nav]')) return;
-      const contact = Array.from(nav.querySelectorAll('a')).find(a => /contact/i.test((a.textContent||'')+' '+(a.getAttribute('href')||'')));
-      const link = document.createElement('a');
-      link.href = '/buy-now/'; link.textContent = 'BUY NOW';
-      link.setAttribute('data-gc-buy-now-nav','true');
-      if (contact) contact.insertAdjacentElement('afterend',link); else nav.appendChild(link);
-    });
-    if (!document.querySelector('a[data-gc-buy-now-nav]')) {
-      const header = document.querySelector('header');
-      if (header) {
-        const link=document.createElement('a'); link.href='/buy-now/'; link.textContent='BUY NOW';
-        link.setAttribute('data-gc-buy-now-nav','true');
-        link.style.cssText='position:absolute;right:16px;top:12px;z-index:999999;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:10px 16px;border-radius:10px;font-weight:950;text-decoration:none;';
-        header.appendChild(link);
-      }
-    }
-  };
-  const start=()=>{install();new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true});};
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
-})();
-</script>
 
-
-<style id="gc-buy-now-public-menu-v8-style">
-a[data-gc-buy-now-menu] { display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:9px 15px!important;margin:4px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;position:relative!important;z-index:99999!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important; }
+<style id="gc-buy-now-stable-menu-style">
+a[data-gc-buy-now-stable]{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
+  padding:9px 15px!important;margin:4px 8px!important;border-radius:10px!important;
+  font-weight:900!important;text-decoration:none!important;white-space:nowrap!important;
+}
 </style>
-<script id="gc-buy-now-public-menu-v8">
-/* GC_BUY_NOW_PUBLIC_MENU_V8_20261111 */
+<script id="gc-buy-now-stable-menu">
+/* One-time menu insertion; deliberately no MutationObserver or polling. */
 (() => {
   const install = () => {
-    const roots = Array.from(document.querySelectorAll('header nav, nav, .navbar-nav, .nav-links, .nav-menu, .menu-items, .navigation, .navbar, [role="navigation"]'));
-    for (const root of roots) {
-      if (root.querySelector('a[data-gc-buy-now-menu]')) continue;
-      const links = Array.from(root.querySelectorAll('a'));
-      const contact = links.find(a => /contact/i.test((a.textContent || '') + ' ' + (a.getAttribute('href') || '')));
-      const link = document.createElement('a');
-      link.href = '/buy-now/';
-      link.textContent = 'BUY NOW';
-      link.setAttribute('data-gc-buy-now-menu', 'true');
-      if (contact) contact.insertAdjacentElement('afterend', link);
-      else root.appendChild(link);
-    }
-  };
-  const start = () => {
-    install();
-    new MutationObserver(install).observe(document.documentElement, {childList:true, subtree:true});
-  };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
-  else start();
-})();
-</script>
-
-
-<style id="gc-buy-now-public-menu-v9-style">
-header a[data-gc-buy-now-menu], nav a[data-gc-buy-now-menu] { display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:9px 15px!important;margin:4px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;position:relative!important;z-index:99999!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important; }
-</style>
-<script id="gc-buy-now-public-menu-v9">
-/* GC_BUY_NOW_PUBLIC_MENU_V9_20261111 */
-(() => {
-  const install = () => {
-    const header = document.querySelector('header') || document.body;
-    const nav = header.querySelector('nav') || document.querySelector('nav') || header.querySelector('[role="navigation"]') || document.querySelector('[role="navigation"]') || header;
-    const candidates = Array.from(header.querySelectorAll('a,button')).filter(el => {
+    const header = document.querySelector('header');
+    if (!header) return;
+    const nav = header.querySelector('nav,[role="navigation"],.navbar,.navigation') ||
+                document.querySelector('nav,[role="navigation"]') || header;
+    const old = Array.from(header.querySelectorAll('a,button')).filter(el => {
       const label = (el.textContent || '').replace(/\s+/g,' ').trim();
       const href = (el.getAttribute('href') || '').toLowerCase();
-      return /buy\s*now/i.test(label) || /buy-now/.test(href) || el.hasAttribute('data-gc-buy-now-menu');
+      return el.hasAttribute('data-gc-buy-now-nav') ||
+             el.hasAttribute('data-gc-buy-now-menu') ||
+             /buy\s*now/i.test(label) || href.includes('/buy-now');
     });
-    let keep = candidates.find(el => el.tagName === 'A' && /buy-now/.test(el.getAttribute('href') || '')) || null;
-    for (const el of candidates) if (el !== keep) el.remove();
-    if (!keep) {
-      keep = document.createElement('a');
-      keep.href = '/buy-now/';
-    }
-    keep.setAttribute('data-gc-buy-now-menu','true');
-    keep.className = 'gc-buy-now-menu-item';
-    keep.textContent = 'BUY NOW';
-    keep.style.cssText = 'display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:9px 15px!important;margin:4px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;position:relative!important;z-index:99999!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important;';
-    if (keep.parentElement !== nav) nav.appendChild(keep);
-  };
-  const start = () => {
-    install();
-    new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true});
-  };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true});
-  else start();
-})();
-</script>
-
-
-<style id="gc-buy-now-public-menu-v10-style">
-a[data-gc-buy-now-menu] { display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:9px 15px!important;margin:4px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important; }
-</style>
-<script id="gc-buy-now-public-menu-v10">
-/* GC_BUY_NOW_PUBLIC_MENU_V10_20261111 */
-(() => {
-  const install = () => {
-    const header = document.querySelector('header') || document.body;
-    const nav = header.querySelector('nav') || document.querySelector('nav') || header.querySelector('[role="navigation"]') || document.querySelector('[role="navigation"]') || header;
-    const matches = Array.from(header.querySelectorAll('a,button')).filter(el => /buy\s*now/i.test((el.textContent || '').trim()) || /buy-now/i.test(el.getAttribute('href') || '') || el.hasAttribute('data-gc-buy-now-menu'));
-    let link = matches.find(el => el.tagName === 'A' && /buy-now/i.test(el.getAttribute('href') || '')) || null;
-    for (const el of matches) if (el !== link) el.remove();
+    let link = old.find(el => el.tagName === 'A' && (el.getAttribute('href') || '').toLowerCase().includes('/buy-now')) || null;
+    old.forEach(el => { if (el !== link) el.remove(); });
     if (!link) link = document.createElement('a');
     link.href = '/buy-now/';
     link.textContent = 'BUY NOW';
-    link.setAttribute('data-gc-buy-now-menu','true');
-    link.style.cssText = 'display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:9px 15px!important;margin:4px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important;';
+    link.setAttribute('data-gc-buy-now-stable','true');
     if (link.parentElement !== nav) nav.appendChild(link);
   };
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, {once:true});
-  else install();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', install, {once:true});
+  } else {
+    install();
+  }
 })();
 </script>
-
-
-
-
-
 
 </body>
 </html>
