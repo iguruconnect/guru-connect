@@ -22,11 +22,11 @@ jobs:
           import re
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-          marker = "GC_BUY_NOW_PUBLIC_NAV_20261111"
+          marker = "GC_BUY_NOW_PUBLIC_NAV_V2_20261111"
           if marker not in s:
               script = """
-          <script id="gc-buy-now-public-nav-20261111">
-          /* GC_BUY_NOW_PUBLIC_NAV_20261111 */
+          <script id="gc-buy-now-public-nav-v2-20261111">
+          /* GC_BUY_NOW_PUBLIC_NAV_V2_20261111 */
           (() => {
             const addLink = () => {
               const links = Array.from(document.querySelectorAll('nav a[href], header a[href], .navbar a[href], .navigation a[href]'));
