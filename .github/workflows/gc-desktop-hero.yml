@@ -14,7 +14,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Apply desktop-only hero image
+      - name: Consolidate desktop-only hero integration
         shell: bash
         run: |
           python - <<'PY'
@@ -22,53 +22,54 @@ jobs:
           import re
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-          marker = "GC_DESKTOP_HERO_IMAGE_ONLY_V4_20261111"
+          marker = "GC_DESKTOP_HERO_IMAGE_ONLY_V5_20261111"
+          # Remove the two previous competing desktop hero scripts; retain all other homepage code.
+          for script_id in ("gc-desktop-hero-only-v3-20261111", "gc-desktop-hero-only-v4-20261111"):
+              s = re.sub(
+                  r'<script\\b(?=[^>]*\\bid=["\\']' + re.escape(script_id) + r'["\\'])[^>]*>.*?</script\\s*>',
+                  '',
+                  s,
+                  count=1,
+                  flags=re.I | re.S
+              )
           if marker not in s:
               script = """
-          <script id="gc-desktop-hero-only-v4-20261111">
-          /* GC_DESKTOP_HERO_IMAGE_ONLY_V4_20261111: preserve the mobile hero and wait for its late-loaded markup */
+          <script id="gc-desktop-hero-only-v5-20261111">
+          /* GC_DESKTOP_HERO_IMAGE_ONLY_V5_20261111: one desktop-only image switch; mobile stays untouched */
           (() => {
             const desktop = window.matchMedia('(min-width: 641px)');
-            const imageUrl = '/assets/gc-desktop-hero.png';
-            let originalSrc = null;
-            let imageReady = false;
-            const replacement = new Image();
-            replacement.onload = () => { imageReady = true; apply(); };
-            replacement.onerror = () => console.warn('GURU CONNECT desktop hero image could not be loaded:', imageUrl);
-            replacement.src = imageUrl;
+            const imageUrl = '/assets/gc-desktop-hero.png?rev=20261111b';
+            const selector = '#publicWebsiteContent > section.gc-approved-hero#home > img.gc-approved-hero-image';
             const apply = () => {
-              const img = document.querySelector('#publicWebsiteContent section.gc-approved-hero#home img.gc-approved-hero-image');
-              if (!img) return false;
-              if (originalSrc === null) originalSrc = img.getAttribute('src') || '';
-              if (desktop.matches) {
-                if (imageReady && img.getAttribute('src') !== imageUrl) img.src = imageUrl;
-              } else if (originalSrc && img.getAttribute('src') !== originalSrc) {
-                img.src = originalSrc;
+              const img = document.querySelector(selector);
+              if (!img) return;
+              if (img.dataset.gcDesktopHeroOriginal === undefined) {
+                img.dataset.gcDesktopHeroOriginal = img.getAttribute('src') || '';
               }
-              return true;
+              const next = desktop.matches ? imageUrl : img.dataset.gcDesktopHeroOriginal;
+              if (next && img.getAttribute('src') !== next) img.setAttribute('src', next);
             };
-            let attempts = 0;
-            const waitForHero = () => {
-              if (apply()) return;
-              if (++attempts < 120) window.setTimeout(waitForHero, 250);
-            };
-            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', waitForHero, {once:true});
-            else waitForHero();
+            apply();
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', apply, {once:true});
+            }
             if (desktop.addEventListener) desktop.addEventListener('change', apply);
             else desktop.addListener(apply);
+            window.addEventListener('resize', apply, {passive:true});
           })();
           </script>
           """
-              if not re.search(r"</body\s*>", s, re.I):
+              if not re.search(r"</body\\s*>", s, re.I):
                   raise SystemExit("STOP: closing body tag not found; no change made.")
-              s = re.sub(r"</body\s*>", lambda m: script + "\n" + m.group(0), s, count=1, flags=re.I)
-              p.write_text(s, encoding="utf-8")
+              s = re.sub(r"</body\\s*>", lambda m: script + "\\n" + m.group(0), s, count=1, flags=re.I)
+          p.write_text(s, encoding="utf-8")
           PY
-      - name: Commit desktop hero integration
+      - name: Commit consolidated hero integration
         run: |
           if git diff --quiet -- index.html; then exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Use uploaded hero image on desktop only"
+          git commit -m "Consolidate desktop hero image switch"
+          git pull --rebase origin main
           git push origin main
