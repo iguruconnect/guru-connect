@@ -96,6 +96,40 @@ main.wrap{padding-top:10px}
 @media(max-width:760px){.hero{padding:27px 4vw 30px}.hero:after{right:2%;top:25px;font-size:78px}.toolbar{padding:11px}.filters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.filter{white-space:nowrap}.catalogue-trust{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.trust-chip{text-align:center;font-size:11px;padding:9px 6px}}
 @media(max-width:620px){.top{padding:11px 4vw!important}.brand{font-size:17px}.top>div:last-child{gap:7px}.hero h1{font-size:34px}.product-card .photo{height:140px;padding:8px}.product-card .photo .fallback{font-size:48px}.cardbody{padding:10px}.category-icon{width:23px;height:23px}.card h3{font-size:14px;min-height:38px}.desc{min-height:48px}.sell{font-size:19px}.product-card .buy{font-size:11px;padding:10px 6px}.save{font-size:9px}}
 
+
+/* Clear, high-contrast shopping cart UI */
+.cart-head{display:inline-flex!important;align-items:center;justify-content:center;gap:9px;min-width:118px;min-height:48px;padding:10px 16px!important;background:#ffe500!important;color:#172337!important;border:2px solid #fff!important;border-radius:12px!important;font-size:14px;font-weight:1000;box-shadow:0 4px 0 #d8b900,0 7px 15px #08245b35!important}
+.cart-head:before{content:"🛒";font-size:20px}
+.cart-count{min-width:27px;min-height:27px;padding:3px 8px!important;border-radius:50%!important;background:#172337!important;color:#ffe500!important;font-size:13px!important;font-weight:1000}
+#cartDetails{background:#fff!important;border:2px solid #cbdcff!important;border-radius:16px!important;padding:20px!important;box-shadow:0 8px 28px #15366d14!important;margin:22px 0!important}
+#cartDetails>div:first-child{padding-bottom:14px;border-bottom:1px solid #e4eaf4}
+#cartDetails h2{display:flex;align-items:center;gap:9px;font-size:22px!important;color:#172337!important}
+#cartDetails h2:before{content:"🛒";display:inline-grid;place-items:center;width:40px;height:40px;background:#eaf2ff;border-radius:11px;font-size:21px}
+#closeCart{background:#edf4ff!important;color:#2056ae!important;border:1px solid #c8dcff!important;border-radius:9px!important;font-weight:900;padding:10px 13px}
+.cart-lines{gap:10px!important;margin-top:15px!important}
+.cart-line{display:flex!important;justify-content:space-between;align-items:center;gap:14px;padding:14px!important;background:#f7f9fd;border:1px solid #e5ebf5!important;border-radius:11px}
+.cart-line>div{min-width:0;flex:1}
+.cart-line b{display:block;color:#172337!important;font-size:15px;line-height:1.4}
+.cart-line .muted{font-size:14px!important;color:#1556bd!important;font-weight:900;margin-top:5px}
+.cart-line button{flex:0 0 auto;background:#fff!important;color:#c2410c!important;border:1px solid #fed7aa!important;border-radius:8px!important;padding:9px 12px!important;font-size:11px;font-weight:950}
+.basket{display:grid!important;grid-template-columns:1fr auto;align-items:center;gap:14px;padding:16px 20px!important;background:linear-gradient(110deg,#123b83,#2874f0)!important;border:2px solid #8ebaff!important;border-radius:14px!important;box-shadow:0 9px 25px #123b8335!important}
+.basket>div:first-child{display:grid;grid-template-columns:1fr auto;align-items:center;gap:5px 12px}
+.basket>div:first-child>div{grid-column:1/-1;font-size:11px!important;letter-spacing:1.1px;font-weight:900;color:#dceaff!important}
+#basketCount{font-size:15px;color:#fff!important}
+#basketTotal{font-size:23px;color:#ffe500!important;font-weight:1000}
+.basket button{min-height:47px;padding:12px 18px!important;background:#ffe500!important;color:#172337!important;border:0!important;border-radius:9px!important;font-size:13px;font-weight:1000;box-shadow:0 3px 0 #d8b900}
+@media(max-width:620px){
+ .cart-head{min-width:104px;min-height:43px;padding:8px 11px!important;font-size:12px}
+ #cartDetails{padding:13px!important}
+ #cartDetails h2{font-size:18px!important}
+ #closeCart{font-size:11px;padding:8px}
+ .cart-line{padding:11px!important;gap:8px}
+ .cart-line b{font-size:13px}
+ .cart-line button{padding:8px!important;font-size:10px}
+ .basket{grid-template-columns:1fr!important;padding:13px!important;gap:12px}
+ .basket button{width:100%;min-height:46px}
+ #basketTotal{font-size:21px}
+}
 </style></head><body>
 <div class="top"><div class="brand">GURU CONNECT</div><div style="display:flex;align-items:center;gap:12px"><small>Learn • Connect • Grow</small><a href="/" style="color:#fff"><b>Home</b></a><span id="memberWelcome" class="member-chip hidden" aria-live="polite"></span><button id="logoutBtn" class="logout-btn hidden" type="button">LOG OUT</button><button class="cart-head" id="cartJump" type="button">🛒 CART <span class="cart-count" id="cartHeadCount">0</span></button></div></div>
 <header class="hero"><div class="wrap"><div class="eyebrow">THE GURU CONNECT STORE</div><h1>Discover. Choose.<br>Grow with us.</h1><p>Explore memberships, learning support and useful services in one place. Find the right option and buy securely through your GURU CONNECT member account.</p><div class="hero-tags"><span class="tag">✦ Curated services</span><span class="tag">✦ Clear pricing</span><span class="tag">✦ Secure UPI checkout</span></div></div></header>
@@ -103,7 +137,7 @@ main.wrap{padding-top:10px}
 <div class="toolbar"><input id="search" class="search" placeholder="Search products and services…"><select id="sort" class="sort" aria-label="Sort products"><option value="featured">Sort: Featured</option><option value="low">Price: Low to High</option><option value="high">Price: High to Low</option><option value="az">Name: A to Z</option></select><div class="filters" id="filters"><button class="filter active" data-cat="all">🛍️ All Products</button><button class="filter" data-cat="membership">👑 Membership</button><button class="filter" data-cat="helpline">🎧 Helpline</button><button class="filter" data-cat="service">✨ Other Services</button></div></div>
 <div class="catalogue-trust"><span class="trust-chip">🛡️ Genuine GURU CONNECT services</span><span class="trust-chip">🏷️ Transparent pricing</span><span class="trust-chip">🔒 Secure UPI checkout</span><span class="trust-chip">✅ Admin-verified orders</span></div><div class="section-title"><div><h2>Explore our catalogue</h2><div class="muted" id="count">Loading products…</div></div><div class="muted">Prices in INR</div></div>
 <div id="catalogue" class="grid"></div><div id="empty" class="empty hidden">No products match your search right now.</div>
-<section id="cartDetails" class="panel hidden"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 style="margin:0">Your Shopping Cart</h2><button class="secondary" id="closeCart" type="button">Continue Shopping</button></div><div id="cartLines" class="cart-lines"></div></section><div id="basket" class="basket hidden"><div><div style="font-size:11px;color:#c7d2fe">YOUR SELECTION</div><b id="basketCount">0 items</b> · <b id="basketTotal">₹0</b></div><button id="checkout">BUY SELECTED　→</button></div>
+<section id="cartDetails" class="panel hidden"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 style="margin:0">Your Shopping Cart</h2><button class="secondary" id="closeCart" type="button">Continue Shopping</button></div><div id="cartLines" class="cart-lines"></div></section><div id="basket" class="basket hidden"><div><div style="font-size:11px;color:#c7d2fe">YOUR SELECTION</div><b id="basketCount">0 items</b> · <b id="basketTotal">₹0</b></div><button id="checkout">PROCEED TO CHECKOUT →</button></div>
 <section id="ordersPanel" class="panel hidden"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2 style="margin:0">My Orders</h2><button class="secondary" id="refreshOrders">Refresh</button></div><div id="orders" class="muted">Loading…</div></section>
 <section id="payment" class="panel hidden"><h2>Complete your UPI payment</h2><p>Order reference: <b id="orderId"></b></p><div class="payqr"><div id="qr"></div><div><div class="muted">Pay to</div><h3>verizon@upi</h3><div id="amount" class="sell"></div><a id="upi" class="primary" style="display:inline-block;margin-top:10px">OPEN UPI APP</a></div></div><p class="muted">After payment, enter your UPI UTR. Your order will be activated only after Admin verifies the payment.</p><form id="utr"><label>UPI transaction reference / UTR</label><input id="utrValue" required minlength="6" maxlength="80" style="width:100%;padding:12px;border:1px solid #ccd4e3;border-radius:10px;margin:8px 0"><button class="primary">SUBMIT PAYMENT REFERENCE</button></form><p id="paymentMsg" class="muted"></p></section>
 </main><footer class="foot">GURU CONNECT · connecting mind - creating Future</footer>
