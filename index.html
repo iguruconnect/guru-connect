@@ -17500,6 +17500,38 @@ input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-
 
 
 <script src='https://cdn.jotfor.ms/agent/embedjs/01a1b9d4e660700280a7d08810cef53960fc/embed.js'></script>
+
+<script id="gc-buy-now-public-nav-20261111">
+/* GC_BUY_NOW_PUBLIC_NAV_20261111 */
+(() => {
+  const addLink = () => {
+    const anchors = Array.from(document.querySelectorAll('a[href]'));
+    const contacts = anchors.filter(a => /contact\s*us/i.test((a.textContent || '').trim()) || /\/contactus\/?(?:[?#]|$)/i.test(a.getAttribute('href') || ''));
+    contacts.forEach(contact => {
+      const scope = contact.closest('nav, header, .menu, .navbar, .navigation') || contact.parentElement?.parentElement;
+      if (!scope || scope.querySelector('[data-gc-buy-now-nav]')) return;
+      const link = document.createElement('a');
+      link.href = '/buy-now/';
+      link.textContent = 'BUY NOW';
+      link.setAttribute('data-gc-buy-now-nav', 'true');
+      link.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;margin:4px 8px;padding:9px 15px;border-radius:9px;background:#f97316;color:#fff!important;font-weight:900;text-decoration:none;white-space:nowrap;';
+      const item = contact.closest('li');
+      if (item && item.parentElement) {
+        const clone = item.cloneNode(false);
+        clone.appendChild(link);
+        item.parentElement.insertBefore(clone, item.nextSibling);
+      } else {
+        contact.insertAdjacentElement('afterend', link);
+      }
+    });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addLink, {once:true});
+  else addLink();
+  const observer = new MutationObserver(addLink);
+  observer.observe(document.documentElement, {childList:true,subtree:true});
+})();
+</script>
+
 </body>
 </html>
 
