@@ -14,7 +14,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Add Buy Now menu link without rewriting the homepage
+      - name: Add Buy Now as a real menu item
         shell: bash
         run: |
           python - <<'PY'
@@ -22,48 +22,58 @@ jobs:
           import re
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-          marker = "GC_BUY_NOW_PUBLIC_NAV_V6_20261111"
+          marker = "GC_BUY_NOW_PUBLIC_MENU_V7_20261111"
           if marker not in s:
               script = """
-          <style id="gc-buy-now-nav-v6-style">
-          a[data-gc-buy-now-nav] { display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:10px 16px!important;margin:4px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;position:relative!important;z-index:99999!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important; }
+          <style id="gc-buy-now-public-menu-v7-style">
+          a[data-gc-buy-now-menu] { display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:9px 15px!important;margin:4px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;position:relative!important;z-index:99999!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important; }
           </style>
-          <script id="gc-buy-now-public-nav-v6">
-          /* GC_BUY_NOW_PUBLIC_NAV_V6_20261111 */
+          <script id="gc-buy-now-public-menu-v7">
+          /* GC_BUY_NOW_PUBLIC_MENU_V7_20261111 */
           (() => {
             const install = () => {
-              const navs = Array.from(document.querySelectorAll('header nav, nav, .navbar, .navigation, [role="navigation"]'));
-              let targets = navs.filter(n => n.getClientRects().length && getComputedStyle(n).visibility !== 'hidden');
-              if (!targets.length) targets = navs;
-              targets.forEach(nav => {
-                if (nav.querySelector('a[data-gc-buy-now-nav]')) return;
-                const contact = Array.from(nav.querySelectorAll('a')).find(a => /contact/i.test((a.textContent||'')+' '+(a.getAttribute('href')||'')));
+              const selectors = 'header nav, nav, .navbar-nav, .nav-links, .nav-menu, .menu-items, .navigation, .navbar, [role="navigation"], header .menu, header';
+              const roots = Array.from(document.querySelectorAll(selectors));
+              let inserted = false;
+              for (const root of roots) {
+                if (root.querySelector('a[data-gc-buy-now-menu]')) { inserted = true; continue; }
+                const links = Array.from(root.querySelectorAll('a'));
+                const contact = links.find(a => /contact/i.test((a.textContent || '') + ' ' + (a.getAttribute('href') || '')));
+                const menuLike = links.length >= 2 || contact || root.matches('nav,[role="navigation"],.navbar-nav,.nav-links,.nav-menu,.menu-items');
+                if (!menuLike) continue;
                 const link = document.createElement('a');
-                link.href = '/buy-now/'; link.textContent = 'BUY NOW';
-                link.setAttribute('data-gc-buy-now-nav','true');
-                if (contact) contact.insertAdjacentElement('afterend',link); else nav.appendChild(link);
-              });
-              if (!document.querySelector('a[data-gc-buy-now-nav]')) {
-                const header = document.querySelector('header');
-                if (header) {
-                  const link=document.createElement('a'); link.href='/buy-now/'; link.textContent='BUY NOW';
-                  link.setAttribute('data-gc-buy-now-nav','true');
-                  link.style.cssText='position:absolute;right:16px;top:12px;z-index:999999;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:10px 16px;border-radius:10px;font-weight:950;text-decoration:none;';
-                  header.appendChild(link);
+                link.href = '/buy-now/';
+                link.textContent = 'BUY NOW';
+                link.setAttribute('data-gc-buy-now-menu', 'true');
+                if (contact) contact.insertAdjacentElement('afterend', link);
+                else root.appendChild(link);
+                inserted = true;
+              }
+              if (!inserted) {
+                const contact = Array.from(document.querySelectorAll('a')).find(a => /contact/i.test((a.textContent || '') + ' ' + (a.getAttribute('href') || '')));
+                if (contact) {
+                  const link = document.createElement('a');
+                  link.href = '/buy-now/'; link.textContent = 'BUY NOW';
+                  link.setAttribute('data-gc-buy-now-menu', 'true');
+                  contact.insertAdjacentElement('afterend', link);
                 }
               }
             };
-            const start=()=>{install();new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true});};
-            if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
+            const start = () => {
+              install();
+              new MutationObserver(install).observe(document.documentElement, {childList:true, subtree:true});
+            };
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
+            else start();
           })();
           </script>
           """
-              if not re.search(r"</body\s*>", s, re.I):
+              if not re.search(r"</body\\s*>", s, re.I):
                   raise SystemExit("STOP: closing body tag not found; no changes made.")
-              s = re.sub(r"</body\s*>", lambda m: script + "\n" + m.group(0), s, count=1, flags=re.I)
+              s = re.sub(r"</body\\s*>", lambda m: script + "\\n" + m.group(0), s, count=1, flags=re.I)
               p.write_text(s, encoding="utf-8")
           PY
-      - name: Commit and push homepage navigation integration
+      - name: Commit and push homepage menu integration
         run: |
           if git diff --quiet -- index.html; then
             echo "No homepage change required."
@@ -72,6 +82,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Integrate Buy Now into public website menu"
+          git commit -m "Place Buy Now directly in public navigation menu"
           git pull --rebase origin main
           git push origin main
