@@ -1,0 +1,111 @@
+name: Stop duplicate BUY NOW menu scripts and restore homepage responsiveness
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-homepage-menu-loop-cleanup.yml"
+permissions:
+  contents: write
+jobs:
+  cleanup-homepage-menu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Remove competing menu scripts and keep one stable menu link
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          p = Path("index.html")
+          s = p.read_text(encoding="utf-8")
+          original = s
+
+          # Remove every previously injected BUY NOW navigation script/style generation.
+          s = re.sub(
+              r'<script\\b(?=[^>]*\\bid=["\']gc-buy-now-public-(?:nav|menu)[^"\']*["\'])[^>]*>[\\s\\S]*?</script>\\s*',
+              '',
+              s,
+              flags=re.I
+          )
+          s = re.sub(
+              r'<style\\b(?=[^>]*\\bid=["\']gc-buy-now-(?:nav-visibility|public-menu)[^"\']*["\'])[^>]*>[\\s\\S]*?</style>\\s*',
+              '',
+              s,
+              flags=re.I
+          )
+          # Also remove the earlier generic BUY NOW nav patch blocks by their IDs.
+          s = re.sub(
+              r'<script\\b(?=[^>]*\\bid=["\']gc-buy-now-navigation[^"\']*["\'])[^>]*>[\\s\\S]*?</script>\\s*',
+              '',
+              s,
+              flags=re.I
+          )
+
+          stable = r"""
+          <style id="gc-buy-now-stable-menu-style">
+          a[data-gc-buy-now-stable]{
+            display:inline-flex!important;align-items:center!important;justify-content:center!important;
+            background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
+            padding:9px 15px!important;margin:4px 8px!important;border-radius:10px!important;
+            font-weight:900!important;text-decoration:none!important;white-space:nowrap!important;
+          }
+          </style>
+          <script id="gc-buy-now-stable-menu">
+          /* One-time menu insertion; deliberately no MutationObserver or polling. */
+          (() => {
+            const install = () => {
+              const header = document.querySelector('header');
+              if (!header) return;
+              const nav = header.querySelector('nav,[role="navigation"],.navbar,.navigation') ||
+                          document.querySelector('nav,[role="navigation"]') || header;
+              const old = Array.from(header.querySelectorAll('a,button')).filter(el => {
+                const label = (el.textContent || '').replace(/\\s+/g,' ').trim();
+                const href = (el.getAttribute('href') || '').toLowerCase();
+                return el.hasAttribute('data-gc-buy-now-nav') ||
+                       el.hasAttribute('data-gc-buy-now-menu') ||
+                       /buy\\s*now/i.test(label) || href.includes('/buy-now');
+              });
+              let link = old.find(el => el.tagName === 'A' && (el.getAttribute('href') || '').toLowerCase().includes('/buy-now')) || null;
+              old.forEach(el => { if (el !== link) el.remove(); });
+              if (!link) link = document.createElement('a');
+              link.href = '/buy-now/';
+              link.textContent = 'BUY NOW';
+              link.setAttribute('data-gc-buy-now-stable','true');
+              if (link.parentElement !== nav) nav.appendChild(link);
+            };
+            if (document.readyState === 'loading') {
+              document.addEventListener('DOMContentLoaded', install, {once:true});
+            } else {
+              install();
+            }
+          })();
+          </script>
+          """
+          if 'gc-buy-now-stable-menu' not in s:
+              if not re.search(r'</body\\s*>', s, flags=re.I):
+                  raise SystemExit("STOP: closing body tag not found; homepage unchanged.")
+              s = re.sub(r'</body\\s*>', lambda m: stable + "\\n" + m.group(0), s, count=1, flags=re.I)
+
+          if s == original:
+              print("Homepage already has the stable menu cleanup.")
+          else:
+              p.write_text(s, encoding="utf-8")
+              print("Removed competing BUY NOW scripts and installed one non-observing menu script.")
+          PY
+      - name: Commit focused homepage cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No homepage changes required."
+            exit 0
+          fi
+          git commit -m "Stop duplicate homepage Buy Now menu observers"
+          git pull --rebase origin main
+          git push origin main
