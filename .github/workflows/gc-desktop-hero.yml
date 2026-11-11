@@ -31,12 +31,12 @@ jobs:
               pattern = r'<script[^>]*id="' + re.escape(script_id) + r'".*?</script>'
               s = re.sub(pattern, '', s, count=1, flags=re.I | re.S)
           # Change only the source of the existing hero img. Its mobile CSS/layout stays intact.
-          match = re.search(r'<img\\b[^>]*class="gc-approved-hero-image"[^>]*>', s, re.I)
+          match = re.search(r'<img[^>]*class="gc-approved-hero-image"[^>]*>', s, re.I)
           if not match:
               raise SystemExit("STOP: approved hero image element not found; no change made.")
           tag = match.group(0)
           tag, src_count = re.subn(
-              r'\\bsrc="[^"]*"',
+              r'src="[^"]*"',
               'src="/assets/gc-desktop-hero.png?rev=20261111c"',
               tag,
               count=1,
@@ -44,7 +44,7 @@ jobs:
           )
           if src_count != 1:
               raise SystemExit("STOP: hero image src not found; no change made.")
-          tag = re.sub(r'\\bloading="[^"]*"', 'loading="lazy"', tag, count=1, flags=re.I)
+          tag = re.sub(r'loading="[^"]*"', 'loading="lazy"', tag, count=1, flags=re.I)
           s = s[:match.start()] + tag + s[match.end():]
           p.write_text(s, encoding="utf-8")
           PY
