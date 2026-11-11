@@ -204,12 +204,23 @@ main.wrap{padding-top:10px}
 const sb=supabase.createClient('https://hzqqswrnawrfgufbxgay.supabase.co','sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',{auth:{persistSession:true,autoRefreshToken:true}}),$=id=>document.getElementById(id),money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2});let products=[],cart=new Set(),category='all',member=null,role='',pendingBuy=null,currentOrder=null;
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function icon(p){if(p.category==='verification')return '<svg class="verified-product-tick" viewBox="0 0 100 100" role="img" aria-label="GURU CONNECT verified badge"><circle cx="50" cy="50" r="43" fill="#2874f0"/><circle cx="50" cy="50" r="35" fill="none" stroke="#fff" stroke-width="3" opacity=".9"/><path d="M29 51 43 65 72 35" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="m50 3 5 8 9-2 2 9 9 3-2 9 7 6-6 7 2 9-9 3-3 9-9-2-6 7-7-6-9 2-3-9-9-3 2-9-7-6 6-7-2-9 9-3 3-9 9 2z" fill="none" stroke="#ffe36e" stroke-width="2" opacity=".95" transform="translate(0 0)"/></svg>';if(p.category==='helpline'){const t=String(p.title||'').toLowerCase();if(/basic|starter|bronze|1 month|one month/.test(t))return '📘';if(/standard|silver|3 month|three month/.test(t))return '📗';if(/premium|gold|6 month|six month/.test(t))return '📙';if(/annual|year|12 month|platinum/.test(t))return '📕';return '📚'}return ({membership:'👑',service:'✨'})[p.category]||'🎁'}function productArtwork(p){
- const title=String(p.title||'GURU CONNECT').trim(),short=title.length>27?title.slice(0,25)+'…':title;
+ const title=String(p.title||'GURU CONNECT').trim(),short=title.length>30?title.slice(0,28)+'…':title;
  let h=0;for(let i=0;i<title.length;i++)h=(h*31+title.charCodeAt(i))>>>0;
- const palettes=[['#123b78','#35a6d6','#f8d477'],['#512b81','#d45ca5','#ffd2a6'],['#075b52','#35b58b','#f5dc85'],['#8a3e21','#f29b38','#ffe0a0'],['#27346e','#6e83e8','#f6c5dc'],['#69364e','#d77b83','#f9d6a5'],['#244c62','#56a8b4','#f7df9b'],['#4c4a24','#b2a64a','#f5e2a1']],c=palettes[h%palettes.length],id='gcArt'+h.toString(16),t=esc(short);
- if(p.category==='helpline')return '<svg class="unique-art" viewBox="0 0 320 190" role="img" aria-label="'+esc(title)+' cover"><defs><linearGradient id="'+id+'" x2="1" y2="1"><stop stop-color="'+c[0]+'"/><stop offset="1" stop-color="'+c[1]+'"/></linearGradient></defs><rect width="320" height="190" rx="12" fill="#fff0c9"/><g transform="translate(104 10) rotate(-4 58 84)"><rect x="8" y="5" width="116" height="166" rx="7" fill="#18243d" opacity=".2"/><rect width="116" height="166" rx="6" fill="url(#'+id+')" stroke="#fff" stroke-width="4"/><path d="M14 0v166" stroke="#fff" stroke-width="3" opacity=".55"/><circle cx="69" cy="57" r="28" fill="'+c[2]+'"/><path d="M51 58h36M69 40v36" stroke="'+c[0]+'" stroke-width="5" stroke-linecap="round"/><text x="69" y="111" fill="#fff" font-size="10" font-weight="900" text-anchor="middle">GURU CONNECT</text><text x="69" y="130" fill="#fff" font-size="8" font-weight="700" text-anchor="middle">'+t+'</text></g><circle cx="260" cy="45" r="20" fill="'+c[1]+'" opacity=".35"/></svg>';
- const glyph=p.category==='membership'?'♛':p.category==='verification'?'✓':p.category==='service'?'✦':'◆';
- return '<svg class="unique-art" viewBox="0 0 320 190" role="img" aria-label="'+esc(title)+' product artwork"><defs><linearGradient id="'+id+'" x2="1" y2="1"><stop stop-color="'+c[0]+'"/><stop offset="1" stop-color="'+c[1]+'"/></linearGradient></defs><rect width="320" height="190" rx="12" fill="url(#'+id+')"/><circle cx="'+(45+h%230)+'" cy="'+(35+(h>>>5)%120)+'" r="'+(18+h%35)+'" fill="'+c[2]+'" opacity=".24"/><path d="M0 150 Q100 '+(80+h%70)+' 190 170 T320 120V190H0Z" fill="#fff" opacity=".12"/><rect x="18" y="18" width="284" height="154" rx="12" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/><text x="160" y="103" text-anchor="middle" font-size="58" font-weight="900" fill="'+c[2]+'">'+glyph+'</text><text x="160" y="137" text-anchor="middle" font-size="13" font-weight="900" fill="#fff">'+t+'</text><text x="160" y="155" text-anchor="middle" font-size="8" letter-spacing="2" fill="#fff" opacity=".8">GURU CONNECT</text></svg>';
+ const palettes=[['#123b78','#35a6d6','#f8d477'],['#512b81','#d45ca5','#ffd2a6'],['#075b52','#35b58b','#f5dc85'],['#8a3e21','#f29b38','#ffe0a0'],['#27346e','#6e83e8','#f6c5dc'],['#69364e','#d77b83','#f9d6a5'],['#244c62','#56a8b4','#f7df9b'],['#4c4a24','#b2a64a','#f5e2a1']],c=palettes[h%palettes.length],id='gcArt'+h.toString(16),t=esc(short),cat=String(p.category||'service');
+ const base='<defs><linearGradient id="'+id+'" x2="1" y2="1"><stop stop-color="'+c[0]+'"/><stop offset="1" stop-color="'+c[1]+'"/></linearGradient><linearGradient id="'+id+'shine" x2="0" y2="1"><stop stop-color="#fff" stop-opacity=".48"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><filter id="'+id+'shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="8" stdDeviation="7" flood-color="#17213b" flood-opacity=".25"/></filter></defs>';
+ if(cat==='helpline')return '<svg class="unique-art" viewBox="0 0 320 190" role="img" aria-label="'+esc(title)+' book cover">'+base+'<rect width="320" height="190" rx="14" fill="#f2edff"/><circle cx="258" cy="36" r="48" fill="'+c[1]+'" opacity=".16"/><circle cx="45" cy="160" r="55" fill="'+c[2]+'" opacity=".24"/><g filter="url(#'+id+'shadow)" transform="translate(105 9) rotate(-4 58 86)"><rect x="9" y="7" width="116" height="166" rx="9" fill="#17213b" opacity=".25"/><rect x="0" y="0" width="116" height="166" rx="8" fill="url(#'+id+')" stroke="#fff" stroke-width="3"/><path d="M13 3v160" stroke="#fff" stroke-width="3" opacity=".5"/><path d="M20 17h82" stroke="#fff" stroke-opacity=".5" stroke-width="1.5"/><circle cx="69" cy="61" r="29" fill="'+c[2]+'"/><path d="M53 62h32M69 46v32" stroke="'+c[0]+'" stroke-width="5" stroke-linecap="round"/><text x="69" y="112" fill="#fff" font-size="9" font-weight="900" text-anchor="middle">GURU CONNECT</text><text x="69" y="130" fill="#fff" font-size="8" font-weight="700" text-anchor="middle">'+t+'</text><path d="M20 145h78" stroke="#fff" stroke-opacity=".55"/></g><g transform="translate(235 94)"><circle r="27" fill="#fff" filter="url(#'+id+'shadow)"/><path d="M-10 0a10 10 0 0 1 20 0v6h-20z" fill="'+c[1]+'"/><rect x="-15" y="3" width="30" height="17" rx="6" fill="'+c[0]+'"/><circle cx="-7" cy="11" r="2" fill="#fff"/><circle cx="7" cy="11" r="2" fill="#fff"/></g></svg>';
+ if(cat==='membership')return '<svg class="unique-art" viewBox="0 0 320 190" role="img" aria-label="'+esc(title)+' membership artwork">'+base+'<rect width="320" height="190" rx="14" fill="#fff1cf"/><circle cx="42" cy="35" r="58" fill="'+c[2]+'" opacity=".3"/><circle cx="286" cy="170" r="62" fill="'+c[1]+'" opacity=".2"/><g filter="url(#'+id+'shadow)" transform="translate(52 35) rotate(-5 108 60)"><rect x="0" y="0" width="216" height="122" rx="16" fill="url(#'+id+')"/><rect x="8" y="8" width="200" height="106" rx="11" fill="none" stroke="#fff" stroke-opacity=".55" stroke-width="1.5"/><path d="M0 34h216" stroke="#fff" stroke-opacity=".3"/><path d="M28 74l15-24 15 24 15-24 15 24" fill="none" stroke="'+c[2]+'" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><text x="105" y="57" fill="#fff" font-size="11" font-weight="900">GURU CONNECT</text><text x="105" y="79" fill="#fff" font-size="8" font-weight="700">'+t+'</text><text x="105" y="99" fill="#fff" font-size="7" letter-spacing="1.5">MEMBERSHIP</text></g><circle cx="261" cy="42" r="20" fill="'+c[2]+'"/><path d="m261 27 5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2z" fill="'+c[0]+'"/></svg>';
+ if(cat==='verification')return '<svg class="unique-art" viewBox="0 0 320 190" role="img" aria-label="'+esc(title)+' verified badge artwork">'+base+'<rect width="320" height="190" rx="14" fill="#e8fbf1"/><circle cx="160" cy="95" r="72" fill="#bcefd5" opacity=".55"/><g filter="url(#'+id+'shadow)"><circle cx="160" cy="88" r="57" fill="#2874f0"/><circle cx="160" cy="88" r="46" fill="none" stroke="#fff" stroke-width="3"/><path d="m132 88 19 19 39-42" fill="none" stroke="#fff" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/><path d="m160 18 8 11 14-2 3 14 13 6-5 13 9 11-11 9 1 14-14 3-7 12-12-7-12 7-7-12-14-3 1-14-11-9 9-11-5-13 13-6 3-14 14 2z" fill="none" stroke="#e7bd45" stroke-width="2.5"/></g><text x="160" y="169" text-anchor="middle" font-size="11" font-weight="900" fill="#155b43">VERIFIED MEMBER</text></svg>';
+ return '<svg class="unique-art" viewBox="0 0 320 190" role="img" aria-label="'+esc(title)+' service artwork">'+base+'<rect width="320" height="190" rx="14" fill="url(#'+id+')"/><circle cx="'+(48+h%220)+'" cy="'+(32+(h>>>5)%125)+'" r="'+(25+h%35)+'" fill="'+c[2]+'" opacity=".23"/><path d="M0 150 Q100 '+(80+h%70)+' 190 170 T320 120V190H0Z" fill="#fff" opacity=".12"/><g filter="url(#'+id+'shadow)"><rect x="89" y="25" width="142" height="112" rx="16" fill="#fff" fill-opacity=".95" transform="rotate('+(h%11-5)+' 160 81)"/><rect x="101" y="39" width="118" height="8" rx="4" fill="'+c[1]+'" opacity=".4"/><circle cx="160" cy="82" r="26" fill="'+c[2]+'"/><text x="160" y="94" text-anchor="middle" font-size="35" font-weight="900" fill="'+c[0]+'">'+(cat==='service'?'✦':'◆')+'</text><rect x="116" y="116" width="88" height="5" rx="3" fill="'+c[0]+'" opacity=".22"/></g><text x="160" y="164" text-anchor="middle" font-size="11" font-weight="900" fill="#fff">'+t+'</text><text x="160" y="178" text-anchor="middle" font-size="7" letter-spacing="2" fill="#fff" opacity=".8">GURU CONNECT</text></svg>';
+}
+function productIntro(p){
+ const custom=String(p.description||'').trim();
+ if(custom)return custom;
+ const c=String(p.category||'').toLowerCase();
+ if(c==='membership')return 'Unlock member benefits and enjoy a more connected GURU CONNECT experience.';
+ if(c==='verification')return 'Show your verified status and build greater confidence with the GURU CONNECT community.';
+ if(c==='helpline')return 'Get helpful guidance and support through this GURU CONNECT helpline plan.';
+ return 'A useful GURU CONNECT service designed to support your learning and growth.';
 }
 function categorySymbol(p){return ({membership:'👑',verification:'🛡️',helpline:'📚',service:'✨'})[p.category]||'🎁'}
 async function loadCatalogue(){const {data,error}=await sb.from('gc_store_products').select('*').eq('active',true).order('sort_order').order('title');if(error){$('count').textContent='Catalogue is temporarily unavailable.';return}products=data||[];render()}
@@ -224,3 +235,55 @@ $('utr').onsubmit=async e=>{e.preventDefault();if(!currentOrder)return;$('paymen
 $('logoutBtn').onclick=async()=>{const {error}=await sb.auth.signOut();if(error){alert('Unable to sign out: '+error.message);return}member=null;role='';pendingBuy=null;$('memberWelcome').textContent='';$('memberWelcome').classList.add('hidden');$('logoutBtn').classList.add('hidden');$('ordersPanel').classList.add('hidden');$('payment').classList.add('hidden');$('authModal').classList.add('hidden')};$('checkout').onclick=checkout;$('cartJump').onclick=()=>{totals();$('cartDetails').scrollIntoView({behavior:'smooth',block:'center'})};$('closeCart').onclick=()=>$('cartDetails').classList.add('hidden');$('search').oninput=render;$('sort').onchange=render;$('filters').onclick=e=>{const b=e.target.closest('button[data-cat]');if(!b)return;category=b.dataset.cat;document.querySelectorAll('.filter').forEach(x=>x.classList.toggle('active',x===b));render()};$('closeModal').onclick=$('cancelLogin').onclick=()=>$('authModal').classList.add('hidden');$('refreshOrders').onclick=loadOrders;
 (async()=>{await loadCatalogue();const {data}=await sb.auth.getSession();if(data.session)await enter(data.session.user)})();
 </script></body></html>
+<style>
+/* Final store polish: stronger cart visibility, useful product copy and refined artwork */
+.cart-head{
+ background:#ff7900!important;color:#fff!important;border:2px solid #fff!important;
+ min-width:132px!important;min-height:50px!important;border-radius:13px!important;
+ font-size:15px!important;font-weight:1000!important;letter-spacing:.35px;
+ box-shadow:0 4px 0 #b84d00,0 8px 18px #17233755!important;
+}
+.cart-head:before{content:"🛒";font-size:21px}
+.cart-head:hover{background:#e96800!important;transform:translateY(-1px)}
+.cart-count{background:#fff!important;color:#c64d00!important;border:2px solid #fff!important;
+ min-width:27px!important;min-height:27px!important;font-size:13px!important}
+#cartDetails{
+ background:#fff!important;border:2px solid #ff9a45!important;border-radius:16px!important;
+ box-shadow:0 10px 30px #a947001c!important;padding:20px!important
+}
+#cartDetails>div:first-child{background:#fff5eb;margin:-20px -20px 14px;padding:16px 20px;border-radius:13px 13px 0 0;border-bottom:1px solid #ffd2ad}
+#cartDetails h2{color:#7d3100!important;font-weight:950!important}
+#cartDetails h2:before{background:#ff7900!important;color:white!important}
+.cart-line{background:#fffaf5!important;border:1px solid #ffd7b8!important}
+.cart-line b{color:#222b3b!important}
+.cart-line .muted{color:#a94700!important}
+.cart-line button{background:#fff0e5!important;color:#b74400!important;border:1px solid #ffbd91!important}
+.basket{
+ background:linear-gradient(110deg,#f56b00,#ff9a20)!important;border:2px solid #ffd0a8!important;
+ box-shadow:0 10px 28px #a9470040!important;border-radius:15px!important
+}
+.basket>div:first-child>div{color:#fff3e8!important}
+#basketCount{color:#fff!important;font-weight:900!important}
+#basketTotal{color:#fff!important;text-shadow:0 1px 2px #8b3600;font-size:26px!important}
+.basket button{background:#fff!important;color:#a33c00!important;border:2px solid #fff!important;
+ min-height:50px!important;font-size:14px!important;box-shadow:0 4px 0 #bd4d00!important}
+.product-card .photo{height:205px!important;background:#f4f7fc!important;padding:10px!important}
+.product-card .photo img{object-fit:contain!important;mix-blend-mode:normal!important;padding:5px!important}
+.product-card .photo .unique-art{width:100%!important;height:100%!important;object-fit:cover!important;border-radius:11px!important;filter:drop-shadow(0 5px 9px #1723371c)}
+.product-card[data-category="helpline"] .photo .fallback:before,
+.product-card[data-category="helpline"] .photo .fallback:after{display:none!important;content:none!important}
+.product-card .desc{
+ color:#526079!important;font-size:13px!important;line-height:1.55!important;
+ min-height:60px!important;display:-webkit-box!important;-webkit-line-clamp:3!important;
+ -webkit-box-orient:vertical!important;overflow:hidden!important
+}
+.product-card h3{min-height:0!important}
+@media(max-width:620px){
+ .cart-head{min-width:112px!important;min-height:44px!important;font-size:12px!important;padding:8px 10px!important}
+ #cartDetails>div:first-child{margin:-13px -13px 12px;padding:13px}
+ .product-card .photo{height:145px!important}
+ .product-card .desc{font-size:11px!important;min-height:58px!important}
+ .basket{background:linear-gradient(110deg,#f56b00,#ff9a20)!important}
+ .basket button{min-height:47px!important}
+}
+</style>
