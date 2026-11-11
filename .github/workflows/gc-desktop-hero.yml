@@ -29,7 +29,7 @@ jobs:
           /* GC_DESKTOP_HERO_IMAGE_ONLY_20261111: preserve the mobile hero */
           (() => {
             const desktop = window.matchMedia('(min-width: 641px)');
-            const imageUrl = 'https://raw.githubusercontent.com/iguruconnect/guru-connect/main/assets/gc-desktop-hero.png';
+            const imageUrl = '/assets/gc-desktop-hero.png';
             const apply = () => {
               const img = document.querySelector('#publicWebsiteContent > section.gc-approved-hero#home > img.gc-approved-hero-image');
               if (!img) return;
@@ -47,7 +47,7 @@ jobs:
           })();
           </script>
           """
-              if not re.search(r"</body\\s*>", s, re.I):
+              if not re.search(r"</body\s*>", s, re.I):
                   raise SystemExit("STOP: closing body tag not found; no change made.")
               s = re.sub(r"</body\\s*>", script + "\\n</body>", s, count=1, flags=re.I)
               p.write_text(s, encoding="utf-8")
