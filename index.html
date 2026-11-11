@@ -17794,6 +17794,42 @@ a[data-gc-buy-now-menu] { display:inline-flex!important;align-items:center!impor
 })();
 </script>
 
+
+<style id="gc-buy-now-public-menu-v9-style">
+header a[data-gc-buy-now-menu], nav a[data-gc-buy-now-menu] { display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:9px 15px!important;margin:4px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;position:relative!important;z-index:99999!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important; }
+</style>
+<script id="gc-buy-now-public-menu-v9">
+/* GC_BUY_NOW_PUBLIC_MENU_V9_20261111 */
+(() => {
+  const install = () => {
+    const header = document.querySelector('header') || document.body;
+    const nav = header.querySelector('nav') || document.querySelector('nav') || header.querySelector('[role="navigation"]') || document.querySelector('[role="navigation"]') || header;
+    const candidates = Array.from(header.querySelectorAll('a,button')).filter(el => {
+      const label = (el.textContent || '').replace(/\s+/g,' ').trim();
+      const href = (el.getAttribute('href') || '').toLowerCase();
+      return /buy\s*now/i.test(label) || /buy-now/.test(href) || el.hasAttribute('data-gc-buy-now-menu');
+    });
+    let keep = candidates.find(el => el.tagName === 'A' && /buy-now/.test(el.getAttribute('href') || '')) || null;
+    for (const el of candidates) if (el !== keep) el.remove();
+    if (!keep) {
+      keep = document.createElement('a');
+      keep.href = '/buy-now/';
+    }
+    keep.setAttribute('data-gc-buy-now-menu','true');
+    keep.className = 'gc-buy-now-menu-item';
+    keep.textContent = 'BUY NOW';
+    keep.style.cssText = 'display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:9px 15px!important;margin:4px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;position:relative!important;z-index:99999!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important;';
+    if (keep.parentElement !== nav) nav.appendChild(keep);
+  };
+  const start = () => {
+    install();
+    new MutationObserver(install).observe(document.documentElement,{childList:true,subtree:true});
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
+})();
+</script>
+
 </body>
 </html>
 
