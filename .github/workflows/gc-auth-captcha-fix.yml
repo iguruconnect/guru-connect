@@ -1,0 +1,44 @@
+name: Fix GURU CONNECT member sign-in CAPTCHA
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-auth-captcha-fix.yml"
+permissions:
+  contents: write
+jobs:
+  install-auth-captcha:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Install shared CAPTCHA bridge before homepage authentication code
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          marker="GC_AUTH_CAPTCHA_BRIDGE_20261111"
+          if marker not in s:
+              tag='<script id="gc-auth-captcha-bridge-20261111" src="/assets/gc-auth-captcha-bridge.js"></script>'
+              m=re.search(r"<head\b[^>]*>",s,re.I)
+              if not m:
+                  raise SystemExit("STOP: homepage head tag not found; no changes made.")
+              s=s[:m.end()]+"\n"+tag+"\n"+s[m.end():]
+              p.write_text(s,encoding="utf-8")
+          PY
+      - name: Commit and push
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "Homepage already has the CAPTCHA bridge."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Fix member sign-in Cloudflare CAPTCHA token handling"
+          git push origin main
