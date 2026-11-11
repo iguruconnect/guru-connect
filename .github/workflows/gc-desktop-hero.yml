@@ -25,7 +25,7 @@ jobs:
           marker = "GC_DESKTOP_HERO_IMAGE_ONLY_V5_20261111"
           # Remove the two previous competing desktop hero scripts; retain all other homepage code.
           for script_id in ("gc-desktop-hero-only-v3-20261111", "gc-desktop-hero-only-v4-20261111"):
-              pattern = r'<script[^>]*id="' + re.escape(script_id) + r'".*?</script\\s*>'
+              pattern = r'<script[^>]*id="' + re.escape(script_id) + r'".*?</script>'
               s = re.sub(pattern, '', s, count=1, flags=re.I | re.S)
           if marker not in s:
               script = """
@@ -54,9 +54,9 @@ jobs:
           })();
           </script>
           """
-              if not re.search(r"</body\\s*>", s, re.I):
+              if "</body>" not in s:
                   raise SystemExit("STOP: closing body tag not found; no change made.")
-              s = re.sub(r"</body\\s*>", lambda m: script + "\\n" + m.group(0), s, count=1, flags=re.I)
+              s = s.replace("</body>", script + "\\n</body>", 1)
           p.write_text(s, encoding="utf-8")
           PY
       - name: Commit consolidated hero integration
