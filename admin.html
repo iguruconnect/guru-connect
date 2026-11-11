@@ -342,6 +342,24 @@ body,body button,body input,body select,body textarea,body table,body th,body td
 </style>
 
 
+<style id="gc-buy-now-orange-tab">
+/* Highlight only the BUY NOW / STORE admin navigation tab */
+.controlbar .topbtn[data-sec="store"]{
+  background:linear-gradient(135deg,#f97316,#ea580c)!important;
+  border:1px solid #c2410c!important;
+  color:#fff!important;
+  box-shadow:0 5px 15px rgba(234,88,12,.22)!important;
+}
+.controlbar .topbtn[data-sec="store"] small{color:#fff7ed!important}
+.controlbar .topbtn[data-sec="store"]:hover,
+.controlbar .topbtn[data-sec="store"].active{
+  background:linear-gradient(135deg,#ea580c,#c2410c)!important;
+  border-color:#9a3412!important;
+  color:#fff!important;
+  transform:translateY(-1px);
+}
+.controlbar .topbtn[data-sec="store"]:focus-visible{outline:3px solid #fdba74!important;outline-offset:3px}
+</style>
 </head><body>
 <header class="head"><div class="headin"><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><div class="gc-admin-titlebar"><span class="gc-admin-title-icon">▦</span><div><h1>Admin Dashboard</h1><p>Manage Your Platform Efficiently</p></div></div><div class="gc-admin-helpline"><span class="gc-admin-headset">◉</span><div><b>Helpline</b><a href="mailto:support@guruconnnect.in">support@guruconnnect.in</a></div></div><div class="gc-admin-user"><span>AJ</span><b>Admin</b></div><button id="logout" class="btn light">↪ LOG OUT</button></div></header>
 <main class="wrap"><div id="gate" class="gate">Admin page loaded — preparing login scripts…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div><div class="gc-admin-stat-grid"><div class="gc-admin-stat stat-blue"><span class="gc-stat-icon">👥</span><div><small>Total Inquiries</small><strong id="gcStatTotalInquiry">—</strong><em>Visitor requests</em></div><b class="gc-stat-arrow">›</b></div><div class="gc-admin-stat stat-green"><span class="gc-stat-icon">🎓</span><div><small>Tutor Inquiries</small><strong id="gcStatTutorInquiry">—</strong><em>Public tutor search</em></div><b class="gc-stat-arrow">›</b></div><div class="gc-admin-stat stat-purple"><span class="gc-stat-icon">🛡️</span><div><small>Pending Approval</small><strong id="gcStatPending">—</strong><em>Needs review</em></div><b class="gc-stat-arrow">›</b></div><div class="gc-admin-stat stat-orange"><span class="gc-stat-icon">📚</span><div><small>Learning Requests</small><strong>LRR</strong><em>Manage requests</em></div><b class="gc-stat-arrow">›</b></div></div>
