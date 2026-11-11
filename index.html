@@ -17574,6 +17574,29 @@ input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-
 })();
 </script>
 
+
+<script id="gc-desktop-hero-only-v3-20261111">
+/* GC_DESKTOP_HERO_IMAGE_ONLY_V3_20261111: preserve the mobile hero */
+(() => {
+  const desktop = window.matchMedia('(min-width: 641px)');
+  const imageUrl = '/assets/gc-desktop-hero.png';
+  const apply = () => {
+    const img = document.querySelector('#publicWebsiteContent > section.gc-approved-hero#home > img.gc-approved-hero-image');
+    if (!img) return;
+    if (desktop.matches) {
+      if (img.dataset.gcDesktopHeroOriginal === undefined) img.dataset.gcDesktopHeroOriginal = img.getAttribute('src') || '';
+      img.src = imageUrl;
+    } else if (img.dataset.gcDesktopHeroOriginal !== undefined) {
+      img.src = img.dataset.gcDesktopHeroOriginal;
+    }
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', apply, {once:true});
+  else apply();
+  if (desktop.addEventListener) desktop.addEventListener('change', apply);
+  else desktop.addListener(apply);
+})();
+</script>
+
 </body>
 </html>
 
