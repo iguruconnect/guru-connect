@@ -44,7 +44,7 @@ async function requestToken(){
   container.innerHTML='';
   widgetId=ts.render(container,{sitekey:SITEKEY,theme:'light',size:'normal',callback:t=>finish(t,null),'expired-callback':()=>{status.textContent='Verification expired. Please complete it again.'},'error-callback':()=>{status.textContent='Verification could not load. Please refresh and try again.'}});
   status.textContent='Complete the Cloudflare check to continue.';
- }catch(e){finish(null,e)}
+ }catch(e){throw e}
  return new Promise(resolve=>{activeResolve=resolve});
 }
 function patch(api){
