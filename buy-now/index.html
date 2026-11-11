@@ -32,12 +32,75 @@
  .top small{display:none}
  .cart-head{padding:9px 12px!important;min-height:42px}
 }
+
+/* Flipkart-inspired colourful marketplace refresh — presentation only */
+:root{--market-blue:#2874f0;--market-orange:#fb641b;--market-yellow:#ffe500;--market-ink:#172337}
+body{background:#f1f3f6;color:var(--market-ink)}
+.top{background:#2874f0!important;padding:13px clamp(16px,4vw,58px)!important;box-shadow:0 2px 8px #142b501c}
+.brand{font-size:20px;letter-spacing:.2px}
+.top small{font-size:12px;color:#eaf2ff!important}
+.top a[href="/"]{font-weight:800;padding:9px 12px;border-radius:8px;background:#ffffff1c}
+.cart-head{background:#ffe500!important;color:#172337!important;border:0!important;border-radius:8px!important;box-shadow:0 3px 8px #102c6540!important;padding:11px 17px!important}
+.cart-head:hover{background:#ffef55!important}
+.cart-count{background:#172337!important;color:#ffe500!important}
+.hero{padding:32px 4vw 36px;background:linear-gradient(112deg,#0b3d91 0%,#2874f0 55%,#18a6c9 100%)!important;position:relative;overflow:hidden}
+.hero:after{content:"🛍️";position:absolute;right:8%;top:18px;font-size:clamp(76px,12vw,150px);opacity:.14;transform:rotate(-12deg);pointer-events:none}
+.hero .wrap{position:relative;z-index:1}
+.hero h1{font-size:clamp(32px,4.4vw,52px);max-width:720px}
+.hero p{max-width:680px}
+.hero-tags .tag{background:#ffffff24;border-color:#ffffff65}
+main.wrap{padding-top:10px}
+.toolbar{background:#fff;padding:14px;border:1px solid #e5eaf2;border-radius:12px;box-shadow:0 2px 8px #102c650c;position:relative}
+.search{border:1px solid #cfd8e6;border-radius:8px;min-height:46px}
+.search:focus{outline:2px solid #9fc3ff;border-color:#2874f0}
+.sort{border-radius:8px;min-height:46px}
+.filters{width:100%;gap:8px;padding-top:3px}
+.filter{border:1px solid #d7e1ef;border-radius:8px;background:#f7faff;padding:10px 14px;color:#253858}
+.filter:hover{border-color:#2874f0;background:#edf5ff}
+.filter.active{background:#2874f0;border-color:#2874f0;color:white}
+.catalogue-trust{gap:9px;margin:14px 0 18px}
+.trust-chip{border:0;border-radius:8px;background:#fff;padding:10px 13px;box-shadow:0 2px 7px #102c650c;color:#35445d}
+.section-title{margin-top:26px;border-bottom:1px solid #dfe5ed;padding-bottom:10px}
+.section-title h2{font-size:24px;color:#172337}
+.grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:15px}
+.product-card{border:1px solid #e1e6ed;border-radius:10px;background:#fff;box-shadow:0 2px 8px #102c650c;transition:transform .18s,box-shadow .18s}
+.product-card:hover{transform:translateY(-3px);box-shadow:0 9px 22px #102c6520}
+.product-card .photo{height:205px;border-bottom:1px solid #edf0f5;background:linear-gradient(135deg,#eaf3ff,#f5f8ff);padding:12px}
+.product-card .photo:before{content:"";position:absolute;width:125px;height:125px;border-radius:50%;background:#ffffff72;right:-24px;bottom:-50px}
+.product-card .photo img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;padding:8px;mix-blend-mode:multiply}
+.product-card .photo-membership{background:linear-gradient(135deg,#fff0c2,#ffe0a3 55%,#fff8e9)}
+.product-card .photo-verification{background:linear-gradient(135deg,#d9fbe9,#b8f0d4 55%,#effff6)}
+.product-card .photo-helpline{background:linear-gradient(135deg,#e5e2ff,#d6d0ff 55%,#f6f3ff)}
+.product-card .photo-service{background:linear-gradient(135deg,#ffe2ef,#ffd1e4 55%,#fff3f8)}
+.product-card .photo .fallback{position:relative;z-index:1;font-size:68px;filter:drop-shadow(0 7px 8px #263b5b20)}
+.product-card .badge{background:#ffef00;color:#172337;box-shadow:0 2px 8px #17233720;border-radius:5px;top:10px;left:10px}
+.cardbody{padding:14px 15px 15px}
+.category-row{display:flex;align-items:center;gap:7px;margin-bottom:5px}
+.category-icon{width:27px;height:27px;border-radius:8px;display:inline-grid;place-items:center;background:#edf4ff;font-size:15px;flex:0 0 auto}
+.category{font-size:10px;letter-spacing:.8px;color:#2874f0}
+.card h3{font-size:16px;line-height:1.35;margin:6px 0 7px;min-height:42px}
+.desc{font-size:12px;line-height:1.5;color:#657187!important;min-height:38px}
+.prices{gap:8px;margin:12px 0 5px}
+.sell{font-size:23px;color:#172337!important}
+.mrp{font-size:12px}
+.save{background:#e6f7ed;color:#16834b;border-radius:4px}
+.valid{font-size:11px;color:#6b778b;margin:4px 0 12px}
+.product-card .buy{background:#fb641b!important;color:#fff!important;border:0;border-radius:7px;padding:12px 10px;font-size:13px;letter-spacing:.2px;box-shadow:0 3px 7px #fb641b30}
+.product-card .buy:hover{background:#e95710!important;filter:none}
+.empty,.panel{border-radius:12px;box-shadow:0 2px 8px #102c650c}
+.basket{background:#172337!important;border:0;border-radius:10px}
+.basket button{background:#ffe500!important;color:#172337!important;border:0!important;border-radius:7px}
+.foot{background:#172337}
+@media(min-width:1000px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:760px){.hero{padding:27px 4vw 30px}.hero:after{right:2%;top:25px;font-size:78px}.toolbar{padding:11px}.filters{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px}.filter{white-space:nowrap}.catalogue-trust{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.trust-chip{text-align:center;font-size:11px;padding:9px 6px}}
+@media(max-width:620px){.top{padding:11px 4vw!important}.brand{font-size:17px}.top>div:last-child{gap:7px}.hero h1{font-size:34px}.product-card .photo{height:140px;padding:8px}.product-card .photo .fallback{font-size:48px}.cardbody{padding:10px}.category-icon{width:23px;height:23px}.card h3{font-size:14px;min-height:38px}.desc{min-height:48px}.sell{font-size:19px}.product-card .buy{font-size:11px;padding:10px 6px}.save{font-size:9px}}
+
 </style></head><body>
 <div class="top"><div class="brand">GURU CONNECT</div><div style="display:flex;align-items:center;gap:12px"><small>Learn • Connect • Grow</small><a href="/" style="color:#fff"><b>Home</b></a><span id="memberWelcome" class="member-chip hidden" aria-live="polite"></span><button id="logoutBtn" class="logout-btn hidden" type="button">LOG OUT</button><button class="cart-head" id="cartJump" type="button">🛒 CART <span class="cart-count" id="cartHeadCount">0</span></button></div></div>
 <header class="hero"><div class="wrap"><div class="eyebrow">THE GURU CONNECT STORE</div><h1>Discover. Choose.<br>Grow with us.</h1><p>Explore memberships, learning support and useful services in one place. Find the right option and buy securely through your GURU CONNECT member account.</p><div class="hero-tags"><span class="tag">✦ Curated services</span><span class="tag">✦ Clear pricing</span><span class="tag">✦ Secure UPI checkout</span></div></div></header>
 <main class="wrap">
-<div class="toolbar"><input id="search" class="search" placeholder="Search products and services…"><select id="sort" class="sort" aria-label="Sort products"><option value="featured">Sort: Featured</option><option value="low">Price: Low to High</option><option value="high">Price: High to Low</option><option value="az">Name: A to Z</option></select><div class="filters" id="filters"><button class="filter active" data-cat="all">All Products</button><button class="filter" data-cat="membership">Membership</button><button class="filter" data-cat="helpline">Helpline</button><button class="filter" data-cat="service">Other Services</button></div></div>
-<div class="catalogue-trust"><span class="trust-chip">✓ Genuine GURU CONNECT services</span><span class="trust-chip">✓ Transparent pricing</span><span class="trust-chip">✓ Secure UPI checkout</span><span class="trust-chip">✓ Admin-verified orders</span></div><div class="section-title"><div><h2>Explore our catalogue</h2><div class="muted" id="count">Loading products…</div></div><div class="muted">Prices in INR</div></div>
+<div class="toolbar"><input id="search" class="search" placeholder="Search products and services…"><select id="sort" class="sort" aria-label="Sort products"><option value="featured">Sort: Featured</option><option value="low">Price: Low to High</option><option value="high">Price: High to Low</option><option value="az">Name: A to Z</option></select><div class="filters" id="filters"><button class="filter active" data-cat="all">🛍️ All Products</button><button class="filter" data-cat="membership">👑 Membership</button><button class="filter" data-cat="helpline">🎧 Helpline</button><button class="filter" data-cat="service">✨ Other Services</button></div></div>
+<div class="catalogue-trust"><span class="trust-chip">🛡️ Genuine GURU CONNECT services</span><span class="trust-chip">🏷️ Transparent pricing</span><span class="trust-chip">🔒 Secure UPI checkout</span><span class="trust-chip">✅ Admin-verified orders</span></div><div class="section-title"><div><h2>Explore our catalogue</h2><div class="muted" id="count">Loading products…</div></div><div class="muted">Prices in INR</div></div>
 <div id="catalogue" class="grid"></div><div id="empty" class="empty hidden">No products match your search right now.</div>
 <section id="cartDetails" class="panel hidden"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 style="margin:0">Your Shopping Cart</h2><button class="secondary" id="closeCart" type="button">Continue Shopping</button></div><div id="cartLines" class="cart-lines"></div></section><div id="basket" class="basket hidden"><div><div style="font-size:11px;color:#c7d2fe">YOUR SELECTION</div><b id="basketCount">0 items</b> · <b id="basketTotal">₹0</b></div><button id="checkout">BUY SELECTED　→</button></div>
 <section id="ordersPanel" class="panel hidden"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><h2 style="margin:0">My Orders</h2><button class="secondary" id="refreshOrders">Refresh</button></div><div id="orders" class="muted">Loading…</div></section>
@@ -47,9 +110,9 @@
 <script>
 const sb=supabase.createClient('https://hzqqswrnawrfgufbxgay.supabase.co','sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',{auth:{persistSession:true,autoRefreshToken:true}}),$=id=>document.getElementById(id),money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2});let products=[],cart=new Set(),category='all',member=null,role='',pendingBuy=null,currentOrder=null;
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function icon(p){if(p.category==='verification')return '<img class="verified-product-tick" src="/assets/gc-verified-tick.png" alt="GURU CONNECT verified tick">';return ({membership:'👑',helpline:'🎧',service:'✨'})[p.category]||'🎁'}
+function icon(p){if(p.category==='verification')return '<img class="verified-product-tick" src="/assets/gc-verified-tick.png" alt="GURU CONNECT verified tick">';return ({membership:'👑',helpline:'🎧',service:'✨'})[p.category]||'🎁'}function categorySymbol(p){return ({membership:'👑',verification:'🛡️',helpline:'🎧',service:'✨'})[p.category]||'🎁'}
 async function loadCatalogue(){const {data,error}=await sb.from('gc_store_products').select('*').eq('active',true).order('sort_order').order('title');if(error){$('count').textContent='Catalogue is temporarily unavailable.';return}products=data||[];render()}
-function render(){const q=$('search').value.trim().toLowerCase(),list=products.filter(p=>(category==='all'||(category==='membership'&&['membership','verification'].includes(p.category))||p.category===category||(category==='service'&&!['membership','verification','helpline'].includes(p.category)))&&[p.title,p.description,p.category].join(' ').toLowerCase().includes(q));const sort=$('sort')?.value||'featured';if(sort==='low')list.sort((a,b)=>Number(a.price_inr)-Number(b.price_inr));else if(sort==='high')list.sort((a,b)=>Number(b.price_inr)-Number(a.price_inr));else if(sort==='az')list.sort((a,b)=>String(a.title).localeCompare(String(b.title)));$('catalogue').innerHTML='';$('count').textContent=list.length+' products and services available';$('empty').classList.toggle('hidden',!!list.length);for(const p of list){const d=document.createElement('article');d.className='card';const img=p.image_url?'<img src="'+esc(p.image_url)+'" alt="'+esc(p.title)+'" loading="lazy" onerror="this.remove()">':'<div class="fallback">'+icon(p)+'</div>';d.innerHTML='<div class="photo">'+(img.includes('fallback')?'<div class="fallback">'+icon(p)+'</div>':img)+(p.badge_text?'<span class="badge">'+esc(p.badge_text)+'</span>':'')+'</div><div class="cardbody"><div class="category">'+esc(p.category)+'</div><h3>'+esc(p.title)+'</h3><div class="desc">'+esc(p.description||'Explore this GURU CONNECT service.')+'</div><div class="prices"><span class="sell">'+money(p.price_inr)+'</span>'+(Number(p.recommended_price_inr)>Number(p.price_inr)?'<span class="mrp">'+money(p.recommended_price_inr)+'</span><span class="save">SAVE '+Math.round((1-Number(p.price_inr)/Number(p.recommended_price_inr))*100)+'%</span>':'')+'</div><div class="valid">'+esc(p.validity_label||'GURU CONNECT service')+'</div><button class="buy" data-buy="'+p.id+'">'+(cart.has(p.id)?'ADDED ✓ · BUY NOW':'BUY NOW →')+'</button></div>';d.querySelector('button').onclick=()=>buy(p);$('catalogue').appendChild(d)}}
+function render(){const q=$('search').value.trim().toLowerCase(),list=products.filter(p=>(category==='all'||(category==='membership'&&['membership','verification'].includes(p.category))||p.category===category||(category==='service'&&!['membership','verification','helpline'].includes(p.category)))&&[p.title,p.description,p.category].join(' ').toLowerCase().includes(q));const sort=$('sort')?.value||'featured';if(sort==='low')list.sort((a,b)=>Number(a.price_inr)-Number(b.price_inr));else if(sort==='high')list.sort((a,b)=>Number(b.price_inr)-Number(a.price_inr));else if(sort==='az')list.sort((a,b)=>String(a.title).localeCompare(String(b.title)));$('catalogue').innerHTML='';$('count').textContent=list.length+' products and services available';$('empty').classList.toggle('hidden',!!list.length);for(const p of list){const d=document.createElement('article');d.className='card product-card';const catClass=String(p.category||'service').toLowerCase().replace(/[^a-z0-9_-]/g,'');d.dataset.category=catClass;const img=p.image_url?'<img src="'+esc(p.image_url)+'" alt="'+esc(p.title)+'" loading="lazy" onerror="this.remove()">':'<div class="fallback">'+icon(p)+'</div>';d.innerHTML='<div class="photo photo-'+catClass+'">'+img+(p.badge_text?'<span class="badge">'+esc(p.badge_text)+'</span>':'')+'</div><div class="cardbody"><div class="category-row"><span class="category-icon">'+categorySymbol(p)+'</span><span class="category">'+esc(p.category)+'</span></div><h3>'+esc(p.title)+'</h3><div class="desc">'+esc(p.description||'Explore this GURU CONNECT service.')+'</div><div class="prices"><span class="sell">'+money(p.price_inr)+'</span>'+(Number(p.recommended_price_inr)>Number(p.price_inr)?'<span class="mrp">'+money(p.recommended_price_inr)+'</span><span class="save">SAVE '+Math.round((1-Number(p.price_inr)/Number(p.recommended_price_inr))*100)+'%</span>':'')+'</div><div class="valid">'+esc(p.validity_label||'GURU CONNECT service')+'</div><button class="buy" data-buy="'+p.id+'">'+(cart.has(p.id)?'ADDED ✓ · BUY NOW':'BUY NOW →')+'</button></div>';d.querySelector('button').onclick=()=>buy(p);$('catalogue').appendChild(d)}}
 function totals(){const chosen=products.filter(p=>cart.has(p.id));$('basket').classList.toggle('hidden',!chosen.length);$('cartDetails').classList.toggle('hidden',!chosen.length);$('basketCount').textContent=chosen.length+' item'+(chosen.length===1?'':'s');$('basketTotal').textContent=money(chosen.reduce((s,p)=>s+Number(p.price_inr),0));$('cartHeadCount').textContent=chosen.length;$('cartLines').innerHTML='';for(const p of chosen){const row=document.createElement('div');row.className='cart-line';row.innerHTML='<div><b>'+esc(p.title)+'</b><div class="muted">'+money(p.price_inr)+'</div></div><button type="button">REMOVE</button>';row.querySelector('button').onclick=()=>{cart.delete(p.id);render();totals()};$('cartLines').appendChild(row)}}
 function buy(p){pendingBuy=p.id;if(!member){$('authModal').classList.remove('hidden');$('authMsg').textContent='';$('modalTitle').textContent='Sign in to buy';$('modalText').textContent='You can browse all products without signing in. To purchase, sign in with your existing approved Student or Tutor account. New members can register first.';return}if(!role){$('authModal').classList.remove('hidden');return}cart.add(p.id);render();totals();$('basket').scrollIntoView({behavior:'smooth',block:'center'})}
 async function enter(u){const {data,error}=await sb.from('profiles').select('role,full_name,is_active,is_disabled,registration_approved,registration_approval_status').eq('id',u.id).maybeSingle();if(error||!data){$('authMsg').textContent='Member profile not found. Please register or contact support@guruconnnect.in.';await sb.auth.signOut();return false}const r=String(data.role||'').toLowerCase();if(!['student','tutor'].includes(r)||data.is_active===false||data.is_disabled||data.registration_approved===false||String(data.registration_approval_status||'APPROVED').toUpperCase()!=='APPROVED'){$('authMsg').textContent='Only approved and active Student or Tutor members can purchase. Your account may still be under approval.';await sb.auth.signOut();return false}member=u;role=r;const displayName=String(data.full_name||u.user_metadata?.full_name||u.user_metadata?.name||u.email||'Member').trim();$('memberWelcome').textContent='Welcome, '+displayName;$('memberWelcome').classList.remove('hidden');$('logoutBtn').classList.remove('hidden');$('authModal').classList.add('hidden');$('ordersPanel').classList.remove('hidden');if(pendingBuy){const p=products.find(x=>x.id===pendingBuy);if(p){cart.add(p.id);pendingBuy=null;render();totals()}}await loadOrders();return true}
