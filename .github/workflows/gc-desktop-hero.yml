@@ -22,11 +22,11 @@ jobs:
           import re
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-          marker = "GC_DESKTOP_HERO_IMAGE_ONLY_V2_20261111"
+          marker = "GC_DESKTOP_HERO_IMAGE_ONLY_V3_20261111"
           if marker not in s:
               script = """
-          <script id="gc-desktop-hero-only-v2-20261111">
-          /* GC_DESKTOP_HERO_IMAGE_ONLY_V2_20261111: preserve the mobile hero */
+          <script id="gc-desktop-hero-only-v3-20261111">
+          /* GC_DESKTOP_HERO_IMAGE_ONLY_V3_20261111: preserve the mobile hero */
           (() => {
             const desktop = window.matchMedia('(min-width: 641px)');
             const imageUrl = '/assets/gc-desktop-hero.png';
@@ -49,7 +49,7 @@ jobs:
           """
               if not re.search(r"</body\s*>", s, re.I):
                   raise SystemExit("STOP: closing body tag not found; no change made.")
-              s = re.sub(r"</body\\s*>", script + "\\n</body>", s, count=1, flags=re.I)
+              s = re.sub(r"</body\\s*>", lambda m: script + "\n" + m.group(0), s, count=1, flags=re.I)
               p.write_text(s, encoding="utf-8")
           PY
       - name: Commit desktop hero integration
