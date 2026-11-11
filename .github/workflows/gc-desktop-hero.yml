@@ -22,11 +22,11 @@ jobs:
           import re
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-          marker = "GC_DESKTOP_HERO_IMAGE_ONLY_20261111"
+          marker = "GC_DESKTOP_HERO_IMAGE_ONLY_V2_20261111"
           if marker not in s:
               script = """
-          <script id="gc-desktop-hero-only-20261111">
-          /* GC_DESKTOP_HERO_IMAGE_ONLY_20261111: preserve the mobile hero */
+          <script id="gc-desktop-hero-only-v2-20261111">
+          /* GC_DESKTOP_HERO_IMAGE_ONLY_V2_20261111: preserve the mobile hero */
           (() => {
             const desktop = window.matchMedia('(min-width: 641px)');
             const imageUrl = '/assets/gc-desktop-hero.png';
