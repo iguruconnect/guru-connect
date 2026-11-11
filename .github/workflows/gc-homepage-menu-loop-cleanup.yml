@@ -25,22 +25,22 @@ jobs:
           s = p.read_text(encoding="utf-8")
           original = s
 
-          # Remove every previously injected BUY NOW navigation script/style generation.
+          # Remove all earlier injected BUY NOW scripts/styles, including
+          # versions that installed document-wide MutationObservers.
           s = re.sub(
-              r'<script\\b(?=[^>]*\\bid=["\']gc-buy-now-public-(?:nav|menu)[^"\']*["\'])[^>]*>[\\s\\S]*?</script>\\s*',
+              r'<script\b(?=[^>]*\bid=["\']gc-buy-now-public-(?:nav|menu)[^"\']*["\'])[^>]*>[\s\S]*?</script>\s*',
               '',
               s,
               flags=re.I
           )
           s = re.sub(
-              r'<style\\b(?=[^>]*\\bid=["\']gc-buy-now-(?:nav-visibility|public-menu)[^"\']*["\'])[^>]*>[\\s\\S]*?</style>\\s*',
+              r'<style\b(?=[^>]*\bid=["\']gc-buy-now-(?:nav-visibility|public-menu)[^"\']*["\'])[^>]*>[\s\S]*?</style>\s*',
               '',
               s,
               flags=re.I
           )
-          # Also remove the earlier generic BUY NOW nav patch blocks by their IDs.
           s = re.sub(
-              r'<script\\b(?=[^>]*\\bid=["\']gc-buy-now-navigation[^"\']*["\'])[^>]*>[\\s\\S]*?</script>\\s*',
+              r'<script\b(?=[^>]*\bid=["\']gc-buy-now-navigation[^"\']*["\'])[^>]*>[\s\S]*?</script>\s*',
               '',
               s,
               flags=re.I
@@ -64,11 +64,11 @@ jobs:
               const nav = header.querySelector('nav,[role="navigation"],.navbar,.navigation') ||
                           document.querySelector('nav,[role="navigation"]') || header;
               const old = Array.from(header.querySelectorAll('a,button')).filter(el => {
-                const label = (el.textContent || '').replace(/\\s+/g,' ').trim();
+                const label = (el.textContent || '').replace(/\s+/g,' ').trim();
                 const href = (el.getAttribute('href') || '').toLowerCase();
                 return el.hasAttribute('data-gc-buy-now-nav') ||
                        el.hasAttribute('data-gc-buy-now-menu') ||
-                       /buy\\s*now/i.test(label) || href.includes('/buy-now');
+                       /buy\s*now/i.test(label) || href.includes('/buy-now');
               });
               let link = old.find(el => el.tagName === 'A' && (el.getAttribute('href') || '').toLowerCase().includes('/buy-now')) || null;
               old.forEach(el => { if (el !== link) el.remove(); });
@@ -87,9 +87,9 @@ jobs:
           </script>
           """
           if 'gc-buy-now-stable-menu' not in s:
-              if not re.search(r'</body\\s*>', s, flags=re.I):
+              if not re.search(r'</body\s*>', s, flags=re.I):
                   raise SystemExit("STOP: closing body tag not found; homepage unchanged.")
-              s = re.sub(r'</body\\s*>', lambda m: stable + "\\n" + m.group(0), s, count=1, flags=re.I)
+              s = re.sub(r'</body\s*>', lambda m: stable + "\n" + m.group(0), s, count=1, flags=re.I)
 
           if s == original:
               print("Homepage already has the stable menu cleanup.")
