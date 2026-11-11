@@ -25,13 +25,8 @@ jobs:
           marker = "GC_DESKTOP_HERO_IMAGE_ONLY_V5_20261111"
           # Remove the two previous competing desktop hero scripts; retain all other homepage code.
           for script_id in ("gc-desktop-hero-only-v3-20261111", "gc-desktop-hero-only-v4-20261111"):
-              s = re.sub(
-                  r'<script\\b(?=[^>]*\\bid=["\\']' + re.escape(script_id) + r'["\\'])[^>]*>.*?</script\\s*>',
-                  '',
-                  s,
-                  count=1,
-                  flags=re.I | re.S
-              )
+              pattern = r'<script[^>]*id="' + re.escape(script_id) + r'".*?</script\\s*>'
+              s = re.sub(pattern, '', s, count=1, flags=re.I | re.S)
           if marker not in s:
               script = """
           <script id="gc-desktop-hero-only-v5-20261111">
