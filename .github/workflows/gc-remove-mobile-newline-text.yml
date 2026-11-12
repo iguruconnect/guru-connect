@@ -1,0 +1,69 @@
+name: Remove stray literal newline text above mobile header
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-remove-mobile-newline-text.yml"
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add precise cleanup for visible literal newline text
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          marker='gc-remove-visible-literal-newlines-mobile-2026'
+          if marker not in s:
+              script = r"""
+          <script id="gc-remove-visible-literal-newlines-mobile-2026">
+          (() => {
+            const removeStrayNewlineText = () => {
+              if (window.matchMedia && !window.matchMedia('(max-width: 640px)').matches) return;
+              const root = document.querySelector('header.gc-beautiful-header')?.parentElement || document.body;
+              const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+              const remove = [];
+              let node;
+              while ((node = walker.nextNode())) {
+                const parent = node.parentElement;
+                if (!parent || parent.closest('script,style,textarea,code,pre')) continue;
+                if (/^(?:\\n\s*)+$/.test(node.nodeValue.trim())) remove.push(node);
+              }
+              remove.forEach(node => node.remove());
+            };
+            const run = () => {
+              removeStrayNewlineText();
+              if (window.__gcLiteralNewlineObserver) window.__gcLiteralNewlineObserver.disconnect();
+              if (window.MutationObserver) {
+                window.__gcLiteralNewlineObserver = new MutationObserver(removeStrayNewlineText);
+                window.__gcLiteralNewlineObserver.observe(document.body,{childList:true,subtree:true});
+              }
+            };
+            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',run,{once:true});
+            else run();
+            window.addEventListener('load',removeStrayNewlineText,{once:true});
+          })();
+          </script>
+          """
+              pos=s.lower().rfind('</body>')
+              if pos<0: raise SystemExit('Closing body tag not found; refusing change.')
+              s=s[:pos]+script+'\\n'+s[pos:]
+          p.write_text(s,encoding='utf-8')
+          print('Added a mobile-only cleanup that removes only standalone visible literal \\n text nodes; all other page content is preserved.')
+          PY
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+          else
+            git commit -m "Remove stray literal newline text above mobile header"
+            git push
+          fi
