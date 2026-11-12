@@ -14,6 +14,19 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
+      - name: Inspect actual dropdown menu markup
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path("index.html").read_text(encoding="utf-8")
+          for term in ["Explore Tutors","Students Directory","dropdown","drop-down","menu-toggle","mobileMenu","nav-menu"]:
+              print("\\n=== "+term+" ===")
+              hits=list(re.finditer(re.escape(term),s,re.I))[:8]
+              for m in hits:
+                  print(s[max(0,m.start()-650):min(len(s),m.end()+850)].replace("\\n"," ")[:1500])
+          PY
       - name: Replace directory links with Registration and Buy Now
         shell: bash
         run: |
