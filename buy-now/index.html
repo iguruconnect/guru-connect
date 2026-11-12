@@ -1134,6 +1134,56 @@ body{background:#f3f6fc!important;color:#17345f!important}
   #catalogue .product-card.helpline-plan-card .cardbody{padding:6px 6px 6px!important}
   #catalogue .product-card.helpline-plan-card .cardbody .product-name{font-size:12px!important}
 }
+
+/* Unified product-card finish: one frame, no extra outlines or inset frames */
+#catalogue.grid{align-items:stretch!important}
+#catalogue .product-card,
+#catalogue .product-card.helpline-plan-card{
+  box-sizing:border-box!important;
+  width:192px!important;min-width:192px!important;max-width:192px!important;
+  height:248px!important;min-height:248px!important;max-height:248px!important;
+  padding:0!important;overflow:hidden!important;
+  border:1px solid #d9e3f5!important;border-radius:12px!important;
+  outline:0!important;box-shadow:0 4px 12px #14265318!important;
+  background:#fff!important;
+}
+#catalogue .product-card .gc-card-brand{border:0!important;border-radius:11px 11px 0 0!important}
+#catalogue .product-card .avatar-mini{
+  box-sizing:border-box!important;width:74px!important;height:74px!important;
+  min-width:74px!important;min-height:74px!important;flex:0 0 74px!important;
+  margin:4px auto!important;border:0!important;border-radius:12px!important;
+  box-shadow:none!important;
+}
+#catalogue .product-card .helpline-visual{
+  box-sizing:border-box!important;flex:0 0 82px!important;
+  width:100%!important;height:82px!important;min-height:82px!important;max-height:82px!important;
+  margin:0!important;padding:3px!important;border:0!important;border-radius:0!important;
+  outline:0!important;box-shadow:none!important;overflow:visible!important;
+}
+#catalogue .product-card .helpline-tutor-art{max-height:76px!important;object-fit:contain!important}
+#catalogue .product-card.helpline-plan-card{border-width:1px!important;border-color:#d9e3f5!important}
+#catalogue .product-card.helpline-plan-card[data-plan]{
+  background:#fff!important;
+}
+#catalogue .product-card.helpline-plan-card .helpline-visual{
+  border:0!important;outline:0!important;box-shadow:none!important;
+}
+#catalogue .product-card .cardbody{
+  box-sizing:border-box!important;min-height:0!important;overflow:visible!important;
+  background:#fff!important;
+}
+@media(max-width:620px){
+  #catalogue.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  #catalogue .product-card,
+  #catalogue .product-card.helpline-plan-card{
+    width:100%!important;min-width:0!important;max-width:100%!important;
+    height:248px!important;min-height:248px!important;max-height:248px!important;
+  }
+  #catalogue .product-card .avatar-mini{
+    width:74px!important;height:74px!important;min-width:74px!important;min-height:74px!important;
+  }
+}
+
 </style></head><body>
 <div class="top"><div class="brand"><span class="brand-guru">GURU</span> <span class="brand-connect">CONNECT</span></div><div style="display:flex;align-items:center;gap:12px"><small>Learn • Connect • Grow</small><a href="/" style="color:#fff"><b>Home</b></a><span id="memberWelcome" class="member-chip hidden" aria-live="polite"></span><button id="logoutBtn" class="logout-btn hidden" type="button">LOG OUT</button><button class="cart-head" id="cartJump" type="button">🛒 CART <span class="cart-count" id="cartHeadCount">0</span></button></div></div>
 <header class="hero"><div class="wrap"><div class="eyebrow">THE GURU CONNECT STORE</div><h1>Discover. Choose.<br>Grow with us.</h1><p>Explore memberships, learning support and useful services in one place. Find the right option and buy securely through your GURU CONNECT member account.</p><div class="hero-tags"><span class="tag">✦ Curated services</span><span class="tag">✦ Clear pricing</span><span class="tag">✦ Secure UPI checkout</span></div></div></header>
