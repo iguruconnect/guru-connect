@@ -35,8 +35,8 @@ jobs:
           buy_now = '<a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-white bg-orange-500 hover:bg-orange-600 transition" href="/buy-now/" onclick="closeNavMenu()">BUY NOW</a>'
 
           patterns = [
-              (r'<a\\b(?=[^>]*href=["\\']#tutors["\\'])[^>]*>\\s*EXPLORE\\s+TUTORS\\s*</a>', registration),
-              (r'<a\\b(?=[^>]*href=["\\']#studentsDirectory["\\'])[^>]*>\\s*STUDENTS\\s+DIRECTORY\\s*</a>', buy_now),
+              (r"""<a\b(?=[^>]*href="#tutors")[^>]*>\s*EXPLORE\s+TUTORS\s*</a>""", registration),
+              (r"""<a\b(?=[^>]*href="#studentsDirectory")[^>]*>\s*STUDENTS\s+DIRECTORY\s*</a>""", buy_now),
           ]
           for pattern, replacement in patterns:
               s, count = re.subn(pattern, replacement, s, count=1, flags=re.I|re.S)
