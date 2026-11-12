@@ -139,7 +139,7 @@ async function init(){
   $('who').textContent=(role==='student'?'STUDENT':'TUTOR')+' • '+dashboardDisplayName;
   if(role==='tutor'){await Promise.all([refreshTutorRequirementsBadge(),refreshTutorVisitorInquiryBadge(),refreshTutorStudentMessagesBadge()]);if(tutorReqTimer)clearInterval(tutorReqTimer);tutorReqTimer=setInterval(()=>{refreshTutorRequirementsBadge();refreshTutorVisitorInquiryBadge();refreshTutorStudentMessagesBadge()},10000);}
   bind();render();startNotificationWatch();loadNotifications(true).catch(e=>console.warn('Notification load deferred:',e));
- }catch(e){msg(e.message||e)}
+ }catch(e){const reason=String(e?.message||e||'');if(/awaiting admin verification|account is blocked|registration.*approved/i.test(reason)){try{await sb?.auth?.signOut({scope:'local'})}catch(_){}try{localStorage.removeItem('active_user_role');localStorage.removeItem('active_user_profile_id');localStorage.removeItem('active_user_id');localStorage.removeItem('active_user_name')}catch(_){}msg(reason+' You have been signed out. Please contact support@guruconnnect.in.');setTimeout(()=>location.replace('index.html'),2600);return}msg(reason)}
 }
 function bind(){
  $('kingdomBtn').onclick=()=>{tab='requests';render();window.scrollTo({top:0,behavior:'smooth'})};
