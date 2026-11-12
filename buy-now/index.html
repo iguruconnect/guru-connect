@@ -483,26 +483,26 @@ const sb=supabase.createClient('https://hzqqswrnawrfgufbxgay.supabase.co','sb_pu
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function icon(p){if(p.category==='verification')return '<svg class="verified-product-tick" viewBox="0 0 100 100" role="img" aria-label="GURU CONNECT verified badge"><circle cx="50" cy="50" r="43" fill="#2874f0"/><circle cx="50" cy="50" r="35" fill="none" stroke="#fff" stroke-width="3" opacity=".9"/><path d="M29 51 43 65 72 35" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="m50 3 5 8 9-2 2 9 9 3-2 9 7 6-6 7 2 9-9 3-3 9-9-2-6 7-7-6-9 2-3-9-9-3 2-9-7-6 6-7-2-9 9-3 3-9 9 2z" fill="none" stroke="#ffe36e" stroke-width="2" opacity=".95" transform="translate(0 0)"/></svg>';if(p.category==='helpline'){const t=String(p.title||'').toLowerCase();if(/basic|starter|bronze|1 month|one month/.test(t))return '📘';if(/standard|silver|3 month|three month/.test(t))return '📗';if(/premium|gold|6 month|six month/.test(t))return '📙';if(/annual|year|12 month|platinum/.test(t))return '📕';return '📚'}return ({membership:'👑',service:'✨'})[p.category]||'🎁'}function productArtwork(p){
  const title=String(p.title||'GURU CONNECT').trim();
- const cat=String(p.category||'service').toLowerCase(),n=title.toLowerCase();
  let h=0;for(let i=0;i<title.length;i++)h=(h*33+title.charCodeAt(i))>>>0;
- // Deep, saturated icon-tile colours inspired by the homepage.
  const palettes=[
-  ['#E53935','#FDE8E7'],['#F57C00','#FFF0DD'],['#239B56','#E4F7EA'],
-  ['#2874F0','#E5EEFF'],['#7E57C2','#F0E9FC'],['#6C4BC3','#ECE8FC'],
-  ['#D63384','#FCE7F1'],['#E0B400','#FFF7D1'],['#20A4D8','#E2F5FC'],
-  ['#159E8C','#E1F6F1'],['#E65B78','#FCE9ED'],['#00A6A6','#E0F7F7']
+  ['#FF3B30','#FFD8D5'],['#FF8500','#FFE0B8'],['#19A85B','#C9F5D9'],
+  ['#2874F0','#CFE2FF'],['#8B4DE8','#E6D5FF'],['#C026D3','#F8D0FA'],
+  ['#E91E63','#FFD0E2'],['#E0B400','#FFF0A8'],['#00A5E5','#C9F1FF'],
+  ['#009688','#C6F5EA'],['#F04F78','#FFD4DE'],['#5B63E6','#D9DCFF']
  ];
- const pal=palettes[h%palettes.length],ink=pal[0],bg=pal[0];
- let icon='✦';
- if(cat==='helpline'||/help|support|helpline|assistance/.test(n))icon=['☎','🎧','✆','💬'][h%4];
- else if(cat==='verification'||/verif|verified|identity|badge/.test(n))icon=['✓','🛡','★','♙'][h%4];
- else if(cat==='membership'||/member|premium|prime|plan|subscription/.test(n))icon=['♛','★','◆','✧'][h%4];
- else if(cat==='book'||/book|notes|study|guide|textbook/.test(n))icon=['▤','▥','✎','▣'][h%4];
- else if(/course|class|lesson|tuition|learning|education/.test(n)||cat==='course')icon=['🎓','✏','▤','★'][h%4];
- else if(/consult|mentor|tutor|expert/.test(n))icon=['♟','◉','✦','▣'][h%4];
- else icon=['✦','◆','★','●','✚','✧','◈','⬟'][h%8];
- const fontSize=title.length>34?17:title.length>25?20:title.length>17?23:27;
- return '<svg class="unique-art" viewBox="0 0 420 260" role="img" aria-label="'+esc(title)+' product image"><rect width="420" height="260" rx="16" fill="'+bg+'"/><circle cx="210" cy="94" r="72" fill="#fff" opacity=".98"/><circle cx="210" cy="94" r="57" fill="#fff"/><text x="210" y="116" text-anchor="middle" font-size="68" font-family="Arial,sans-serif" fill="'+ink+'">'+icon+'</text><rect x="18" y="169" width="384" height="58" rx="9" fill="#173b78"/><text x="210" y="205" text-anchor="middle" fill="#fff" font-size="'+fontSize+'" font-family="Arial,Helvetica,sans-serif" font-weight="700">'+esc(title)+'</text><text x="210" y="247" text-anchor="middle" fill="#173b78" opacity=".9" font-size="10" font-family="Arial,Helvetica,sans-serif" letter-spacing="2">GURU CONNECT</text></svg>';
+ const pal=palettes[h%palettes.length],bg=pal[0],light=pal[1];
+ const skin=['#F2C6A0','#D99A70','#A96848','#F6D1B1','#8D563C','#E8B28C'][h%6];
+ const hair=['#29202B','#4A2B1C','#171923','#7A3F20','#33251D','#5A3445'][Math.floor(h/7)%6];
+ const shirt=['#173B78','#FFFFFF','#FFD23F','#102A43','#F7F7FF','#142653'][Math.floor(h/13)%6];
+ const hairStyle=Math.floor(h/19)%4,shirtStyle=Math.floor(h/29)%3;
+ const hairShape=[
+  '<path d="M119 119Q112 35 210 31Q310 34 301 124L278 103Q265 73 210 72Q155 72 142 106Z" fill="'+hair+'"/>',
+  '<path d="M119 126Q105 40 210 30Q315 40 301 126L285 176Q276 112 251 91Q210 113 151 91Q132 115 135 176Z" fill="'+hair+'"/>',
+  '<path d="M126 120Q116 48 210 35Q304 48 294 120Q270 86 244 82Q186 103 148 88Z" fill="'+hair+'"/><path d="M125 105Q98 126 115 177L139 161Z M295 105Q322 126 305 177L281 161Z" fill="'+hair+'"/>',
+  '<path d="M122 125Q108 44 210 31Q312 44 298 125L280 91Q253 55 210 65Q165 55 140 91Z" fill="'+hair+'"/><path d="M148 76Q165 28 205 37Q174 52 172 87Z" fill="'+hair+'"/>'
+ ][hairStyle];
+ const shirtShape=shirtStyle===0?'M120 244Q128 185 170 180L210 197 250 180Q292 185 300 244Z':shirtStyle===1?'M112 244Q123 183 171 179L210 201 249 179Q297 183 308 244Z':'M118 244Q128 188 170 180L210 194 250 180Q292 188 302 244L270 244 250 213 210 225 170 213 150 244Z';
+ return '<svg class="unique-art avatar-art" viewBox="0 0 420 260" role="img" aria-label="'+esc(title)+' illustrated avatar"><rect width="420" height="260" rx="16" fill="'+bg+'"/><circle cx="210" cy="125" r="112" fill="'+light+'" opacity=".78"/><circle cx="45" cy="45" r="22" fill="#fff" opacity=".25"/><circle cx="370" cy="215" r="36" fill="#fff" opacity=".22"/><path d="'+''+'" fill="none"/><g>'+shirtShape.replace(/<path/g,'<path')+'</g><path d="M184 166Q210 190 236 166L244 190Q210 218 176 190Z" fill="'+skin+'"/><ellipse cx="210" cy="121" rx="61" ry="73" fill="'+skin+'"/>'+hairShape+'<ellipse cx="185" cy="128" rx="5" ry="7" fill="#2D2530"/><ellipse cx="235" cy="128" rx="5" ry="7" fill="#2D2530"/><path d="M195 153Q210 164 225 153" fill="none" stroke="#8E4D45" stroke-width="4" stroke-linecap="round"/><path d="M210 133L204 146 214 147" fill="none" stroke="#B8795D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M174 111Q185 104 195 110M225 110Q237 104 247 111" fill="none" stroke="'+hair+'" stroke-width="5" stroke-linecap="round"/><circle cx="210" cy="121" r="93" fill="none" stroke="#fff" stroke-width="5" opacity=".7"/></svg>';
 }
 function productIntro(p){
  const custom=String(p.description||'').trim();
