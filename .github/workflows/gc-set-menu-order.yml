@@ -44,8 +44,8 @@ jobs:
           <a class="gc-final-single-login bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 text-[11px] sm:text-sm font-black rounded-xl transition" href="javascript:void(0)" id="gcFinalMenuLogin" onclick="closeNavMenu();openLoginModal()">🔐 LOGIN</a>
           '''
           patterns = [
-            (r'(<nav\\b(?=[^>]*class=["\\'][^"\\']*gc-beautiful-nav[^"\\']*["\\'])[^>]*>)([\\s\\S]*?)(</nav>)', desktop, "desktop navigation"),
-            (r'(<nav\\b(?=[^>]*id=["\\']publicNavbarLinks["\\'])[^>]*>)([\\s\\S]*?)(</nav>)', dropdown, "dropdown menu")
+            (r'(<nav\b(?=[^>]*class=["\'][^"\']*gc-beautiful-nav[^"\']*["\'])[^>]*>)([\s\S]*?)(</nav>)', desktop, "desktop navigation"),
+            (r'(<nav\b(?=[^>]*id=["\']publicNavbarLinks["\'])[^>]*>)([\s\S]*?)(</nav>)', dropdown, "dropdown menu")
           ]
           for pat, replacement, label in patterns:
             s2,n=re.subn(pat,lambda m:m.group(1)+replacement+m.group(3),s,count=1,flags=re.I)
