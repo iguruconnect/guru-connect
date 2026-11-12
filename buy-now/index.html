@@ -645,6 +645,64 @@ body{background:#f3f6fc!important;color:#17345f!important}
  font-weight:1000!important;
 }
 #basket #checkout:hover{background:linear-gradient(135deg,#ffe500,#ffbf00)!important;color:#142653!important}
+
+/* Compact product cards: approximately 2 inches wide x 3 inches tall */
+#catalogue.grid{
+  grid-template-columns:repeat(auto-fill,192px)!important;
+  justify-content:center!important;
+  align-items:start!important;
+  gap:12px!important;
+}
+#catalogue .product-card{
+  box-sizing:border-box!important;
+  width:192px!important;
+  min-width:192px!important;
+  max-width:192px!important;
+  height:288px!important;
+  min-height:288px!important;
+  max-height:288px!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+  border-radius:12px!important;
+}
+#catalogue .product-card .gc-card-brand{
+  min-height:36px!important;
+  max-height:36px!important;
+  flex:0 0 36px!important;
+  padding:4px 7px!important;
+  gap:6px!important;
+}
+#catalogue .product-card .gc-logo-disc{
+  width:27px!important;height:27px!important;min-width:27px!important;flex:0 0 27px!important;
+}
+#catalogue .product-card .gc-logo-disc img{width:23px!important;height:23px!important}
+#catalogue .product-card .gc-brand-copy b{font-size:10px!important;line-height:1.1!important}
+#catalogue .product-card .gc-brand-copy small{font-size:7px!important;line-height:1!important}
+#catalogue .product-card .photo{
+  box-sizing:border-box!important;
+  height:83px!important;min-height:83px!important;max-height:83px!important;
+  flex:0 0 83px!important;padding:5px!important;
+}
+#catalogue .product-card .photo img{max-height:70px!important;object-fit:contain!important}
+#catalogue .product-card .cardbody{
+  box-sizing:border-box!important;
+  min-height:0!important;flex:1 1 auto!important;
+  padding:7px!important;gap:1px!important;overflow:hidden!important;
+}
+#catalogue .product-card .category-row{font-size:9px!important;line-height:1.1!important}
+#catalogue .product-card h3{margin:3px 0!important;line-height:1.15!important}
+#catalogue .product-card .product-name{font-size:12px!important;line-height:1.15!important}
+#catalogue .product-card button.desc{font-size:9px!important;padding:4px 6px!important;margin:2px 0!important}
+#catalogue .product-card .prices{margin:3px 0 1px!important;gap:4px!important}
+#catalogue .product-card .sell{font-size:17px!important;line-height:1.1!important}
+#catalogue .product-card .mrp,#catalogue .product-card .save{font-size:9px!important}
+#catalogue .product-card .valid{font-size:8px!important;line-height:1.1!important;margin:2px 0 4px!important}
+#catalogue .product-card .buy{font-size:10px!important;padding:7px 6px!important;min-height:30px!important;margin-top:auto!important}
+@media(max-width:620px){
+  #catalogue.grid{grid-template-columns:192px!important;justify-content:center!important;gap:12px!important}
+  #catalogue .product-card{width:192px!important;min-width:192px!important;max-width:192px!important;height:288px!important;min-height:288px!important;max-height:288px!important}
+}
 </style></head><body>
 <div class="top"><div class="brand">GURU CONNECT</div><div style="display:flex;align-items:center;gap:12px"><small>Learn • Connect • Grow</small><a href="/" style="color:#fff"><b>Home</b></a><span id="memberWelcome" class="member-chip hidden" aria-live="polite"></span><button id="logoutBtn" class="logout-btn hidden" type="button">LOG OUT</button><button class="cart-head" id="cartJump" type="button">🛒 CART <span class="cart-count" id="cartHeadCount">0</span></button></div></div>
 <header class="hero"><div class="wrap"><div class="eyebrow">THE GURU CONNECT STORE</div><h1>Discover. Choose.<br>Grow with us.</h1><p>Explore memberships, learning support and useful services in one place. Find the right option and buy securely through your GURU CONNECT member account.</p><div class="hero-tags"><span class="tag">✦ Curated services</span><span class="tag">✦ Clear pricing</span><span class="tag">✦ Secure UPI checkout</span></div></div></header>
