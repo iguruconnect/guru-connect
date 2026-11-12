@@ -1495,3 +1495,39 @@ $('logoutBtn').onclick=async()=>{const {error}=await sb.auth.signOut();if(error)
 $('catalogue').addEventListener('click',e=>{const b=e.target.closest('[data-details]');if(!b)return;const p=products.find(x=>String(x.id)===String(b.dataset.details));if(p)openProductDetails(p)});$('catalogue').addEventListener('keydown',e=>{const b=e.target.closest('.desc[data-details]');if(!b||!['Enter',' '].includes(e.key))return;e.preventDefault();const p=products.find(x=>String(x.id)===String(b.dataset.details));if(p)openProductDetails(p)});$('detailsClose').onclick=()=>$('detailsModal').classList.add('hidden');$('detailsModal').addEventListener('click',e=>{if(e.target.id==='detailsModal')$('detailsModal').classList.add('hidden')});$('detailsBuy').onclick=()=>{$('detailsModal').classList.add('hidden');const p=products.find(x=>x.title===$('detailsTitle').textContent);if(p)buy(p)};document.addEventListener('keydown',e=>{if(e.key==='Escape')$('detailsModal').classList.add('hidden')});
 (async()=>{await loadCatalogue();const {data}=await sb.auth.getSession();if(data.session)await enter(data.session.user)})();
 </script></body></html>
+
+/* Royal invitation + Flipkart blue/yellow palette */
+#catalogue .product-card,
+#catalogue .product-card.helpline-plan-card{
+  border:3px double #f2bd28!important;
+  border-radius:12px!important;
+  background:linear-gradient(145deg,#fffdf0 0%,#ffffff 48%,#fff5c9 100%)!important;
+  box-shadow:inset 0 0 0 2px #fff,inset 0 0 0 3px #d9eaff,0 5px 14px #123b8324!important;
+}
+#catalogue .product-card .gc-card-brand{
+  background:linear-gradient(105deg,#073b91 0%,#1769d2 52%,#073b91 100%)!important;
+  color:#fff!important;border-radius:8px 8px 0 0!important;
+}
+#catalogue .product-card .gc-card-brand b{
+  color:#fff!important;letter-spacing:1px!important;text-shadow:0 1px 2px #001b4d!important;
+}
+#catalogue .product-card .avatar-mini{
+  background:linear-gradient(135deg,#fff1a8 0%,#e8f3ff 52%,#c9e2ff 100%)!important;
+  border-bottom:1px solid #e8c34f!important;
+}
+#catalogue .product-card .helpline-visual{
+  background:linear-gradient(135deg,#fff1a8,#e8f3ff)!important;
+  border-bottom:1px solid #e8c34f!important;
+}
+#catalogue .product-card .cardbody{background:transparent!important}
+#catalogue .product-card .cardbody .product-name{color:#103d82!important}
+#catalogue .product-card .sell{color:#064db5!important}
+#catalogue .product-card .buy{
+  background:linear-gradient(100deg,#ffd52a 0%,#ffeb70 48%,#ffc928 100%)!important;
+  color:#073b91!important;border:1px solid #e0ae08!important;
+  border-radius:6px!important;font-weight:950!important;letter-spacing:.35px!important;
+  box-shadow:0 2px 4px #123b8326!important;
+}
+#catalogue .product-card .buy:hover{
+  background:linear-gradient(100deg,#ffca05,#ffe45a)!important;
+}
