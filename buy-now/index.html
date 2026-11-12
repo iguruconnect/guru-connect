@@ -485,14 +485,14 @@ function icon(p){if(p.category==='verification')return '<svg class="verified-pro
  const title=String(p.title||'GURU CONNECT').trim();
  const cat=String(p.category||'service').toLowerCase(),n=title.toLowerCase();
  let h=0;for(let i=0;i<title.length;i++)h=(h*33+title.charCodeAt(i))>>>0;
- // Bright, distinct icon tiles inspired by the colourful home-page tiles.
+ // Deep, saturated icon-tile colours inspired by the homepage.
  const palettes=[
   ['#E53935','#FDE8E7'],['#F57C00','#FFF0DD'],['#239B56','#E4F7EA'],
   ['#2874F0','#E5EEFF'],['#7E57C2','#F0E9FC'],['#6C4BC3','#ECE8FC'],
   ['#D63384','#FCE7F1'],['#E0B400','#FFF7D1'],['#20A4D8','#E2F5FC'],
   ['#159E8C','#E1F6F1'],['#E65B78','#FCE9ED'],['#00A6A6','#E0F7F7']
  ];
- const pal=palettes[h%palettes.length],ink=pal[0],bg=pal[1];
+ const pal=palettes[h%palettes.length],ink=pal[0],bg=pal[0];
  let icon='✦';
  if(cat==='helpline'||/help|support|helpline|assistance/.test(n))icon=['☎','🎧','✆','💬'][h%4];
  else if(cat==='verification'||/verif|verified|identity|badge/.test(n))icon=['✓','🛡','★','♙'][h%4];
@@ -502,7 +502,7 @@ function icon(p){if(p.category==='verification')return '<svg class="verified-pro
  else if(/consult|mentor|tutor|expert/.test(n))icon=['♟','◉','✦','▣'][h%4];
  else icon=['✦','◆','★','●','✚','✧','◈','⬟'][h%8];
  const fontSize=title.length>34?17:title.length>25?20:title.length>17?23:27;
- return '<svg class="unique-art" viewBox="0 0 420 260" role="img" aria-label="'+esc(title)+' product image"><rect width="420" height="260" rx="16" fill="'+bg+'"/><circle cx="210" cy="94" r="72" fill="#fff" opacity=".78"/><circle cx="210" cy="94" r="57" fill="'+ink+'"/><text x="210" y="116" text-anchor="middle" font-size="68" font-family="Arial,sans-serif" fill="#fff">'+icon+'</text><rect x="18" y="169" width="384" height="58" rx="9" fill="#173b78"/><text x="210" y="205" text-anchor="middle" fill="#fff" font-size="'+fontSize+'" font-family="Arial,Helvetica,sans-serif" font-weight="700">'+esc(title)+'</text><text x="210" y="247" text-anchor="middle" fill="#173b78" opacity=".9" font-size="10" font-family="Arial,Helvetica,sans-serif" letter-spacing="2">GURU CONNECT</text></svg>';
+ return '<svg class="unique-art" viewBox="0 0 420 260" role="img" aria-label="'+esc(title)+' product image"><rect width="420" height="260" rx="16" fill="'+bg+'"/><circle cx="210" cy="94" r="72" fill="#fff" opacity=".98"/><circle cx="210" cy="94" r="57" fill="'+ink+'"/><text x="210" y="116" text-anchor="middle" font-size="68" font-family="Arial,sans-serif" fill="'+ink+'">'+icon+'</text><rect x="18" y="169" width="384" height="58" rx="9" fill="#173b78"/><text x="210" y="205" text-anchor="middle" fill="#fff" font-size="'+fontSize+'" font-family="Arial,Helvetica,sans-serif" font-weight="700">'+esc(title)+'</text><text x="210" y="247" text-anchor="middle" fill="#173b78" opacity=".9" font-size="10" font-family="Arial,Helvetica,sans-serif" letter-spacing="2">GURU CONNECT</text></svg>';
 }
 function productIntro(p){
  const custom=String(p.description||'').trim();
