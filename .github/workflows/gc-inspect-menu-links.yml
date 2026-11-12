@@ -1,0 +1,16 @@
+name: Inspect menu links and dropdown
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-inspect-menu-links.yml"
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Locate visible menu labels
+        run: |
+          grep -inE -C 3 'Home|About Us|Join Us|Helpline Service Plans|Registration|Contact Us|Buy Now|Login|publicNavbarLinks|gc-beautiful-nav' index.html | head -n 500
