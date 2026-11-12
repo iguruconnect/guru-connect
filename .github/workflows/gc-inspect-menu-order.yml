@@ -1,0 +1,32 @@
+name: Inspect current website menu order
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-inspect-menu-order.yml"
+permissions:
+  contents: read
+jobs:
+  inspect-menu:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print menu-related navigation blocks
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path("index.html").read_text(encoding="utf-8")
+          for label,pat in [
+            ("NAV",r'<nav\\b[^>]*>[\\s\\S]*?</nav>'),
+            ("DROPDOWN",r'<(?:div|ul)\\b[^>]*(?:dropdown|publicNavbarLinks)[^>]*>[\\s\\S]*?</(?:div|ul)>')
+          ]:
+            print("\\n--- "+label+" ---")
+            matches=list(re.finditer(pat,s,re.I))
+            for i,m in enumerate(matches):
+              block=m.group(0)
+              if re.search(r'Home|About|Join|Helpline|Registration|Contact|Buy Now|Login',block,re.I):
+                print(f"BLOCK {i}:")
+                print(block[:18000])
+          PY
