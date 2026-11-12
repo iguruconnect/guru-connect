@@ -18,7 +18,7 @@ jobs:
           from pathlib import Path
           import re
           s=Path("index.html").read_text(encoding="utf-8")
-          for m in re.finditer(r'<header\\b[\\s\\S]*?</header>',s,re.I):
+          for m in re.finditer(r'<header\b[\s\S]*?</header>',s,re.I):
             b=m.group(0)
             print("HEADER OFFSET",m.start(),"LENGTH",len(b))
             print(b[:22000])
