@@ -1,0 +1,24 @@
+name: Inspect actual dropdown markup
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-inspect-dropdown-markup.yml"
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print dropdown and header HTML
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("index.html").read_text(encoding="utf-8")
+          for needle in ['id="publicNavbarLinks"',"id='publicNavbarLinks'",'class="gc-beautiful-nav"',"class='gc-beautiful-nav'"]:
+            p=s.find(needle)
+            print("\\n###",needle,"at",p)
+            if p>=0: print(s[max(0,p-1800):p+9000])
+          PY
