@@ -1,0 +1,38 @@
+name: Inspect actual public dropdown and header links
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-dropdown-inspect.yml"
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print navigation structure
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          class P(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.stack=[]; self.capture=None
+              def handle_starttag(self, tag, attrs):
+                  a=dict(attrs); item={'tag':tag,'id':a.get('id',''),'class':a.get('class',''),'href':a.get('href',''),'role':a.get('role',''),'aria':a.get('aria-label','')}
+                  self.stack.append(item)
+                  if tag=='a': self.capture={'item':item,'text':''}
+              def handle_data(self,data):
+                  if self.capture is not None: self.capture['text']+=data
+              def handle_endtag(self,tag):
+                  if tag=='a' and self.capture:
+                      x=self.capture; t=' '.join(x['text'].split())
+                      if any(k in (t+' '+x['item']['href']).lower() for k in ['buy now','registration','explore tutors','students directory','dropdown','menu']):
+                          print('ANCHOR',repr(t),x['item'],'ANCESTORS',self.stack[-5:-1])
+                      self.capture=None
+                  for i in range(len(self.stack)-1,-1,-1):
+                      if self.stack[i]['tag']==tag:
+                          self.stack=self.stack[:i]; break
+          p=P(); p.feed(Path('index.html').read_text(encoding='utf-8'))
+          PY
