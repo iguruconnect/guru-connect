@@ -874,6 +874,44 @@ body{background:#f3f6fc!important;color:#17345f!important}
   #catalogue.grid{grid-template-columns:repeat(2,192px)!important;justify-content:center!important;gap:10px!important}
   #catalogue .product-card{width:192px!important;min-width:192px!important;max-width:192px!important;height:192px!important;min-height:192px!important;max-height:192px!important}
 }
+
+/* Mobile: fit two compact product tiles side by side */
+@media(max-width:620px){
+  #catalogue.grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    justify-content:stretch!important;
+    gap:8px!important;
+  }
+  #catalogue .product-card{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+    height:244px!important;
+    min-height:244px!important;
+    max-height:244px!important;
+    padding:6px!important;
+    border-radius:11px!important;
+  }
+  #catalogue .product-card .gc-card-brand{
+    min-height:29px!important;
+    max-height:29px!important;
+    flex:0 0 29px!important;
+    padding:3px 5px!important;
+  }
+  #catalogue .product-card .avatar-mini{
+    min-height:55px!important;
+    height:55px!important;
+    margin:4px auto!important;
+  }
+  #catalogue .product-card .tile-icon{font-size:34px!important}
+  #catalogue .product-card .cardbody{padding:3px 4px!important;gap:3px!important}
+  #catalogue .product-card h3{font-size:12px!important;line-height:1.2!important;margin:2px 0!important}
+  #catalogue .product-card .desc{font-size:10px!important;padding:3px 5px!important;min-height:24px!important}
+  #catalogue .product-card .sell{font-size:15px!important}
+  #catalogue .product-card .valid{font-size:9px!important;line-height:1.1!important}
+  #catalogue .product-card .buy{font-size:10px!important;min-height:29px!important;padding:5px 4px!important}
+}
+
 </style></head><body>
 <div class="top"><div class="brand">GURU CONNECT</div><div style="display:flex;align-items:center;gap:12px"><small>Learn • Connect • Grow</small><a href="/" style="color:#fff"><b>Home</b></a><span id="memberWelcome" class="member-chip hidden" aria-live="polite"></span><button id="logoutBtn" class="logout-btn hidden" type="button">LOG OUT</button><button class="cart-head" id="cartJump" type="button">🛒 CART <span class="cart-count" id="cartHeadCount">0</span></button></div></div>
 <header class="hero"><div class="wrap"><div class="eyebrow">THE GURU CONNECT STORE</div><h1>Discover. Choose.<br>Grow with us.</h1><p>Explore memberships, learning support and useful services in one place. Find the right option and buy securely through your GURU CONNECT member account.</p><div class="hero-tags"><span class="tag">✦ Curated services</span><span class="tag">✦ Clear pricing</span><span class="tag">✦ Secure UPI checkout</span></div></div></header>
