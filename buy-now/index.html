@@ -746,6 +746,67 @@ body{background:#f3f6fc!important;color:#17345f!important}
 
 /* Keep the Buy Now hero top-left plain and normal: no decorative glow overlay */
 .hero:before{content:none!important;background:none!important}
+
+
+/* GURU CONNECT blue footer and refreshed wider product cards */
+.foot{
+  background:linear-gradient(110deg,#142653 0%,#174b9b 55%,#2874f0 100%)!important;
+  color:#fff!important;
+}
+.foot a,.foot p,.foot span,.foot small{color:#fff!important}
+#catalogue.grid{
+  grid-template-columns:repeat(auto-fill,288px)!important;
+  justify-content:center!important;
+  gap:16px!important;
+}
+#catalogue .product-card{
+  width:288px!important;min-width:288px!important;max-width:288px!important;
+  height:288px!important;min-height:288px!important;max-height:288px!important;
+  border:1px solid #cbdaf2!important;
+  border-top:4px solid #2874f0!important;
+  border-radius:17px!important;
+  background:linear-gradient(150deg,#fff 0%,#f8fbff 68%,#edf4ff 100%)!important;
+  box-shadow:0 7px 20px #14265318,0 2px 5px #1426530c!important;
+  overflow:hidden!important;
+  transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease!important;
+}
+#catalogue .product-card:hover{
+  transform:translateY(-4px)!important;
+  border-color:#7ba8ed!important;
+  box-shadow:0 13px 26px #14265325!important;
+}
+#catalogue .product-card .gc-card-brand{
+  background:linear-gradient(105deg,#142653,#174b9b 65%,#2874f0)!important;
+  border-radius:12px 12px 0 0!important;
+  min-height:32px!important;height:32px!important;max-height:32px!important;flex-basis:32px!important;
+}
+#catalogue .product-card .photo{
+  height:78px!important;min-height:78px!important;max-height:78px!important;flex-basis:78px!important;
+  background:linear-gradient(135deg,#edf4ff,#f7fbff 60%,#e8f1ff)!important;
+  border-bottom:1px solid #e1eafa!important;
+}
+#catalogue .product-card .avatar-mini{
+  width:56px!important;height:56px!important;min-height:56px!important;flex-basis:56px!important;
+  border:3px solid #fff!important;box-shadow:0 3px 12px #174b9b28!important;
+}
+#catalogue .product-card .cardbody{padding:3px 14px 9px!important;gap:2px!important}
+#catalogue .product-card .product-name{font-size:14px!important;color:#142653!important}
+#catalogue .product-card button.desc{
+  background:#eaf2ff!important;color:#174b9b!important;border:1px solid #b8d0f5!important;
+  border-radius:20px!important;padding:5px 13px!important;font-weight:800!important;
+}
+#catalogue .product-card button.desc:hover{background:#d9e8ff!important}
+#catalogue .product-card .prices{margin:2px 0!important}
+#catalogue .product-card .sell{color:#174b9b!important}
+#catalogue .product-card .buy{
+  background:linear-gradient(100deg,#174b9b,#2874f0)!important;color:#fff!important;
+  border:1px solid #174b9b!important;border-radius:9px!important;
+  box-shadow:0 3px 0 #102f68!important;
+}
+@media(max-width:620px){
+  #catalogue.grid{grid-template-columns:288px!important;justify-content:center!important;gap:14px!important}
+  #catalogue .product-card{width:288px!important;min-width:288px!important;max-width:288px!important}
+}
 </style></head><body>
 <div class="top"><div class="brand">GURU CONNECT</div><div style="display:flex;align-items:center;gap:12px"><small>Learn • Connect • Grow</small><a href="/" style="color:#fff"><b>Home</b></a><span id="memberWelcome" class="member-chip hidden" aria-live="polite"></span><button id="logoutBtn" class="logout-btn hidden" type="button">LOG OUT</button><button class="cart-head" id="cartJump" type="button">🛒 CART <span class="cart-count" id="cartHeadCount">0</span></button></div></div>
 <header class="hero"><div class="wrap"><div class="eyebrow">THE GURU CONNECT STORE</div><h1>Discover. Choose.<br>Grow with us.</h1><p>Explore memberships, learning support and useful services in one place. Find the right option and buy securely through your GURU CONNECT member account.</p><div class="hero-tags"><span class="tag">✦ Curated services</span><span class="tag">✦ Clear pricing</span><span class="tag">✦ Secure UPI checkout</span></div></div></header>
