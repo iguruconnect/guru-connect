@@ -555,6 +555,49 @@ body{background:#f3f6fc!important;color:#17345f!important}
  #basketTotal{font-size:19px!important}
 }
 
+
+/* Restore the original GURU CONNECT gradient wordmark in the store header */
+.top .brand{
+  font-family:Roboto,Arial,sans-serif!important;
+  font-size:clamp(21px,2.5vw,29px)!important;
+  font-weight:1000!important;
+  letter-spacing:.35px!important;
+  line-height:1.1!important;
+  background:linear-gradient(90deg,#ffffff 0%,#ffe500 48%,#ffffff 100%)!important;
+  -webkit-background-clip:text!important;
+  background-clip:text!important;
+  color:transparent!important;
+  -webkit-text-fill-color:transparent!important;
+  text-shadow:none!important;
+}
+/* Orange checkout action patch */
+.basket button{
+  background:linear-gradient(135deg,#ff7600,#ff9b22)!important;
+  color:#fff!important;
+  border:1px solid #e96700!important;
+  box-shadow:0 3px 0 #c95000!important;
+}
+.basket button:hover{background:linear-gradient(135deg,#ed6800,#ff8500)!important}
+/* Slightly shorter product tiles with a little more width */
+#catalogue.grid{grid-template-columns:repeat(auto-fill,minmax(243px,1fr))!important}
+#catalogue .product-card .photo{
+  height:120px!important;
+  min-height:120px!important;
+  flex-basis:120px!important;
+}
+#catalogue .product-card .cardbody{padding:10px!important}
+#catalogue .product-card .prices{margin:5px 0 2px!important}
+#catalogue .product-card .valid{margin:1px 0 6px!important}
+@media(max-width:620px){
+  #catalogue.grid{grid-template-columns:minmax(0,1fr)!important}
+  #catalogue .product-card .photo{
+    height:104px!important;
+    min-height:104px!important;
+    flex-basis:104px!important;
+  }
+  #catalogue .product-card .cardbody{padding:8px!important}
+}
+
 </style></head><body>
 <div class="top"><div class="brand">GURU CONNECT</div><div style="display:flex;align-items:center;gap:12px"><small>Learn • Connect • Grow</small><a href="/" style="color:#fff"><b>Home</b></a><span id="memberWelcome" class="member-chip hidden" aria-live="polite"></span><button id="logoutBtn" class="logout-btn hidden" type="button">LOG OUT</button><button class="cart-head" id="cartJump" type="button">🛒 CART <span class="cart-count" id="cartHeadCount">0</span></button></div></div>
 <header class="hero"><div class="wrap"><div class="eyebrow">THE GURU CONNECT STORE</div><h1>Discover. Choose.<br>Grow with us.</h1><p>Explore memberships, learning support and useful services in one place. Find the right option and buy securely through your GURU CONNECT member account.</p><div class="hero-tags"><span class="tag">✦ Curated services</span><span class="tag">✦ Clear pricing</span><span class="tag">✦ Secure UPI checkout</span></div></div></header>
