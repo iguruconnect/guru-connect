@@ -380,33 +380,28 @@ body{background:linear-gradient(180deg,#f4f7ff 0,#fff9f1 42%,#f5fbff 100%)}
 const sb=supabase.createClient('https://hzqqswrnawrfgufbxgay.supabase.co','sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',{auth:{persistSession:true,autoRefreshToken:true}}),$=id=>document.getElementById(id),money=n=>'₹'+Number(n||0).toLocaleString('en-IN',{maximumFractionDigits:2});let products=[],cart=new Set(),category='all',member=null,role='',pendingBuy=null,currentOrder=null;
 function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function icon(p){if(p.category==='verification')return '<svg class="verified-product-tick" viewBox="0 0 100 100" role="img" aria-label="GURU CONNECT verified badge"><circle cx="50" cy="50" r="43" fill="#2874f0"/><circle cx="50" cy="50" r="35" fill="none" stroke="#fff" stroke-width="3" opacity=".9"/><path d="M29 51 43 65 72 35" fill="none" stroke="#fff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/><path d="m50 3 5 8 9-2 2 9 9 3-2 9 7 6-6 7 2 9-9 3-3 9-9-2-6 7-7-6-9 2-3-9-9-3 2-9-7-6 6-7-2-9 9-3 3-9 9 2z" fill="none" stroke="#ffe36e" stroke-width="2" opacity=".95" transform="translate(0 0)"/></svg>';if(p.category==='helpline'){const t=String(p.title||'').toLowerCase();if(/basic|starter|bronze|1 month|one month/.test(t))return '📘';if(/standard|silver|3 month|three month/.test(t))return '📗';if(/premium|gold|6 month|six month/.test(t))return '📙';if(/annual|year|12 month|platinum/.test(t))return '📕';return '📚'}return ({membership:'👑',service:'✨'})[p.category]||'🎁'}function productArtwork(p){
- const title=String(p.title||'GURU CONNECT').trim(),short=title.length>30?title.slice(0,28)+'…':title;
+ const title=String(p.title||'GURU CONNECT').trim();
  const cat=String(p.category||'service').toLowerCase(),n=title.toLowerCase();
  let h=0;for(let i=0;i<title.length;i++)h=(h*33+title.charCodeAt(i))>>>0;
- // Muted-but-rich retail colours: deliberately avoid fluorescent/neon shades.
+ // Simple product-photo treatment: calm solid colour, one clear icon and the
+ // product's ordinary name printed directly on the image (no decorative banner).
  const palettes=[
-  ['#315C9B','#E8F0FB','#244574'],['#287C78','#E5F4F1','#1E5D5A'],
-  ['#76518F','#F0EAF5','#56396B'],['#B65F45','#F9ECE7','#87432F'],
-  ['#A87928','#F7F0DF','#78551D'],['#39745B','#E8F2EC','#28533F'],
-  ['#526B8C','#E9EEF5','#394D68'],['#A94F6B','#F7EAF0','#79364C'],
-  ['#535A9A','#EAEBF7','#3B4172'],['#8A6546','#F2ECE5','#62472F'],
-  ['#3E789A','#E7F1F6','#2B536B'],['#68764A','#EFF1E6','#465132']
+  ['#DCE8F5','#315C9B'],['#DDEFEA','#287C78'],['#EAE2F0','#76518F'],
+  ['#F3E2DA','#A6533B'],['#F1E8D2','#93691F'],['#E1EBDD','#39745B'],
+  ['#E1E7EF','#526B8C'],['#F0DFE5','#A94F6B'],['#E2E3F2','#535A9A'],
+  ['#EAE2D8','#8A6546'],['#DCEAF0','#3E789A'],['#E8EBD9','#68764A']
  ];
- const pal=palettes[h%palettes.length],main=pal[0],pale=pal[1],deep=pal[2],id='gcBanner'+h.toString(16);
+ const pal=palettes[h%palettes.length],bg=pal[0],ink=pal[1],id='gcProduct'+h.toString(16);
  let icon='✦';
  if(cat==='helpline'||/help|support|helpline|assistance/.test(n))icon=['☎','🎧','✆','💬'][h%4];
- else if(cat==='verification'||/verif|verified|identity|badge/.test(n))icon=['✓','🛡','★','♙'][h%4];
- else if(cat==='membership'||/member|premium|prime|plan|subscription/.test(n))icon=['♛','✧','★','◆'][h%4];
+ else if(cat==='verification'||/verif|verified|identity|badge/.test(n))icon=['✓','♙','★','◆'][h%4];
+ else if(cat==='membership'||/member|premium|prime|plan|subscription/.test(n))icon=['♛','★','◆','✧'][h%4];
  else if(cat==='book'||/book|notes|study|guide|textbook/.test(n))icon=['▤','▥','✎','▣'][h%4];
  else if(/course|class|lesson|tuition|learning|education/.test(n)||cat==='course')icon=['🎓','✏','▤','★'][h%4];
  else if(/consult|mentor|tutor|expert/.test(n))icon=['♟','◉','✦','▣'][h%4];
  else icon=['✦','◆','★','●','✚','✧','◈','⬟'][h%8];
- const safeTitle=esc(short);
- const defs='<defs><linearGradient id="'+id+'bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff"/><stop offset="1" stop-color="'+pale+'"/></linearGradient><filter id="'+id+'shadow" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="9" stdDeviation="8" flood-color="'+deep+'" flood-opacity=".2"/></filter></defs>';
- const decor='<circle cx="70" cy="55" r="44" fill="'+main+'" opacity=".07"/><circle cx="355" cy="45" r="72" fill="'+main+'" opacity=".08"/><path d="M0 190 Q100 150 210 188 T420 170v90H0z" fill="'+main+'" opacity=".06"/>';
- const illustration='<g filter="url(#'+id+'shadow)"><rect x="139" y="24" width="142" height="142" rx="34" fill="'+main+'"/><rect x="147" y="32" width="126" height="126" rx="28" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="2"/><text x="210" y="119" text-anchor="middle" font-size="75" font-family="Arial,sans-serif" fill="#fff">'+icon+'</text></g><circle cx="294" cy="146" r="17" fill="'+deep+'"/><path d="m286 146 6 6 11-13" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>';
- const banner='<rect x="18" y="181" width="384" height="59" rx="12" fill="'+main+'"/><rect x="18" y="181" width="7" height="59" rx="3" fill="'+deep+'"/><text x="210" y="207" text-anchor="middle" fill="#fff" font-size="'+(short.length>23?14:17)+'" font-weight="900" letter-spacing=".3">'+safeTitle+'</text><text x="210" y="226" text-anchor="middle" fill="#fff" fill-opacity=".82" font-size="9" font-weight="800" letter-spacing="2">GURU CONNECT</text>';
- return '<svg class="unique-art" viewBox="0 0 420 260" role="img" aria-label="'+esc(title)+' product image">'+defs+'<rect width="420" height="260" rx="18" fill="url(#'+id+'bg)"/>'+decor+illustration+banner+'</svg>';
+ const fontSize=title.length>34?17:title.length>25?20:title.length>17?23:27;
+ return '<svg class="unique-art" viewBox="0 0 420 260" role="img" aria-label="'+esc(title)+' product image"><rect width="420" height="260" rx="16" fill="'+bg+'"/><circle cx="210" cy="94" r="61" fill="'+ink+'" opacity=".12"/><circle cx="210" cy="94" r="49" fill="'+ink+'"/><text x="210" y="116" text-anchor="middle" font-size="68" font-family="Arial,sans-serif" fill="#fff">'+icon+'</text><text x="210" y="190" text-anchor="middle" fill="'+ink+'" font-size="'+fontSize+'" font-family="Arial,Helvetica,sans-serif" font-weight="600">'+esc(title)+'</text><text x="210" y="222" text-anchor="middle" fill="'+ink+'" opacity=".72" font-size="11" font-family="Arial,Helvetica,sans-serif" letter-spacing="2">GURU CONNECT</text></svg>';
 }
 function productIntro(p){
  const custom=String(p.description||'').trim();
