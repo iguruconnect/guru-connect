@@ -17636,7 +17636,36 @@ a[data-gc-public-menu="registration"] {background:#168b45!important;color:#fff!i
 })();
 </script>
 
-</body>
+
+<script id="gc-remove-visible-literal-newlines-mobile-2026">
+(() => {
+  const removeStrayNewlineText = () => {
+    if (window.matchMedia && !window.matchMedia('(max-width: 640px)').matches) return;
+    const root = document.querySelector('header.gc-beautiful-header')?.parentElement || document.body;
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const remove = [];
+    let node;
+    while ((node = walker.nextNode())) {
+      const parent = node.parentElement;
+      if (!parent || parent.closest('script,style,textarea,code,pre')) continue;
+      if (/^(?:\\n\s*)+$/.test(node.nodeValue.trim())) remove.push(node);
+    }
+    remove.forEach(node => node.remove());
+  };
+  const run = () => {
+    removeStrayNewlineText();
+    if (window.__gcLiteralNewlineObserver) window.__gcLiteralNewlineObserver.disconnect();
+    if (window.MutationObserver) {
+      window.__gcLiteralNewlineObserver = new MutationObserver(removeStrayNewlineText);
+      window.__gcLiteralNewlineObserver.observe(document.body,{childList:true,subtree:true});
+    }
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',run,{once:true});
+  else run();
+  window.addEventListener('load',removeStrayNewlineText,{once:true});
+})();
+</script>
+\n</body>
 </html>
 
 <!-- gc-mobile-orange-hero-persistent-final-20261105: final mobile-only override; desktop artwork remains unchanged -->
