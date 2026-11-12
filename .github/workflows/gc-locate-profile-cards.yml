@@ -1,0 +1,29 @@
+name: Locate actual homepage profile cards
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-locate-profile-cards.yml"
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Locate homepage action tiles
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("index.html").read_text(encoding="utf-8")
+          for term in ["Tutor Profile","Student Profile"]:
+            print("\\nTERM",term)
+            pos=[]; p=0
+            while True:
+              p=s.lower().find(term.lower(),p)
+              if p<0: break
+              pos.append(p); p+=len(term)
+            for p in pos[-8:]:
+              print("OFFSET",p)
+              print(s[max(0,p-600):p+800])
+          PY
