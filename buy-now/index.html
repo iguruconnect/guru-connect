@@ -409,6 +409,60 @@ body{background:linear-gradient(180deg,#f4f7ff 0,#fff9f1 42%,#f5fbff 100%)}
  border-color:#f6b17e!important;
 }
 #catalogue .product-card .photo .unique-art{filter:drop-shadow(0 3px 5px #9a4b1b18)}
+
+/* Yellow and blue marketplace theme with colourful individual product icon tiles */
+:root{--market-blue:#174b9b;--market-yellow:#ffd928;--market-ink:#17345f}
+body{background:#f3f6fc!important;color:#17345f!important}
+.top{background:#174b9b!important;color:#fff!important;box-shadow:0 3px 12px #17345f22!important}
+.top a[href="/"]{background:#ffffff20!important;color:#fff!important}
+.cart-head{background:#ffd928!important;color:#17345f!important;border:2px solid #fff!important;box-shadow:0 4px 0 #d6ad00,0 7px 15px #08245b35!important}
+.cart-head:hover{background:#ffe766!important}
+.cart-count{background:#174b9b!important;color:#ffd928!important}
+.hero{background:linear-gradient(112deg,#123c7a 0%,#1d5db5 62%,#2874d0 100%)!important;position:relative}
+.hero .eyebrow{color:#ffe27a!important}
+.hero h1{color:#fff!important}
+.hero p{color:#edf4ff!important}
+.hero .tag{border-color:#ffe27a80!important;background:#ffffff18!important}
+.toolbar{border-color:#d7e2f3!important;background:#fff!important}
+.filter.active{background:#174b9b!important;border-color:#174b9b!important}
+.section-title{border-color:#d8e2f0!important}
+#catalogue .product-card{
+ border:2px solid #e7c94b!important;border-radius:17px!important;
+ background:linear-gradient(145deg,#fffdf3 0%,#fff 55%,#f2f7ff 100%)!important;
+ box-shadow:0 5px 16px #17345f13!important;
+}
+#catalogue .product-card:hover{box-shadow:0 10px 24px #174b9b25!important}
+#catalogue .product-card .gc-card-brand{
+ background:linear-gradient(110deg,#174b9b,#2874d0)!important;
+ border:1px solid #3d76c4!important;color:#fff!important;
+}
+#catalogue .product-card .gc-brand-copy b{color:#fff!important}
+#catalogue .product-card .gc-brand-copy small{color:#ffe27a!important}
+#catalogue .product-card .gc-card-chip{
+ background:linear-gradient(135deg,#fff2a8,#ffd928 55%,#fff4bf)!important;
+ border-color:#ffe98b!important;
+}
+#catalogue .product-card .gc-card-chip:before,
+#catalogue .product-card .gc-card-chip:after{background:#a98500!important}
+#catalogue .product-card .photo{
+ background:linear-gradient(145deg,#fff8d9,#eaf2ff)!important;
+ border:1px solid #d9e5f7!important;
+}
+#catalogue .product-card .product-name{color:#174b9b!important}
+#catalogue .product-card .desc{background:#f7faff!important;border-color:#dce7f7!important}
+#catalogue .product-card .desc strong{color:#174b9b!important}
+#catalogue .product-card .sell{color:#174b9b!important}
+#catalogue .product-card .buy{
+ background:linear-gradient(100deg,#ffd928,#ffdf55)!important;color:#17345f!important;
+ box-shadow:0 3px 8px #b58d0033!important;border:1px solid #e6bd00!important;
+}
+#catalogue .product-card .buy:hover{background:#ffe766!important}
+.basket{background:linear-gradient(110deg,#174b9b,#2874d0)!important;border-color:#9abcf0!important}
+.basket button{background:#ffd928!important;color:#17345f!important}
+#cartDetails{border-color:#9bb9e8!important}
+#cartDetails h2:before{background:#fff2b8!important}
+.foot{background:#123c7a!important}
+@media(max-width:620px){#catalogue .product-card{background:#fffdf3!important}}
 </style></head><body>
 <div class="top"><div class="brand">GURU CONNECT</div><div style="display:flex;align-items:center;gap:12px"><small>Learn • Connect • Grow</small><a href="/" style="color:#fff"><b>Home</b></a><span id="memberWelcome" class="member-chip hidden" aria-live="polite"></span><button id="logoutBtn" class="logout-btn hidden" type="button">LOG OUT</button><button class="cart-head" id="cartJump" type="button">🛒 CART <span class="cart-count" id="cartHeadCount">0</span></button></div></div>
 <header class="hero"><div class="wrap"><div class="eyebrow">THE GURU CONNECT STORE</div><h1>Discover. Choose.<br>Grow with us.</h1><p>Explore memberships, learning support and useful services in one place. Find the right option and buy securely through your GURU CONNECT member account.</p><div class="hero-tags"><span class="tag">✦ Curated services</span><span class="tag">✦ Clear pricing</span><span class="tag">✦ Secure UPI checkout</span></div></div></header>
@@ -431,8 +485,13 @@ function icon(p){if(p.category==='verification')return '<svg class="verified-pro
  const title=String(p.title||'GURU CONNECT').trim();
  const cat=String(p.category||'service').toLowerCase(),n=title.toLowerCase();
  let h=0;for(let i=0;i<title.length;i++)h=(h*33+title.charCodeAt(i))>>>0;
- // One consistent LRR-style orange family; product identity comes from its own icon.
- const palettes=[['#F47721','#FFF0E3'],['#E96816','#FFE8D5'],['#FF8A35','#FFF3E8'],['#D95B12','#FCE6D5']];
+ // Bright, distinct icon tiles inspired by the colourful home-page tiles.
+ const palettes=[
+  ['#E53935','#FDE8E7'],['#F57C00','#FFF0DD'],['#239B56','#E4F7EA'],
+  ['#2874F0','#E5EEFF'],['#7E57C2','#F0E9FC'],['#6C4BC3','#ECE8FC'],
+  ['#D63384','#FCE7F1'],['#E0B400','#FFF7D1'],['#20A4D8','#E2F5FC'],
+  ['#159E8C','#E1F6F1'],['#E65B78','#FCE9ED'],['#00A6A6','#E0F7F7']
+ ];
  const pal=palettes[h%palettes.length],ink=pal[0],bg=pal[1];
  let icon='✦';
  if(cat==='helpline'||/help|support|helpline|assistance/.test(n))icon=['☎','🎧','✆','💬'][h%4];
@@ -443,7 +502,7 @@ function icon(p){if(p.category==='verification')return '<svg class="verified-pro
  else if(/consult|mentor|tutor|expert/.test(n))icon=['♟','◉','✦','▣'][h%4];
  else icon=['✦','◆','★','●','✚','✧','◈','⬟'][h%8];
  const fontSize=title.length>34?17:title.length>25?20:title.length>17?23:27;
- return '<svg class="unique-art" viewBox="0 0 420 260" role="img" aria-label="'+esc(title)+' product image"><rect width="420" height="260" rx="16" fill="'+bg+'"/><circle cx="210" cy="94" r="72" fill="#fff" opacity=".72"/><circle cx="210" cy="94" r="57" fill="'+ink+'"/><text x="210" y="116" text-anchor="middle" font-size="68" font-family="Arial,sans-serif" fill="#fff">'+icon+'</text><rect x="18" y="169" width="384" height="58" rx="9" fill="'+ink+'"/><text x="210" y="205" text-anchor="middle" fill="#fff" font-size="'+fontSize+'" font-family="Arial,Helvetica,sans-serif" font-weight="700">'+esc(title)+'</text><text x="210" y="247" text-anchor="middle" fill="'+ink+'" opacity=".85" font-size="10" font-family="Arial,Helvetica,sans-serif" letter-spacing="2">GURU CONNECT</text></svg>';
+ return '<svg class="unique-art" viewBox="0 0 420 260" role="img" aria-label="'+esc(title)+' product image"><rect width="420" height="260" rx="16" fill="'+bg+'"/><circle cx="210" cy="94" r="72" fill="#fff" opacity=".78"/><circle cx="210" cy="94" r="57" fill="'+ink+'"/><text x="210" y="116" text-anchor="middle" font-size="68" font-family="Arial,sans-serif" fill="#fff">'+icon+'</text><rect x="18" y="169" width="384" height="58" rx="9" fill="#173b78"/><text x="210" y="205" text-anchor="middle" fill="#fff" font-size="'+fontSize+'" font-family="Arial,Helvetica,sans-serif" font-weight="700">'+esc(title)+'</text><text x="210" y="247" text-anchor="middle" fill="#173b78" opacity=".9" font-size="10" font-family="Arial,Helvetica,sans-serif" letter-spacing="2">GURU CONNECT</text></svg>';
 }
 function productIntro(p){
  const custom=String(p.description||'').trim();
