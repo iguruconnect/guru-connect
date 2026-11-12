@@ -1275,6 +1275,33 @@ body{background:#f3f6fc!important;color:#17345f!important}
   #catalogue .product-card .cardbody .product-name{font-size:11px!important}
   #catalogue .product-card .sell{font-size:17px!important}
 }
+
+/* Ensure every product card keeps its BUY NOW action visible */
+#catalogue .product-card,
+#catalogue .product-card.helpline-plan-card{
+  height:auto!important;min-height:230px!important;max-height:none!important;
+  overflow:visible!important;
+}
+#catalogue .product-card .cardbody{
+  height:auto!important;min-height:0!important;overflow:visible!important;
+  flex:1 1 auto!important;
+}
+#catalogue .product-card .buy,
+#catalogue .product-card button.buy{
+  display:block!important;visibility:visible!important;opacity:1!important;
+  position:static!important;flex:0 0 auto!important;
+  width:100%!important;height:auto!important;min-height:30px!important;
+  margin:5px 0 0!important;padding:7px 6px!important;
+  overflow:visible!important;white-space:normal!important;
+}
+@media(max-width:620px){
+  #catalogue .product-card,#catalogue .product-card.helpline-plan-card{
+    height:auto!important;min-height:230px!important;max-height:none!important;
+  }
+  #catalogue .product-card .buy,#catalogue .product-card button.buy{
+    min-height:30px!important;margin-top:5px!important;
+  }
+}
 </style></head><body>
 <div class="top"><div class="brand"><span class="brand-guru">GURU</span> <span class="brand-connect">CONNECT</span></div><div style="display:flex;align-items:center;gap:12px"><small>Learn • Connect • Grow</small><a href="/" style="color:#fff"><b>Home</b></a><span id="memberWelcome" class="member-chip hidden" aria-live="polite"></span><button id="logoutBtn" class="logout-btn hidden" type="button">LOG OUT</button><button class="cart-head" id="cartJump" type="button">🛒 CART <span class="cart-count" id="cartHeadCount">0</span></button></div></div>
 <header class="hero"><div class="wrap"><div class="eyebrow">THE GURU CONNECT STORE</div><h1>Discover. Choose.<br>Grow with us.</h1><p>Explore memberships, learning support and useful services in one place. Find the right option and buy securely through your GURU CONNECT member account.</p><div class="hero-tags"><span class="tag">✦ Curated services</span><span class="tag">✦ Clear pricing</span><span class="tag">✦ Secure UPI checkout</span></div></div></header>
