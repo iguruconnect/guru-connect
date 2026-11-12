@@ -1,0 +1,29 @@
+name: Read homepage profile tile styles
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-read-profile-tile-styles.yml"
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract exact profile tile snippets
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("index.html").read_text(encoding="utf-8")
+          terms=["Tutor Profile","Student Profile","TUTOR PROFILE","STUDENT PROFILE"]
+          for term in terms:
+            p=0; n=0
+            while n<6:
+              p=s.lower().find(term.lower(),p)
+              if p<0: break
+              print("\\n###",term,"OFFSET",p)
+              print(s[max(0,p-900):p+1100])
+              p+=len(term); n+=1
+          PY
