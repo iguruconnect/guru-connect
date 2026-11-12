@@ -1,0 +1,71 @@
+name: Restore product card look and update credit header only
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/gc-restore-product-card-look-header-only.yml"
+permissions:
+  contents: write
+  actions: write
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Restore original product card styling; keep header-only polish
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("buy-now/index.html")
+          s=p.read_text(encoding="utf-8")
+          start="/* Seamless, colour-matched credit-card product tile treatment */"
+          if start not in s:
+              raise SystemExit("Target styling marker not found; no changes made.")
+          a=s.index(start)
+          b=s.find("</style>",a)
+          if b<0: raise SystemExit("Style block end not found; no changes made.")
+          header_css = r"""
+          /* Header-only credit-card refinement; preserve the original product tile */
+          #catalogue .product-card .gc-card-brand{
+            margin:0!important;min-height:57px!important;padding:9px 13px!important;
+            border:0!important;border-radius:12px 12px 9px 9px!important;
+            background:linear-gradient(110deg,#b84b08 0%,#f47716 52%,#ff9a35 100%)!important;
+            box-shadow:inset 0 1px 0 #ffffff55,0 3px 8px #a9470020!important;
+            position:relative!important;overflow:hidden!important
+          }
+          #catalogue .product-card .gc-card-brand:after{
+            content:"";position:absolute;right:-25px;top:-67px;width:140px;height:140px;
+            border:1px solid #ffffff55;border-radius:50%;
+            box-shadow:0 0 0 10px #ffffff14,0 0 0 22px #ffffff0c;
+            pointer-events:none
+          }
+          #catalogue .product-card .gc-logo-disc{
+            background:linear-gradient(145deg,#fff,#fff4df)!important;
+            border:1px solid #ffffffb0!important;box-shadow:0 2px 7px #74300b40!important
+          }
+          #catalogue .product-card .gc-card-chip{
+            border-color:#fff0b0!important;
+            background:linear-gradient(135deg,#fff1b8,#c79b45 45%,#fff4c8 70%,#b88b36)!important;
+            box-shadow:inset 0 0 0 1px #ffffff90,0 2px 5px #74300b30!important
+          }
+          #catalogue .product-card .gc-card-chip:before,
+          #catalogue .product-card .gc-card-chip:after{background:#94702d!important}
+          @media(max-width:560px){
+            #catalogue .product-card .gc-card-brand{min-height:48px!important;padding:7px 9px!important}
+          }
+          """
+          s=s[:a]+header_css+"\n"+s[b:]
+          p.write_text(s,encoding="utf-8")
+          PY
+      - name: Commit restoration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add buy-now/index.html
+          git commit -m "Restore product card design and refine header only"
+          git push
