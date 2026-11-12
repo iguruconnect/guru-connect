@@ -1,0 +1,31 @@
+name: Inspect profile tile dimensions
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-inspect-profile-tile-size.yml"
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Find homepage Tutor and Student Profile tile markup and styles
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path("index.html").read_text(encoding="utf-8")
+          for term in ["Tutor Profile","Student Profile","TUTOR PROFILE","STUDENT PROFILE"]:
+            print("\\n###",term)
+            for m in list(re.finditer(re.escape(term),s,re.I))[:8]:
+              print("OFFSET",m.start())
+              print(s[max(0,m.start()-1400):m.start()+1600].replace("\\n"," ")[:3000])
+          print("\\n### likely tile CSS")
+          for m in re.finditer(r'[^{}]*(?:profile|tile|card)[^{}]*\\{[^{}]{0,600}\\}',s,re.I):
+            x=m.group(0)
+            if any(k in x.lower() for k in ["height","min-height","padding"]):
+              print(x[:900])
+          PY
