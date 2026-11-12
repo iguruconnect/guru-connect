@@ -1,0 +1,68 @@
+name: Keep BUY NOW only inside dropdown
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-dropdown-final-fix.yml"
+permissions:
+  contents: write
+jobs:
+  fix-dropdown:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Remove extra header button and verify dropdown item
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          before=s
+          # Remove the older script/style that injected a second BUY NOW link
+          # directly into the header navigation, outside the dropdown.
+          s=re.sub(r'<script\b(?=[^>]*\bid=["\']gc-buy-now-stable-menu["\'])[^>]*>[\s\S]*?</script>\s*','',s,flags=re.I)
+          s=re.sub(r'<style\b(?=[^>]*\bid=["\']gc-buy-now-stable-menu-style["\'])[^>]*>[\s\S]*?</style>\s*','',s,flags=re.I)
+          # Remove any leftover element created by that header-injection script.
+          s=re.sub(r'<a\b(?=[^>]*\bdata-gc-buy-now-stable(?:=["\'][^"\']*["\'])?)[^>]*>[\s\S]*?</a>\s*','',s,flags=re.I)
+          # Validate the real dropdown, not homepage content or the desktop header.
+          m=re.search(r'<nav\b(?=[^>]*\bid=["\']publicNavbarLinks["\'])[^>]*>([\s\S]*?)</nav>',s,flags=re.I)
+          if not m:
+              raise SystemExit("STOP: #publicNavbarLinks dropdown not found; no file committed.")
+          menu=m.group(1)
+          reg=re.search(r'<a\b(?=[^>]*href=["\'](?:/)?registration(?:/|\.html)?(?:["\'?#]))[^>]*>[\s\S]*?</a>',menu,flags=re.I)
+          buy=re.search(r'<a\b(?=[^>]*href=["\'](?:/)?buy-now/(?:["\'?#]))[^>]*>[\s\S]*?</a>',menu,flags=re.I)
+          if not reg:
+              raise SystemExit("STOP: Registration entry missing from dropdown; no file committed.")
+          if not buy:
+              # Insert immediately after Registration, in the same dropdown.
+              item='<a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-white bg-orange-500 hover:bg-orange-600 transition" href="/buy-now/" onclick="closeNavMenu()">BUY NOW</a>'
+              start,end=reg.span()
+              menu=menu[:end]+'\n'+item+menu[end:]
+              s=s[:m.start(1)]+menu+s[m.end(1):]
+          else:
+              # Keep one orange BUY NOW entry in the dropdown.
+              first=buy.group(0)
+              menu=re.sub(r'<a\b(?=[^>]*href=["\'](?:/)?buy-now/(?:["\'?#]))[^>]*>[\s\S]*?</a>','',menu,flags=re.I)
+              menu=re.sub(r'(</a>\s*)$',r'\1'+first,menu,count=1,flags=re.I)
+              s=s[:m.start(1)]+menu+s[m.end(1):]
+          if s!=before:
+              p.write_text(s,encoding="utf-8")
+          print("Verified: REGISTRATION and BUY NOW are inside #publicNavbarLinks. Removed the separate header-injection script/button.")
+          PY
+      - name: Commit focused dropdown fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "Dropdown already correct; no file changes needed."
+            exit 0
+          fi
+          git commit -m "Keep Buy Now in dropdown and remove extra header button"
+          git pull --rebase origin main
+          git push origin main
