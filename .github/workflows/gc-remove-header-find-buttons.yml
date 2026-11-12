@@ -1,0 +1,49 @@
+name: Remove Find Tutor and Find Student from header
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-remove-header-find-buttons.yml"
+permissions:
+  contents: write
+jobs:
+  remove-header-buttons:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Remove only the two header navigation links
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          m=re.search(r'<nav\b(?=[^>]*class=["\'][^"\']*gc-beautiful-nav[^"\']*["\'])[^>]*>([\s\S]*?)</nav>',s,re.I)
+          if not m: raise SystemExit("STOP: main header navigation not found; no edit made.")
+          nav=m.group(1)
+          patterns=[
+            r'<a\b(?=[^>]*href=["\']#tutors["\'])[^>]*>[\s\S]*?</a>\s*',
+            r'<a\b(?=[^>]*href=["\']#studentsDirectory["\'])[^>]*>[\s\S]*?</a>\s*'
+          ]
+          counts=[]
+          for pat in patterns:
+            nav,n=re.subn(pat,'',nav,count=1,flags=re.I)
+            counts.append(n)
+          if counts != [1,1]:
+            raise SystemExit(f"STOP: expected exactly one Find Tutor and one Find Student header link; found {counts}. No edit made.")
+          s=s[:m.start(1)]+nav+s[m.end(1):]
+          p.write_text(s,encoding="utf-8")
+          print("Removed Find Tutor and Find Student from the desktop header navigation only. Tutor/student sections and dropdown menu are untouched.")
+          PY
+      - name: Commit focused header cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Remove Find Tutor and Find Student from header"
+          git pull --rebase origin main
+          git push origin main
