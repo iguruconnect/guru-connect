@@ -1,0 +1,97 @@
+name: Clean header and add orange Buy Now beside hero search
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-clean-header-search.yml"
+permissions:
+  contents: write
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Apply focused homepage header and search changes
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          # Remove accidental literal backslash-n text introduced between the two header style blocks.
+          s=s.replace(r'</style>\n\n<style id="gc-restore-dropdown-menu-2026">','</style>\n\n<style id="gc-restore-dropdown-menu-2026">')
+          marker='gc-header-search-buy-now-cleanup-2026'
+          if marker not in s:
+              script = r"""
+          <script id="gc-header-search-buy-now-cleanup-2026">
+          (() => {
+            const clean = () => {
+              const header = document.querySelector('header.gc-beautiful-header') || document.querySelector('header');
+              if (header) {
+                header.querySelectorAll('a,button').forEach(el => {
+                  if (el.closest('#publicMenuWrapper')) return;
+                  const href = (el.getAttribute('href') || '').toLowerCase();
+                  const label = (el.textContent || '').replace(/\s+/g,' ').trim().toLowerCase();
+                  if (href.includes('buy-now') || href.includes('/registration') || /^(buy now|register|registration)$/.test(label)) {
+                    if (el.id !== 'publicMenuWrapper' && !el.classList.contains('gc-menu-button')) el.remove();
+                  }
+                });
+              }
+              const form = document.querySelector('#gc-mobile-hero-search form');
+              if (form && !form.querySelector('.gc-search-buy-now')) {
+                const link = document.createElement('a');
+                link.className = 'gc-search-buy-now';
+                link.href = '/buy-now/';
+                link.textContent = 'BUY NOW';
+                link.setAttribute('aria-label','Buy Now');
+                const searchButton = form.querySelector('button[type="submit"],button');
+                if (searchButton) searchButton.insertAdjacentElement('afterend', link);
+                else form.appendChild(link);
+              }
+            };
+            clean();
+            document.addEventListener('DOMContentLoaded', clean, {once:true});
+            window.addEventListener('load', clean, {once:true});
+            const header = document.querySelector('header');
+            if (header && window.MutationObserver) {
+              const observer = new MutationObserver(clean);
+              observer.observe(header,{childList:true,subtree:true});
+            }
+          })();
+          </script>
+          """
+              s=s.rstrip()+"\n\n"+script+"\n"
+          css_marker='gc-search-buy-now-button-style-2026'
+          if css_marker not in s:
+              css = r"""
+          <style id="gc-search-buy-now-button-style-2026">
+          #gc-mobile-hero-search .gc-search-buy-now{
+            display:inline-flex!important;align-items:center!important;justify-content:center!important;
+            flex:0 0 auto!important;min-width:86px!important;height:43px!important;padding:0 13px!important;
+            border:0!important;border-radius:10px!important;background:linear-gradient(135deg,#ff9a00,#f97316,#e65c00)!important;
+            color:#fff!important;-webkit-text-fill-color:#fff!important;font:900 12px/1 Roboto,Arial,sans-serif!important;
+            text-decoration:none!important;white-space:nowrap!important;box-shadow:0 4px 10px rgba(230,92,0,.24)!important;
+          }
+          #gc-mobile-hero-search .gc-search-buy-now:hover{filter:brightness(.95)}
+          @media(max-width:380px){#gc-mobile-hero-search .gc-search-buy-now{min-width:74px!important;padding:0 9px!important;font-size:11px!important}}
+          </style>
+          """
+              i=s.lower().find('</head>')
+              if i<0: raise SystemExit('No closing head tag; refusing CSS insertion.')
+              s=s[:i]+css+'\n'+s[i:]
+          if 'id="gc-mobile-hero-search"' not in s:
+              raise SystemExit('Expected mobile hero search bar not found; no safe search-button change.')
+          p.write_text(s,encoding='utf-8')
+          print('Removed Buy Now/Registration from the header navigation, preserved dropdown contents, added orange Buy Now beside hero search, and cleaned the accidental header text.')
+          PY
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+          else
+            git commit -m "Move Buy Now from header to homepage search bar"
+            git push
+          fi
