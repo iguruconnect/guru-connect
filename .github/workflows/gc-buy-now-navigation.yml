@@ -14,7 +14,7 @@ jobs:
         with:
           ref: main
           fetch-depth: 0
-      - name: Add Buy Now as a real menu item
+      - name: Add Buy Now to desktop and mobile navigation
         shell: bash
         run: |
           python - <<'PY'
@@ -22,36 +22,64 @@ jobs:
           import re
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-          marker = "GC_BUY_NOW_PUBLIC_MENU_V10_20261111"
+          marker = "GC_BUY_NOW_PUBLIC_MENU_V11_20261112"
           if marker not in s:
               script = r"""
-          <style id="gc-buy-now-public-menu-v10-style">
-          a[data-gc-buy-now-menu] { display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:9px 15px!important;margin:4px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important; }
+          <style id="gc-buy-now-public-menu-v11-style">
+          a[data-gc-buy-now-menu] { display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:10px 16px!important;margin:5px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important; }
           </style>
-          <script id="gc-buy-now-public-menu-v10">
-          /* GC_BUY_NOW_PUBLIC_MENU_V10_20261111 */
+          <script id="gc-buy-now-public-menu-v11">
+          /* GC_BUY_NOW_PUBLIC_MENU_V11_20261112 */
           (() => {
+            const selectors = ['#mobileMenu','#mobile-menu','#mobileNav','#mobile-nav','.mobile-menu','.mobile-nav','.nav-menu','.nav-links','.menu-dropdown','.dropdown-menu','.nav-dropdown','[class*="mobile-menu"]','[class*="nav-menu"]'];
+            const makeLink = () => {
+              const a = document.createElement('a');
+              a.href = '/buy-now/';
+              a.textContent = 'BUY NOW';
+              a.setAttribute('data-gc-buy-now-menu','true');
+              a.setAttribute('aria-label','Buy Now');
+              return a;
+            };
+            const styleLink = a => {
+              a.href = '/buy-now/';
+              a.textContent = 'BUY NOW';
+              a.setAttribute('data-gc-buy-now-menu','true');
+              a.setAttribute('aria-label','Buy Now');
+              a.style.cssText = 'display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:10px 16px!important;margin:5px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important;';
+            };
             const install = () => {
               const header = document.querySelector('header') || document.body;
               const nav = header.querySelector('nav') || document.querySelector('nav') || header.querySelector('[role="navigation"]') || document.querySelector('[role="navigation"]') || header;
-              const matches = Array.from(header.querySelectorAll('a,button')).filter(el => /buy\s*now/i.test((el.textContent || '').trim()) || /buy-now/i.test(el.getAttribute('href') || '') || el.hasAttribute('data-gc-buy-now-menu'));
-              let link = matches.find(el => el.tagName === 'A' && /buy-now/i.test(el.getAttribute('href') || '')) || null;
-              for (const el of matches) if (el !== link) el.remove();
-              if (!link) link = document.createElement('a');
-              link.href = '/buy-now/';
-              link.textContent = 'BUY NOW';
-              link.setAttribute('data-gc-buy-now-menu','true');
-              link.style.cssText = 'display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:9px 15px!important;margin:4px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important;';
-              if (link.parentElement !== nav) nav.appendChild(link);
+              const all = Array.from(document.querySelectorAll('a[data-gc-buy-now-menu]'));
+              let desktop = all.find(a => nav.contains(a)) || Array.from(header.querySelectorAll('a')).find(a => /buy-now/i.test(a.getAttribute('href') || '')) || null;
+              if (!desktop) desktop = makeLink();
+              styleLink(desktop);
+              if (desktop.parentElement !== nav) nav.appendChild(desktop);
+              for (const el of Array.from(header.querySelectorAll('a,button'))) {
+                if (el !== desktop && (/buy\s*now/i.test((el.textContent || '').trim()) || /buy-now/i.test(el.getAttribute('href') || '') || el.hasAttribute('data-gc-buy-now-menu'))) el.remove();
+              }
+              const mobileContainers = new Set();
+              for (const selector of selectors) {
+                document.querySelectorAll(selector).forEach(el => {
+                  if (el !== nav && !el.contains(desktop) && !desktop.contains(el)) mobileContainers.add(el);
+                });
+              }
+              mobileContainers.forEach(container => {
+                let item = container.querySelector('a[data-gc-buy-now-menu],a[href*="buy-now"]');
+                if (!item) item = makeLink();
+                styleLink(item);
+                if (item.parentElement !== container) container.appendChild(item);
+              });
             };
             if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, {once:true});
             else install();
+            window.addEventListener('load', install, {once:true});
           })();
           </script>
           """
               if not re.search(r"</body\s*>", s, re.I):
                   raise SystemExit("STOP: closing body tag not found; no changes made.")
-              s = re.sub(r"</body\s*>", lambda m: script + "\n" + m.group(0), s, count=1, flags=re.I)
+              s = re.sub(r"</body\s*>", lambda m: script + "\\n" + m.group(0), s, count=1, flags=re.I)
               p.write_text(s, encoding="utf-8")
           PY
       - name: Commit and push homepage menu integration
@@ -63,6 +91,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git commit -m "Place Buy Now directly in public navigation menu"
+          git commit -m "Add Buy Now to mobile and desktop navigation"
           git pull --rebase origin main
           git push origin main
