@@ -1,0 +1,29 @@
+name: Inspect homepage header and search area
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-inspect-header-search.yml"
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect relevant homepage markup
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          s=Path("index.html").read_text(encoding="utf-8")
+          lines=s.splitlines()
+          print("TOTAL LINES",len(lines))
+          for i,line in enumerate(lines):
+              low=line.lower()
+              if any(x in low for x in ["gc-header-brand-buy-now-only-2026","gc-restore-dropdown-menu-2026","search bar","searchbar","search-bar","id=\"search","register","buy now"]):
+                  print(f"\\n--- LINE {i+1} ---")
+                  print("\\n".join(f"{j+1}: {lines[j]}" for j in range(max(0,i-5),min(len(lines),i+9))))
+          print("\\n--- FIRST 100 LINES ---")
+          print("\\n".join(f"{i+1}: {x}" for i,x in enumerate(lines[:100])))
+          PY
