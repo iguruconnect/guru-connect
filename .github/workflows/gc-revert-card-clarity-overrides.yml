@@ -1,0 +1,43 @@
+name: Revert latest Buy Now card layout override
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/gc-revert-card-clarity-overrides.yml"
+permissions:
+  contents: write
+  actions: write
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  revert:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove only the latest card clarity override
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("buy-now/index.html")
+          s=p.read_text(encoding="utf-8")
+          marker="/* Clear product cards: prevent clipped text, images and controls */"
+          if marker not in s:
+              raise SystemExit("Latest clarity override not found; no changes made.")
+          start=s.index(marker)
+          end=s.find("</style>", start)
+          if end < 0:
+              raise SystemExit("Closing style tag not found; no changes made.")
+          s=s[:start]+s[end:]
+          p.write_text(s,encoding="utf-8")
+          print("Removed only the latest clarity/layout override. Previous card styling preserved.")
+          PY
+      - name: Commit rollback
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add buy-now/index.html
+          git commit -m "Revert latest Buy Now card layout override"
+          git push
