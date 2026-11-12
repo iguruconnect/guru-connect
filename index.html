@@ -17546,7 +17546,59 @@ a[data-gc-buy-now-stable]{
 })();
 </script>
 
-</body>
+
+<style id="gc-buy-now-public-menu-v11-style">
+a[data-gc-buy-now-menu] { display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:10px 16px!important;margin:5px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important; }
+</style>
+<script id="gc-buy-now-public-menu-v11">
+/* GC_BUY_NOW_PUBLIC_MENU_V11_20261112 */
+(() => {
+  const selectors = ['#mobileMenu','#mobile-menu','#mobileNav','#mobile-nav','.mobile-menu','.mobile-nav','.nav-menu','.nav-links','.menu-dropdown','.dropdown-menu','.nav-dropdown','[class*="mobile-menu"]','[class*="nav-menu"]'];
+  const makeLink = () => {
+    const a = document.createElement('a');
+    a.href = '/buy-now/';
+    a.textContent = 'BUY NOW';
+    a.setAttribute('data-gc-buy-now-menu','true');
+    a.setAttribute('aria-label','Buy Now');
+    return a;
+  };
+  const styleLink = a => {
+    a.href = '/buy-now/';
+    a.textContent = 'BUY NOW';
+    a.setAttribute('data-gc-buy-now-menu','true');
+    a.setAttribute('aria-label','Buy Now');
+    a.style.cssText = 'display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:10px 16px!important;margin:5px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important;';
+  };
+  const install = () => {
+    const header = document.querySelector('header') || document.body;
+    const nav = header.querySelector('nav') || document.querySelector('nav') || header.querySelector('[role="navigation"]') || document.querySelector('[role="navigation"]') || header;
+    const all = Array.from(document.querySelectorAll('a[data-gc-buy-now-menu]'));
+    let desktop = all.find(a => nav.contains(a)) || Array.from(header.querySelectorAll('a')).find(a => /buy-now/i.test(a.getAttribute('href') || '')) || null;
+    if (!desktop) desktop = makeLink();
+    styleLink(desktop);
+    if (desktop.parentElement !== nav) nav.appendChild(desktop);
+    for (const el of Array.from(header.querySelectorAll('a,button'))) {
+      if (el !== desktop && (/buy\s*now/i.test((el.textContent || '').trim()) || /buy-now/i.test(el.getAttribute('href') || '') || el.hasAttribute('data-gc-buy-now-menu'))) el.remove();
+    }
+    const mobileContainers = new Set();
+    for (const selector of selectors) {
+      document.querySelectorAll(selector).forEach(el => {
+        if (el !== nav && !el.contains(desktop) && !desktop.contains(el)) mobileContainers.add(el);
+      });
+    }
+    mobileContainers.forEach(container => {
+      let item = container.querySelector('a[data-gc-buy-now-menu],a[href*="buy-now"]');
+      if (!item) item = makeLink();
+      styleLink(item);
+      if (item.parentElement !== container) container.appendChild(item);
+    });
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', install, {once:true});
+  else install();
+  window.addEventListener('load', install, {once:true});
+})();
+</script>
+\n</body>
 </html>
 
 <!-- gc-mobile-orange-hero-persistent-final-20261105: final mobile-only override; desktop artwork remains unchanged -->
