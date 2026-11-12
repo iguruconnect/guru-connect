@@ -532,6 +532,84 @@ body{background:#f3f6fc!important;color:#17345f!important}
   #catalogue .product-card .sell{font-size:15px!important}
   #catalogue .product-card .buy{font-size:9px!important;min-height:27px!important;height:27px!important;max-height:27px!important}
 }
+
+/* Seamless, colour-matched credit-card product tile treatment */
+#catalogue .product-card{
+  --cc:#f47716;--cc-dark:#a83d08;--cc-light:#ffe3c5;--cc-glow:#fff2e4;
+  padding:0!important;gap:0!important;overflow:hidden!important;
+  border:1px solid color-mix(in srgb,var(--cc) 48%,white)!important;
+  border-radius:17px!important;
+  background:linear-gradient(145deg,var(--cc-glow),#fff 58%,var(--cc-light))!important;
+  box-shadow:0 7px 19px color-mix(in srgb,var(--cc) 17%,transparent),inset 0 1px 0 #ffffff!important;
+  position:relative!important;isolation:isolate!important
+}
+#catalogue .product-card:nth-child(5n+1){--cc:#f47716;--cc-dark:#9b3c08;--cc-light:#ffd5ae;--cc-glow:#fff0e2}
+#catalogue .product-card:nth-child(5n+2){--cc:#2874e8;--cc-dark:#123d91;--cc-light:#c9e0ff;--cc-glow:#eaf3ff}
+#catalogue .product-card:nth-child(5n+3){--cc:#08a69a;--cc-dark:#075f62;--cc-light:#b9eee3;--cc-glow:#e5fbf5}
+#catalogue .product-card:nth-child(5n+4){--cc:#7954d8;--cc-dark:#45258f;--cc-light:#d9caff;--cc-glow:#f1ecff}
+#catalogue .product-card:nth-child(5n){--cc:#df438e;--cc-dark:#8e2059;--cc-light:#ffc9e1;--cc-glow:#fff0f7}
+#catalogue .product-card:before{
+  content:"";position:absolute;inset:0 0 auto;height:4px!important;z-index:4;
+  background:linear-gradient(90deg,var(--cc-dark),var(--cc),#fff7d2,var(--cc))!important
+}
+#catalogue .product-card .gc-card-brand{
+  margin:0!important;min-height:57px!important;padding:9px 13px!important;
+  border:0!important;border-radius:0!important;
+  background:linear-gradient(112deg,var(--cc-dark),var(--cc) 58%,color-mix(in srgb,var(--cc) 66%,white))!important;
+  box-shadow:inset 0 -1px 0 #ffffff30!important;position:relative!important;overflow:hidden!important
+}
+#catalogue .product-card .gc-card-brand:after{
+  content:"";position:absolute;right:-23px;top:-67px;width:145px;height:145px;
+  border:1px solid #ffffff55;border-radius:50%;
+  box-shadow:0 0 0 10px #ffffff12,0 0 0 22px #ffffff0c,0 0 0 35px #ffffff08;
+  pointer-events:none
+}
+#catalogue .product-card .gc-logo-disc{
+  background:linear-gradient(145deg,#ffffff,#fff4df)!important;
+  border:1px solid #ffffffb0!important;box-shadow:0 2px 7px #14265335!important
+}
+#catalogue .product-card .gc-card-chip{
+  border-color:#fff0b0!important;
+  background:linear-gradient(135deg,#fff1b8,#c79b45 45%,#fff4c8 70%,#b88b36)!important;
+  box-shadow:inset 0 0 0 1px #ffffff90,0 2px 5px #14265330!important
+}
+#catalogue .product-card .gc-card-chip:before,
+#catalogue .product-card .gc-card-chip:after{background:#94702d!important}
+#catalogue .product-card .photo{
+  margin:0!important;border:0!important;border-radius:0!important;
+  border-bottom:1px solid color-mix(in srgb,var(--cc) 22%,white)!important;
+  background:linear-gradient(135deg,var(--cc-light),#fff 56%,var(--cc-glow))!important;
+  box-shadow:inset 0 0 24px color-mix(in srgb,var(--cc) 10%,transparent)!important
+}
+#catalogue .product-card .photo:before{
+  background:radial-gradient(circle,#ffffffa8 0 38%,transparent 40%)!important;
+  opacity:.65!important
+}
+#catalogue .product-card .cardbody{
+  padding:13px 14px 14px!important;background:linear-gradient(145deg,#ffffffd9,#fff 62%,var(--cc-glow))!important
+}
+#catalogue .product-card .category{color:var(--cc-dark)!important}
+#catalogue .product-card .category-icon{
+  background:color-mix(in srgb,var(--cc) 13%,white)!important;
+  border:1px solid color-mix(in srgb,var(--cc) 28%,white)!important
+}
+#catalogue .product-card h3,#catalogue .product-card .product-name{color:var(--cc-dark)!important}
+#catalogue .product-card .desc{
+  background:color-mix(in srgb,var(--cc) 6%,white)!important;
+  border-color:color-mix(in srgb,var(--cc) 22%,white)!important
+}
+#catalogue .product-card .prices{border-color:color-mix(in srgb,var(--cc) 28%,white)!important}
+#catalogue .product-card .sell{color:var(--cc-dark)!important}
+#catalogue .product-card .buy{
+  background:linear-gradient(105deg,var(--cc-dark),var(--cc) 62%,color-mix(in srgb,var(--cc) 68%,white))!important;
+  box-shadow:0 4px 10px color-mix(in srgb,var(--cc) 25%,transparent)!important
+}
+#catalogue .product-card .buy:hover{filter:brightness(1.07)!important}
+@media(max-width:560px){
+  #catalogue .product-card .gc-card-brand{min-height:48px!important;padding:7px 9px!important}
+  #catalogue .product-card .cardbody{padding:10px!important}
+}
+
 </style></head><body>
 <div class="top"><div class="brand">GURU CONNECT</div><div style="display:flex;align-items:center;gap:12px"><small>Learn • Connect • Grow</small><a href="/" style="color:#fff"><b>Home</b></a><span id="memberWelcome" class="member-chip hidden" aria-live="polite"></span><button id="logoutBtn" class="logout-btn hidden" type="button">LOG OUT</button><button class="cart-head" id="cartJump" type="button">🛒 CART <span class="cart-count" id="cartHeadCount">0</span></button></div></div>
 <header class="hero"><div class="wrap"><div class="eyebrow">THE GURU CONNECT STORE</div><h1>Discover. Choose.<br>Grow with us.</h1><p>Explore memberships, learning support and useful services in one place. Find the right option and buy securely through your GURU CONNECT member account.</p><div class="hero-tags"><span class="tag">✦ Curated services</span><span class="tag">✦ Clear pricing</span><span class="tag">✦ Secure UPI checkout</span></div></div></header>
