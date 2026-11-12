@@ -1,0 +1,65 @@
+name: Set website menu order
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-set-menu-order.yml"
+permissions:
+  contents: write
+jobs:
+  set-menu-order:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Set the same eight-item order in desktop navigation and dropdown
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path("index.html")
+          s=p.read_text(encoding="utf-8")
+          desktop = '''
+          <a class="gc-beautiful-home" href="#home">Home</a>
+          <a href="about.html">About Us</a>
+          <a href="join-us.html">Join Us</a>
+          <a href="helpline.html">Helpline Service Plans</a>
+          <a href="/registration/">Registration</a>
+          <a href="/contactus/">Contact Us</a>
+          <a href="/buy-now/">Buy Now</a>
+          <a href="javascript:void(0)" onclick="openLoginModal()">Login</a>
+          '''
+          dropdown = '''
+          <a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition" href="#home" onclick="closeNavMenu()">HOME</a>
+          <a class="gc-menu-yellow-item" href="about.html" onclick="closeNavMenu()">ABOUT US</a>
+          <a class="gc-menu-yellow-item" href="join-us.html" onclick="closeNavMenu()">JOIN US</a>
+          <a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition" href="helpline.html" onclick="closeNavMenu()">HELPLINE SERVICE PLANS</a>
+          <a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-emerald-700 hover:bg-emerald-600 hover:text-white transition" href="/registration/" onclick="closeNavMenu()">REGISTRATION</a>
+          <a class="gc-menu-yellow-item" href="/contactus/" onclick="closeNavMenu()">CONTACT US</a>
+          <a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-white bg-orange-500 hover:bg-orange-600 transition" href="/buy-now/" onclick="closeNavMenu()">BUY NOW</a>
+          <div class="gc-menu-divider"></div>
+          <a class="gc-final-single-login bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 text-[11px] sm:text-sm font-black rounded-xl transition" href="javascript:void(0)" id="gcFinalMenuLogin" onclick="closeNavMenu();openLoginModal()">🔐 LOGIN</a>
+          '''
+          patterns = [
+            (r'(<nav\\b(?=[^>]*class=["\\'][^"\\']*gc-beautiful-nav[^"\\']*["\\'])[^>]*>)([\\s\\S]*?)(</nav>)', desktop, "desktop navigation"),
+            (r'(<nav\\b(?=[^>]*id=["\\']publicNavbarLinks["\\'])[^>]*>)([\\s\\S]*?)(</nav>)', dropdown, "dropdown menu")
+          ]
+          for pat, replacement, label in patterns:
+            s2,n=re.subn(pat,lambda m:m.group(1)+replacement+m.group(3),s,count=1,flags=re.I)
+            if n != 1:
+              raise SystemExit(f"STOP: expected exactly one {label}; found {n}. No changes written.")
+            s=s2
+          p.write_text(s,encoding="utf-8")
+          print("Updated desktop navigation and dropdown to the requested eight items in order. Learning Requests remains available through its page; only its menu entry was removed.")
+          PY
+      - name: Commit menu order
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Set website navigation menu order"
+          git pull --rebase origin main
+          git push origin main
