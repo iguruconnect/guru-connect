@@ -1,0 +1,23 @@
+name: Extract homepage tile sizing
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-extract-home-tile-size.yml"
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print tile style and actual tile markup
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("index.html").read_text(encoding="utf-8")
+          for term in ['.gc-home-tile{','#homeActionTiles .gc-home-tile','id="homeActionTiles"']:
+            p=s.find(term)
+            print("\\nTERM",term,"OFFSET",p)
+            if p>=0: print(s[max(0,p-1200):p+4000])
+          PY
