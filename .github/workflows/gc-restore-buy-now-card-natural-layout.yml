@@ -1,0 +1,55 @@
+name: Restore Buy Now cards to clear natural-height orange layout
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/gc-restore-buy-now-card-natural-layout.yml"
+permissions:
+  contents: write
+  actions: write
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Remove fixed-height clipping and later card recolouring
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("buy-now/index.html")
+          s=p.read_text(encoding="utf-8")
+          # Remove the yellow/blue overrides that recoloured product cards,
+          # leaving the existing page theme and original orange LRR card rules.
+          theme="/* Yellow and blue marketplace theme with colourful individual product icon tiles */"
+          if theme not in s: raise SystemExit("Expected marketplace theme section not found.")
+          a=s.index(theme)
+          b=s.index("/* Product tiles match the 255px homepage Tutor Profile / Student Profile tile height */",a)
+          section=s[a:b]
+          start=section.find("#catalogue .product-card{")
+          if start<0: raise SystemExit("Card recolour rules not found.")
+          end=section.find("@media(max-width:620px){#catalogue .product-card{background:#fffdf3!important}}",start)
+          if end<0: raise SystemExit("End of card recolour rules not found.")
+          end += len("@media(max-width:620px){#catalogue .product-card{background:#fffdf3!important}}")
+          section=section[:start]+section[end:]
+          s=s[:a]+section+s[b:]
+          # Remove the fixed 255px height/overflow rules responsible for clipping.
+          fixed="/* Product tiles match the 255px homepage Tutor Profile / Student Profile tile height */"
+          if fixed not in s: raise SystemExit("Fixed-height card rules not found.")
+          a=s.index(fixed)
+          b=s.index("/* Header-only credit-card refinement; preserve the original product tile */",a)
+          s=s[:a]+s[b:]
+          p.write_text(s,encoding="utf-8")
+          print("Restored original fluid orange product-card styling; removed fixed height and clipping only. Credit-card header styling retained.")
+          PY
+      - name: Commit restored card layout
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add buy-now/index.html
+          git commit -m "Restore clear natural-height Buy Now product cards"
+          git push
