@@ -1,0 +1,36 @@
+name: Inspect header Find Tutor and Find Student buttons
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/gc-inspect-header-find-buttons.yml"
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Print matching header controls and structure
+        run: |
+          python - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          class P(HTMLParser):
+              def __init__(self): super().__init__(); self.stack=[]; self.capture=None
+              def handle_starttag(self,tag,attrs):
+                  a=dict(attrs); x={'tag':tag,'id':a.get('id',''),'class':a.get('class',''),'href':a.get('href',''),'aria':a.get('aria-label','')}
+                  self.stack.append(x)
+                  if tag in ('a','button'): self.capture={'x':x,'text':'','anc':self.stack[-6:-1]}
+              def handle_data(self,d):
+                  if self.capture is not None:self.capture['text']+=d
+              def handle_endtag(self,tag):
+                  if self.capture and self.capture['x']['tag']==tag:
+                      z=self.capture;t=' '.join(z['text'].split())
+                      if any(k in t.lower() for k in ('find tutor','find student')):
+                          print('MATCH',repr(t),z['x'],'ANCESTORS',z['anc'])
+                      self.capture=None
+                  for i in range(len(self.stack)-1,-1,-1):
+                      if self.stack[i]['tag']==tag:self.stack=self.stack[:i];break
+          p=P();p.feed(Path('index.html').read_text(encoding='utf-8'))
+          PY
