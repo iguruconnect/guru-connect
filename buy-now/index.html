@@ -475,6 +475,56 @@ body{background:#f3f6fc!important;color:#17345f!important}
 #catalogue .product-card .desc:hover{border-color:#f47716!important;box-shadow:0 2px 8px #b84b0818!important}
 #catalogue .product-card .desc:focus-visible{outline:3px solid #174b9b!important;outline-offset:2px!important}
 
+
+
+/* Compact portrait credit-card style product tiles */
+#catalogue.grid{
+  grid-template-columns:repeat(auto-fill,minmax(205px,1fr))!important;
+  gap:14px!important;
+}
+#catalogue .product-card{
+  min-width:0!important;
+  border-radius:14px!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+#catalogue .product-card .photo{
+  height:132px!important;
+  min-height:132px!important;
+  flex:0 0 132px!important;
+  padding:7px!important;
+}
+#catalogue .product-card .cardbody{
+  padding:12px!important;
+  gap:2px!important;
+}
+#catalogue .product-card h3{margin:5px 0!important;line-height:1.25!important}
+#catalogue .product-card .product-name{font-size:15px!important;line-height:1.25!important}
+#catalogue .product-card .desc{
+  min-height:0!important;
+  max-height:none!important;
+  display:-webkit-box!important;
+  -webkit-box-orient:vertical!important;
+  -webkit-line-clamp:2!important;
+  overflow:hidden!important;
+  line-height:1.4!important;
+  font-size:11px!important;
+  margin:4px 0!important;
+  cursor:pointer!important;
+}
+#catalogue .product-card .prices{margin:7px 0 3px!important;gap:6px!important}
+#catalogue .product-card .sell{font-size:21px!important}
+#catalogue .product-card .valid{margin:2px 0 8px!important;font-size:10px!important}
+#catalogue .product-card .buy{padding:10px!important;min-height:39px!important;margin-top:auto!important}
+@media(max-width:620px){
+  #catalogue.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}
+  #catalogue .product-card .photo{height:112px!important;min-height:112px!important;flex-basis:112px!important}
+  #catalogue .product-card .cardbody{padding:9px!important}
+  #catalogue .product-card .product-name{font-size:13px!important}
+  #catalogue .product-card .desc{font-size:10px!important}
+  #catalogue .product-card .sell{font-size:18px!important}
+}
+
 </style></head><body>
 <div class="top"><div class="brand">GURU CONNECT</div><div style="display:flex;align-items:center;gap:12px"><small>Learn • Connect • Grow</small><a href="/" style="color:#fff"><b>Home</b></a><span id="memberWelcome" class="member-chip hidden" aria-live="polite"></span><button id="logoutBtn" class="logout-btn hidden" type="button">LOG OUT</button><button class="cart-head" id="cartJump" type="button">🛒 CART <span class="cart-count" id="cartHeadCount">0</span></button></div></div>
 <header class="hero"><div class="wrap"><div class="eyebrow">THE GURU CONNECT STORE</div><h1>Discover. Choose.<br>Grow with us.</h1><p>Explore memberships, learning support and useful services in one place. Find the right option and buy securely through your GURU CONNECT member account.</p><div class="hero-tags"><span class="tag">✦ Curated services</span><span class="tag">✦ Clear pricing</span><span class="tag">✦ Secure UPI checkout</span></div></div></header>
