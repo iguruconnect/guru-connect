@@ -388,6 +388,27 @@ body{background:linear-gradient(180deg,#f4f7ff 0,#fff9f1 42%,#f5fbff 100%)}
 #catalogue .product-card .buy{width:100%!important;min-height:44px!important;margin-top:auto!important;border:0!important;border-radius:10px!important;background:linear-gradient(100deg,#f36b0a,#ff8a18)!important;color:#fff!important;font-size:13px!important;font-weight:950!important;box-shadow:0 3px 8px #c4512633!important}
 @media(max-width:560px){#catalogue.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}#catalogue .product-card{padding:9px!important;border-radius:14px!important}#catalogue .product-card .product-name{font-size:15px!important}#catalogue .product-card .desc{font-size:11px!important;padding:7px!important}#catalogue .product-card .sell{font-size:18px!important}}
 
+
+/* Unified LRR orange theme: consistent product avatars and top member strip */
+#catalogue .product-card .gc-card-brand{
+ background:linear-gradient(110deg,#e85d0b 0%,#f47721 52%,#ff9a45 100%)!important;
+ border:1px solid #f6a36e!important;
+ color:#fff!important;
+ box-shadow:inset 0 1px 0 #ffffff45,0 3px 8px #b84b1730!important;
+}
+#catalogue .product-card .gc-brand-copy b{color:#fff!important}
+#catalogue .product-card .gc-brand-copy small{color:#fff0df!important}
+#catalogue .product-card .gc-card-chip{
+ background:linear-gradient(135deg,#fff0df,#ffc18f 52%,#ffe4c8)!important;
+ border-color:#fff0df!important;
+}
+#catalogue .product-card .gc-card-chip:before,
+#catalogue .product-card .gc-card-chip:after{background:#d86a28!important}
+#catalogue .product-card .photo{
+ background:linear-gradient(145deg,#fff0e3,#ffe0c5)!important;
+ border-color:#f6b17e!important;
+}
+#catalogue .product-card .photo .unique-art{filter:drop-shadow(0 3px 5px #9a4b1b18)}
 </style></head><body>
 <div class="top"><div class="brand">GURU CONNECT</div><div style="display:flex;align-items:center;gap:12px"><small>Learn • Connect • Grow</small><a href="/" style="color:#fff"><b>Home</b></a><span id="memberWelcome" class="member-chip hidden" aria-live="polite"></span><button id="logoutBtn" class="logout-btn hidden" type="button">LOG OUT</button><button class="cart-head" id="cartJump" type="button">🛒 CART <span class="cart-count" id="cartHeadCount">0</span></button></div></div>
 <header class="hero"><div class="wrap"><div class="eyebrow">THE GURU CONNECT STORE</div><h1>Discover. Choose.<br>Grow with us.</h1><p>Explore memberships, learning support and useful services in one place. Find the right option and buy securely through your GURU CONNECT member account.</p><div class="hero-tags"><span class="tag">✦ Curated services</span><span class="tag">✦ Clear pricing</span><span class="tag">✦ Secure UPI checkout</span></div></div></header>
@@ -410,34 +431,19 @@ function icon(p){if(p.category==='verification')return '<svg class="verified-pro
  const title=String(p.title||'GURU CONNECT').trim();
  const cat=String(p.category||'service').toLowerCase(),n=title.toLowerCase();
  let h=0;for(let i=0;i<title.length;i++)h=(h*33+title.charCodeAt(i))>>>0;
- // Bright, clear retail colours; each product gets a repeatable colour pair.
- const palettes=[
-  ['#FF3030','#FFE2E2'], // red
-  ['#FF7A00','#FFE8CF'], // orange
-  ['#16A34A','#DDFBE7'], // green
-  ['#2563EB','#DFE9FF'], // blue
-  ['#8B3DCE','#F0E1FF'], // purple
-  ['#7C3AED','#EAE2FF'], // violet
-  ['#D81B80','#FFE0F1'], // magenta
-  ['#E5B800','#FFF5B8'], // yellow
-  ['#20A7E8','#DDF4FF'], // sky blue
-  ['#159E8C','#D9F8F1'], // sea green
-  ['#F04478','#FFE1E9'], // rose
-  ['#00A6A6','#D9FAFA'], // turquoise
-  ['#E34B2F','#FFE3D9'], // coral
-  ['#557A26','#EAF5D7']  // leaf green
- ];
+ // One consistent LRR-style orange family; product identity comes from its own icon.
+ const palettes=[['#F47721','#FFF0E3'],['#E96816','#FFE8D5'],['#FF8A35','#FFF3E8'],['#D95B12','#FCE6D5']];
  const pal=palettes[h%palettes.length],ink=pal[0],bg=pal[1];
  let icon='✦';
  if(cat==='helpline'||/help|support|helpline|assistance/.test(n))icon=['☎','🎧','✆','💬'][h%4];
- else if(cat==='verification'||/verif|verified|identity|badge/.test(n))icon=['✓','♙','★','◆'][h%4];
+ else if(cat==='verification'||/verif|verified|identity|badge/.test(n))icon=['✓','🛡','★','♙'][h%4];
  else if(cat==='membership'||/member|premium|prime|plan|subscription/.test(n))icon=['♛','★','◆','✧'][h%4];
  else if(cat==='book'||/book|notes|study|guide|textbook/.test(n))icon=['▤','▥','✎','▣'][h%4];
  else if(/course|class|lesson|tuition|learning|education/.test(n)||cat==='course')icon=['🎓','✏','▤','★'][h%4];
  else if(/consult|mentor|tutor|expert/.test(n))icon=['♟','◉','✦','▣'][h%4];
  else icon=['✦','◆','★','●','✚','✧','◈','⬟'][h%8];
  const fontSize=title.length>34?17:title.length>25?20:title.length>17?23:27;
- return '<svg class="unique-art" viewBox="0 0 420 260" role="img" aria-label="'+esc(title)+' product image"><rect width="420" height="260" rx="16" fill="'+bg+'"/><circle cx="210" cy="94" r="67" fill="'+ink+'" opacity=".18"/><circle cx="210" cy="94" r="52" fill="'+ink+'"/><text x="210" y="116" text-anchor="middle" font-size="68" font-family="Arial,sans-serif" fill="#fff">'+icon+'</text><rect x="18" y="169" width="384" height="58" rx="9" fill="'+ink+'"/><text x="210" y="205" text-anchor="middle" fill="#fff" font-size="'+fontSize+'" font-family="Arial,Helvetica,sans-serif" font-weight="700">'+esc(title)+'</text><text x="210" y="247" text-anchor="middle" fill="'+ink+'" opacity=".85" font-size="10" font-family="Arial,Helvetica,sans-serif" letter-spacing="2">GURU CONNECT</text></svg>';
+ return '<svg class="unique-art" viewBox="0 0 420 260" role="img" aria-label="'+esc(title)+' product image"><rect width="420" height="260" rx="16" fill="'+bg+'"/><circle cx="210" cy="94" r="72" fill="#fff" opacity=".72"/><circle cx="210" cy="94" r="57" fill="'+ink+'"/><text x="210" y="116" text-anchor="middle" font-size="68" font-family="Arial,sans-serif" fill="#fff">'+icon+'</text><rect x="18" y="169" width="384" height="58" rx="9" fill="'+ink+'"/><text x="210" y="205" text-anchor="middle" fill="#fff" font-size="'+fontSize+'" font-family="Arial,Helvetica,sans-serif" font-weight="700">'+esc(title)+'</text><text x="210" y="247" text-anchor="middle" fill="'+ink+'" opacity=".85" font-size="10" font-family="Arial,Helvetica,sans-serif" letter-spacing="2">GURU CONNECT</text></svg>';
 }
 function productIntro(p){
  const custom=String(p.description||'').trim();
