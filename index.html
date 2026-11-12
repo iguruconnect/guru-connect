@@ -5200,14 +5200,14 @@ a[href*="wa.me" i], a[href*="whatsapp.com" i],
 <nav class="absolute top-full right-0 mt-2 sm:mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 flex-col hidden z-[60] origin-top-right" id="publicNavbarLinks">
 <a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition" href="#home" onclick="closeNavMenu()">HOME</a>
 <a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-emerald-700 hover:bg-emerald-600 hover:text-white transition" href="/registration/" onclick="closeNavMenu()">REGISTRATION</a>
-<a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-white bg-orange-500 hover:bg-orange-600 transition" href="/buy-now/" onclick="closeNavMenu()">BUY NOW</a>
+
 
 <a class="gc-menu-yellow-item" href="learning.html" onclick="closeNavMenu()">LEARNING REQUESTS</a>
 <a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-slate-600 hover:bg-brand-blue hover:text-white transition" href="helpline.html" onclick="closeNavMenu()">HELPLINE SERVICE PLANS</a>
 <a class="gc-menu-yellow-item" href="about.html" onclick="closeNavMenu()">ABOUT US</a>
 <a class="gc-menu-yellow-item" href="join-us.html" onclick="closeNavMenu()">JOIN US</a>
 <a class="gc-menu-yellow-item" href="/contactus/">CONTACT US</a>
-<div class="gc-menu-divider"></div><a class="gc-final-single-login bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 text-[11px] sm:text-sm font-black rounded-xl transition" href="javascript:void(0)" id="gcFinalMenuLogin">🔐 LOGIN</a></nav>
+<div class="gc-menu-divider"></div><a class="gc-final-single-login bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 text-[11px] sm:text-sm font-black rounded-xl transition" href="javascript:void(0)" id="gcFinalMenuLogin">🔐 LOGIN</a><a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-white bg-orange-500 hover:bg-orange-600 transition" href="/buy-now/" onclick="closeNavMenu()">BUY NOW</a></nav>
 </div>
 </div>
 </div>
@@ -17506,46 +17506,6 @@ input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-
 <style id="gc-buy-now-nav-v6-style">
 a[data-gc-buy-now-nav] { display:inline-flex!important;align-items:center!important;justify-content:center!important;background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;padding:10px 16px!important;margin:4px 8px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;opacity:1!important;visibility:visible!important;position:relative!important;z-index:99999!important;white-space:nowrap!important;box-shadow:0 3px 10px #0002!important; }
 </style>
-
-<style id="gc-buy-now-stable-menu-style">
-a[data-gc-buy-now-stable]{
-  display:inline-flex!important;align-items:center!important;justify-content:center!important;
-  background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;
-  padding:9px 15px!important;margin:4px 8px!important;border-radius:10px!important;
-  font-weight:900!important;text-decoration:none!important;white-space:nowrap!important;
-}
-</style>
-<script id="gc-buy-now-stable-menu">
-/* One-time menu insertion; deliberately no MutationObserver or polling. */
-(() => {
-  const install = () => {
-    const header = document.querySelector('header');
-    if (!header) return;
-    const nav = header.querySelector('nav,[role="navigation"],.navbar,.navigation') ||
-                document.querySelector('nav,[role="navigation"]') || header;
-    const old = Array.from(header.querySelectorAll('a,button')).filter(el => {
-      const label = (el.textContent || '').replace(/\s+/g,' ').trim();
-      const href = (el.getAttribute('href') || '').toLowerCase();
-      return el.hasAttribute('data-gc-buy-now-nav') ||
-             el.hasAttribute('data-gc-buy-now-menu') ||
-             /buy\s*now/i.test(label) || href.includes('/buy-now');
-    });
-    let link = old.find(el => el.tagName === 'A' && (el.getAttribute('href') || '').toLowerCase().includes('/buy-now')) || null;
-    old.forEach(el => { if (el !== link) el.remove(); });
-    if (!link) link = document.createElement('a');
-    link.href = '/buy-now/';
-    link.textContent = 'BUY NOW';
-    link.setAttribute('data-gc-buy-now-stable','true');
-    if (link.parentElement !== nav) nav.appendChild(link);
-  };
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', install, {once:true});
-  } else {
-    install();
-  }
-})();
-</script>
-
 
 \n
 <style id="gc-public-menu-v13-style">
