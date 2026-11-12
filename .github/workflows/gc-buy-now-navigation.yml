@@ -22,85 +22,64 @@ jobs:
           import re
           p = Path("index.html")
           s = p.read_text(encoding="utf-8")
-          # Remove the previous injected Buy Now menu helper to avoid duplicate links.
-          s = re.sub(r'<style\\s+id=["\\']gc-buy-now-public-menu-v11-style["\\'][^>]*>.*?</style>\\s*', '', s, flags=re.I|re.S)
-          s = re.sub(r'<script\\s+id=["\\']gc-buy-now-public-menu-v11["\\'][^>]*>.*?</script>\\s*', '', s, flags=re.I|re.S)
-          marker = "GC_PUBLIC_MENU_REGISTRATION_BUYNOW_V12_20261112"
+          # Remove earlier injected navigation helpers, if present.
+          s = re.sub(r'<style id="gc-buy-now-public-menu-v11-style".*?</script>\s*', '', s, flags=re.I|re.S)
+          s = re.sub(r'<style id="gc-public-menu-v12-style".*?</script>\s*', '', s, flags=re.I|re.S)
+          marker = "GC_PUBLIC_MENU_REGISTRATION_BUYNOW_V13_20261112"
           if marker not in s:
-              script = r"""
-          <style id="gc-public-menu-v12-style">
+              helper = r"""
+          <style id="gc-public-menu-v13-style">
           a[data-gc-public-menu] {display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:10px 16px!important;margin:5px 7px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;white-space:nowrap!important;visibility:visible!important;opacity:1!important}
-          a[data-gc-public-menu="buy"] {background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important;box-shadow:0 3px 10px #0002!important}
-          a[data-gc-public-menu="registration"] {background:#168b45!important;color:#fff!important;-webkit-text-fill-color:#fff!important;box-shadow:0 3px 10px #0002!important}
+          a[data-gc-public-menu="buy"] {background:#ff8500!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
+          a[data-gc-public-menu="registration"] {background:#168b45!important;color:#fff!important;-webkit-text-fill-color:#fff!important}
           </style>
-          <script id="gc-public-menu-v12">
-          /* GC_PUBLIC_MENU_REGISTRATION_BUYNOW_V12_20261112 */
+          <script id="gc-public-menu-v13">
+          /* GC_PUBLIC_MENU_REGISTRATION_BUYNOW_V13_20261112 */
           (() => {
-            const mobileSelectors = ['#mobileMenu','#mobile-menu','#mobileNav','#mobile-nav','.mobile-menu','.mobile-nav','.nav-menu','.nav-links','.menu-dropdown','.dropdown-menu','.nav-dropdown','[class*="mobile-menu"]','[class*="nav-menu"]'];
-            const definitions = [
-              {key:'registration',href:'/registration/',label:'REGISTRATION'},
-              {key:'buy',href:'/buy-now/',label:'BUY NOW'}
+            const items = [
+              {key:"registration",href:"/registration/",label:"REGISTRATION"},
+              {key:"buy",href:"/buy-now/",label:"BUY NOW"}
             ];
-            const normalize = value => (value || '').replace(/\\s+/g,' ').trim().toLowerCase();
-            const removeOldDirectoryLinks = root => {
-              for (const a of Array.from(root.querySelectorAll('a'))) {
-                const label = normalize(a.textContent);
-                if (/explore\\s+tutors?|students?\\s+director(y|ies)|explore\\s+students?/i.test(label)) a.remove();
-              }
+            const isDirectory = a => /explore\s+tutors?|students?\s+director(y|ies)|explore\s+students?/i.test((a.textContent||"").replace(/\s+/g," ").trim());
+            const isNewItem = a => a.hasAttribute("data-gc-public-menu");
+            const style = a => {
+              a.style.cssText = "display:inline-flex!important;align-items:center!important;justify-content:center!important;padding:10px 16px!important;margin:5px 7px!important;border-radius:10px!important;font-weight:950!important;text-decoration:none!important;white-space:nowrap!important;visibility:visible!important;opacity:1!important;";
+              a.style.background = a.dataset.gcPublicMenu === "buy" ? "#ff8500" : "#168b45";
+              a.style.color = "#fff";
+              a.style.webkitTextFillColor = "#fff";
             };
-            const getOrCreate = (container, item) => {
+            const place = (container,item) => {
               let a = container.querySelector('a[data-gc-public-menu="'+item.key+'"]');
-              if (!a) a = Array.from(container.querySelectorAll('a')).find(x =>
-                (item.key === 'buy' && /buy-now/i.test(x.getAttribute('href') || '')) ||
-                (item.key === 'registration' && /registration/i.test(x.getAttribute('href') || ''))
-              );
-              if (!a) a = document.createElement('a');
-              a.href = item.href;
-              a.textContent = item.label;
-              a.setAttribute('data-gc-public-menu',item.key);
-              a.setAttribute('aria-label',item.label);
-              return a;
+              if (!a) a = Array.from(container.querySelectorAll("a")).find(x => item.key==="buy" ? /buy-now/i.test(x.getAttribute("href")||"") : /registration/i.test(x.getAttribute("href")||""));
+              if (!a) a = document.createElement("a");
+              a.href=item.href;
+              a.textContent=item.label;
+              a.dataset.gcPublicMenu=item.key;
+              a.setAttribute("aria-label",item.label);
+              style(a);
+              if (a.parentElement!==container) container.appendChild(a);
             };
             const install = () => {
-              const header = document.querySelector('header') || document.body;
-              const nav = header.querySelector('nav') || document.querySelector('nav') || header.querySelector('[role="navigation"]') || document.querySelector('[role="navigation"]') || header;
-              removeOldDirectoryLinks(header);
-              for (const item of definitions) {
-                const a = getOrCreate(nav,item);
-                if (a.parentElement !== nav) nav.appendChild(a);
-              }
-              // Keep exactly one copy of each new menu item in the desktop header.
-              for (const item of definitions) {
-                const matches = Array.from(header.querySelectorAll('a[data-gc-public-menu="'+item.key+'"]'));
-                matches.slice(1).forEach(a => a.remove());
-              }
-              const mobileContainers = new Set();
-              for (const selector of mobileSelectors) {
-                document.querySelectorAll(selector).forEach(el => {
-                  if (el !== nav && !el.contains(nav) && !nav.contains(el)) mobileContainers.add(el);
-                });
-              }
-              mobileContainers.forEach(container => {
-                removeOldDirectoryLinks(container);
-                for (const item of definitions) {
-                  const a = getOrCreate(container,item);
-                  if (a.parentElement !== container) container.appendChild(a);
-                }
-                for (const item of definitions) {
-                  const matches = Array.from(container.querySelectorAll('a[data-gc-public-menu="'+item.key+'"]'));
-                  matches.slice(1).forEach(a => a.remove());
-                }
+              const header=document.querySelector("header")||document.body;
+              const nav=header.querySelector("nav")||document.querySelector("nav")||header;
+              header.querySelectorAll("a").forEach(a=>{if(isDirectory(a))a.remove();});
+              items.forEach(item=>place(nav,item));
+              const selectors=["#mobileMenu","#mobile-menu","#mobileNav","#mobile-nav",".mobile-menu",".mobile-nav",".nav-menu",".nav-links",".menu-dropdown",".dropdown-menu",".nav-dropdown",'[class*="mobile-menu"]','[class*="nav-menu"]'];
+              const containers=new Set();
+              selectors.forEach(sel=>document.querySelectorAll(sel).forEach(el=>{if(el!==nav&&!nav.contains(el)&&!el.contains(nav))containers.add(el);}));
+              containers.forEach(el=>{
+                el.querySelectorAll("a").forEach(a=>{if(isDirectory(a))a.remove();});
+                items.forEach(item=>place(el,item));
               });
             };
-            if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',install,{once:true});
-            else install();
-            window.addEventListener('load',install,{once:true});
+            if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",install,{once:true});else install();
+            window.addEventListener("load",install,{once:true});
           })();
           </script>
           """
-              if not re.search(r"</body\\s*>", s, re.I):
+              if not re.search(r"</body\s*>", s, re.I):
                   raise SystemExit("STOP: closing body tag not found; no changes made.")
-              s = re.sub(r"</body\\s*>", lambda m: script + "\\n" + m.group(0), s, count=1, flags=re.I)
+              s = re.sub(r"</body\s*>", lambda m: helper + "\n" + m.group(0), s, count=1, flags=re.I)
               p.write_text(s, encoding="utf-8")
           PY
       - name: Commit homepage navigation update
