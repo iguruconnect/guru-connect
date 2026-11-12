@@ -5237,7 +5237,20 @@ header.gc-beautiful-header #publicMenuWrapper [role="menu"]{
   z-index:99999!important;
 }
 </style>
-\n</head>
+\n
+<style id="gc-search-buy-now-button-style-2026">
+#gc-mobile-hero-search .gc-search-buy-now{
+  display:inline-flex!important;align-items:center!important;justify-content:center!important;
+  flex:0 0 auto!important;min-width:86px!important;height:43px!important;padding:0 13px!important;
+  border:0!important;border-radius:10px!important;background:linear-gradient(135deg,#ff9a00,#f97316,#e65c00)!important;
+  color:#fff!important;-webkit-text-fill-color:#fff!important;font:900 12px/1 Roboto,Arial,sans-serif!important;
+  text-decoration:none!important;white-space:nowrap!important;box-shadow:0 4px 10px rgba(230,92,0,.24)!important;
+}
+#gc-mobile-hero-search .gc-search-buy-now:hover{filter:brightness(.95)}
+@media(max-width:380px){#gc-mobile-hero-search .gc-search-buy-now{min-width:74px!important;padding:0 9px!important;font-size:11px!important}}
+</style>
+
+</head>
 <body class="bg-brand-lightBg text-brand-dark font-sans antialiased min-h-screen flex flex-col justify-between overflow-x-hidden relative">
 
 <!-- Header / Navbar -->
@@ -17667,3 +17680,42 @@ a[data-gc-public-menu="registration"] {background:#168b45!important;color:#fff!i
   }
 }
 </style>
+
+
+<script id="gc-header-search-buy-now-cleanup-2026">
+(() => {
+  const clean = () => {
+    const header = document.querySelector('header.gc-beautiful-header') || document.querySelector('header');
+    if (header) {
+      header.querySelectorAll('a,button').forEach(el => {
+        if (el.closest('#publicMenuWrapper')) return;
+        const href = (el.getAttribute('href') || '').toLowerCase();
+        const label = (el.textContent || '').replace(/\s+/g,' ').trim().toLowerCase();
+        if (href.includes('buy-now') || href.includes('/registration') || /^(buy now|register|registration)$/.test(label)) {
+          if (el.id !== 'publicMenuWrapper' && !el.classList.contains('gc-menu-button')) el.remove();
+        }
+      });
+    }
+    const form = document.querySelector('#gc-mobile-hero-search form');
+    if (form && !form.querySelector('.gc-search-buy-now')) {
+      const link = document.createElement('a');
+      link.className = 'gc-search-buy-now';
+      link.href = '/buy-now/';
+      link.textContent = 'BUY NOW';
+      link.setAttribute('aria-label','Buy Now');
+      const searchButton = form.querySelector('button[type="submit"],button');
+      if (searchButton) searchButton.insertAdjacentElement('afterend', link);
+      else form.appendChild(link);
+    }
+  };
+  clean();
+  document.addEventListener('DOMContentLoaded', clean, {once:true});
+  window.addEventListener('load', clean, {once:true});
+  const header = document.querySelector('header');
+  if (header && window.MutationObserver) {
+    const observer = new MutationObserver(clean);
+    observer.observe(header,{childList:true,subtree:true});
+  }
+})();
+</script>
+
