@@ -241,4 +241,58 @@ async function sendWelcomeEmail(user){try{const email=$('email').value.trim().to
 </script><style id="gc-global-arial-nova-code-font-20261101">
 html,body,body *:not(svg):not(path):not(i):not(.material-icons):not(.material-symbols):not([class*="icon"]):not([class*="fa-"]){font-family:"Arial Nova Code","Arial Nova",Arial,sans-serif!important}
 </style>
+
+<style id="gc-role-before-terms-20261123">
+#gcRoleFirstCard{margin:18px 0}
+#gcRoleFirstCard .gc-role-choice-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+#gcRoleFirstCard .role{min-height:126px;padding:22px;border-radius:20px}
+#gcRoleFirstCard .role b{font-size:18px}
+#gcRoleFirstCard .role small{font-size:13px}
+#termsFirstGate.gc-waiting-for-role{display:none!important}
+#gcRoleFirstCard .gc-role-instruction{margin:-5px 0 16px;color:#64748b;font-size:13px;font-weight:650}
+#gcRoleFirstCard .role.active{outline:3px solid #bfdbfe}
+@media(max-width:650px){#gcRoleFirstCard .gc-role-choice-grid{grid-template-columns:1fr}#gcRoleFirstCard .role{min-height:100px}}
+</style>
+<script id="gc-role-before-terms-20261123">
+(function(){
+  const form=document.getElementById('form');
+  const gate=document.getElementById('termsFirstGate');
+  if(!form||!gate||document.getElementById('gcRoleFirstCard'))return;
+  const originalRoles=form.querySelector('.roles');
+  if(!originalRoles)return;
+  const originalButtons=[...originalRoles.querySelectorAll('.role')];
+  if(originalButtons.length!==2)return;
+  const card=document.createElement('section');
+  card.className='card';
+  card.id='gcRoleFirstCard';
+  card.innerHTML='<h2 class="section-title"><span class="title-icon">✦</span>Choose Your Registration</h2><p class="gc-role-instruction">First, select how you want to join GURU CONNECT.</p><div class="gc-role-choice-grid"></div>';
+  const grid=card.querySelector('.gc-role-choice-grid');
+  originalButtons.forEach((original)=>{
+    const choice=original.cloneNode(true);
+    choice.classList.remove('active');
+    choice.setAttribute('aria-pressed','false');
+    choice.addEventListener('click',()=>{
+      original.click();
+      grid.querySelectorAll('.role').forEach(b=>{
+        const active=b.dataset.role===original.dataset.role;
+        b.classList.toggle('active',active);
+        b.setAttribute('aria-pressed',String(active));
+      });
+      gate.classList.remove('gc-waiting-for-role');
+      gate.scrollIntoView({behavior:'smooth',block:'start'});
+    });
+    grid.appendChild(choice);
+  });
+  const oldHeading=originalRoles.parentElement.querySelector('.section-title');
+  if(oldHeading)oldHeading.style.display='none';
+  originalRoles.style.display='none';
+  gate.classList.add('gc-waiting-for-role');
+  gate.parentNode.insertBefore(card,gate);
+  const requestedRole=new URLSearchParams(location.search).get('role');
+  if(requestedRole==='student'||requestedRole==='tutor'){
+    const preselected=grid.querySelector('[data-role="'+requestedRole+'"]');
+    if(preselected)preselected.click();
+  }
+})();
+</script>
 </body></html>
