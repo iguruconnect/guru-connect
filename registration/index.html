@@ -255,44 +255,54 @@ html,body,body *:not(svg):not(path):not(i):not(.material-icons):not(.material-sy
 </style>
 <script id="gc-role-before-terms-20261123">
 (function(){
-  const form=document.getElementById('form');
-  const gate=document.getElementById('termsFirstGate');
+  const form=document.getElementById('form'),gate=document.getElementById('termsFirstGate');
   if(!form||!gate||document.getElementById('gcRoleFirstCard'))return;
   const originalRoles=form.querySelector('.roles');
   if(!originalRoles)return;
   const originalButtons=[...originalRoles.querySelectorAll('.role')];
   if(originalButtons.length!==2)return;
+  const studentArt='<svg viewBox="0 0 160 140" role="img" aria-label="Student reading a book" xmlns="http://www.w3.org/2000/svg"><circle cx="80" cy="70" r="66" fill="#dbeafe"/><circle cx="80" cy="50" r="23" fill="#f4bd91"/><path d="M57 48c0-24 13-34 27-34 18 0 28 14 25 36-7-9-15-13-27-13-8 0-16 5-25 11Z" fill="#253858"/><path d="M43 119c3-28 18-42 37-42s35 14 38 42" fill="#2563eb"/><path d="M37 91c15-8 29-8 43 1v29c-15-9-29-9-43 0Zm86 0c-15-8-29-8-43 1v29c15-9 29-9 43 0Z" fill="#fff" stroke="#1d4ed8" stroke-width="3" stroke-linejoin="round"/><path d="M80 92v29" stroke="#93c5fd" stroke-width="3"/></svg>';
+  const tutorArt='<svg viewBox="0 0 160 140" role="img" aria-label="Tutor teaching beside a board" xmlns="http://www.w3.org/2000/svg"><circle cx="80" cy="70" r="66" fill="#ffedd5"/><rect x="76" y="20" width="61" height="48" rx="6" fill="#fff" stroke="#ea580c" stroke-width="4"/><path d="M88 34h36M88 45h25" stroke="#fdba74" stroke-width="4" stroke-linecap="round"/><circle cx="49" cy="48" r="21" fill="#f4bd91"/><path d="M28 47c0-22 12-32 25-32 17 0 25 12 23 32-7-9-15-13-25-13-8 0-15 5-23 13Z" fill="#253858"/><path d="M17 120c3-29 15-43 33-43 17 0 29 14 32 43" fill="#f97316"/><path d="m66 83 18 13 20-28" fill="none" stroke="#f97316" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M49 90v28" stroke="#fed7aa" stroke-width="4" stroke-linecap="round"/></svg>';
   const card=document.createElement('section');
-  card.className='card';
-  card.id='gcRoleFirstCard';
+  card.className='card';card.id='gcRoleFirstCard';
   card.innerHTML='<h2 class="section-title"><span class="title-icon">✦</span>Choose Your Registration</h2><p class="gc-role-instruction">First, select how you want to join GURU CONNECT.</p><div class="gc-role-choice-grid"></div>';
   const grid=card.querySelector('.gc-role-choice-grid');
-  originalButtons.forEach((original)=>{
-    const choice=original.cloneNode(true);
-    choice.classList.remove('active');
-    choice.setAttribute('aria-pressed','false');
+  originalButtons.forEach(original=>{
+    const choice=original.cloneNode(true);choice.classList.remove('active');choice.setAttribute('aria-pressed','false');
+    const art=document.createElement('span');art.className='gc-role-art';art.innerHTML=original.dataset.role==='student'?studentArt:tutorArt;
+    const label=document.createElement('span');label.className='gc-role-copy';
+    label.innerHTML=original.dataset.role==='student'?'<b>STUDENT REGISTRATION</b><small>I am looking for a Tutor</small><em>Register as Student →</em>':'<b>TUTOR REGISTRATION</b><small>I want to teach Students</small><em>Register as Tutor →</em>';
+    choice.replaceChildren(art,label);
     choice.addEventListener('click',()=>{
       original.click();
-      grid.querySelectorAll('.role').forEach(b=>{
-        const active=b.dataset.role===original.dataset.role;
-        b.classList.toggle('active',active);
-        b.setAttribute('aria-pressed',String(active));
-      });
-      gate.classList.remove('gc-waiting-for-role');
-      gate.scrollIntoView({behavior:'smooth',block:'start'});
+      grid.querySelectorAll('.role').forEach(b=>{const active=b.dataset.role===original.dataset.role;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
+      gate.classList.remove('gc-waiting-for-role');gate.scrollIntoView({behavior:'smooth',block:'start'});
     });
     grid.appendChild(choice);
   });
-  const oldHeading=originalRoles.parentElement.querySelector('.section-title');
-  if(oldHeading)oldHeading.style.display='none';
-  originalRoles.style.display='none';
-  gate.classList.add('gc-waiting-for-role');
-  gate.parentNode.insertBefore(card,gate);
+  const oldHeading=originalRoles.parentElement.querySelector('.section-title');if(oldHeading)oldHeading.style.display='none';
+  originalRoles.style.display='none';gate.classList.add('gc-waiting-for-role');gate.parentNode.insertBefore(card,gate);
   const requestedRole=new URLSearchParams(location.search).get('role');
-  if(requestedRole==='student'||requestedRole==='tutor'){
-    const preselected=grid.querySelector('[data-role="'+requestedRole+'"]');
-    if(preselected)preselected.click();
-  }
+  if(requestedRole==='student'||requestedRole==='tutor'){const preselected=grid.querySelector('[data-role="'+requestedRole+'"]');if(preselected)preselected.click();}
 })();
 </script>
+
+<style id="gc-role-illustrations-20261123">
+#gcRoleFirstCard .gc-role-choice-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+#gcRoleFirstCard .role{display:flex;align-items:center;gap:17px;min-height:174px;padding:18px;text-align:left;border:2px solid #bfdbfe;background:linear-gradient(135deg,#eff6ff,#fff 72%);box-shadow:0 12px 30px #2563eb12}
+#gcRoleFirstCard .role:nth-child(2){border-color:#fed7aa;background:linear-gradient(135deg,#fff7ed,#fff 72%);box-shadow:0 12px 30px #f9731612}
+#gcRoleFirstCard .role:before{width:6px}
+#gcRoleFirstCard .role.active{border-color:#2563eb;background:linear-gradient(135deg,#dbeafe,#fff);box-shadow:0 15px 32px #2563eb25;outline:3px solid #bfdbfe}
+#gcRoleFirstCard .role:nth-child(2).active{border-color:#f97316;background:linear-gradient(135deg,#ffedd5,#fff);outline-color:#fed7aa;box-shadow:0 15px 32px #f9731625}
+#gcRoleFirstCard .gc-role-art{display:grid;place-items:center;flex:0 0 112px;width:112px;height:112px}
+#gcRoleFirstCard .gc-role-art svg{display:block;width:100%;height:100%}
+#gcRoleFirstCard .gc-role-copy{display:flex;flex-direction:column;align-items:flex-start;gap:7px}
+#gcRoleFirstCard .gc-role-copy b{font-size:17px;line-height:1.2;color:#1643a0}
+#gcRoleFirstCard .role:nth-child(2) .gc-role-copy b{color:#c2410c}
+#gcRoleFirstCard .gc-role-copy small{font-size:12px;line-height:1.45;color:#64748b;margin:0}
+#gcRoleFirstCard .gc-role-copy em{font-size:11px;font-style:normal;font-weight:900;color:#2563eb;margin-top:3px}
+#gcRoleFirstCard .role:nth-child(2) .gc-role-copy em{color:#ea580c}
+@media(max-width:700px){#gcRoleFirstCard .gc-role-choice-grid{grid-template-columns:1fr}#gcRoleFirstCard .role{min-height:145px;padding:14px}#gcRoleFirstCard .gc-role-art{flex-basis:100px;width:100px;height:100px}#gcRoleFirstCard .gc-role-copy b{font-size:16px}}
+@media(max-width:380px){#gcRoleFirstCard .role{gap:10px}#gcRoleFirstCard .gc-role-art{flex-basis:84px;width:84px;height:84px}#gcRoleFirstCard .gc-role-copy b{font-size:14px}}
+</style>
 </body></html>
