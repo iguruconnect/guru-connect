@@ -649,19 +649,28 @@ let activeSection='edit';
 let lrrLoaded=false,lrrLoading=false,coinHistoryLoaded=false;
 
 
-async function gcPrintRegistrationForm(userId){
+async function gcPrintRegistrationForm(userId,profileId,email){
   const win=window.open('about:blank','_blank');
   if(!win){alert('Please allow pop-ups to print the registration form.');return;}
   win.document.write('<!doctype html><title>Loading registration form…</title><p style="font:16px Arial;padding:24px">Loading original registration form…</p>');
   try{
-    const q=await sb.from('gc_registration_submissions').select('*').eq('auth_user_id',String(userId)).maybeSingle();
-    if(q.error)throw q.error;
-    if(!q.data||!q.data.form_data)throw new Error('Original registration form record not found.');
-    const f=q.data.form_data||{};
+    const ids=[...new Set([userId,profileId].map(x=>String(x||'').trim()).filter(Boolean))];
+    let record=null,lastError=null;
+    for(const id of ids){
+      const q=await sb.from('gc_registration_submissions').select('*').eq('auth_user_id',id).maybeSingle();
+      if(q.error){lastError=q.error;continue}
+      if(q.data){record=q.data;break}
+    }
+    if(!record&&email){
+      const q=await sb.from('gc_registration_submissions').select('*').ilike('email',String(email).trim()).order('created_at',{ascending:false}).limit(1);
+      if(q.error)lastError=q.error;else record=(q.data||[])[0]||null;
+    }
+    if(!record||!record.form_data)throw new Error(lastError?'Could not access the saved registration record: '+lastError.message:'No original saved registration form was found for this member. The member may have registered before original-form records were being archived.');
+    const f=record.form_data||{};
     const escHtml=v=>String(v==null||v===''?'—':(typeof v==='object'?JSON.stringify(v,null,2):v)).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-    const title=String(q.data.role||f.role||'Member').toUpperCase()+' REGISTRATION FORM';
+    const title=String(record.role||f.role||'Member').toUpperCase()+' REGISTRATION FORM';
     const rows=Object.entries(f).map(([k,v])=>'<tr><th>'+escHtml(k.replaceAll('_',' '))+'</th><td>'+escHtml(v)+'</td></tr>').join('');
-    const applied=q.data.created_at?new Date(q.data.created_at).toLocaleString('en-IN',{dateStyle:'full',timeStyle:'short',timeZone:'Asia/Kolkata'})+' IST':'Not recorded';
+    const applied=record.created_at?new Date(record.created_at).toLocaleString('en-IN',{dateStyle:'full',timeStyle:'short',timeZone:'Asia/Kolkata'})+' IST':'Not recorded';
     win.document.open();
     win.document.write('<!doctype html><html><head><meta charset="utf-8"><title>'+escHtml(title)+'</title><style>@page{size:A4;margin:14mm}*{box-sizing:border-box}body{font-family:Arial,sans-serif;color:#172b4d;margin:0}.top{background:#123b75;color:white;padding:18px 22px;border-bottom:7px solid #f59e0b}.brand{font-size:23px;font-weight:900}.tag{color:#ffcf70;font-size:12px;margin-top:4px}.title{font-size:18px;font-weight:900;margin:20px 0 5px;color:#123b75}.date{font-size:11px;color:#64748b;margin-bottom:14px}.rule{height:4px;background:#f59e0b;margin-bottom:14px}table{width:100%;border-collapse:collapse;font-size:11px;table-layout:fixed}th,td{border:1px solid #d7e0ed;padding:8px;text-align:left;vertical-align:top;overflow-wrap:anywhere;white-space:pre-wrap}th{width:32%;background:#eef5ff;color:#123b75;text-transform:capitalize}tr:nth-child(even) td{background:#fff8ed}.foot{margin-top:22px;border-top:2px solid #f59e0b;padding-top:9px;font-size:10px;color:#64748b}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}</style></head><body><header class="top"><div class="brand">GURU CONNECT</div><div class="tag">Learn • Connect • Grow</div></header><div class="title">'+escHtml(title)+'</div><div class="date">Submitted: '+escHtml(applied)+'</div><div class="rule"></div><table>'+rows+'</table><div class="foot">GURU CONNECT · Official registration record · Printed copy for administrative use</div><script>window.onload=()=>setTimeout(()=>window.print(),300)<\/script></body></html>');
     win.document.close();
@@ -1600,7 +1609,7 @@ function renderUsers(){
 }
 function userCard(u,i){
   const role=u.role.toUpperCase(),sub=u.role==='tutor'?(u.qualification||u.subject||'Tutor'):(u.course||u.stream||'Student');
-  return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed user')}</b><span class="badge">${role}</span><div class="muted">${esc(sub)}<br>Email: ${esc(u.email||'—')}<br>Phone: ${esc(u.phone||'—')}<br>Student/Tutor ID: ${esc(u.member_id||u.profile_id||u.user_id||'—')}<br>Auth User ID: ${esc(u.user_id||'—')}<br>Status: ${esc(u.registration_status||'registered')}<br>Payment: ${esc(u.paid_status||'PENDING')} · Admin Verified: ${(u.admin_verified||u.verified)?'🟢 YES':'NO'} · Directory: ${u.directory_visible===false?'🔴 HIDDEN':'🟢 VISIBLE'}</div></div><div class="actions"><button class="btn primary" onclick="viewDetails(${i})">👁️ PROFILE / ACCOUNT</button><button class="btn orange" onclick="gcPrintRegistrationForm('${esc(u.user_id||'')}')">🖨️ DOWNLOAD FORM · A4</button><button class="btn primary" onclick="toggleEdit(${i})">✏️ EDIT</button>${u.role==='tutor'?'<button class="btn '+(u.premium_badge_override===true?'green':u.premium_badge_override===false?'orange':'primary')+'" onclick="togglePremiumBadge('+i+')">👑 PREMIUM: '+(u.premium_badge_override===true?'ON':u.premium_badge_override===false?'OFF':'AUTO')+'</button>':''}<button class="btn teal" onclick="setPaid(${i})">${String(u.paid_status||'PENDING').toUpperCase()==='PAID'?'✓ PAID':'MARK PAID'}</button><button class="btn primary" onclick="toggleVerified(${i})">${(u.public_verified_tick||u.verified)?'✓ BLUE TICK':'GRANT BLUE TICK'}</button><button class="btn ${u.directory_visible===false?'orange':'light'}" onclick="toggleDirectory(${i})">${u.directory_visible===false?'👁 SHOW IN DIRECTORY':'🙈 HIDE FROM DIRECTORY'}</button><button class="btn teal" onclick="selectCoins(${i})">🪙 COINS</button><button class="btn caseChat" onclick="adminWhatsAppUser(${i})">💬 WHATSAPP</button><button class="btn purple" onclick="receipt(${i})">🧾 RECEIPT</button><button class="btn light" onclick="resetUser(${i})">RESET PASSWORD</button><button class="btn red" onclick="deleteUser(${i})">DELETE</button></div></div><div class="edit" id="edit-${i}">${editForm(u,i)}</div></article>`;
+  return `<article class="user"><div class="userHead"><div class="identity"><b>${esc(u.name||'Unnamed user')}</b><span class="badge">${role}</span><div class="muted">${esc(sub)}<br>Email: ${esc(u.email||'—')}<br>Phone: ${esc(u.phone||'—')}<br>Student/Tutor ID: ${esc(u.member_id||u.profile_id||u.user_id||'—')}<br>Auth User ID: ${esc(u.user_id||'—')}<br>Status: ${esc(u.registration_status||'registered')}<br>Payment: ${esc(u.paid_status||'PENDING')} · Admin Verified: ${(u.admin_verified||u.verified)?'🟢 YES':'NO'} · Directory: ${u.directory_visible===false?'🔴 HIDDEN':'🟢 VISIBLE'}</div></div><div class="actions"><button class="btn primary" onclick="viewDetails(${i})">👁️ PROFILE / ACCOUNT</button><button class="btn orange" onclick="gcPrintRegistrationForm('${esc(u.user_id||'')}','${esc(u.profile_id||'')}','${esc(u.email||'')}')">🖨️ DOWNLOAD FORM · A4</button><button class="btn primary" onclick="toggleEdit(${i})">✏️ EDIT</button>${u.role==='tutor'?'<button class="btn '+(u.premium_badge_override===true?'green':u.premium_badge_override===false?'orange':'primary')+'" onclick="togglePremiumBadge('+i+')">👑 PREMIUM: '+(u.premium_badge_override===true?'ON':u.premium_badge_override===false?'OFF':'AUTO')+'</button>':''}<button class="btn teal" onclick="setPaid(${i})">${String(u.paid_status||'PENDING').toUpperCase()==='PAID'?'✓ PAID':'MARK PAID'}</button><button class="btn primary" onclick="toggleVerified(${i})">${(u.public_verified_tick||u.verified)?'✓ BLUE TICK':'GRANT BLUE TICK'}</button><button class="btn ${u.directory_visible===false?'orange':'light'}" onclick="toggleDirectory(${i})">${u.directory_visible===false?'👁 SHOW IN DIRECTORY':'🙈 HIDE FROM DIRECTORY'}</button><button class="btn teal" onclick="selectCoins(${i})">🪙 COINS</button><button class="btn caseChat" onclick="adminWhatsAppUser(${i})">💬 WHATSAPP</button><button class="btn purple" onclick="receipt(${i})">🧾 RECEIPT</button><button class="btn light" onclick="resetUser(${i})">RESET PASSWORD</button><button class="btn red" onclick="deleteUser(${i})">DELETE</button></div></div><div class="edit" id="edit-${i}">${editForm(u,i)}</div></article>`;
 }
 function v(id,val){return `<input id="${id}" value="${esc(val??'')}">`}
 function area(id,val){return `<textarea id="${id}">${esc(val??'')}</textarea>`}
