@@ -380,13 +380,21 @@ body,body button,body input,body select,body textarea,body table,body th,body td
 <button class="topbtn" data-sec="advertisement">📢 <b>ADVERTISEMENT</b><small>Manage website advertisements</small></button>
 <button class="topbtn" data-sec="idgeneration">🪪 <b>GENERATE ID</b><small>Create Student / Tutor ID card</small></button>
 <button class="topbtn" data-sec="staff">👔 <b>ADD STAFF</b><small>Create and manage permanent Staff IDs</small></button>
+<button class="topbtn priority" data-sec="writeTous">✉️ <b>WRITE TO US</b><small>Visitor enquiries, assistance and complaints</small></button>
 <button class="topbtn priority" data-sec="tutorinquiries">📩 <b>STUDENT INQUIRIES</b><small>Student / parent requests received from Tutor Search</small></button>
 <button class="topbtn priority" data-sec="tutorrequirements">🎯 <b>TUTOR REQUIREMENTS</b><small>Learning needs posted by students and parents</small></button>
 <button class="topbtn" data-sec="studenttutorcontacts">📞 <b>STD & TUT CNCT REQ</b><small>Student-to-tutor contact requests and lifetime history</small></button>
 <button class="topbtn priority" data-sec="stdmsgfortutors">✉️ <b>MESSAGE</b><small>Review student messages and forward to tutors</small></button>
 <button class="topbtn priority" data-sec="store">🛒 <b>BUY NOW / STORE</b><small>Manage services, prices and payments</small></button>\n</nav>
 
-<section class="section" id="sec-store"><div class="secHead"><div><h2>🛒 BUY NOW / STORE</h2><p>Manage the member catalogue and review UPI payment submissions.</p></div></div><div class="secBody" style="padding:0"><iframe title="Buy Now Store Management" src="admin-store.html" style="width:100%;height:1200px;border:0;border-radius:12px;background:#fff"></iframe></div></section>\n<section class="section" id="sec-tutorinquiries"><div class="secHead"><div><h2>📩 STUDENT INQUIRIES</h2><p>Requests received when students, parents or visitors search for a tutor. Review contact details and send each suitable inquiry to matching Premium Tutors.</p></div><span class="pill" id="tutorInquiryCount">INQUIRIES</span></div><div class="secBody"><div class="row" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="btn primary" id="refreshTutorInquiries" type="button">↻ REFRESH INQUIRIES</button><button class="btn purple" id="viewTutorInquiryHistory" type="button">🕘 INQUIRY HISTORY</button><span class="status" id="tutorInquiryStatus">Run the Tutor Inquiry SQL setup in Supabase first.</span></div><div id="tutorInquiryResults" style="margin-top:16px"></div></div></section>
+<section class="section" id="sec-store"><div class="secHead"><div><h2>🛒 BUY NOW / STORE</h2><p>Manage the member catalogue and review UPI payment submissions.</p></div></div><div class="secBody" style="padding:0"><iframe title="Buy Now Store Management" src="admin-store.html" style="width:100%;height:1200px;border:0;border-radius:12px;background:#fff"></iframe></div></section>\n<section class="section" id="sec-writeTous">
+ <div class="secHead"><div><h2>✉️ WRITE TO US</h2><p>Messages submitted by website visitors. Open the complete form, download it, and update its review status.</p></div><span class="pill" id="gcWriteCount">VISITOR MESSAGES</span></div>
+ <div class="secBody">
+  <div class="actions" style="margin-top:0"><button class="btn primary" type="button" onclick="gcLoadWriteToUs()">↻ REFRESH MESSAGES</button><span class="status" id="gcWriteStatus">Open this tab to load visitor messages.</span></div>
+  <div id="gcWriteResults" style="margin-top:16px"></div>
+ </div>
+</section>
+<section class="section" id="sec-tutorinquiries"><div class="secHead"><div><h2>📩 STUDENT INQUIRIES</h2><p>Requests received when students, parents or visitors search for a tutor. Review contact details and send each suitable inquiry to matching Premium Tutors.</p></div><span class="pill" id="tutorInquiryCount">INQUIRIES</span></div><div class="secBody"><div class="row" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="btn primary" id="refreshTutorInquiries" type="button">↻ REFRESH INQUIRIES</button><button class="btn purple" id="viewTutorInquiryHistory" type="button">🕘 INQUIRY HISTORY</button><span class="status" id="tutorInquiryStatus">Run the Tutor Inquiry SQL setup in Supabase first.</span></div><div id="tutorInquiryResults" style="margin-top:16px"></div></div></section>
 <section class="section" id="sec-tutorrequirements">
  <div class="secHead"><div><h2>🎯 TUTOR REQUIREMENTS</h2><p>Learning requirements posted by registered students, parents and verified visitors. Review class, stream, subjects, mode, location, budget and tutor-notification status. Lifetime records are retained here.</p></div><span class="pill" id="gcTutorReqCount">REQUIREMENTS</span></div>
  <div class="secBody">
@@ -1499,6 +1507,31 @@ window.gcRejectStdTutorMessage=async function(id){
  const status=$('gcStdMsgStatus');try{const q=await sb.rpc('gc_admin_reject_student_tutor_message',{p_message_id:id,p_admin_note:note});if(q.error)throw q.error;status.textContent='Student message rejected and saved in history.';await gcLoadStdTutorMessages(gcStdMsgHistoryMode)}catch(e){status.textContent='Could not reject message: '+(e.message||String(e))}
 };
 
+async function gcLoadWriteToUs(){
+ const out=$('gcWriteResults'),status=$('gcWriteStatus'),count=$('gcWriteCount');
+ if(!out||!status)return;
+ status.textContent='Loading visitor messages…';out.innerHTML='';
+ try{
+  const q=await sb.from('gc_write_to_us_submissions').select('*').order('created_at',{ascending:false}).limit(500);
+  if(q.error)throw q.error;
+  const rows=q.data||[];window.gcWriteRows=rows;count.textContent=rows.length+' MESSAGES';
+  if(!rows.length){out.innerHTML='<div class="empty">No Write to Us messages have been received yet.</div>';status.textContent='No visitor messages found.';return}
+  out.innerHTML=rows.map(r=>{
+   const date=r.created_at?new Date(r.created_at).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Kolkata'})+' IST':'—';
+   return '<article class="user" style="margin-bottom:13px"><div class="userHead"><div class="identity"><b>'+esc(r.full_name)+'</b><span class="badge">'+esc(r.message_type)+'</span><div class="muted">📱 '+esc(r.mobile_number)+' · ✉️ '+esc(r.email)+'<br>Received: '+esc(date)+' · Ref: '+esc(r.id)+'</div></div><span class="badge">'+esc(r.status)+'</span></div><div style="margin-top:12px;padding:13px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;white-space:pre-wrap;line-height:1.6;font-size:13px">'+esc(r.message)+'</div><div class="actions"><button class="btn primary" type="button" onclick="gcDownloadWriteForm(this)" data-id="'+esc(r.id)+'">⬇ DOWNLOAD FORM</button><button class="btn light" type="button" onclick="gcPrintWriteForm(this)" data-id="'+esc(r.id)+'">🖨 VIEW / PRINT FORM</button><select aria-label="Update message status" style="border:1px solid #cbd5e1;border-radius:10px;padding:9px;font-weight:800" onchange="gcUpdateWriteStatus(this)" data-id="'+esc(r.id)+'"><option value="NEW" '+(r.status==='NEW'?'selected':'')+'>NEW</option><option value="IN_REVIEW" '+(r.status==='IN_REVIEW'?'selected':'')+'>IN REVIEW</option><option value="RESOLVED" '+(r.status==='RESOLVED'?'selected':'')+'>RESOLVED</option><option value="CLOSED" '+(r.status==='CLOSED'?'selected':'')+'>CLOSED</option></select></div></article>';
+  }).join('');
+  status.textContent=rows.length+' visitor message(s) loaded.';
+ }catch(e){status.textContent='Could not load Write to Us messages: '+(e.message||String(e));out.innerHTML='<div class="empty">Please check your Admin session and try Refresh.</div>'}
+}
+function gcWriteFormHtml(r){
+ const safe=v=>String(v??'—').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const date=r.created_at?new Date(r.created_at).toLocaleString('en-IN',{dateStyle:'full',timeStyle:'short',timeZone:'Asia/Kolkata'})+' IST':'—';
+ return '<!doctype html><html><head><meta charset="utf-8"><title>GURU CONNECT - Write to Us Submission</title><style>body{font:15px Arial;color:#172033;margin:32px}.head{display:flex;align-items:center;gap:16px;border-bottom:3px solid #155eef;padding-bottom:16px}.head img{width:78px;height:78px;object-fit:contain}.head h1{margin:0;color:#123b82}.head p{margin:5px 0;color:#64748b;font-weight:bold}.title{background:#eff6ff;padding:14px;border-radius:10px;color:#123b82;margin:20px 0;font-size:20px;font-weight:bold}.field{border:1px solid #cbd5e1;border-radius:10px;margin:11px 0;overflow:hidden}.field b{display:block;background:#f1f5f9;padding:9px 12px;font-size:11px;color:#475569}.field div{padding:13px;white-space:pre-wrap;min-height:22px;line-height:1.5}.foot{margin-top:25px;border-top:1px solid #cbd5e1;padding-top:12px;color:#64748b;font-size:11px}@media print{button{display:none}}</style></head><body><div class="head"><img src="https://guruconnnect.in/guru-connect-brand.png"><div><h1>GURU CONNECT</h1><p>Learn • Connect • Grow</p><small>connecting mind - creating Future</small></div></div><div class="title">WRITE TO US — VISITOR SUBMISSION FORM</div><div class="field"><b>FULL NAME</b><div>'+safe(r.full_name)+'</div></div><div class="field"><b>MOBILE NUMBER</b><div>'+safe(r.mobile_number)+'</div></div><div class="field"><b>EMAIL ADDRESS</b><div>'+safe(r.email)+'</div></div><div class="field"><b>MESSAGE TYPE</b><div>'+safe(r.message_type)+'</div></div><div class="field"><b>MESSAGE</b><div>'+safe(r.message)+'</div></div><div class="field"><b>SUBMISSION DATE / TIME</b><div>'+safe(date)+'</div></div><div class="field"><b>REFERENCE ID / STATUS</b><div>'+safe(r.id)+' / '+safe(r.status)+'</div></div><div class="foot">GURU CONNECT · Visitor communication record · For internal use</div></body></html>';
+}
+function gcGetWriteRow(button){const id=button?.dataset?.id;return window.gcWriteRows?.find(r=>String(r.id)===String(id))}
+window.gcDownloadWriteForm=button=>{const r=gcGetWriteRow(button);if(!r){alert('Please refresh the messages and try again.');return}const blob=new Blob([gcWriteFormHtml(r)],{type:'text/html;charset=utf-8'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='GURU-CONNECT-Write-To-Us-'+String(r.id).slice(0,8)+'.html';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+window.gcPrintWriteForm=button=>{const r=gcGetWriteRow(button);if(!r){alert('Please refresh the messages and try again.');return}const w=window.open('','_blank');if(!w){alert('Please allow pop-ups to view/print the form.');return}w.document.open();w.document.write(gcWriteFormHtml(r));w.document.close();w.onload=()=>w.print()};
+window.gcUpdateWriteStatus=async select=>{const id=select.dataset.id,status=select.value;select.disabled=true;try{const q=await sb.from('gc_write_to_us_submissions').update({status}).eq('id',id);if(q.error)throw q.error;await gcLoadWriteToUs()}catch(e){alert('Could not update status: '+(e.message||String(e)));select.disabled=false}};
 function switchSection(name){
   if(!name||activeSection===name)return;
   activeSection=name;
@@ -1506,6 +1539,7 @@ function switchSection(name){
   document.querySelectorAll('.topbtn').forEach(x=>x.classList.toggle('active',x.dataset.sec===name));
   const el=$('sec-'+name);if(el)el.classList.add('open');
   if(name==='registrationapproval')loadRegistrationApprovals();
+  if(name==='writeTous'){window.gcWriteRows=window.gcWriteRows||[];gcLoadWriteToUs();}
   if(name==='accountaccess')gcAdminLoadAccountAccess();
   if((name==='learning'||name==='approval')&&!lrrLoaded&&!lrrLoading)loadLearning();
   if(name==='coins'&&!coinHistoryLoaded)loadCoinHistory();
