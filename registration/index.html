@@ -87,7 +87,62 @@
 }
 </style>
 
-<style id="gc-global-chatgpt-font-20261030">html,body{font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}body,body button,body input,body select,body textarea,body table,body th,body td,body label,body p,body h1,body h2,body h3,body h4,body small,body strong,body b,body a,body span,body div{font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}</style><style id="gc-global-roboto-font"> @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800;900&display=swap');html,body,body *{font-family:'Roboto',Arial,sans-serif!important}input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-serif!important}</style></head><body><div class="page">
+<style id="gc-global-chatgpt-font-20261030">html,body{font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}body,body button,body input,body select,body textarea,body table,body th,body td,body label,body p,body h1,body h2,body h3,body h4,body small,body strong,body b,body a,body span,body div{font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif!important}</style><style id="gc-global-roboto-font"> @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;600;700;800;900&display=swap');html,body,body *{font-family:'Roboto',Arial,sans-serif!important}input,button,select,textarea,option,table,th,td{font-family:'Roboto',Arial,sans-serif!important}</style><style id="gc-registration-mobile-layout-final-20261125">
+/* Explicit mobile form layout. Keep this in HEAD so it overrides the legacy one-column rule. */
+@media screen and (max-width:760px){
+  html,body{width:100%;max-width:100%;overflow-x:hidden}
+  .page{width:calc(100% - 20px)!important;max-width:100%!important;margin:0 auto!important;padding-bottom:24px!important}
+  #form{width:100%!important;max-width:100%!important}
+  #form .card,#form .section{width:100%!important;max-width:100%!important;min-width:0!important}
+  #form .grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;column-gap:10px!important;row-gap:12px!important;align-items:start!important}
+  #form .grid>.field{display:block!important;min-width:0!important;width:100%!important;max-width:100%!important;grid-column:auto!important}
+  #form .grid>.field.full{grid-column:1/-1!important}
+  #form .field label{display:block!important;max-width:100%!important;font-size:10px!important;line-height:1.3!important;white-space:normal!important;overflow-wrap:anywhere!important;margin:0 0 5px!important}
+  #form .field input,#form .field select,#form .field textarea{display:block!important;width:100%!important;min-width:0!important;max-width:100%!important;height:auto!important;min-height:41px!important;padding:9px 8px!important;font-size:13px!important;line-height:1.35!important;border-radius:9px!important}
+  #form .field textarea{min-height:78px!important}
+  #form .field .hint{font-size:10px!important;line-height:1.4!important;overflow-wrap:anywhere}
+  #form .section{padding:12px!important;margin-top:12px!important;border-radius:15px!important}
+  #form .card{padding:12px!important;margin-top:12px!important;border-radius:16px!important}
+  #form .section h3{font-size:14px!important;line-height:1.35!important;margin:0 0 10px!important}
+  #form .section-title{font-size:16px!important;line-height:1.3!important;margin-bottom:11px!important}
+  #form .roles{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
+  #form .role{min-width:0!important;padding:10px!important}
+  #form .role b{font-size:12px!important}
+  #form .role small{font-size:10px!important;line-height:1.35!important}
+  #gcRoleFirstCard{padding:12px!important;margin:12px 0!important}
+  #gcRoleFirstCard .gc-role-choice-grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:9px!important}
+  #gcRoleFirstCard .role{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important;gap:5px!important;min-height:0!important;padding:10px 6px!important}
+  #gcRoleFirstCard .gc-role-art{flex:0 0 54px!important;width:54px!important;height:54px!important}
+  #gcRoleFirstCard .gc-role-copy{align-items:center!important;gap:4px!important;min-width:0}
+  #gcRoleFirstCard .gc-role-copy b{font-size:12px!important;line-height:1.2!important}
+  #gcRoleFirstCard .gc-role-copy small,#gcRoleFirstCard .gc-role-copy em{font-size:10px!important;line-height:1.3!important}
+  .registration-id-card{padding:12px!important}
+  .registration-id-input-wrap{width:100%!important;max-width:100%!important}
+  .otp-card{padding:12px!important}
+  .otp-row{display:grid!important;grid-template-columns:repeat(8,minmax(0,1fr))!important;gap:4px!important}
+  .otp{width:100%!important;min-width:0!important;height:42px!important;font-size:16px!important}
+  .payment{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important}
+  .terms-list{padding:9px!important}
+  .term{grid-template-columns:27px minmax(0,1fr)!important;gap:8px!important;padding:10px!important}
+  .term p{font-size:11.5px!important;line-height:1.5!important}
+  .accept{padding:12px!important;font-size:11px!important;line-height:1.5!important}
+  #form .submit{padding:14px!important;font-size:13px!important}
+}
+@media screen and (max-width:380px){
+  .page{width:calc(100% - 14px)!important}
+  #form .grid{column-gap:7px!important;row-gap:10px!important}
+  #form .field label{font-size:9px!important}
+  #form .field input,#form .field select,#form .field textarea{font-size:12px!important;padding:8px 6px!important}
+  #gcRoleFirstCard .gc-role-art{flex-basis:46px!important;width:46px!important;height:46px!important}
+  #gcRoleFirstCard .gc-role-copy b{font-size:11px!important}
+  .otp-row{gap:3px!important}
+  .otp{height:38px!important;font-size:14px!important}
+}
+@media screen and (max-width:330px){
+  #form .grid{grid-template-columns:minmax(0,1fr)!important}
+  #form .grid>.field.full{grid-column:1!important}
+}
+</style></head><body><div class="page">
 <header class="topbar"><a class="brand exact-registration-brand" href="/index.html"><img class="exact-registration-logo" src="/guru-connect-brand.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></a><a class="home-btn" href="/index.html">← Home</a></header>
 <section class="hero"><div class="hero-inner"><h1>Join GURU CONNECT</h1><p>Build your Student or Tutor profile with a modern, secure registration experience. Email verification is required before registration can be completed.</p><div class="hero-badges"><span class="hero-badge">✓ Email verified registration</span><span class="hero-badge">🎓 Students</span><span class="hero-badge">👨‍🏫 Tutors</span><span class="hero-badge">🔒 Secure account</span></div></div></section>
 <section class="card terms-first-gate" id="termsFirstGate"><h2 class="section-title"><span class="title-icon">✓</span>Terms &amp; Conditions</h2><div class="terms-first-banner">STEP 1 — READ AND AGREE TO THE TERMS &amp; CONDITIONS TO CONTINUE TO REGISTRATION</div><div class="terms-shell"><div class="terms-brand"><img alt="GURU CONNECT logo" src="/guru-connect-header-transparent.png"/><div><div class="terms-brand-name"><span>GURU</span> <span>CONNECT</span></div><p>Connecting Mind - Creating Future...</p></div></div><div class="terms-head"><h3>GURU CONNECT User Agreement &amp; Registration Terms</h3><p>Please read the terms carefully. Your registration can be completed only after you tick the agreement box below.</p></div><div class="terms-list">
