@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en"><head><base href="/"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Write to Us | GURU CONNECT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" defer></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#eff6ff,#f8fbff 48%,#f0fdfa);font-family:Roboto,Arial,sans-serif;color:#172033}.page{width:min(850px,94%);margin:24px auto 55px}.brand{display:flex;align-items:center;gap:14px;margin-bottom:18px}.brand img{width:76px;height:76px;object-fit:contain}.brand strong{font-size:clamp(25px,4vw,38px);font-weight:900;letter-spacing:-1px}.brand small{display:block;color:#64748b;font-weight:700;margin-top:5px}.home{margin-left:auto;color:#155eef;text-decoration:none;font-weight:800}.hero{padding:23px 26px;border-radius:22px;background:linear-gradient(115deg,#1746ad,#1676dc,#0e9fa8);color:white;box-shadow:0 15px 35px #155eef26}.hero h1{margin:0;font-size:clamp(24px,4vw,34px)}.hero p{margin:8px 0 0;line-height:1.55;color:#eaf6ff}.card{background:white;border:1px solid #dbe5f2;border-radius:22px;padding:24px;margin-top:18px;box-shadow:0 15px 40px #0f172a0d}.notice{padding:12px 14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;color:#1e40af;font-size:13px;font-weight:700;line-height:1.5;margin-bottom:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.field.full{grid-column:1/-1}.field label{display:block;font-size:12px;font-weight:900;color:#334155;margin-bottom:7px}.field input,.field select,.field textarea{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:13px 14px;font:500 15px Roboto,Arial;outline:none;background:#fff}.field input:focus,.field select:focus,.field textarea:focus{border-color:#2563eb;box-shadow:0 0 0 3px #2563eb18}.field textarea{min-height:150px;resize:vertical}.required{color:#dc2626}.captcha{margin-top:18px;padding:14px;border:1px dashed #93c5fd;border-radius:13px;background:#f8fbff}.captcha b{display:block;font-size:12px;margin-bottom:10px;color:#1e3a8a}.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:20px}.submit{border:0;border-radius:12px;background:linear-gradient(100deg,#155eef,#0891b2);color:white;padding:14px 24px;font-size:14px;font-weight:900;cursor:pointer}.submit:disabled{opacity:.55;cursor:not-allowed}.status{font-size:13px;font-weight:700;line-height:1.5}.footer{text-align:center;color:#64748b;font-size:12px;margin-top:18px}@media(max-width:620px){.page{margin-top:14px}.brand img{width:62px;height:62px}.brand strong{font-size:25px}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.card{padding:17px}.hero{padding:20px}}
+</style></head><body><main class="page">
+<header class="brand"><img src="/guru-connect-brand.png" alt="GURU CONNECT logo"><div><strong>GURU CONNECT</strong><small>Learn • Connect • Grow</small></div><a class="home" href="/">HOME</a></header>
+<section class="hero"><h1>WRITE TO US</h1><p>Have a question, need assistance, or want to share a complaint or suggestion? Send us your message. Our team will review it.</p></section>
+<form class="card" id="writeForm" novalidate>
+<div class="notice">All fields marked <span class="required">*</span> are compulsory. Please provide correct contact details so our team can respond to you.</div>
+<div class="grid">
+<div class="field"><label for="fullName">FULL NAME <span class="required">*</span></label><input id="fullName" name="full_name" autocomplete="name" maxlength="120" required placeholder="Enter your full name"></div>
+<div class="field"><label for="mobile">MOBILE NUMBER <span class="required">*</span></label><input id="mobile" name="mobile_number" type="tel" autocomplete="tel" maxlength="20" required placeholder="Enter your mobile number"></div>
+<div class="field"><label for="email">EMAIL ADDRESS <span class="required">*</span></label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required placeholder="Enter your email address"></div>
+<div class="field"><label for="type">MESSAGE TYPE <span class="required">*</span></label><select id="type" name="message_type" required><option value="">Select message type</option><option>Enquiry</option><option>Need Assistance</option><option>Complaint</option><option>Suggestion</option><option>Other</option></select></div>
+<div class="field full"><label for="message">YOUR MESSAGE <span class="required">*</span></label><textarea id="message" name="message" maxlength="5000" required placeholder="Please write your question, need, complaint or suggestion here..."></textarea></div>
+</div>
+<div class="captcha"><b>HUMAN VERIFICATION <span class="required">*</span></b><div id="gcWriteTurnstile"></div><div class="status" id="captchaStatus">Please complete the security verification.</div></div>
+<div class="actions"><button class="submit" id="submitBtn" type="submit" disabled>SUBMIT MESSAGE</button><span class="status" id="formStatus" role="status" aria-live="polite"></span></div>
+</form><div class="footer">GURU CONNECT · connecting mind - creating Future</div>
+</main>
+<script>
+(()=> {
+ const U='https://hzqqswrnawrfgufbxgay.supabase.co', K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu';
+ const $=id=>document.getElementById(id);let token='',widget=null,ready=false;
+ const status=(t,ok=false)=>{$('captchaStatus').textContent=t;$('captchaStatus').style.color=ok?'#15803d':'#b45309'};
+ const enable=()=>{$('submitBtn').disabled=!(ready&&token)};
+ const init=()=>{if(!window.turnstile||widget!==null)return;try{widget=turnstile.render('#gcWriteTurnstile',{sitekey:'0x4AAAAAAFy99xtMvTDkv10E',theme:'light',callback:t=>{token=t;ready=true;status('✓ Human verification completed.',true);enable()},'expired-callback':()=>{token='';ready=false;status('Verification expired. Please complete it again.');enable()},'error-callback':()=>{token='';ready=false;status('Verification could not load. Refresh the page and try again.');enable()}});ready=true;status('Complete the security verification below.')}catch(e){status('Security verification could not load. Please refresh the page.')}};
+ const wait=setInterval(()=>{if(window.turnstile){clearInterval(wait);init()}},250);
+ $('writeForm').addEventListener('submit',async e=>{
+  e.preventDefault();const form=e.currentTarget;
+  if(!form.reportValidity())return;
+  if(!token){$('formStatus').textContent='Please complete human verification first.';return}
+  const btn=$('submitBtn');btn.disabled=true;btn.textContent='SUBMITTING…';$('formStatus').textContent='Sending your message securely…';
+  try{
+   const payload={full_name:$('fullName').value.trim(),mobile_number:$('mobile').value.trim(),email:$('email').value.trim(),message_type:$('type').value,message:$('message').value.trim(),turnstile_token:token};
+   const r=await fetch(U+'/functions/v1/gc-write-to-us',{method:'POST',headers:{'Content-Type':'application/json','apikey':K},body:JSON.stringify(payload)});
+   const d=await r.json().catch(()=>({}));
+   if(!r.ok||!d.success)throw new Error(d.message||'Your message could not be submitted. Please try again.');
+   $('formStatus').textContent='✓ '+d.message+' Reference: '+d.reference_id;
+   $('formStatus').style.color='#15803d';form.reset();token='';ready=false;enable();if(window.turnstile&&widget!==null)turnstile.reset(widget);status('Please complete the security verification for your next message.');
+  }catch(err){$('formStatus').textContent=err.message||'Submission failed. Please try again.';$('formStatus').style.color='#b91c1c';token='';ready=false;enable();if(window.turnstile&&widget!==null)turnstile.reset(widget)}
+  finally{btn.textContent='SUBMIT MESSAGE';enable()}
+ });
+})();
+</script></body></html>
