@@ -22,17 +22,17 @@ jobs:
           import re
           p=Path("index.html")
           s=p.read_text(encoding="utf-8")
-          menu=re.search(r'(<nav\\b(?=[^>]*id=["\\']publicNavbarLinks["\\'])[^>]*>)([\\s\\S]*?)(</nav>)',s,re.I)
+          menu=re.search(r'(<nav\b(?=[^>]*id=["\']publicNavbarLinks["\'])[^>]*>)([\s\S]*?)(</nav>)',s,re.I)
           if not menu:
               raise SystemExit("STOP: mobile visitor menu #publicNavbarLinks not found.")
           body=menu.group(2)
           if 'href="/write-to-us/"' not in body:
               anchor='<a class="block px-5 py-3 text-[11px] sm:text-sm font-bold text-blue-700 hover:bg-blue-600 hover:text-white transition" href="/write-to-us/" onclick="closeNavMenu()">✉️ WRITE TO US</a>'
-              guide=re.search(r'<a\\b(?=[^>]*href=["\\']/guidelines/["\\'])[^>]*>.*?</a>',body,re.I|re.S)
+              guide=re.search(r'<a\b(?=[^>]*href=["\']/guidelines/["\'])[^>]*>.*?</a>',body,re.I|re.S)
               if guide:
-                  body=body[:guide.end()]+'\\n'+anchor+body[guide.end():]
+                  body=body[:guide.end()]+'\n'+anchor+body[guide.end():]
               else:
-                  body=body+ '\\n'+anchor
+                  body=body+'\n'+anchor
               s=s[:menu.start(2)]+body+s[menu.end(2):]
               p.write_text(s,encoding="utf-8")
               print("Inserted WRITE TO US in the mobile hamburger menu.")
