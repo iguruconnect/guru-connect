@@ -1,4 +1,4 @@
-name: Remove stray literal newline text above mobile header
+name: Remove stray literal newline text above homepage navigation
 on:
   push:
     branches: [main]
@@ -30,7 +30,7 @@ jobs:
               while ((node = walker.nextNode())) {
                 const parent = node.parentElement;
                 if (!parent || parent.closest('script,style,textarea,code,pre')) continue;
-                if (/^(?:\\\\n\\s*)+$/.test(node.nodeValue.trim())) remove.push(node);
+                if (/^(?:\\n\s*)+$/.test(node.nodeValue.trim())) remove.push(node);
               }
               remove.forEach(node => node.remove());
             };
@@ -48,13 +48,13 @@ jobs:
           })();
           </script>
           """
-          pattern = r'<script\\b(?=[^>]*\\bid=["\\']gc-remove-visible-literal-newlines-mobile-2026["\\'])[^>]*>[\\s\\S]*?</script>'
+          pattern = r'<script\b(?=[^>]*\bid=["\']gc-remove-visible-literal-newlines-mobile-2026["\'])[^>]*>[\s\S]*?</script>'
           if re.search(pattern,s,re.I):
               s=re.sub(pattern,lambda _:script,s,count=1,flags=re.I)
           else:
               pos=s.lower().rfind('</body>')
               if pos<0: raise SystemExit('Closing body tag not found; refusing change.')
-              s=s[:pos]+script+'\\n'+s[pos:]
+              s=s[:pos]+script+'\n'+s[pos:]
           p.write_text(s,encoding='utf-8')
           print('Updated the precise cleanup so standalone visible literal \\n text is removed on desktop and mobile.')
           PY
@@ -66,6 +66,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "No changes needed."
           else
-            git commit -m "Remove stray literal newline text above mobile header"
+            git commit -m "Remove stray literal newline text above homepage navigation"
             git push
           fi
