@@ -11,20 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Add precise cleanup for visible literal newline text
+      - name: Remove standalone visible newline escape text on desktop and mobile
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
           p=Path("index.html")
           s=p.read_text(encoding="utf-8")
-          marker='gc-remove-visible-literal-newlines-mobile-2026'
-          if marker not in s:
-              script = r"""
+          script = r"""
           <script id="gc-remove-visible-literal-newlines-mobile-2026">
           (() => {
             const removeStrayNewlineText = () => {
-              if (window.matchMedia && !window.matchMedia('(max-width: 640px)').matches) return;
               const root = document.querySelector('header.gc-beautiful-header')?.parentElement || document.body;
               const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
               const remove = [];
@@ -32,7 +30,7 @@ jobs:
               while ((node = walker.nextNode())) {
                 const parent = node.parentElement;
                 if (!parent || parent.closest('script,style,textarea,code,pre')) continue;
-                if (/^(?:\\n\s*)+$/.test(node.nodeValue.trim())) remove.push(node);
+                if (/^(?:\\\\n\\s*)+$/.test(node.nodeValue.trim())) remove.push(node);
               }
               remove.forEach(node => node.remove());
             };
@@ -50,11 +48,15 @@ jobs:
           })();
           </script>
           """
+          pattern = r'<script\\b(?=[^>]*\\bid=["\\']gc-remove-visible-literal-newlines-mobile-2026["\\'])[^>]*>[\\s\\S]*?</script>'
+          if re.search(pattern,s,re.I):
+              s=re.sub(pattern,lambda _:script,s,count=1,flags=re.I)
+          else:
               pos=s.lower().rfind('</body>')
               if pos<0: raise SystemExit('Closing body tag not found; refusing change.')
               s=s[:pos]+script+'\\n'+s[pos:]
           p.write_text(s,encoding='utf-8')
-          print('Added a mobile-only cleanup that removes only standalone visible literal \\n text nodes; all other page content is preserved.')
+          print('Updated the precise cleanup so standalone visible literal \\n text is removed on desktop and mobile.')
           PY
       - name: Commit and push
         run: |
