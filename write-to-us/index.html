@@ -55,8 +55,9 @@
    const r=await fetch(U+'/functions/v1/gc-write-to-us',{method:'POST',headers:{'Content-Type':'application/json','apikey':K},body:JSON.stringify(payload)});
    const d=await r.json().catch(()=>({}));
    if(!r.ok||!d.success)throw new Error(d.message||'Your message could not be submitted. Please try again.');
-   const reference='GC-WTU-'+String(d.reference_id||'').replace(/-/g,'').toUpperCase();
+   const reference=d.reference_number||('GC-WTU-'+String(d.reference_id||'').replace(/-/g,'').toUpperCase());
    $('successReference').textContent=reference;
+   $('ackEmailNote').textContent=d.acknowledgement_email_sent?'A confirmation email has been sent to '+payload.email+'. Please check your inbox or spam folder.':'Your message is safely received. The email acknowledgement could not be sent right now. Please keep your reference number for future communication.';
    $('successOverlay').classList.add('show');
    $('copyReference').textContent='COPY REFERENCE NUMBER';
    $('formStatus').textContent='✓ Your message has been received.';
