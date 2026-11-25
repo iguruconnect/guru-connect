@@ -204,6 +204,46 @@
  #gcRegistrationPrintHeader .gc-registration-contact{font-size:10px}
 }
 </style>
+<style id="gc-registration-classic-square-form-20261125">
+/* Classic paper-form appearance: square panels, clear black labels and readable entry boxes. */
+#form{color:#171717!important}
+#form .card,#form .section,#gcRegistrationPrintHeader{
+ border-radius:3px!important;box-shadow:none!important
+}
+#form .card,#form .section{
+ background:#f1f2f4!important;border:1px solid #bfc4cb!important;padding:18px!important
+}
+#form .section-title,#form .section h3,#form h2,#form h3{color:#171717!important}
+#form .field{min-width:0}
+#form .field label{
+ display:block!important;color:#111!important;font-size:13px!important;font-weight:700!important;
+ line-height:1.4!important;margin:0 0 6px!important
+}
+#form .field input,#form .field select,#form .field textarea,
+#form input:not([type=checkbox]):not([type=radio]),#form select,#form textarea{
+ color:#111!important;background:#fff!important;border:1px solid #8f969f!important;
+ border-radius:2px!important;box-shadow:none!important;min-height:42px!important;
+ padding:10px 11px!important;font-size:14px!important
+}
+#form .field textarea{min-height:88px!important}
+#form .field input::placeholder,#form textarea::placeholder{color:#555!important;opacity:1!important}
+#form .field select option{color:#111!important;background:#fff!important}
+#form .field .hint,#form .hint,#form small,#form .muted{color:#444!important}
+#form .registration-id-card,#form .otp-card{
+ border-radius:3px!important;background:#e7e9ec!important;border:1px solid #aeb4bc!important;box-shadow:none!important
+}
+#form .registration-id-kicker,#form .registration-id-title,#form .registration-id-hint,
+#form .otp-title,#form .otp-card .hint{color:#222!important}
+#form .otp{border-radius:2px!important;color:#111!important}
+#gcRegistrationPrintHeader{border-radius:3px!important}
+@media(max-width:600px){
+ #form .card,#form .section{padding:13px!important}
+ #form .grid{grid-template-columns:minmax(0,1fr)!important;row-gap:13px!important}
+ #form .grid>.field.full{grid-column:1!important}
+ #form .field label{font-size:13px!important}
+ #form .field input,#form .field select,#form .field textarea{font-size:14px!important;min-height:44px!important}
+}
+</style>
 </head><body><div class="page">
 <header class="topbar"><a class="brand exact-registration-brand" href="/index.html"><img class="exact-registration-logo" src="/Best%20NB%20New%20age.png" alt="GURU CONNECT logo"><span class="exact-registration-copy"><strong>GURU CONNECT</strong><small>Connecting Mind - Creating Future</small></span></a><a class="home-btn" href="/index.html">← Home</a></header>
 <section class="hero"><div class="hero-inner"><h1>Join GURU CONNECT</h1><p>Build your Student or Tutor profile with a modern, secure registration experience. Email verification is required before registration can be completed.</p><div class="hero-badges"><span class="hero-badge">✓ Email verified registration</span><span class="hero-badge">🎓 Students</span><span class="hero-badge">👨‍🏫 Tutors</span><span class="hero-badge">🔒 Secure account</span></div></div></section>
@@ -237,7 +277,7 @@
   <h2 id="gcRegistrationFormTitle">Student's Registration Form</h2>
   <div class="gc-registration-contact"><a href="https://www.guruconnnect.in" target="_blank" rel="noopener">www.guruconnnect.in</a><span>|</span><a href="https://wa.me/15557777707" target="_blank" rel="noopener">WhatsApp: +1 555 77 77 707</a></div>
 </section>
-<section class="card"><h2 class="section-title"><span class="title-icon">✦</span>Choose your registration</h2><div class="roles"><button class="role active" data-role="student" type="button"><b>🎓 Student Registration</b><small>Post Learning Requirements, discover tutors and connect with educators.</small></button><button class="role" data-role="tutor" type="button"><b>👨‍🏫 Tutor Registration</b><small>Create your teaching profile and connect with students.</small></button></div>
+<section class="card" id="gcRegistrationRolePicker"><h2 class="section-title"><span class="title-icon">✦</span>Choose your registration</h2><div class="roles"><button class="role active" data-role="student" type="button"><b>🎓 Student Registration</b><small>Post Learning Requirements, discover tutors and connect with educators.</small></button><button class="role" data-role="tutor" type="button"><b>👨‍🏫 Tutor Registration</b><small>Create your teaching profile and connect with students.</small></button></div>
 <div class="section blue"><h3>👤 Account Details</h3><div class="grid">
 <div class="registration-id-card" aria-label="GURU CONNECT registration number">
   <div class="registration-id-copy">
@@ -287,7 +327,7 @@ $('gcActivityModal')?.addEventListener('click',e=>{if(e.target.id==='gcActivityM
 function setOtpInputs(enabled){document.querySelectorAll('.otp').forEach(x=>{x.disabled=!enabled;x.value='';});$('verifyOtp').disabled=!enabled;if(enabled)document.querySelector('.otp').focus()}
 function generateRegistrationNo(){const el=$('registration_no');if(!el)return;if(/^\d{8}$/.test(el.value))return;let n='';try{const a=new Uint32Array(1);crypto.getRandomValues(a);n=String(10000000+(a[0]%90000000));}catch(_){n=String(Math.floor(10000000+Math.random()*90000000));}el.value=n;}
 generateRegistrationNo();
-function gcRegistrationDateIndia(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}function syncRole(){if($('gcRegistrationFormTitle'))$('gcRegistrationFormTitle').textContent=role==='tutor'?"Tutor's Registration Form":"Student's Registration Form";document.querySelectorAll('.role').forEach(b=>b.classList.toggle('active',b.dataset.role===role));document.querySelectorAll('.tutorOnly').forEach(x=>x.style.display=role==='tutor'?'block':'none');document.querySelectorAll('.studentOnly').forEach(x=>x.style.display=role==='student'?'block':'none');$('submit').textContent='COMPLETE '+role.toUpperCase()+' REGISTRATION';if($('registration_date'))$('registration_date').value=gcRegistrationDateIndia();syncStudentHelplineUI()}
+function gcRegistrationDateIndia(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Kolkata',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date())}function syncRole(){if($('gcRegistrationRolePicker'))$('gcRegistrationRolePicker').style.display=(requestedRole==='student'||requestedRole==='tutor')?'none':'';if($('gcRegistrationFormTitle'))$('gcRegistrationFormTitle').textContent=role==='tutor'?"Tutor's Registration Form":"Student's Registration Form";document.querySelectorAll('.role').forEach(b=>b.classList.toggle('active',b.dataset.role===role));document.querySelectorAll('.tutorOnly').forEach(x=>x.style.display=role==='tutor'?'block':'none');document.querySelectorAll('.studentOnly').forEach(x=>x.style.display=role==='student'?'block':'none');$('submit').textContent='COMPLETE '+role.toUpperCase()+' REGISTRATION';if($('registration_date'))$('registration_date').value=gcRegistrationDateIndia();syncStudentHelplineUI()}
 document.querySelectorAll('.role').forEach(b=>b.addEventListener('click',()=>{if(otpVerified)return;role=b.dataset.role;syncRole()}));
 const requestedRole=new URLSearchParams(location.search).get('role');
 if(requestedRole==='student'||requestedRole==='tutor')role=requestedRole;
