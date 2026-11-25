@@ -320,15 +320,16 @@ async function sendWelcomeEmail(user){try{const email=$('email').value.trim().to
   const cb=document.getElementById('terms');
    const mobileConsent=document.getElementById('mobileVerificationConsent');
   const status=document.getElementById('termsGateStatus');
-  if(!gate||!form||!cb)return;
+  if(!gate||!form||!cb||!mobileConsent)return;
   function update(){
-    const ok=!!cb.checked;
+    const ok=!!cb.checked&&!!mobileConsent.checked;
     form.classList.toggle('gc-form-locked',!ok);
     gate.classList.toggle('accepted',ok);
     if(status) status.textContent=ok ? '✓ Terms accepted and mobile verification consent recorded. You can now proceed with registration.' : 'Please accept the Terms & Conditions and separately tick the mobile verification consent box to unlock registration.';
     if(ok){ setTimeout(()=>{ const first=form.querySelector('input:not([type="hidden"]),select,textarea,button'); if(first) first.focus({preventScroll:true}); form.scrollIntoView({behavior:'smooth',block:'start'}); },120); }
   }
   cb.addEventListener('change',update);
+  mobileConsent.addEventListener('change',update);
   update();
 })();
 </script><style id="gc-global-arial-nova-code-font-20261101">
