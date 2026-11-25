@@ -943,7 +943,7 @@ async function loadRegistrationApprovals(){
       const role=String(p.role||'').toLowerCase();if(!['student','tutor'].includes(role))return false;
       const detail=(role==='student'?studentMap:tutorMap).get(String(p.id))||{};
       const state=String(p.registration_approval_status||detail.registration_approval_status||'').toUpperCase();
-      return state && state!=='APPROVED';
+      return state && state!=='APPROVED' && registrationMap.has(String(p.id));
     });
     count.textContent=pending.length+' NEED REVIEW';const pendingStat=document.getElementById('gcStatPending');if(pendingStat)pendingStat.textContent=String(pending.length);
     if(!pending.length){out.innerHTML='<div class="empty">No pending registration approvals. New registrations will appear here after the approval-status SQL migration is applied.</div>';status.textContent='Registration approval list refreshed.';return;}
