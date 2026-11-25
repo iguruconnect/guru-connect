@@ -731,7 +731,7 @@ body,body button,body input,body select,body textarea,body table,body th,body td
  <div><h3 style="color:#1d4ed8;margin:6px 0">🎓 STUDENT MOBILE VERIFICATION REGISTER</h3><div id="studentMobileVerificationResults" class="results"></div></div>
  <div><h3 style="color:#047857;margin:6px 0">👨‍🏫 TUTOR MOBILE VERIFICATION REGISTER</h3><div id="tutorMobileVerificationResults" class="results"></div></div>
 </div>
-<div style="margin-top:14px"><h3 style="margin:6px 0">📒 CALL HISTORY / OFFICIAL VERIFICATION LOG</h3><div id="mobileVerificationHistory" class="results"></div></div>
+<div style="margin-top:14px"><h3 style="margin:6px 0">📒 SEPARATE OFFICIAL CALL REGISTERS</h3><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px"><div><h4 style="color:#1d4ed8">STUDENT CALL HISTORY</h4><div id="studentMobileVerificationHistory" class="results"></div></div><div><h4 style="color:#047857">TUTOR CALL HISTORY</h4><div id="tutorMobileVerificationHistory" class="results"></div></div></div></div>
 <div id="registrationApprovalStatus" class="status"></div><div id="registrationApprovalResults" class="results"><div class="empty">Open this tab to load pending registrations.</div></div></div></section>
 
 <section class="section" id="sec-learning"><div class="secHead"><div><h2>📚 LRR — Learning Requirement Requests</h2><p>All Learning Requirement Requests load directly into this tab. Every request has Admin controls for tutor approval, rejection, return, coins and case chat.</p></div><div class="actions" style="margin:0"><span class="pill" id="lrrCount">0 REQUESTS</span><button id="loadLearning" class="btn light">↻ REFRESH LRR</button></div></div><div class="secBody"><div class="lrrControlNote"><b>LRR controls:</b> Approve to Tutor · Reject · Return to Student · Tutor Coins · Student Coins · Chat Student · Chat Tutor</div><div style="margin:10px 0 14px"><button type="button" class="btn light" onclick="adminOpenCentralHistory()">📜 OPEN LRR & CONNECTION HISTORY</button></div><div id="learningStatus" class="status"></div><div id="learningResults" class="results"><div class="empty">Loading Learning Requirement Requests…</div></div></div></section>
@@ -882,8 +882,8 @@ async function gcPrintRegistrationForm(userId,profileId,email){
 }
 
 async function loadMobileVerificationRegister(){
- const status=$('mobileVerificationStatus'),studentOut=$('studentMobileVerificationResults'),tutorOut=$('tutorMobileVerificationResults'),historyOut=$('mobileVerificationHistory');
- if(!status||!studentOut||!tutorOut||!historyOut)return;
+ const status=$('mobileVerificationStatus'),studentOut=$('studentMobileVerificationResults'),tutorOut=$('tutorMobileVerificationResults'),studentHistoryOut=$('studentMobileVerificationHistory'),tutorHistoryOut=$('tutorMobileVerificationHistory');
+ if(!status||!studentOut||!tutorOut||!studentHistoryOut||!tutorHistoryOut)return;
  status.textContent='Loading separate Student and Tutor verification registers…';
  try{
   const response=await sb.functions.invoke('gc-mobile-verification',{body:{action:'list'}});
@@ -903,7 +903,7 @@ async function loadMobileVerificationRegister(){
   };
   studentOut.innerHTML=applicants.filter(p=>String(p.role).toLowerCase()==='student').map(renderApplicant).join('')||'<div class="empty">No new Student registrations are awaiting mobile verification.</div>';
   tutorOut.innerHTML=applicants.filter(p=>String(p.role).toLowerCase()==='tutor').map(renderApplicant).join('')||'<div class="empty">No new Tutor registrations are awaiting mobile verification.</div>';
-  historyOut.innerHTML=history.map(h=>'<article class="user" style="margin:6px 0"><b>'+esc(h.applicant_name||'Applicant')+'</b> · '+esc(String(h.role||'').toUpperCase())+' · '+esc(h.mobile_number||'—')+'<div class="muted">Call: '+esc(h.call_date||'—')+' at '+esc(String(h.call_time||'').slice(0,5))+' IST · Officer: '+esc(h.verification_officer||'—')+'<br>Outcome: <b>'+esc(h.outcome||'—')+'</b> · Recorded: '+esc(h.recorded_at?new Date(h.recorded_at).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}):'—')+'<br>Remarks: '+esc(h.remarks||'—')+'</div></article>').join('')||'<div class="empty">No mobile verification calls have been recorded yet.</div>';
+  const renderHistory=h=>'<article class="user" style="margin:6px 0"><b>'+esc(h.applicant_name||'Applicant')+'</b> · '+esc(h.mobile_number||'—')+'<div class="muted">Call: '+esc(h.call_date||'—')+' at '+esc(String(h.call_time||'').slice(0,5))+' IST · Officer: '+esc(h.verification_officer||'—')+'<br>Outcome: <b>'+esc(h.outcome||'—')+'</b> · Recorded: '+esc(h.recorded_at?new Date(h.recorded_at).toLocaleString('en-IN',{timeZone:'Asia/Kolkata'}):'—')+'<br>Remarks: '+esc(h.remarks||'—')+'</div></article>';studentHistoryOut.innerHTML=history.filter(h=>String(h.role).toLowerCase()==='student').map(renderHistory).join('')||'<div class="empty">No Student calls recorded yet.</div>';tutorHistoryOut.innerHTML=history.filter(h=>String(h.role).toLowerCase()==='tutor').map(renderHistory).join('')||'<div class="empty">No Tutor calls recorded yet.</div>';
   document.querySelectorAll('[data-mobile-save]').forEach(btn=>btn.addEventListener('click',async()=>{
    const id=btn.dataset.mobileSave,outcome=document.querySelector('[data-mobile-outcome="'+id+'"]').value,officer=document.querySelector('[data-mobile-officer="'+id+'"]').value.trim(),callDate=document.querySelector('[data-mobile-date="'+id+'"]').value,callTime=document.querySelector('[data-mobile-time="'+id+'"]').value,remarks=document.querySelector('[data-mobile-remarks="'+id+'"]').value.trim();
    if(!officer||!callDate||!callTime){status.textContent='Please enter the call date, time and Verification Officer name.';return;}
