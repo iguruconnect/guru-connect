@@ -658,4 +658,58 @@ window.gcUnlockRegistrationForm=function(){
   }
 };
 </script>
+
+<style id="gc-student-helpline-payment-visibility-fix-20261125">
+/* Paid student plans must visibly reveal the UPI controls and QR area. */
+#form #studentHelplinePlanArea.student-helpline-payment.show{display:grid!important}
+#form #studentHelplinePaymentArea.student-helpline-payment.show{display:block!important;visibility:visible!important;opacity:1!important}
+#form #studentHelplineUpiArea[style*="display: grid"]{display:grid!important;grid-template-columns:minmax(0,1fr) 240px!important;align-items:center!important;gap:18px!important}
+#form #studentHelplineUpiLink[style*="inline-block"]{display:inline-block!important;visibility:visible!important}
+#form #studentHelplineQrWrap[style*="block"]{display:block!important;visibility:visible!important;opacity:1!important}
+#form #studentHelplineQrWrap .qr{display:grid!important;visibility:visible!important}
+@media(max-width:760px){#form #studentHelplineUpiArea[style*="display: grid"]{grid-template-columns:minmax(0,1fr)!important}}
+</style>
+<script id="gc-student-helpline-payment-refresh-fix-20261125">
+(function(){
+  function refreshStudentHelplinePayment(){
+    var choice=document.getElementById('helpline_choice');
+    var plan=document.getElementById('student_helpline_plan');
+    var mode=document.getElementById('student_helpline_mode');
+    if(!choice||!plan||!mode)return;
+    var selected=choice.value==='with_helpline'&&plan.value!=='';
+    var amount=Number(plan.selectedOptions[0]?.dataset.amount||0);
+    var paid=selected&&amount>0;
+    var upi=paid&&mode.value==='upi';
+    var area=document.getElementById('studentHelplinePaymentArea');
+    var upiArea=document.getElementById('studentHelplineUpiArea');
+    var link=document.getElementById('studentHelplineUpiLink');
+    var qrWrap=document.getElementById('studentHelplineQrWrap');
+    var qr=document.getElementById('studentHelplineQr');
+    var qrAmount=document.getElementById('studentHelplineQrAmount');
+    if(area)area.classList.toggle('show',selected);
+    if(upiArea)upiArea.style.display=upi?'grid':'none';
+    if(link){
+      link.style.display=upi?'inline-block':'none';
+      if(upi)link.href='upi://pay?pa=7837835252@okbizaxis&pn=Verizon%20Learnx%20Academy&cu=INR&am='+amount;
+    }
+    if(qrWrap)qrWrap.style.display=upi?'block':'none';
+    if(qrAmount&&upi)qrAmount.textContent='Scan to pay ₹'+amount.toLocaleString('en-IN');
+    if(qr&&upi){
+      qr.innerHTML='';
+      if(typeof QRCode!=='undefined'){
+        try{new QRCode(qr,{text:'upi://pay?pa=7837835252@okbizaxis&pn=Verizon%20Learnx%20Academy&cu=INR&am='+amount,width:199,height:199,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});}
+        catch(e){qr.textContent='QR could not be generated. Please use the UPI payment button.';}
+      }else{qr.textContent='QR library could not load. Please use the UPI payment button.';}
+    }else if(qr){qr.innerHTML='';}
+  }
+  document.addEventListener('change',function(e){
+    if(e.target&&['helpline_choice','student_helpline_plan','student_helpline_mode'].includes(e.target.id)){
+      setTimeout(refreshStudentHelplinePayment,0);
+    }
+  },true);
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',refreshStudentHelplinePayment);
+  else refreshStudentHelplinePayment();
+})();
+</script>
+
 </body></html>
