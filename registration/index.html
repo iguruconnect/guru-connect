@@ -244,6 +244,10 @@
  #form .field input,#form .field select,#form .field textarea{font-size:14px!important;min-height:44px!important}
 }
 </style>
+<style id="gc-hide-duplicate-registration-role-tiles-20261125">
+/* Role is selected before the terms gate; do not repeat the selector in the form. */
+#gcRegistrationRolePicker{display:none!important}
+</style>
 </head><body><div class="page">
 <header class="topbar"><a class="brand exact-registration-brand" href="/index.html"><img class="exact-registration-logo" src="/Best%20NB%20New%20age.png" alt="GURU CONNECT logo"><span class="exact-registration-copy"><strong>GURU CONNECT</strong><small>Connecting Mind - Creating Future</small></span></a><a class="home-btn" href="/index.html">← Home</a></header>
 <section class="hero"><div class="hero-inner"><h1>Join GURU CONNECT</h1><p>Build your Student or Tutor profile with a modern, secure registration experience. Email verification is required before registration can be completed.</p><div class="hero-badges"><span class="hero-badge">✓ Email verified registration</span><span class="hero-badge">🎓 Students</span><span class="hero-badge">👨‍🏫 Tutors</span><span class="hero-badge">🔒 Secure account</span></div></div></section>
@@ -445,7 +449,7 @@ html,body,body *:not(svg):not(path):not(i):not(.material-icons):not(.material-sy
     choice.addEventListener('click',()=>{
       original.click();
       grid.querySelectorAll('.role').forEach(b=>{const active=b.dataset.role===original.dataset.role;b.classList.toggle('active',active);b.setAttribute('aria-pressed',String(active));});
-      gate.classList.remove('gc-waiting-for-role');gate.scrollIntoView({behavior:'smooth',block:'start'});
+      card.style.display='none';const duplicatePicker=document.getElementById('gcRegistrationRolePicker');if(duplicatePicker)duplicatePicker.style.display='none';gate.classList.remove('gc-waiting-for-role');gate.scrollIntoView({behavior:'smooth',block:'start'});
     });
     grid.appendChild(choice);
   });
