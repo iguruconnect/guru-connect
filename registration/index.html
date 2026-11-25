@@ -271,7 +271,7 @@
 <div class="term"><div class="num">17</div><div><strong>Tutor</strong><p>Physical Form &amp; Signature Requirement For Tutors, it is mandatory to keep a physical / hard copy of the completed registration form containing the submitted details and the agreed GURU CONNECT terms &amp; conditions, duly signed by the Tutor. The signed hard copy must be couriered to GURU CONNECT or submitted to a GURU CONNECT Executive when instructed. Further details and submission instructions will be communicated to you through your registered Email Address and/or Phone Number. Please follow the instructions communicated by GURU CONNECT.</p></div></div>
  <div class="term"><div class="num">18</div><div><strong>Mobile Number &amp; Identity Verification Consent</strong><p>By submitting a registration, you agree that GURU CONNECT and its authorised Verification Team may contact you using the phone number and other contact details provided by you, including by telephone call, SMS, WhatsApp, email or another reasonable mode of communication, to verify that the mobile number is reachable and belongs to or is legitimately used by you, and to confirm your identity and the genuineness of the registration. You agree to reasonably cooperate with verification. Your account login and access to GURU CONNECT services will remain restricted until the Verification Team successfully completes the required verification and GURU CONNECT Admin approves your registration. If you do not provide this consent or cannot complete verification, your registration may not be activated.</p></div></div>
 </div>
-<label class="accept"><input id="terms" required="" type="checkbox"/><span class="accept-copy"><span class="accept-brand"><img alt="" src="/Best%20NB%20New%20age.png"/><b>GURU CONNECT — Agreement Confirmation</b></span><span class="accept-note">I HAVE READ, UNDERSTOOD AND ACCEPT THE GURU CONNECT USER AGREEMENT, REGISTRATION TERMS, PRIVACY/SAFETY RULES AND THE RULES APPLICABLE TO MY SELECTED PLAN.</span></span></label><label class="accept" id="mobileVerificationConsentRow" style="margin-top:12px;border:2px solid #2563eb;background:#eff6ff"><input id="mobileVerificationConsent" required="" type="checkbox"/><span class="accept-copy"><span class="accept-brand"><b>📞 MOBILE NUMBER &amp; IDENTITY VERIFICATION — MANDATORY CONSENT</b></span><span class="accept-note">I expressly authorise GURU CONNECT and its authorised Verification Team to call or contact me on the mobile number and other contact details I have provided, by phone call, SMS, WhatsApp, email or another reasonable communication method, to verify my mobile number and confirm that I am a genuine applicant. I understand that my GURU CONNECT login and service access will be enabled only after successful verification and Admin approval.</span></span></label><div class="terms-gate-status" id="termsGateStatus">Please accept the Terms &amp; Conditions and the separate mobile verification consent to unlock the registration form.</div></div>
+<label class="accept"><input id="terms" required="" type="checkbox" onchange="window.gcUnlockRegistrationForm && window.gcUnlockRegistrationForm()"/><span class="accept-copy"><span class="accept-brand"><img alt="" src="/Best%20NB%20New%20age.png"/><b>GURU CONNECT — Agreement Confirmation</b></span><span class="accept-note">I HAVE READ, UNDERSTOOD AND ACCEPT THE GURU CONNECT USER AGREEMENT, REGISTRATION TERMS, PRIVACY/SAFETY RULES AND THE RULES APPLICABLE TO MY SELECTED PLAN.</span></span></label><label class="accept" id="mobileVerificationConsentRow" style="margin-top:12px;border:2px solid #2563eb;background:#eff6ff"><input id="mobileVerificationConsent" required="" type="checkbox" onchange="window.gcUnlockRegistrationForm && window.gcUnlockRegistrationForm()"/><span class="accept-copy"><span class="accept-brand"><b>📞 MOBILE NUMBER &amp; IDENTITY VERIFICATION — MANDATORY CONSENT</b></span><span class="accept-note">I expressly authorise GURU CONNECT and its authorised Verification Team to call or contact me on the mobile number and other contact details I have provided, by phone call, SMS, WhatsApp, email or another reasonable communication method, to verify my mobile number and confirm that I am a genuine applicant. I understand that my GURU CONNECT login and service access will be enabled only after successful verification and Admin approval.</span></span></label><div class="terms-gate-status" id="termsGateStatus">Please accept the Terms &amp; Conditions and the separate mobile verification consent to unlock the registration form.</div></div>
 </section><form class="gc-form-locked" id="form" novalidate="">
 <section class="gc-registration-print-header" id="gcRegistrationPrintHeader">
   <div class="gc-registration-brand">
@@ -556,4 +556,32 @@ html,body,body *:not(svg):not(path):not(i):not(.material-icons):not(.material-sy
 }
 </style>
 
+<script id="gc-registration-form-unlock-reliable-20261125">
+window.gcUnlockRegistrationForm=function(){
+  var form=document.getElementById('form');
+  var terms=document.getElementById('terms');
+  var mobile=document.getElementById('mobileVerificationConsent');
+  var status=document.getElementById('termsGateStatus');
+  var gate=document.getElementById('termsFirstGate');
+  if(!form||!terms||!mobile)return;
+  var ok=terms.checked&&mobile.checked;
+  if(ok){
+    form.classList.remove('gc-form-locked');
+    form.classList.add('gc-form-unlocked');
+    form.hidden=false;
+    form.removeAttribute('hidden');
+    form.style.setProperty('display','block','important');
+    form.style.setProperty('visibility','visible','important');
+    form.style.setProperty('opacity','1','important');
+    if(gate)gate.classList.add('accepted');
+    if(status)status.textContent='✓ Both consents accepted. Your registration form is now visible below.';
+    setTimeout(function(){form.scrollIntoView({behavior:'smooth',block:'start'});},180);
+  }else{
+    form.classList.add('gc-form-locked');
+    form.classList.remove('gc-form-unlocked');
+    form.style.removeProperty('display');
+    if(status)status.textContent=terms.checked?'Please also tick the separate Mobile Number & Identity Verification consent box.':'Please tick both consent boxes to continue.';
+  }
+};
+</script>
 </body></html>
