@@ -406,8 +406,9 @@ async function sendWelcomeEmail(user){try{const email=$('email').value.trim().to
     form.classList.toggle('gc-form-unlocked',ok);
     if(ok){form.removeAttribute('hidden');form.style.removeProperty('display');}
     gate.classList.toggle('accepted',ok);
-    if(status) status.textContent=ok ? '✓ Terms accepted and mobile verification consent recorded. You can now proceed with registration.' : 'Please accept the Terms & Conditions and separately tick the mobile verification consent box to unlock registration.';
-    if(ok){ setTimeout(()=>{ const first=form.querySelector('input:not([type="hidden"]),select,textarea,button'); if(first) first.focus({preventScroll:true}); form.scrollIntoView({behavior:'smooth',block:'start'}); },120); }
+    if(status) status.textContent=ok ? '✓ Both consents accepted. Your registration form is now unlocked below.' : (cb.checked && !mobileConsent.checked ? 'ONE MORE STEP: Please tick the separate MOBILE NUMBER & IDENTITY VERIFICATION consent box below. The registration form will appear after both boxes are ticked.' : 'Please tick both boxes: (1) GURU CONNECT Agreement Confirmation and (2) Mobile Number & Identity Verification consent.');
+    if(cb.checked && !mobileConsent.checked){setTimeout(()=>{const row=document.getElementById('mobileVerificationConsentRow');if(row)row.scrollIntoView({behavior:'smooth',block:'center'});},120);}
+    if(ok){ setTimeout(()=>{ const first=form.querySelector('input:not([type="hidden"]),select,textarea,button'); if(first) first.focus({preventScroll:true}); form.scrollIntoView({behavior:'smooth',block:'start'}); },180); }
   }
   cb.addEventListener('change',update);
   mobileConsent.addEventListener('change',update);
