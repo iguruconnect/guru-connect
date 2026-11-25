@@ -35,7 +35,7 @@
 </style>
 <style id="gc-terms-first-style">
 /* GURU CONNECT — Terms first registration gate */
-#form.gc-form-locked{display:none !important;}
+#form.gc-form-locked{display:none !important;} #form.gc-form-unlocked{display:block!important;visibility:visible!important;opacity:1!important;height:auto!important;overflow:visible!important;}
 #termsFirstGate{scroll-margin-top:20px;}
 .terms-first-banner{margin:0 0 18px;padding:14px 18px;border-radius:14px;background:linear-gradient(135deg,#fff7d6,#eaf7ff);border:2px solid #f2c94c;color:#13246b;font-weight:900;text-align:center;letter-spacing:.2px;font-size:15px;}
 .terms-gate-status{margin-top:12px;padding:10px 14px;border-radius:10px;background:#fff7ed;color:#9a3412;font-weight:800;text-align:center;}
@@ -403,6 +403,8 @@ async function sendWelcomeEmail(user){try{const email=$('email').value.trim().to
   function update(){
     const ok=!!cb.checked&&!!mobileConsent.checked;
     form.classList.toggle('gc-form-locked',!ok);
+    form.classList.toggle('gc-form-unlocked',ok);
+    if(ok){form.removeAttribute('hidden');form.style.removeProperty('display');}
     gate.classList.toggle('accepted',ok);
     if(status) status.textContent=ok ? '✓ Terms accepted and mobile verification consent recorded. You can now proceed with registration.' : 'Please accept the Terms & Conditions and separately tick the mobile verification consent box to unlock registration.';
     if(ok){ setTimeout(()=>{ const first=form.querySelector('input:not([type="hidden"]),select,textarea,button'); if(first) first.focus({preventScroll:true}); form.scrollIntoView({behavior:'smooth',block:'start'}); },120); }
