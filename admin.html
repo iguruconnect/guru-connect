@@ -958,7 +958,7 @@ async function loadRegistrationApprovals(){
       return state && !['APPROVED','REJECTED'].includes(state) && registrationMap.has(String(p.id));
     });
     count.textContent=pending.length+' NEED REVIEW';const pendingStat=document.getElementById('gcStatPending');if(pendingStat)pendingStat.textContent=String(pending.length);
-    if(!pending.length){studentOut.innerHTML='<div class="empty">No student registrations awaiting approval.</div>';tutorOut.innerHTML='<div class="empty">No tutor registrations awaiting approval.</div>';status.textContent='Registration approval list refreshed.';return;}
+    if(!pending.length){studentOut.innerHTML='<div class="empty">No student registrations awaiting approval.</div>';tutorOut.innerHTML='<div class="empty">No tutor registrations awaiting approval.</div>';status.textContent='Registration approval list refreshed.';loadRegistrationApprovalHistory('student');loadRegistrationApprovalHistory('tutor');return;}
     const renderPending=list=>list.map(p=>{
       const role=String(p.role||'').toLowerCase(),detail=(role==='student'?studentMap:tutorMap).get(String(p.id))||{};
       const state=String(p.registration_approval_status||detail.registration_approval_status||'PENDING_ADMIN_APPROVAL').toUpperCase();
@@ -1009,10 +1009,10 @@ async function loadRegistrationApprovalHistory(role){
     if(r.error)throw r.error;
     const rows=r.data||[];
     target.innerHTML=rows.length?rows.map(h=>{
-      const when=h.decided_at?new Date(h.decided_at).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Kolkata'})+' IST':'Date unavailable';
+      const when=h.decided_at?new Date(h.decided_at).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Kolkata'})+' IST':'Date unavailable'; const applied=h.applied_at?new Date(h.applied_at).toLocaleDateString('en-IN',{dateStyle:'medium',timeZone:'Asia/Kolkata'}):'Application date unavailable';
       const label=h.decision==='APPROVED'?'✓ APPROVED':h.decision==='REJECTED'?'✕ REJECTED':'⏸ ON HOLD';
       const color=h.decision==='APPROVED'?'#047857':h.decision==='REJECTED'?'#b91c1c':'#b45309';
-      return '<div class="historyRow" style="grid-template-columns:minmax(0,1fr) auto auto;gap:8px"><div><b>'+esc(h.applicant_name||'Applicant')+'</b><div class="muted">'+esc(h.applicant_email||'')+' · '+role.toUpperCase()+'</div></div><div style="font-weight:950;color:'+color+'">'+label+'<div class="muted">'+esc(when)+'</div></div><button class="btn red" style="padding:8px 10px" data-reg-history-delete="'+esc(String(h.id))+'">DELETE</button></div>';
+      return '<div class="historyRow" style="grid-template-columns:minmax(0,1fr) auto auto;gap:8px"><div><b>'+esc(h.applicant_name||'Applicant')+'</b><div class="muted">'+esc(h.applicant_email||'')+' · Applied: '+esc(applied)+'</div></div><div style="font-weight:950;color:'+color+'">'+label+'<div class="muted">Decision: '+esc(when)+'</div></div><button class="btn red" style="padding:8px 10px" data-reg-history-delete="'+esc(String(h.id))+'">DELETE</button></div>';
     }).join(''):'<div class="empty">No '+role+' approval history recorded yet.</div>';
     target.querySelectorAll('[data-reg-history-delete]').forEach(btn=>btn.addEventListener('click',async()=>{
       if(!confirm('Permanently delete this '+role+' approval history entry? Applicant account and registration data will NOT be deleted.'))return;
