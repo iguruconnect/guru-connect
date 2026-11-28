@@ -63,6 +63,23 @@
 
 /* GURU CONNECT typography: Calibri, matching the official registration form */
 body,body *:not(i):not(svg):not(svg *):not([class*="icon"]):not([class*="Icon"]){font-family:Calibri,Arial,sans-serif!important}
+
+/* REGISTRATION APPROVAL HISTORY — responsive box cards */
+.regHistoryList{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px;min-width:0}
+.regHistoryCard{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;min-width:0;padding:13px;border:1px solid #d8dee8;border-left:5px solid #64748b;border-radius:13px;background:linear-gradient(135deg,#f8fafc,#fff);box-shadow:0 3px 10px rgba(15,23,42,.045)}
+.regHistoryCard.status-approved{border-left-color:#16a34a}.regHistoryCard.status-rejected{border-left-color:#dc2626}.regHistoryCard.status-on_hold{border-left-color:#ea580c}
+.regHistoryMain{min-width:0;overflow-wrap:anywhere;word-break:break-word}
+.regHistoryName{font-size:14px;font-weight:950;color:#172554;line-height:1.4;overflow-wrap:anywhere}
+.regHistoryEmail{font-size:11px;color:#64748b;line-height:1.5;margin-top:3px;overflow-wrap:anywhere;word-break:break-word}
+.regHistoryMeta{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.regHistoryMetaBox{min-width:0;padding:8px 9px;border:1px solid #e2e8f0;border-radius:9px;background:#fff}
+.regHistoryMetaLabel{display:block;font-size:9px;font-weight:950;letter-spacing:.35px;text-transform:uppercase;color:#64748b;margin-bottom:4px}
+.regHistoryMetaValue{display:block;font-size:11px;font-weight:850;line-height:1.45;color:#334155;overflow-wrap:anywhere;word-break:break-word}
+.regHistoryDecision{display:inline-flex;align-items:center;gap:5px;padding:6px 9px;border-radius:8px;font-size:10px;font-weight:950;white-space:normal;line-height:1.35}
+.regHistoryDecision.approved{background:#dcfce7;color:#166534}.regHistoryDecision.rejected{background:#fee2e2;color:#991b1b}.regHistoryDecision.on_hold{background:#ffedd5;color:#9a3412}
+.regHistoryDelete{align-self:center;white-space:nowrap;padding:9px 11px!important;border-radius:9px!important;font-size:10px!important}
+.regHistoryHeading{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 12px;border:1px solid #cbd5e1;border-radius:11px;background:linear-gradient(90deg,#e2e8f0,#f8fafc);color:#334155;font-weight:950;font-size:12px}
+@media(max-width:560px){.regHistoryCard{grid-template-columns:minmax(0,1fr);gap:10px;padding:11px}.regHistoryMeta{grid-template-columns:1fr 1fr}.regHistoryDelete{justify-self:start}.regHistoryName{font-size:13px}}
 </style><style id="gc-admin-connection-fix">#gcDetailsModal button{cursor:pointer}@media(max-width:650px){#gcDetailsModal>div{padding:14px!important}#gcDetailsModal .btn{min-height:42px}.actions{flex-wrap:wrap}}
 .lrrControlNote{padding:12px 14px;border:1px solid #bfdbfe;background:#eff6ff;color:#1e3a8a;border-radius:12px;font-size:11px;font-weight:800;margin-bottom:12px}.lrrActions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #e2e8f0}.lrrActions .btn{min-height:40px}.receiptServiceBox{margin-top:16px;border:1px solid #dbe4f0;border-radius:16px;padding:16px;background:#f8fafc}.receiptServiceHead{display:flex;justify-content:space-between;gap:12px;align-items:center}.receiptServiceHead h3{margin:0;color:#123b8f}.receiptServiceHead p{margin:4px 0 0;color:#64748b;font-size:11px}.receiptServiceAdd{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:12px;margin-top:14px}.receiptServices{display:grid;gap:8px;margin-top:12px}.receiptServiceRow{display:grid;grid-template-columns:minmax(0,1fr) 160px 90px;gap:10px;align-items:end;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:10px}.receiptServiceRow .field{margin:0}.receiptServiceRow input{background:#fff}.receiptTotal{display:flex;justify-content:space-between;align-items:center;border-top:2px solid #cbd5e1;margin-top:14px;padding-top:14px;font-size:13px;font-weight:950}.receiptTotal strong{font-size:20px;color:#123b8f}.receiptRemove{min-height:40px}@media(max-width:650px){.receiptServiceAdd,.receiptServiceRow{grid-template-columns:1fr}.receiptServiceHead{align-items:flex-start;flex-direction:column}.receiptServiceHead .btn{width:100%}}
 </style>
@@ -1009,12 +1026,12 @@ async function loadRegistrationApprovalHistory(role){
     const r=await sb.rpc('gc_admin_list_registration_approval_history',{p_role:role});
     if(r.error)throw r.error;
     const rows=r.data||[];
-    target.innerHTML=rows.length?rows.map(h=>{
+    target.innerHTML=rows.length?'<div class="regHistoryHeading">📋 '+(role==='student'?'STUDENT':'TUTOR')+' DECISION RECORDS <span class="pill">'+rows.length+' RECORD(S)</span></div><div class="regHistoryList">'+rows.map(h=>{
       const when=h.decided_at?new Date(h.decided_at).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Kolkata'})+' IST':'Date unavailable'; const applied=h.applied_at?new Date(h.applied_at).toLocaleDateString('en-IN',{dateStyle:'medium',timeZone:'Asia/Kolkata'}):'Application date unavailable';
       const label=h.decision==='APPROVED'?'✓ APPROVED':h.decision==='REJECTED'?'✕ REJECTED':'⏸ ON HOLD';
       const color=h.decision==='APPROVED'?'#047857':h.decision==='REJECTED'?'#b91c1c':'#b45309';
-      return '<div class="historyRow" style="grid-template-columns:minmax(0,1fr) auto auto;gap:8px"><div><b>'+esc(h.applicant_name||'Applicant')+'</b><div class="muted">'+esc(h.applicant_email||'')+' · Applied: '+esc(applied)+'</div></div><div style="font-weight:950;color:'+color+'">'+label+'<div class="muted">Decision: '+esc(when)+'</div></div><button class="btn red" style="padding:8px 10px" data-reg-history-delete="'+esc(String(h.id))+'">DELETE</button></div>';
-    }).join(''):'<div class="empty">No '+role+' approval history recorded yet.</div>';
+      return '<article class="regHistoryCard status-'+(h.decision==='APPROVED'?'approved':h.decision==='REJECTED'?'rejected':'on_hold')+'"><div class="regHistoryMain"><div class="regHistoryName">'+esc(h.applicant_name||'Applicant')+'</div><div class="regHistoryEmail">'+esc(h.applicant_email||'Email not available')+'</div><div class="regHistoryMeta"><div class="regHistoryMetaBox"><span class="regHistoryMetaLabel">Application date</span><span class="regHistoryMetaValue">📅 '+esc(applied)+'</span></div><div class="regHistoryMetaBox"><span class="regHistoryMetaLabel">Decision & date</span><span class="regHistoryDecision '+(h.decision==='APPROVED'?'approved':h.decision==='REJECTED'?'rejected':'on_hold')+'">'+label+'</span><span class="regHistoryMetaValue" style="margin-top:4px">🕒 '+esc(when)+'</span></div></div></div><button class="btn red regHistoryDelete" data-reg-history-delete="'+esc(String(h.id))+'">🗑 DELETE HISTORY</button></article>';
+    }).join('')+'</div>':'<div class="empty">No '+role+' approval history recorded yet.</div>';
     target.querySelectorAll('[data-reg-history-delete]').forEach(btn=>btn.addEventListener('click',async()=>{
       if(!confirm('Permanently delete this '+role+' approval history entry? Applicant account and registration data will NOT be deleted.'))return;
       btn.disabled=true;btn.textContent='DELETING…';
