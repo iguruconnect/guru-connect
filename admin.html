@@ -906,7 +906,7 @@ async function staffCheck(){
   const app=$('app'),gate=$('gate');
   if(app)app.style.display='none';
   if(gate){gate.style.display='block';gate.textContent='Checking Staff/Admin session…';}
-  try{const loginAt=Number(sessionStorage.getItem('gc_staff_login_at')||0);const tabLogin=sessionStorage.getItem('gc_staff_supabase_auth')==='true'&&sessionStorage.getItem('active_user_role')==='staff'&&loginAt>0&&(Date.now()-loginAt)<120000;if(!tabLogin){gcAdminLockAndRedirect();return false;}const s=await sb.auth.getSession();if(!gcAdminIsAuthorizedSession(s.data?.session)){gcAdminLockAndRedirect();return false;}sessionStorage.removeItem('gc_staff_supabase_auth');sessionStorage.removeItem('gc_staff_login_at');}
+  try{const loginAt=Number(sessionStorage.getItem('gc_staff_login_at')||0);const tabLogin=sessionStorage.getItem('gc_staff_supabase_auth')==='true'&&sessionStorage.getItem('active_user_role')==='staff'&&loginAt>0&&(Date.now()-loginAt)<600000;if(!tabLogin){gcAdminLockAndRedirect();return false;}let sessionResult=null;for(let attempt=0;attempt<8;attempt++){sessionResult=await sb.auth.getSession();if(gcAdminIsAuthorizedSession(sessionResult.data?.session))break;await new Promise(resolve=>setTimeout(resolve,350));}if(!gcAdminIsAuthorizedSession(sessionResult?.data?.session)){gcAdminLockAndRedirect();return false;}sessionStorage.removeItem('gc_staff_supabase_auth');sessionStorage.removeItem('gc_staff_login_at');}
   catch(e){gcAdminLockAndRedirect();return false;}
   if(gate)gate.style.display='none';if(app)app.style.display='block';document.body.classList.add('gc-admin-authorized');return true;
 }
