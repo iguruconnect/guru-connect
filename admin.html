@@ -933,7 +933,7 @@ async function loadMobileVerificationRegister(){
 $('refreshMobileVerificationRegister')?.addEventListener('click',loadMobileVerificationRegister);
 
 async function loadRegistrationApprovals(){
-  const status=$('registrationApprovalStatus'),out=$('registrationApprovalResults');
+  const status=$('registrationApprovalStatus'),out=$('sec-registrationapproval');
   const studentOut=$('studentRegistrationApprovalResults'),tutorOut=$('tutorRegistrationApprovalResults'),count=$('registrationApprovalCount');
   if(!status||!studentOut||!tutorOut||!count)return;
   status.textContent='Loading Student and Tutor registration approvals…';studentOut.innerHTML='';tutorOut.innerHTML='';
