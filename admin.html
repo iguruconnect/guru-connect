@@ -600,6 +600,7 @@ body,body button,body input,body select,body textarea,body table,body th,body td
  #sec-registrationapproval .regHistoryMeta{grid-template-columns:1fr 1fr!important}
 }
 </style>
+ <style id="gc-admin-session-visibility-20261128">.head{display:none!important}body.gc-admin-authorized .head{display:block!important}</style>
 </head><body>
 <header class="head"><div class="headin"><div class="gc-admin-brand"><img src="GURU_CONNECT_EXACT_BRAND.png" alt="GURU CONNECT — Connecting Mind - Creating Future"></div><div class="gc-admin-titlebar"><span class="gc-admin-title-icon">▦</span><div><h1>Admin Dashboard</h1><p>Manage Your Platform Efficiently</p></div></div><div class="gc-admin-helpline"><span class="gc-admin-headset">◉</span><div><b>Helpline</b><a href="mailto:support@guruconnnect.in">support@guruconnnect.in</a></div></div><div class="gc-admin-user"><span>AJ</span><b>Admin</b></div><button id="logout" class="btn light">↪ LOG OUT</button></div></header>
 <main class="wrap"><div id="gate" class="gate">Admin page loaded — preparing login scripts…</div><section id="app" style="display:none"><div class="notice">All member edits below are sent to Supabase. The admin directory reads the live <b>profiles</b>, <b>student_profiles</b> and <b>tutor_profiles</b> records, so verified registrations can be found even when the old combined search RPC misses them. <b>PROFILE / ACCOUNT</b> now contains Verification, Payments, Coins, Directory Visibility and Activity.</div><div class="gc-admin-stat-grid"><div class="gc-admin-stat stat-blue"><span class="gc-stat-icon">👥</span><div><small>Total Inquiries</small><strong id="gcStatTotalInquiry">—</strong><em>Visitor requests</em></div><b class="gc-stat-arrow">›</b></div><div class="gc-admin-stat stat-green"><span class="gc-stat-icon">🎓</span><div><small>Tutor Inquiries</small><strong id="gcStatTutorInquiry">—</strong><em>Public tutor search</em></div><b class="gc-stat-arrow">›</b></div><div class="gc-admin-stat stat-purple"><span class="gc-stat-icon">🛡️</span><div><small>Pending Approval</small><strong id="gcStatPending">—</strong><em>Needs review</em></div><b class="gc-stat-arrow">›</b></div><div class="gc-admin-stat stat-orange"><span class="gc-stat-icon">📚</span><div><small>Learning Requests</small><strong>LRR</strong><em>Manage requests</em></div><b class="gc-stat-arrow">›</b></div></div>
@@ -863,7 +864,7 @@ body,body button,body input,body select,body textarea,body table,body th,body td
 })();
 </script><script>
 const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',FN=U+'/functions/v1/admin-user-actions';
-if(!window.supabase||typeof window.supabase.createClient!=='function'){const g=document.getElementById('gate');if(g)g.textContent='Admin login library failed to load. Please refresh this page; if this message remains, the website cannot reach the login service.';throw new Error('Supabase login library did not load');}const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+if(!window.supabase||typeof window.supabase.createClient!=='function'){const g=document.getElementById('gate');if(g)g.textContent='Admin login library failed to load. Please refresh this page; if this message remains, the website cannot reach the login service.';throw new Error('Supabase login library did not load');}const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.sessionStorage}});
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function deleteUserViaAdminFunction(userId,role){
@@ -893,6 +894,7 @@ function gcAdminIsAuthorizedSession(session){
   return !!u&&String(u.email||'').toLowerCase()==='guruconnect.in@gmail.com'&&String(u.id||'')==='1df7606a-3a96-4116-b022-804b37a3c3dd';
 }
 function gcAdminLockAndRedirect(){
+  document.body.classList.remove('gc-admin-authorized');
   const app=$('app'),gate=$('gate');
   if(app)app.style.display='none';
   if(gate){gate.style.display='block';gate.textContent='Admin session ended. Redirecting to the home page…';}
@@ -900,12 +902,13 @@ function gcAdminLockAndRedirect(){
   location.replace('./?logout=1&ts='+Date.now());
 }
 async function staffCheck(){
+  document.body.classList.remove('gc-admin-authorized');
   const app=$('app'),gate=$('gate');
   if(app)app.style.display='none';
   if(gate){gate.style.display='block';gate.textContent='Checking Staff/Admin session…';}
   try{const s=await sb.auth.getSession();if(!gcAdminIsAuthorizedSession(s.data?.session)){gcAdminLockAndRedirect();return false;}}
   catch(e){gcAdminLockAndRedirect();return false;}
-  if(gate)gate.style.display='none';if(app)app.style.display='block';return true;
+  if(gate)gate.style.display='none';if(app)app.style.display='block';document.body.classList.add('gc-admin-authorized');return true;
 }
 let gcAdminLoggingOut=false;
 sb.auth.onAuthStateChange((event,session)=>{if(event==='SIGNED_OUT'&&!gcAdminLoggingOut)gcAdminLockAndRedirect();});
@@ -1887,15 +1890,16 @@ $('logout').onclick=async()=>{
   const btn=$('logout');if(btn){btn.disabled=true;btn.textContent='LOGGING OUT…'}
   const app=$('app'),gate=$('gate');if(app)app.style.display='none';if(gate){gate.style.display='block';gate.textContent='Signing out securely…';}
   try{await sb.auth.signOut({scope:'local'});}catch(e){console.warn('Sign-out cleanup:',e)}
-  try{['is_staff_logged','gc_staff_supabase_auth','active_user_role','active_user_id','active_user_email','gc_staff_email','gc_staff_role'].forEach(k=>{localStorage.removeItem(k);sessionStorage.removeItem(k);});}catch(e){}
+  try{['sb-hzqqswrnawrfgufbxgay-auth-token','sb-hzqqswrnawrfgufbxgay-auth-token-code-verifier'].forEach(k=>{localStorage.removeItem(k);sessionStorage.removeItem(k);});['is_staff_logged','gc_staff_supabase_auth','active_user_role','active_user_id','active_user_email','gc_staff_email','gc_staff_role'].forEach(k=>{localStorage.removeItem(k);sessionStorage.removeItem(k);});}catch(e){}
   window.location.replace('./?logout=1&ts='+Date.now());
 };
 window.addEventListener('pageshow',async function(){
+  document.body.classList.remove('gc-admin-authorized');
   const app=$('app');if(app)app.style.display='none';
-  try{const s=await sb.auth.getSession();if(!gcAdminIsAuthorizedSession(s.data?.session)){gcAdminLockAndRedirect();return;}if(app)app.style.display='block';const gate=$('gate');if(gate)gate.style.display='none';}
+  try{const s=await sb.auth.getSession();if(!gcAdminIsAuthorizedSession(s.data?.session)){gcAdminLockAndRedirect();return;}if(app)app.style.display='block';const gate=$('gate');if(gate)gate.style.display='none';document.body.classList.add('gc-admin-authorized');}
   catch(e){gcAdminLockAndRedirect();}
 });
-window.addEventListener('pagehide',function(){const app=$('app');if(app)app.style.display='none';});
+window.addEventListener('pagehide',function(){document.body.classList.remove('gc-admin-authorized');const app=$('app');if(app)app.style.display='none';});
 
 function adminWhatsAppUser(i){const u=users[i]||{};let phone=String(u.phone||'').replace(/\D/g,'');if(phone.startsWith('00'))phone=phone.slice(2);if(phone.length===11&&phone.startsWith('0'))phone=phone.slice(1);if(phone.length===10)phone='91'+phone;if(!phone){alert('This user has no registered phone/WhatsApp number.');return}const name=String(u.name||u.full_name||u.role||'GURU CONNECT member');const msg='Hello '+name+', I am contacting you from GURU CONNECT Admin regarding your account.';window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank','noopener,noreferrer')}
 function normalizeRpcUsers(rows){
