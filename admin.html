@@ -862,13 +862,13 @@ async function gcPrintRegistrationForm(userId,profileId,email){
     for(const id of ids){const q=await sb.from('gc_registration_submissions').select('*').eq('auth_user_id',id).maybeSingle();if(q.error){lastError=q.error;continue}if(q.data){record=q.data;break}}
     if(!record&&email){const q=await sb.from('gc_registration_submissions').select('*').ilike('email',String(email).trim()).order('created_at',{ascending:false}).limit(1);if(q.error)lastError=q.error;else record=(q.data||[])[0]||null}
     if(!record||!record.form_data)throw new Error(lastError?'Could not access saved registration: '+lastError.message:'No saved registration record found for this member.');
-    const f=record.form_data||{},escHtml=v=>String(v==null||v===''?'—':(typeof v==='object'?JSON.stringify(v,null,2):v)).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+    const f=record.form_data||{},role=String(record.role||f.role||'').toLowerCase(),isTutor=role==='tutor',escHtml=v=>String(v==null||v===''?'—':(typeof v==='object'?JSON.stringify(v,null,2):v)).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
     const skip=new Set(['sub','auth_user_id','user_id','password','otp','email_verified','phone_verified']);
-    const planName=String(f.payment_plan||f.helpline_plan||f.payment_plan_name||record.payment?.plan_name||record.payment?.plan||'').trim();
-    const planAmount=Number(f.payment_plan_amount??f.helpline_amount??record.payment?.amount??0)||0;
+    const planName=String(f.payment_plan||(isTutor?'':f.helpline_plan)||f.payment_plan_name||record.payment?.plan_name||record.payment?.plan||'').trim();
+    const planAmount=Number(f.payment_plan_amount??(isTutor?0:f.helpline_amount)??record.payment?.amount??0)||0;
     const paidPlan=planAmount>0||/premium|prime|genx|pro/i.test(planName),planCategory=paidPlan?'PREMIUM':'FREE';
     const paymentField=/payment|amount|paid.?to|utr|transaction|receipt|bank|upi|cash|branch|payment.?reference|helpline.?status/i;
-    const entries=Object.entries(f).filter(([k])=>!skip.has(k.toLowerCase())&&(paidPlan||!paymentField.test(k))).map(([k,v])=>({key:k,value:v,filled:!(v===null||v===undefined||v===''||(Array.isArray(v)&&!v.length)||(typeof v==='object'&&!Array.isArray(v)&&!Object.keys(v).length))}));
+    const entries=Object.entries(f).filter(([k])=>!skip.has(k.toLowerCase())&&!(isTutor&&/helpline|service/i.test(k))&&(paidPlan||!paymentField.test(k))).map(([k,v])=>({key:k,value:v,filled:!(v===null||v===undefined||v===''||(Array.isArray(v)&&!v.length)||(typeof v==='object'&&!Array.isArray(v)&&!Object.keys(v).length))}));
     const filled=entries.filter(x=>x.filled),blank=entries.filter(x=>!x.filled);
     const pretty=k=>k.replace(/_/g,' ').replace(/\b[a-z]/g,s=>s.toUpperCase());
     const card=x=>'<tr><th>'+escHtml(pretty(x.key))+'</th><td>'+escHtml(x.value)+'</td></tr>';
