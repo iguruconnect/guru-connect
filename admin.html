@@ -864,7 +864,7 @@ body,body button,body input,body select,body textarea,body table,body th,body td
 })();
 </script><script>
 const U='https://hzqqswrnawrfgufbxgay.supabase.co',K='sb_publishable_Oc5HvqDpisv76XrdsyFhiw_IpostIDu',FN=U+'/functions/v1/admin-user-actions';
-if(!window.supabase||typeof window.supabase.createClient!=='function'){const g=document.getElementById('gate');if(g)g.textContent='Admin login library failed to load. Please refresh this page; if this message remains, the website cannot reach the login service.';throw new Error('Supabase login library did not load');}const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storage:window.sessionStorage}});
+if(!window.supabase||typeof window.supabase.createClient!=='function'){const g=document.getElementById('gate');if(g)g.textContent='Admin login library failed to load. Please refresh this page; if this message remains, the website cannot reach the login service.';throw new Error('Supabase login library did not load');}const sb=supabase.createClient(U,K,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 async function deleteUserViaAdminFunction(userId,role){
@@ -906,7 +906,7 @@ async function staffCheck(){
   const app=$('app'),gate=$('gate');
   if(app)app.style.display='none';
   if(gate){gate.style.display='block';gate.textContent='Checking Staff/Admin session…';}
-  try{const s=await sb.auth.getSession();if(!gcAdminIsAuthorizedSession(s.data?.session)){gcAdminLockAndRedirect();return false;}}
+  try{const tabLogin=sessionStorage.getItem('gc_staff_supabase_auth')==='true'&&sessionStorage.getItem('active_user_role')==='staff';const s=await sb.auth.getSession();if(!tabLogin||!gcAdminIsAuthorizedSession(s.data?.session)){gcAdminLockAndRedirect();return false;}}
   catch(e){gcAdminLockAndRedirect();return false;}
   if(gate)gate.style.display='none';if(app)app.style.display='block';document.body.classList.add('gc-admin-authorized');return true;
 }
