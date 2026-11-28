@@ -1896,7 +1896,7 @@ $('logout').onclick=async()=>{
 window.addEventListener('pageshow',async function(){
   document.body.classList.remove('gc-admin-authorized');
   const app=$('app');if(app)app.style.display='none';
-  try{const s=await sb.auth.getSession();if(!gcAdminIsAuthorizedSession(s.data?.session)){gcAdminLockAndRedirect();return;}if(app)app.style.display='block';const gate=$('gate');if(gate)gate.style.display='none';document.body.classList.add('gc-admin-authorized');}
+  try{const tabLogin=sessionStorage.getItem('gc_staff_supabase_auth')==='true'&&sessionStorage.getItem('active_user_role')==='staff';const s=await sb.auth.getSession();if(!tabLogin||!gcAdminIsAuthorizedSession(s.data?.session)){gcAdminLockAndRedirect();return;}if(app)app.style.display='block';const gate=$('gate');if(gate)gate.style.display='none';document.body.classList.add('gc-admin-authorized');}
   catch(e){gcAdminLockAndRedirect();}
 });
 window.addEventListener('pagehide',function(){document.body.classList.remove('gc-admin-authorized');const app=$('app');if(app)app.style.display='none';});
