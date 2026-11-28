@@ -734,12 +734,12 @@ body,body button,body input,body select,body textarea,body table,body th,body td
 </div>
 <div style="margin-top:14px"><h3 style="margin:6px 0">📒 SEPARATE OFFICIAL CALL REGISTERS</h3><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px"><div><h4 style="color:#1d4ed8">STUDENT CALL HISTORY</h4><div id="studentMobileVerificationHistory" class="results"></div></div><div><h4 style="color:#047857">TUTOR CALL HISTORY</h4><div id="tutorMobileVerificationHistory" class="results"></div></div></div></div>
 <div id="registrationApprovalStatus" class="status"></div>
-<div class="registration-approval-groups" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;margin-top:12px">
- <section class="registration-approval-group" style="min-width:0;border:1px solid #bfdbfe;border-radius:14px;padding:12px;background:#f8fbff">
+<div class="regRoleTabs" style="display:flex;gap:9px;flex-wrap:wrap;margin:12px 0"><button type="button" class="btn primary" data-reg-role-tab="student" aria-selected="true">🎓 STUDENT REGISTRATION</button><button type="button" class="btn light" data-reg-role-tab="tutor" aria-selected="false">👨‍🏫 TUTOR REGISTRATION</button></div><div class="registration-approval-groups" style="display:block;margin-top:8px">
+ <section id="studentRegistrationApprovalPanel" class="registration-approval-group" style="display:block;min-width:0;border:1px solid #bfdbfe;border-radius:14px;padding:12px;background:#f8fbff">
   <h3 style="margin:2px 0 10px;color:#1d4ed8">🎓 STUDENTS REGISTRATION</h3>
   <div id="studentRegistrationApprovalResults" class="results"><div class="empty">Student registrations will appear here.</div></div><div style="margin-top:14px;padding-top:12px;border-top:2px solid #bfdbfe"><h4 style="margin:0 0 8px;color:#1d4ed8">📜 STUDENT REGISTRATION APPROVAL HISTORY</h4><div id="studentRegistrationApprovalHistory" class="results"><div class="empty">Loading Student approval history…</div></div></div>
  </section>
- <section class="registration-approval-group" style="min-width:0;border:1px solid #fed7aa;border-radius:14px;padding:12px;background:#fffaf5">
+ <section id="tutorRegistrationApprovalPanel" class="registration-approval-group" style="display:none;min-width:0;border:1px solid #fed7aa;border-radius:14px;padding:12px;background:#fffaf5">
   <h3 style="margin:2px 0 10px;color:#c2410c">👨‍🏫 TUTORS REGISTRATION</h3>
   <div id="tutorRegistrationApprovalResults" class="results"><div class="empty">Tutor registrations will appear here.</div></div><div style="margin-top:14px;padding-top:12px;border-top:2px solid #fed7aa"><h4 style="margin:0 0 8px;color:#c2410c">📜 TUTOR REGISTRATION APPROVAL HISTORY</h4><div id="tutorRegistrationApprovalHistory" class="results"><div class="empty">Loading Tutor approval history…</div></div></div>
  </section>
@@ -935,6 +935,7 @@ $('refreshMobileVerificationRegister')?.addEventListener('click',loadMobileVerif
 async function loadRegistrationApprovals(){
   const status=$('registrationApprovalStatus'),out=$('sec-registrationapproval');
   const studentOut=$('studentRegistrationApprovalResults'),tutorOut=$('tutorRegistrationApprovalResults'),count=$('registrationApprovalCount');
+  document.querySelectorAll('[data-reg-role-tab]').forEach(btn=>btn.onclick=()=>{const role=btn.dataset.regRoleTab;const student=role==='student';$('studentRegistrationApprovalPanel').style.display=student?'block':'none';$('tutorRegistrationApprovalPanel').style.display=student?'none':'block';document.querySelectorAll('[data-reg-role-tab]').forEach(tab=>{const active=tab.dataset.regRoleTab===role;tab.className='btn '+(active?'primary':'light');tab.setAttribute('aria-selected',String(active));});});
   if(!status||!studentOut||!tutorOut||!count)return;
   status.textContent='Loading Student and Tutor registration approvals…';studentOut.innerHTML='';tutorOut.innerHTML='';
   try{
