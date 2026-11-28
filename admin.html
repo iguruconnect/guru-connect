@@ -737,11 +737,11 @@ body,body button,body input,body select,body textarea,body table,body th,body td
 <div class="registration-approval-groups" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px;margin-top:12px">
  <section class="registration-approval-group" style="min-width:0;border:1px solid #bfdbfe;border-radius:14px;padding:12px;background:#f8fbff">
   <h3 style="margin:2px 0 10px;color:#1d4ed8">🎓 STUDENTS REGISTRATION</h3>
-  <div id="studentRegistrationApprovalResults" class="results"><div class="empty">Student registrations will appear here.</div></div>
+  <div id="studentRegistrationApprovalResults" class="results"><div class="empty">Student registrations will appear here.</div></div><div style="margin-top:14px;padding-top:12px;border-top:2px solid #bfdbfe"><h4 style="margin:0 0 8px;color:#1d4ed8">📜 STUDENT REGISTRATION APPROVAL HISTORY</h4><div id="studentRegistrationApprovalHistory" class="results"><div class="empty">Loading Student approval history…</div></div></div>
  </section>
  <section class="registration-approval-group" style="min-width:0;border:1px solid #fed7aa;border-radius:14px;padding:12px;background:#fffaf5">
   <h3 style="margin:2px 0 10px;color:#c2410c">👨‍🏫 TUTORS REGISTRATION</h3>
-  <div id="tutorRegistrationApprovalResults" class="results"><div class="empty">Tutor registrations will appear here.</div></div>
+  <div id="tutorRegistrationApprovalResults" class="results"><div class="empty">Tutor registrations will appear here.</div></div><div style="margin-top:14px;padding-top:12px;border-top:2px solid #fed7aa"><h4 style="margin:0 0 8px;color:#c2410c">📜 TUTOR REGISTRATION APPROVAL HISTORY</h4><div id="tutorRegistrationApprovalHistory" class="results"><div class="empty">Loading Tutor approval history…</div></div></div>
  </section>
 </div></div></section>
 
@@ -955,7 +955,7 @@ async function loadRegistrationApprovals(){
       const role=String(p.role||'').toLowerCase();if(!['student','tutor'].includes(role))return false;
       const detail=(role==='student'?studentMap:tutorMap).get(String(p.id))||{};
       const state=String(p.registration_approval_status||detail.registration_approval_status||'').toUpperCase();
-      return state && state!=='APPROVED' && registrationMap.has(String(p.id));
+      return state && !['APPROVED','REJECTED'].includes(state) && registrationMap.has(String(p.id));
     });
     count.textContent=pending.length+' NEED REVIEW';const pendingStat=document.getElementById('gcStatPending');if(pendingStat)pendingStat.textContent=String(pending.length);
     if(!pending.length){studentOut.innerHTML='<div class="empty">No student registrations awaiting approval.</div>';tutorOut.innerHTML='<div class="empty">No tutor registrations awaiting approval.</div>';status.textContent='Registration approval list refreshed.';return;}
@@ -990,28 +990,55 @@ async function loadRegistrationApprovals(){
       formData.plan_validity_explanation=planValidity+' — duration only; this does not mean payment was made or a paid subscription was activated.';
       const formRows=Object.entries(formData).map(([k,v])=>'<div style="display:grid;grid-template-columns:minmax(110px,1fr) 2fr;gap:8px;padding:7px 0;border-bottom:1px solid #e5e7eb"><b>'+escv(k.replaceAll('_',' '))+'</b><span style="overflow-wrap:anywhere">'+escv(typeof v==='object'?JSON.stringify(v):v)+'</span></div>').join('');
       const formPanel=form?'<details data-form-review-details="'+escv(p.id)+'" style="margin:12px 0;padding:12px;border:1px solid #bfdbfe;border-radius:12px;background:#f8fbff"><summary style="cursor:pointer;font-weight:900;color:#123b75">📄 OPEN & REVIEW ORIGINAL REGISTRATION FORM — '+(reviewed?'REVIEWED ✓':'REVIEW REQUIRED')+'</summary><div style="margin-top:10px;padding:12px;border-radius:9px;background:#fff1db;border:1px solid #f3c27a"><b>REGISTRATION APPLIED ON</b><div style="font-size:16px;font-weight:900;margin-top:4px">'+escv(appliedLabel)+'</div></div><div style="margin-top:10px;padding:12px;border-radius:9px;background:#eef6ff;border:1px solid #bfdbfe"><b>MEMBERSHIP / PAYMENT CLARIFICATION</b><div style="margin-top:5px">Selected plan: <b>'+escv(planName)+'</b><br>Plan amount: <b>₹'+escv(planAmount)+'</b><br>Validity: <b>'+escv(planValidity)+'</b> (duration only — NOT proof of payment or subscription activation)</div></div><div style="margin-top:10px">'+formRows+'<div style="margin-top:8px"><b>Form record saved:</b> '+escv(appliedLabel)+'<br><b>Email verified:</b> '+escv(form.verified_email_at?new Date(form.verified_email_at).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Kolkata'})+' IST':'Not recorded')+'</div></div></details>':'<div class="lrrControlNote" style="margin:10px 0;color:#b91c1c">Original registration form not found. Approval is disabled until the form is available.</div>';
-      return '<article class="user"><div class="userHead"><div class="identity"><b>'+escv(p.full_name||detail.name||detail.full_name||'New member')+'</b><span class="badge">'+escv(role.toUpperCase())+'</span><div class="muted">Registered On: <b>'+escv(registeredLabel)+'</b><br>Email: '+escv(p.email||detail.email)+'<br>Phone: '+escv(p.phone||detail.phone)+'<br>Auth User ID: '+escv(p.id)+'<br>Approval Status: <b>'+escv(state)+'</b><br>Registration No: '+escv(p.registration_no||detail.record_no)+'<br>Membership Plan: '+escv(detail.payment_plan||plan)+(role==='student'?'<br>Helpline Service: '+escv(helpline||'not selected')+'<br>Helpline Plan: '+escv(plan)+' · Amount: ₹'+escv(amount)+'<br>Payment mode: '+escv(mode)+(mode==='cash'?'<br>Cash paid to: '+escv(cashTo)+' · Branch: '+escv(branch)+' · Recipient: '+escv(cashPerson)+' · Recipient Reg. No.: '+escv(regNo)+' · Receipt No.: '+escv(receipt):'<br>UPI UTR: '+escv(utr)):'')+'</div></div></div>'+formPanel+'<div class="actions"><button class="btn primary" onclick="gcPrintRegistrationForm(\''+escv(p.id)+'\')">👁️ VIEW FORM</button><button class="btn '+(reviewed?'light':'blue')+'" data-reg-review="'+escv(p.id)+'" data-form-review-button="'+escv(p.id)+'" data-reviewed="'+(reviewed?'true':'false')+'" disabled title="Open the original form above first">'+(reviewed?'✓ FORM REVIEWED':'📄 MARK FORM REVIEWED')+'</button><button class="btn green" data-reg-approval="approve" data-user-id="'+escv(p.id)+'" '+(!reviewed?'disabled title="Review the original form first"':'')+'>✓ APPROVE REGISTRATION</button><button class="btn red" data-reg-approval="reject" data-user-id="'+escv(p.id)+'">✕ REJECT</button></div></article>';
+      return '<article class="user"><div class="userHead"><div class="identity"><b>'+escv(p.full_name||detail.name||detail.full_name||'New member')+'</b><span class="badge">'+escv(role.toUpperCase())+'</span><div class="muted">Registered On: <b>'+escv(registeredLabel)+'</b><br>Email: '+escv(p.email||detail.email)+'<br>Phone: '+escv(p.phone||detail.phone)+'<br>Auth User ID: '+escv(p.id)+'<br>Approval Status: <b>'+escv(state)+'</b><br>Registration No: '+escv(p.registration_no||detail.record_no)+'<br>Membership Plan: '+escv(detail.payment_plan||plan)+(role==='student'?'<br>Helpline Service: '+escv(helpline||'not selected')+'<br>Helpline Plan: '+escv(plan)+' · Amount: ₹'+escv(amount)+'<br>Payment mode: '+escv(mode)+(mode==='cash'?'<br>Cash paid to: '+escv(cashTo)+' · Branch: '+escv(branch)+' · Recipient: '+escv(cashPerson)+' · Recipient Reg. No.: '+escv(regNo)+' · Receipt No.: '+escv(receipt):'<br>UPI UTR: '+escv(utr)):'')+'</div></div></div>'+formPanel+'<div class="actions"><button class="btn primary" onclick="gcPrintRegistrationForm(\''+escv(p.id)+'\')">👁️ VIEW FORM</button><button class="btn '+(reviewed?'light':'blue')+'" data-reg-review="'+escv(p.id)+'" data-form-review-button="'+escv(p.id)+'" data-reviewed="'+(reviewed?'true':'false')+'" disabled title="Open the original form above first">'+(reviewed?'✓ FORM REVIEWED':'📄 MARK FORM REVIEWED')+'</button><button class="btn green" data-reg-approval="APPROVED" data-user-id="'+escv(p.id)+'" '+(!reviewed?'disabled title="Review the original form first"':'')+'>✓ APPROVE</button><button class="btn orange" data-reg-approval="ON_HOLD" data-user-id="'+escv(p.id)+'">⏸ ON HOLD</button><button class="btn red" data-reg-approval="REJECTED" data-user-id="'+escv(p.id)+'">✕ REJECT</button></div></article>';
     }).join('');
     studentOut.innerHTML=renderPending(pending.filter(p=>String(p.role||'').toLowerCase()==='student'))||'<div class="empty">No student registrations awaiting approval.</div>';
     tutorOut.innerHTML=renderPending(pending.filter(p=>String(p.role||'').toLowerCase()==='tutor'))||'<div class="empty">No tutor registrations awaiting approval.</div>';
-    out.querySelectorAll('[data-reg-approval]').forEach(btn=>btn.addEventListener('click',()=>decideRegistrationApproval(btn.dataset.userId,btn.dataset.regApproval==='approve')));
+    out.querySelectorAll('[data-reg-approval]').forEach(btn=>btn.addEventListener('click',()=>decideRegistrationApproval(btn.dataset.userId,btn.dataset.regApproval)));
     out.querySelectorAll('[data-form-review-details]').forEach(details=>details.addEventListener('toggle',()=>{const b=out.querySelector('[data-form-review-button="'+details.dataset.formReviewDetails+'"]');if(b&&b.dataset.reviewed!=='true')b.disabled=!details.open}));
     out.querySelectorAll('[data-reg-review]').forEach(btn=>btn.addEventListener('click',async()=>{const details=out.querySelector('[data-form-review-details="'+btn.dataset.regReview+'"]');if(!details?.open){status.textContent='Please open the original registration form and review the submitted details first.';return}btn.disabled=true;try{const r=await sb.rpc('gc_admin_mark_registration_reviewed',{p_user_id:btn.dataset.regReview});if(r.error)throw r.error;await loadRegistrationApprovals()}catch(e){btn.disabled=false;status.textContent='Could not mark form reviewed: '+(e.message||e)}}));
-    status.textContent='Loaded '+pending.length+' registration(s) requiring review.';loadMobileVerificationRegister();
+    status.textContent='Loaded '+pending.length+' registration(s) requiring review.';loadMobileVerificationRegister();loadRegistrationApprovalHistory('student');loadRegistrationApprovalHistory('tutor');
   }catch(e){status.textContent='Could not load registration approvals: '+(e.message||e);studentOut.innerHTML='<div class="empty">Check the approval SQL migration and Admin permissions, then refresh.</div>';tutorOut.innerHTML='<div class="empty">Check the approval SQL migration and Admin permissions, then refresh.</div>';count.textContent='LOAD ERROR';}
 }
-async function decideRegistrationApproval(userId,approved){
-  const action=approved?'APPROVE':'REJECT';
-  if(!confirm(action+' this Student/Tutor registration?'))return;
+async function loadRegistrationApprovalHistory(role){
+  const target=$(role==='student'?'studentRegistrationApprovalHistory':'tutorRegistrationApprovalHistory');
+  if(!target)return;
+  target.innerHTML='<div class="empty">Loading '+(role==='student'?'Student':'Tutor')+' approval history…</div>';
+  try{
+    const r=await sb.rpc('gc_admin_list_registration_approval_history',{p_role:role});
+    if(r.error)throw r.error;
+    const rows=r.data||[];
+    target.innerHTML=rows.length?rows.map(h=>{
+      const when=h.decided_at?new Date(h.decided_at).toLocaleString('en-IN',{dateStyle:'medium',timeStyle:'short',timeZone:'Asia/Kolkata'})+' IST':'Date unavailable';
+      const label=h.decision==='APPROVED'?'✓ APPROVED':h.decision==='REJECTED'?'✕ REJECTED':'⏸ ON HOLD';
+      const color=h.decision==='APPROVED'?'#047857':h.decision==='REJECTED'?'#b91c1c':'#b45309';
+      return '<div class="historyRow" style="grid-template-columns:minmax(0,1fr) auto auto;gap:8px"><div><b>'+esc(h.applicant_name||'Applicant')+'</b><div class="muted">'+esc(h.applicant_email||'')+' · '+role.toUpperCase()+'</div></div><div style="font-weight:950;color:'+color+'">'+label+'<div class="muted">'+esc(when)+'</div></div><button class="btn red" style="padding:8px 10px" data-reg-history-delete="'+esc(String(h.id))+'">DELETE</button></div>';
+    }).join(''):'<div class="empty">No '+role+' approval history recorded yet.</div>';
+    target.querySelectorAll('[data-reg-history-delete]').forEach(btn=>btn.addEventListener('click',async()=>{
+      if(!confirm('Permanently delete this '+role+' approval history entry? Applicant account and registration data will NOT be deleted.'))return;
+      btn.disabled=true;btn.textContent='DELETING…';
+      try{
+        const d=await sb.rpc('gc_admin_delete_registration_approval_history',{p_history_id:Number(btn.dataset.regHistoryDelete)});
+        if(d.error)throw d.error;
+        await loadRegistrationApprovalHistory(role);
+      }catch(e){btn.disabled=false;btn.textContent='DELETE';alert('Could not delete history: '+(e.message||e));}
+    }));
+  }catch(e){target.innerHTML='<div class="empty">Could not load approval history: '+esc(e.message||e)+'</div>';}
+}
+async function decideRegistrationApproval(userId,decision){
+  const action=decision==='APPROVED'?'APPROVE':decision==='REJECTED'?'REJECT':'PUT ON HOLD';
+  if(!confirm(action+' this registration?'))return;
   const status=$('registrationApprovalStatus');
   try{
     status.textContent=action+' registration…';
-    const r=await sb.rpc('gc_admin_set_registration_approval',{p_user_id:String(userId),p_approved:!!approved,p_note:approved?'Approved by Admin':'Rejected by Admin'});
+    const note=decision==='APPROVED'?'Approved by Admin':decision==='REJECTED'?'Rejected by Admin':'Put on hold by Admin';
+    const r=await sb.rpc('gc_admin_set_registration_decision',{p_user_id:String(userId),p_decision:decision,p_note:note});
     if(r.error)throw r.error;
-    const access=await sb.functions.invoke('gc-mobile-verification',{body:{action:'sync_access',user_id:String(userId)}});if(access.error||!access.data?.ok)throw new Error(access.error?.message||access.data?.error||'Registration decision saved, but login access sync failed.');
-    status.textContent='Registration '+(approved?'approved':'rejected')+'. '+(access.data.login_activated?'Login activated.':'Login remains blocked until mobile verification is complete.');
+    const access=await sb.functions.invoke('gc-mobile-verification',{body:{action:'sync_access',user_id:String(userId)}});
+    if(access.error||!access.data?.ok)throw new Error(access.error?.message||access.data?.error||'Decision saved, but login access sync failed.');
+    status.textContent='Registration '+(decision==='APPROVED'?'approved':decision==='REJECTED'?'rejected':'put on hold')+'. '+(access.data.login_activated?'Login activated.':'Login remains blocked.');
     await loadRegistrationApprovals();
-  }catch(e){status.textContent='Registration decision failed: '+(e.message||e)+' — ensure the registration approval SQL migration has been run in Supabase.';}
+  }catch(e){status.textContent='Registration decision failed: '+(e.message||e)+' — please check Admin permissions and the registration history migration.';}
 }
 $('refreshRegistrationApprovals')?.addEventListener('click',loadRegistrationApprovals);
 async function gcAdminLoadAccountAccess(){
