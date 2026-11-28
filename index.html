@@ -17753,3 +17753,38 @@ a[data-gc-public-menu="registration"] {background:#168b45!important;color:#fff!i
 })();
 </script>
 
+<!-- GURU CONNECT: public homepage must never expose the legacy embedded Staff dashboard -->
+<style id="gc-homepage-disable-legacy-admin-20261128">
+  #staffAdminDashboard,
+  #stickyAdminLogout { display:none !important; visibility:hidden !important; }
+</style>
+<script id="gc-homepage-disable-legacy-admin-20261128-js">
+(function(){
+  'use strict';
+  // The current Staff/Admin workspace is admin.html. This old dashboard is
+  // retained in the source for compatibility, but is never enabled on the
+  // public homepage.
+  try { localStorage.removeItem('is_staff_logged'); } catch(e) {}
+  try { sessionStorage.removeItem('is_staff_logged'); } catch(e) {}
+
+  window.checkStaffSessionState = function(){
+    try { localStorage.removeItem('is_staff_logged'); } catch(e) {}
+    try { sessionStorage.removeItem('is_staff_logged'); } catch(e) {}
+    var dash=document.getElementById('staffAdminDashboard');
+    var pub=document.getElementById('publicWebsiteContent');
+    var menu=document.getElementById('publicMenuWrapper');
+    var staffBtn=document.getElementById('navStaffBtn');
+    var sticky=document.getElementById('stickyAdminLogout');
+    if(dash){ dash.classList.add('hidden'); dash.style.setProperty('display','none','important'); }
+    if(pub){ pub.classList.remove('hidden'); pub.style.removeProperty('display'); }
+    if(menu){ menu.classList.remove('hidden'); menu.style.removeProperty('display'); }
+    if(staffBtn){ staffBtn.classList.add('hidden'); staffBtn.style.setProperty('display','none','important'); }
+    if(sticky){ sticky.classList.add('hidden'); sticky.style.setProperty('display','none','important'); }
+  };
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',window.checkStaffSessionState,{once:true});
+  } else {
+    window.checkStaffSessionState();
+  }
+})();
+</script>
