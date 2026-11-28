@@ -16692,7 +16692,7 @@ window.gcEmailLogin=async function(){
       if(String(u.email||'').toLowerCase()!==STAFF_EMAIL||String(u.id||'')!=='1df7606a-3a96-4116-b022-804b37a3c3dd')throw new Error('This account is not the authorized GURU CONNECT Admin account.');
       localStorage.setItem('is_staff_logged','true');localStorage.setItem('gc_staff_supabase_auth','true');
       localStorage.setItem('active_user_id',u.id);localStorage.setItem('active_user_email',u.email||STAFF_EMAIL);localStorage.setItem('active_user_role','staff');
-      sessionStorage.setItem('is_staff_logged','true');sessionStorage.setItem('gc_staff_supabase_auth','true');
+      sessionStorage.setItem('is_staff_logged','true');sessionStorage.setItem('gc_staff_supabase_auth','true');sessionStorage.setItem('active_user_role','staff');sessionStorage.setItem('active_user_id',u.id);sessionStorage.setItem('active_user_email',u.email||STAFF_EMAIL);sessionStorage.setItem('gc_staff_login_at',String(Date.now()));
       try{sessionStorage.removeItem('gc_logged_out')}catch(_){}
       window.closeLoginModal();window.location.replace('admin.html');return true;
     }catch(err){console.error('Admin login failed',err);alert('Login failed: '+(err?.message||String(err)));return false;}
